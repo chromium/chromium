@@ -3949,6 +3949,7 @@ enum WebFeature {
   kFetchLater = 4609,
   kURLPatternReliantOnImplicitURLComponentsInString = 4610,
   kURLPatternReliantOnLaterComponentFromBaseURL = 4611,
+  kV8Navigator_CreateAuctionNonce_Method = 4612,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

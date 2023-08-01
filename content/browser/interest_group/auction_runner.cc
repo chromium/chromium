@@ -470,6 +470,7 @@ AuctionRunner::AuctionRunner(
                interest_group_manager,
                &auction_metrics_recorder_,
                /*auction_start_time=*/base::Time::Now(),
+               owned_auction_config_->non_shared_params.auction_nonce,
                std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {

@@ -28,8 +28,9 @@ namespace {
 bool AreBuyerPrioritySignalsValid(
     const base::flat_map<std::string, double>& buyer_priority_signals) {
   for (const auto& priority_signal : buyer_priority_signals) {
-    if (base::StartsWith(priority_signal.first, "browserSignals."))
+    if (base::StartsWith(priority_signal.first, "browserSignals.")) {
       return false;
+    }
   }
   return true;
 }
@@ -179,6 +180,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadRequiredSellerCapabilities(
           &out->required_seller_capabilities) ||
       !data.ReadRequestedSize(&out->requested_size) ||
+      !data.ReadAuctionNonce(&out->auction_nonce) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
   }
@@ -195,16 +197,18 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
   if (out->interest_group_buyers) {
     for (const auto& buyer : *out->interest_group_buyers) {
       // Buyers must be HTTPS.
-      if (buyer.scheme() != url::kHttpsScheme)
+      if (buyer.scheme() != url::kHttpsScheme) {
         return false;
+      }
     }
   }
 
   if (out->per_buyer_priority_signals) {
     for (const auto& per_buyer_priority_signals :
          *out->per_buyer_priority_signals) {
-      if (!AreBuyerPrioritySignalsValid(per_buyer_priority_signals.second))
+      if (!AreBuyerPrioritySignalsValid(per_buyer_priority_signals.second)) {
         return false;
+      }
     }
   }
   if (out->all_buyers_priority_signals &&
@@ -216,8 +220,14 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     // TODO(1457241): Add support for multi-level auctions including server-side
     // auctions.
     // Component auctions may not have their own nested component auctions.
-    if (!component_auction.non_shared_params.component_auctions.empty())
+    if (!component_auction.non_shared_params.component_auctions.empty()) {
       return false;
+    }
+    // Component auctions must not specify an auctionNonce; it's only meaningful
+    // for the top-level auction.
+    if (component_auction.non_shared_params.auction_nonce) {
+      return false;
+    }
   }
 
   return true;
@@ -242,16 +252,19 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   out->expects_direct_from_seller_signals_header_ad_slot =
       data.expects_direct_from_seller_signals_header_ad_slot();
 
-  if (data.has_seller_experiment_group_id())
+  if (data.has_seller_experiment_group_id()) {
     out->seller_experiment_group_id = data.seller_experiment_group_id();
+  }
 
-  if (data.has_all_buyer_experiment_group_id())
+  if (data.has_all_buyer_experiment_group_id()) {
     out->all_buyer_experiment_group_id = data.all_buyer_experiment_group_id();
+  }
 
   // Seller must be HTTPS. This also excludes opaque origins, for which scheme()
   // returns an empty string.
-  if (out->seller.scheme() != url::kHttpsScheme)
+  if (out->seller.scheme() != url::kHttpsScheme) {
     return false;
+  }
 
   // We need at least 1 of server response and decision logic url.
   if (!out->server_response && !out->decision_logic_url) {

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
@@ -436,6 +437,7 @@ class CONTENT_EXPORT InterestGroupAuction
       InterestGroupManagerImpl* interest_group_manager,
       AuctionMetricsRecorder* auction_metrics_recorder,
       base::Time auction_start_time,
+      base::optional_ref<base::Uuid> auction_nonce,
       base::RepeatingCallback<
           void(const PrivateAggregationRequests& private_aggregation_requests)>
           maybe_log_private_aggregation_web_features_callback);
@@ -1085,6 +1087,16 @@ class CONTENT_EXPORT InterestGroupAuction
   const base::Time auction_start_time_;
   // The time when this InterestGroupAuction was created; used for UMA.
   const base::TimeTicks creation_time_;
+
+  // A unique identifier associated with this and only this invocation of
+  // runAdAuction, which came from a prior call to createAuctionNonce. This is
+  // only required for auctions that provide additional bids, and each of those
+  // additional bids must use the same auction nonce to ensure that each of
+  // those additional bids was intended for this and only this auction. Because
+  // this value is associated with the call to runAdAuction, the value of this
+  // nonce is identical for the top-level and all component auctions in a
+  // multi-seller auction.
+  absl::optional<base::Uuid> auction_nonce_;
 
   // Holds the computed subresource URLs (renderer-supplied prefix + browser
   // produced suffix). This gets constructed on-demand once the prefix actually

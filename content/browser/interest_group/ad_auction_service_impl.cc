@@ -17,7 +17,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -53,6 +55,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
@@ -112,8 +115,9 @@ void AdAuctionServiceImpl::CreateMojoService(
 void AdAuctionServiceImpl::JoinInterestGroup(
     const blink::InterestGroup& group,
     JoinInterestGroupCallback callback) {
-  if (!JoinOrLeaveApiAllowedFromRenderer(group.owner))
+  if (!JoinOrLeaveApiAllowedFromRenderer(group.owner)) {
     return;
+  }
 
   // If the interest group API is not allowed for this origin, report the result
   // of the permissions check, but don't actually join the interest group.
@@ -125,8 +129,9 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
-  if (updated_group.expiry > max_expiry)
+  if (updated_group.expiry > max_expiry) {
     updated_group.expiry = max_expiry;
+  }
 
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(updated_group), main_frame_url_, origin(),
@@ -138,8 +143,9 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
     const url::Origin& owner,
     const std::string& name,
     LeaveInterestGroupCallback callback) {
-  if (!JoinOrLeaveApiAllowedFromRenderer(owner))
+  if (!JoinOrLeaveApiAllowedFromRenderer(owner)) {
     return;
+  }
 
   // If the interest group API is not allowed for this origin, report the result
   // of the permissions check, but don't actually join the interest group.
@@ -223,6 +229,13 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
       origin(), GetClientSecurityState());
 }
 
+void AdAuctionServiceImpl::CreateAuctionNonce(
+    CreateAuctionNonceCallback callback) {
+  base::Uuid token = base::Uuid::GenerateRandomV4();
+  pending_auction_nonces_.insert(token);
+  std::move(callback).Run(token);
+}
+
 void AdAuctionServiceImpl::RunAdAuction(
     const blink::AuctionConfig& config,
     mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
@@ -246,6 +259,25 @@ void AdAuctionServiceImpl::RunAdAuction(
     std::move(callback).Run(/*manually_aborted=*/false,
                             /*config=*/absl::nullopt);
     return;
+  }
+
+  if (config.non_shared_params.auction_nonce) {
+    if (auto nonce_iter = pending_auction_nonces_.find(
+            *config.non_shared_params.auction_nonce);
+        nonce_iter != pending_auction_nonces_.end()) {
+      pending_auction_nonces_.erase(nonce_iter);
+    } else {
+      // No matching auction nonce from a prior call to CreateAuctionNonce.
+      devtools_instrumentation::LogWorkletMessage(
+          *GetFrame(), blink::mojom::ConsoleMessageLevel::kError,
+          "Invalid AuctionConfig passed to runAdAuction. The config provided "
+          "an auctionNonce value that was _not_ created by a previous call to "
+          "createAuctionNonce. Aborting the auction.");
+
+      std::move(callback).Run(/*manually_aborted=*/false,
+                              /*config=*/absl::nullopt);
+      return;
+    }
   }
 
   FencedFrameURLMapping& fenced_frame_urls_map =
@@ -302,8 +334,9 @@ class FencedFrameURLMappingObserver
     // FLEDGE URN URLs should already be mapped, so the observer will be called
     // synchronously.
     mapping.ConvertFencedFrameURNToURL(urn_url, &obs);
-    if (!obs.called_)
+    if (!obs.called_) {
       mapping.RemoveObserverForURN(urn_url, &obs);
+    }
     return mapped_url;
   }
 
@@ -799,8 +832,9 @@ InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()
 }
 
 url::Origin AdAuctionServiceImpl::GetTopWindowOrigin() const {
-  if (!render_frame_host().GetParent())
+  if (!render_frame_host().GetParent()) {
     return origin();
+  }
   return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 }
 

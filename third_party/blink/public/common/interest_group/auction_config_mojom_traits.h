@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -322,6 +323,11 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<blink::AdSize> requested_size(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.requested_size;
+  }
+
+  static const absl::optional<base::Uuid>& auction_nonce(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.auction_nonce;
   }
 
   static const std::vector<blink::AuctionConfig>& component_auctions(

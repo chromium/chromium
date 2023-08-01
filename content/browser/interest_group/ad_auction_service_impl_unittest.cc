@@ -33,6 +33,7 @@
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -900,6 +901,27 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         rfh, interest_service.BindNewPipeAndPassReceiver());
 
     interest_service->UpdateAdInterestGroups();
+  }
+
+  // Creates a new and unique auction nonce.
+  //
+  // If `rfh` is nullptr, uses the main frame.
+  base::Uuid CreateAuctionNonceAndFlush(RenderFrameHost* rfh = nullptr) {
+    mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        rfh ? rfh : main_rfh(),
+        ad_auction_service.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    base::Uuid auction_nonce;
+    ad_auction_service->CreateAuctionNonce(base::BindLambdaForTesting(
+        [&run_loop, &auction_nonce](const base::Uuid& nonce) {
+          auction_nonce = nonce;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    return auction_nonce;
   }
 
   // Runs an ad auction using the config specified in `auction_config` in the
@@ -4099,6 +4121,11 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render3");
+}
+
+TEST_F(AdAuctionServiceImplTest, CreateAuctionNonce) {
+  base::Uuid auction_nonce = CreateAuctionNonceAndFlush();
+  EXPECT_NE(auction_nonce.AsLowercaseString(), "");
 }
 
 // Add an interest group, and run an ad auction.
@@ -7602,7 +7629,8 @@ class AdAuctionServiceImplPrivateAggregationDisabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest, PrivateAggregationNotExposed) {
+TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
+       PrivateAggregationNotExposed) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,

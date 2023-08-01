@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -449,8 +450,9 @@ base::expected<absl::uint128, String> CopyBigIntToUint128(
 scoped_refptr<const SecurityOrigin> ParseOrigin(const String& origin_string) {
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromString(origin_string);
-  if (origin->Protocol() != url::kHttpsScheme)
+  if (origin->Protocol() != url::kHttpsScheme) {
     return nullptr;
+  }
   return origin;
 }
 
@@ -548,8 +550,9 @@ bool CopySellerCapabilitiesFromIdlToMojo(
     const AuctionAdInterestGroup& input,
     mojom::blink::InterestGroup& output) {
   output.all_sellers_capabilities = mojom::blink::SellerCapabilities::New();
-  if (!input.hasSellerCapabilities())
+  if (!input.hasSellerCapabilities()) {
     return true;
+  }
 
   for (const auto& [origin_string, capabilities_vector] :
        input.sellerCapabilities()) {
@@ -559,8 +562,9 @@ bool CopySellerCapabilitiesFromIdlToMojo(
     if (origin_string == "*") {
       output.all_sellers_capabilities = std::move(seller_capabilities);
     } else {
-      if (!output.seller_capabilities)
+      if (!output.seller_capabilities) {
         output.seller_capabilities.emplace();
+      }
       output.seller_capabilities->insert(
           SecurityOrigin::CreateFromString(origin_string),
           std::move(seller_capabilities));
@@ -574,8 +578,9 @@ bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
                                     ExceptionState& exception_state,
                                     const AuctionAdInterestGroup& input,
                                     mojom::blink::InterestGroup& output) {
-  if (!input.hasExecutionMode())
+  if (!input.hasExecutionMode()) {
     return true;
+  }
   const bool used_deprecated_names = input.executionMode() == "groupByOrigin";
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.EnumNaming.Renderer.WorkletExecutionMode",
@@ -697,8 +702,9 @@ bool CopyTrustedBiddingSignalsUrlFromIdlToMojo(
 bool CopyTrustedBiddingSignalsKeysFromIdlToMojo(
     const AuctionAdInterestGroup& input,
     mojom::blink::InterestGroup& output) {
-  if (!input.hasTrustedBiddingSignalsKeys())
+  if (!input.hasTrustedBiddingSignalsKeys()) {
     return true;
+  }
   output.trusted_bidding_signals_keys.emplace();
   for (const auto& key : input.trustedBiddingSignalsKeys()) {
     output.trusted_bidding_signals_keys->push_back(key);
@@ -710,8 +716,9 @@ bool CopyUserBiddingSignalsFromIdlToMojo(const ScriptState& script_state,
                                          ExceptionState& exception_state,
                                          const AuctionAdInterestGroup& input,
                                          mojom::blink::InterestGroup& output) {
-  if (!input.hasUserBiddingSignals())
+  if (!input.hasUserBiddingSignals()) {
     return true;
+  }
   if (!Jsonify(script_state, input.userBiddingSignals().V8Value(),
                output.user_bidding_signals)) {
     exception_state.ThrowTypeError(
@@ -727,8 +734,9 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
                           ExceptionState& exception_state,
                           const AuctionAdInterestGroup& input,
                           mojom::blink::InterestGroup& output) {
-  if (!input.hasAds())
+  if (!input.hasAds()) {
     return true;
+  }
   output.ads.emplace();
   for (const auto& ad : input.ads()) {
     auto mojo_ad = mojom::blink::InterestGroupAd::New();
@@ -783,8 +791,9 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
                                    ExceptionState& exception_state,
                                    const AuctionAdInterestGroup& input,
                                    mojom::blink::InterestGroup& output) {
-  if (!input.hasAdComponents())
+  if (!input.hasAdComponents()) {
     return true;
+  }
   output.ad_components.emplace();
   for (const auto& ad : input.adComponents()) {
     auto mojo_ad = mojom::blink::InterestGroupAd::New();
@@ -1149,8 +1158,9 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
     mojom::blink::AuctionAdConfig& output) {
   DCHECK(!output.auction_ad_config_non_shared_params->interest_group_buyers);
 
-  if (!input.hasInterestGroupBuyers())
+  if (!input.hasInterestGroupBuyers()) {
     return true;
+  }
 
   Vector<scoped_refptr<const SecurityOrigin>> buyers;
   for (const auto& buyer_str : input.interestGroupBuyers()) {
@@ -1245,8 +1255,9 @@ TryToBuildDirectFromSellerSignalsSubresource(
   // always return absl::nullopt.
   absl::optional<base::UnguessableToken> token =
       resource_fetcher.GetSubresourceBundleToken(subresource_url);
-  if (!token)
+  if (!token) {
     return nullptr;
+  }
   absl::optional<KURL> bundle_url =
       resource_fetcher.GetSubresourceBundleSourceUrl(subresource_url);
   DCHECK(bundle_url->ProtocolIs(url::kHttpsScheme));
@@ -1312,8 +1323,9 @@ ConvertDirectFromSellerSignalsFromV8ToMojo(
           TryToBuildDirectFromSellerSignalsSubresource(
               subresource_url, seller_origin, exception_state,
               resource_fetcher);
-      if (!maybe_mojo_bundle)
+      if (!maybe_mojo_bundle) {
         continue;  // The bundle wasn't found, try the next one.
+      }
       mojo_direct_from_seller_signals->per_buyer_signals.insert(
           buyer, std::move(maybe_mojo_bundle));
     }
@@ -1651,8 +1663,9 @@ bool CopyPerBuyerExperimentIdsFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasPerBuyerExperimentGroupIds())
+  if (!input.hasPerBuyerExperimentGroupIds()) {
     return true;
+  }
   for (const auto& per_buyer_experiment_id :
        input.perBuyerExperimentGroupIds()) {
     if (per_buyer_experiment_id.first == "*") {
@@ -1681,8 +1694,9 @@ bool CopyPerBuyerGroupLimitsFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasPerBuyerGroupLimits())
+  if (!input.hasPerBuyerGroupLimits()) {
     return true;
+  }
   for (const auto& per_buyer_group_limit : input.perBuyerGroupLimits()) {
     if (per_buyer_group_limit.second <= 0) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
@@ -1732,8 +1746,9 @@ bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasPerBuyerPrioritySignals())
+  if (!input.hasPerBuyerPrioritySignals()) {
     return true;
+  }
 
   output.auction_ad_config_non_shared_params->per_buyer_priority_signals
       .emplace();
@@ -1895,6 +1910,21 @@ bool CopyRequestedSizeFromIdlToMojo(const ExecutionContext& execution_context,
   return true;
 }
 
+bool CopyAuctionNonceFromIdlToMojo(const ExecutionContext& execution_context,
+                                   ExceptionState& exception_state,
+                                   const AuctionAdConfig& input,
+                                   mojom::blink::AuctionAdConfig& output) {
+  // We don't validate that the UUID parsed successfully here. If it failed,
+  // the returned Uuid is an empty string. When we look for it later in the
+  // pending_auction_nonces_, we won't find an empty string, and will fail
+  // the auction then.
+  if (input.hasAuctionNonce()) {
+    output.auction_ad_config_non_shared_params->auction_nonce =
+        base::Uuid::ParseLowercase(input.auctionNonce().Ascii());
+  }
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure. `auction_handle` is used for promise handling;
@@ -1950,7 +1980,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyRequiredSellerSignalsFromIdlToMojo(context, exception_state, config,
                                               *mojo_config) ||
       !CopyRequestedSizeFromIdlToMojo(context, exception_state, config,
-                                      *mojo_config)) {
+                                      *mojo_config) ||
+      !CopyAuctionNonceFromIdlToMojo(context, exception_state, config,
+                                     *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 
@@ -1988,6 +2020,13 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     // auctions.
     exception_state.ThrowTypeError(
         "Only top-level auctions may have 'serverResponse'.");
+    return mojom::blink::AuctionAdConfigPtr();
+  }
+
+  if (mojo_config->auction_ad_config_non_shared_params->auction_nonce &&
+      !is_top_level) {
+    exception_state.ThrowTypeError(
+        "Only top-level auctions may have 'auctionNonce'.");
     return mojom::blink::AuctionAdConfigPtr();
   }
 
@@ -2042,8 +2081,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       auto mojo_component_auction = IdlAuctionConfigToMojo(
           auction_handle, /*is_top_level=*/false, pos, script_state, context,
           exception_state, resource_fetcher, *idl_component_auction);
-      if (!mojo_component_auction)
+      if (!mojo_component_auction) {
         return mojom::blink::AuctionAdConfigPtr();
+      }
       mojo_config->auction_ad_config_non_shared_params->component_auctions
           .emplace_back(std::move(mojo_component_auction));
     }
@@ -2104,8 +2144,9 @@ bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
 }
 
 void RecordCommonFledgeUseCounters(Document* document) {
-  if (!document)
+  if (!document) {
     return;
+  }
   UseCounter::Count(document, mojom::blink::WebFeature::kFledge);
   // Only record the ads APIs counter if enabled in that manner.
   if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(
@@ -2733,8 +2774,9 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                              *mojo_group)) {
     return ScriptPromise();
   }
-  if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
+  if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group)) {
     return ScriptPromise();
+  }
   mojo_group->name = group->name();
   mojo_group->priority = (group->hasPriority()) ? group->priority() : 0.0;
 
@@ -2775,8 +2817,9 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                                                  *group, *mojo_group)) {
     return ScriptPromise();
   }
-  if (!CopyTrustedBiddingSignalsKeysFromIdlToMojo(*group, *mojo_group))
+  if (!CopyTrustedBiddingSignalsKeysFromIdlToMojo(*group, *mojo_group)) {
     return ScriptPromise();
+  }
   if (!CopyUserBiddingSignalsFromIdlToMojo(*script_state, exception_state,
                                            *group, *mojo_group)) {
     return ScriptPromise();
@@ -2995,6 +3038,30 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
   return From(context, navigator).updateAdInterestGroups();
 }
 
+ScriptPromise NavigatorAuction::createAuctionNonce(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+
+  ScriptPromise promise = resolver->Promise();
+
+  ad_auction_service_->CreateAuctionNonce(resolver->WrapCallbackInScriptScope(
+      WTF::BindOnce(&NavigatorAuction::CreateAuctionNonceComplete,
+                    WrapPersistent(this))));
+
+  return promise;
+}
+
+/* static */
+ScriptPromise NavigatorAuction::createAuctionNonce(
+    ScriptState* script_state,
+    Navigator& navigator,
+    ExceptionState& exception_state) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .createAuctionNonce(script_state, exception_state);
+}
+
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              AuctionAdConfig* mutable_config,
                                              ExceptionState& exception_state) {
@@ -3014,8 +3081,9 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
       exception_state,
       /*resource_fetcher=*/
       *GetSupplementable()->DomWindow()->document()->Fetcher(), *config);
-  if (!mojo_config)
+  if (!mojo_config) {
     return ScriptPromise();
+  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -3241,28 +3309,33 @@ ScriptPromise NavigatorAuction::createAdRequest(
   auto mojo_config = mojom::blink::AdRequestConfig::New();
 
   if (!CopyAdRequestUrlFromIdlToMojo(*context, exception_state, *config,
-                                     *mojo_config))
+                                     *mojo_config)) {
     return ScriptPromise();
+  }
 
   if (!CopyAdPropertiesFromIdlToMojo(*context, exception_state, *config,
-                                     *mojo_config))
+                                     *mojo_config)) {
     return ScriptPromise();
+  }
 
   if (config->hasPublisherCode()) {
     mojo_config->publisher_code = config->publisherCode();
   }
 
   if (!CopyTargetingFromIdlToMojo(*context, exception_state, *config,
-                                  *mojo_config))
+                                  *mojo_config)) {
     return ScriptPromise();
+  }
 
   if (!CopyAdSignalsFromIdlToMojo(*context, exception_state, *config,
-                                  *mojo_config))
+                                  *mojo_config)) {
     return ScriptPromise();
+  }
 
   if (!CopyFallbackSourceFromIdlToMojo(*context, exception_state, *config,
-                                       *mojo_config))
+                                       *mojo_config)) {
     return ScriptPromise();
+  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -3327,8 +3400,9 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
                                    /*auction_id=*/nullptr, *script_state,
                                    *config, *mojo_config);
 
-  if (!ValidateAdsObject(exception_state, ads))
+  if (!ValidateAdsObject(exception_state, ads)) {
     return ScriptPromise();
+  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -3377,8 +3451,9 @@ void NavigatorAuction::StartJoin(PendingJoin&& pending_join) {
 void NavigatorAuction::JoinComplete(bool is_cross_origin,
                                     ScriptPromiseResolver* resolver,
                                     bool failed_well_known_check) {
-  if (is_cross_origin)
+  if (is_cross_origin) {
     queued_cross_site_joins_.OnComplete();
+  }
 
   if (failed_well_known_check) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
@@ -3399,8 +3474,9 @@ void NavigatorAuction::StartLeave(PendingLeave&& pending_leave) {
 void NavigatorAuction::LeaveComplete(bool is_cross_origin,
                                      ScriptPromiseResolver* resolver,
                                      bool failed_well_known_check) {
-  if (is_cross_origin)
+  if (is_cross_origin) {
     queued_cross_site_leaves_.OnComplete();
+  }
 
   if (failed_well_known_check) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
@@ -3412,6 +3488,12 @@ void NavigatorAuction::LeaveComplete(bool is_cross_origin,
   resolver->Resolve();
 }
 
+void NavigatorAuction::CreateAuctionNonceComplete(
+    ScriptPromiseResolver* resolver,
+    const base::Uuid& nonce) {
+  resolver->Resolve(String(nonce.AsLowercaseString()));
+}
+
 void NavigatorAuction::AuctionHandle::AuctionComplete(
     ScriptPromiseResolver* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
@@ -3419,8 +3501,9 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
     const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
         result_config) {
   if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
+  }
   AbortSignal* abort_signal =
       scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
   ScriptState* script_state = resolver->GetScriptState();

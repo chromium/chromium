@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -23,6 +24,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -167,8 +169,9 @@ base::Value::List MakeAdsValue(
     if (ad.buyer_and_seller_reporting_id) {
       entry.Set("buyerAndSellerReportingId", *ad.buyer_and_seller_reporting_id);
     }
-    if (ad.metadata)
+    if (ad.metadata) {
       entry.Set("metadata", JsonToValue(*ad.metadata));
+    }
     if (ad.ad_render_id) {
       entry.Set("adRenderId", std::move(ad.ad_render_id.value()));
     }
@@ -426,8 +429,9 @@ class NetworkResponder {
     std::string script_tags;
     for (const SubresourceBundle& bundle : bundles) {
       base::Value::List subresources;
-      for (const SubresourceResponse& subresource : bundle.subresources)
+      for (const SubresourceResponse& subresource : bundle.subresources) {
         subresources.Append(subresource.subresource_url);
+      }
       script_tags += JsReplace(kScriptWebBundleTemplate, bundle.bundle_url,
                                std::move(subresources));
     }
@@ -493,8 +497,9 @@ function generateBid(
       const net::test_server::HttpRequest& request) {
     base::AutoLock auto_lock(response_map_lock_);
     const auto it = response_map_.find(request.GetURL().path());
-    if (it == response_map_.end())
+    if (it == response_map_.end()) {
       return nullptr;
+    }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader(kFledgeHeader, "true");
     response->set_code(net::HTTP_OK);
@@ -712,8 +717,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     dict.Set("priority", group.priority);
     dict.Set("enableBiddingSignalsPrioritization",
              group.enable_bidding_signals_prioritization);
-    if (group.priority_vector)
+    if (group.priority_vector) {
       dict.Set("priorityVector", StringDoubleMapToDict(*group.priority_vector));
+    }
     if (group.priority_signals_overrides) {
       dict.Set("prioritySignalsOverrides",
                StringDoubleMapToDict(*group.priority_signals_overrides));
@@ -721,10 +727,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     dict.Set("sellerCapabilities",
              SellerCapabilitiesToDict(group.seller_capabilities,
                                       group.all_sellers_capabilities));
-    if (group.bidding_url)
+    if (group.bidding_url) {
       dict.Set("biddingLogicUrl", group.bidding_url->spec());
-    if (group.bidding_wasm_helper_url)
+    }
+    if (group.bidding_wasm_helper_url) {
       dict.Set("biddingWasmHelperUrl", group.bidding_wasm_helper_url->spec());
+    }
     if (group.update_url) {
       // It doesn't really make sense to set `update_url` without one of these
       // being true.
@@ -740,8 +748,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       dict.Set("trustedBiddingSignalsUrl",
                group.trusted_bidding_signals_url->spec());
     }
-    if (group.user_bidding_signals)
+    if (group.user_bidding_signals) {
       dict.Set("userBiddingSignals", JsonToValue(*group.user_bidding_signals));
+    }
     if (group.trusted_bidding_signals_keys) {
       base::Value::List keys;
       for (const auto& key : *group.trusted_bidding_signals_keys) {
@@ -749,10 +758,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       }
       dict.Set("trustedBiddingSignalsKeys", std::move(keys));
     }
-    if (group.ads)
+    if (group.ads) {
       dict.Set("ads", MakeAdsValue(*group.ads));
-    if (group.ad_components)
+    }
+    if (group.ad_components) {
       dict.Set("adComponents", MakeAdsValue(*group.ad_components));
+    }
     if (group.ad_sizes) {
       dict.Set("adSizes", AdSizesToDict(*group.ad_sizes));
     }
@@ -911,8 +922,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
     absl::optional<StorageInterestGroup> group = GetInterestGroup(owner, name);
-    if (!group)
+    if (!group) {
       return 0;
+    }
     return group->bidding_browser_signals->join_count;
   }
 
@@ -1015,6 +1027,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 })())",
                       interest_group_json.c_str()));
+  }
+
+  [[nodiscard]] content::EvalJsResult CreateAuctionNonceAndWait() {
+    return EvalJs(shell(), "navigator.createAuctionNonce()");
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -1154,8 +1170,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       base::RepeatingCallback<bool(const std::vector<StorageInterestGroup>&)>
           condition) {
     while (true) {
-      if (condition.Run(GetInterestGroupsForOwner(owner)))
+      if (condition.Run(GetInterestGroupsForOwner(owner))) {
         break;
+      }
     }
   }
 
@@ -1171,8 +1188,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
     {
       base::AutoLock auto_lock(requests_lock_);
-      if (received_https_test_server_requests_.count(wait_for_url) > 0u)
+      if (received_https_test_server_requests_.count(wait_for_url) > 0u) {
         return;
+      }
       wait_for_url_ = wait_for_url;
       request_run_loop_ = std::make_unique<base::RunLoop>();
     }
@@ -1246,8 +1264,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   bool HasServerSeenUrls(const std::vector<GURL>& urls) {
     for (const auto& url : urls) {
-      if (!HasServerSeenUrl(url))
+      if (!HasServerSeenUrl(url)) {
         return false;
+      }
     }
     return true;
   }
@@ -1354,8 +1373,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     EvalJsResult result =
         EvalJs(adapter, JsReplace("navigator.deprecatedURNToURL($1, $2)",
                                   urn_url, send_reports));
-    if (!result.error.empty() || result.value.is_none())
+    if (!result.error.empty() || result.value.is_none()) {
       return absl::nullopt;
+    }
     return GURL(result.ExtractString());
   }
 
@@ -1364,8 +1384,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const base::flat_map<std::string, std::string> replacements,
       std::string* error_out = nullptr) {
     base::Value::Dict replacement_value;
-    for (const auto& replacement : replacements)
+    for (const auto& replacement : replacements) {
       replacement_value.Set(replacement.first, replacement.second);
+    }
     EvalJsResult result = EvalJs(
         shell(), JsReplace(R"(
     (async function() {
@@ -1456,8 +1477,9 @@ class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
       const GURL& expected_ad_url,
       const std::string& auction_config_json,
       absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
-    if (!execution_target)
+    if (!execution_target) {
       execution_target = shell();
+    }
 
     // For this test, we:
     //   1. Run the ad auction, specifically requesting that the returned
@@ -1615,8 +1637,9 @@ try {
     ASSERT_TRUE(components);
     ASSERT_EQ(1u, components->size());
     EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme_piece());
-    if (component_ad_urn)
+    if (component_ad_urn) {
       *component_ad_urn = (*components)[0];
+    }
 
     // Load the ad component in the nested fenced frame. The load should
     // succeed.
@@ -1631,14 +1654,16 @@ try {
         base::StringPrintf("navigator.adAuctionComponents(%i)", num_params));
     // Return nullopt if an exception was thrown, as should be the case for
     // loading pages that are not the result of an auction.
-    if (!result.error.empty())
+    if (!result.error.empty()) {
       return absl::nullopt;
+    }
 
     // Otherwise, adAuctionComponents should always return a list, since it
     // forces its input to be a number, and clamps it to the expected range.
     EXPECT_TRUE(result.value.is_list());
-    if (!result.value.is_list())
+    if (!result.value.is_list()) {
       return absl::nullopt;
+    }
 
     std::vector<GURL> out;
     for (const auto& value : result.value.GetList()) {
@@ -1679,8 +1704,9 @@ try {
       EXPECT_EQ(url::kUrnScheme, (*all_component_urls)[i].scheme_piece());
 
       // All ad component URLs should be unique.
-      for (size_t j = 0; j < i; ++j)
+      for (size_t j = 0; j < i; ++j) {
         EXPECT_NE((*all_component_urls)[i], (*all_component_urls)[j]);
+      }
 
       // Check URNs are mapped to the values in `expected_ad_component_urls`.
       TestFencedFrameURLMappingResultObserver observer;
@@ -8726,8 +8752,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
     // Some auctions will have no winner, depending on which interest groups
     // were chosen to participate. No need to do anything more for those.
-    if (result.value.is_none())
+    if (result.value.is_none()) {
       continue;
+    }
 
     // For other auctions, navigate iframe to winning URN to trigger reports.
     // This should happen exactly 4 times, so shouldn't slow the test down too
@@ -11523,8 +11550,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
       test_origin,
       base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
                                         groups) {
-        if (groups.size() != 1)
+        if (groups.size() != 1) {
           return false;
+        }
         const auto& group = groups[0].interest_group;
         return group.name == "cars" && group.priority == 0.0 &&
                group.execution_mode ==
@@ -11694,8 +11722,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       test_origin,
       base::BindLambdaForTesting(
           [](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 1)
+            if (groups.size() != 1) {
               return false;
+            }
             const auto& group = groups[0].interest_group;
             return group.name == "cars" && group.bidding_url.has_value() &&
                    group.bidding_url->path() ==
@@ -14211,9 +14240,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   // Verify the expected error is logged to the console.
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(console_observer.messages().size(), 1u);
-  EXPECT_EQ(base::UTF16ToUTF8(console_observer.messages()[0].message),
-            "This frame is an ad component. It is not allowed to call "
-            "fence.reportEvent.");
 
   // Send a basic request to the reporting destination.
   GURL reporting_url = https_server_->GetURL("a.test", "/report_event.html");
@@ -14872,6 +14898,101 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Missing "
       "required field ad auction config decisionLogicURL or serverResponse",
       RunAuctionAndWait(auction_config));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       AuctionNonceNotFromCreateAuctionNonce) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+
+  std::string auction_config = R"({
+    seller: "https://seller.example.com",
+    decisionLogicUrl: "https://seller.example.com/decision_logic.js",
+    interestGroupBuyers: ["https://buyer.example.com"],
+    auctionNonce: "00000000-0000-0000-0000-000000000000",
+  })";
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Monitor the console errors.
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
+  console_observer.SetPattern(
+      "Invalid AuctionConfig passed to runAdAuction. The config provided "
+      "an auctionNonce value that was _not_ created by a previous call "
+      "to createAuctionNonce. Aborting the auction.");
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+
+  // Verify the expected error is logged to the console.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       AuctionNonceOnComponentAuction) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+
+  std::string auction_config = R"({
+    seller: "https://seller.example.com",
+    decisionLogicUrl: "https://seller.example.com/decision_logic.js",
+    auctionNonce: "00000000-0000-0000-0000-000000000000",
+    componentAuctions: [{
+      seller: "https://seller2.example.com",
+      decisionLogicUrl: "https://seller2.example.com/decision_logic.js",
+      interestGroupBuyers: ["https://buyer2.example.com"],
+      auctionNonce: "00000000-0000-0000-0000-000000000000",
+    }]
+  })";
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "Only top-level auctions may have 'auctionNonce'.",
+      RunAuctionAndWait(auction_config));
+}
+
+// This convouted way to validate the UUID is necessary because MatchesRegex
+// only support simple regular expressions, not PCRE.
+std::string ConvertUuidWithOnlyZeros(const std::string& uuid) {
+  std::string all_zeros;
+  base::ReplaceChars(uuid, "1234567890abcdef", "0", &all_zeros);
+  return all_zeros;
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, AuctionNonceIsValid) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic_use_wasm.js"))
+                    .SetBiddingWasmHelperUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/multiply.wasm"))
+                    .SetAds({{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
+                    .Build()));
+
+  std::string auction_nonce = CreateAuctionNonceAndWait().ExtractString();
+  EXPECT_EQ("00000000-0000-0000-0000-000000000000",
+            ConvertUuidWithOnlyZeros(auction_nonce));
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1],
+        auctionNonce: $3,
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      auction_nonce);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 
 class InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest

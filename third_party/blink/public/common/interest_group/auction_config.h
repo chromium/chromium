@@ -286,6 +286,15 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // config as its container size.
     absl::optional<blink::AdSize> requested_size;
 
+    // A unique identifier associated with this and only this invocation of
+    // runAdAuction. This must come from a prior call to createAuctionNonce.
+    // This is only required for auctions that provide additional bids, and each
+    // of those additional bids must use the same auction nonce to ensure that
+    // each of those additional bids was intended for this and only this
+    // auction. In multi-seller auctions, this field is only meaningful for the
+    // top-level auction config; it's ignored in component auction configs.
+    absl::optional<base::Uuid> auction_nonce;
+
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.
     std::vector<AuctionConfig> component_auctions;
