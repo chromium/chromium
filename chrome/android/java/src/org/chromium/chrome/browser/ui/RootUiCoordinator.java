@@ -101,6 +101,8 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudToolbarButtonController;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
@@ -1248,7 +1250,13 @@ public class RootUiCoordinator
                                 mModalDialogManagerSupplier, /*managePasskeys=*/false);
                     },
                     // Open History Clusters UI for Query:
-                    openHistoryClustersDelegate);
+                    openHistoryClustersDelegate,
+                    // Open Quick Delete Dialog callback:
+                    () -> {
+                        new QuickDeleteController(mActivity, new QuickDeleteDelegateImpl(),
+                                mModalDialogManagerSupplier.get(), mSnackbarManagerSupplier.get(),
+                                mLayoutManager, mTabModelSelectorSupplier.get());
+                    });
 
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),

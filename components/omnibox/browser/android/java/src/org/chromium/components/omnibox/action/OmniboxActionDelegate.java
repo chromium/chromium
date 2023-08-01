@@ -56,4 +56,9 @@ public interface OmniboxActionDelegate {
      * @param query the query to access History Clusters for
      */
     void openHistoryClustersPage(String query);
+
+    /**
+     * Handles opening the CBD or the quick deleted dialog.
+     */
+    void handleClearBrowsingData();
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.any;
@@ -14,6 +15,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.KeyEvent;
 
@@ -29,6 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -60,6 +64,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -70,6 +75,7 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.Arrays;
@@ -88,6 +94,7 @@ public class OmniboxPedalsTest {
             new DisableAnimationsTestRule();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
+    public @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock OmniboxActionJni mOmniboxActionJni;
 
@@ -123,6 +130,12 @@ public class OmniboxPedalsTest {
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> sActivityTestRule.getActivity()
+                                   .getModalDialogManager()
+                                   .dismissAllDialogs(
+                                           DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
     }
@@ -174,11 +187,26 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData() throws InterruptedException {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), ClearBrowsingDataTabsFragment.class);
         verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        OmniboxPedalId.CLEAR_BROWSING_DATA, /*position=*/0, /*executed=*/true);
+        verifyNoMoreInteractions(mOmniboxActionJni);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    public void testClearBrowsingData_withQuickDeleteEnabled() throws InterruptedException {
+        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
+        mOmniboxUtils.clickOnAction(0, 0);
+
+        onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
+        verify(mOmniboxActionJni)
                 .recordActionShown(
                         OmniboxPedalId.CLEAR_BROWSING_DATA, /*position=*/0, /*executed=*/true);
         verifyNoMoreInteractions(mOmniboxActionJni);

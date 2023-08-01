@@ -271,7 +271,9 @@ public class SearchActivity extends AsyncInitializationActivity
                                     ManagePasswordsReferrer.CHROME_SETTINGS,
                                     () -> getModalDialogManager(), /*managePasskeys=*/false),
                     // Open History Clusters UI for Query:
-                    query -> {}), null,
+                    query -> {},
+                    // Open Quick Delete Dialog callback:
+                    null), null,
             ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
             /*OmniboxSuggestionsDropdownScrollListener=*/this,
             new OpenHistoryClustersDelegate() {

@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -29,8 +30,10 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -45,12 +48,15 @@ import java.util.function.Consumer;
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxActionDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock Consumer<String> mMockOpenUrl;
     private @Mock OpenHistoryClustersDelegate mMockOpenHistoryClustersUi;
     private @Mock Runnable mMockOpenIncognitoPage;
     private @Mock Runnable mMockOpenPasswordSettings;
     private @Mock SettingsLauncher mMockSettingsLauncher;
     private @Mock Tab mTab;
+    private @Mock Runnable mMockOpenQuickDeleteDialog;
     private AtomicReference<Tab> mTabReference = new AtomicReference<>();
     private Context mContext;
     private OmniboxActionDelegateImpl mDelegate;
@@ -63,7 +69,7 @@ public class OmniboxActionDelegateImplUnitTest {
                 ()
                         -> mTabReference.get(),
                 mMockSettingsLauncher, mMockOpenUrl, mMockOpenIncognitoPage,
-                mMockOpenPasswordSettings, mMockOpenHistoryClustersUi);
+                mMockOpenPasswordSettings, mMockOpenHistoryClustersUi, mMockOpenQuickDeleteDialog);
     }
 
     @After
@@ -72,6 +78,7 @@ public class OmniboxActionDelegateImplUnitTest {
         verifyNoMoreInteractions(mMockOpenPasswordSettings);
         verifyNoMoreInteractions(mMockOpenHistoryClustersUi);
         verifyNoMoreInteractions(mMockOpenUrl);
+        verifyNoMoreInteractions(mMockOpenQuickDeleteDialog);
     }
 
     @Test
@@ -139,6 +146,21 @@ public class OmniboxActionDelegateImplUnitTest {
         mDelegate.loadPageInCurrentTab("url");
         verifyNoMoreInteractions(mTab);
         verify(mMockOpenUrl).accept("url");
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    public void openClearBrowsingData() {
+        mDelegate.handleClearBrowsingData();
+        verify(mMockSettingsLauncher)
+                .launchSettingsActivity(mContext, SettingsFragment.CLEAR_BROWSING_DATA);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    public void openQuickDeleteDialog() {
+        mDelegate.handleClearBrowsingData();
+        verify(mMockOpenQuickDeleteDialog).run();
     }
 
     @Test
