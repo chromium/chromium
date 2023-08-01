@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
@@ -536,6 +537,27 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithBaseNavigationController:navigationController
                                    browser:browser];
   [navigationController.inactiveTabsSettingsCoordinator start];
+  return navigationController;
+}
+
++ (instancetype)
+    contentSettingsControllerForBrowser:(Browser*)browser
+                               delegate:
+                                   (id<SettingsNavigationControllerDelegate>)
+                                       delegate {
+  UIViewController* controller =
+      [[ContentSettingsTableViewController alloc] initWithBrowser:browser];
+
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:controller
+                             browser:browser
+                            delegate:delegate];
+
+  // Make sure the cancel button is always present, as the Contents Settings
+  // screen isn't just shown from Settings.
+  [controller navigationItem].leftBarButtonItem =
+      [navigationController cancelButton];
   return navigationController;
 }
 
@@ -1177,6 +1199,19 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showTabPickupSettings {
   [self showTabPickup];
+}
+
+- (void)showContentsSettingsFromViewController:
+    (UIViewController*)baseViewController {
+  if ([self.topViewController
+          isKindOfClass:[ContentSettingsTableViewController class]]) {
+    // The top view controller is already the Contents Settings panel.
+    // No need to open it.
+    return;
+  }
+  ContentSettingsTableViewController* controller =
+      [[ContentSettingsTableViewController alloc] initWithBrowser:self.browser];
+  [self pushViewController:controller animated:YES];
 }
 
 @end

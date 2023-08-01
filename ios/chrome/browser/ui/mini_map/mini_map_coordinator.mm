@@ -174,7 +174,10 @@
 }
 
 - (void)userPressedContentSettings {
-  // TODO(crbug.com/1351353): Show settings
+  id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
+  [settings_command_handler
+      showContentsSettingsFromViewController:self.consentViewController];
 }
 
 #pragma mark - Private methods
