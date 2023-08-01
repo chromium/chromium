@@ -266,36 +266,37 @@ void WebUIInfoSingleton::ClearPGPings() {
   std::map<int, LoginReputationClientResponse>().swap(pg_responses_);
 }
 
-int WebUIInfoSingleton::AddToRTLookupPings(const RTLookupRequest request,
-                                           const std::string oauth_token) {
+int WebUIInfoSingleton::AddToURTLookupPings(const RTLookupRequest request,
+                                            const std::string oauth_token) {
   if (!HasListener())
     return -1;
 
-  RTLookupRequestAndToken ping = {request, oauth_token};
+  URTLookupRequest ping = {request, oauth_token};
 
   for (auto* webui_listener : webui_instances_)
-    webui_listener->NotifyRTLookupPingJsListener(rt_lookup_pings_.size(), ping);
+    webui_listener->NotifyURTLookupPingJsListener(urt_lookup_pings_.size(),
+                                                  ping);
 
-  rt_lookup_pings_.push_back(ping);
+  urt_lookup_pings_.push_back(ping);
 
-  return rt_lookup_pings_.size() - 1;
+  return urt_lookup_pings_.size() - 1;
 }
 
-void WebUIInfoSingleton::AddToRTLookupResponses(
+void WebUIInfoSingleton::AddToURTLookupResponses(
     int token,
     const RTLookupResponse response) {
   if (!HasListener())
     return;
 
   for (auto* webui_listener : webui_instances_)
-    webui_listener->NotifyRTLookupResponseJsListener(token, response);
+    webui_listener->NotifyURTLookupResponseJsListener(token, response);
 
-  rt_lookup_responses_[token] = response;
+  urt_lookup_responses_[token] = response;
 }
 
-void WebUIInfoSingleton::ClearRTLookupPings() {
-  std::vector<RTLookupRequestAndToken>().swap(rt_lookup_pings_);
-  std::map<int, RTLookupResponse>().swap(rt_lookup_responses_);
+void WebUIInfoSingleton::ClearURTLookupPings() {
+  std::vector<URTLookupRequest>().swap(urt_lookup_pings_);
+  std::map<int, RTLookupResponse>().swap(urt_lookup_responses_);
 }
 
 absl::optional<int> WebUIInfoSingleton::AddToHPRTLookupPings(
@@ -471,7 +472,7 @@ void WebUIInfoSingleton::MaybeClearData() {
     ClearClientPhishingResponsesReceived();
     ClearPGEvents();
     ClearPGPings();
-    ClearRTLookupPings();
+    ClearURTLookupPings();
     ClearHPRTLookupPings();
     ClearLogMessages();
     ClearReportingEvents();
@@ -2251,7 +2252,7 @@ std::string SerializePGResponse(const LoginReputationClientResponse& response) {
   return response_serialized;
 }
 
-std::string SerializeRTLookupPing(const RTLookupRequestAndToken& ping) {
+std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
   base::Value::Dict request_dict;
   RTLookupRequest request = ping.request;
 
@@ -2320,7 +2321,7 @@ std::string SerializeRTLookupPing(const RTLookupRequestAndToken& ping) {
   return request_serialized;
 }
 
-std::string SerializeRTLookupResponse(const RTLookupResponse& response) {
+std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
   base::Value::Dict response_dict;
 
   base::Value::List threat_info_list;
@@ -3084,16 +3085,16 @@ void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
   ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
 }
 
-void SafeBrowsingUIHandler::GetRTLookupPings(const base::Value::List& args) {
-  const std::vector<RTLookupRequestAndToken> requests =
-      WebUIInfoSingleton::GetInstance()->rt_lookup_pings();
+void SafeBrowsingUIHandler::GetURTLookupPings(const base::Value::List& args) {
+  const std::vector<URTLookupRequest> requests =
+      WebUIInfoSingleton::GetInstance()->urt_lookup_pings();
 
   base::Value::List pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
        request_index++) {
     base::Value::List ping_entry;
     ping_entry.Append(static_cast<int>(request_index));
-    ping_entry.Append(SerializeRTLookupPing(requests[request_index]));
+    ping_entry.Append(SerializeURTLookupPing(requests[request_index]));
     pings_sent.Append(std::move(ping_entry));
   }
 
@@ -3103,16 +3104,17 @@ void SafeBrowsingUIHandler::GetRTLookupPings(const base::Value::List& args) {
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
-void SafeBrowsingUIHandler::GetRTLookupResponses(
+void SafeBrowsingUIHandler::GetURTLookupResponses(
     const base::Value::List& args) {
   const std::map<int, RTLookupResponse> responses =
-      WebUIInfoSingleton::GetInstance()->rt_lookup_responses();
+      WebUIInfoSingleton::GetInstance()->urt_lookup_responses();
 
   base::Value::List responses_sent;
   for (const auto& token_and_response : responses) {
     base::Value::List response_entry;
     response_entry.Append(token_and_response.first);
-    response_entry.Append(SerializeRTLookupResponse(token_and_response.second));
+    response_entry.Append(
+        SerializeURTLookupResponse(token_and_response.second));
     responses_sent.Append(std::move(response_entry));
   }
 
@@ -3349,26 +3351,26 @@ void SafeBrowsingUIHandler::NotifyPGResponseJsListener(
   FireWebUIListener("pg-responses-update", response_list);
 }
 
-void SafeBrowsingUIHandler::NotifyRTLookupPingJsListener(
+void SafeBrowsingUIHandler::NotifyURTLookupPingJsListener(
     int token,
-    const RTLookupRequestAndToken& request) {
+    const URTLookupRequest& request) {
   base::Value::List request_list;
   request_list.Append(token);
-  request_list.Append(SerializeRTLookupPing(request));
+  request_list.Append(SerializeURTLookupPing(request));
 
   AllowJavascript();
-  FireWebUIListener("rt-lookup-pings-update", request_list);
+  FireWebUIListener("urt-lookup-pings-update", request_list);
 }
 
-void SafeBrowsingUIHandler::NotifyRTLookupResponseJsListener(
+void SafeBrowsingUIHandler::NotifyURTLookupResponseJsListener(
     int token,
     const RTLookupResponse& response) {
   base::Value::List response_list;
   response_list.Append(token);
-  response_list.Append(SerializeRTLookupResponse(response));
+  response_list.Append(SerializeURTLookupResponse(response));
 
   AllowJavascript();
-  FireWebUIListener("rt-lookup-responses-update", response_list);
+  FireWebUIListener("urt-lookup-responses-update", response_list);
 }
 
 void SafeBrowsingUIHandler::NotifyHPRTLookupPingJsListener(
@@ -3484,12 +3486,12 @@ void SafeBrowsingUIHandler::RegisterMessages() {
       base::BindRepeating(&SafeBrowsingUIHandler::GetPGResponses,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getRTLookupPings",
-      base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupPings,
+      "getURTLookupPings",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetURTLookupPings,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getRTLookupResponses",
-      base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupResponses,
+      "getURTLookupResponses",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetURTLookupResponses,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getHPRTLookupPings",

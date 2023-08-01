@@ -67,11 +67,11 @@ struct LoginReputationClientRequestAndToken {
   std::string token;
 };
 
-// The struct to combine a real time lookup request and the token associated
+// The struct to combine a URL real time lookup request and the token associated
 // with it. The token is not part of the request proto because it is sent in the
 // header. The token will be displayed along with the request in the safe
 // browsing page.
-struct RTLookupRequestAndToken {
+struct URTLookupRequest {
   RTLookupRequest request;
   std::string token;
 };
@@ -172,13 +172,13 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // currently open chrome://safe-browsing tab was opened.
   void GetPGResponses(const base::Value::List& args);
 
-  // Get the real time lookup pings that have been sent since the oldest
+  // Get the URL real time lookup pings that have been sent since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetRTLookupPings(const base::Value::List& args);
+  void GetURTLookupPings(const base::Value::List& args);
 
-  // Get the real time lookup responses that have been received since the oldest
-  // currently open chrome://safe-browsing tab was opened.
-  void GetRTLookupResponses(const base::Value::List& args);
+  // Get the URL real time lookup responses that have been received since the
+  // oldest currently open chrome://safe-browsing tab was opened.
+  void GetURTLookupResponses(const base::Value::List& args);
 
   // Get the hash-prefix real-time lookup pings that have been sent since the
   // oldest currently open chrome://safe-browsing tab was opened.
@@ -271,15 +271,15 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
       int token,
       const LoginReputationClientResponse& response);
 
-  // Called when any new real time lookup pings are sent while one or more
+  // Called when any new URL real time lookup pings are sent while one or more
   // WebUI tabs are open.
-  void NotifyRTLookupPingJsListener(int token,
-                                    const RTLookupRequestAndToken& request);
+  void NotifyURTLookupPingJsListener(int token,
+                                     const URTLookupRequest& request);
 
-  // Called when any new real time lookup responses are received while one or
-  // more WebUI tabs are open.
-  void NotifyRTLookupResponseJsListener(int token,
-                                        const RTLookupResponse& response);
+  // Called when any new URL real time lookup responses are received while one
+  // or more WebUI tabs are open.
+  void NotifyURTLookupResponseJsListener(int token,
+                                         const RTLookupResponse& response);
 
   // Called when any new hash-prefix real-time lookup pings are sent while one
   // or more WebUI tabs are open.
@@ -435,13 +435,13 @@ class WebUIInfoSingleton : public UrlRealTimeMechanism::WebUIDelegate,
   void ClearPGPings();
 
   // UrlRealTimeMechanism::WebUIDelegate:
-  int AddToRTLookupPings(const RTLookupRequest request,
-                         const std::string oauth_token) override;
-  void AddToRTLookupResponses(int token,
-                              const RTLookupResponse response) override;
+  int AddToURTLookupPings(const RTLookupRequest request,
+                          const std::string oauth_token) override;
+  void AddToURTLookupResponses(int token,
+                               const RTLookupResponse response) override;
 
-  // Clear the list of sent RT Lookup pings and responses.
-  void ClearRTLookupPings();
+  // Clear the list of sent URT lookup pings and responses.
+  void ClearURTLookupPings();
 
   // HashRealTimeService::WebUIDelegate:
   absl::optional<int> AddToHPRTLookupPings(
@@ -576,16 +576,16 @@ class WebUIInfoSingleton : public UrlRealTimeMechanism::WebUIDelegate,
     return pg_responses_;
   }
 
-  // Get the list of real time lookup pings since the oldest currently open
+  // Get the list of URL real time lookup pings since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  const std::vector<RTLookupRequestAndToken>& rt_lookup_pings() const {
-    return rt_lookup_pings_;
+  const std::vector<URTLookupRequest>& urt_lookup_pings() const {
+    return urt_lookup_pings_;
   }
 
-  // Get the list of real time lookup pings since the oldest currently open
+  // Get the list of URL real time lookup pings since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  const std::map<int, RTLookupResponse>& rt_lookup_responses() const {
-    return rt_lookup_responses_;
+  const std::map<int, RTLookupResponse>& urt_lookup_responses() const {
+    return urt_lookup_responses_;
   }
 
   // Get the list of hash-prefix real-time lookup pings since the oldest
@@ -706,14 +706,14 @@ class WebUIInfoSingleton : public UrlRealTimeMechanism::WebUIDelegate,
   // corresponding request in |pg_pings_|.
   std::map<int, LoginReputationClientResponse> pg_responses_;
 
-  // List of real time lookup pings sent since the oldest currently open
+  // List of URL real time lookup pings sent since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  std::vector<RTLookupRequestAndToken> rt_lookup_pings_;
+  std::vector<URTLookupRequest> urt_lookup_pings_;
 
-  // List of real time lookup responses received since the oldest currently open
-  // chrome://safe-browsing tab was opened. Keyed by the index of the
+  // List of URL real time lookup responses received since the oldest currently
+  // open chrome://safe-browsing tab was opened. Keyed by the index of the
   // corresponding request in |rt_lookup_pings_|.
-  std::map<int, RTLookupResponse> rt_lookup_responses_;
+  std::map<int, RTLookupResponse> urt_lookup_responses_;
 
   // List of hash-prefix real-time lookup pings sent since the oldest currently
   // open chrome://safe-browsing tab was opened.

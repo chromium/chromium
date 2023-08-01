@@ -149,10 +149,10 @@ void UrlRealTimeMechanism::StartLookupOnUIThread(
   }
 
   RTLookupRequestCallback request_callback =
-      base::BindOnce(&UrlRealTimeMechanism::OnRTLookupRequest, weak_ptr_on_io);
+      base::BindOnce(&UrlRealTimeMechanism::OnLookupRequest, weak_ptr_on_io);
 
   RTLookupResponseCallback response_callback =
-      base::BindOnce(&UrlRealTimeMechanism::OnRTLookupResponse, weak_ptr_on_io);
+      base::BindOnce(&UrlRealTimeMechanism::OnLookupResponse, weak_ptr_on_io);
 
   url_lookup_service_on_ui->StartLookup(
       url, last_committed_url, is_mainframe, std::move(request_callback),
@@ -176,34 +176,34 @@ void UrlRealTimeMechanism::MaybeSendSampleRequest(
   bool is_lookup_service_available =
       !url_lookup_service_on_ui->IsInBackoffMode();
   if (is_lookup_service_available) {
-    RTLookupRequestCallback request_callback = base::BindOnce(
-        &UrlRealTimeMechanism::OnRTLookupRequest, weak_ptr_on_io);
+    RTLookupRequestCallback request_callback =
+        base::BindOnce(&UrlRealTimeMechanism::OnLookupRequest, weak_ptr_on_io);
     url_lookup_service_on_ui->SendSampledRequest(
         url, last_committed_url, is_mainframe, std::move(request_callback),
         std::move(io_task_runner));
   }
 }
 
-void UrlRealTimeMechanism::OnRTLookupRequest(
+void UrlRealTimeMechanism::OnLookupRequest(
     std::unique_ptr<RTLookupRequest> request,
     std::string oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LogRTLookupRequest(*request, oauth_token);
+  LogLookupRequest(*request, oauth_token);
 }
 
-void UrlRealTimeMechanism::OnRTLookupResponse(
-    bool is_rt_lookup_successful,
+void UrlRealTimeMechanism::OnLookupResponse(
+    bool is_lookup_successful,
     bool is_cached_response,
     std::unique_ptr<RTLookupResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_rt_lookup_successful) {
+  if (!is_lookup_successful) {
     PerformHashBasedCheck(url_, /*real_time_request_failed=*/true);
     return;
   }
 
-  LogRTLookupResponse(*response);
+  LogLookupResponse(*response);
 
   // Filter the response to remove enterprise verdicts if experiment is not
   // enabled for Managed Policy UrlFiltering
@@ -240,26 +240,25 @@ void UrlRealTimeMechanism::OnRTLookupResponse(
   }
 }
 
-void UrlRealTimeMechanism::LogRTLookupRequest(const RTLookupRequest& request,
-                                              const std::string& oauth_token) {
+void UrlRealTimeMechanism::LogLookupRequest(const RTLookupRequest& request,
+                                            const std::string& oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!webui_delegate_) {
     return;
   }
 
-  // The following is to log this RTLookupRequest on any open
+  // The following is to log this lookup request on any open
   // chrome://safe-browsing pages.
   ui_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&WebUIDelegate::AddToRTLookupPings,
+      base::BindOnce(&WebUIDelegate::AddToURTLookupPings,
                      base::Unretained(webui_delegate_), request, oauth_token),
       base::BindOnce(&UrlRealTimeMechanism::SetWebUIToken,
                      weak_factory_.GetWeakPtr()));
 }
 
-void UrlRealTimeMechanism::LogRTLookupResponse(
-    const RTLookupResponse& response) {
+void UrlRealTimeMechanism::LogLookupResponse(const RTLookupResponse& response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!webui_delegate_) {
@@ -267,10 +266,10 @@ void UrlRealTimeMechanism::LogRTLookupResponse(
   }
 
   if (url_web_ui_token_ != -1) {
-    // The following is to log this RTLookupResponse on any open
+    // The following is to log this lookup response on any open
     // chrome://safe-browsing pages.
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&WebUIDelegate::AddToRTLookupResponses,
+        FROM_HERE, base::BindOnce(&WebUIDelegate::AddToURTLookupResponses,
                                   base::Unretained(webui_delegate_),
                                   url_web_ui_token_, response));
   }

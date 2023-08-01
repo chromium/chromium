@@ -29,14 +29,15 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
    public:
     virtual ~WebUIDelegate() = default;
 
-    // Adds the new ping to the set of RT lookup pings. Returns a token that can
-    // be used in |AddToRTLookupResponses| to correlate a ping and response.
-    virtual int AddToRTLookupPings(const RTLookupRequest request,
-                                   const std::string oauth_token) = 0;
+    // Adds the new ping to the set of URT lookup pings. Returns a token that
+    // can be used in |AddToURTLookupResponses| to correlate a ping and
+    // response.
+    virtual int AddToURTLookupPings(const RTLookupRequest request,
+                                    const std::string oauth_token) = 0;
 
-    // Adds the new response to the set of RT lookup pings.
-    virtual void AddToRTLookupResponses(int token,
-                                        const RTLookupResponse response) = 0;
+    // Adds the new response to the set of URT lookup pings.
+    virtual void AddToURTLookupResponses(int token,
+                                         const RTLookupResponse response) = 0;
   };
 
   UrlRealTimeMechanism(
@@ -87,24 +88,24 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Called when the |request| from the real-time lookup service is sent.
-  void OnRTLookupRequest(std::unique_ptr<RTLookupRequest> request,
-                         std::string oauth_token);
+  void OnLookupRequest(std::unique_ptr<RTLookupRequest> request,
+                       std::string oauth_token);
 
   // Called when the |response| from the real-time lookup service is received.
-  // |is_rt_lookup_successful| is true if the response code is OK and the
+  // |is_lookup_successful| is true if the response code is OK and the
   // response body is successfully parsed.
   // |is_cached_response| is true if the response is a cache hit. In such a
   // case, fall back to hash-based checks if the cached verdict is |SAFE|.
-  void OnRTLookupResponse(bool is_rt_lookup_successful,
-                          bool is_cached_response,
-                          std::unique_ptr<RTLookupResponse> response);
+  void OnLookupResponse(bool is_lookup_successful,
+                        bool is_cached_response,
+                        std::unique_ptr<RTLookupResponse> response);
 
-  // Logs |request| on any open chrome://safe-browsing pages.
-  void LogRTLookupRequest(const RTLookupRequest& request,
-                          const std::string& oauth_token);
+  // Logs |request| and |oauth_token| on any open chrome://safe-browsing pages.
+  void LogLookupRequest(const RTLookupRequest& request,
+                        const std::string& oauth_token);
 
   // Logs |response| on any open chrome://safe-browsing pages.
-  void LogRTLookupResponse(const RTLookupResponse& response);
+  void LogLookupResponse(const RTLookupResponse& response);
 
   void SetWebUIToken(int token);
 
