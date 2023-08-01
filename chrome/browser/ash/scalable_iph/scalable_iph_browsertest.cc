@@ -6,7 +6,6 @@
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
@@ -16,11 +15,7 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
-#include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/account_id/account_id.h"
 #include "components/feature_engagement/test/mock_tracker.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/message_center.h"
@@ -35,24 +30,6 @@ using TestEnvironment =
     ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
-
-void LockAndUnlockSession() {
-  const AccountId account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
-  ash::ScreenLockerTester tester;
-  tester.Lock();
-  EXPECT_TRUE(tester.IsLocked());
-  tester.SetUnlockPassword(account_id, "pass");
-  tester.UnlockWithPassword(account_id, "pass");
-  tester.WaitForUnlock();
-  EXPECT_FALSE(tester.IsLocked());
-}
-
-void SendSuspendDone() {
-  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
-      power_manager::SuspendImminent::IDLE);
-  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
-}
 
 class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
  protected:
@@ -214,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, HasServiceWhenFeatureEnabl
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent_FiveMinTick) {
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent) {
   EXPECT_CALL(*mock_tracker(),
               NotifyEvent(scalable_iph::kEventNameFiveMinTick));
 
@@ -223,15 +200,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent_FiveMinTick) {
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent_Unlocked) {
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked));
-
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kUnlocked);
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIphByTimer_Notification) {
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
   EnableTestIphFeature();
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
@@ -260,37 +229,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIphByTimer_Notification) {
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIphByUnlock_Notification) {
-  EnableTestIphFeature();
-
-  // Tracker::Dismissed must be called when an IPH gets dismissed.
-  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
-
-  scalable_iph::ScalableIphDelegate::NotificationParams expected_params;
-  expected_params.notification_id =
-      ScalableIphBrowserTestBase::kTestNotificationId;
-  expected_params.title = ScalableIphBrowserTestBase::kTestNotificationTitle;
-  expected_params.text = ScalableIphBrowserTestBase::kTestNotificationBodyText;
-  expected_params.button.text =
-      ScalableIphBrowserTestBase::kTestNotificationButtonText;
-  expected_params.button.action.action_type =
-      scalable_iph::ActionType::kOpenChrome;
-  expected_params.button.action.iph_event_name =
-      ScalableIphBrowserTestBase::kTestButtonActionEvent;
-
-  EXPECT_CALL(*mock_delegate(), ShowNotification(::testing::Eq(expected_params),
-                                                 ::testing::NotNull()))
-      .WillOnce([](const scalable_iph::ScalableIphDelegate::NotificationParams&
-                       params,
-                   std::unique_ptr<scalable_iph::IphSession> session) {
-        // Simulate that an IPH gets dismissed.
-        session.reset();
-      });
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kUnlocked);
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
@@ -324,82 +262,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, UnlockedEvent) {
-  // We test unlocked event inside ScalableIph service. Make sure that
-  // ScalableIph service is running.
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  ASSERT_TRUE(scalable_iph);
-
-  // No Unlocked event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(0);
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-
-  // Lock and unlock screen. An Unlocked event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(1);
-  LockAndUnlockSession();
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-
-  // Shutdown should stop the observations and no Unlocked event should be
-  // observed.
-  ShutdownScalableIph();
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(0);
-  LockAndUnlockSession();
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OnSuspendDone) {
-  // We test unlocked event inside ScalableIph service. Make sure that
-  // ScalableIph service is running.
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  ASSERT_TRUE(scalable_iph);
-
-  // No Unlocked event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(0);
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-
-  // Simulate SuspendDone. An Unlocked event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(1);
-  SendSuspendDone();
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-
-  // Shutdown should stop the observations and no Unlocked event should be
-  // observed.
-  ShutdownScalableIph();
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(0);
-  SendSuspendDone();
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OnSuspendDoneWithLockScreen) {
-  // We test unlocked event inside ScalableIph service. Make sure that
-  // ScalableIph service is running.
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  ASSERT_TRUE(scalable_iph);
-
-  // No Unlocked event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(0);
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-
-  // Simulate SuspendDone with lock screen. No Unlocked event should be
-  // observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameUnlocked))
-      .Times(0);
-  ash::ScreenLockerTester tester;
-  tester.Lock();
-  SendSuspendDone();
-  testing::Mock::VerifyAndClearExpectations(mock_tracker());
-}
-
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnection, Online) {
   EnableTestIphFeature();
 
@@ -421,8 +283,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnectionOnline,
   // We have to trigger a conditions check manually. The trigger condition check
   // in `ScalableIph` constructor happens before we set the expectation to the
   // delegate mock. We need another event for the next check.
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero, Satisfied) {
@@ -433,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero, Satisfied) {
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero,
@@ -446,8 +306,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero,
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero,
@@ -459,8 +318,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero,
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeNonZero, Satisfied) {
@@ -471,8 +329,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeNonZero, Satisfied) {
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeNonZero, NotSatisfied) {
@@ -483,8 +340,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeNonZero, NotSatisfied) {
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidString,
@@ -496,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidString,
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidNumber,
@@ -509,8 +364,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidNumber,
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification, ShowNotification) {
@@ -523,8 +377,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification, ShowNotification) {
   // The action is not performed.
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 
   auto* message_center = message_center::MessageCenter::Get();
   auto* notification =
@@ -546,8 +399,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
   // The action is performed.
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent));
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
 
   auto* message_center = message_center::MessageCenter::Get();
   auto* notification =
@@ -558,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByTimer_Bubble) {
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIph_Bubble) {
   EnableTestIphFeature();
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
@@ -589,37 +441,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByTimer_Bubble) {
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByUnlock_Bubble) {
-  EnableTestIphFeature();
-
-  // Tracker::Dismissed must be called when an IPH gets dismissed.
-  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
-
-  scalable_iph::ScalableIphDelegate::BubbleParams expected_params;
-  expected_params.bubble_id = ScalableIphBrowserTestBase::kTestBubbleId;
-  expected_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
-  expected_params.button.text =
-      ScalableIphBrowserTestBase::kTestBubbleButtonText;
-  expected_params.button.action.action_type =
-      scalable_iph::ActionType::kOpenGoogleDocs;
-  expected_params.button.action.iph_event_name =
-      ScalableIphBrowserTestBase::kTestButtonActionEvent;
-  expected_params.icon =
-      scalable_iph::ScalableIphDelegate::BubbleIcon::kGoogleDocsIcon;
-
-  EXPECT_CALL(*mock_delegate(),
-              ShowBubble(::testing::Eq(expected_params), ::testing::NotNull()))
-      .WillOnce(
-          [](const scalable_iph::ScalableIphDelegate::BubbleParams& params,
-             std::unique_ptr<scalable_iph::IphSession> session) {
-            // Simulate that an IPH gets dismissed.
-            session.reset();
-          });
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kUnlocked);
-}
-
 // TODO(b/290307529): Fix the test.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
   EnableTestIphFeature();
@@ -632,9 +453,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
   // The action is not performed.
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
-
+  TriggerConditionsCheckWithAFakeEvent();
   // Default nudge duration is 6 seconds.
   task_runner()->FastForwardBy(base::Seconds(7));
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
@@ -652,8 +471,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, RemoveBubble) {
   // The action is not performed.
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  TriggerConditionsCheckWithAFakeEvent();
   ash::AnchoredNudgeManager::Get()->Cancel(kTestBubbleId);
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
   // TODO(b/290066999): Verify the nudge is not shown.

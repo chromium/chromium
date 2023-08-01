@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -79,11 +78,10 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void EnableTestIphFeature();
   const base::Feature& TestIphFeature() const;
 
-  // Triggers a conditions check with a fake event. Note that this will make the
-  // count of the five min time tick or unlocked event incorrect if you are
-  // testing it.
-  void TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event event);
+  // Triggers a conditions check with a fake event, which is a five min time
+  // tick event. Note that this will make the count of the five min time tick
+  // event incorrect if you are testing it.
+  void TriggerConditionsCheckWithAFakeEvent();
 
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
