@@ -121,7 +121,7 @@ TEST_F(VisualSearchClassifierAgentTest,
   // on certain platforms (i.e. linux-lacros-rel, linux-wayland).
   if (model_file_.IsValid()) {
     histogram_tester_.ExpectBucketCount(
-        "Companion.VisualSearch.Agent.DomImageCount", 1, 1);
+        "Companion.VisualQuery.Agent.DomImageCount", 1, 1);
   }
 }
 
@@ -140,7 +140,7 @@ TEST_F(VisualSearchClassifierAgentTest, StartClassification_NoImages) {
   // on certain platforms (i.e. linux-lacros-rel, linux-wayland).
   if (model_file_.IsValid()) {
     histogram_tester_.ExpectBucketCount(
-        "Companion.VisualSearch.Agent.DomImageCount", 0, 1);
+        "Companion.VisualQuery.Agent.DomImageCount", 0, 1);
   }
 }
 
