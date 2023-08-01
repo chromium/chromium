@@ -508,8 +508,6 @@ ci.builder(
     health_spec = health_spec(
         build_time = struct(
             p50_mins = 240,
-            p95_mins = 300,
-            p99_mins = 360,
         ),
     ),
 )
