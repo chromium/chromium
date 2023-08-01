@@ -237,8 +237,8 @@ class SafeBrowsingDatabaseManager
   // v4 protocol manager.  This may be called multiple times during the life of
   // the DatabaseManager. Must be called on IO thread unless
   // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread. All
-  // subclasses should override this method, set enabled_ to true and call the
-  // base class method at the top of it.
+  // subclasses should override this method and call the base class method at
+  // the top of it.
   virtual void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
@@ -256,12 +256,12 @@ class SafeBrowsingDatabaseManager
 
   // Called to stop or shutdown operations on the io_thread unless
   // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread. All
-  // subclasses should override this method, set enabled_ to false and call the
-  // base class method at the bottom of it.
+  // subclasses should override this method and call the base class method at
+  // the bottom of it.
   virtual void StopOnSBThread(bool shutdown);
 
   // Called to check if database is ready or not.
-  virtual bool IsDatabaseReady();
+  virtual bool IsDatabaseReady() const = 0;
 
  protected:
   // Bundled client info for an API abuse hash prefix check.
@@ -338,15 +338,6 @@ class SafeBrowsingDatabaseManager
   // In-progress checks. This set owns the SafeBrowsingApiCheck pointers and is
   // responsible for deleting them when removing from the set.
   ApiCheckSet api_checks_;
-
-  // Whether the service is running. 'enabled_' is used by the
-  // SafeBrowsingDatabaseManager on the IO thread during normal operations.
-  bool enabled_;
-
-  // Whether the service has been stopped due to browser shutdown. We can be
-  // `!enabled_` if the browser is shutting down or if the Safe Browsing pref
-  // has been turned off.
-  bool is_shutdown_;
 
   // Make callbacks about the completion of database update process. This is
   // currently used by the extension blocklist checker to disable any installed

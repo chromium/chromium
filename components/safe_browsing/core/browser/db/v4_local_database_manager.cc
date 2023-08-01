@@ -205,26 +205,6 @@ StoresToCheck CreateStoresToCheckFromSBThreatTypeSet(
   return stores_to_check;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum StoreAvailabilityResult {
-  // Unknown availability. This is unexpected.
-  UNKNOWN = 0,
-
-  // The local database is not enabled.
-  NOT_ENABLED = 1,
-
-  // The database is still being loaded.
-  DATABASE_UNAVAILABLE = 2,
-
-  // The requested store is unavailable.
-  STORE_UNAVAILABLE = 3,
-
-  // The store is available.
-  AVAILABLE = 4,
-  COUNT,
-};
-
 void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
   if (last_response_time.is_null()) {
     return;
@@ -385,7 +365,9 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       v4_database_(std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>(
           nullptr,
-          base::OnTaskRunnerDeleter(nullptr))) {
+          base::OnTaskRunnerDeleter(nullptr))),
+      enabled_(false),
+      is_shutdown_(false) {
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
@@ -405,7 +387,7 @@ void V4LocalDatabaseManager::CancelCheck(Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   // If we've stopped responding due to browser shutdown, it's possible that a
   // client will call CancelCheck even though we're disabled.
-  DCHECK(enabled_ || is_shutdown_);
+  DCHECK(IsDatabaseReady() || is_shutdown_);
   auto pending_it =
       base::ranges::find(pending_checks_, client, &PendingCheck::client);
   if (pending_it != pending_checks_.end()) {
@@ -443,6 +425,8 @@ bool V4LocalDatabaseManager::CheckBrowseUrl(
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
 
+  // We use `enabled_` here because `HandleCheck` queues checks that come in
+  // before the database is ready.
   if (!enabled_ || !CanCheckUrl(url)) {
     return true;
   }
@@ -465,6 +449,8 @@ bool V4LocalDatabaseManager::CheckDownloadUrl(
     Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
+  // We use `enabled_` here because `HandleCheck` queues checks that come in
+  // before the database is ready.
   if (!enabled_ || url_chain.empty()) {
     return true;
   }
@@ -482,6 +468,8 @@ bool V4LocalDatabaseManager::CheckExtensionIDs(
     Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
+  // We use `enabled_` here because `HandleCheck` queues checks that come in
+  // before the database is ready.
   if (!enabled_) {
     return true;
   }
@@ -538,7 +526,8 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
                       kHighConfidenceAllowlistMinimumEntryCount);
   RecordCheckUrlForHighConfidenceAllowlistBoolean(
       "AllowlistSizeTooSmall", metric_variation, is_allowlist_too_small);
-  if (!enabled_ || (is_allowlist_too_small && is_artificial_prefix_empty) ||
+  if (!IsDatabaseReady() ||
+      (is_allowlist_too_small && is_artificial_prefix_empty) ||
       !CanCheckUrl(url) ||
       (!all_stores_available && is_artificial_prefix_empty)) {
     // NOTE(vakh): If Safe Browsing isn't enabled yet, or if the URL isn't a
@@ -685,6 +674,10 @@ void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
   SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
 }
 
+bool V4LocalDatabaseManager::IsDatabaseReady() const {
+  return enabled_ && !!v4_database_;
+}
+
 //
 // End: SafeBrowsingDatabaseManager implementation
 //
@@ -721,7 +714,7 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
 
 void V4LocalDatabaseManager::DatabaseReadyForUpdates(
     const std::vector<ListIdentifier>& stores_to_reset) {
-  if (enabled_) {
+  if (IsDatabaseReady()) {
     v4_database_->ResetStores(stores_to_reset);
     UpdateListClientStates(GetStoreStateMap());
 
@@ -731,7 +724,7 @@ void V4LocalDatabaseManager::DatabaseReadyForUpdates(
 }
 
 void V4LocalDatabaseManager::DatabaseUpdated() {
-  if (enabled_) {
+  if (IsDatabaseReady()) {
     v4_update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
 
     v4_database_->RecordFileSizeHistograms();
@@ -769,7 +762,7 @@ void V4LocalDatabaseManager::GetPrefixMatches(
     PendingCheck* check,
     base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(enabled_);
+  DCHECK(IsDatabaseReady());
 
   v4_database_->GetStoresMatchingFullHash(
       check->full_hashes, check->stores_to_check, std::move(callback));
@@ -871,7 +864,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
 
   AsyncMatch local_match;
   if (GetPrefixMatchesIsAsync()) {
-    if (!enabled_) {
+    if (!IsDatabaseReady()) {
       DCHECK(pending_checks_.empty());
       return;
     }
@@ -966,7 +959,7 @@ void V4LocalDatabaseManager::HandleCheckContinuation(
     FullHashToStoreAndHashPrefixesMap results) {
   AsyncMatch local_match;
   if (GetPrefixMatchesIsAsync()) {
-    if (!enabled_) {
+    if (!IsDatabaseReady()) {
       DCHECK(pending_checks_.empty());
       return;
     }
@@ -1070,7 +1063,7 @@ void V4LocalDatabaseManager::OnFullHashResponse(
     const std::vector<FullHashInfo>& full_hash_infos) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
-  if (!enabled_) {
+  if (!IsDatabaseReady()) {
     DCHECK(pending_checks_.empty());
     return;
   }
@@ -1096,9 +1089,9 @@ void V4LocalDatabaseManager::PerformFullHashCheck(
 
   DCHECK(!check->full_hash_to_store_and_hash_prefixes.empty());
 
-  // If we're not enabled, we're in the middle of shutdown, so silently drop the
-  // check.
-  if (enabled_) {
+  // If the database isn't ready, the service has been turned off, so silently
+  // drop the check.
+  if (IsDatabaseReady()) {
     FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
         check->full_hash_to_store_and_hash_prefixes;
     MechanismExperimentHashDatabaseCache experiment_cache_selection =
@@ -1138,7 +1131,7 @@ void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
     std::unique_ptr<PendingCheck> check,
     FullHashToStoreAndHashPrefixesMap results) {
   if (GetPrefixMatchesIsAsync()) {
-    if (!enabled_) {
+    if (!IsDatabaseReady()) {
       DCHECK(pending_checks_.empty());
       return;
     }
@@ -1287,20 +1280,13 @@ void V4LocalDatabaseManager::UpdateRequestCompleted(
 
 bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
     const StoresToCheck& stores_to_check) const {
-  StoreAvailabilityResult result = StoreAvailabilityResult::AVAILABLE;
-  if (!enabled_) {
-    result = StoreAvailabilityResult::NOT_ENABLED;
-  } else if (!v4_database_) {
-    result = StoreAvailabilityResult::DATABASE_UNAVAILABLE;
-  } else if (!v4_database_->AreAllStoresAvailable(stores_to_check)) {
-    result = StoreAvailabilityResult::STORE_UNAVAILABLE;
-  }
-  return (result == StoreAvailabilityResult::AVAILABLE);
+  return IsDatabaseReady() &&
+         v4_database_->AreAllStoresAvailable(stores_to_check);
 }
 
 int64_t V4LocalDatabaseManager::GetStoreEntryCount(const ListIdentifier& store,
                                                    int bytes_per_entry) const {
-  if (!enabled_ || !v4_database_) {
+  if (!IsDatabaseReady()) {
     return 0;
   }
   return v4_database_->GetStoreSizeInBytes(store) / bytes_per_entry;
@@ -1314,7 +1300,7 @@ bool V4LocalDatabaseManager::IsStoreTooSmall(const ListIdentifier& store,
 
 bool V4LocalDatabaseManager::AreAnyStoresAvailableNow(
     const StoresToCheck& stores_to_check) const {
-  return enabled_ && v4_database_ &&
+  return IsDatabaseReady() &&
          v4_database_->AreAnyStoresAvailable(stores_to_check);
 }
 

@@ -93512,14 +93512,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Enhanced protection."/>
 </enum>
 
-<enum name="SafeBrowsingStoreAvailabilityResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Not Enabled"/>
-  <int value="2" label="Database Unavailable"/>
-  <int value="3" label="Store Unavailable"/>
-  <int value="4" label="Available"/>
-</enum>
-
 <enum name="SafeBrowsingTailoredSecurityNotificationResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Shown"/>

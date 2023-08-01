@@ -57,9 +57,13 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
   void StopOnSBThread(bool shutdown) override;
+  bool IsDatabaseReady() const override;
 
  protected:
   ~TestSafeBrowsingDatabaseManager() override = default;
+
+ private:
+  bool enabled_;
 };
 
 }  // namespace safe_browsing

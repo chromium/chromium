@@ -25,9 +25,7 @@ SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager(
           base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
               ? ui_task_runner
               : std::move(io_task_runner)),
-      ui_task_runner_(std::move(ui_task_runner)),
-      enabled_(false),
-      is_shutdown_(false) {}
+      ui_task_runner_(std::move(ui_task_runner)) {}
 
 SafeBrowsingDatabaseManager::~SafeBrowsingDatabaseManager() {
   DCHECK(!v4_get_hash_protocol_manager_);
@@ -49,7 +47,7 @@ bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   // Make sure we can check this url and that the service is enabled.
-  if (!enabled_ ||
+  if (!IsDatabaseReady() ||
       !(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme))) {
     return true;
   }
@@ -151,11 +149,6 @@ SafeBrowsingDatabaseManager::RegisterDatabaseUpdatedCallback(
 void SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   update_complete_callback_list_.Notify();
-}
-
-bool SafeBrowsingDatabaseManager::IsDatabaseReady() {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  return enabled_;
 }
 
 void SafeBrowsingDatabaseManager::SetLookupMechanismExperimentIsEnabled() {

@@ -94,6 +94,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
   void StopOnSBThread(bool shutdown) override;
+  bool IsDatabaseReady() const override;
 
   // The stores/lists to always get full hashes for, regardless of which store
   // the hash prefix matched. We request all lists since it makes the full hash
@@ -468,6 +469,15 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // The protocol manager that downloads the hash prefix updates.
   std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;
+
+  // Whether the service is running. 'enabled_' is used by the
+  // V4LocalDatabaseManager on the IO thread during normal operations.
+  bool enabled_;
+
+  // Whether the service has been stopped due to browser shutdown. We can be
+  // `!enabled_` if the browser is shutting down or if the Safe Browsing pref
+  // has been turned off.
+  bool is_shutdown_;
 
   base::WeakPtrFactory<V4LocalDatabaseManager> weak_factory_{this};
 };  // class V4LocalDatabaseManager

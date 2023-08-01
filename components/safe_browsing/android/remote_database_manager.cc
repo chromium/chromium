@@ -105,7 +105,8 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDone(
 // TODO(nparker): Add more tests for this class
 RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
     : SafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({}),
-                                  content::GetIOThreadTaskRunner({})) {
+                                  content::GetIOThreadTaskRunner({})),
+      enabled_(false) {
   // Avoid memory allocations growing the underlying vector. Although this
   // usually wastes a bit of memory, it will still be less than the default
   // vector allocation strategy.
@@ -351,6 +352,10 @@ void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   enabled_ = false;
 
   SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+}
+
+bool RemoteSafeBrowsingDatabaseManager::IsDatabaseReady() const {
+  return enabled_;
 }
 
 }  // namespace safe_browsing

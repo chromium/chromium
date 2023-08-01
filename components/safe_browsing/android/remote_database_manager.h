@@ -69,14 +69,17 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
   void StopOnSBThread(bool shutdown) override;
+  bool IsDatabaseReady() const override;
 
   //
   // RemoteSafeBrowsingDatabaseManager implementation
   //
 
  private:
-  ~RemoteSafeBrowsingDatabaseManager() override;
   class ClientRequest;  // Per-request tracker.
+  friend class base::RefCountedThreadSafe<RemoteSafeBrowsingDatabaseManager>;
+
+  ~RemoteSafeBrowsingDatabaseManager() override;
 
   // Requests currently outstanding.  This owns the ptrs.
   std::vector<ClientRequest*> current_requests_;
@@ -84,7 +87,10 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   base::flat_set<network::mojom::RequestDestination>
       request_destinations_to_check_;
 
-  friend class base::RefCountedThreadSafe<RemoteSafeBrowsingDatabaseManager>;
+  // Whether the service is running. 'enabled_' is used by the
+  // RemoteSafeBrowsingDatabaseManager on the IO thread during normal
+  // operations.
+  bool enabled_;
 };  // class RemoteSafeBrowsingDatabaseManager
 
 }  // namespace safe_browsing
