@@ -105,6 +105,19 @@ void CookieControlsContentView::SetToggleVisible(bool visible) {
   PreferredSizeChanged();
 }
 
+void CookieControlsContentView::SetToggleLabel(const std::u16string& label) {
+  toggle_label_->SetText(label);
+
+  const std::u16string accessible_name = base::JoinString(
+      {
+          l10n_util::GetStringUTF16(
+              IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL),
+          label,
+      },
+      u"\n");
+  toggle_button_->SetAccessibleName(accessible_name);
+}
+
 void CookieControlsContentView::SetEnforcedIcon(const gfx::VectorIcon& icon,
                                                 const std::u16string& tooltip) {
   enforced_icon_->SetImage(ui::ImageModel::FromVectorIcon(
@@ -126,10 +139,8 @@ void CookieControlsContentView::AddToggleRow() {
   toggle_row_->SetTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL));
 
-  // TODO (crbug.com/1446230): Use plural string and update label based on
-  // actual blocked sites.
-  const std::u16string secondary_label = u"17 sites blocked";
-  toggle_row_->AddSecondaryLabel(secondary_label);
+  // The label will be provided via SetToggleLabel().
+  toggle_label_ = toggle_row_->AddSecondaryLabel(u"");
 
   enforced_icon_ =
       toggle_row_->AddControl(std::make_unique<views::ImageView>());
@@ -142,14 +153,9 @@ void CookieControlsContentView::AddToggleRow() {
       gfx::Size(toggle_button_->GetPreferredSize().width(),
                 toggle_row_->GetFirstLineHeight()));
 
-  const std::u16string accessible_name = base::JoinString(
-      {
-          l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL),
-          secondary_label,
-      },
-      u"\n");
-  toggle_button_->SetAccessibleName(accessible_name);
+  // The accessible name will be updated again when the label is updated.
+  toggle_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL));
   toggle_button_->SetVisible(true);
   toggle_button_->SetProperty(views::kElementIdentifierKey, kToggleButton);
 }

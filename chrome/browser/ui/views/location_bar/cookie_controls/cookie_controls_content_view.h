@@ -37,6 +37,7 @@ class CookieControlsContentView : public views::View {
   virtual void SetToggleIcon(const gfx::VectorIcon& icon);
 
   virtual void SetToggleVisible(bool visible);
+  virtual void SetToggleLabel(const std::u16string& label);
   virtual void SetEnforcedIcon(const gfx::VectorIcon& icon,
                                const std::u16string& tooltip);
   virtual void SetEnforcedIconVisible(bool visible);
@@ -60,6 +61,7 @@ class CookieControlsContentView : public views::View {
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<RichControlsContainerView> toggle_row_ = nullptr;
+  raw_ptr<views::Label> toggle_label_ = nullptr;
   raw_ptr<views::ToggleButton> toggle_button_ = nullptr;
   raw_ptr<views::ImageView> enforced_icon_ = nullptr;
   raw_ptr<views::View> feedback_section_ = nullptr;

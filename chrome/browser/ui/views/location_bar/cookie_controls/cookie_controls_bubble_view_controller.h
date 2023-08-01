@@ -63,6 +63,10 @@ class CookieControlsBubbleViewController
 
   std::u16string GetSubjectUrlName(content::WebContents* web_contents) const;
 
+  // The most recent status provided by the CookieControlsController. Cached
+  // so that updates to site counts can use the appropriate label.
+  CookieControlsStatus latest_status_ = CookieControlsStatus::kUninitialized;
+
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
 
   // Used for favicon loading tasks.

@@ -21,6 +21,7 @@ class CookieControlsContentViewUnitTest : public TestWithBrowserView {
  protected:
   views::View* GetFeedbackSection() { return view_->feedback_section_; }
   views::ToggleButton* GetToggleButton() { return view_->toggle_button_; }
+  CookieControlsContentView* GetContentView() { return view_.get(); }
 
   std::unique_ptr<CookieControlsContentView> view_;
 };
@@ -37,12 +38,19 @@ TEST_F(CookieControlsContentViewUnitTest, FeedbackSection) {
               IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE)))));
 }
 
-TEST_F(CookieControlsContentViewUnitTest, ToggleButton) {
+TEST_F(CookieControlsContentViewUnitTest, ToggleButton_Initial) {
+  EXPECT_THAT(GetToggleButton()->GetAccessibleName(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL)));
+}
+
+TEST_F(CookieControlsContentViewUnitTest, ToggleButton_UpdatedSites) {
+  const std::u16string label = u"17 sites allowed";
+  GetContentView()->SetToggleLabel(label);
   std::u16string expected = base::JoinString(
       {l10n_util::GetStringUTF16(
            IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL),
-       // TODO (crbug.com/1446230): Update when correct string is used.
-       u"17 sites blocked"},
+       label},
       u"\n");
   // TODO: convert to AllOf(HasSubstr(), HasSubStr()) when gtest supports
   // u16string.

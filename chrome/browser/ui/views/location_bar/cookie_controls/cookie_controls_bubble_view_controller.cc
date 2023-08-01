@@ -181,12 +181,34 @@ void CookieControlsBubbleViewController::OnStatusChanged(
           bubble_view_->GetContentView()->SetEnforcedIconVisible(true);
       break;
   }
+
+  latest_status_ = status;
 }
 
 void CookieControlsBubbleViewController::OnSitesCountChanged(
     int allowed_third_party_sites_count,
     int blocked_third_party_sites_count) {
-  // TODO(1446230): Implement OnSitesCountChanged
+  std::u16string label;
+  switch (latest_status_) {
+    case CookieControlsStatus::kEnabled:
+      label = l10n_util::GetPluralStringFUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_BLOCKED_SITES_COUNT,
+          blocked_third_party_sites_count);
+      break;
+    case CookieControlsStatus::kDisabledForSite:
+      label = l10n_util::GetPluralStringFUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_ALLOWED_SITES_COUNT,
+          allowed_third_party_sites_count);
+      break;
+    case CookieControlsStatus::kDisabled:
+    case CookieControlsStatus::kUninitialized:
+      // If this happens, it is transitory and and can be ignored.
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  bubble_view_->GetContentView()->SetToggleLabel(label);
 }
 
 void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
