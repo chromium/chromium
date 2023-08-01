@@ -91,6 +91,7 @@ class TopControlsSlideControllerTest;
 class WebAppFrameToolbarView;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
+class SidePanelCoordinator;
 
 namespace ui {
 class NativeTheme;
@@ -1238,6 +1239,9 @@ class BrowserView : public BrowserWindow,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  base::ScopedObservation<SidePanelCoordinator, SidePanelViewStateObserver>
+      side_panel_state_observation_{this};
 
   bool interactive_resize_in_progress_ = false;
 

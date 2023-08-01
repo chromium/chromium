@@ -962,10 +962,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
 
-  SidePanelUI::SetSidePanelUIForBrowser(
-      browser_.get(), std::make_unique<SidePanelCoordinator>(this));
-  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser_.get())
-      ->AddSidePanelViewStateObserver(this);
+  auto side_panel_coordinator = std::make_unique<SidePanelCoordinator>(this);
+  side_panel_state_observation_.Observe(side_panel_coordinator.get());
+
+  SidePanelUI::SetSidePanelUIForBrowser(browser_.get(),
+                                        std::move(side_panel_coordinator));
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1036,8 +1037,11 @@ BrowserView::~BrowserView() {
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
 
-  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
-      ->RemoveSidePanelViewStateObserver(this);
+  // `SidePanelUI::RemoveSidePanelUIForBrowser()` deletes the
+  // SidePanelCoordinator. Since SidePanelCoordinator unregisters its
+  // SidePanelViewStateObservers in its d'tor, BrowserView's side panel
+  // observation needs resetting.
+  side_panel_state_observation_.Reset();
   SidePanelUI::RemoveSidePanelUIForBrowser(browser());
 }
 
