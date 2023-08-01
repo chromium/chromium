@@ -1415,6 +1415,7 @@ test("content_browsertests") {
     "../browser/network/network_field_trial_browsertest.cc",
     "../browser/network/network_service_memory_cache_browsertest.cc",
     "../browser/network/sandboxed_http_cache_browsertest.cc",
+    "../browser/network/sandboxed_network_list_browsertest.cc",
     "../browser/network/sandboxed_nqe_browsertest.cc",
     "../browser/network/sandboxed_socket_broker_browsertest.cc",
     "../browser/network/shared_dictionary_browsertest.cc",
