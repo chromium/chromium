@@ -473,6 +473,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     }, {once: true});
   }
 
+  getBookmarkDescriptionForTests(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    return this.getBookmarkDescription_(bookmark);
+  }
+
   private computeCanDrag_(): boolean {
     return !this.editing_ && !this.renamingId_ && !this.hasSomeActiveFilter_;
   }

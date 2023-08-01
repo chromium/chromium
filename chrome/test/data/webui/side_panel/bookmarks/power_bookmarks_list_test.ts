@@ -12,7 +12,9 @@ import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrom
 import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -73,8 +75,35 @@ suite('SidePanelPowerBookmarksListTest', () => {
     },
   ];
 
-  function getBookmarkElements(root: HTMLElement): PowerBookmarkRowElement[] {
-    return Array.from(root.shadowRoot!.querySelectorAll('power-bookmark-row'));
+  function getBookmarks(root: HTMLElement):
+      chrome.bookmarks.BookmarkTreeNode[] {
+    const ironList = root.shadowRoot!.querySelector<IronListElement>(
+        '#shownBookmarksIronList');
+    if (!ironList || !ironList.items) {
+      return [];
+    }
+    return ironList.items!;
+  }
+
+  function getBookmarkWithId(root: HTMLElement, id: string):
+      chrome.bookmarks.BookmarkTreeNode|undefined {
+    const ironList = root.shadowRoot!.querySelector<IronListElement>(
+        '#shownBookmarksIronList');
+    if (!ironList || !ironList.items) {
+      return undefined;
+    }
+    return ironList.items!.find((bookmark) => bookmark.id === id);
+  }
+
+  function getCrUrlListItemElementWithId(
+      root: HTMLElement, id: string): CrUrlListItemElement|undefined {
+    const powerBookmarkRowElement =
+        root.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            `#bookmark-${id}`);
+    if (!powerBookmarkRowElement) {
+      return undefined;
+    }
+    return powerBookmarkRowElement.$.crUrlListItem;
   }
 
   function isHidden(element: HTMLElement): boolean {
@@ -126,19 +155,19 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(1, bookmarksApi.getCallCount('getFolders'));
     assertEquals(
         folders[1]!.children!.length + 1,
-        getBookmarkElements(powerBookmarksList).length);
+        getBookmarks(powerBookmarksList).length);
   });
 
   test('DefaultsToSortByNewest', () => {
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(4, bookmarkElements.length);
+    const bookmarks = getBookmarks(powerBookmarksList);
+    assertEquals(4, bookmarks.length);
     // All folders should come first
-    assertEquals('bookmark-1', bookmarkElements[0]!.id);
-    assertEquals('bookmark-5', bookmarkElements[1]!.id);
+    assertEquals('1', bookmarks[0]!.id);
+    assertEquals('5', bookmarks[1]!.id);
     // Newest URL should come next
-    assertEquals('bookmark-4', bookmarkElements[2]!.id);
+    assertEquals('4', bookmarks[2]!.id);
     // Older URL should be last
-    assertEquals('bookmark-3', bookmarkElements[3]!.id);
+    assertEquals('3', bookmarks[3]!.id);
   });
 
   test('UpdatesChangedBookmarks', () => {
@@ -149,21 +178,17 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(4, bookmarkElements.length);
-    const bookmarkElement = bookmarkElements[3]!;
-    assertEquals(
-        'New title',
-        (bookmarkElement as PowerBookmarkRowElement).bookmark.title);
-    assertEquals(
-        'http://new/url',
-        (bookmarkElement as PowerBookmarkRowElement).bookmark.url);
-    assertNotEquals(
-        undefined,
-        Array
-            .from(bookmarkElement.shadowRoot!.querySelectorAll(
-                'cr-url-list-item'))
-            .find(el => el.title === 'New title'));
+    const bookmark = getBookmarkWithId(powerBookmarksList, '3');
+    assertTrue(!!bookmark);
+
+    assertEquals('New title', bookmark.title);
+    assertEquals('http://new/url', bookmark.url);
+
+    const crUrlListItemElement =
+        getCrUrlListItemElementWithId(powerBookmarksList, '3');
+    assertTrue(!!crUrlListItemElement);
+
+    assertEquals('New title', crUrlListItemElement.title);
   });
 
   test('AddsCreatedBookmark', async () => {
@@ -176,8 +201,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(5, bookmarkElements.length);
+    const bookmarks = getBookmarks(powerBookmarksList);
+    assertEquals(5, bookmarks.length);
   });
 
   test('AddsCreatedBookmarkForNewFolder', () => {
@@ -200,11 +225,13 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(5, bookmarkElements.length);
-    const newFolder = bookmarkElements[0]!;
-    assertEquals(
-        1, (newFolder as PowerBookmarkRowElement).bookmark.children!.length);
+    const bookmarks = getBookmarks(powerBookmarksList);
+    assertEquals(5, bookmarks.length);
+
+    const newFolder = getBookmarkWithId(powerBookmarksList, '1000');
+    assertTrue(!!newFolder);
+
+    assertEquals(1, newFolder.children!.length);
   });
 
   test('MovesBookmarks', () => {
@@ -217,12 +244,12 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(5, bookmarkElements.length);
-    const childFolder = bookmarkElements[1]!;
-    assertEquals('5', (childFolder as PowerBookmarkRowElement).bookmark.id);
-    assertEquals(
-        0, (childFolder as PowerBookmarkRowElement).bookmark.children!.length);
+    const bookmarks = getBookmarks(powerBookmarksList);
+    assertEquals(5, bookmarks.length);
+
+    const childFolder = getBookmarkWithId(powerBookmarksList, '5');
+    assertTrue(!!childFolder);
+    assertEquals(0, childFolder.children!.length);
   });
 
   test('MovesBookmarksIntoNewFolder', () => {
@@ -244,22 +271,18 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const newFolder =
-        powerBookmarksList.shadowRoot!.querySelector('#bookmark-1000');
-    assertEquals(
-        1, (newFolder as PowerBookmarkRowElement).bookmark.children!.length);
+    const newFolder = getBookmarkWithId(powerBookmarksList, '1000');
+    assertTrue(!!newFolder);
+
+    assertEquals(1, newFolder.children!.length);
   });
 
   test('SetsCompactDescription', async () => {
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(4, bookmarkElements.length);
-    const folderElement = bookmarkElements[1]!;
-    assertEquals('bookmark-5', folderElement.id);
+    const folder = getBookmarkWithId(powerBookmarksList, '5');
+    assertTrue(!!folder);
 
-    const urlListItemElement =
-        folderElement.shadowRoot!.querySelector('cr-url-list-item');
-    const compactDescription = '(1)';
-    assertTrue(urlListItemElement!.description!.includes(compactDescription));
+    assertEquals(
+        '(1)', powerBookmarksList.getBookmarkDescriptionForTests(folder));
   });
 
   test('SetsExpandedDescription', () => {
@@ -267,15 +290,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
         powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
     viewButton.click();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(4, bookmarkElements.length);
-    const folderElement = bookmarkElements[2]!;
-    assertEquals('bookmark-4', folderElement.id);
+    const folder = getBookmarkWithId(powerBookmarksList, '4');
+    assertTrue(!!folder);
 
-    const urlListItemElement =
-        folderElement.shadowRoot!.querySelector('cr-url-list-item');
-    const expandedDescription = 'child';
-    assertTrue(urlListItemElement!.description!.includes(expandedDescription));
+    assertEquals(
+        'child', powerBookmarksList.getBookmarkDescriptionForTests(folder));
   });
 
   test('SetsExpandedSearchResultDescription', async () => {
@@ -291,15 +310,12 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     await flushTasks();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(4, bookmarkElements.length);
-    const folderElement = bookmarkElements[0]!;
-    assertEquals('bookmark-4', folderElement.id);
+    const folder = getBookmarkWithId(powerBookmarksList, '4');
+    assertTrue(!!folder);
 
-    const urlListItemElement =
-        folderElement.shadowRoot!.querySelector('cr-url-list-item');
-    const expandedDescription = 'child - All Bookmarks';
-    assertTrue(urlListItemElement!.description!.includes(expandedDescription));
+    assertEquals(
+        'child - All Bookmarks',
+        powerBookmarksList.getBookmarkDescriptionForTests(folder));
   });
 
   test('ShowsFolderImages', () => {
@@ -309,21 +325,15 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     flush();
 
-    const bookmarkElements = getBookmarkElements(powerBookmarksList);
-    assertEquals(4, bookmarkElements.length);
+    const bookmarksBarFolderElement =
+        getCrUrlListItemElementWithId(powerBookmarksList, '1');
+    assertTrue(!!bookmarksBarFolderElement);
+    assertEquals(0, bookmarksBarFolderElement.imageUrls.length);
 
-    const bookmarksBarFolderElement = bookmarkElements[0]!;
-    const bookmarksBarUrlListItemElement =
-        bookmarksBarFolderElement.shadowRoot!.querySelector('cr-url-list-item');
-    assertTrue(!!bookmarksBarUrlListItemElement);
-    assertEquals(0, bookmarksBarUrlListItemElement.imageUrls.length);
-
-    const otherBookmarksFolderElement = bookmarkElements[1]!;
-    const otherBookmarksUrlListItemElement =
-        otherBookmarksFolderElement.shadowRoot!.querySelector(
-            'cr-url-list-item');
-    assertTrue(!!otherBookmarksUrlListItemElement);
-    assertNotEquals(0, otherBookmarksUrlListItemElement.imageUrls.length);
+    const childFolderElement =
+        getCrUrlListItemElementWithId(powerBookmarksList, '5');
+    assertTrue(!!childFolderElement);
+    assertNotEquals(0, childFolderElement.imageUrls.length);
   });
 
   test('TogglesSectionVisibilityAndEmptyStates', async () => {
@@ -348,7 +358,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertFalse(isHidden(footer));
 
     // Opening an empty folder.
-    getBookmarkElements(powerBookmarksList)[0]!.$.crUrlListItem.click();
+    const crUrlListItemElement =
+        getCrUrlListItemElementWithId(powerBookmarksList, '1');
+    assertTrue(!!crUrlListItemElement);
+    crUrlListItemElement.click();
+
     await flushTasks();
     assertFalse(isHidden(search));
     assertTrue(isHidden(filterChips));
