@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
@@ -133,8 +134,18 @@ HidService::HidService(
       /* cleanup_watcher_ids=*/true, /*watchers_removed=*/1));
 
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (delegate)
+  if (delegate && render_frame_host_) {
     delegate->AddObserver(GetBrowserContext(), this);
+  } else if (service_worker_version_) {
+    // For service worker case, it relies on ServiceWorkerHidDelegateObserver to
+    // be the broker between HidDelegate and HidService.
+    auto context = service_worker_version_->context();
+    if (context) {
+      context->hid_delegate_observer()->RegisterHidService(
+          service_worker_version_->registration_id(),
+          weak_factory_.GetWeakPtr());
+    }
+  }
 }
 
 HidService::HidService(RenderFrameHostImpl* render_frame_host)
@@ -151,8 +162,9 @@ HidService::HidService(
 
 HidService::~HidService() {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (delegate)
+  if (delegate && render_frame_host_) {
     delegate->RemoveObserver(GetBrowserContext(), this);
+  }
 
   // Update connection count and active frame count tracking as remaining
   // watchers will be closed from this end.

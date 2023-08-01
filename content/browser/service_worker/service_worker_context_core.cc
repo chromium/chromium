@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_offline_capability_checker.h"
@@ -1290,5 +1291,21 @@ void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
         base::TimeTicks::Now() - start_time);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+ServiceWorkerHidDelegateObserver*
+ServiceWorkerContextCore::hid_delegate_observer() {
+  if (!hid_delegate_observer_) {
+    hid_delegate_observer_ =
+        std::make_unique<ServiceWorkerHidDelegateObserver>(this);
+  }
+  return hid_delegate_observer_.get();
+}
+
+void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
+    std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer) {
+  hid_delegate_observer_ = std::move(hid_delegate_observer);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

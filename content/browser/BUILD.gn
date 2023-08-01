@@ -1027,8 +1027,6 @@ source_set("browser") {
     "handwriting/handwriting_recognition_service_impl.h",
     "handwriting/handwriting_recognizer_impl.cc",
     "handwriting/handwriting_recognizer_impl.h",
-    "hid/hid_service.cc",
-    "hid/hid_service.h",
     "host_zoom_level_context.cc",
     "host_zoom_level_context.h",
     "host_zoom_map_impl.cc",
@@ -2023,6 +2021,8 @@ source_set("browser") {
     "service_worker/service_worker_context_wrapper.h",
     "service_worker/service_worker_controllee_request_handler.cc",
     "service_worker/service_worker_controllee_request_handler.h",
+    "service_worker/service_worker_device_delegate_observer.cc",
+    "service_worker/service_worker_device_delegate_observer.h",
     "service_worker/service_worker_fetch_dispatcher.cc",
     "service_worker/service_worker_fetch_dispatcher.h",
     "service_worker/service_worker_host.cc",
@@ -3214,6 +3214,10 @@ source_set("browser") {
       "direct_sockets/direct_sockets_service_impl.cc",
       "direct_sockets/direct_sockets_service_impl.h",
 
+      # WebHID is non-Android
+      "hid/hid_service.cc",
+      "hid/hid_service.h",
+
       # Non-Android platforms that don't presently support
       # enable_screen_capture, like Fuchsia, nevertheless compile
       # these files. This follows the pattern of #ifdef-ing around Android
@@ -3230,6 +3234,10 @@ source_set("browser") {
       # The Serial API is not implemented on Android.
       "serial/serial_service.cc",
       "serial/serial_service.h",
+
+      # WebHID is non-Android
+      "service_worker/service_worker_hid_delegate_observer.cc",
+      "service_worker/service_worker_hid_delegate_observer.h",
 
       # Most speech code is non-Android.
       "speech/endpointer/endpointer.cc",

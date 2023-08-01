@@ -25,3 +25,5 @@ yyanagisawa@chromium.org
 # per-file rules:
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
+per-file service_worker_hid_*=file://content/browser/hid/OWNERS
+per-file service_worker_device_*=file://content/browser/hid/OWNERS

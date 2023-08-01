@@ -48,6 +48,9 @@ class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
 class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
+#if !BUILDFLAG(IS_ANDROID)
+class ServiceWorkerHidDelegateObserver;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This class manages data associated with service workers.
 // The class is single threaded and should only be used on the UI thread.
@@ -405,6 +408,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void BeginProcessingWarmingUp() { is_processing_warming_up_ = true; }
   void EndProcessingWarmingUp() { is_processing_warming_up_ = false; }
 
+#if !BUILDFLAG(IS_ANDROID)
+  ServiceWorkerHidDelegateObserver* hid_delegate_observer();
+
+  void SetServiceWorkerHidDelegateObserverForTesting(
+      std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   friend class ServiceWorkerContextCoreTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerContextCoreTest, FailureInfo);
@@ -536,6 +546,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   base::circular_deque<WarmUpRequest> warm_up_requests_;
 
   bool is_processing_warming_up_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };

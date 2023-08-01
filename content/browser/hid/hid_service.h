@@ -72,6 +72,20 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
   void OnHidManagerConnectionError() override;
   void OnPermissionRevoked(const url::Origin& origin) override;
 
+  const mojo::AssociatedRemoteSet<device::mojom::HidManagerClient>& clients()
+      const {
+    return clients_;
+  }
+
+  base::WeakPtr<content::ServiceWorkerVersion> service_worker_version() {
+    return service_worker_version_;
+  }
+
+  const mojo::ReceiverSet<device::mojom::HidConnectionWatcher>&
+  GetWatchersForTesting() {
+    return watchers_;
+  }
+
  private:
   HidService(RenderFrameHostImpl* render_frame_host,
              base::WeakPtr<ServiceWorkerVersion> service_worker_version,
