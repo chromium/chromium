@@ -113,9 +113,6 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeFuseBox:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
-    case kFileSystemTypeRestrictedLocal:
-      return FILE_PERMISSION_READ_ONLY | FILE_PERMISSION_USE_FILE_PERMISSION;
-
     case kFileSystemTypeDeviceMedia:
     case kFileSystemTypeLocalMedia:
       return FILE_PERMISSION_USE_FILE_PERMISSION;

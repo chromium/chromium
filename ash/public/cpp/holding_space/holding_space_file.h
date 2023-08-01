@@ -23,7 +23,7 @@ struct ASH_PUBLIC_EXPORT HoldingSpaceFile {
     kExternal = 4,
     kTest = 5,
     kLocal = 6,
-    kRestrictedLocal = 7,
+    // kRestrictedLocal = 7,
     kDragged = 8,
     kLocalMedia = 9,
     kDeviceMedia = 10,

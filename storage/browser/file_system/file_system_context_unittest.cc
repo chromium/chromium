@@ -256,8 +256,7 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
   // Register a system external mount point with the same name/id as the
   // registered isolated mount point.
   ASSERT_TRUE(ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-      kIsolatedFileSystemID, kFileSystemTypeRestrictedLocal,
-      FileSystemMountOption(),
+      kIsolatedFileSystemID, kFileSystemTypeLocal, FileSystemMountOption(),
       base::FilePath(DRIVE FPL("/test/system/isolated"))));
   // Add a mount points with the same name as a system mount point to
   // FileSystemContext's external mount points.
@@ -300,7 +299,7 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
       {"system", "external", true /* is_valid */, kFileSystemTypeExternal,
        kFileSystemTypeLocal, DRIVE FPL("/test/sys/root/file"), "system"},
       {kIsolatedFileSystemID, "external", true /* is_valid */,
-       kFileSystemTypeExternal, kFileSystemTypeRestrictedLocal,
+       kFileSystemTypeExternal, kFileSystemTypeLocal,
        DRIVE FPL("/test/system/isolated/root/file"), kIsolatedFileSystemID},
       // Should be cracked by FileSystemContext's ExternalMountPoints.
       {"ext", "external", true /* is_valid */, kFileSystemTypeExternal,

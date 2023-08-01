@@ -127,7 +127,6 @@ bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
       break;
 
     case kFileSystemTypeLocal:
-    case kFileSystemTypeRestrictedLocal:
     case kFileSystemTypeLocalMedia:
     case kFileSystemTypeLocalForPlatformApp:
     case kFileSystemTypeDriveFs:

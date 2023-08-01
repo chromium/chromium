@@ -61,8 +61,6 @@ HoldingSpaceFile::FileSystemType ToHoldingSpaceFileSystemType(
       return HoldingSpaceFile::FileSystemType::kPersistent;
     case storage::FileSystemType::kFileSystemTypeProvided:
       return HoldingSpaceFile::FileSystemType::kProvided;
-    case storage::FileSystemType::kFileSystemTypeRestrictedLocal:
-      return HoldingSpaceFile::FileSystemType::kRestrictedLocal;
     case storage::FileSystemType::kFileSystemTypeSmbFs:
       return HoldingSpaceFile::FileSystemType::kSmbFs;
     case storage::FileSystemType::kFileSystemTypeSyncable:

@@ -133,9 +133,6 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       "removable", storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(FPL("/media/removable"))));
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
-      "oem", storage::kFileSystemTypeRestrictedLocal,
-      storage::FileSystemMountOption(), base::FilePath(FPL("/usr/share/oem"))));
 
   // Backend specific mount point access.
   EXPECT_FALSE(backend.IsAccessAllowed(

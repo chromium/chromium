@@ -59,7 +59,6 @@ bool FileSystemBackend::CanHandleURL(const storage::FileSystemURL& url) {
   if (!url.is_valid())
     return false;
   return url.type() == storage::kFileSystemTypeLocal ||
-         url.type() == storage::kFileSystemTypeRestrictedLocal ||
          url.type() == storage::kFileSystemTypeProvided ||
          url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage ||
          url.type() == storage::kFileSystemTypeArcContent ||
@@ -111,7 +110,6 @@ void FileSystemBackend::AddSystemMountPoints() {
 bool FileSystemBackend::CanHandleType(storage::FileSystemType type) const {
   switch (type) {
     case storage::kFileSystemTypeExternal:
-    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeLocalForPlatformApp:
     case storage::kFileSystemTypeDeviceMediaAsFileStorage:
@@ -283,7 +281,6 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
     case storage::kFileSystemTypeProvided:
       return file_system_provider_delegate_->GetAsyncFileUtil(type);
     case storage::kFileSystemTypeLocal:
-    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeFuseBox:
       return local_file_util_.get();
     case storage::kFileSystemTypeDeviceMediaAsFileStorage:
@@ -347,7 +344,6 @@ FileSystemBackend::CreateFileSystemOperation(
             context, MediaFileSystemBackend::MediaTaskRunner().get()));
   }
   if (url.type() == storage::kFileSystemTypeLocal ||
-      url.type() == storage::kFileSystemTypeRestrictedLocal ||
       url.type() == storage::kFileSystemTypeDriveFs ||
       url.type() == storage::kFileSystemTypeSmbFs ||
       url.type() == storage::kFileSystemTypeFuseBox) {
@@ -386,7 +382,6 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     // crbug.com/953603.
     case storage::kFileSystemTypeArcDocumentsProvider:
     case storage::kFileSystemTypeLocal:
-    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
     // TODO(crbug.com/939235): Implement in-place copy in SmbFs.
     case storage::kFileSystemTypeSmbFs:
@@ -418,7 +413,6 @@ FileSystemBackend::CreateFileStreamReader(
           url, offset, max_bytes_to_read, expected_modification_time, context);
     // The dlp file_access callback is needed for the local filesystem only.
     case storage::kFileSystemTypeLocal:
-    case storage::kFileSystemTypeRestrictedLocal:
       return storage::FileStreamReader::CreateForLocalFile(
           base::ThreadPool::CreateTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
@@ -477,7 +471,6 @@ FileSystemBackend::CreateFileStreamWriter(
       return arc_documents_provider_delegate_->CreateFileStreamWriter(
           url, offset, context);
     // Read only file systems.
-    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
       return nullptr;
     default:
@@ -511,7 +504,6 @@ void FileSystemBackend::GetRedirectURLForContents(
       mtp_delegate_->GetRedirectURLForContents(url, std::move(callback));
       return;
     case storage::kFileSystemTypeLocal:
-    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
     case storage::kFileSystemTypeArcDocumentsProvider:
     case storage::kFileSystemTypeDriveFs:

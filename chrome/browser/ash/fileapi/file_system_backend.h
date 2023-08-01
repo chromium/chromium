@@ -47,10 +47,7 @@ constexpr char kSystemMountNameRemovable[] = "removable";
 // - Create FileSystemOperation per file system type
 // - Create FileStreamReader/Writer per file system type
 //
-// Chrome OS specific mount points:
-//
-// "Downloads" is a mount point for user's Downloads directory on the local
-// disk, where downloaded files are stored by default.
+// Chrome OS specific static mount points:
 //
 // "archive" is a mount point for an archive file, such as a zip file. This
 // mount point exposes contents of an archive file via cros_disks and AVFS
@@ -59,17 +56,13 @@ constexpr char kSystemMountNameRemovable[] = "removable";
 // "removable" is a mount point for removable media such as an SD card.
 // Insertion and removal of removable media are handled by cros_disks.
 //
-// "oem" is a read-only mount point for a directory containing OEM data.
-//
-// "drive" is a mount point for Google Drive. Drive is integrated with the
-// FileSystem API layer via drive::FileSystemProxy. This mount point is added
-// by drive::DriveIntegrationService.
-//
 // These mount points are placed under the "external" namespace, and file
 // system URLs for these mount points look like:
 //
 //   filesystem:<origin>/external/<mount_name>/...
 //
+// Other mounts are also registered by VolumeManager for MyFiles, Drive, VMs
+// (crostini, arc, etc), Android Document Providers, fileSystemProviders, etc.
 class FileSystemBackend : public storage::ExternalFileSystemBackend {
  public:
   using storage::FileSystemBackend::ResolveURLCallback;

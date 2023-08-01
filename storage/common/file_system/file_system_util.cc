@@ -248,8 +248,6 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "Test";
     case kFileSystemTypeLocal:
       return "Local";
-    case kFileSystemTypeRestrictedLocal:
-      return "RestrictedLocal";
     case kFileSystemTypeDragged:
       return "Dragged";
     case kFileSystemTypeLocalMedia:
