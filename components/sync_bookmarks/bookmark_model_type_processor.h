@@ -140,6 +140,10 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // instead the caller must meet this precondition.
   void StopTrackingMetadataAndResetTracker();
 
+  // Honors `wipe_model_on_stopping_sync_with_clear_data_`, i.e. deletes all
+  // bookmarks in the model if the member variable is set to true.
+  void TriggerWipeModelUponSyncDisabledPolicy();
+
   // Creates a DictionaryValue for local and remote debugging information about
   // `node` and appends it to `all_nodes`. It does the same for child nodes
   // recursively. `index` is the index of `node` within its parent. `index`

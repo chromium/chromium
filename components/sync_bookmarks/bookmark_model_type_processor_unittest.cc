@@ -295,9 +295,9 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
         bookmark_model_.get());
   }
 
-  void SimulateOnSyncStarting() {
+  void SimulateOnSyncStarting(const std::string& cache_guid = kCacheGuid) {
     syncer::DataTypeActivationRequest request;
-    request.cache_guid = kCacheGuid;
+    request.cache_guid = cache_guid;
     request.error_handler = error_handler_.Get();
     processor_->OnSyncStarting(request, base::DoNothing());
   }
@@ -631,6 +631,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Metadata are corrupted, so no tracker should have been created.
   EXPECT_FALSE(new_processor.IsTrackingMetadata());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldIgnoreMetadataIfCacheGuidMismatch) {
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
+  SimulateOnSyncStarting("unexpected_cache_guid");
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
 // Verifies that the model type state stored in the tracker gets
@@ -1654,6 +1662,101 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldWipeBookmarksIfMetadataClearedWhileStopped) {
+  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  processor()->OnSyncStopping(syncer::KEEP_METADATA);
+
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", GURL("http://www.example.com"));
+
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  base::HistogramTester histogram_tester;
+
+  // Expect saving empty metadata upon call to ClearMetadataWhileStopped().
+  EXPECT_CALL(*schedule_save_closure(), Run);
+
+  processor()->ClearMetadataWhileStopped();
+  // Should clear the tracker even if already stopped.
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+  // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
+
+  // Local bookmarks should have been deleted.
+  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldWipeBookmarksIfMetadataClearedWhileStoppedUponModelReadyToSync) {
+  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+
+  base::HistogramTester histogram_tester;
+
+  // Expect no call to save metadata before ModelReadyToSync().
+  EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
+  // Call ClearMetadataWhileStopped() before ModelReadyToSync(). This should set
+  // the flag for a pending clearing of metadata.
+  processor()->ClearMetadataWhileStopped();
+  // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
+
+  // Mimic some bookmarks being loaded as part of startup.
+  const bookmarks::BookmarkNode* bookmarknode = bookmark_model()->AddURL(
+      bookmark_model()->bookmark_bar_node(), /*index=*/0, u"foo",
+      GURL("http://www.example.com"));
+
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmarknode, "node_id1");
+
+  // Expect saving empty metadata from ModelReadyToSync() while processing the
+  // pending clearing of metadata.
+  EXPECT_CALL(*schedule_save_closure(), Run);
+  // ModelReadyToSync() should take into account the pending metadata clearing
+  // flag and clear the metadata.
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+  // Tracker should have not been set.
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+  // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
+
+  // Local bookmarks should have been deleted.
+  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
+  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", GURL("http://www.example.com"));
+
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  SimulateOnSyncStarting("unexpected_cache_guid");
+
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+
+  // Local bookmarks should have been deleted.
+  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
 }
 
 }  // namespace

@@ -309,10 +309,8 @@ std::string BookmarkModelTypeProcessor::EncodeSyncMetadata() const {
     model_metadata.SerializeToString(&metadata_str);
   } else if (last_initial_merge_remote_updates_exceeded_limit_) {
     sync_pb::BookmarkModelMetadata model_metadata;
-    // Only set this field in the metadata if set to allow for easier rollback
-    // of the feature. Moreover, setting this field explicitly even when the
-    // value is false somehow leads to a non-empty serialized output. Setting
-    // the field only when true allows for an empty serialized output otherwise.
+    // Setting the field only when true guarantees that the empty-string case
+    // is interpreted as no-metadata-to-clear.
     model_metadata.set_last_initial_merge_remote_updates_exceeded_limit(true);
     model_metadata.SerializeToString(&metadata_str);
   }
@@ -347,6 +345,14 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
     if (!metadata_str.empty()) {
       LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
                                             /*is_delayed_call=*/true);
+      if (syncer::IsInitialSyncDone(
+              model_metadata.model_type_state().initial_sync_state())) {
+        // There used to be a tracker, which is dropped now due to
+        // `pending_clear_metadata_`. This isn't very different to
+        // ClearMetadataWhileStopped(), in the sense that the need to wipe the
+        // local model needs to be considered.
+        TriggerWipeModelUponSyncDisabledPolicy();
+      }
       schedule_save_closure_.Run();
     }
   } else if (model_metadata
@@ -473,7 +479,6 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
 
   if (bookmark_tracker_ &&
       bookmark_tracker_->model_type_state().cache_guid() != cache_uuid_) {
-    // TODO(crbug.com/820049): Add basic unit testing.
     // In case of a cache uuid mismatch, treat it as a corrupted metadata and
     // start clean.
     StopTrackingMetadataAndResetTracker();
@@ -517,19 +522,13 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
 
     case syncer::CLEAR_METADATA: {
       // Stop observing local changes. We'll start observing local changes again
-      // when Sync is (re)started in StartTrackingMetadata().
+      // when Sync is (re)started in StartTrackingMetadata(). This is only
+      // necessary if a tracker exists, which also means local changes are being
+      // tracked (see StartTrackingMetadata()).
       if (bookmark_tracker_) {
         StopTrackingMetadataAndResetTracker();
       }
       last_initial_merge_remote_updates_exceeded_limit_ = false;
-      if (wipe_model_on_stopping_sync_with_clear_data_) {
-        // `CLEAR_METADATA` indicates sync is permanently disabled. Since
-        // `wipe_model_on_stopping_sync_with_clear_data_` is `true`, the
-        // lifetime of local data (bookmarks) is coupled with sync metadata's,
-        // which means disabling sync requires that bookmarks in local storage
-        // are deleted.
-        bookmark_model_->RemoveAllUserBookmarks();
-      }
       schedule_save_closure_.Run();
       break;
     }
@@ -808,6 +807,22 @@ void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
   bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
   bookmark_model_observer_.reset();
   bookmark_tracker_.reset();
+
+  // Tracked sync metadata has just been thrown away. Depending on the current
+  // policy, bookmarks themselves may need clearing too.
+  TriggerWipeModelUponSyncDisabledPolicy();
+}
+
+void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledPolicy() {
+  if (!wipe_model_on_stopping_sync_with_clear_data_) {
+    // Nothing to do.
+    return;
+  }
+
+  // Since `wipe_model_on_stopping_sync_with_clear_data_` is `true`, the
+  // lifetime of local data (bookmarks) is coupled with sync metadata's, which
+  // means disabling sync requires that bookmarks in local storage are deleted.
+  bookmark_model_->RemoveAllUserBookmarks();
 }
 
 }  // namespace sync_bookmarks
