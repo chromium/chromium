@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
@@ -884,4 +885,33 @@ TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
               *metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
   }
 }
+
+TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
+  base::test::ScopedFeatureList enabled_feature_list;
+  enabled_feature_list.InitAndEnableFeature(
+      ash::features::kSuppressTextMessages);
+
+  // Case: Suppression state should be Allow when user text message
+  // suppression state has never been set.
+  EXPECT_EQ(
+      TextMessageSuppressionState::kAllow,
+      metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+
+  // Case: Suppression state should be Suppress when the user text message
+  // suppression state was set to Suppress.
+  metadata_store()->SetUserTextMessageSuppressionState(
+      kCellularkGuid, TextMessageSuppressionState::kSuppress);
+  EXPECT_EQ(
+      TextMessageSuppressionState::kSuppress,
+      metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+
+  // Case: Suppression state should be Allow when the user text message
+  // suppression state was set to Allow.
+  metadata_store()->SetUserTextMessageSuppressionState(
+      kCellularkGuid, TextMessageSuppressionState::kAllow);
+  EXPECT_EQ(
+      TextMessageSuppressionState::kAllow,
+      metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+}
+
 }  // namespace ash

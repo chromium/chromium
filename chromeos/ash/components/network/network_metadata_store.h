@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
@@ -28,6 +29,13 @@ class TimeDelta;
 }
 
 namespace ash {
+
+enum class TextMessageSuppressionState : int {
+  // Text message notifications will be allowed.
+  kAllow = 0,
+  // Text message notifications will be suppressed.
+  kSuppress = 1,
+};
 
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
@@ -158,6 +166,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   bool secure_dns_templates_with_identifiers_active() const {
     return secure_dns_templates_with_identifiers_active_;
   }
+
+  // Sets user suppression state to configure text message notifications.
+  void SetUserTextMessageSuppressionState(
+      const std::string& network_guid,
+      const TextMessageSuppressionState& state);
+
+  // Returns the user set text message suppression state. When no user state has
+  // been configured this will return |TextMessageSuppressionState::kAllow|
+  // which will default to allowing text message notifications.
+  TextMessageSuppressionState GetUserTextMessageSuppressionState(
+      const std::string& network_guid);
 
   // Sets whether the deviceReportXDREvents policy is enabled.
   void SetReportXdrEventsEnabled(bool enabled);

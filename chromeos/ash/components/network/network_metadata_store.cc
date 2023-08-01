@@ -9,13 +9,18 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "base/values.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -48,6 +53,8 @@ const char kEnableTrafficCountersAutoReset[] =
     "enable_traffic_counters_auto_reset";
 const char kDayOfTrafficCountersAutoReset[] =
     "day_of_traffic_counters_auto_reset";
+const char kUserTextMessageSuppressionState[] =
+    "user_text_message_suppression_state";
 
 constexpr base::TimeDelta kDefaultOverrideAge = base::Days(1);
 // Wait two weeks before overwriting the creation timestamp for a given
@@ -592,6 +599,37 @@ void NetworkMetadataStore::SetReportXdrEventsEnabled(bool enabled) {
   report_xdr_events_enabled_ = enabled;
   managed_network_configuration_handler_
       ->OnEnterpriseMonitoredWebPoliciesApplied();
+}
+
+void NetworkMetadataStore::SetUserTextMessageSuppressionState(
+    const std::string& network_guid,
+    const TextMessageSuppressionState& state) {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+
+  SetPref(network_guid, kUserTextMessageSuppressionState,
+          base::Value(base::to_underlying(state)));
+}
+
+TextMessageSuppressionState
+NetworkMetadataStore::GetUserTextMessageSuppressionState(
+    const std::string& network_guid) {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+
+  const base::Value* state_value =
+      GetPref(network_guid, kUserTextMessageSuppressionState);
+  if (!state_value || !state_value->is_int()) {
+    return TextMessageSuppressionState::kAllow;
+  }
+
+  if (base::to_underlying(TextMessageSuppressionState::kAllow) ==
+      state_value->GetInt()) {
+    return TextMessageSuppressionState::kAllow;
+  } else if (base::to_underlying(TextMessageSuppressionState::kSuppress) ==
+             state_value->GetInt()) {
+    return TextMessageSuppressionState::kSuppress;
+  }
+  NOTREACHED();
+  return TextMessageSuppressionState::kAllow;
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,
