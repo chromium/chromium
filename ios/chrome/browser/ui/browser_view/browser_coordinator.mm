@@ -149,6 +149,7 @@
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
@@ -235,41 +236,43 @@ enum class ToolbarKind {
 
 }  // anonymous namespace
 
-@interface BrowserCoordinator () <BrowserCoordinatorCommands,
-                                  BubblePresenterDelegate,
-                                  DefaultBrowserPromoCommands,
-                                  DefaultPromoNonModalPresentationDelegate,
-                                  EnterprisePromptCoordinatorDelegate,
-                                  FormInputAccessoryCoordinatorNavigator,
-                                  MiniMapCommands,
-                                  NetExportTabHelperDelegate,
-                                  NewTabPageCommands,
-                                  NewTabPageTabHelperDelegate,
-                                  OverscrollActionsControllerDelegate,
-                                  PageInfoCommands,
-                                  PageInfoPresentation,
-                                  PasswordBreachCommands,
-                                  PasswordControllerDelegate,
-                                  PasswordProtectionCommands,
-                                  PasswordProtectionCoordinatorDelegate,
-                                  PasswordSettingsCoordinatorDelegate,
-                                  PasswordSuggestionCommands,
-                                  PasswordSuggestionCoordinatorDelegate,
-                                  PasswordsAccountStorageNoticeCommands,
-                                  PriceNotificationsCommands,
-                                  PromosManagerCommands,
-                                  PolicyChangeCommands,
-                                  PreloadControllerDelegate,
-                                  ReadingListCoordinatorDelegate,
-                                  RecentTabsCoordinatorDelegate,
-                                  RepostFormCoordinatorDelegate,
-                                  RepostFormTabHelperDelegate,
-                                  SigninPresenter,
-                                  SnapshotGeneratorDelegate,
-                                  ToolbarAccessoryCoordinatorDelegate,
-                                  URLLoadingDelegate,
-                                  WebContentCommands,
-                                  WebNavigationNTPDelegate>
+@interface BrowserCoordinator () <
+    BrowserCoordinatorCommands,
+    BubblePresenterDelegate,
+    DefaultBrowserPromoCommands,
+    DefaultPromoNonModalPresentationDelegate,
+    EnterprisePromptCoordinatorDelegate,
+    FormInputAccessoryCoordinatorNavigator,
+    MiniMapCommands,
+    NetExportTabHelperDelegate,
+    NewTabPageCommands,
+    NewTabPageTabHelperDelegate,
+    OverscrollActionsControllerDelegate,
+    PageInfoCommands,
+    PageInfoPresentation,
+    PasswordBreachCommands,
+    PasswordControllerDelegate,
+    PasswordProtectionCommands,
+    PasswordProtectionCoordinatorDelegate,
+    PasswordSettingsCoordinatorDelegate,
+    PasswordSuggestionCommands,
+    PasswordSuggestionCoordinatorDelegate,
+    PasswordSuggestionBottomSheetCoordinatorDelegate,
+    PasswordsAccountStorageNoticeCommands,
+    PriceNotificationsCommands,
+    PromosManagerCommands,
+    PolicyChangeCommands,
+    PreloadControllerDelegate,
+    ReadingListCoordinatorDelegate,
+    RecentTabsCoordinatorDelegate,
+    RepostFormCoordinatorDelegate,
+    RepostFormTabHelperDelegate,
+    SigninPresenter,
+    SnapshotGeneratorDelegate,
+    ToolbarAccessoryCoordinatorDelegate,
+    URLLoadingDelegate,
+    WebContentCommands,
+    WebNavigationNTPDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -623,9 +626,7 @@ enum class ToolbarKind {
 
   [self stopPasswordProtectionCoordinator];
 
-  [self.passwordSuggestionBottomSheetCoordinator stop];
-  self.passwordSuggestionBottomSheetCoordinator = nil;
-
+  [self stopPasswordSuggestionBottomSheetCoordinator];
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
@@ -671,6 +672,12 @@ enum class ToolbarKind {
   [self.recentTabsCoordinator stop];
   self.recentTabsCoordinator.delegate = nil;
   self.recentTabsCoordinator = nil;
+}
+
+- (void)stopPasswordSuggestionBottomSheetCoordinator {
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator.delegate = nil;
+  self.passwordSuggestionBottomSheetCoordinator = nil;
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
@@ -1244,8 +1251,7 @@ enum class ToolbarKind {
 
   [self stopPasswordProtectionCoordinator];
 
-  [self.passwordSuggestionBottomSheetCoordinator stop];
-  self.passwordSuggestionBottomSheetCoordinator = nil;
+  [self stopPasswordSuggestionBottomSheetCoordinator];
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -1487,6 +1493,7 @@ enum class ToolbarKind {
                              browser:self.browser
                               params:params
                             delegate:self];
+  self.passwordSuggestionBottomSheetCoordinator.delegate = self;
   [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
@@ -2946,6 +2953,14 @@ enum class ToolbarKind {
 - (void)hideMiniMap {
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
+}
+
+#pragma mark - PasswordSuggestionBottomSheetCoordinatorDelegate
+
+- (void)passwordSuggestionBottomSheetCoordinatorWantsToBeStopped:
+    (PasswordSuggestionBottomSheetCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.passwordSuggestionBottomSheetCoordinator);
+  [self stopPasswordSuggestionBottomSheetCoordinator];
 }
 
 #pragma mark - PasswordProtectionCoordinator

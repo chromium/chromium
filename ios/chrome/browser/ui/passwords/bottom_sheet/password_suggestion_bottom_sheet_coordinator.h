@@ -13,11 +13,15 @@ struct FormActivityParams;
 }  // namespace autofill
 
 @protocol PasswordControllerDelegate;
+@protocol PasswordSuggestionBottomSheetCoordinatorDelegate;
 
 // This coordinator is responsible for creating the bottom sheet's mediator and
 // view controller.
 @interface PasswordSuggestionBottomSheetCoordinator
     : ChromeCoordinator <PasswordSuggestionBottomSheetHandler>
+
+@property(nonatomic, weak) id<PasswordSuggestionBottomSheetCoordinatorDelegate>
+    delegate;
 
 // `viewController` is the VC used to present the bottom sheet.
 // `params` comes from the form (in bottom_sheet.ts) and contains
