@@ -344,11 +344,11 @@
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "ci_only": true,
           "dimension_sets": [
             {
               "cpu": "x86",

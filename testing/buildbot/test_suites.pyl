@@ -651,9 +651,7 @@
 
     'chromeos_integration_tests': {
       'chromeos_integration_tests': {
-        'swarming': {
-          'ci_only': True,
-        },
+        'ci_only': True,
       },
     },
     'chromeos_isolated_scripts': {

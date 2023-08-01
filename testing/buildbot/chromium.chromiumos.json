@@ -234,11 +234,11 @@
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "ci_only": true,
           "dimension_sets": [
             {
               "cpu": "x86",
@@ -1278,12 +1278,12 @@
           "--board=amd64-generic",
           "--use-vm"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "chromeos_integration_tests amd64-generic",
         "swarming": {
-          "ci_only": true,
           "dimension_sets": [
             {
               "cpu": "x86",
@@ -1302,12 +1302,12 @@
           "--board=eve",
           "--flash"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "chromeos_integration_tests eve",
         "swarming": {
-          "ci_only": true,
           "dimension_sets": [
             {
               "device_type": "eve",
