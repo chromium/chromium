@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 
@@ -144,6 +145,15 @@ bool IsFieldRequired(ServerFieldType server_type,
     return ::i18n::addressinput::IsFieldRequired(field_enum, country_code);
   }
   return false;
+}
+
+base::span<const ServerFieldType> GetStaticEditorFields() {
+  static constexpr std::array<ServerFieldType, 3> static_fields = {
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      NAME_HONORIFIC_PREFIX,
+  };
+  return static_fields;
 }
 
 }  // namespace i18n

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -49,6 +50,11 @@ bool FieldForType(ServerFieldType server_type,
 // |country_code|, according to the libaddressinput metadata.
 bool IsFieldRequired(ServerFieldType server_type,
                      const std::string& country_code);
+
+// Returns the list of fields which are added to the editors regardless of the
+// specified country. This list determines the fields that should not be cleared
+// from AutofillProfile even though they may be not user visible.
+base::span<const ServerFieldType> GetStaticEditorFields();
 
 }  // namespace i18n
 }  // namespace autofill

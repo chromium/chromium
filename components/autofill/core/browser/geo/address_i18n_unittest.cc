@@ -10,10 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
@@ -136,6 +138,32 @@ TEST(AddressI18nTest, IsFieldRequired) {
 
   EXPECT_TRUE(IsFieldRequired(ADDRESS_HOME_STATE, "AE"));
   EXPECT_FALSE(IsFieldRequired(ADDRESS_HOME_STATE, "BS"));
+}
+
+// This test verifies several important cases when ServerFieldType values should
+// and should not be present in the set of country dependent fields.
+TEST(AddressI18nTest, GetStaticEditorFields) {
+  base::span<const ServerFieldType> fields = GetStaticEditorFields();
+
+  // Fields added by the UI must be in the list.
+  EXPECT_THAT(GetStaticEditorFields(),
+              testing::IsSupersetOf({EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
+                                     NAME_HONORIFIC_PREFIX}));
+
+  // Everything from libaddressinput must not be included.
+  std::vector<ServerFieldType> libaddressinput_fields = {
+      NAME_FULL,
+      COMPANY_NAME,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE};
+  EXPECT_TRUE(base::ranges::none_of(libaddressinput_fields,
+                                    [&fields](ServerFieldType type) {
+                                      return base::Contains(fields, type);
+                                    }));
 }
 
 }  // namespace i18n

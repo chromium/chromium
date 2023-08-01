@@ -381,6 +381,9 @@ class AddressEditorMediator {
                 && PersonalDataManager.getInstance().isCountryEligibleForAccountStorage(country)) {
             profile.setSource(Source.ACCOUNT);
         }
+        // Clear field values that change among countries so that invisible fields
+        // do not get forwarded to the backend.
+        profile.resetDynamicFields();
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, country);

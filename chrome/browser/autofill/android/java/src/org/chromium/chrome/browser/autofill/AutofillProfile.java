@@ -12,7 +12,9 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.autofill.ServerFieldType;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Autofill address information.
@@ -314,6 +316,11 @@ public class AutofillProfile {
 
     public String getLabel() {
         return mLabel;
+    }
+
+    public void resetDynamicFields() {
+        Set<Integer> staticFields = new HashSet<>(AutofillProfileBridge.getStaticEditorFields());
+        mFields.keySet().removeIf(key -> !staticFields.contains(key));
     }
 
     @CalledByNative
