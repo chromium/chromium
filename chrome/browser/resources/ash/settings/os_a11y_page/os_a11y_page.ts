@@ -31,7 +31,7 @@ import {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page
 
 export interface OsSettingsA11yPageElement {
   $: {
-    a11yImageLabels: SettingsToggleButtonElement,
+    a11yImageLabelsToggle: SettingsToggleButtonElement,
   };
 }
 
@@ -146,9 +146,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   override ready() {
     super.ready();
 
-    if (routes.MANAGE_ACCESSIBILITY) {
-      this.addFocusConfig(routes.MANAGE_ACCESSIBILITY, '#subpage-trigger');
-    }
     if (routes.A11Y_TEXT_TO_SPEECH) {
       this.addFocusConfig(
           routes.A11Y_TEXT_TO_SPEECH, '#textToSpeechSubpageTrigger');
@@ -156,20 +153,20 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     if (routes.A11Y_DISPLAY_AND_MAGNIFICATION) {
       this.addFocusConfig(
           routes.A11Y_DISPLAY_AND_MAGNIFICATION,
-          '#display-and-magnification-page-trigger');
+          '#displayAndMagnificationPageTrigger');
     }
     if (routes.A11Y_KEYBOARD_AND_TEXT_INPUT) {
       this.addFocusConfig(
           routes.A11Y_KEYBOARD_AND_TEXT_INPUT,
-          '#keyboard-and-text-input-page-trigger');
+          '#keyboardAndTextInputPageTrigger');
     }
     if (routes.A11Y_CURSOR_AND_TOUCHPAD) {
       this.addFocusConfig(
-          routes.A11Y_CURSOR_AND_TOUCHPAD, '#cursor-and-touchpad-page-trigger');
+          routes.A11Y_CURSOR_AND_TOUCHPAD, '#cursorAndTouchpadPageTrigger');
     }
     if (routes.A11Y_AUDIO_AND_CAPTIONS) {
       this.addFocusConfig(
-          routes.A11Y_AUDIO_AND_CAPTIONS, '#audio-and-captions-page-trigger');
+          routes.A11Y_AUDIO_AND_CAPTIONS, '#audioAndCaptionsPageTrigger');
     }
 
     this.addWebUiListener(
@@ -189,25 +186,16 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     }
   }
 
-  private shouldShowAdditionalFeaturesLink_(isKiosk: boolean, isGuest: boolean):
-      boolean {
-    return !isKiosk && !isGuest;
-  }
-
   private onScreenReaderStateChanged_(hasScreenReader: boolean): void {
     this.hasScreenReader_ = hasScreenReader;
     this.showAccessibilityLabelsSetting_ = this.hasScreenReader_;
   }
 
   private onToggleAccessibilityImageLabels_(): void {
-    const a11yImageLabelsOn = this.$.a11yImageLabels.checked;
+    const a11yImageLabelsOn = this.$.a11yImageLabelsToggle.checked;
     if (a11yImageLabelsOn) {
       this.browserProxy_.confirmA11yImageLabels();
     }
-  }
-
-  private onManageAccessibilityFeaturesClick_(): void {
-    Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);
   }
 
   private onTextToSpeechClick_(): void {

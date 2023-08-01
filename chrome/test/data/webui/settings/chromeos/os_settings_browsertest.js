@@ -489,8 +489,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_a11y_page/keyboard_and_text_input_page_test.js',
  ],
  [
-   'OsA11yPageManageA11ySubpage',
-   'os_a11y_page/manage_a11y_subpage_test.js',
+   'OsA11yPageKioskMode',
+   'os_a11y_page/os_a11y_page_kiosk_mode_test.js',
  ],
  [
    'OsA11yPageSelectToSpeakSubpage',

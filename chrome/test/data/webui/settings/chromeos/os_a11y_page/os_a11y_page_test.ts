@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrSettingsPrefs, OsA11yPageBrowserProxyImpl, OsSettingsA11yPageElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, OsA11yPageBrowserProxyImpl, OsSettingsA11yPageElement, OsSettingsRoutes, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,8 +13,14 @@ import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestOsA11yPageBrowserProxy} from './test_os_a11y_page_browser_proxy.js';
+
+interface SubpageTriggerData {
+  triggerSelector: string;
+  routeName: keyof OsSettingsRoutes;
+}
 
 suite('<os-settings-a11y-page>', () => {
   let page: OsSettingsA11yPageElement;
@@ -64,7 +70,7 @@ suite('<os-settings-a11y-page>', () => {
 
     // Turn on 'Get image descriptions from Google'.
     const a11yImageLabelsToggle =
-        page.shadowRoot!.querySelector<HTMLElement>('#a11yImageLabels');
+        page.shadowRoot!.querySelector<HTMLElement>('#a11yImageLabelsToggle');
     a11yImageLabelsToggle!.click();
     flush();
 
@@ -97,5 +103,53 @@ suite('<os-settings-a11y-page>', () => {
 
     await waitAfterNextRender(pdfOcrToggle);
     assertFalse(pdfOcrToggle.hidden);
+  });
+
+  const subpageTriggerData: SubpageTriggerData[] = [
+    {
+      triggerSelector: '#textToSpeechSubpageTrigger',
+      routeName: 'A11Y_TEXT_TO_SPEECH',
+    },
+    {
+      triggerSelector: '#displayAndMagnificationPageTrigger',
+      routeName: 'A11Y_DISPLAY_AND_MAGNIFICATION',
+    },
+    {
+      triggerSelector: '#keyboardAndTextInputPageTrigger',
+      routeName: 'A11Y_KEYBOARD_AND_TEXT_INPUT',
+    },
+    {
+      triggerSelector: '#cursorAndTouchpadPageTrigger',
+      routeName: 'A11Y_CURSOR_AND_TOUCHPAD',
+    },
+    {
+      triggerSelector: '#audioAndCaptionsPageTrigger',
+      routeName: 'A11Y_AUDIO_AND_CAPTIONS',
+    },
+  ];
+  subpageTriggerData.forEach(({triggerSelector, routeName}) => {
+    test(
+        `Row for ${routeName} is focused when returning from subpage`,
+        async () => {
+          Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
+
+          const subpageTrigger =
+              page.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+          assertTrue(!!subpageTrigger);
+
+          // Sub-page trigger navigates to subpage for route
+          subpageTrigger.click();
+          assertEquals(routes[routeName], Router.getInstance().currentRoute);
+
+          // Navigate back
+          const popStateEventPromise = eventToPromise('popstate', window);
+          Router.getInstance().navigateToPreviousRoute();
+          await popStateEventPromise;
+          await waitAfterNextRender(page);
+
+          assertEquals(
+              subpageTrigger, page.shadowRoot!.activeElement,
+              `${triggerSelector} should be focused.`);
+        });
   });
 });

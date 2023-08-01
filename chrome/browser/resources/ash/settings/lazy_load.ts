@@ -30,7 +30,6 @@ import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
 import './kerberos_page/kerberos_accounts_subpage.js';
-import './os_a11y_page/manage_a11y_subpage.js';
 import './os_a11y_page/display_and_magnification_subpage.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
@@ -166,7 +165,6 @@ export {SettingsChromeVoxSubpageElement} from './os_a11y_page/chromevox_subpage.
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
 export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/display_and_magnification_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
-export {SettingsManageA11ySubpageElement} from './os_a11y_page/manage_a11y_subpage.js';
 export {HandlerVoice, SettingsSelectToSpeakSubpageElement} from './os_a11y_page/select_to_speak_subpage.js';
 export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/switch_access_action_assignment_dialog.js';
 export {SwitchAccessCommand} from './os_a11y_page/switch_access_constants.js';

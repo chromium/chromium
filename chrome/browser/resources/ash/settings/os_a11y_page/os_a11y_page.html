@@ -5,7 +5,7 @@
   <div route-path="default">
     <settings-card header-text="$i18n{a11yPageTitle}">
       <settings-toggle-button
-          id="a11yImageLabels"
+          id="a11yImageLabelsToggle"
           hidden="[[!showAccessibilityLabelsSetting_]]"
           pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
           on-change="onToggleAccessibilityImageLabels_"
@@ -15,13 +15,12 @@
       </settings-toggle-button>
       <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
       <settings-toggle-button id="optionsInMenuToggle"
-          hidden="[[isKioskModeActive_]]"
           label="$i18n{optionsInMenuLabel}"
           sub-label="$i18n{optionsInMenuDescription}"
           pref="{{prefs.settings.a11y.enable_menu}}"
           deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
       </settings-toggle-button>
-      <div class="hr" hidden="[[isKioskModeActive_]]"></div>
+      <div class="hr"></div>
       <cr-link-row id="textToSpeechSubpageTrigger"
           label="$i18n{textToSpeechLinkTitle}"
           on-click="onTextToSpeechClick_"
@@ -29,35 +28,34 @@
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="hr"></div>
-      <cr-link-row id="display-and-magnification-page-trigger"
+      <cr-link-row id="displayAndMagnificationPageTrigger"
           label="$i18n{displayAndMagnificationLinkTitle}"
           on-click="onDisplayAndMagnificationClick_"
           sub-label="$i18n{displayAndMagnificationLinkDescription}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="hr"></div>
-      <cr-link-row id="keyboard-and-text-input-page-trigger"
+      <cr-link-row id="keyboardAndTextInputPageTrigger"
           label="$i18n{keyboardAndTextInputLinkTitle}"
           on-click="onKeyboardAndTextInputClick_"
           sub-label="$i18n{keyboardAndTextInputLinkDescription}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="hr"></div>
-      <cr-link-row id="cursor-and-touchpad-page-trigger"
+      <cr-link-row id="cursorAndTouchpadPageTrigger"
           label="$i18n{cursorAndTouchpadLinkTitle}"
           on-click="onCursorAndTouchpadClick_"
           sub-label="$i18n{cursorAndTouchpadLinkDescription}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="hr"></div>
-      <cr-link-row id="audio-and-captions-page-trigger"
+      <cr-link-row id="audioAndCaptionsPageTrigger"
           label="$i18n{audioAndCaptionsLinkTitle}"
           on-click="onAudioAndCaptionsClick_"
           sub-label="$i18n{audioAndCaptionsLinkDescription}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <template is="dom-if"
-          if="[[shouldShowAdditionalFeaturesLink_(isKioskModeActive_, isGuest_)]]">
+      <template is="dom-if" if="[[!isGuest_]]">
         <cr-link-row
             id="additionalFeaturesLink" class="hr"
             label="$i18n{additionalFeaturesTitle}"
@@ -70,9 +68,51 @@
 
   <template is="dom-if" route-path="/manageAccessibility">
     <os-settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
-        hide-close-button="[[isKioskModeActive_]]">
-      <settings-manage-a11y-subpage prefs="{{prefs}}">
-      </settings-manage-a11y-subpage>
+        hide-close-button>
+      <settings-toggle-button
+          id="a11yImageLabelsToggle"
+          hidden="[[!showAccessibilityLabelsSetting_]]"
+          pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
+          on-change="onToggleAccessibilityImageLabels_"
+          label="$i18n{accessibleImageLabelsTitle}"
+          sub-label="$i18n{accessibleImageLabelsSubtitle}"
+          deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
+      </settings-toggle-button>
+      <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
+      <cr-link-row id="textToSpeechSubpageTrigger"
+          label="$i18n{textToSpeechLinkTitle}"
+          on-click="onTextToSpeechClick_"
+          sub-label="$i18n{textToSpeechLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="displayAndMagnificationPageTrigger"
+          label="$i18n{displayAndMagnificationLinkTitle}"
+          on-click="onDisplayAndMagnificationClick_"
+          sub-label="$i18n{displayAndMagnificationLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="keyboardAndTextInputPageTrigger"
+          label="$i18n{keyboardAndTextInputLinkTitle}"
+          on-click="onKeyboardAndTextInputClick_"
+          sub-label="$i18n{keyboardAndTextInputLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="cursorAndTouchpadPageTrigger"
+          label="$i18n{cursorAndTouchpadLinkTitle}"
+          on-click="onCursorAndTouchpadClick_"
+          sub-label="$i18n{cursorAndTouchpadLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="audioAndCaptionsPageTrigger"
+          label="$i18n{audioAndCaptionsLinkTitle}"
+          on-click="onAudioAndCaptionsClick_"
+          sub-label="$i18n{audioAndCaptionsLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/textToSpeech">

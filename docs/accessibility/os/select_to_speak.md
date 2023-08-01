@@ -52,7 +52,7 @@ chrome/browser/resources/chromeos/accessibility/select_to_speak/
 - Floating panel, system/accessibility/select_to_speak_menu_bubble_controller.h
 
 In addition, there are settings for STS in
-chrome/browser/resources/settings/a11y_page/manage_a11y_subpage.*
+chrome/browser/resources/ash/settings/os_a11y_page/select_to_speak_subpage.*
 
 ### Tests
 
