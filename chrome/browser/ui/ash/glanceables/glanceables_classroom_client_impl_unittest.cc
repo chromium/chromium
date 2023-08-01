@@ -220,14 +220,13 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](std::unique_ptr<GlanceablesClassroomClientImpl::CourseList>
-                courses) {
+        [&](const GlanceablesClassroomClientImpl::CourseList& courses) {
           run_loop.Quit();
 
-          ASSERT_EQ(courses->size(), 1u);
+          ASSERT_EQ(courses.size(), 1u);
 
-          EXPECT_EQ(courses->at(0)->id, "course-id-1");
-          EXPECT_EQ(courses->at(0)->name, "Active Course 1");
+          EXPECT_EQ(courses.at(0)->id, "course-id-1");
+          EXPECT_EQ(courses.at(0)->name, "Active Course 1");
 
           histogram_tester.ExpectTotalCount(
               "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
@@ -261,11 +260,10 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnHttpError) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     fetch_method.Run(base::BindLambdaForTesting(
-        [&](std::unique_ptr<GlanceablesClassroomClientImpl::CourseList>
-                courses) {
+        [&](const GlanceablesClassroomClientImpl::CourseList& courses) {
           run_loop.Quit();
 
-          EXPECT_FALSE(courses);
+          EXPECT_EQ(0u, courses.size());
 
           histogram_tester.ExpectTotalCount(
               "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
@@ -337,15 +335,14 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](std::unique_ptr<GlanceablesClassroomClientImpl::CourseList>
-                courses) {
+        [&](const GlanceablesClassroomClientImpl::CourseList& courses) {
           run_loop.Quit();
 
-          ASSERT_EQ(courses->size(), 3u);
+          ASSERT_EQ(courses.size(), 3u);
 
-          EXPECT_EQ(courses->at(0)->id, "course-id-from-page-1");
-          EXPECT_EQ(courses->at(1)->id, "course-id-from-page-2");
-          EXPECT_EQ(courses->at(2)->id, "course-id-from-page-3");
+          EXPECT_EQ(courses.at(0)->id, "course-id-from-page-1");
+          EXPECT_EQ(courses.at(1)->id, "course-id-from-page-2");
+          EXPECT_EQ(courses.at(2)->id, "course-id-from-page-3");
 
           histogram_tester.ExpectUniqueSample(
               test_case.expected_courses_count_histogram_name,
@@ -1139,17 +1136,29 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        StudentRoleIsActiveWithEnrolledCourses) {
-  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url,
+                        AllOf(HasSubstr("/courses?"), HasSubstr("studentId=me"),
+                              Not(HasSubstr("teacherId=me"))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-1",
+                  "name": "Active Course 1",
+                  "courseState": "ACTIVE"
+                }
+              ]
+            })"))));
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
-      .WillOnce(
-          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse("{}"))));
+      .Times(0);
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   HasSubstr("/studentSubmissions?"))))
-      .WillOnce(
-          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse("{}"))));
+      .Times(0);
 
   TestFuture<bool> future;
   client()->IsStudentRoleActive(future.GetCallback());
@@ -1158,7 +1167,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
   ASSERT_TRUE(active);
 
   histogram_tester()->ExpectTotalCount(
-      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      "Ash.Glanceables.Api.Classroom.GetCourses.Status",
       /*expected_count=*/1);
 }
 
@@ -1261,6 +1270,10 @@ TEST_F(GlanceablesClassroomClientImplTest, ReturnsCompletedStudentAssignments) {
             "https://classroom.google.com/test-link-2");
   EXPECT_FALSE(assignments.at(1)->due);
   EXPECT_FALSE(assignments.at(1)->submissions_state);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -1407,6 +1420,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_EQ(FormatTimeAsString(assignments.at(2)->due.value()),
             "2023-06-25T15:09:25.250Z");
   EXPECT_FALSE(assignments.at(2)->submissions_state);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -1571,6 +1588,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_EQ(FormatTimeAsString(assignments.at(2)->due.value()),
             "2023-03-20T15:09:25.250Z");
   EXPECT_FALSE(assignments.at(2)->submissions_state);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -1647,6 +1668,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
             "https://classroom.google.com/test-link-1");
   EXPECT_FALSE(assignments.at(0)->due);
   EXPECT_FALSE(assignments.at(0)->submissions_state);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -1759,12 +1784,25 @@ TEST_F(GlanceablesClassroomClientImplTest,
 // Public interface, teacher assignments:
 
 TEST_F(GlanceablesClassroomClientImplTest, TeacherRoleIsActiveWithCourses) {
-  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(
+                  &HttpRequest::relative_url,
+                  AllOf(HasSubstr("/courses?"), Not(HasSubstr("studentId=me")),
+                        HasSubstr("teacherId=me")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-1",
+                  "name": "Active Course 1",
+                  "courseState": "ACTIVE"
+                }
+              ]
+            })"))));
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
-      .WillOnce(
-          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse("{}"))));
+      .Times(0);
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   HasSubstr("/studentSubmissions?"))))
@@ -1777,7 +1815,7 @@ TEST_F(GlanceablesClassroomClientImplTest, TeacherRoleIsActiveWithCourses) {
   ASSERT_TRUE(active);
 
   histogram_tester()->ExpectTotalCount(
-      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      "Ash.Glanceables.Api.Classroom.GetCourses.Status",
       /*expected_count=*/1);
 }
 
@@ -1990,6 +2028,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_EQ(assignments.at(2)->submissions_state->total_count, 1);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 0);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_graded, 0);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -2173,6 +2215,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_EQ(assignments.at(2)->submissions_state->total_count, 1);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 0);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_graded, 0);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -2345,6 +2391,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_EQ(assignments.at(2)->submissions_state->total_count, 1);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 0);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_graded, 0);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest, ReturnsGradedTeacherAssignments) {
@@ -2477,6 +2527,10 @@ TEST_F(GlanceablesClassroomClientImplTest, ReturnsGradedTeacherAssignments) {
   EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 2);
   EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
   EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 2);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -3060,6 +3114,217 @@ TEST_F(GlanceablesClassroomClientImplTest,
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - approaching due date");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       FetchStudentCoursesAfterIsActiveCheck) {
+  ExpectActiveCourse(/*times=*/2);
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::relative_url,
+                          HasSubstr("/courses/course-id-1/courseWork?"))))
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "student-course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })");
+      }));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::relative_url,
+                          HasSubstr("courseWork/-/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("student-course-work-item-1", 1, 0,
+                                        0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("student-course-work-item-1", 1, 1,
+                                        0)))));
+
+  TestFuture<bool> is_active_future;
+  client()->IsStudentRoleActive(is_active_future.GetCallback());
+
+  const bool active = is_active_future.Get();
+  EXPECT_TRUE(active);
+
+  // The student has one assignment with missed due date.
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithMissedDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+  }
+
+  // Simulate glanceables bubble closure.
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetCompletedStudentAssignments(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       FetchStudentCoursesConcurrentlyWithIsActiveCheck) {
+  ExpectActiveCourse(/*times=*/2);
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::relative_url,
+                          HasSubstr("/courses/course-id-1/courseWork?"))))
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "student-course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })");
+      }));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::relative_url,
+                          HasSubstr("courseWork/-/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("student-course-work-item-1", 1, 0,
+                                        0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("student-course-work-item-1", 1, 1,
+                                        0)))));
+
+  TestFuture<bool> is_active_future;
+  client()->IsStudentRoleActive(is_active_future.GetCallback());
+
+  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+      assignments_future;
+  client()->GetStudentAssignmentsWithMissedDueDate(
+      assignments_future.GetCallback());
+
+  const bool active = is_active_future.Get();
+  EXPECT_TRUE(active);
+
+  const auto assignments = assignments_future.Take();
+  ASSERT_EQ(assignments.size(), 1u);
+  EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+
+  // Simulate glanceables bubble closure.
+  client()->OnGlanceablesBubbleClosed();
+
+  client()->GetCompletedStudentAssignments(assignments_future.GetCallback());
+
+  const auto refetched_assignments = assignments_future.Take();
+  ASSERT_EQ(refetched_assignments.size(), 1u);
+  EXPECT_EQ(refetched_assignments.at(0)->course_work_title, "Assignment 1");
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       FetchTeacherCoursesAfterIsActiveCheck) {
+  OverrideTime("10 Apr 2023 09:00 GMT");
+
+  ExpectActiveCourse(/*times=*/2);
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::relative_url,
+                          HasSubstr("/courses/course-id-1/courseWork?"))))
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })");
+      }));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-1/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 2, 1, 0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 2, 2, 0)))));
+
+  TestFuture<bool> is_active_future;
+  client()->IsTeacherRoleActive(is_active_future.GetCallback());
+
+  const bool active = is_active_future.Get();
+  EXPECT_TRUE(active);
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
+  }
+
+  // Simulate glanceables bubble closure.
+  client()->OnGlanceablesBubbleClosed();
+  OverrideTime("10 Apr 2023 09:05 GMT");
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
   }
 }
 
@@ -5075,7 +5340,9 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courseWork": [
                 {
@@ -5092,11 +5359,13 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   }
                 }
               ]
-            })"))));
+            })");
+      }));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   HasSubstr("/studentSubmissions?"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "studentSubmissions": [
                 {
@@ -5105,7 +5374,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "state": "NEW"
                 }
               ]
-            })"))));
+            })");
+      }));
 
   {
     TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
@@ -5173,7 +5443,9 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courseWork": [
                 {
@@ -5190,11 +5462,14 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   }
                 }
               ]
-            })"))));
+            })");
+      }));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   HasSubstr("/studentSubmissions?"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "studentSubmissions": [
                 {
@@ -5203,7 +5478,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "state": "NEW"
                 }
               ]
-            })"))));
+            })");
+      }));
 
   {
     TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
@@ -5730,6 +6006,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnCachedTeacherAssignmentsOnCoursesFetchFailure) {
+  OverrideTime("10 Apr 2023 09:05 GMT");
+
   EXPECT_CALL(request_handler(), HandleRequest(Field(&HttpRequest::relative_url,
                                                      HasSubstr("/courses?"))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
@@ -5747,7 +6025,9 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courseWork": [
                 {
@@ -5755,7 +6035,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "title": "Assignment 1",
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-1",
-                  "dueDate": {"year": 2023, "month": 3, "day": 5},
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
                   "dueTime": {
                     "hours": 15,
                     "minutes": 9,
@@ -5764,14 +6044,17 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   }
                 }
               ]
-            })"))));
+            })");
+      }));
   EXPECT_CALL(
       request_handler(),
       HandleRequest(Field(
           &HttpRequest::relative_url,
           HasSubstr("courseWork/course-work-item-1/studentSubmissions?"))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
-          CreateSubmissionsListResponse("course-work-item-1", 1, 0, 0)))));
+          CreateSubmissionsListResponse("course-work-item-1", 1, 0, 0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 2, 0, 0)))));
   client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
 
   {
@@ -5789,6 +6072,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
   }
 
   client()->OnGlanceablesBubbleClosed();
+  OverrideTime("10 Apr 2023 09:15 GMT");
 
   {
     TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
@@ -5801,7 +6085,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
     ASSERT_TRUE(assignments.at(0)->submissions_state);
-    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 2);
   }
 }
 

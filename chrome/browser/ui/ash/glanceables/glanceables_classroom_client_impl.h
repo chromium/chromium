@@ -130,7 +130,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Done callback for fetching all courses for student or teacher roles.
   using CourseList = std::vector<std::unique_ptr<GlanceablesClassroomCourse>>;
   using FetchCoursesCallback =
-      base::OnceCallback<void(std::unique_ptr<CourseList> courses)>;
+      base::OnceCallback<void(const CourseList& courses)>;
 
   using CourseWorkInfo =
       base::flat_map<std::string, GlanceablesClassroomCourseWorkItem>;
@@ -150,6 +150,46 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
     // The data has been fetched.
     kFetched
+  };
+
+  // Tracks a course list state - the latest fetched list, the fetch status, and
+  // the list of callbacks waiting for the list to be fetched.
+  class CourseListState {
+   public:
+    CourseListState();
+    CourseListState(const CourseListState&) = delete;
+    CourseListState& operator=(const CourseListState&) = delete;
+    ~CourseListState();
+
+    // If the course list is fetched, it runs the `callback` immediately.
+    // Otherwise, it enqueues the callback to be run when the list gets fetched.
+    // It updates the fetch status to indicate that the list is to be fetched.
+    // Returns whether the client should initiate course list request.
+    bool RunOrEnqueueCallbackAndUpdateFetchStatus(
+        FetchCoursesCallback callback);
+
+    // Called by the `GlanceablesClassroomClientImpl` to update the course list
+    // state when a course list fetch request completes.
+    // It updates the cached course list, and updates the fetch state, and runs
+    // any pending course list callbacks.
+    // `fetched_courses` - the list of fetched courses, nullptr if the course
+    // list fetch request failed.
+    void FinalizeFetch(std::unique_ptr<CourseList> fetched_courses);
+
+    // Updates fetch status to indicate it can be refetched when course list is
+    // requested next time. Called when the glanceables bubble gets closed.
+    void InvalidateFetchStatus();
+
+    const CourseList& courses() const { return courses_; }
+
+   private:
+    // Runs pending callbacks in `callbacks_` and passes them the latest cached
+    // course list.
+    void RunCallbacks();
+
+    CourseList courses_;
+    FetchStatus fetch_status_ = FetchStatus::kNotFetched;
+    std::vector<FetchCoursesCallback> callbacks_;
   };
 
   // Wrapper around course work fetch callback that tracks the number of pending
@@ -187,6 +227,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
     int pending_page_requests_ = 0;
   };
 
+  // Updates the `*fetch_status` in response to the glanceables bubble closing -
+  // it updates the fetch status to indicate that the data can be refetched when
+  // requested again.
+  static void InvalidateFetchStatus(FetchStatus* fetch_status);
+
   // Fetches all courses for student and teacher roles and invokes `callback`
   // when done.
   void FetchStudentCourses(FetchCoursesCallback callback);
@@ -223,28 +268,27 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void InvokeOnceTeacherDataFetched(DataFetchCallback callback);
 
   // Fetches one page of courses.
-  // `student_id`        - restricts returned courses to those having a student
-  //                       with the specified identifier. Use an empty string
-  //                       to avoid filtering by student id.
-  // `teacher_id`        - restricts returned courses to those having a teacher
-  //                       with the specified identifier. Use an empty string
-  //                       to avoid filtering by teacher id.
-  // `page_token`        - token specifying the result page to return, comes
-  //                       from the previous fetch request. Use an empty string
-  //                       to fetch the first page.
-  // `fetched_courses`   - the container to which course items returned during
-  //                       course list fetch are saved. This container will be
-  //                       passed to `callback` once all items have been
-  //                       fetched.
-  // `callback`          - a callback that runs when all courses for the user
-  //                       have been fetched. This may require multiple fetch
-  //                       requests, in this case `callback` gets called when
-  //                       the final request completes.
+  // `student_id`         - restricts returned courses to those having a student
+  //                        with the specified identifier. Use an empty string
+  //                        to avoid filtering by student id.
+  // `teacher_id`         - restricts returned courses to those having a teacher
+  //                        with the specified identifier. Use an empty string
+  //                        to avoid filtering by teacher id.
+  // `page_token`         - token specifying the result page to return, comes
+  //                        from the previous fetch request. Use an empty string
+  //                        to fetch the first page.
+  // `target_course_list` - reference to the course list that is being fetched,
+  //                        and that needs to be updated once the full course
+  //                        list gets fetched.
+  // `fetched_courses`    - the container to which course items returned during
+  //                        course list fetch are saved. This container will be
+  //                        passed to `callback` once all items have been
+  //                        fetched.
   void FetchCoursesPage(const std::string& student_id,
                         const std::string& teacher_id,
                         const std::string& page_token,
-                        std::unique_ptr<CourseList> fetched_courses,
-                        FetchCoursesCallback callback);
+                        CourseListState& target_course_list,
+                        std::unique_ptr<CourseList> fetched_courses);
 
   // Callback for `FetchCoursesPage()`. If `next_page_token()` in the `result`
   // is not empty - calls another `FetchCoursesPage()`, otherwise runs done
@@ -252,9 +296,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void OnCoursesPageFetched(
       const std::string& student_id,
       const std::string& teacher_id,
+      CourseListState& target_course_list,
       std::unique_ptr<CourseList> fetched_courses,
       const base::Time& request_start_time,
-      FetchCoursesCallback callback,
       base::expected<std::unique_ptr<google_apis::classroom::Courses>,
                      google_apis::ApiErrorCode> result);
 
@@ -264,11 +308,10 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // `course_work` is the map where course work and student submissions whose
   // fetch gets requested should be saved.
   void OnCoursesFetched(
-      CourseList& target_course_list,
       bool fetch_submissions_per_course_work,
       CourseWorkPerCourse& course_work,
       base::OnceClosure on_course_work_and_student_submissions_fetched,
-      std::unique_ptr<CourseList> fetched_courses);
+      const CourseList& target_course_list);
 
   // Fetches one page of course work items.
   // `request_id`  - the ID for the course work request that's being handled.
@@ -448,8 +491,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   size_t number_of_assignments_prioritized_for_display_;
 
   // Available courses for student and teacher roles.
-  CourseList student_courses_;
-  CourseList teacher_courses_;
+  CourseListState student_courses_;
+  CourseListState teacher_courses_;
 
   // All course work information grouped by course id.
   CourseWorkPerCourse student_course_work_;

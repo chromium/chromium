@@ -119,6 +119,67 @@ struct TentativeTeacherAssignment {
 
 }  // namespace
 
+GlanceablesClassroomClientImpl::CourseListState::CourseListState() = default;
+
+GlanceablesClassroomClientImpl::CourseListState::~CourseListState() = default;
+
+bool GlanceablesClassroomClientImpl::CourseListState::
+    RunOrEnqueueCallbackAndUpdateFetchStatus(
+        GlanceablesClassroomClientImpl::FetchCoursesCallback callback) {
+  if (fetch_status_ == FetchStatus::kFetched) {
+    std::move(callback).Run(courses_);
+    return false;
+  }
+
+  callbacks_.push_back(std::move(callback));
+
+  const bool needs_fetch = fetch_status_ != FetchStatus::kFetching &&
+                           fetch_status_ != FetchStatus::kFetchingInvalidated;
+  fetch_status_ = FetchStatus::kFetching;
+  return needs_fetch;
+}
+
+void GlanceablesClassroomClientImpl::CourseListState::FinalizeFetch(
+    std::unique_ptr<CourseList> fetched_courses) {
+  if (fetched_courses) {
+    switch (fetch_status_) {
+      case FetchStatus::kNotFetched:
+      case FetchStatus::kFetched:
+        NOTREACHED();
+        break;
+      case FetchStatus::kFetching:
+        fetch_status_ = FetchStatus::kFetched;
+        break;
+      case FetchStatus::kFetchingInvalidated:
+        fetch_status_ = FetchStatus::kNotFetched;
+        break;
+    }
+
+    courses_.swap(*fetched_courses);
+  } else {
+    fetch_status_ = FetchStatus::kNotFetched;
+    // NOTE: Keeping existing `courses_` state around, so it can be reused to
+    // surface some, potentially unfresh data to the user. Marking the list
+    // status as not fetched to force another fetch when courses get requested
+    // again.
+  }
+
+  RunCallbacks();
+}
+
+void GlanceablesClassroomClientImpl::CourseListState::InvalidateFetchStatus() {
+  GlanceablesClassroomClientImpl::InvalidateFetchStatus(&fetch_status_);
+}
+
+void GlanceablesClassroomClientImpl::CourseListState::RunCallbacks() {
+  std::vector<FetchCoursesCallback> callbacks;
+  callbacks_.swap(callbacks);
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(courses_);
+  }
+}
+
 GlanceablesClassroomClientImpl::CourseWorkRequest::CourseWorkRequest(
     base::OnceClosure callback)
     : callback_(std::move(callback)) {
@@ -176,13 +237,11 @@ void GlanceablesClassroomClientImpl::IsStudentRoleActive(
     IsRoleEnabledCallback callback) {
   CHECK(callback);
 
-  InvokeOnceStudentDataFetched(base::BindOnce(
-      [](GlanceablesClassroomClientImpl* self,
-         base::OnceCallback<void(bool active)> callback) {
-        std::move(callback).Run(!self->student_courses_.empty());
-        return true;
+  FetchStudentCourses(base::BindOnce(
+      [](IsRoleEnabledCallback callback, const CourseList& courses) {
+        std::move(callback).Run(!courses.empty());
       },
-      base::Unretained(this), std::move(callback)));
+      std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetCompletedStudentAssignments(
@@ -298,13 +357,11 @@ void GlanceablesClassroomClientImpl::IsTeacherRoleActive(
     IsRoleEnabledCallback callback) {
   CHECK(callback);
 
-  InvokeOnceTeacherDataFetched(base::BindOnce(
-      [](GlanceablesClassroomClientImpl* self,
-         base::OnceCallback<void(bool active)> callback) {
-        std::move(callback).Run(!self->teacher_courses_.empty());
-        return true;
+  FetchTeacherCourses(base::BindOnce(
+      [](IsRoleEnabledCallback callback, const CourseList& courses) {
+        std::move(callback).Run(!courses.empty());
       },
-      base::Unretained(this), std::move(callback)));
+      std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::
@@ -441,22 +498,10 @@ void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
 void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
   for (FetchStatus* fetch_status :
        {&student_data_fetch_status_, &teacher_data_fetch_status_}) {
-    switch (*fetch_status) {
-      case FetchStatus::kNotFetched:
-        break;
-      case FetchStatus::kFetched:
-        *fetch_status = FetchStatus::kNotFetched;
-        break;
-      case FetchStatus::kFetching:
-        *fetch_status = FetchStatus::kFetchingInvalidated;
-        break;
-      case FetchStatus::kFetchingInvalidated:
-        // Do no restart fetch if it's still in progress, which could happen if
-        // the user toggles glanceables bubble in quick succession.
-        *fetch_status = FetchStatus::kFetching;
-        break;
-    }
+    InvalidateFetchStatus(fetch_status);
   }
+  student_courses_.InvalidateFetchStatus();
+  teacher_courses_.InvalidateFetchStatus();
 }
 
 bool GlanceablesClassroomClientImpl::
@@ -470,24 +515,54 @@ bool GlanceablesClassroomClientImpl::
   return true;
 }
 
+// static
+void GlanceablesClassroomClientImpl::InvalidateFetchStatus(
+    FetchStatus* fetch_status) {
+  switch (*fetch_status) {
+    case FetchStatus::kNotFetched:
+      break;
+    case FetchStatus::kFetched:
+      *fetch_status = FetchStatus::kNotFetched;
+      break;
+    case FetchStatus::kFetching:
+      *fetch_status = FetchStatus::kFetchingInvalidated;
+      break;
+    case FetchStatus::kFetchingInvalidated:
+      // Do no restart fetch if it's still in progress, which could happen if
+      // the user toggles glanceables bubble in quick succession.
+      *fetch_status = FetchStatus::kFetching;
+      break;
+  }
+}
+
 void GlanceablesClassroomClientImpl::FetchStudentCourses(
     FetchCoursesCallback callback) {
   CHECK(callback);
 
-  auto courses = std::make_unique<CourseList>();
-  FetchCoursesPage(
-      /*student_id=*/kOwnCoursesFilterValue, /*teacher_id=*/"",
-      /*page_token=*/"", std::move(courses), std::move(callback));
+  const bool needs_refetch =
+      student_courses_.RunOrEnqueueCallbackAndUpdateFetchStatus(
+          std::move(callback));
+  if (needs_refetch) {
+    auto courses = std::make_unique<CourseList>();
+    FetchCoursesPage(
+        /*student_id=*/kOwnCoursesFilterValue, /*teacher_id=*/"",
+        /*page_token=*/"", student_courses_, std::move(courses));
+  }
 }
 
 void GlanceablesClassroomClientImpl::FetchTeacherCourses(
     FetchCoursesCallback callback) {
   CHECK(callback);
 
-  auto courses = std::make_unique<CourseList>();
-  FetchCoursesPage(
-      /*student_id=*/"", /*teacher_id=*/kOwnCoursesFilterValue,
-      /*page_token=*/"", std::move(courses), std::move(callback));
+  const bool needs_refetch =
+      teacher_courses_.RunOrEnqueueCallbackAndUpdateFetchStatus(
+          std::move(callback));
+  if (needs_refetch) {
+    auto courses = std::make_unique<CourseList>();
+    FetchCoursesPage(
+        /*student_id=*/"", /*teacher_id=*/kOwnCoursesFilterValue,
+        /*page_token=*/"", teacher_courses_, std::move(courses));
+  }
 }
 
 void GlanceablesClassroomClientImpl::FetchCourseWork(
@@ -553,7 +628,7 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
   if (needs_fetch) {
     FetchStudentCourses(base::BindOnce(
         &GlanceablesClassroomClientImpl::OnCoursesFetched,
-        weak_factory_.GetWeakPtr(), std::ref(student_courses_),
+        weak_factory_.GetWeakPtr(),
         /*fetch_submissions_per_course_work=*/false,
         std::ref(student_course_work_),
         base::BindOnce(&GlanceablesClassroomClientImpl::OnStudentDataFetched,
@@ -582,7 +657,7 @@ void GlanceablesClassroomClientImpl::InvokeOnceTeacherDataFetched(
   if (needs_fetch) {
     FetchTeacherCourses(base::BindOnce(
         &GlanceablesClassroomClientImpl::OnCoursesFetched,
-        weak_factory_.GetWeakPtr(), std::ref(teacher_courses_),
+        weak_factory_.GetWeakPtr(),
         /*fetch_submissions_per_course_work=*/true,
         std::ref(teacher_course_work_),
         base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
@@ -594,10 +669,9 @@ void GlanceablesClassroomClientImpl::FetchCoursesPage(
     const std::string& student_id,
     const std::string& teacher_id,
     const std::string& page_token,
-    std::unique_ptr<CourseList> fetched_courses,
-    FetchCoursesCallback callback) {
+    CourseListState& target_courses,
+    std::unique_ptr<CourseList> fetched_courses) {
   CHECK(!student_id.empty() || !teacher_id.empty());
-  CHECK(callback);
 
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
@@ -605,19 +679,18 @@ void GlanceablesClassroomClientImpl::FetchCoursesPage(
           request_sender, student_id, teacher_id, page_token,
           base::BindOnce(&GlanceablesClassroomClientImpl::OnCoursesPageFetched,
                          weak_factory_.GetWeakPtr(), student_id, teacher_id,
-                         std::move(fetched_courses), clock_->Now(),
-                         std::move(callback))));
+                         std::ref(target_courses), std::move(fetched_courses),
+                         clock_->Now())));
 }
 
 void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
     const std::string& student_id,
     const std::string& teacher_id,
+    CourseListState& target_courses,
     std::unique_ptr<CourseList> fetched_courses,
     const base::Time& request_start_time,
-    FetchCoursesCallback callback,
     base::expected<std::unique_ptr<Courses>, ApiErrorCode> result) {
   CHECK(!student_id.empty() || !teacher_id.empty());
-  CHECK(callback);
 
   base::UmaHistogramTimes("Ash.Glanceables.Api.Classroom.GetCourses.Latency",
                           clock_->Now() - request_start_time);
@@ -625,9 +698,7 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    // TODO(b/293640451): handle failures of a single page fetch request more
-    // gracefully (retry and/or reflect errors on UI).
-    std::move(callback).Run(nullptr);
+    target_courses.FinalizeFetch(nullptr);
     return;
   }
 
@@ -645,39 +716,28 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
             {student_id == kOwnCoursesFilterValue ? "Student" : "Teacher"},
             nullptr),
         fetched_courses->size());
-    std::move(callback).Run(std::move(fetched_courses));
+    target_courses.FinalizeFetch(std::move(fetched_courses));
   } else {
     FetchCoursesPage(student_id, teacher_id, result.value()->next_page_token(),
-                     std::move(fetched_courses), std::move(callback));
+                     target_courses, std::move(fetched_courses));
   }
 }
 
 void GlanceablesClassroomClientImpl::OnCoursesFetched(
-    CourseList& target_course_list,
     bool fetch_submissions_per_course_work,
     CourseWorkPerCourse& course_work,
     base::OnceClosure on_course_work_and_student_submissions_fetched,
-    std::unique_ptr<CourseList> fetched_courses) {
+    const CourseList& course_list) {
   CHECK(on_course_work_and_student_submissions_fetched);
-
-  // If the fetch failed, return immediately, and use previously fetched course
-  // information.
-  if (!fetched_courses) {
-    std::move(on_course_work_and_student_submissions_fetched).Run();
-    return;
-  }
-
-  target_course_list.swap(*fetched_courses);
-  fetched_courses.reset();
 
   // `FetchCourseWork()` + `FetchStudentSubmissions()` per course.
   const auto expected_callback_calls =
-      target_course_list.size() * (fetch_submissions_per_course_work ? 1 : 2);
+      course_list.size() * (fetch_submissions_per_course_work ? 1 : 2);
   const auto barrier_closure = base::BarrierClosure(
       expected_callback_calls,
       std::move(on_course_work_and_student_submissions_fetched));
 
-  for (const auto& course : target_course_list) {
+  for (const auto& course : course_list) {
     FetchCourseWork(course->id, fetch_submissions_per_course_work, course_work,
                     barrier_closure);
 
@@ -909,7 +969,7 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched(
       break;
   }
 
-  PruneInvalidCourseWork(student_courses_, student_course_work_);
+  PruneInvalidCourseWork(student_courses_.courses(), student_course_work_);
 
   std::list<DataFetchCallback> callbacks;
   callbacks_waiting_for_student_data_.swap(callbacks);
@@ -938,7 +998,7 @@ void GlanceablesClassroomClientImpl::OnTeacherDataFetched(
       break;
   }
 
-  PruneInvalidCourseWork(teacher_courses_, teacher_course_work_);
+  PruneInvalidCourseWork(teacher_courses_.courses(), teacher_course_work_);
 
   std::list<DataFetchCallback> callbacks;
   callbacks_waiting_for_teacher_data_.swap(callbacks);
@@ -982,7 +1042,7 @@ bool GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
       std::pair<std::string, const GlanceablesClassroomCourseWorkItem*>;
   std::vector<CourseNameAndCourseWork> filtered_items;
 
-  for (const auto& course : student_courses_) {
+  for (const auto& course : student_courses_.courses()) {
     const auto course_work_iter = student_course_work_.find(course->id);
     if (course_work_iter == student_course_work_.end()) {
       continue;
@@ -1036,7 +1096,7 @@ bool GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
 
   std::vector<TentativeTeacherAssignment> filtered_items;
 
-  for (const auto& course : teacher_courses_) {
+  for (const auto& course : teacher_courses_.courses()) {
     const auto course_work_iter = teacher_course_work_.find(course->id);
     if (course_work_iter == teacher_course_work_.end()) {
       continue;
@@ -1143,13 +1203,22 @@ void GlanceablesClassroomClientImpl::PrefetchTeacherData() {
   // requested from UI.
   teacher_data_fetch_status_ = FetchStatus::kFetchingInvalidated;
 
-  FetchTeacherCourses(base::BindOnce(
-      &GlanceablesClassroomClientImpl::OnCoursesFetched,
-      weak_factory_.GetWeakPtr(), std::ref(teacher_courses_),
-      /*fetch_submissions_per_course_work=*/true,
-      std::ref(teacher_course_work_),
-      base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
-                     weak_factory_.GetWeakPtr(), clock_->Now())));
+  const bool needs_refetch =
+      teacher_courses_.RunOrEnqueueCallbackAndUpdateFetchStatus(base::BindOnce(
+          &GlanceablesClassroomClientImpl::OnCoursesFetched,
+          weak_factory_.GetWeakPtr(),
+          /*fetch_submissions_per_course_work=*/true,
+          std::ref(teacher_course_work_),
+          base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
+                         weak_factory_.GetWeakPtr(), clock_->Now())));
+
+  if (needs_refetch) {
+    teacher_courses_.InvalidateFetchStatus();
+    auto courses = std::make_unique<CourseList>();
+    FetchCoursesPage(
+        /*student_id=*/"", /*teacher_id=*/kOwnCoursesFilterValue,
+        /*page_token=*/"", teacher_courses_, std::move(courses));
+  }
 }
 
 RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {
