@@ -179,7 +179,7 @@
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
-                           action:@selector(dismiss)];
+                           action:@selector(dismss)];
   dismissButton.accessibilityIdentifier = kSettingsDoneButtonId;
   self.navigationItem.rightBarButtonItem = dismissButton;
 
@@ -207,10 +207,10 @@
   [self.dataManager loadModel:self.tableViewModel];
 }
 
-- (void)dismiss {
+- (void)dismss {
   base::RecordAction(base::UserMetricsAction("MobileClearBrowsingDataClose"));
   [self prepareForDismissal];
-  [self.delegate dismissClearBrowsingData];
+  [self.delegate clearBrowsingDataTableViewControllerWantsDismissal:self];
 }
 
 #pragma mark - Public Methods
@@ -349,7 +349,7 @@
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self dismiss];
+  [self dismss];
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate

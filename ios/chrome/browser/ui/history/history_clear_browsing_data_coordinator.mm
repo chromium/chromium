@@ -110,8 +110,9 @@
   }];
 }
 
-- (void)dismissClearBrowsingData {
-  DCHECK(self.historyClearBrowsingDataNavigationController);
+- (void)clearBrowsingDataTableViewControllerWantsDismissal:
+    (ClearBrowsingDataTableViewController*)controller {
+  CHECK_EQ(controller, self.clearBrowsingDataTableViewController);
   [self stopWithCompletion:nil];
 }
 

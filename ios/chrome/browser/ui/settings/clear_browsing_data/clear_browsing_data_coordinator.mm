@@ -77,10 +77,17 @@
   [self.handler closeSettingsUIAndOpenURL:command];
 }
 
-- (void)dismissClearBrowsingData {
+- (void)clearBrowsingDataTableViewControllerWantsDismissal:
+    (ClearBrowsingDataTableViewController*)controller {
   SettingsNavigationController* navigationController =
       base::mac::ObjCCastStrict<SettingsNavigationController>(
           self.viewController.navigationController);
+  CHECK_EQ(controller, self.viewController);
+  // The user tapped the "done" button, so the entire settings should be
+  // dismissed, not only the CBD. It is thus sufficient to dismiss the
+  // navigationController, which will be in charge of dismissing every view it
+  // owns, including the current coordinator. Hence, there is no need to send a
+  // message to the delegate requesting to stop `self`.
   [navigationController closeSettings];
 }
 

@@ -17,8 +17,10 @@ class GURL;
 - (void)clearBrowsingDataTableViewController:
             (ClearBrowsingDataTableViewController*)controller
                               wantsToOpenURL:(const GURL&)URL;
-// Notifies the delegate that Clear Browsing Data should be dismissed.
-- (void)dismissClearBrowsingData;
+// Notifies the delegate that Clear Browsing Data wants to be dismissed.
+- (void)clearBrowsingDataTableViewControllerWantsDismissal:
+    (ClearBrowsingDataTableViewController*)controller;
+
 // Called when the view controller is removed from its parent.
 - (void)clearBrowsingDataTableViewControllerWasRemoved:
     (ClearBrowsingDataTableViewController*)controller;
