@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -72,6 +73,8 @@ class DriveUploadHandlerTest
     drive_root_dir_ = drive_mount_point_.AppendASCII("root");
     my_files_dir_ = temp_dir_.GetPath().Append("myfiles");
     read_only_dir_ = temp_dir_.GetPath().Append("readonly");
+
+    net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
   }
 
   DriveUploadHandlerTest(const DriveUploadHandlerTest&) = delete;
