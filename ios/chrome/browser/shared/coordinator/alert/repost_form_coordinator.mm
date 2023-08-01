@@ -8,8 +8,8 @@
 #import "base/memory/weak_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
@@ -98,7 +98,7 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   // 400 milliseconds
   const int64_t kDelayBetweenAttemptsNanoSecs = 0.4 * NSEC_PER_SEC;
   if (_repostAttemptCount >= kMaximumNumberAttempts) {
-    [self stop];
+    [self.delegate repostFormCoordinatorWantsToBeDismissed:self];
     return;
   }
   __weak RepostFormCoordinator* weakSelf = self;

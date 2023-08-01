@@ -14,9 +14,13 @@ namespace web {
 class WebState;
 }
 
+@protocol RepostFormCoordinatorDelegate;
+
 // Creates and manages a repost form dialog that has Continue and Cancel
 // buttons.
 @interface RepostFormCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<RepostFormCoordinatorDelegate> delegate;
 
 // Initializes a coordinator for displaying an alert on this `viewController`.
 // `browser` should be passed as a parameter in the initializer for the

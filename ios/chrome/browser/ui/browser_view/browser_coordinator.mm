@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -259,6 +260,7 @@ enum class ToolbarKind {
                                   PolicyChangeCommands,
                                   PreloadControllerDelegate,
                                   ReadingListCoordinatorDelegate,
+                                  RepostFormCoordinatorDelegate,
                                   RepostFormTabHelperDelegate,
                                   SigninPresenter,
                                   SnapshotGeneratorDelegate,
@@ -653,6 +655,12 @@ enum class ToolbarKind {
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator.delegate = nil;
   self.passwordProtectionCoordinator = nil;
+}
+
+- (void)stopRepostFormCoordinator {
+  [self.repostFormCoordinator stop];
+  self.repostFormCoordinator.delegate = nil;
+  self.repostFormCoordinator = nil;
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
@@ -1254,8 +1262,7 @@ enum class ToolbarKind {
   [self.recentTabsCoordinator stop];
   self.recentTabsCoordinator = nil;
 
-  [self.repostFormCoordinator stop];
-  self.repostFormCoordinator = nil;
+  [self stopRepostFormCoordinator];
 
   // TODO(crbug.com/1298934): Should stop when the Sad Tab UI appears.
   [self.sadTabCoordinator stop];
@@ -2049,13 +2056,13 @@ enum class ToolbarKind {
                   dialogLocation:location
                         webState:webState
                completionHandler:completion];
+  self.repostFormCoordinator.delegate = self;
   [self.repostFormCoordinator start];
 }
 
 - (void)repostFormTabHelperDismissRepostFormDialog:
     (RepostFormTabHelper*)helper {
-  [self.repostFormCoordinator stop];
-  self.repostFormCoordinator = nil;
+  [self stopRepostFormCoordinator];
 }
 
 #pragma mark - ToolbarAccessoryCoordinatorDelegate
@@ -2939,6 +2946,14 @@ enum class ToolbarKind {
     (PasswordProtectionCoordinator*)coordinator {
   CHECK_EQ(self.passwordProtectionCoordinator, coordinator);
   [self stopPasswordProtectionCoordinator];
+}
+
+#pragma mark - RepostFormCoordinatorDelegate
+
+- (void)repostFormCoordinatorWantsToBeDismissed:
+    (RepostFormCoordinator*)coordinator {
+  CHECK_EQ(self.repostFormCoordinator, coordinator);
+  [self stopRepostFormCoordinator];
 }
 
 @end
