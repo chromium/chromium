@@ -134,24 +134,6 @@ TEST_F(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeNotificationTypeMapping) {
-  ModelTypeSet all_types = ModelTypeSet::All();
-  for (ModelType model_type : all_types) {
-    std::string notification_type;
-    bool ret = RealModelTypeToNotificationType(model_type, &notification_type);
-    if (ret) {
-      auto notified_model_type = ModelType::UNSPECIFIED;
-      ASSERT_NE(model_type, notified_model_type);
-      EXPECT_TRUE(NotificationTypeToRealModelType(notification_type,
-                                                  &notified_model_type));
-      EXPECT_EQ(model_type, notified_model_type);
-    } else {
-      EXPECT_FALSE(ProtocolTypes().Has(model_type));
-      EXPECT_TRUE(notification_type.empty());
-    }
-  }
-}
-
 TEST_F(ModelTypeTest, ModelTypesSubsetsSanity) {
   // UserTypes and ControlTypes shouldn't overlap.
   EXPECT_TRUE(Intersection(UserTypes(), ControlTypes()).Empty());

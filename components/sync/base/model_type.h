@@ -494,20 +494,6 @@ std::string ModelTypeToProtocolRootTag(ModelType model_type);
 // for local persistence. It is guaranteed to be lowercase.
 const char* GetModelTypeLowerCaseRootTag(ModelType model_type);
 
-// Convert a real model type to a notification type (used for
-// subscribing to server-issued notifications).  Returns true iff
-// |model_type| was a real model type and |notification_type| was
-// filled in.
-bool RealModelTypeToNotificationType(ModelType model_type,
-                                     std::string* notification_type);
-
-// Converts a notification type to a real model type.  Returns true
-// iff |notification_type| was the notification type of a real model
-// type and |model_type| was filled in.
-[[nodiscard]] bool NotificationTypeToRealModelType(
-    const std::string& notification_type,
-    ModelType* model_type);
-
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);
 

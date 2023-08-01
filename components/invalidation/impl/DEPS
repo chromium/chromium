@@ -5,11 +5,6 @@ include_rules = [
   "+components/keyed_service",
   "+components/pref_registry",
   "+components/signin/public",
-  "+components/sync_preferences",
-  # TODO(crbug.com/1029698): Depending on sync is a layering violation,
-  # currently necessary for metrics recording. Eventually the "whitelisted for
-  # metrics" bit should be part of a Topic.
-  "+components/sync/base/model_type.h",
 
   "+google_apis/gaia",
   "+google_apis/gcm",

@@ -10,8 +10,6 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
@@ -19,11 +17,9 @@ namespace syncer {
 
 struct ModelTypeInfo {
   const ModelType model_type;
-  // Model Type notification string.
-  // This needs to match the corresponding proto message name in sync.proto. It
-  // is also used to identify the model type in the SyncModelType
-  // histogram_suffix in histograms.xml. Must always be kept in sync.
-  const char* const notification_type;
+  // Used to identify the model type in the SyncModelType histogram_suffix in
+  // histograms.xml. Must always be kept in sync.
+  const char* const histogram_suffix;
   // Root tag for Model Type
   // This should be the same as the model type but all lowercase.
   const char* const lowercase_root_tag;
@@ -543,9 +539,7 @@ const char* ModelTypeToDebugString(ModelType model_type) {
 }
 
 const char* ModelTypeToHistogramSuffix(ModelType model_type) {
-  // We use the same string that is used for notification types because they
-  // satisfy all we need (being stable and explanatory).
-  return kModelTypeInfoMap[model_type].notification_type;
+  return kModelTypeInfoMap[model_type].histogram_suffix;
 }
 
 ModelTypeForHistograms ModelTypeHistogramValue(ModelType model_type) {
@@ -595,30 +589,6 @@ std::string ModelTypeToProtocolRootTag(ModelType model_type) {
 
 const char* GetModelTypeLowerCaseRootTag(ModelType model_type) {
   return kModelTypeInfoMap[model_type].lowercase_root_tag;
-}
-
-bool RealModelTypeToNotificationType(ModelType model_type,
-                                     std::string* notification_type) {
-  if (ProtocolTypes().Has(model_type)) {
-    *notification_type = kModelTypeInfoMap[model_type].notification_type;
-    return true;
-  }
-  notification_type->clear();
-  return false;
-}
-
-bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type) {
-  auto* iter = base::ranges::find(kModelTypeInfoMap, notification_type,
-                                  &ModelTypeInfo::notification_type);
-  if (iter == std::end(kModelTypeInfoMap)) {
-    return false;
-  }
-  if (!IsRealDataType(iter->model_type)) {
-    return false;
-  }
-  *model_type = iter->model_type;
-  return true;
 }
 
 bool IsRealDataType(ModelType model_type) {

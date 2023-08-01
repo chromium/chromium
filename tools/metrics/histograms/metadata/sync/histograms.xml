@@ -101,23 +101,6 @@ chromium-metrics-reviews@google.com.
                last day (wrt recording the metrics)."/>
 </variants>
 
-<histogram name="FCMInvalidations.SubscriptionResponseCodeForTopic{Topic}"
-    enum="HttpResponseCode" expires_after="never">
-<!-- TODO(crbug.com/1266807): Move back to */invalidation/histograms.xml once
-    variants can be shared across files. -->
-
-  <owner>melandory@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    For each subcription request to the FCM Per-User-Topic server, log the
-    response received from the server per topic. Note: This is only recorded
-    with a data type suffix. The base version is never recorded.
-  </summary>
-  <token key="Topic" variants="SyncModelType">
-    <variant name=".OTHER" summary="OTHER"/>
-  </token>
-</histogram>
-
 <histogram name="Sync.BackedOffModelType" enum="SyncModelTypes"
     expires_after="2024-01-14">
   <owner>victorvianna@google.com</owner>

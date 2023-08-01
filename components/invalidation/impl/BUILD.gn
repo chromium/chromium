@@ -68,11 +68,6 @@ static_library("impl") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-
-    # TODO(crbug.com/1029698): Depending on sync is a layering violation,
-    # currently necessary for metrics recording. Eventually the "whitelisted for
-    # metrics" bit should be part of a Topic.
-    "//components/sync/base",
     "//google_apis",
     "//net:net",
     "//services/network/public/cpp",
@@ -101,7 +96,6 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
-    "//components/sync_preferences:test_support",
     "//google_apis:test_support",
     "//google_apis/gcm:gcm",
     "//net",
