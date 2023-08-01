@@ -19,7 +19,7 @@ import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/ash/
 import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ESimManagerRemote, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimManagerRemote, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -720,7 +720,7 @@ Polymer({
         this.euicc_
             .installProfileFromActivationCode(
                 this.activationCode_, confirmationCode,
-                this.isActivationCodeFromQrCode_)
+                this.computeProfileInstallMethod_())
             .then(this.handleProfileInstallResponse_.bind(this));
         break;
       case ESimUiState.PROFILE_SELECTION:
@@ -733,7 +733,7 @@ Polymer({
             this.euicc_
                 .installProfileFromActivationCode(
                     this.selectedProfileProperties_.activationCode,
-                    confirmationCode, this.isActivationCodeFromQrCode_)
+                    confirmationCode, ProfileInstallMethod.kViaSmds)
                 .then(this.handleProfileInstallResponse_.bind(this));
           } else {
             this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
@@ -759,7 +759,8 @@ Polymer({
               this.activationCode_;
           this.euicc_
               .installProfileFromActivationCode(
-                  activationCode, this.confirmationCode_, fromQrCode)
+                  activationCode, this.confirmationCode_,
+                  this.computeProfileInstallMethod_())
               .then(this.handleProfileInstallResponse_.bind(this));
         } else {
           if (this.selectedProfile_) {
@@ -769,7 +770,7 @@ Polymer({
             this.euicc_
                 .installProfileFromActivationCode(
                     this.activationCode_, this.confirmationCode_,
-                    this.isActivationCodeFromQrCode_)
+                    this.computeProfileInstallMethod_())
                 .then(this.handleProfileInstallResponse_.bind(this));
           }
         }
@@ -852,6 +853,21 @@ Polymer({
     }
 
     return '';
+  },
+
+  /**
+   * @return {ProfileInstallMethod}
+   * @private
+   */
+  computeProfileInstallMethod_() {
+    if (this.isActivationCodeFromQrCode_) {
+      return this.hasConsentedForDiscovery_ ?
+          ProfileInstallMethod.kViaQrCodeAfterSmds :
+          ProfileInstallMethod.kViaQrCodeSkippedSmds;
+    }
+    return this.hasConsentedForDiscovery_ ?
+        ProfileInstallMethod.kViaActivationCodeAfterSmds :
+        ProfileInstallMethod.kViaActivationCodeSkippedSmds;
   },
 
   /**

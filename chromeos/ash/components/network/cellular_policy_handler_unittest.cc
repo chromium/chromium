@@ -138,6 +138,8 @@ class CellularPolicyHandlerTest : public testing::Test {
     size_t hermes_install_failed_retry_count = 0u;
     size_t smds_scan_profile_total_count = 0u;
     size_t smds_scan_profile_sum = 0u;
+    size_t install_method_via_smdp_count = 0u;
+    size_t install_method_via_smds_count = 0u;
   };
 
   CellularPolicyHandlerTest(
@@ -334,6 +336,14 @@ class CellularPolicyHandlerTest : public testing::Test {
     EXPECT_EQ(static_cast<int64_t>(state.smds_scan_profile_sum),
               histogram_tester_.GetTotalSum(
                   CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
+        CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp,
+        /*expected_count=*/state.install_method_via_smdp_count);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
+        CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds,
+        /*expected_count=*/state.install_method_via_smds_count);
   }
 
   // This functionality was explicitly separated from InstallProfile() since
@@ -480,6 +490,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                  /*check_for_service=*/true));
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -542,6 +553,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.success_initial_count++;
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
+  expected_state.install_method_via_smds_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -645,6 +657,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.success_initial_count++;
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum = 5;
+  expected_state.install_method_via_smds_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -684,6 +697,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                  /*check_for_service=*/true));
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -723,6 +737,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                  /*check_for_service=*/true));
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -918,6 +933,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                   /*check_for_service=*/true));
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 
   // Failures due to Hermes are considered transient and the installation will
@@ -996,6 +1012,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                   /*check_for_service=*/true));
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 
   // Failures that are not due to Hermes or user behavior are not considered
@@ -1075,6 +1092,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                   /*check_for_service=*/true));
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 
   // Failures that are due to user behavior are not considered transient and the
@@ -1115,6 +1133,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled,
                                  /*check_for_service=*/true));
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 }
 

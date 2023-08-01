@@ -452,8 +452,9 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
                  << "result code " << status << " when called for policy eSIM "
                  << "profile: " << current_request->activation_code.ToString();
 
-  if (current_request->activation_code.type() ==
-      policy_util::SmdxActivationCode::Type::SMDS) {
+  const bool is_smds = current_request->activation_code.type() ==
+                       policy_util::SmdxActivationCode::Type::SMDS;
+  if (is_smds) {
     CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
     // TODO(b/278135481): Emit
     // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
@@ -480,6 +481,12 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
 
   const bool is_initial_install =
       current_request->retry_backoff.failure_count() == 0;
+  if (is_initial_install) {
+    CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
+        is_smds
+            ? CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds
+            : CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp);
+  }
 
   // Confirmation codes are not required when installing policy eSIM profiles
   // using an activation code.

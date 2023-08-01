@@ -50,6 +50,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     kMaxValue = kDoesNotMatchSelectedApn
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ESimUserInstallMethod {
+    kViaSmds = 0,
+    kViaQrCodeAfterSmds = 1,
+    kViaQrCodeSkippedSmds = 2,
+    kViaActivationCodeAfterSmds = 3,
+    kViaActivationCodeSkippedSmds = 4,
+    kMaxValue = kViaActivationCodeSkippedSmds,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ESimPolicyInstallMethod {
+    kViaSmdp = 0,
+    kViaSmds = 1,
+    kMaxValue = kViaSmds,
+  };
+
   static constexpr char kCreateCustomApnResultHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
   static constexpr char kCreateCustomApnAuthenticationTypeHistogram[] =
@@ -91,6 +110,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   static constexpr char kSmdsScanProfileCount[] =
       "Network.Ash.Cellular.ESim.SmdsScan.ProfileCount";
+  static constexpr char kESimUserInstallMethod[] =
+      "Network.Ash.Cellular.ESim.UserInstall.Method";
+  static constexpr char kESimPolicyInstallMethod[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.Method";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
@@ -119,6 +142,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // Logs results from attempting operations related to eSIM.
   static void LogSmdsScanProfileCount(size_t count);
+  static void LogESimUserInstallMethod(ESimUserInstallMethod type);
+  static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod type);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:

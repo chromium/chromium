@@ -23,6 +23,15 @@ enum ProfileInstallResult {
   kErrorInvalidActivationCode,  // Given activation code is invalid.
 };
 
+// Represents the method used for eSIM profile installation attempts.
+enum ProfileInstallMethod {
+  kViaSmds,
+  kViaQrCodeAfterSmds,
+  kViaQrCodeSkippedSmds,
+  kViaActivationCodeAfterSmds,
+  kViaActivationCodeSkippedSmds,
+};
+
 // Result code for operations on Euicc and ESimProfile.
 enum ESimOperationResult {
     kSuccess,                     // Operation succeeded.
@@ -130,11 +139,11 @@ interface Euicc {
   // previous call to RequestPendingProfiles or directly from the user through
   // a QR code. If |confirmation_code| is required but not supplied or if it’s
   // invalid then a kErrorNeedsConfirmationCode result is returned. The
-  // |is_install_via_qr_code| value should indicate whether the activation_code
-  // was entered manually or scanned from QR Code.
+  // |install_method| value indicates the method used for this installation
+  // attempt, e.g. via QR code.
   InstallProfileFromActivationCode(string activation_code,
                                    string confirmation_code,
-                                   bool is_install_via_qr_code) =>
+                                   ProfileInstallMethod install_method) =>
     (ProfileInstallResult result, pending_remote<ESimProfile>? profile);
 
   // Returns a QR Code image representing the EID of this Euicc. A null value is
