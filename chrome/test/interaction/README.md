@@ -150,6 +150,8 @@ Verbs fall into a number of different categories:
 - **Name** verbs assign a string name to some UI element which may not be known
   ahead of time, so that it can be referenced later in the test. Examples
   include:
+    - `NameElement()`
+    - `NameElementRelative()`
     - `NameView()` [Views]
     - `NameChildView()` [Views]
     - `NameChildViewByType()` [Views]

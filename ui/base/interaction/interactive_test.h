@@ -252,6 +252,38 @@ class InteractiveTestApi {
   [[nodiscard]] static MultiStep EnsurePresent(
       ElementSpecifier element_to_check);
 
+  // Specifies an element not relative to any particular other element.
+  using AbsoluteElementSpecifier = absl::variant<
+      // Specify an element that is known at the time the sequence is created.
+      // Theelement must persist until the step executes.
+      TrackedElement*,
+      // Specify an element pointer that will be valid by the time the step
+      // executes. Use `std::ref()` to wrap the pointer that will receive the
+      // value.
+      std::reference_wrapper<TrackedElement*>,
+      // Find and return an element based on an arbitrary rule.
+      base::OnceCallback<TrackedElement*()>,
+      // Find and return an element in the given context based on a rule.
+      base::OnceCallback<TrackedElement*(ElementContext)>>;
+
+  // Names an element specified by `spec` as `name`. If `spec` requires a
+  // context, the context of the current step will be used.
+  //
+  // For Views, prefer `InteractiveViewsTest::NameView()`.
+  [[nodiscard]] StepBuilder NameElement(base::StringPiece name,
+                                        AbsoluteElementSpecifier spec);
+
+  // Calls `find_callback` to locate an element relative to element
+  // `relative_to` and assign it `name`.
+  //
+  // For Views, prefer `InteractiveViewsTest::NameViewRelative()`.
+  template <typename C,
+            typename =
+                internal::RequireSignature<C, TrackedElement*(TrackedElement*)>>
+  [[nodiscard]] StepBuilder NameElementRelative(ElementSpecifier relative_to,
+                                                base::StringPiece name,
+                                                C&& find_callback);
+
   // Ensures that the next step does not piggyback on the previous step(s), but
   // rather, executes on a fresh message loop. Normally, steps will continue to
   // trigger on the same call stack until a start condition is not met.
@@ -458,6 +490,13 @@ class InteractiveTestApi {
   bool RunTestSequenceImpl(ElementContext context,
                            InteractionSequence::Builder builder);
 
+  // Returns a callback to locate an element based on a pivot element and the
+  // specification `spec`.
+  using FindElementCallback =
+      base::OnceCallback<TrackedElement*(TrackedElement*)>;
+  static FindElementCallback GetFindElementCallback(
+      AbsoluteElementSpecifier spec);
+
   // Helper method to add a step or steps to a sequence builder.
   static void AddStep(InteractionSequence::Builder& builder, MultiStep steps);
   template <typename T>
@@ -612,6 +651,34 @@ InteractionSequence::StepBuilder InteractiveTestApi::WithElement(
       base::RectifyCallback<InteractionSequence::StepStartCallback>(
           internal::MaybeBind(std::forward<T>(step_callback))));
   builder.SetMustBeVisibleAtStart(true);
+  return builder;
+}
+
+// static
+template <typename C, typename>
+InteractionSequence::StepBuilder InteractiveTestApi::NameElementRelative(
+    ElementSpecifier relative_to,
+    base::StringPiece name,
+    C&& find_callback) {
+  StepBuilder builder;
+  builder.SetDescription(
+      base::StringPrintf("NameElementRelative( \"%s\" )", name.data()));
+  ui::test::internal::SpecifyElement(builder, relative_to);
+  builder.SetMustBeVisibleAtStart(true);
+  builder.SetStartCallback(base::BindOnce(
+      [](base::OnceCallback<TrackedElement*(TrackedElement*)> find_callback,
+         std::string name, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        TrackedElement* const result = std::move(find_callback).Run(el);
+        if (!result) {
+          LOG(ERROR) << "NameElement(): No View found.";
+          seq->FailForTesting();
+          return;
+        }
+        seq->NameElement(result, name);
+      },
+      ui::test::internal::MaybeBind(std::forward<C>(find_callback)),
+      std::string(name)));
   return builder;
 }
 

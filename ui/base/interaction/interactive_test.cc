@@ -15,6 +15,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -268,6 +269,13 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
                         internal::DescribeElement(element_to_check).c_str()))));
 }
 
+InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
+    base::StringPiece name,
+    AbsoluteElementSpecifier spec) {
+  return NameElementRelative(kInteractiveTestPivotElementId, name,
+                             GetFindElementCallback(std::move(spec)));
+}
+
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
   return internal::InteractiveTestPrivate::PostTask("FlushEvents()",
@@ -362,6 +370,45 @@ bool InteractiveTestApi::RunTestSequenceImpl(
   private_test_impl_->Cleanup();
 
   return private_test_impl_->success_;
+}
+
+// static
+InteractiveTestApi::FindElementCallback
+InteractiveTestApi::GetFindElementCallback(AbsoluteElementSpecifier spec) {
+  if (TrackedElement** el = absl::get_if<TrackedElement*>(&spec)) {
+    CHECK(*el) << "NameView(TrackedElement*): view must be set.";
+    return base::BindOnce(
+        [](const SafeElementReference& ref, TrackedElement*) {
+          LOG_IF(ERROR, !ref.get())
+              << "NameElement(TrackedElement*): element ceased to be valid "
+                 "before step was executed.";
+          return ref.get();
+        },
+        SafeElementReference(*el));
+  }
+
+  if (std::reference_wrapper<TrackedElement*>* el =
+          absl::get_if<std::reference_wrapper<TrackedElement*>>(&spec)) {
+    return base::BindOnce(
+        [](std::reference_wrapper<TrackedElement*> el, TrackedElement*) {
+          LOG_IF(ERROR, !el.get())
+              << "NameElement(ref(TrackedElement*)): element pointer is null.";
+          return el.get();
+        },
+        *el);
+  }
+
+  using ContextCallback = base::OnceCallback<TrackedElement*(ElementContext)>;
+  if (auto* callback = absl::get_if<ContextCallback>(&spec)) {
+    return base::BindOnce(
+        [](ContextCallback callback, TrackedElement* relative_to) {
+          return std::move(callback).Run(relative_to->context());
+        },
+        std::move(*callback));
+  }
+
+  return base::RectifyCallback<FindElementCallback>(
+      std::move(absl::get<base::OnceCallback<TrackedElement*()>>(spec)));
 }
 
 // static

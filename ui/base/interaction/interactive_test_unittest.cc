@@ -616,24 +616,69 @@ TEST_F(InteractiveTestTest, EnsurePresentFails) {
   });
 }
 
-TEST_F(InteractiveTestTest, NamedElement) {
+TEST_F(InteractiveTestTest, NameElementWithPointer) {
   UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>, cb);
 
-  TestElement e1(kTestId1, kTestContext1);
-  TestElement e2(kTestId2, kTestContext2);
-  e1.Show();
-  e2.Show();
+  TestElement el(kTestId1, kTestContext1);
+  el.Show();
   constexpr char kName[] = "name";
 
   EXPECT_CALL_IN_SCOPE(
-      cb, Run(&e2),
+      cb, Run(&el),
+      RunTestSequenceInContext(kTestContext1, NameElement(kName, &el),
+                               WithElement(kName, cb.Get())));
+}
+
+TEST_F(InteractiveTestTest, NameElementWithReference) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>, cb);
+
+  TestElement el(kTestId1, kTestContext1);
+  el.Show();
+  constexpr char kName[] = "name";
+
+  TrackedElement* ptr = nullptr;
+
+  EXPECT_CALL_IN_SCOPE(
+      cb, Run(&el),
+      RunTestSequenceInContext(kTestContext1, Do([&]() { ptr = &el; }),
+                               NameElement(kName, std::ref(ptr)),
+                               WithElement(kName, cb.Get())));
+}
+
+TEST_F(InteractiveTestTest, NameElementWithCallback) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>, cb);
+
+  TestElement el(kTestId1, kTestContext1);
+  el.Show();
+  constexpr char kName[] = "name";
+
+  EXPECT_CALL_IN_SCOPE(
+      cb, Run(&el),
       RunTestSequenceInContext(
           kTestContext1,
-          WithElement(kTestId1,
-                      base::BindLambdaForTesting(
-                          [&](InteractionSequence* seq, TrackedElement*) {
-                            seq->NameElement(&e2, kName);
-                          })),
+          NameElement(kName, base::BindLambdaForTesting(
+                                 [&]() -> TrackedElement* { return &el; })),
+          WithElement(kName, cb.Get())));
+}
+
+TEST_F(InteractiveTestTest, NameElementWithContext) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>, cb);
+
+  TestElement el(kTestId1, kTestContext2);
+  el.Show();
+  constexpr char kName[] = "name";
+
+  EXPECT_CALL_IN_SCOPE(
+      cb, Run(&el),
+      RunTestSequenceInContext(
+          kTestContext1,
+          InContext(kTestContext2,
+                    NameElement(
+                        kName,
+                        base::BindLambdaForTesting([&](ElementContext context) {
+                          return ElementTracker::GetElementTracker()
+                              ->GetUniqueElement(kTestId1, context);
+                        }))),
           WithElement(kName, cb.Get())));
 }
 
