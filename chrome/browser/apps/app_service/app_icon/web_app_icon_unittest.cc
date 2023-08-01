@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -76,9 +77,7 @@ class WebAppIconFactoryTest : public testing::Test {
   // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   WebAppIconFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-             ash::features::kLacrosOnly,
-             ash::features::kLacrosProfileMigrationForceOff});
+        {}, ash::standalone_browser::GetFeatureRefs());
   }
 #else
   WebAppIconFactoryTest() = default;

@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
@@ -55,9 +56,7 @@ namespace {
 std::vector<base::test::FeatureRef> GetDisabledFeatures() {
 // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-          ash::features::kLacrosOnly,
-          ash::features::kLacrosProfileMigrationForceOff};
+  return ash::standalone_browser::GetFeatureRefs();
 #else
   return {};
 #endif

@@ -18,6 +18,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/model/string_ordinal.h"
@@ -248,10 +249,7 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
 TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
-       ash::features::kLacrosSupport},
-      {});
+  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
   AddRegularUser("test@test.com");
 
   // Migration is necessary to begin with.
@@ -288,10 +286,7 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
 
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
-       ash::features::kLacrosSupport},
-      {});
+  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
   AddRegularUser("test@test.com");
 
   // Perform migration
@@ -323,9 +318,7 @@ TEST_F(ChromeShelfPrefsTest, EnableSideBySideLacrosDisable) {
 
   // Disable lacros.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
-           ash::features::kLacrosSupport});
+  feature_list.InitWithFeatures({}, ash::standalone_browser::GetFeatureRefs());
   AddRegularUser("test@test.com");
 
   // Perform migration

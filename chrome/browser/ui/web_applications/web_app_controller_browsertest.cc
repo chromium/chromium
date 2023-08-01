@@ -45,7 +45,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "base/containers/extend.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 namespace web_app {
@@ -64,18 +66,12 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest(
       update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
   os_hooks_suppress_.emplace();
-  std::vector<base::test::FeatureRef> all_disabled_features = {
+  std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
-    ash::features::kLacrosSupport,
-    ash::features::kLacrosPrimary,
-    ash::features::kLacrosOnly,
-    ash::features::kLacrosProfileMigrationForceOff
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+  base::Extend(all_disabled_features,
+               ash::standalone_browser::GetFeatureRefs());
 #endif
-  };
-  all_disabled_features.insert(all_disabled_features.end(),
-                               disabled_features.begin(),
-                               disabled_features.end());
   scoped_feature_list_.InitWithFeatures(enabled_features,
                                         all_disabled_features);
 }

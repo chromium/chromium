@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -432,12 +433,10 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
 
 TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabledByLacros) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord,
-                            features::kLacrosSupport, features::kLacrosPrimary,
-                            features::kLacrosOnly,
-                            features::kLacrosProfileMigrationForceOff},
-      /*disabled_features=*/{});
+  std::vector<base::test::FeatureRef> enabled =
+      ash::standalone_browser::GetFeatureRefs();
+  enabled.push_back(features::kAssistMultiWord);
+  feature_list.InitWithFeatures(enabled, {});
 
   // Set up a user, necessary for Lacros.
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();

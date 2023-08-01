@@ -45,6 +45,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -507,12 +508,7 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
  protected:
   AutotestPrivateLacrosTest() {
     feature_list_.InitWithFeatures(
-        {
-            ash::features::kLacrosSupport,
-            ash::features::kLacrosPrimary,
-            ash::features::kLacrosOnly,
-            ash::features::kLacrosProfileMigrationForceOff,
-        },
+        ash::standalone_browser::GetFeatureRefs(),
         // Disable ash extension keeplist so that the test extension will not
         // be blocked in Ash.
         {ash::features::kEnforceAshExtensionKeeplist});

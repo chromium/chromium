@@ -48,6 +48,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
@@ -803,11 +804,10 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   KioskLaunchControllerUsingLacrosTest()
       : fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kWebKioskEnableLacros, ash::features::kLacrosSupport,
-         ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+    std::vector<base::test::FeatureRef> enabled =
+        ash::standalone_browser::GetFeatureRefs();
+    enabled.push_back(::features::kWebKioskEnableLacros);
+    scoped_feature_list_.InitWithFeatures(enabled, {});
   }
 
   void SetUp() override {

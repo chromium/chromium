@@ -55,6 +55,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
@@ -1511,12 +1512,10 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   StartupAppLauncherUsingLacrosTest()
       : fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff,
-         ::features::kChromeKioskEnableLacros},
-        {});
+    std::vector<base::test::FeatureRef> enabled =
+        ash::standalone_browser::GetFeatureRefs();
+    enabled.push_back(::features::kChromeKioskEnableLacros);
+    scoped_feature_list_.InitWithFeatures(enabled, {});
   }
 
   void SetUp() override {

@@ -22,6 +22,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -157,11 +158,8 @@ class BrowserManagerTest : public testing::Test {
   ~BrowserManagerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+    feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
+                                   {});
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal(), &local_state_);

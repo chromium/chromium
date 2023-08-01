@@ -91,6 +91,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -480,11 +481,7 @@ using RenderViewContextMenuDeveloperItemsTest = ChromeRenderViewHostTestHarness;
 TEST_F(RenderViewContextMenuDeveloperItemsTest,
        DeveloperItemsAreNotPresentByDefaultIfAshBrowserIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff},
-      {});
+  features.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
@@ -513,12 +510,10 @@ TEST_F(RenderViewContextMenuDeveloperItemsTest,
 TEST_F(RenderViewContextMenuDeveloperItemsTest,
        DeveloperItemsArePresentIfAshBrowserIsDisabledAndFlagIsEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff,
-       ash::features::kAllowDevtoolsInSystemUI},
-      {});
+  std::vector<base::test::FeatureRef> enabled =
+      ash::standalone_browser::GetFeatureRefs();
+  enabled.push_back(ash::features::kAllowDevtoolsInSystemUI);
+  features.InitWithFeatures(enabled, {});
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
@@ -1246,12 +1241,12 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
 TEST_F(RenderViewContextMenuPrefsTest,
        LensImageSearchDisabledIfAshBrowserIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate,
-       ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff},
-      {});
+  std::vector<base::test::FeatureRef> enabled =
+      ash::standalone_browser::GetFeatureRefs();
+  enabled.push_back(lens::features::kLensStandalone);
+  enabled.push_back(lens::features::kEnableImageTranslate);
+  features.InitWithFeatures(enabled, {});
+
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
       fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
@@ -1466,11 +1461,11 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
 TEST_F(RenderViewContextMenuPrefsTest,
        LensRegionSearchDisabledIfAshBrowserIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, ash::features::kLacrosSupport,
-       ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff},
-      {});
+  std::vector<base::test::FeatureRef> enabled =
+      ash::standalone_browser::GetFeatureRefs();
+  enabled.push_back(lens::features::kLensStandalone);
+  features.InitWithFeatures(enabled, {});
+
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
       fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));

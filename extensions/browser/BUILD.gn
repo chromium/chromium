@@ -1023,6 +1023,7 @@ source_set("unit_tests") {
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network:test_support",
       "//chromeos/ash/components/standalone_browser",
+      "//chromeos/ash/components/standalone_browser:test_support",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//components/account_id",

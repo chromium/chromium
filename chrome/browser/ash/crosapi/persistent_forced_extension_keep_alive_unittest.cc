@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,10 +38,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   PersistentForcedExtensionKeepAliveTest()
       : browser_manager_(std::make_unique<FakeBrowserManager>()) {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+        ash::standalone_browser::GetFeatureRefs(), {});
   }
 
   PersistentForcedExtensionKeepAliveTest(

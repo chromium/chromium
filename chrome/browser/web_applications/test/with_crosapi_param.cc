@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
@@ -19,17 +20,10 @@ WithCrosapiParam::WithCrosapiParam() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetParam() == CrosapiParam::kEnabled) {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         // Disable profile migration to avoid potential Ash restart.
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
-
+        ash::standalone_browser::GetFeatureRefs(), {});
   } else {
     scoped_feature_list_.InitWithFeatures(
-        {}, {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-             ash::features::kLacrosOnly,
-             ash::features::kLacrosProfileMigrationForceOff});
+        {}, ash::standalone_browser::GetFeatureRefs());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

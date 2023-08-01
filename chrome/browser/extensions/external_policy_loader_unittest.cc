@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -191,11 +192,7 @@ class ExternalPolicyLoaderAshTest : public ExternalPolicyLoaderTest {
 
 TEST_F(ExternalPolicyLoaderAshTest, BlockNonOSExtensionsIfAshBrowserDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly},
-      {});
-
+  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
   ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
 
   base::Value::Dict forced_extensions;
@@ -225,9 +222,7 @@ TEST_F(ExternalPolicyLoaderAshTest, BlockNonOSExtensionsIfAshBrowserDisabled) {
 
 TEST_F(ExternalPolicyLoaderAshTest, AllowNonOSExtensionsIfAshBrowserEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-           ash::features::kLacrosOnly});
+  feature_list.InitWithFeatures({}, ash::standalone_browser::GetFeatureRefs());
   ASSERT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
 
   base::Value::Dict forced_extensions;

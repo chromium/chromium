@@ -56,6 +56,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -437,10 +438,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     enabled_features.push_back(
         features::kDesktopPWAsEnforceWebAppSettingsPolicy);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::vector<base::test::FeatureRef> lacros_flags = {
-        ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-        ash::features::kLacrosOnly,
-        ash::features::kLacrosProfileMigrationForceOff};
+    std::vector<base::test::FeatureRef> lacros_flags =
+        ash::standalone_browser::GetFeatureRefs();
     if (GetParam().lacros_params == TestLacrosParam::kLacrosEnabled) {
       base::Extend(enabled_features, lacros_flags);
     } else if (GetParam().lacros_params == TestLacrosParam::kLacrosDisabled) {

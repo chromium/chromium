@@ -26,6 +26,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -314,12 +315,10 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
         fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff,
-         ::features::kWebKioskEnableLacros},
-        {});
+    std::vector<base::test::FeatureRef> enabled =
+        ash::standalone_browser::GetFeatureRefs();
+    enabled.push_back(::features::kWebKioskEnableLacros);
+    scoped_feature_list_.InitWithFeatures(enabled, {});
   }
 
   void LoginWebKioskUser() {

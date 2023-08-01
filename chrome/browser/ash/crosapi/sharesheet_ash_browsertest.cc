@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "components/exo/window_properties.h"
@@ -117,10 +118,7 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
  public:
   SharesheetAshBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+        ash::standalone_browser::GetFeatureRefs(), {});
   }
   ~SharesheetAshBrowserTest() override = default;
 

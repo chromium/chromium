@@ -13,6 +13,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -34,11 +35,7 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Disable Lacros, so that Web Apps get synced in the Ash browser.
   // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
-  std::vector<base::test::FeatureRef> lacros_flags = {
-      ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-      ash::features::kLacrosOnly,
-      ash::features::kLacrosProfileMigrationForceOff};
-  base::Extend(disabled_features, lacros_flags);
+  base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 
   scoped_feature_list_.InitWithFeatures({}, disabled_features);

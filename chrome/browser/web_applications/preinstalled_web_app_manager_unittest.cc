@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -50,6 +49,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -78,17 +78,12 @@ constexpr char kAppChildUrl[] = "https://www.google.com/child";
 
 class PreinstalledWebAppManagerTest : public testing::Test {
  public:
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   PreinstalledWebAppManagerTest() {
-    std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::vector<base::test::FeatureRef> lacros_flags = {
-        ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-        ash::features::kLacrosOnly,
-        ash::features::kLacrosProfileMigrationForceOff};
-    base::Extend(disabled_features, lacros_flags);
+    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+    scoped_feature_list_.InitWithFeatures(
+        {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
 #endif
-    scoped_feature_list_.InitWithFeatures({}, disabled_features);
   }
 
   PreinstalledWebAppManagerTest(const PreinstalledWebAppManagerTest&) = delete;

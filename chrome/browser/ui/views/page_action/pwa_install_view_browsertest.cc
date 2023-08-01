@@ -64,6 +64,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -118,13 +119,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
             feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
          {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        {
-            // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
-            ash::features::kLacrosSupport,
-            ash::features::kLacrosPrimary,
-            ash::features::kLacrosOnly,
-            ash::features::kLacrosProfileMigrationForceOff,
-        }
+        // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+        ash::standalone_browser::GetFeatureRefs()
 #else
         {}
 #endif

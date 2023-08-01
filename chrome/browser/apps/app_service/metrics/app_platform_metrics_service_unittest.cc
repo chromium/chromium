@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/containers/extend.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -219,17 +221,10 @@ class AppPlatformMetricsServiceTest
     AppPlatformMetricsServiceTestBase::SetUp();
     if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary,
-                                ash::features::kLacrosOnly,
-                                ash::features::kLacrosProfileMigrationForceOff},
-          {});
+          /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
     } else {
       feature_list_.InitWithFeatures(
-          {},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary,
-                                 ash::features::kLacrosOnly});
+          {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
     }
 
     InstallApps();
@@ -2938,23 +2933,16 @@ class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
     metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
+    std::vector<base::test::FeatureRef> enabled{
+        metrics::structured::kAppDiscoveryLogging,
+        metrics::structured::kEventSequenceLogging};
+    std::vector<base::test::FeatureRef> disabled;
     if (IsLacrosEnabled()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary,
-                                ash::features::kLacrosOnly,
-                                ash::features::kLacrosProfileMigrationForceOff,
-                                metrics::structured::kAppDiscoveryLogging,
-                                metrics::structured::kEventSequenceLogging},
-          {});
+      base::Extend(enabled, ash::standalone_browser::GetFeatureRefs());
     } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{metrics::structured::kAppDiscoveryLogging,
-                                metrics::structured::kEventSequenceLogging},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary,
-                                 ash::features::kLacrosOnly});
+      base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
     }
+    feature_list_.InitWithFeatures(enabled, disabled);
 
     AppPlatformMetricsServiceTestBase::SetUp();
 
@@ -3330,17 +3318,10 @@ class AppPlatformMetricsServiceObserverTest
   void SetUp() override {
     if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary,
-                                ash::features::kLacrosOnly,
-                                ash::features::kLacrosProfileMigrationForceOff},
-          {});
+          /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
     } else {
       feature_list_.InitWithFeatures(
-          {},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary,
-                                 ash::features::kLacrosOnly});
+          {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
     }
 
     // Set up test user.

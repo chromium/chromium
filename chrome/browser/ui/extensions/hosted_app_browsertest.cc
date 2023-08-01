@@ -95,6 +95,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "base/containers/extend.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 using content::RenderFrameHost;
@@ -183,19 +185,16 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   HostedOrWebAppTest()
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-          // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
-          // tests.
-          features::kHttpsUpgrades,
+    std::vector<base::test::FeatureRef> disabled{
+        // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
+        // tests.
+        features::kHttpsUpgrades,
+    };
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-              // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
-              ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-              ash::features::kLacrosOnly,
-              ash::features::kLacrosProfileMigrationForceOff
+    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+    base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
 #endif
-        });
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled);
   }
 
   HostedOrWebAppTest(const HostedOrWebAppTest&) = delete;

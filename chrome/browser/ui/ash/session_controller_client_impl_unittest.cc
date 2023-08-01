@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -288,10 +289,8 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   {
     // It should be disabled if Lacros is enabled.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
+    feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
+                                  {});
     EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED,
               SessionControllerClientImpl::GetAddUserSessionPolicy());
   }

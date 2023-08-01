@@ -153,6 +153,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -4424,11 +4425,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
-  std::vector<base::test::FeatureRef> lacros_flags = {
-      ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-      ash::features::kLacrosOnly,
-      ash::features::kLacrosProfileMigrationForceOff};
-  base::Extend(disabled_features, lacros_flags);
+  base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.

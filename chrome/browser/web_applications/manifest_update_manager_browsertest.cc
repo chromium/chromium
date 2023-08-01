@@ -126,6 +126,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -341,9 +342,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
     scoped_feature_list_.InitWithFeatures(
-        {}, {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-             ash::features::kLacrosOnly,
-             ash::features::kLacrosProfileMigrationForceOff});
+        {}, ash::standalone_browser::GetFeatureRefs());
 #endif
   }
   ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =
