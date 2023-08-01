@@ -2381,6 +2381,14 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2},
       {"privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1",
        IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1},
+      {"privacyGuideSearchSuggestionsCardHeader",
+       IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_CARD_HEADER},
+      {"privacyGuideSearchSuggestionsFeatureDescription1",
+       IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1},
+      {"privacyGuideSearchSuggestionsPrivacyDescription1",
+       IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1},
+      {"privacyGuideSearchSuggestionsPrivacyDescription2",
+       IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION2},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
