@@ -3,10 +3,51 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_type.h"
+
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 namespace {
+
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Matcher;
+using ::testing::Property;
+using FieldPrediction =
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
+
+// TODO(crbug.com/1466435): Consolidate the prediction matchers used in
+// different files and move them to a central location.
+Matcher<FieldPrediction> EqualsPrediction(ServerFieldType prediction) {
+  return AllOf(Property("type", &FieldPrediction::type, prediction),
+               Property("source", &FieldPrediction::source,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT));
+}
+
+class AutofillTypeServerPredictionTest : public ::testing::Test {
+ private:
+  test::AutofillUnitTestEnvironment autofill_environment_;
+};
+
+TEST_F(AutofillTypeServerPredictionTest, PredictionFromAutofillField) {
+  AutofillField field = AutofillField(
+      test::CreateTestFormField("label", "name", "value", /*type=*/"text"));
+  field.set_server_predictions(
+      {test::CreateFieldPrediction(ServerFieldType::EMAIL_ADDRESS),
+       test::CreateFieldPrediction(ServerFieldType::USERNAME)});
+  field.set_may_use_prefilled_placeholder(true);
+
+  AutofillType::ServerPrediction prediction(field);
+  EXPECT_THAT(prediction.server_predictions,
+              ElementsAre(EqualsPrediction(ServerFieldType::EMAIL_ADDRESS),
+                          EqualsPrediction(ServerFieldType::USERNAME)));
+  EXPECT_TRUE(prediction.may_use_prefilled_placeholder);
+}
 
 TEST(AutofillTypeTest, ServerFieldTypes) {
   // No server data.
