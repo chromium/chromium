@@ -30,10 +30,20 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
   using JSONKeyValuePair =
       ash::FilesInternalsDebugJSONProvider::JSONKeyValuePair;
 
-  std::pair<std::string_view, ash::FilesInternalsDebugJSONProvider*>
+  std::tuple<std::string_view,
+             ash::FilesInternalsDebugJSONProvider::FunctionPointerType,
+             ash::FilesInternalsDebugJSONProvider*>
       named_providers[] = {
-          {"fusebox", fusebox::Server::GetInstance()},
-          // TODO: add more providers.
+          {
+              "execute_file_task",
+              &file_manager::file_tasks::GetDebugJSONForKeyForExecuteFileTask,
+              nullptr,
+          },
+          {
+              "fusebox",
+              nullptr,
+              fusebox::Server::GetInstance(),
+          },
       };
 
   base::RepeatingCallback<void(JSONKeyValuePair)> barrier_callback =
@@ -51,10 +61,13 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
               std::move(callback)));
 
   for (auto& i : named_providers) {
-    if (i.second) {
-      i.second->GetDebugJSONForKey(i.first, barrier_callback);
+    std::string_view key = std::get<0>(i);
+    if (auto* function_ptr = std::get<1>(i)) {
+      (*function_ptr)(key, barrier_callback);
+    } else if (auto* object_ptr = std::get<2>(i)) {
+      object_ptr->GetDebugJSONForKey(key, barrier_callback);
     } else {
-      barrier_callback.Run(std::make_pair(i.first, base::Value()));
+      barrier_callback.Run(std::make_pair(key, base::Value()));
     }
   }
 }

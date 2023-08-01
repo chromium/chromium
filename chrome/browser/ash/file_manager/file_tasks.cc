@@ -162,6 +162,31 @@ constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPdfFileExtension[] = ".pdf";
 constexpr char kEncryptedMimeType[] = "application/vnd.google-gsuite.encrypted";
 
+base::Value& GetDebugBaseValueForExecuteFileTask() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  static base::NoDestructor<base::Value> instance;
+  return *instance;
+}
+
+void UpdateDebugBaseValue(const TaskDescriptor& task,
+                          const std::vector<FileSystemURL>& file_urls) {
+  base::Value::Dict overall_dict;
+
+  base::Value::Dict task_dict;
+  task_dict.Set("action_id", task.action_id);
+  task_dict.Set("app_id", task.app_id);
+  task_dict.Set("type", TaskTypeToString(task.task_type));
+  overall_dict.Set("task", std::move(task_dict));
+
+  base::Value::List urls_list;
+  for (const auto& url : file_urls) {
+    urls_list.Append(url.ToGURL().spec());
+  }
+  overall_dict.Set("urls", std::move(urls_list));
+
+  GetDebugBaseValueForExecuteFileTask() = base::Value(std::move(overall_dict));
+}
+
 void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
                                   const std::set<std::string>& mime_types,
                                   const std::set<std::string>& suffixes) {
@@ -866,6 +891,10 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<FileSystemURL>& file_urls,
                      gfx::NativeWindow modal_parent,
                      FileTaskFinishedCallback done) {
+  // Save some of the arguments of "the most recent ExecuteFileTask" in JSON
+  // (base::Value) format.
+  UpdateDebugBaseValue(task, file_urls);
+
   UMA_HISTOGRAM_ENUMERATION("FileBrowser.ViewingTaskType", task.task_type,
                             NUM_TASK_TYPE);
   if (drive::util::GetDriveConnectionStatus(profile) ==
@@ -1008,6 +1037,14 @@ bool ExecuteFileTask(Profile* profile,
   }
   NOTREACHED();
   return false;
+}
+
+void GetDebugJSONForKeyForExecuteFileTask(
+    std::string_view key,
+    base::OnceCallback<void(std::pair<std::string_view, base::Value>)>
+        callback) {
+  std::move(callback).Run(
+      std::make_pair(key, GetDebugBaseValueForExecuteFileTask().Clone()));
 }
 
 void LaunchQuickOffice(Profile* profile,

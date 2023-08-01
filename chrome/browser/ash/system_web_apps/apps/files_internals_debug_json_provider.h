@@ -22,6 +22,12 @@ class FilesInternalsDebugJSONProvider {
   virtual void GetDebugJSONForKey(
       std::string_view key,
       base::OnceCallback<void(JSONKeyValuePair)> callback) = 0;
+
+  // The function-pointer type of a free-standing (no implicit "this" argument)
+  // equivalent of the GetDebugJSONForKey method.
+  using FunctionPointerType =
+      void (*)(std::string_view key,
+               base::OnceCallback<void(JSONKeyValuePair)> callback);
 };
 
 }  // namespace ash

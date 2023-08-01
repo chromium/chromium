@@ -351,6 +351,13 @@ bool ExecuteFileTask(Profile* profile,
                      gfx::NativeWindow modal_parent,
                      FileTaskFinishedCallback done);
 
+// See ash::FilesInternalsDebugJSONProvider::FunctionPointerType in
+// chrome/browser/ash/system_web_apps/apps/files_internals_debug_json_provider.h
+void GetDebugJSONForKeyForExecuteFileTask(
+    std::string_view key,
+    base::OnceCallback<void(std::pair<std::string_view, base::Value>)>
+        callback);
+
 // Executes QuickOffice file handler for each element of |file_urls|.
 void LaunchQuickOffice(Profile* profile,
                        const std::vector<storage::FileSystemURL>& file_urls);
