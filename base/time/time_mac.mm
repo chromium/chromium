@@ -28,10 +28,6 @@
 #include "base/ios/ios_util.h"
 #endif  // !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 #if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)

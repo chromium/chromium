@@ -15,10 +15,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace base {
 
 bool PathProviderIOS(int key, base::FilePath* result) {

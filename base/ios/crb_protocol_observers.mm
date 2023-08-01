@@ -14,10 +14,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRBProtocolObservers () {
   Protocol* _protocol;
   // ivars declared here are private to the implementation but must be

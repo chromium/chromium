@@ -11,10 +11,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/timer/elapsed_timer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace base::test::ios {
 
 bool WaitUntilConditionOrTimeout(TimeDelta timeout,

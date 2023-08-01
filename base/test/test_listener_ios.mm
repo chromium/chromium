@@ -8,10 +8,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The iOS watchdog timer will kill an app that doesn't spin the main event
 // loop often enough. This uses a Gtest TestEventListener to spin the current
 // loop after each test finishes. However, if any individual test takes too

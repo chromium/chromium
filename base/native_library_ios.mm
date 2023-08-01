@@ -9,10 +9,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace base {
 
 std::string NativeLibraryLoadError::ToString() const {

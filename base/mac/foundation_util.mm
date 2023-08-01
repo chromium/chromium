@@ -28,10 +28,6 @@
 #import <AppKit/AppKit.h>
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern "C" {
 CFTypeID SecKeyGetTypeID();
 }  // extern "C"
