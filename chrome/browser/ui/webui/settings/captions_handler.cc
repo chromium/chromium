@@ -44,6 +44,22 @@ std::vector<std::string> GetEnabledLanguages() {
       ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 }
 
+base::Value::List SortByDisplayName(
+    std::vector<base::Value::Dict> language_packs) {
+  std::sort(language_packs.begin(), language_packs.end(),
+            [](const base::Value::Dict& a, const base::Value::Dict& b) {
+              return *(a.Find(kDisplayNameKey)->GetIfString()) <
+                     *(b.Find(kDisplayNameKey)->GetIfString());
+            });
+
+  base::Value::List sorted_language_packs;
+  for (base::Value::Dict& language_pack : language_packs) {
+    sorted_language_packs.Append(std::move(language_pack));
+  }
+
+  return sorted_language_packs;
+}
+
 }  // namespace
 
 namespace settings {
@@ -150,7 +166,7 @@ void CaptionsHandler::HandleInstallLanguagePacks(
 
 base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
   auto enabled_languages = GetEnabledLanguages();
-  base::Value::List available_language_packs;
+  std::vector<base::Value::Dict> available_language_packs;
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&
         base::Contains(enabled_languages, config.language_name)) {
@@ -164,15 +180,15 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
           kNativeDisplayNameKey,
           speech::GetLanguageDisplayName(config.language_name,
                                          config.language_name));
-      available_language_packs.Append(std::move(available_language_pack));
+      available_language_packs.push_back(std::move(available_language_pack));
     }
   }
 
-  return available_language_packs;
+  return SortByDisplayName(std::move(available_language_packs));
 }
 
 base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
-  base::Value::List installed_language_packs;
+  std::vector<base::Value::Dict> installed_language_packs;
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     base::Value::Dict installed_language_pack;
@@ -188,11 +204,11 @@ base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
           kNativeDisplayNameKey,
           speech::GetLanguageDisplayName(config->language_name,
                                          config->language_name));
-      installed_language_packs.Append(std::move(installed_language_pack));
+      installed_language_packs.push_back(std::move(installed_language_pack));
     }
   }
 
-  return installed_language_packs;
+  return SortByDisplayName(std::move(installed_language_packs));
 }
 
 void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
