@@ -131,6 +131,7 @@ class Task {
   const std::string& position() const { return position_; }
   const absl::optional<base::Time>& due() const { return due_; }
   const std::vector<std::unique_ptr<TaskLink>>& links() const { return links_; }
+  const std::string& notes() const { return notes_; }
 
  private:
   // Task identifier.
@@ -155,6 +156,9 @@ class Task {
 
   // Collection of links related to this task.
   std::vector<std::unique_ptr<TaskLink>> links_;
+
+  // Notes describing the task.
+  std::string notes_;
 };
 
 // Container for multiple `Task`s.

@@ -105,9 +105,10 @@ std::vector<std::unique_ptr<GlanceablesTask>> ConvertTasks(
                      [](const auto& link) {
                        return link->type() == TaskLink::Type::kEmail;
                      }) != root_task->links().end();
+    const bool has_notes = !root_task->notes().empty();
     converted_tasks.push_back(std::make_unique<GlanceablesTask>(
         root_task->id(), root_task->title(), completed, root_task->due(),
-        has_subtasks, has_email_link));
+        has_subtasks, has_email_link, has_notes));
   }
 
   return converted_tasks;

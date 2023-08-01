@@ -94,7 +94,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "title": "Parent task",
             "position": "00000000000000000001",
             "status": "needsAction",
-            "due": "2023-04-19T00:00:00.000Z"
+            "due": "2023-04-19T00:00:00.000Z",
+            "notes": "Lorem ipsum dolor sit amet"
           }
         ]
       })");
@@ -111,6 +112,7 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[0]->parent_id(), "asd");
   EXPECT_EQ(tasks->items()[0]->position(), "00000000000000000000");
   EXPECT_FALSE(tasks->items()[0]->due());
+  EXPECT_TRUE(tasks->items()[0]->notes().empty());
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
@@ -119,6 +121,7 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[1]->position(), "00000000000000000001");
   EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->due().value()),
             "2023-04-19T00:00:00.000Z");
+  EXPECT_EQ(tasks->items()[1]->notes(), "Lorem ipsum dolor sit amet");
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {

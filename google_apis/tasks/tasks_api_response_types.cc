@@ -29,6 +29,7 @@ constexpr char kTasksKind[] = "tasks#tasks";
 constexpr char kApiResponseDueKey[] = "due";
 constexpr char kApiResponseLinksKey[] = "links";
 constexpr char kApiResponseLinkTypeKey[] = "type";
+constexpr char kApiResponseNotesKey[] = "notes";
 constexpr char kApiResponseParentKey[] = "parent";
 constexpr char kApiResponsePositionKey[] = "position";
 constexpr char kApiResponseStatusKey[] = "status";
@@ -132,6 +133,7 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
       kApiResponseDueKey, &Task::due_, &ConvertTaskDueDate);
   converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
                                                &Task::links_);
+  converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
 }
 
 // static

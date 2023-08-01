@@ -32,7 +32,7 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrl) {
                             /*page_token=*/""),
             "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
             "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition"
-            "%2Cdue%2Clinks(type))%2CnextPageToken"
+            "%2Cdue%2Clinks(type)%2Cnotes)%2CnextPageToken"
             "&showCompleted=false");
 }
 
@@ -42,7 +42,7 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {
                             /*page_token=*/"qwerty"),
             "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
             "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition%"
-            "2Cdue%2Clinks(type))%2CnextPageToken"
+            "2Cdue%2Clinks(type)%2Cnotes)%2CnextPageToken"
             "&showCompleted=true"
             "&maxResults=100"
             "&pageToken=qwerty");

@@ -28,7 +28,8 @@ constexpr char kTaskListsListRequestedFields[] =
 
 constexpr char kTasksListUrlTemplate[] = "tasks/v1/lists/$1/tasks";
 constexpr char kTasksListRequestedFields[] =
-    "kind,items(id,title,status,parent,position,due,links(type)),nextPageToken";
+    "kind,items(id,title,status,parent,position,due,links(type),notes),"
+    "nextPageToken";
 
 constexpr char kTaskUrlTemplate[] = "tasks/v1/lists/$1/tasks/$2";
 
