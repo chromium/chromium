@@ -608,6 +608,9 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdatesAfterSliderShown) {
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   AddNotification();
   auto* popup = GetLastPopUpAdded();
   ASSERT_TRUE(popup);
@@ -641,6 +644,9 @@ TEST_P(AshMessagePopupCollectionTest,
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   // Create a window, otherwise autohide doesn't work.
   Shelf* shelf = GetPrimaryShelf();
@@ -722,6 +728,9 @@ TEST_P(AshMessagePopupCollectionTest, PopupsAndTrayBubbleViewsZOrdering) {
 }
 
 TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
@@ -781,6 +790,9 @@ TEST_P(AshMessagePopupCollectionTest,
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   // Create a window, otherwise autohide doesn't work.
   Shelf* shelf = GetPrimaryShelf();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
@@ -832,6 +844,10 @@ TEST_P(AshMessagePopupCollectionTest,
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
 
   auto* ime_tray =
@@ -851,6 +867,9 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   UpdateDisplay("801x800,801x800");
 
@@ -913,6 +932,9 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenNotificationAdded) {
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   UpdateDisplay("801x600");
 
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
@@ -964,6 +986,9 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenNotificationUpdated) {
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   UpdateDisplay("801x600");
 
@@ -1022,6 +1047,9 @@ TEST_P(AshMessagePopupCollectionTest, DisableExpandCollapseNotification) {
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   UpdateDisplay("801x800");
 
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
@@ -1067,6 +1095,9 @@ TEST_P(AshMessagePopupCollectionTest, DisableExpandCollapseGroupNotification) {
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   UpdateDisplay("1001x1000");
 
@@ -1114,6 +1145,9 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenBubbleHeightChanged) {
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   UpdateDisplay("801x800");
 
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
@@ -1159,6 +1193,9 @@ TEST_P(AshMessagePopupCollectionTest,
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   auto verify_move_down_behavior =
       [](UnifiedSystemTray* system_tray,
@@ -1233,6 +1270,9 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   UpdateDisplay("1001x900");
 
   phone_hub_manager()->fake_feature_status_provider()->SetStatus(
@@ -1305,6 +1345,9 @@ TEST_P(AshMessagePopupCollectionTest, QsBubbleNotCloseWhenPopupClose) {
     return;
   }
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   // Create a window to simulate the step from b/291988617.
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
       nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
@@ -1341,6 +1384,9 @@ TEST_P(AshMessagePopupCollectionTest, BubbleNotCloseWhenPopupClose) {
   if (!IsQsRevampEnabled()) {
     return;
   }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   // Update display so that notification fit on top of phone hub bubble.
   UpdateDisplay("1001x900");

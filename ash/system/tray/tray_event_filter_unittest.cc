@@ -192,6 +192,9 @@ TEST_P(TrayEventFilterTest, ClickingOnPopupWhenBubbleOpen) {
   // notification is allowed on top of the tray bubble.
   UpdateDisplay("901x900");
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kNotifierCollision);
+
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 

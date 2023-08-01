@@ -222,7 +222,7 @@ void AshMessagePopupCollection::NotifyPopupClosed(
 }
 
 void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
-  if (!features::IsQsRevampEnabled()) {
+  if (!features::IsNotifierCollisionEnabled()) {
     return;
   }
 
@@ -360,7 +360,7 @@ void AshMessagePopupCollection::UpdateWorkArea() {
 void AshMessagePopupCollection::AdjustBaselineBasedOnBubbleChange(
     TrayBubbleView* tray_bubble,
     bool bubble_visible) {
-  if (!features::IsQsRevampEnabled()) {
+  if (!features::IsNotifierCollisionEnabled()) {
     return;
   }
 
@@ -375,7 +375,7 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnBubbleChange(
 
 void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble(
     bool triggered_by_bubble_change) {
-  CHECK(features::IsQsRevampEnabled());
+  CHECK(features::IsNotifierCollisionEnabled());
 
   auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
   auto* shelf_pod_bubble =
@@ -426,6 +426,8 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble(
 void AshMessagePopupCollection::AdjustBaselineBasedOnSecondaryBubble(
     TrayBubbleView* tray_bubble,
     bool visible) {
+  CHECK(features::IsNotifierCollisionEnabled());
+
   DCHECK(tray_bubble);
   DCHECK_EQ(tray_bubble->GetBubbleType(),
             TrayBubbleView::TrayBubbleType::kSecondaryBubble);
