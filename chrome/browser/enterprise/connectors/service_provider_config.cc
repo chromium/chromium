@@ -50,6 +50,14 @@ constexpr std::array<SupportedTag, 1> kBrcmChrmCasSupportedTags = {{
     },
 }};
 
+constexpr std::array<SupportedTag, 1> kTrellixSupportedTags = {{
+    {
+        .name = "dlp",
+        .display_name = "Sensitive data protection",
+        .max_file_size = 52428800,
+    },
+}};
+
 constexpr AnalysisConfig kLocalTestUserAnalysisConfig = {
     .local_path = "path_user",
     .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
@@ -60,6 +68,16 @@ constexpr AnalysisConfig kBrcmChrmCasAnalysisConfig = {
     .local_path = "brcm_chrm_cas",
     .supported_tags = base::span<const SupportedTag>(kBrcmChrmCasSupportedTags),
     .user_specific = false,
+};
+
+constexpr std::array<const char*, 1> kTrellixSubjectNames = {
+    {"MUSARUBRA US LLC"}};
+
+constexpr AnalysisConfig kTrellixAnalysisConfig = {
+    .local_path = "Trellix_DLP",
+    .supported_tags = base::span<const SupportedTag>(kTrellixSupportedTags),
+    .user_specific = true,
+    .subject_names = base::span<const char* const>(kTrellixSubjectNames),
 };
 
 constexpr ReportingConfig kGoogleReportingConfig = {
@@ -107,6 +125,13 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
               {
                   .display_name = "Broadcom Inc",
                   .analysis = &kBrcmChrmCasAnalysisConfig,
+              },
+          },
+          {
+              "trellix",
+              {
+                  .display_name = "Trellix DLP Endpoint",
+                  .analysis = &kTrellixAnalysisConfig,
               },
           },
       });

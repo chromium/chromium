@@ -113,4 +113,26 @@ TEST(ServiceProviderConfigTest, BrcmChrmCas) {
             kMaxFileSize);
 }
 
+TEST(ServiceProviderConfigTest, Trellix) {
+  const ServiceProviderConfig* config = GetServiceProviderConfig();
+  ASSERT_TRUE(config->count("trellix"));
+  ServiceProvider service_provider = config->at("trellix");
+
+  ASSERT_TRUE(service_provider.analysis);
+  ASSERT_FALSE(service_provider.reporting);
+
+  ASSERT_FALSE(service_provider.analysis->url);
+  ASSERT_TRUE(service_provider.analysis->local_path);
+  ASSERT_EQ("Trellix_DLP", std::string(service_provider.analysis->local_path));
+  ASSERT_TRUE(service_provider.analysis->user_specific);
+  ASSERT_EQ(service_provider.analysis->subject_names.size(), 1u);
+
+  // The trellix local service provider has 1 tag: dlp.
+  ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
+  ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
+            "dlp");
+  ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
+            kMaxFileSize);
+}
+
 }  // namespace enterprise_connectors
