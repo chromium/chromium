@@ -9,7 +9,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -50,7 +50,8 @@ bool ClearDCompSurface(IDCompositionSurface* surface,
       gl::QueryD3D11DeviceObjectFromANGLE();
   // DX11 protects the DComp surface atlas so this clear only affects pixels in
   // the update rect.
-  if (!ClearD3D11TextureToColor(draw_texture, SkColors::kTransparent)) {
+  if (!D3DImageBackingFactory::ClearTextureToColor(
+          d3d11_device.Get(), draw_texture.Get(), SkColors::kTransparent)) {
     return false;
   }
 

@@ -223,7 +223,8 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
     // To clear only uninitialized buffers, this must happen after |Present|s of
     // outstanding draws, including the one above.
     if (!D3DImageBackingFactory::ClearBackBufferToColor(
-            dxgi_swap_chain_.Get(), initialize_color.value())) {
+            d3d11_device_.Get(), dxgi_swap_chain_.Get(),
+            initialize_color.value())) {
       LOG(ERROR) << "Could not initialize back buffer alpha";
       return false;
     }
