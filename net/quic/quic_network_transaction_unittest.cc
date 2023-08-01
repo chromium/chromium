@@ -5243,8 +5243,8 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternateProtocolOnConnectFailure) {
   ExpectBrokenAlternateProtocolMapping();
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicNetworkTransactionTest, DISABLED_ConnectionCloseDuringConnect) {
+TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnect) {
+  FLAGS_quic_enable_chaos_protection = false;
   if (version_.AlpnDeferToRFCv1()) {
     // These versions currently do not support Alt-Svc.
     return;
@@ -7720,8 +7720,8 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1MockTest) {
   SendRequestAndExpectQuicResponse("hello!");
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicNetworkTransactionTest, DISABLED_AllowHTTP1UploadPauseAndResume) {
+TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadPauseAndResume) {
+  FLAGS_quic_enable_chaos_protection = false;
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
 
@@ -7780,9 +7780,8 @@ TEST_P(QuicNetworkTransactionTest, DISABLED_AllowHTTP1UploadPauseAndResume) {
   CheckResponseData(&trans, "hello!");
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicNetworkTransactionTest,
-       DISABLED_AllowHTTP1UploadFailH1AndResumeQuic) {
+TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
+  FLAGS_quic_enable_chaos_protection = false;
   if (version_.AlpnDeferToRFCv1()) {
     // These versions currently do not support Alt-Svc.
     return;
