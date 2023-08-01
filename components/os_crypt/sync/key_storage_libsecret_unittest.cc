@@ -44,7 +44,7 @@ class MockPasswordStore {
   void ClearPassword() {
     if (password_) {
       ASSERT_EQ(password_->ref_count, 1u);
-      g_object_unref(password_);
+      g_object_unref(password_.ExtractAsDangling());
       password_ = nullptr;
     }
   }
@@ -135,8 +135,9 @@ gboolean MockLibsecretLoader::mock_secret_password_store_sync(
     GError** error,
     ...) {
   // TODO(crbug.com/660005) We don't read the dummy we store to unlock keyring.
-  if (strcmp("_chrome_dummy_schema_for_unlocking", schema->name) == 0)
+  if (strcmp("_chrome_dummy_schema_for_unlocking", schema->name) == 0) {
     return true;
+  }
 
   EXPECT_STREQ(kKeystoreSchemaV2.name, schema->name);
   g_password_store.Pointer()->SetPassword(password);
@@ -164,8 +165,9 @@ GList* MockLibsecretLoader::mock_secret_service_search_sync(
   GObject* item = nullptr;
   MockPasswordStore* store = g_password_store.Pointer();
   GObject* password = store->password();
-  if (password)
+  if (password) {
     item = store->MakeTempObject(store->GetString(password));
+  }
 
   if (!item) {
     return nullptr;
