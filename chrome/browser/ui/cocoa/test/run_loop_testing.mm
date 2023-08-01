@@ -11,10 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This class is scheduled with a delayed selector to quit the message pump.
 @interface CocoaQuitTask : NSObject {
  @private

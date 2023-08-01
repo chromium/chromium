@@ -33,10 +33,6 @@
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface WindowAppleScript ()
 
 // The NSWindow that corresponds to this window.

@@ -16,10 +16,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace mac_notifications {
 
 class NotificationCategoryManagerTest : public testing::Test {

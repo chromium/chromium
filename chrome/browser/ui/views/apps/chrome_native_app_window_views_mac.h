@@ -9,10 +9,6 @@
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class ResizeNotificationObserver;
 
 // Mac-specific parts of ChromeNativeAppWindowViews.

@@ -44,10 +44,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The NSApplication for app shims is a vanilla NSApplication, but sub-class it
 // so that we can DCHECK that we know precisely when it is initialized.
 @interface AppShimApplication : NSApplication

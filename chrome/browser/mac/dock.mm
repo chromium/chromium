@@ -19,10 +19,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "build/branding_buildflags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern "C" {
 
 // Undocumented private internal CFURL functions. The Dock uses these to

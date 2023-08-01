@@ -127,10 +127,6 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // True while AppController is calling chrome::NewEmptyWindow(). We need a

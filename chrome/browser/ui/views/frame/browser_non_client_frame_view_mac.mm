@@ -44,10 +44,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Keep in sync with web_app_frame_toolbar_browsertest.cc

@@ -10,10 +10,6 @@
 #include "chrome/browser/ui/cocoa/scoped_menu_bar_lock.h"
 #import "ui/base/cocoa/tracking_area.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Additional height threshold added at the toolbar's bottom. This is to mimic

@@ -15,10 +15,6 @@
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() = default;
 
 BrowserProcessPlatformPart::~BrowserProcessPlatformPart() = default;

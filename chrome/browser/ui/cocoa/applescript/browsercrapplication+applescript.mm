@@ -23,10 +23,6 @@
 #import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using bookmarks::BookmarkModel;
 
 @implementation BrowserCrApplication (AppleScriptAdditions)

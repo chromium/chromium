@@ -14,10 +14,6 @@
 #include "components/version_info/version_info.h"
 #include "mojo/core/embedder/embedder.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace app_mode {
 
 const char kAppShimBootstrapNameFragment[] = "apps";

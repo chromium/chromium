@@ -17,10 +17,6 @@
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class SpellCheckMacViewInteractiveUiTest : public InProcessBrowserTest {

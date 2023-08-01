@@ -13,10 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/test/test_navigation_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void InProcessBrowserTest::OpenDevToolsWindow(
     content::WebContents* web_contents) {
   // Opening a Devtools Window can cause AppKit to throw objects into the

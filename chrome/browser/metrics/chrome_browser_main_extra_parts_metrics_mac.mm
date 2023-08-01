@@ -8,10 +8,6 @@
 
 #include "base/metrics/histogram_macros.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The possible values of the setting "Screens Have Separate Spaces".

@@ -16,10 +16,6 @@
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ChromeCommandDispatcherDelegate
 
 - (BOOL)eventHandledByViewsFocusManager:(NSEvent*)event

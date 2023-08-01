@@ -18,10 +18,6 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FullscreenToolbarController {
   // Whether or not we are in fullscreen mode.
   BOOL _inFullscreenMode;

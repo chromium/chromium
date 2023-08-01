@@ -30,10 +30,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ChromeRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
 
 @property(readonly) content::WebContents* webContents;

@@ -26,10 +26,6 @@
 #include "ui/events/base_event_utils.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Refers to how the event is going to be sent to the NSView. There are 3

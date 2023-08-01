@@ -10,10 +10,6 @@
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NSColorSampler;
 
 class EyeDropperViewMac : public content::EyeDropper {

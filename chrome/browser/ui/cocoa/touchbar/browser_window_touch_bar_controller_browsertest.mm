@@ -29,10 +29,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A class that watches for invalidations of a window's touch bar by calls
 // to -setTouchBar:.
 //

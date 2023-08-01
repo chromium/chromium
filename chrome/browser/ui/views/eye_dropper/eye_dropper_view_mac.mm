@@ -13,10 +13,6 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/ui_base_features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
     : listener_(listener), weak_ptr_factory_(this) {
   if (!listener_) {

@@ -10,10 +10,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // If the window width stored in the prefs is smaller than this, the size is
 // not restored but instead cleared from the profile -- to protect users from
 // accidentally making their windows very small and then not finding them again.

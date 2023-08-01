@@ -13,10 +13,6 @@
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation WebTextfieldTouchBarController {
   BrowserWindowTouchBarController* __weak _controller;
   CreditCardAutofillTouchBarController* __strong _autofillTouchBarController;

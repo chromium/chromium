@@ -8,10 +8,6 @@
 
 #include "base/strings/sys_string_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 void DevToolsDockTile::Update(const std::string& label, gfx::Image image) {
   NSDockTile* dockTile = NSApplication.sharedApplication.dockTile;

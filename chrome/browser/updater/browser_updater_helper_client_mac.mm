@@ -19,10 +19,6 @@
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const int kPrivilegedHelperConnectionFailed = -10000;
 }

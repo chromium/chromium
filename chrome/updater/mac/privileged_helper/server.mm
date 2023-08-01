@@ -20,10 +20,6 @@
 #include "chrome/updater/mac/privileged_helper/helper_branding.h"
 #include "chrome/updater/updater_branding.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace updater {
 
 namespace {

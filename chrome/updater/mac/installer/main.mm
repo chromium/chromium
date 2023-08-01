@@ -19,10 +19,6 @@
 #include "chrome/updater/util/util.h"
 #include "third_party/zlib/google/zip_reader.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace updater {
 
 namespace {

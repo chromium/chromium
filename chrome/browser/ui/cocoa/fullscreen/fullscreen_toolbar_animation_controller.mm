@@ -8,10 +8,6 @@
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // If the fullscreen toolbar is hidden, it is difficult for the user to see

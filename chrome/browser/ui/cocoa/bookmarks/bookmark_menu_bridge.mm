@@ -25,10 +25,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 

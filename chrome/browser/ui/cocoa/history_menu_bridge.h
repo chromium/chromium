@@ -25,10 +25,6 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class Profile;
 class ScopedProfileKeepAlive;
 @class HistoryMenuCocoaController;

@@ -24,10 +24,6 @@
 #include "content/public/browser/native_event_processor_observer_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome_browser_application_mac {
 
 void RegisterBrowserCrApp() {

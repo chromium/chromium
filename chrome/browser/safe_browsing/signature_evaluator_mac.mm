@@ -21,10 +21,6 @@
 #include "chrome/common/safe_browsing/mach_o_image_reader_mac.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace safe_browsing {
 
 namespace {

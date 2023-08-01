@@ -42,10 +42,6 @@
 #include "ui/views/window/non_client_view.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class TextChangeWaiter {

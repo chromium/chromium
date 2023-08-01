@@ -8,10 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FakeUNNotification : NSObject
 @property(nonatomic, strong, nullable) UNNotificationRequest* request;
 @end

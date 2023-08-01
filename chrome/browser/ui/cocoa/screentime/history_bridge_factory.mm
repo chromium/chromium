@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ui/cocoa/screentime/history_bridge_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include "base/no_destructor.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

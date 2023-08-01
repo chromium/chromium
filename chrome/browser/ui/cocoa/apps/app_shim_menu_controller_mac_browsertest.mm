@@ -27,10 +27,6 @@
 #include "extensions/test/extension_test_message_listener.h"
 #import "ui/base/test/scoped_fake_nswindow_focus.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class AppShimMenuControllerBrowserTest

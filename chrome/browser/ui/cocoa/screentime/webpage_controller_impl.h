@@ -9,10 +9,6 @@
 
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class BlockedObserver;
 @class STWebpageController;
 

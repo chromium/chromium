@@ -11,10 +11,6 @@
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "ui/base/models/table_model_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class WindowSizeAutosaver;
 
 namespace task_manager {

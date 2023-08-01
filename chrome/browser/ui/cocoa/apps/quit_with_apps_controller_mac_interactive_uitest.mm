@@ -29,10 +29,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The param selects whether to use ChromeNativeAppWindowViewsMac, otherwise it

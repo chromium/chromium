@@ -22,10 +22,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using local_discovery::ServiceWatcher;
 using local_discovery::ServiceResolver;
 using local_discovery::ServiceDescription;

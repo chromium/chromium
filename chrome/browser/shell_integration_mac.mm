@@ -18,10 +18,6 @@
 #include "components/version_info/version_info.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace shell_integration {
 
 namespace {

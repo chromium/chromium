@@ -9,10 +9,6 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AuthenticatorMac::AuthenticatorMac() = default;
 
 AuthenticatorMac::~AuthenticatorMac() = default;

@@ -10,10 +10,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // How much horizontal and vertical offset there is between newly
 // opened windows.
 const int WindowSizer::kWindowTilePixels = 22;

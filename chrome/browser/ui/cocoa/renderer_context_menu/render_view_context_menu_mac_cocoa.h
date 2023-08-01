@@ -12,10 +12,6 @@
 @class MenuControllerCocoa;
 @class MenuControllerCocoaDelegateImpl;
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Mac Cocoa implementation of the renderer context menu display code. Uses a
 // NSMenu to display the context menu. Internally uses an Obj-C object as the
 // target of the NSMenu, bridging back to this C++ class.

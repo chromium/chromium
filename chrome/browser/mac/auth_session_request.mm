@@ -26,10 +26,6 @@
 #include "net/base/mac/url_conversions.h"
 #include "url/url_canon.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // A navigation throttle that calls a closure when a navigation to a specified

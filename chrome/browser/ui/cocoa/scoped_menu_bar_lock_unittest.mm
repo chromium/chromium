@@ -8,10 +8,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Verify that creating and tearing down a ScopedMenuBarLock doesn't crash.
 TEST(ScopedMenuBarLockTest, CreateAndDestroy) {
   ScopedMenuBarLock menuBarLock;

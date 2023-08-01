@@ -36,10 +36,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace mac_relauncher {
 
 namespace {

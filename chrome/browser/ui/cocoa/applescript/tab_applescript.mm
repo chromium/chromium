@@ -28,10 +28,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using content::NavigationController;
 using content::NavigationEntry;
 using content::OpenURLParams;

@@ -11,10 +11,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Cocoa intends a smart dragging source, while `DragDownloadItem()` is a simple
 // "start dragging this" fire-and-forget. This is a generic source just good
 // enough to satisfy AppKit.

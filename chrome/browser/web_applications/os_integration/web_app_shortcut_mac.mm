@@ -90,10 +90,6 @@
 #include "base/process/launch.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A TerminationObserver observes a NSRunningApplication for when it
 // terminates. On termination, it will run the specified callback on the UI
 // thread and release itself.

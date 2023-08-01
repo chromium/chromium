@@ -18,10 +18,6 @@
 #include "net/base/sockaddr_storage.h"
 #include "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TestNSNetService : NSNetService {
  @private
   NSData* __strong _data;

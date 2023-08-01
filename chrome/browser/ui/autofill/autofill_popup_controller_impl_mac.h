@@ -7,10 +7,6 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class WebTextfieldTouchBarController;
 
 namespace autofill {

@@ -12,10 +12,6 @@
 #include "chrome/browser/ui/cocoa/screentime/history_deleter.h"
 #include "chrome/browser/ui/cocoa/screentime/screentime_policy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace screentime {
 
 HistoryBridge::HistoryBridge(history::HistoryService* service,

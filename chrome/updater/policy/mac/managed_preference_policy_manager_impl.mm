@@ -11,10 +11,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Constants for managed preference policy keys.
 static NSString* kGlobalPolicyKey = @"global";
 static NSString* kUpdateDefaultKey = @"UpdateDefault";

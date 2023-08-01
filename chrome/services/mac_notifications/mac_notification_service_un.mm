@@ -25,10 +25,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This uses a private API so that updated banners do not keep reappearing on
 // the screen, for example banners that are used to show progress would keep
 // reappearing on the screen without the usage of this private API.

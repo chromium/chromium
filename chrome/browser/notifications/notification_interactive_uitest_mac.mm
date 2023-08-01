@@ -13,10 +13,6 @@
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/message_center/message_center.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Verify that Chrome becomes the active app if a notification opens a popup
 // when clicked.
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPopupShouldActivateApp) {

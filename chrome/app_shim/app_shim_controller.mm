@@ -47,10 +47,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The ProfileMenuTarget bridges between Objective C (as the target for the
 // profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).

@@ -15,10 +15,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FakeHistoryMenuController : HistoryMenuCocoaController {
  @public
   // ivars are initialized to zero, so these all start out as NO.

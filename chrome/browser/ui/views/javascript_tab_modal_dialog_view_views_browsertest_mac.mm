@@ -15,10 +15,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using JavaScriptTabModalDialogViewViewsBrowserTestMac = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,

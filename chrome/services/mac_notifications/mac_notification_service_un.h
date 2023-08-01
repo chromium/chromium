@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class AlertUNNotificationCenterDelegate;
 @class UNUserNotificationCenter;
 

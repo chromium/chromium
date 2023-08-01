@@ -9,10 +9,6 @@
 #include "chrome/app_shim/app_shim_controller.h"
 #include "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AppShimDelegate {
   raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|
 }

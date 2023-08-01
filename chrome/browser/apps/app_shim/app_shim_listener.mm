@@ -23,10 +23,6 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "content/public/browser/browser_task_traits.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AppShimListener::AppShimListener() = default;
 
 void AppShimListener::Init() {

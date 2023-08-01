@@ -13,10 +13,6 @@
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 base::Lock tis_lock_;
 
 UniChar GetCharacter(UInt16 mac_key_code, UInt32 modifier_key_state) {

@@ -13,10 +13,6 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/mac/privileged_helper/service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace updater {
 
 class PrivilegedHelperServer : public App {

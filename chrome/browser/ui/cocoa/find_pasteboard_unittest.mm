@@ -11,10 +11,6 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/cocoa/find_pasteboard.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A subclass of FindPasteboard that doesn't write to the real find pasteboard.
 @interface FindPasteboardTesting : FindPasteboard {
  @private

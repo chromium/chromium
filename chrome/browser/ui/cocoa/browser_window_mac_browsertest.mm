@@ -20,10 +20,6 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/test/ns_ax_tree_validator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test harness for Mac-specific behaviors of BrowserWindow.
 class BrowserWindowMacTest : public InProcessBrowserTest {
  public:

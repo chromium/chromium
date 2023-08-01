@@ -11,10 +11,6 @@
 #include "ui/base/test/view_tree_validator.h"
 #include "ui/base/ui_base_switches.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using FirstRunDialogControllerTest = CocoaTest;
 
 FirstRunDialogViewController* MakeTestController(BOOL stats) {

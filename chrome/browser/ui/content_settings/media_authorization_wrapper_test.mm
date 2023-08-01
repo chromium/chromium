@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ui/content_settings/media_authorization_wrapper_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void MediaAuthorizationWrapperTest::SetMockMediaPermissionStatus(
     AVAuthorizationStatus status) {
   permission_status_ = status;

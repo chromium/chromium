@@ -41,10 +41,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 AppShimHost* GetHostForBrowser(Browser* browser) {

@@ -6,10 +6,6 @@
 
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class HistoryOverlayControllerTest : public CocoaTest {
  public:
   void SetUp() override {

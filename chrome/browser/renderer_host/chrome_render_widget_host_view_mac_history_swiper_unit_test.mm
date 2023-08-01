@@ -12,10 +12,6 @@
 #import "third_party/ocmock/ocmock_extensions.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HistorySwiper (MacHistorySwiperTest)
 - (BOOL)browserCanNavigateInDirection:
         (history_swiper::NavigationDirection)forward

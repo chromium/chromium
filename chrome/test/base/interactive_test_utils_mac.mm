@@ -18,10 +18,6 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface NSApplication (Private)
 // (Apparently) forces the application to activate itself.
 - (void)_handleActivatedEvent:(id)arg1;

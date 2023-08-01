@@ -12,10 +12,6 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // TODO(crbug.com/841631): This file uses the deprecated CWInterface interface;
 // it needs to be migrated to CWWiFiClient, which is unfortunately not
 // compatible.

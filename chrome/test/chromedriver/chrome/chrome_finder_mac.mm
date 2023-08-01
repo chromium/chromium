@@ -7,10 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void GetApplicationDirs(std::vector<base::FilePath>* app_dirs) {
   base::FilePath user_app_dir;
   if (base::mac::GetUserDirectory(NSApplicationDirectory, &user_app_dir))

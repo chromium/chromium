@@ -22,10 +22,6 @@
 #include "net/base/data_url.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Function to recursively read Bookmarks out of Safari plist.

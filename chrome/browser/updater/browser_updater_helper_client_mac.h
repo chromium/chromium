@@ -14,10 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Client that will create a connection between the browser and the privileged
 // helper for the Chromium updater. Helps with setting up the system-level
 // updater during promotion.
