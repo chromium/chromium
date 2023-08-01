@@ -7,7 +7,6 @@
  */
 import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
@@ -19,9 +18,7 @@ import {OutputCustomEvent} from '../output/output_types.js';
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;

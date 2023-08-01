@@ -7,7 +7,6 @@
  */
 import {AsyncUtil} from '../../../common/async_util.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {ChromeVox} from '../chromevox.js';
@@ -15,12 +14,7 @@ import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 
-const ActionType = chrome.automation.ActionType;
-const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
 
 /** @implements {ChromeVoxRangeObserver} */
 export class PageLoadSoundHandler extends BaseAutomationHandler {
