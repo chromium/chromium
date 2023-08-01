@@ -181,6 +181,20 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
   return attributes;
 }
 
+webnn::GemmAttributes ConvertToGemmAttributes(
+    const blink::MLGemmOptions* options) {
+  CHECK(options);
+  webnn::GemmAttributes attributes;
+  if (options->hasC()) {
+    attributes.c_operand = ConvertToComponentOperand(options->c());
+  }
+  attributes.alpha = options->alpha();
+  attributes.beta = options->beta();
+  attributes.a_transpose = options->aTranspose();
+  attributes.b_transpose = options->bTranspose();
+  return attributes;
+}
+
 bool ValidateClampOptions(const MLClampOptions* options,
                           ExceptionState& exception_state) {
   // The generated code of MLClampOptions uses blink::ToRestrictedFloat to
@@ -1227,74 +1241,14 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,
                                 const MLGemmOptions* options,
                                 ExceptionState& exception_state) {
-  if (a->Type() != b->Type()) {
+  auto validated_output = webnn::ValidateGemmAndInferOutput(
+      ConvertToComponentOperand(a), ConvertToComponentOperand(b),
+      ConvertToGemmAttributes(options));
+  if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The types of first two inputs don't match.");
+        WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
-  }
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm, the first input 2-D
-  // tensor with shape [M, K] if aTranspose is false, or [K, M] if aTranspose is
-  // true.
-  auto shape_a = a->Dimensions();
-  if (shape_a.size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The first input must be a 2-D tensor.");
-    return nullptr;
-  }
-  if (options->aTranspose()) {
-    shape_a.Reverse();
-  }
-  // The second input 2-D tensor with shape [K, N] if bTranspose is false, or
-  // [N, K] if bTranspose is true.
-  auto shape_b = b->Dimensions();
-  if (shape_b.size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The second input must be a 2-D tensor.");
-    return nullptr;
-  }
-  if (options->bTranspose()) {
-    shape_b.Reverse();
-  }
-  // The number of columns in the first matrix must be equal to the number of
-  // rows in the second matrix.
-  if (shape_a[1] != shape_b[0]) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::Format(
-            "The number of columns (%u) in the %sfirst matrix isn't equal to "
-            "the number of rows (%u) in the %ssecond matrix.",
-            shape_a[1], options->aTranspose() ? "transposed " : "", shape_b[0],
-            options->bTranspose() ? "transposed " : ""));
-    return nullptr;
-  };
-  // The output is 2-D tensor of shape [M, N].
-  Vector<uint32_t> output_shape = {shape_a[0], shape_b[1]};
-  // The third input tensor c is either a scalar, or of the shape that is
-  // unidirectionally broadcastable to the output shape [M, N].
-  if (options->hasC()) {
-    const auto* c = options->c();
-    if (c->Type() != a->Type()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The third input type doesn't match other inputs' type.");
-      return nullptr;
-    }
-    const auto shape_c = options->c()->Dimensions();
-    if (shape_c.size() > 2) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The third input tensor should be either a scalar or a 2-D tensor.");
-      return nullptr;
-    }
-    if (!BroadcastShapes(shape_c, output_shape, false)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The third input tensor isn't unidirectionally broadcastable to the "
-          "output tensor.");
-      return nullptr;
-    }
   }
   auto* gemm = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kGemm, options);
@@ -1303,7 +1257,8 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
     inputs.push_back(options->c());
   }
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, a->Type(), std::move(output_shape), gemm);
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
+      Vector<uint32_t>(validated_output.value().dimensions), gemm);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());

@@ -269,6 +269,161 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   }
 }
 
+struct GemmTester {
+  OperandInfo a;
+  OperandInfo b;
+  struct GemmAttributes {
+    absl::optional<OperandInfo> c;
+    float alpha = 1.0;
+    float beta = 1.0;
+    bool a_transpose = false;
+    bool b_transpose = false;
+  };
+  GemmAttributes attributes;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t a_operand_id = builder.BuildInput("a", a.dimensions, a.type);
+    uint64_t b_operand_id = builder.BuildInput("b", b.dimensions, b.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    mojom::GemmAttributesPtr mojo_attributes = mojom::GemmAttributes::New();
+    if (attributes.c) {
+      mojo_attributes->c_operand_id =
+          builder.BuildInput("c", attributes.c->dimensions, attributes.c->type);
+    }
+    mojo_attributes->alpha = attributes.alpha;
+    mojo_attributes->beta = attributes.beta;
+    mojo_attributes->a_transpose = attributes.a_transpose;
+    mojo_attributes->b_transpose = attributes.b_transpose;
+    builder.BuildOperator(
+        mojom::Operator::Kind::kGemm, {a_operand_id, b_operand_id},
+        {output_operand_id},
+        mojom::OperatorAttributes::NewGemm(std::move(mojo_attributes)));
+    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GemmTest) {
+  {
+    // Test building gemm with default option.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building gemm with aTranspose = true.
+    // Transposed a_dimensions would be {3, 2} and it's compatible with
+    // b_dimensions {2, 4}.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 4}},
+        .attributes = {.a_transpose = true},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building gemm with bTranspose = true.
+    // Transposed b_dimensions would be {3, 4} and it's compatible with
+    // a_dimensions {2, 3}.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4, 3}},
+        .attributes = {.b_transpose = true},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building gemm with setting optional input C.
+    // The output dimensions of a * b would be {2, 4} and c_dimensions {4} is
+    // able to broadcast to {2, 4}.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .attributes = {.c = OperandInfo{.type =
+                                            mojom::Operand::DataType::kFloat32,
+                                        .dimensions = {4}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building gemm with two matrices - {2, 3} and {2, 4} that can't be
+    // multiplied together due to incompatible dimensions.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building gemm with aTranspose = true, bTranspose = true.
+    // The output dimensions of a * b would be {2, 4} and c_dimension {2, 3} is
+    // incompatible with {2, 4}.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .attributes = {.c = OperandInfo{.type =
+                                            mojom::Operand::DataType::kFloat32,
+                                        .dimensions = {2, 3}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building gemm with aTranspose = true, bTranspose = true.
+    // Set optional input C with type = int32 and it mismatches with input
+    // type float32.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 2}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4, 3}},
+        .attributes = {.c =
+                           OperandInfo{.type = mojom::Operand::DataType::kInt32,
+                                       .dimensions = {2, 4}},
+                       .a_transpose = true,
+                       .b_transpose = true},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kInt32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kInt32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = false}
+        .Test();
+  }
+}
+
 struct Pool2dTester {
   OperandInfo input;
   struct Pool2dAttributes {

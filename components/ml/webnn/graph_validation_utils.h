@@ -99,6 +99,29 @@ struct Pool2dAttributes {
   absl::optional<Size2d> output_sizes;
 };
 
+// Contains the attributes of gemm operator.
+struct GemmAttributes {
+  GemmAttributes();
+  ~GemmAttributes();
+
+  GemmAttributes(GemmAttributes&& other);
+  GemmAttributes& operator=(GemmAttributes&& other);
+
+  GemmAttributes(const GemmAttributes&) = delete;
+  GemmAttributes& operator=(const GemmAttributes&) = delete;
+
+  // The optional third tensor in expression alpha * A * B + beta * C.
+  absl::optional<Operand> c_operand;
+  // A float scalar multiplier for the `A * B`.
+  float alpha = 1.0;
+  // A float scalar multiplier for the third tensor.
+  float beta = 1.0;
+  // True is to transpose the first tensor matrix multiplication.
+  bool a_transpose = false;
+  // True is to transpose the second tensor matrix multiplication.
+  bool b_transpose = false;
+};
+
 // Validate softmax operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
@@ -109,6 +132,13 @@ base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes);
+
+// Validate gemm operator defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
+base::expected<Operand, std::string> ValidateGemmAndInferOutput(
+    const Operand& a,
+    const Operand& b,
+    const GemmAttributes& attributes);
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions);

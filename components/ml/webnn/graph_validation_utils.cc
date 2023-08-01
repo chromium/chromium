@@ -190,6 +190,71 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+GemmAttributes::GemmAttributes() = default;
+GemmAttributes::~GemmAttributes() = default;
+
+GemmAttributes::GemmAttributes(GemmAttributes&& other) = default;
+GemmAttributes& GemmAttributes::operator=(GemmAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateGemmAndInferOutput(
+    const Operand& a,
+    const Operand& b,
+    const GemmAttributes& attributes) {
+  if (a.data_type != b.data_type) {
+    return base::unexpected("The types of first two inputs don't match.");
+  }
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm, the first input 2-D
+  // tensor with shape [M, K] if aTranspose is false, or [K, M] if aTranspose is
+  // true.
+  auto shape_a = a.dimensions;
+  if (shape_a.size() != 2) {
+    return base::unexpected("The first input must be a 2-D tensor.");
+  }
+  if (attributes.a_transpose) {
+    std::reverse(shape_a.begin(), shape_a.end());
+  }
+  // The second input 2-D tensor with shape [K, N] if bTranspose is false, or
+  // [N, K] if bTranspose is true.
+  auto shape_b = b.dimensions;
+  if (shape_b.size() != 2) {
+    return base::unexpected("The second input must be a 2-D tensor.");
+  }
+  if (attributes.b_transpose) {
+    std::reverse(shape_b.begin(), shape_b.end());
+  }
+  // The number of columns in the first matrix must be equal to the number of
+  // rows in the second matrix.
+  if (shape_a[1] != shape_b[0]) {
+    return base::unexpected(base::StringPrintf(
+        "The number of columns (%u) in the %sfirst matrix isn't equal to "
+        "the number of rows (%u) in the %ssecond matrix.",
+        shape_a[1], attributes.a_transpose ? "transposed " : "", shape_b[0],
+        attributes.b_transpose ? "transposed " : ""));
+  };
+  // The output is 2-D tensor of shape [M, N].
+  std::vector<uint32_t> output_shape = {shape_a[0], shape_b[1]};
+  // The third input tensor c is either a scalar, or of the shape that is
+  // unidirectionally broadcastable to the output shape [M, N].
+  if (attributes.c_operand) {
+    if (attributes.c_operand->data_type != a.data_type) {
+      return base::unexpected(
+          "The third input type doesn't match other inputs' type.");
+    }
+    const auto shape_c = attributes.c_operand->dimensions;
+    if (shape_c.size() > 2) {
+      return base::unexpected(
+          "The third input tensor should be either a scalar or a 2-D tensor.");
+    }
+    if (!BroadcastShapes(shape_c, output_shape, false)) {
+      return base::unexpected(
+          "The third input tensor isn't unidirectionally broadcastable to the "
+          "output tensor.");
+    }
+  }
+  return Operand(a.data_type, std::move(output_shape));
+}
+
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {
   if (dimensions.empty()) {

@@ -79,9 +79,24 @@ struct Pool2dAttributes {
   InputOperandLayout layout;
 };
 
+// Contains the attributes of gemm operator.
+struct GemmAttributes {
+  // The optional third tensor in expression alpha * A * B + beta * C.
+  uint64? c_operand_id;
+  // A float scalar multiplier for the `A * B`.
+  float alpha = 1.0;
+  // A float scalar multiplier for the third tensor.
+  float beta = 1.0;
+  // True is to transpose the first tensor before matrix multiplication.
+  bool a_transpose = false;
+  // True is to transpose the second tensor before matrix multiplication.
+  bool b_transpose = false;
+};
+
 // Holds one of operator attributes.
 union OperatorAttributes {
   ClampAttributes clamp;
+  GemmAttributes gemm;
   Pool2dAttributes pool2d;
 };
 
@@ -97,6 +112,7 @@ struct Operator {
     kDiv,
     kMax,
     kMin,
+    kGemm,
     kAveragePool2d,
     kMaxPool2d,
     kRelu,
