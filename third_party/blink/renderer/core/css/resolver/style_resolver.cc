@@ -226,6 +226,7 @@ bool IsAnimationStyleChange(Element& element) {
 // empty (which is what we want).
 String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
                                     const ComputedStyle& computed_style) {
+  using DebugDiff = ComputedStyleBase::DebugDiff;
   using DebugField = ComputedStyleBase::DebugField;
 
   if (!base_computed_style) {
@@ -273,17 +274,20 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
   // RecalcOwnStyle, regardless of how ResolveStyle produces its result.
   exclusions.insert(DebugField::highlight_data_);
 
-  Vector<DebugField> diff =
-      base_computed_style->DebugDiffFields(computed_style);
+  Vector<DebugDiff> diff = base_computed_style->DebugDiffFields(computed_style);
 
   StringBuilder builder;
 
-  for (DebugField field : diff) {
-    if (exclusions.Contains(field)) {
+  for (const DebugDiff& d : diff) {
+    if (exclusions.Contains(d.field)) {
       continue;
     }
-    builder.Append(ComputedStyleBase::DebugFieldToString(field));
-    builder.Append(" ");
+    builder.Append(ComputedStyleBase::DebugFieldToString(d.field));
+    builder.Append("(was ");
+    builder.Append(d.actual.c_str());
+    builder.Append(", should be ");
+    builder.Append(d.correct.c_str());
+    builder.Append(") ");
   }
 
   if (builder.empty()) {

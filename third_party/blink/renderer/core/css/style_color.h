@@ -192,6 +192,9 @@ class CORE_EXPORT StyleColor {
   CSSValueID EffectiveColorKeyword() const;
 };
 
+// For debugging only.
+std::ostream& operator<<(std::ostream& stream, const StyleColor& color);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_

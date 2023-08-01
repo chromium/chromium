@@ -66,9 +66,31 @@ String ComputedStyleBase::DebugFieldToString(DebugField field) {
   }
 }
 
-Vector<ComputedStyleBase::DebugField>
+template<typename, typename = void>
+constexpr bool HasLogging {};
+
+template<typename T>
+constexpr bool HasLogging<
+  T,
+  std::void_t<decltype(std::stringstream() << T())>
+> = true;
+
+template<class T>
+static std::string DebugStringForField(const T& t) {
+  if constexpr (std::is_same_v<T, bool>) {
+    return t ? "true" : "false";
+  } else if constexpr (HasLogging<T>) {
+    std::stringstream ss;
+    ss << t;
+    return ss.str();
+  } else {
+    return "<unable to print>";
+  }
+}
+
+Vector<ComputedStyleBase::DebugDiff>
 ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
-  Vector<DebugField> diff;
+  Vector<DebugDiff> diff;
   {{fieldwise_debug_diff(computed_style, computed_style.all_fields)|indent(2)}}
   return diff;
 }

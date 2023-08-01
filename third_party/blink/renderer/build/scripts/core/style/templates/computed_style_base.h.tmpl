@@ -178,11 +178,16 @@ class ComputedStyleBase {
     {{field.name}},
     {% endfor %}
   };
+  struct DebugDiff {
+    DebugField field;
+    std::string correct;
+    std::string actual;
+  };
 
   CORE_EXPORT static String DebugFieldToString(DebugField);
 
   // Returns a list of all fields that differ between |this| and |o|.
-  CORE_EXPORT Vector<DebugField> DebugDiffFields(const ComputedStyleBase& o) const;
+  CORE_EXPORT Vector<DebugDiff> DebugDiffFields(const ComputedStyleBase& o) const;
 #endif // DCHECK_IS_ON()
 
  private:

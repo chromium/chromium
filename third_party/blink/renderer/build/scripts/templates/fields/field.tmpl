@@ -180,8 +180,13 @@ const {{field.type_name}}&
 {% endfor %}
 // Group: {{group.name}}
 {% for field in group.fields|rejectattr("custom_compare")|select("in", fields_to_compare) -%}
-  if (!({{compare(field.wrapper_pointer_name, getter_expression(field), "o")}}))
-    diff.push_back(DebugField::{{field.name}});
+  if (!({{compare(field.wrapper_pointer_name, getter_expression(field), "o")}})) {
+    DebugDiff d;
+    d.field = DebugField::{{field.name}};
+    d.actual = DebugStringForField({{getter_expression(field)}});
+    d.correct = DebugStringForField(o.{{getter_expression(field)}});
+    diff.push_back(std::move(d));
+  }
 {% endfor %}
 {% endmacro %}
 
