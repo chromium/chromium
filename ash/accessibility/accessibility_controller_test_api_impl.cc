@@ -37,6 +37,21 @@ int AccessibilityControllerTestApiImpl::GetDictationSodaDownloadProgress()
   return GetController()->dictation_soda_download_progress();
 }
 
+bool AccessibilityControllerTestApiImpl::IsDictationKeboardDialogShowing()
+    const {
+  return GetController()
+      ->IsDictationKeyboardDialogShowingForTesting();  // IN-TEST
+}
+
+void AccessibilityControllerTestApiImpl::AcceptDictationKeyboardDialog() {
+  return GetController()->AcceptDictationKeyboardDialogForTesting();  // IN-TEST
+}
+
+void AccessibilityControllerTestApiImpl::DismissDictationKeyboardDialog() {
+  return GetController()
+      ->DismissDictationKeyboardDialogForTesting();  // IN-TEST
+}
+
 // static
 std::unique_ptr<AccessibilityControllerTestApi>
 AccessibilityControllerTestApi::Create() {

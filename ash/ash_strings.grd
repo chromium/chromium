@@ -1312,6 +1312,17 @@ Style notes:
         "Copy"
       </message>
 
+      <!-- Dictation keyboard dialog strings -->
+      <message name="IDS_ASH_DICTATION_KEYBOARD_DIALOG_TITLE" desc="The title of a dialog that is shown when Dictation is enabled from the keyboard.">
+        Turn on Dictation?
+      </message>
+      <message name="IDS_ASH_DICTATION_KEYBOARD_DIALOG_DESCRIPTION_SODA_AVAILABLE" desc="The description of a dialog that is shown when Dictation is enabled from the keyboard. This description is only shown if SODA (speech-on-device-API) is available.">
+        With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="language">$1<ex>English (United States)</ex></ph>. Speech files will be downloaded so you can use dictation offline. You can change the dictation language anytime in Settings > Accessibility.
+      </message>
+      <message name="IDS_ASH_DICTATION_KEYBOARD_DIALOG_DESCRIPTION_SODA_NOT_AVAILABLE" desc="The description of a dialog that is shown when Dictation is enabled from the keyboard. This description is only shown if SODA (speech-on-device-API) is unavailable.">
+        With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="language">$1<ex>English (United States)</ex></ph>. Speech is sent to Google for processing. You can change the dictation language anytime in Settings > Accessibility.
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD" desc="The label used in the accessibility menu of the system tray to toggle on/off the onscreen keyboard.">
         On-screen keyboard
       </message>

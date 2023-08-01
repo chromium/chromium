@@ -1799,9 +1799,14 @@ void AccessibilityControllerImpl::EnableOrToggleDictationFromSource(
     if (dictation().enabled()) {
       ToggleDictationFromSource(source);
     } else if (source == DictationToggleSource::kKeyboard) {
-      // Only allow direct-enabling of Dictation from the keyboard.
-      base::RecordAction(base::UserMetricsAction("Accel_Enable_Dictation"));
-      dictation().SetEnabled(true);
+      // Only allow direct-enabling of Dictation from the keyboard. Show the
+      // confirmation dialog if it hasn't been accepted yet.
+      if (active_user_prefs_->GetBoolean(
+              prefs::kDictationAcceleratorDialogHasBeenAccepted)) {
+        OnDictationKeyboardDialogAccepted();
+      } else {
+        ShowDictationKeyboardDialog();
+      }
     }
     return;
   }
@@ -1811,6 +1816,71 @@ void AccessibilityControllerImpl::EnableOrToggleDictationFromSource(
     // Dictation to be toggled if Dictation is already enabled.
     ToggleDictationFromSource(source);
   }
+}
+
+void AccessibilityControllerImpl::ShowDictationKeyboardDialog() {
+  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled() ||
+      !client_) {
+    return;
+  }
+
+  dictation_keyboard_dialog_showing_for_testing_ = true;
+
+  std::string dictation_locale;
+  if (active_user_prefs_->GetString(prefs::kAccessibilityDictationLocale)
+          .empty()) {
+    dictation_locale = client_->GetDictationDefaultLocale(/*new_user=*/true);
+  } else {
+    dictation_locale =
+        active_user_prefs_->GetString(prefs::kAccessibilityDictationLocale);
+  }
+
+  std::u16string display_locale = l10n_util::GetDisplayNameForLocale(
+      /*locale=*/dictation_locale, /*display_locale=*/dictation_locale,
+      /*is_for_ui=*/true);
+  std::vector<std::u16string> replacements{display_locale};
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_ASH_DICTATION_KEYBOARD_DIALOG_TITLE);
+  std::u16string description =
+      ::features::IsDictationOfflineAvailable()
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DICTATION_KEYBOARD_DIALOG_DESCRIPTION_SODA_AVAILABLE,
+                replacements, nullptr)
+          : l10n_util::GetStringFUTF16(
+                IDS_ASH_DICTATION_KEYBOARD_DIALOG_DESCRIPTION_SODA_NOT_AVAILABLE,
+                replacements, nullptr);
+  ShowConfirmationDialog(
+      title, description,
+      base::BindOnce(
+          &AccessibilityControllerImpl::OnDictationKeyboardDialogAccepted,
+          GetWeakPtr()),
+      base::BindOnce(
+          &AccessibilityControllerImpl::OnDictationKeyboardDialogDismissed,
+          GetWeakPtr()),
+      base::BindOnce(
+          &AccessibilityControllerImpl::OnDictationKeyboardDialogDismissed,
+          GetWeakPtr()));
+}
+
+void AccessibilityControllerImpl::OnDictationKeyboardDialogAccepted() {
+  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
+    return;
+  }
+
+  dictation_keyboard_dialog_showing_for_testing_ = false;
+  active_user_prefs_->SetBoolean(
+      prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+  confirmation_dialog_.reset();
+  base::RecordAction(base::UserMetricsAction("Accel_Enable_Dictation"));
+  dictation().SetEnabled(true);
+}
+
+void AccessibilityControllerImpl::OnDictationKeyboardDialogDismissed() {
+  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
+    return;
+  }
+
+  dictation_keyboard_dialog_showing_for_testing_ = false;
 }
 
 void AccessibilityControllerImpl::ShowDictationLanguageUpgradedNudge(

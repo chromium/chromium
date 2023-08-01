@@ -499,6 +499,16 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   DictationBubbleController* GetDictationBubbleControllerForTest();
 
+  bool IsDictationKeyboardDialogShowingForTesting() {
+    return dictation_keyboard_dialog_showing_for_testing_;
+  }
+  void AcceptDictationKeyboardDialogForTesting() {
+    OnDictationKeyboardDialogAccepted();
+  }
+  void DismissDictationKeyboardDialogForTesting() {
+    OnDictationKeyboardDialogDismissed();
+  }
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
@@ -544,9 +554,15 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void SyncSwitchAccessPrefsToSignInProfile();
   void UpdateKeyCodesAfterSwitchAccessEnabled();
 
+  void ShowDictationKeyboardDialog();
+  void OnDictationKeyboardDialogAccepted();
+  void OnDictationKeyboardDialogDismissed();
+
   // Dictation's SODA download progress. Values are between 0 and 100. Tracked
   // for testing purposes only.
   int dictation_soda_download_progress_ = 0;
+
+  bool dictation_keyboard_dialog_showing_for_testing_ = false;
 
   // Client interface in chrome browser.
   raw_ptr<AccessibilityControllerClient, ExperimentalAsh> client_ = nullptr;

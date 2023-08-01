@@ -2029,6 +2029,11 @@ class AccessibilityManagerDictationKeyboardImprovementsTest
         ::features::kAccessibilityDictationKeyboardImprovements);
   }
 
+  void SetUpOnMainThread() override {
+    test_api_ = AccessibilityControllerTestApi::Create();
+    AccessibilityManagerTest::SetUpOnMainThread();
+  }
+
   // Invokes Dictation via the keyboard. The keys that are pressed depend on the
   // parameter that is passed at test construction.
   void PressKeys() {
@@ -2050,19 +2055,10 @@ class AccessibilityManagerDictationKeyboardImprovementsTest
     }
   }
 
-  void AcceptDialog() {
-    AccessibilityManager::Get()->OnNetworkDictationDialogAccepted();
-  }
-
-  void DismissDialog() {
-    AccessibilityManager::Get()->OnNetworkDictationDialogDismissed();
-  }
-
-  bool IsNetworkDictationDialogShowing() {
-    return AccessibilityManager::Get()->network_dictation_dialog_is_showing_;
-  }
+  AccessibilityControllerTestApi* test_api() { return test_api_.get(); }
 
  private:
+  std::unique_ptr<AccessibilityControllerTestApi> test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2085,13 +2081,12 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
 
   PressKeys();
   // If the dialog hasn't been accepted yet, then pressing the Dictation key
-  // should enable Dictation and show the network dialog.
-  ASSERT_TRUE(manager->IsDictationEnabled());
-  ASSERT_TRUE(IsNetworkDictationDialogShowing());
-  // Dismissing the dialog should disable the Dictation feature.
-  DismissDialog();
+  // should show a dialog.
   ASSERT_FALSE(manager->IsDictationEnabled());
-  ASSERT_FALSE(IsNetworkDictationDialogShowing());
+  ASSERT_TRUE(test_api()->IsDictationKeboardDialogShowing());
+  test_api()->DismissDictationKeyboardDialog();
+  ASSERT_FALSE(manager->IsDictationEnabled());
+  ASSERT_FALSE(test_api()->IsDictationKeboardDialogShowing());
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
@@ -2102,12 +2097,12 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
   manager->SetDictationEnabled(false);
 
   PressKeys();
+  ASSERT_FALSE(manager->IsDictationEnabled());
+  ASSERT_TRUE(test_api()->IsDictationKeboardDialogShowing());
+  // Accepting the dialog should enable the Dictation feature.
+  test_api()->AcceptDictationKeyboardDialog();
   ASSERT_TRUE(manager->IsDictationEnabled());
-  ASSERT_TRUE(IsNetworkDictationDialogShowing());
-  // Accepting the dialog should keep the Dictation feature enabled.
-  AcceptDialog();
-  ASSERT_TRUE(manager->IsDictationEnabled());
-  ASSERT_FALSE(IsNetworkDictationDialogShowing());
+  ASSERT_FALSE(test_api()->IsDictationKeboardDialogShowing());
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
@@ -2121,7 +2116,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
   // If the dialog has already been accepted yet, then pressing the Dictation
   // key should enable Dictation.
   ASSERT_TRUE(manager->IsDictationEnabled());
-  ASSERT_FALSE(IsNetworkDictationDialogShowing());
+  ASSERT_FALSE(test_api()->IsDictationKeboardDialogShowing());
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
