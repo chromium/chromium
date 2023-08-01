@@ -67,16 +67,33 @@ AccountStatus::Type ParseAccountStatusType(
   return AccountStatus::Type::kUnknown;
 }
 
-bool IsEnrollmentRequired(const em::CheckUserAccountResponse& response) {
+EnrollmentNudgePolicyFetchResult ParseEnrollmentNudgePolicy(
+    const em::CheckUserAccountResponse& response) {
   if (!response.has_enrollment_nudge_type()) {
-    return false;
+    return EnrollmentNudgePolicyFetchResult::kNoPolicyInResponse;
   }
-  return response.enrollment_nudge_type() ==
-         em::CheckUserAccountResponse::ENROLLMENT_REQUIRED;
+  switch (response.enrollment_nudge_type()) {
+    case em::CheckUserAccountResponse::UNKNOWN_ENROLLMENT_NUDGE_TYPE:
+      return EnrollmentNudgePolicyFetchResult::kUnknown;
+    case em::CheckUserAccountResponse::NONE:
+      return EnrollmentNudgePolicyFetchResult::kAllowConsumerSignIn;
+    case em::CheckUserAccountResponse::ENROLLMENT_REQUIRED:
+      return EnrollmentNudgePolicyFetchResult::kEnrollmentRequired;
+  }
+  LOG(ERROR)
+      << "Unexpected enrollment nudge policy value received from DM server: "
+      << static_cast<int>(response.enrollment_nudge_type());
+  return EnrollmentNudgePolicyFetchResult::kUnknown;
 }
 
 void RecordAccountStatusCheckResult(AccountStatus::Type value) {
   base::UmaHistogramEnumeration("Enterprise.AccountStatusCheckResult", value);
+}
+
+void RecordEnrollmentNudgePolicyFetchResult(
+    EnrollmentNudgePolicyFetchResult value) {
+  base::UmaHistogramEnumeration("Enterprise.EnrollmentNudge.PolicyFetchResult",
+                                value);
 }
 
 }  // namespace
@@ -157,10 +174,17 @@ void AccountStatusCheckFetcher::OnAccountStatusCheckReceived(
       fetch_succeeded = true;
       const em::CheckUserAccountResponse& response =
           result.response.check_user_account_response();
-      account_status = {.type = ParseAccountStatusType(response, email_),
-                        .enrollment_required = IsEnrollmentRequired(response)};
+      const EnrollmentNudgePolicyFetchResult enrollment_nudge_policy =
+          ParseEnrollmentNudgePolicy(response);
+      account_status = {
+          .type = ParseAccountStatusType(response, email_),
+          .enrollment_required =
+              enrollment_nudge_policy ==
+              EnrollmentNudgePolicyFetchResult::kEnrollmentRequired};
 
-      if (!is_fetching_enrollment_nudge_policy_) {
+      if (is_fetching_enrollment_nudge_policy_) {
+        RecordEnrollmentNudgePolicyFetchResult(enrollment_nudge_policy);
+      } else {
         // This call records UMA which is intended to reflect the account status
         // checks in enrollment flow. Enrollment nudge use-cases should not
         // affect it.
@@ -170,7 +194,7 @@ void AccountStatusCheckFetcher::OnAccountStatusCheckReceived(
       if (account_status.enrollment_required &&
           account_status.type != AccountStatus::Type::kDasher) {
         LOG(ERROR)
-            << "Unexpected responce from DM Server: Enrollment Nudge policy is "
+            << "Unexpected response from DM Server: Enrollment Nudge policy is "
                "set to require enrollment for a non-Dasher account.";
         account_status.enrollment_required = false;
       }

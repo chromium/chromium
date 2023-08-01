@@ -31912,6 +31912,25 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Grid view mode"/>
 </enum>
 
+<enum name="EnrollmentNudgePolicyFetchResult">
+  <summary>
+    Enrollment nudge policy can be fetched during OOBE consumer sign-in flow.
+  </summary>
+  <int value="0" label="Unknown server response"/>
+  <int value="1" label="Policy is not set in the response"/>
+  <int value="2" label="Policy requires enrollment"/>
+  <int value="3" label="Policy allows consumer sign-in"/>
+</enum>
+
+<enum name="EnrollmentNudgeUserAction">
+  <summary>
+    Corresponds to the buttons available on the enrollment nudge pop-up on the
+    Gaia screen.
+  </summary>
+  <int value="0" label="Enterprise Enrollment button clicked"/>
+  <int value="1" label="Use Another Account button clicked"/>
+</enum>
+
 <enum name="EnrollmentStatus">
   <int value="0" label="Non-managed"/>
   <int value="1" label="Managed EDU (Deprecated)"/>

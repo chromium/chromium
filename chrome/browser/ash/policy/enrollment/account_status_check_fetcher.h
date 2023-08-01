@@ -18,6 +18,18 @@ namespace policy {
 
 struct DMServerJobResult;
 
+// This enum is tied directly to the UMA `EnrollmentNudgePolicyFetchResult` enum
+// defined in //tools/metrics/histograms/enums.xml, and should always reflect it
+// (do not change one without changing the other). Entries should be never
+// modified or deleted. Only additions possible.
+enum class EnrollmentNudgePolicyFetchResult {
+  kUnknown = 0,
+  kNoPolicyInResponse = 1,
+  kEnrollmentRequired = 2,
+  kAllowConsumerSignIn = 3,
+  kMaxValue = kAllowConsumerSignIn
+};
+
 struct AccountStatus {
   // This enum is tied directly to a UMA enum `EnterpriseAccountStatus` defined
   // in //tools/metrics/histograms/enums.xml, and should always reflect it (do
@@ -32,6 +44,7 @@ struct AccountStatus {
     kDasher = 5,
     kMaxValue = kDasher
   };
+
   Type type = Type::kUnknown;
   bool enrollment_required = false;
 };

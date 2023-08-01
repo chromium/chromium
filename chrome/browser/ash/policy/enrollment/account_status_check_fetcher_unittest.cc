@@ -96,15 +96,25 @@ class AccountStatusCheckFetcherUnitTest : public testing::TestWithParam<bool> {
     return response;
   }
 
-  void CheckHistograms(const AccountStatus::Type& account_type) {
+  void CheckHistograms(
+      const AccountStatus::Type& expected_account_type,
+      const EnrollmentNudgePolicyFetchResult& expected_enr_nudge_policy) {
+    std::vector<base::Bucket> account_status_samples =
+        histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult");
+    std::vector<base::Bucket> enrollment_nudge_samples =
+        histogram_tester_.GetAllSamples(
+            "Enterprise.EnrollmentNudge.PolicyFetchResult");
+
     if (!GetParam()) {
-      EXPECT_THAT(histogram_tester_.GetAllSamples(
-                      "Enterprise.AccountStatusCheckResult"),
-                  ElementsAre(base::Bucket(static_cast<int>(account_type), 1)));
+      EXPECT_THAT(account_status_samples,
+                  ElementsAre(base::Bucket(
+                      static_cast<int>(expected_account_type), 1)));
+      EXPECT_TRUE(enrollment_nudge_samples.empty());
     } else {
-      EXPECT_TRUE(
-          histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult")
-              .empty());
+      EXPECT_THAT(enrollment_nudge_samples,
+                  ElementsAre(base::Bucket(
+                      static_cast<int>(expected_enr_nudge_policy), 1)));
+      EXPECT_TRUE(account_status_samples.empty());
     }
   }
 
@@ -143,7 +153,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithUnknownEnrollmentNudge) {
   const AccountStatus expected_status = {.type = AccountStatus::Type::kDasher,
                                          .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kUnknown);
 }
 
 TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithEnrollmentNudgeSetToNone) {
@@ -156,7 +167,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithEnrollmentNudgeSetToNone) {
   const AccountStatus expected_status = {.type = AccountStatus::Type::kDasher,
                                          .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kAllowConsumerSignIn);
 }
 
 TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithEnrollmentRequired) {
@@ -169,7 +181,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithEnrollmentRequired) {
   const AccountStatus expected_status = {.type = AccountStatus::Type::kDasher,
                                          .enrollment_required = GetParam()};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kEnrollmentRequired);
 }
 
 TEST_P(AccountStatusCheckFetcherUnitTest, ConsumerWithConsumerDomain) {
@@ -184,7 +197,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, ConsumerWithConsumerDomain) {
       .type = AccountStatus::Type::kConsumerWithConsumerDomain,
       .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kUnknown);
 }
 
 TEST_P(AccountStatusCheckFetcherUnitTest, ConsumerWithBusinessDomain) {
@@ -199,7 +213,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, ConsumerWithBusinessDomain) {
       .type = AccountStatus::Type::kConsumerWithBusinessDomain,
       .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kUnknown);
 }
 
 TEST_P(AccountStatusCheckFetcherUnitTest, OrganisationalAccountVerified) {
@@ -214,7 +229,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, OrganisationalAccountVerified) {
       .type = AccountStatus::Type::kOrganisationalAccountVerified,
       .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kUnknown);
 }
 
 TEST_P(AccountStatusCheckFetcherUnitTest, OrganisationalAccountUnverified) {
@@ -229,7 +245,8 @@ TEST_P(AccountStatusCheckFetcherUnitTest, OrganisationalAccountUnverified) {
       .type = AccountStatus::Type::kOrganisationalAccountUnverified,
       .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  CheckHistograms(expected_status.type);
+  CheckHistograms(expected_status.type,
+                  EnrollmentNudgePolicyFetchResult::kUnknown);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -76,6 +76,23 @@ const DialogMode = {
  */
 const POSSIBLE_FIRST_SIGNIN_STEPS = [DialogMode.GAIA, DialogMode.LOADING];
 
+
+/**
+ * This enum is tied directly to the `EnrollmentNudgeUserAction` UMA enum
+ * defined in //tools/metrics/histograms/enums.xml, and to the
+ * `EnrollmentNudgeTest::UserAction` enum defined in
+ * //chrome/browser/ash/login/enrollment_nudge_browsertest.cc.
+ * Do not change one without changing the others.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ * @enum {number}
+ */
+const EnrollmentNudgeUserAction = {
+  ENTERPRISE_ENROLLMENT_BUTTON: 0,
+  USE_ANOTHER_ACCOUNT_BUTTON: 1,
+  MAX: 2,
+};
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -967,6 +984,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onEnrollmentNudgeUseAnotherAccount_() {
+    this.RecordUMAHistogramForEnrollmentNudgeUserAction_(
+        EnrollmentNudgeUserAction.USE_ANOTHER_ACCOUNT_BUTTON);
     this.$.enrollmentNudge.hideDialog();
     this.doReload();
   }
@@ -977,6 +996,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onEnrollmentNudgeEnroll_() {
+    this.RecordUMAHistogramForEnrollmentNudgeUserAction_(
+        EnrollmentNudgeUserAction.ENTERPRISE_ENROLLMENT_BUTTON);
     this.$.enrollmentNudge.hideDialog();
     this.userActed('startEnrollment');
   }
@@ -1168,6 +1189,18 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   setQuickStartEnabled() {
     this.$['signin-frame-dialog'].isQuickStartEnabled_ = true;
+  }
+
+  /**
+   * @param {EnrollmentNudgeUserAction} user_action
+   * @private
+   */
+  RecordUMAHistogramForEnrollmentNudgeUserAction_(user_action) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Enterprise.EnrollmentNudge.UserAction',
+      user_action,
+      EnrollmentNudgeUserAction.MAX,
+    ]);
   }
 }
 
