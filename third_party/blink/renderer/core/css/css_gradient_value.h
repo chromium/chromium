@@ -155,6 +155,8 @@ class CSSGradientValue : public CSSImageGeneratorValue {
                                   bool requires_separator) const;
   void AppendCSSTextForDeprecatedColorStops(StringBuilder&) const;
 
+  bool Equals(const CSSGradientValue&) const;
+
   // Stops
   HeapVector<CSSGradientColorStop, 2> stops_;
   CSSGradientType gradient_type_;

@@ -1179,7 +1179,7 @@ bool CSSLinearGradientValue::Equals(const CSSLinearGradientValue& other) const {
            stops_ == other.stops_;
   }
 
-  if (repeating_ != other.repeating_) {
+  if (!CSSGradientValue::Equals(other)) {
     return false;
   }
 
@@ -1206,7 +1206,7 @@ bool CSSLinearGradientValue::Equals(const CSSLinearGradientValue& other) const {
     equal_xand_y = !other.first_x_ && !other.first_y_;
   }
 
-  return equal_xand_y && stops_ == other.stops_;
+  return equal_xand_y;
 }
 
 CSSLinearGradientValue* CSSLinearGradientValue::ComputedCSSValue(
@@ -1309,6 +1309,13 @@ void CSSGradientValue::AppendCSSTextForDeprecatedColorStops(
       result.Append(')');
     }
   }
+}
+
+bool CSSGradientValue::Equals(const CSSGradientValue& other) const {
+  return repeating_ == other.repeating_ &&
+         color_interpolation_space_ == other.color_interpolation_space_ &&
+         hue_interpolation_method_ == other.hue_interpolation_method_ &&
+         stops_ == other.stops_;
 }
 
 String CSSRadialGradientValue::CustomCSSText() const {
@@ -1653,7 +1660,7 @@ bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
            stops_ == other.stops_;
   }
 
-  if (repeating_ != other.repeating_) {
+  if (!CSSGradientValue::Equals(other)) {
     return false;
   }
 
@@ -1687,7 +1694,7 @@ bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
       return false;
     }
   }
-  return stops_ == other.stops_;
+  return true;
 }
 
 CSSRadialGradientValue* CSSRadialGradientValue::ComputedCSSValue(
@@ -1790,11 +1797,10 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
 }
 
 bool CSSConicGradientValue::Equals(const CSSConicGradientValue& other) const {
-  return repeating_ == other.repeating_ &&
+  return CSSGradientValue::Equals(other) &&
          base::ValuesEquivalent(x_, other.x_) &&
          base::ValuesEquivalent(y_, other.y_) &&
-         base::ValuesEquivalent(from_angle_, other.from_angle_) &&
-         stops_ == other.stops_;
+         base::ValuesEquivalent(from_angle_, other.from_angle_);
 }
 
 CSSConicGradientValue* CSSConicGradientValue::ComputedCSSValue(
