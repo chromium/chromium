@@ -2238,41 +2238,15 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
 void Node::UpdateForRemovedDOMParts(ContainerNode& insertion_point) {
   if (UNLIKELY(RuntimeEnabledFeatures::DOMPartsAPIEnabled() && HasDOMParts())) {
     for (Part* part : GetDOMParts()) {
-      if (part->root()) {
-        part->root()->MarkPartsDirty();
-        if (part->root()->IsDocumentPartRoot()) {
-          // If this part's root is the DocumentPartRoot, then disconnect it.
-          part->MoveToRoot(nullptr);
-        }
-      }
+      part->PartDisconnected();
     }
   }
 }
 
 void Node::UpdateForInsertedDOMParts(ContainerNode& insertion_point) {
   if (UNLIKELY(RuntimeEnabledFeatures::DOMPartsAPIEnabled() && HasDOMParts())) {
-    auto get_new_root = [&insertion_point]() -> PartRoot* {
-      Node* tree_root = &insertion_point.TreeRoot();
-      if (auto* document_fragment = DynamicTo<DocumentFragment>(tree_root)) {
-        return &document_fragment->getPartRoot();
-      } else if (auto* document = DynamicTo<Document>(tree_root)) {
-        return &document->getPartRoot();
-      } else {
-        // Disconnected tree - no part root.
-        return nullptr;
-      }
-    };
-    PartRoot* new_root = nullptr;
     for (Part* part : GetDOMParts()) {
-      if (!part->root()) {
-        if (!new_root) {
-          // Lazy load the new root, because calling TreeRoot can require a
-          // parent walk.
-          new_root = get_new_root();
-        }
-        part->MoveToRoot(new_root);
-      }
-      part->root()->MarkPartsDirty();
+      part->PartConnected(insertion_point);
     }
   }
 }

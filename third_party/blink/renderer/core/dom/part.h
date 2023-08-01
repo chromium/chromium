@@ -33,6 +33,8 @@ class CORE_EXPORT Part : public ScriptWrappable {
   PartRoot* root() const { return root_; }
   void MoveToRoot(PartRoot* new_root);
   virtual Document& GetDocument() const = 0;
+  void PartDisconnected();
+  void PartConnected(ContainerNode& insertion_point);
 
   // Part API
   V8UnionChildNodePartOrDocumentPartRoot* rootForBindings() const;
