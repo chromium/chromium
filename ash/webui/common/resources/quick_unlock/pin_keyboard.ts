@@ -271,8 +271,12 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
   focusInputSynchronously(selectionStart?: number, selectionEnd?: number):
       void {
     this.passwordElement_().focus();
-    this.selectionStart_ = selectionStart || 0;
-    this.selectionEnd_ = selectionEnd || 0;
+    if (selectionStart !== undefined) {
+      this.selectionStart_ = selectionStart;
+    }
+    if (selectionEnd !== undefined) {
+      this.selectionEnd_ = selectionEnd;
+    }
   }
 
   /**
