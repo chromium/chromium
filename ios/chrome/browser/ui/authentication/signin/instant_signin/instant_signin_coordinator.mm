@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -42,6 +43,9 @@
   SigninCoordinator* _addAccountSigninCoordinator;
   // Overlay to block the current window while the sign-in is in progress.
   ActivityOverlayCoordinator* _activityOverlayCoordinator;
+  // Whether a snackbar displaying the signed-in account and an "Undo" button
+  // should be displayed after successful sign-in.
+  BOOL _showSnackbarAfterSuccessfulSignin;
 }
 
 #pragma mark - Public
@@ -74,10 +78,20 @@
                                                      accessPoint:_accessPoint];
   _mediator.delegate = self;
   if (_identity) {
+    // No other dialog will be shown in this flow, so display the snackbar to
+    // ensure the full signed-in account is shown at least once.
+    _showSnackbarAfterSuccessfulSignin = YES;
     // If an identity was selected, sign-in can start now.
     [self startSignInOnlyFlow];
     return;
   }
+
+  // The remaining code paths already contain some UI that fully displays the
+  // signed-in account, so no need for the snackbar. They happen to currently
+  // show it, so guard the change behind flag.
+  _showSnackbarAfterSuccessfulSignin =
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(chromeState);
   if (!accountManagerService->HasIdentities()) {
@@ -204,12 +218,15 @@
 - (void)startSignInOnlyFlow {
   [self showActivityOverlay];
   signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
-  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
-               initWithBrowser:self.browser
-                      identity:_identity
-                   accessPoint:_accessPoint
-              postSignInAction:PostSignInAction::kShowSnackbar
-      presentingViewController:self.baseViewController];
+  auto postSigninAction = _showSnackbarAfterSuccessfulSignin
+                              ? PostSignInAction::kShowSnackbar
+                              : PostSignInAction::kNone;
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:_identity
+                                      accessPoint:_accessPoint
+                                 postSignInAction:postSigninAction
+                         presentingViewController:self.baseViewController];
   authenticationFlow.delegate = self;
   [_mediator startSignInOnlyFlowWithAuthenticationFlow:authenticationFlow];
 }

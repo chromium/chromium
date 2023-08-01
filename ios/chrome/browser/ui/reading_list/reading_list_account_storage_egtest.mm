@@ -152,6 +152,16 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       syncer::kReadingListEnableDualReadingListModel);
   config.features_enabled.push_back(
       syncer::kReadingListEnableSyncTransportModeUponSignIn);
+  if ([self isRunningTest:@selector
+            (testSignInWithSecondaryAccountInPromo_WithSnackbar)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector
+            (testSignInWithSecondaryAccountInPromo_NoSnackbar)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
   return config;
 }
 
@@ -233,8 +243,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Test that when multiple identities exist on the device, the user can sign-in
-// with a secondary identity using the secondary button in the promo.
-- (void)testSignInWithSecondaryAccountInPromo {
+// with a secondary identity using the secondary button in the promo, and a
+// snackbar is shown after sign-in.
+// kReplaceSyncPromosWithSignInPromos is disabled.
+- (void)testSignInWithSecondaryAccountInPromo_WithSnackbar {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
@@ -254,6 +266,30 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                               fakeIdentity2.userEmail)];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SignedInSnackbarUndoButton()];
+  // Verify that the identity2 is signed-in without sync, and that the promo is
+  // hidden.
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Test that when multiple identities exist on the device, the user can sign-in
+// with a secondary identity using the secondary button in the promo.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testSignInWithSecondaryAccountInPromo_NoSnackbar {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  // Use sign-in with the second account using the promo's secondary button.
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity2.userEmail)]
+      performAction:grey_tap()];
   // Verify that the identity2 is signed-in without sync, and that the promo is
   // hidden.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
