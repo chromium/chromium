@@ -634,7 +634,7 @@ bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return true;
   v8::Local<v8::Value> wrapper =
-      object->GetInternalField(kV8DOMWrapperObjectIndex);
+      object->GetInternalField(kV8DOMWrapperObjectIndex).As<v8::Value>();
   // Skip wrapper boilerplates which are like regular wrappers but don't have
   // native object.
   if (!wrapper.IsEmpty() && wrapper->IsUndefined())
