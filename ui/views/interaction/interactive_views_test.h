@@ -739,7 +739,7 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
         } else {
           // Watch the property for a value that satisfies the matcher.
           subscription->data = (view->*add_listener)(base::BindRepeating(
-              [](View* view, R (V::*property)() const,
+              [](V* view, R (V::*property)() const,
                  ui::CustomElementEventType event_type,
                  testing::Matcher<R> matcher) {
                 if (matcher.Matches((view->*property)())) {
