@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -382,7 +383,7 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Only chromium based Cronet supports the multi-network API
+    @OnlyRunNativeCronet // Tests internals of Native CronetEngine
     @RequiresMinAndroidApi(Build.VERSION_CODES.M) // Multi-network API is supported from Marshmallow
     public void testNetworkBoundRequestCancel() throws Exception {
         // Upon a network disconnection, NCN posts a tasks onto the network thread that calls
@@ -429,6 +430,37 @@ public class CronetUrlRequestContextTest {
         assertThat(callback.mError).isNull();
         // urlRequest.cancel(); should destroy the underlying network bound context.
         assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+    }
+
+    @Test
+    @OnlyRunJavaCronet
+    @RequiresMinAndroidApi(Build.VERSION_CODES.P)
+    // JavaCronetEngine Multi-network API is supported from Pie
+    public void testBindToNetwork() {
+        // bind to invalid network handle
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        cronetEngine.bindToNetwork(-150 /* invalid network handle */);
+        ExperimentalUrlRequest.Builder builder =
+                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
+        builder.build().start();
+        callback.blockForDone();
+
+        assertThat(callback.mError).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("NetworkHandle");
+
+        // bind to the default network
+        ConnectivityManagerDelegate delegate =
+                new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
+        Network defaultNetwork = delegate.getDefaultNetwork();
+        assumeTrue(defaultNetwork != null);
+        cronetEngine.bindToNetwork(defaultNetwork.getNetworkHandle());
+        callback = new TestUrlRequestCallback();
+        builder = cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
+        builder.build().start();
+        callback.blockForDone();
+
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     @Test

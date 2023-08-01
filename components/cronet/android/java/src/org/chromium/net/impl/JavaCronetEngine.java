@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE;
 
+import android.os.Build;
 import android.util.Log;
 
 import org.chromium.net.BidirectionalStream;
@@ -49,6 +50,9 @@ public final class JavaCronetEngine extends CronetEngineBase {
     private final int mCronetEngineId;
     private final CronetLogger mLogger;
     private final AtomicInteger mActiveRequestCount = new AtomicInteger();
+
+    /** The network handle to be used for requests that do not explicitly specify one. **/
+    private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
     public JavaCronetEngine(CronetEngineBuilderImpl builder) {
         mCronetEngineId = hashCode();
@@ -120,13 +124,11 @@ public final class JavaCronetEngine extends CronetEngineBase {
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
             int idempotency, long networkHandle) {
         if (networkHandle != DEFAULT_NETWORK_HANDLE) {
-            throw new UnsupportedOperationException(
-                    "The multi-network API is not supported by the Java implementation "
-                    + "of Cronet Engine");
+            mNetworkHandle = networkHandle;
         }
         return new JavaUrlRequest(this, callback, mExecutorService, executor, url, mUserAgent,
                 allowDirectExecutor, trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet,
-                trafficStatsUid);
+                trafficStatsUid, mNetworkHandle);
     }
 
     @Override
@@ -208,9 +210,11 @@ public final class JavaCronetEngine extends CronetEngineBase {
 
     @Override
     public void bindToNetwork(long networkHandle) {
-        throw new UnsupportedOperationException(
-                "The multi-network API is not supported by the Java implementation "
-                + "of Cronet Engine");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            throw new UnsupportedOperationException(
+                    "This multi-network Java implementation is available starting from Android Pie");
+        }
+        mNetworkHandle = networkHandle;
     }
 
     @Override
