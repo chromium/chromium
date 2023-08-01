@@ -21,29 +21,48 @@ const CGFloat kSpotlightSize = 38;
 const CGFloat kSpotlightCornerRadius = 7;
 }  // namespace
 
+@interface ToolbarButton () {
+  // The image used for the normal state.
+  UIImage* _image;
+  // The image used for iphHighlighted state. If this property is not nil, the
+  // iphHighlighted effect will be replacing the default image with this one,
+  // instead of using tint color OR `self.spotlightView`.
+  UIImage* _IPHHighlightedImage;
+}
+
+@end
+
 @implementation ToolbarButton
 
-+ (instancetype)toolbarButtonWithImage:(UIImage*)image {
-  ToolbarButton* button = [[self class] buttonWithType:UIButtonTypeSystem];
-  [button setImage:image forState:UIControlStateNormal];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
+- (instancetype)initWithImage:(UIImage*)image {
+  return [self initWithImage:image IPHHighlightedImage:nil];
+}
 
-  UIView* spotlightView = [[UIView alloc] init];
-  spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
-  spotlightView.hidden = YES;
-  spotlightView.userInteractionEnabled = NO;
-  spotlightView.layer.cornerRadius = kSpotlightCornerRadius;
-  // Make sure that the spotlightView is below the image to avoid changing the
-  // color of the image.
-  [button insertSubview:spotlightView belowSubview:button.imageView];
-  AddSameCenterConstraints(button, spotlightView);
-  [spotlightView.widthAnchor constraintEqualToConstant:kSpotlightSize].active =
-      YES;
-  [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightSize].active =
-      YES;
-  button.spotlightView = spotlightView;
+- (instancetype)initWithImage:(UIImage*)image
+          IPHHighlightedImage:(UIImage*)IPHHighlightedImage {
+  self = [[super class] buttonWithType:UIButtonTypeSystem];
+  if (self) {
+    _image = image;
+    _IPHHighlightedImage = IPHHighlightedImage;
+    [self setImage:image forState:UIControlStateNormal];
+    self.translatesAutoresizingMaskIntoConstraints = NO;
 
-  return button;
+    UIView* spotlightView = [[UIView alloc] init];
+    spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
+    spotlightView.hidden = YES;
+    spotlightView.userInteractionEnabled = NO;
+    spotlightView.layer.cornerRadius = kSpotlightCornerRadius;
+    // Make sure that the spotlightView is below the image to avoid changing the
+    // color of the image.
+    [self insertSubview:spotlightView belowSubview:self.imageView];
+    AddSameCenterConstraints(self, spotlightView);
+    [spotlightView.widthAnchor constraintEqualToConstant:kSpotlightSize]
+        .active = YES;
+    [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightSize]
+        .active = YES;
+    _spotlightView = spotlightView;
+  }
+  return self;
 }
 
 #pragma mark - Public Methods
@@ -92,8 +111,12 @@ const CGFloat kSpotlightCornerRadius = 7;
     return;
 
   _iphHighlighted = iphHighlighted;
-  [self updateTintColor];
-  [self updateSpotlightView];
+  if (_IPHHighlightedImage) {
+    [self updateImage];
+  } else {
+    [self updateTintColor];
+    [self updateSpotlightView];
+  }
 }
 
 - (void)setToolbarConfiguration:(ToolbarConfiguration*)toolbarConfiguration {
@@ -127,6 +150,14 @@ const CGFloat kSpotlightCornerRadius = 7;
 // Updates the spotlight view's appearance according to the current state.
 - (void)updateSpotlightView {
   self.spotlightView.hidden = !self.iphHighlighted;
+}
+
+- (void)updateImage {
+  if (_iphHighlighted && _IPHHighlightedImage) {
+    [self setImage:_IPHHighlightedImage forState:UIControlStateNormal];
+  } else {
+    [self setImage:_image forState:UIControlStateNormal];
+  }
 }
 
 // Updates the tint color according to the current state.

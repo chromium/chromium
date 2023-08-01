@@ -51,6 +51,19 @@ const CGFloat kLabelSize = 14;
   }
 }
 
+- (void)setIphHighlighted:(BOOL)iphHighlighted {
+  if (self.iphHighlighted == iphHighlighted) {
+    return;
+  }
+  [super setIphHighlighted:iphHighlighted];
+  if (self.iphHighlighted) {
+    self.tabCountLabel.textColor =
+        self.toolbarConfiguration.buttonsTintColorIPHHighlighted;
+  } else {
+    self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
+  }
+}
+
 - (UILabel*)tabCountLabel {
   if (!_tabCountLabel) {
     [[NSNotificationCenter defaultCenter]
