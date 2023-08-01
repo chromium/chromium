@@ -267,7 +267,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 27
+  // Next tag: 28
   message Hardware {
     // OS CPU architecture. Common options are: x86, x86_64, arm64, armv7,
     // armv7l, armv8l and aarch64.
@@ -498,6 +498,10 @@ message SystemProfileProto {
     // Firmware version of the TPM on the device. This field is only filled in
     // on ChromeOS devices (both CrOS and LaCrOS platforms).
     optional uint64 tpm_firmware_version = 26;
+
+    // RW Firmware version of the TPM on the device. This field is only filled
+    // in on ChromeOS devices.
+    optional string tpm_rw_firmware_version = 27;
   }
   optional Hardware hardware = 6;
 
