@@ -44,13 +44,14 @@ class UkmDatabaseClient {
 
   UkmObserver* ukm_observer_for_testing() { return ukm_observer_.get(); }
 
+  void clear_ukm_recorder_for_testing() { ukm_recorder_for_testing_ = nullptr; }
+
  private:
   friend base::NoDestructor<UkmDatabaseClient>;
   UkmDatabaseClient();
   ~UkmDatabaseClient();
 
-  raw_ptr<ukm::UkmRecorderImpl, LeakedDanglingUntriaged>
-      ukm_recorder_for_testing_;
+  raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_for_testing_;
   std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<segmentation_platform::UkmDataManager> ukm_data_manager_;
 };

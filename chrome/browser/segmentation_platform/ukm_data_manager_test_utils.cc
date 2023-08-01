@@ -71,7 +71,9 @@ absl::optional<float> RunQueryAndGetResult(
 UkmDataManagerTestUtils::UkmDataManagerTestUtils(
     ukm::TestUkmRecorder* ukm_recorder)
     : ukm_recorder_(ukm_recorder) {}
-UkmDataManagerTestUtils::~UkmDataManagerTestUtils() = default;
+UkmDataManagerTestUtils::~UkmDataManagerTestUtils() {
+  UkmDatabaseClient::GetInstance().clear_ukm_recorder_for_testing();
+}
 
 void UkmDataManagerTestUtils::PreProfileInit(
     const std::map<SegmentId, proto::SegmentationModelMetadata>&
