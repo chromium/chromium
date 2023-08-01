@@ -69,6 +69,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -1171,8 +1172,8 @@ FileManagerPrivateGetDialogCallerFunction::Run() {
           GetSenderWebContents());
   base::Value::Dict info;
   if (caller.has_value()) {
-    if (caller->url_or_path().has_value()) {
-      info.Set("url", caller->url_or_path().value());
+    if (caller->url().has_value()) {
+      info.Set("url", caller->url()->spec());
     }
     if (caller->component().has_value()) {
       info.Set("component",

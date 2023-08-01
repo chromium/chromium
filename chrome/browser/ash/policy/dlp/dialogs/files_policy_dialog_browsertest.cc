@@ -263,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest, UrlDestination) {
   ASSERT_TRUE(FilesPolicyDialog::CreateWarnDialog(
       base::DoNothing(), warning_files_, dlp::FileAction::kCopy,
-      /*modal_parent=*/nullptr, DlpFileDestination("htpps://example.com")));
+      /*modal_parent=*/nullptr,
+      DlpFileDestination(GURL("https://example.com"))));
 }
 
 // (b/281495499): This is a test for the crash that happens upon showing a
@@ -296,7 +297,7 @@ INSTANTIATE_TEST_SUITE_P(
     WarningComponentBrowserTest,
     ::testing::Values(
         std::make_tuple(dlp::FileAction::kUpload,
-                        DlpFileDestination("htpps://example.com")),
+                        DlpFileDestination(GURL("https://example.com"))),
         std::make_tuple(dlp::FileAction::kTransfer,
                         DlpFileDestination(data_controls::Component::kArc)),
         std::make_tuple(

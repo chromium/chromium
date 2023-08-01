@@ -283,11 +283,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
       CheckIfDlpAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> dropped_files);
 
-  // Gets the component out of |destination| if possible.
-  absl::optional<data_controls::Component> MaybeGetComponent(
-      Profile* profile,
-      const DlpFileDestination& destination);
-
   // Keeps track of events and detects duplicate ones using time based
   // approach.
   std::unique_ptr<DlpFilesEventStorage> event_storage_;

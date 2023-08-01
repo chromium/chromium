@@ -47,6 +47,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -99,8 +100,8 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kChromeApp:
-      return DlpFileDestination(base::StrCat(
-          {extensions::kExtensionScheme, "://", app_update.AppId()}));
+      return DlpFileDestination(GURL(base::StrCat(
+          {extensions::kExtensionScheme, "://", app_update.AppId()})));
     case apps::AppType::kArc:
       return DlpFileDestination(data_controls::Component::kArc);
     case apps::AppType::kCrostini:
@@ -108,7 +109,9 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
     case apps::AppType::kPluginVm:
       return DlpFileDestination(data_controls::Component::kPluginVm);
     case apps::AppType::kWeb:
-      return DlpFileDestination(app_update.PublisherId());
+      // Expecting `PublisherId()` to return an URL. For web apps this should be
+      // the start URL.
+      return DlpFileDestination(GURL(app_update.PublisherId()));
     case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
     case apps::AppType::kMacOs:
@@ -297,7 +300,7 @@ DlpFileDestination DTEndpointToFileDestination(
   switch (endpoint->type()) {
     case ui::EndpointType::kUrl:
       DCHECK(endpoint->GetURL());
-      return DlpFileDestination(endpoint->GetURL()->spec());
+      return DlpFileDestination(*endpoint->GetURL());
 
     case ui::EndpointType::kArc:
       return DlpFileDestination(data_controls::Component::kArc);
@@ -550,19 +553,23 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     return;
   }
 
-  if (!download_src.url_or_path().has_value()) {
+  if (!download_src.url().has_value()) {
     // Currently we only support urls as sources.
     std::move(result_callback).Run(true);
     return;
   }
 
   // TODO(b/290200170): Check whether referrer_url could be set too.
-  FileDaemonInfo file_info({}, {}, file_path,
-                           download_src.url_or_path().value(),
+  FileDaemonInfo file_info({}, {}, file_path, download_src.url()->spec(),
                            /*referrer_url=*/"");
+
+  absl::optional<data_controls::Component> component =
+      MapFilePathtoPolicyComponent(profile, file_path);
+  DlpFileDestination dlp_destination =
+      component ? DlpFileDestination(*component) : DlpFileDestination();
   IsFilesTransferRestricted(
-      absl::nullopt, {std::move(file_info)},
-      DlpFileDestination(file_path.value()), dlp::FileAction::kDownload,
+      absl::nullopt, {std::move(file_info)}, dlp_destination,
+      dlp::FileAction::kDownload,
       base::BindOnce(
           [](CheckIfDlpAllowedCallback result_callback,
              const std::vector<std::pair<
@@ -589,7 +596,7 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
 bool DlpFilesControllerAsh::ShouldPromptBeforeDownload(
     const DlpFileDestination& download_src,
     const base::FilePath& file_path) {
-  if (!download_src.url_or_path().has_value()) {
+  if (download_src.IsFileSystem()) {
     return false;
   }
   auto* profile = ProfileManager::GetPrimaryUserProfile();
@@ -603,7 +610,7 @@ bool DlpFilesControllerAsh::ShouldPromptBeforeDownload(
   }
 
   DlpRulesManager::Level level = rules_manager_->IsRestrictedComponent(
-      GURL(download_src.url_or_path().value()), dst_component.value(),
+      download_src.url().value(), dst_component.value(),
       DlpRulesManager::Restriction::kFiles, /*out_source_pattern=*/nullptr,
       /*out_rule_metadata=*/nullptr);
   return level == DlpRulesManager::Level::kBlock ||
@@ -632,8 +639,8 @@ void DlpFilesControllerAsh::CheckIfLaunchAllowed(
   absl::optional<DlpFileDestination> destination =
       GetFileDestinationForApp(app_update);
   if (destination.has_value()) {
-    if (destination->url_or_path().has_value()) {
-      request.set_destination_url(destination->url_or_path().value());
+    if (destination->url().has_value()) {
+      request.set_destination_url(destination->url()->spec());
     } else if (destination->component().has_value()) {
       request.set_destination_component(
           dlp::MapPolicyComponentToProto(destination->component().value()));
@@ -664,10 +671,9 @@ bool DlpFilesControllerAsh::IsLaunchBlocked(const apps::AppUpdate& app_update,
     if (!file->dlp_source_url.has_value()) {
       continue;
     }
-    if (destination->url_or_path().has_value()) {
+    if (destination->url().has_value()) {
       DlpRulesManager::Level level = rules_manager_->IsRestrictedDestination(
-          GURL(file->dlp_source_url.value()),
-          GURL(destination->url_or_path().value()),
+          GURL(file->dlp_source_url.value()), *destination->url(),
           DlpRulesManager::Restriction::kFiles, /*out_source_pattern=*/nullptr,
           /*out_destination_pattern=*/nullptr, /*out_rule_metadata=*/nullptr);
       if (level == DlpRulesManager::Level::kBlock) {
@@ -695,8 +701,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     IsFilesTransferRestrictedCallback result_callback) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
-  absl::optional<data_controls::Component> dst_component =
-      MaybeGetComponent(profile, destination);
 
   DlpFileDestination actual_dst = destination;
 
@@ -709,26 +713,22 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     DlpRulesManager::Level level;
     std::string source_pattern;
     DlpRulesManager::RuleMetadata rule_metadata;
-    if (dst_component.has_value()) {
+    if (destination.component()) {
+      data_controls::Component dst_component = *destination.component();
       level = rules_manager_->IsRestrictedComponent(
-          GURL(file.source_url), dst_component.value(),
+          GURL(file.source_url), dst_component,
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &rule_metadata);
-      actual_dst = DlpFileDestination(dst_component.value());
+      actual_dst = DlpFileDestination(dst_component);
       MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
                        actual_dst, absl::nullopt, rule_metadata, level);
-      // TODO(http://b/287003462) find better way to figure out if this is a url
-      // or path than parsing the string
-    } else if (destination.url_or_path() &&
-               !GURL(*destination.url_or_path()).is_valid() &&
-               IsInLocalFileSystem(
-                   base::FilePath(*destination.url_or_path()))) {
+    } else if (destination.IsFileSystem()) {
       level = DlpRulesManager::Level::kAllow;
     } else {
-      DCHECK(destination.url_or_path().has_value());
+      DCHECK(destination.url().has_value());
       destination_pattern = std::string();
       level = rules_manager_->IsRestrictedDestination(
-          GURL(file.source_url), GURL(*destination.url_or_path()),
+          GURL(file.source_url), GURL(*destination.url()),
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &destination_pattern.value(), &rule_metadata);
       MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
@@ -1096,7 +1096,7 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
       auto* profile = ProfileManager::GetPrimaryUserProfile();
       DCHECK(profile);
       absl::optional<data_controls::Component> dst_component =
-          MaybeGetComponent(profile, destination.value());
+          destination->component();
       if (dst_component.has_value()) {
         DlpRulesManager::Level dst_level =
             rules_manager_->IsRestrictedComponent(
@@ -1105,11 +1105,10 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
         is_restricted_for_destination =
             dst_level == DlpRulesManager::Level::kBlock;
       } else {
-        DCHECK(destination->url_or_path().has_value());
+        DCHECK(destination->url());
         DlpRulesManager::Level dst_level =
             rules_manager_->IsRestrictedDestination(
-                GURL(metadata.source_url()),
-                GURL(destination->url_or_path().value()),
+                GURL(metadata.source_url()), *destination->url(),
                 DlpRulesManager::Restriction::kFiles, nullptr, nullptr,
                 nullptr);
         is_restricted_for_destination =
@@ -1234,7 +1233,16 @@ void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
     return;
   }
 
-  request.set_destination_url(destination.path().value());
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  absl::optional<data_controls::Component> component =
+      MapFilePathtoPolicyComponent(profile, destination.path());
+  ::dlp::DlpComponent proto;
+  if (component) {
+    proto = dlp::MapPolicyComponentToProto(*component);
+  } else {
+    proto = ::dlp::DlpComponent::SYSTEM;
+  }
+  request.set_destination_component(proto);
   request.set_file_action(is_move ? ::dlp::FileAction::MOVE
                                   : ::dlp::FileAction::COPY);
   if (task_id) {
@@ -1271,8 +1279,8 @@ void DlpFilesControllerAsh::ContinueFilterDisallowedUploads(
     request.set_destination_component(
         dlp::MapPolicyComponentToProto(destination.component().value()));
   } else {
-    DCHECK(destination.url_or_path().has_value());
-    request.set_destination_url(destination.url_or_path().value());
+    DCHECK(destination.url());
+    request.set_destination_url(destination.url()->spec());
   }
   request.set_file_action(::dlp::FileAction::UPLOAD);
 
@@ -1303,8 +1311,8 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
     request.set_destination_component(
         dlp::MapPolicyComponentToProto(destination.component().value()));
   } else {
-    DCHECK(destination.url_or_path().has_value());
-    request.set_destination_url(destination.url_or_path().value());
+    DCHECK(destination.url());
+    request.set_destination_url(destination.url()->spec());
   }
   request.set_file_action(::dlp::FileAction::MOVE);
 
@@ -1314,18 +1322,6 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
                      std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_drop_allowed_cb));
-}
-
-absl::optional<data_controls::Component>
-DlpFilesControllerAsh::MaybeGetComponent(
-    Profile* profile,
-    const DlpFileDestination& destination) {
-  if (destination.component().has_value()) {
-    return destination.component();
-  }
-  DCHECK(destination.url_or_path().has_value());
-  return MapFilePathtoPolicyComponent(
-      profile, base::FilePath(*destination.url_or_path()));
 }
 
 }  // namespace policy

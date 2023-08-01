@@ -13,27 +13,28 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "url/gurl.h"
 
 namespace policy {
-
 namespace {
-// Returns the domain of the |destination|'s |url_or_path| if it can be
+
+// Returns the domain of the |destination|'s |url| if it can be
 // obtained, or the full value otherwise, converted to u16string. Fails if
-// |url_or_path| is empty.
+// |url| is empty.
 std::u16string GetDestinationURL(DlpFileDestination destination) {
-  DCHECK(destination.url_or_path().has_value());
-  DCHECK(!destination.url_or_path()->empty());
-  std::string url = destination.url_or_path().value();
-  GURL gurl(url);
-  if (gurl.is_valid() && gurl.has_host()) {
+  DCHECK(destination.url().has_value());
+  DCHECK(destination.url()->is_valid());
+  GURL gurl = *destination.url();
+  if (gurl.has_host()) {
     return base::UTF8ToUTF16(gurl.host());
   }
-  return base::UTF8ToUTF16(url);
+  return base::UTF8ToUTF16(gurl.spec());
 }
 
 // Returns the u16string formatted name for |destination|'s |component|. Fails
@@ -64,7 +65,8 @@ const std::u16string GetDestinationComponent(DlpFileDestination destination) {
 }
 
 // Returns the u16string formatted |destination|. Fails if both |component| and
-// |url_or_path| are empty. Returns the |component| if both are non-empty.
+// |url| are empty (the destination is a local file/directory). Returns the
+// |component| if both are non-empty.
 const std::u16string GetDestination(DlpFileDestination destination) {
   return destination.component().has_value()
              ? GetDestinationComponent(destination)

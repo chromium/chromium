@@ -11,7 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/task/bind_post_task.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -162,9 +164,13 @@ void DlpFilesController::RequestCopyAccess(
     return;
   }
 
+  ::dlp::DlpComponent proto =
+      dst_component ? dlp::MapPolicyComponentToProto(*dst_component)
+                    : ::dlp::DlpComponent::SYSTEM;
+
   ::dlp::RequestFileAccessRequest file_access_request;
   file_access_request.add_files_paths(source_file.path().value());
-  file_access_request.set_destination_url(destination.path().DirName().value());
+  file_access_request.set_destination_component(proto);
 
   if (!dst_component.has_value()) {
     // We allow internal copy, we still have to get the scopedFS

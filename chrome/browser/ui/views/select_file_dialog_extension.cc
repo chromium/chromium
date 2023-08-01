@@ -530,7 +530,7 @@ void SelectFileDialogExtension::SelectFileImpl(
   Owner owner;
   owner.window = owner_window;
   if (caller && caller->is_valid()) {
-    owner.dialog_caller.emplace(caller->spec());
+    owner.dialog_caller.emplace(*caller);
   }
   SelectFileWithFileManagerParams(type, title, default_path, file_types,
                                   file_type_index, params, owner,

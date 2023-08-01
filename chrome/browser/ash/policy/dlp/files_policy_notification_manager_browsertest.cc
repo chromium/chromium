@@ -441,7 +441,7 @@ INSTANTIATE_TEST_SUITE_P(
     OnDlpWarningNotificationClickedTest,
     ::testing::Values(
         std::make_tuple(dlp::FileAction::kUpload,
-                        DlpFileDestination(kExampleUrl)),
+                        DlpFileDestination(GURL(kExampleUrl))),
         std::make_tuple(dlp::FileAction::kMove,
                         DlpFileDestination(data_controls::Component::kDrive))));
 
@@ -600,7 +600,7 @@ INSTANTIATE_TEST_SUITE_P(
     OnDlpErrorNotificationClickedTest,
     ::testing::Values(
         std::make_tuple(dlp::FileAction::kOpen,
-                        DlpFileDestination(kExampleUrl)),
+                        DlpFileDestination(GURL(kExampleUrl))),
         std::make_tuple(dlp::FileAction::kDownload,
                         DlpFileDestination(data_controls::Component::kUsb))));
 
@@ -670,7 +670,7 @@ class IOTaskBrowserTest
               },
               std::move(result_callback), expected_should_proceed);
           fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
-                                warning_files, DlpFileDestination(""), action);
+                                warning_files, DlpFileDestination(), action);
         };
 
     EXPECT_CALL(*files_controller_,
@@ -730,7 +730,7 @@ class IOTaskBrowserTest
               std::move(result_callback), transferred_files,
               expected_should_proceed);
           fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
-                                warning_files, DlpFileDestination(""), action);
+                                warning_files, DlpFileDestination(), action);
         };
 
     EXPECT_CALL(*files_controller_,
@@ -763,7 +763,7 @@ class IOTaskBrowserTest
               std::move(result_callback), transferred_files,
               expected_should_proceed);
           fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
-                                warning_files, DlpFileDestination(""), action);
+                                warning_files, DlpFileDestination(), action);
         };
 
     EXPECT_CALL(*files_controller_,

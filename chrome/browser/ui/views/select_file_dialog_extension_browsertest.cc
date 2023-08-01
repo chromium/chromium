@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
 
   // Check that the caller field is set correctly.
   ASSERT_TRUE(dialog_->owner_.dialog_caller.has_value());
-  ASSERT_EQ(dialog_->owner_.dialog_caller->url_or_path().value(), url);
+  ASSERT_EQ(dialog_->owner_.dialog_caller->url().value(), url);
 
   // Click the "Cancel" button.
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
@@ -808,9 +808,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadAllow) {
                                      test_file, owning_window, "dialog-ready",
                                      &caller));
 
-  EXPECT_CALL(*mock_files_controller_.get(),
-              CheckIfDownloadAllowed(policy::DlpFileDestination(url), test_file,
-                                     base::test::IsNotNullCallback()))
+  EXPECT_CALL(
+      *mock_files_controller_.get(),
+      CheckIfDownloadAllowed(policy::DlpFileDestination(caller), test_file,
+                             base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(true));
 
   // Click the "Save" button.
@@ -840,9 +841,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadBlock) {
                                      test_file, owning_window, "dialog-ready",
                                      &caller));
 
-  EXPECT_CALL(*mock_files_controller_.get(),
-              CheckIfDownloadAllowed(policy::DlpFileDestination(url), test_file,
-                                     base::test::IsNotNullCallback()))
+  EXPECT_CALL(
+      *mock_files_controller_.get(),
+      CheckIfDownloadAllowed(policy::DlpFileDestination(caller), test_file,
+                             base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(false));
 
   // Click the "Save" button.
@@ -887,10 +889,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadAllow) {
   auto selected_file = ui::SelectedFileInfo(test_file, test_file);
   selected_file.virtual_path = test_file_virtual_path;
   selected_files.push_back(std::move(selected_file));
-  EXPECT_CALL(
-      *mock_files_controller_.get(),
-      FilterDisallowedUploads(selected_files, policy::DlpFileDestination(url),
-                              base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_files_controller_.get(),
+              FilterDisallowedUploads(selected_files,
+                                      policy::DlpFileDestination(caller),
+                                      base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(selected_files));
 
   // Click the "Save" button.
@@ -937,7 +939,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadBlock) {
   selected_files.push_back(std::move(selected_file));
   EXPECT_CALL(*mock_files_controller_.get(),
               FilterDisallowedUploads(std::move(selected_files),
-                                      policy::DlpFileDestination(url),
+                                      policy::DlpFileDestination(caller),
                                       base::test::IsNotNullCallback()))
       .WillOnce(
           base::test::RunOnceCallback<2>(std::vector<ui::SelectedFileInfo>()));

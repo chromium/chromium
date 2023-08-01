@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   const std::string file_path = "Downloads/file.txt";
 
   files_controller_->CheckIfDownloadAllowed(
-      DlpFileDestination(kExampleUrl),
+      DlpFileDestination(GURL(kExampleUrl)),
       base::FilePath(file_system_list[0].mount_path().Append(file_path)),
       cb.Get());
 

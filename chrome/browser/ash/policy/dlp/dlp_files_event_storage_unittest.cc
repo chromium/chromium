@@ -67,7 +67,7 @@ TEST_F(DlpFilesEventStorageTest, UpsertEvents) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   storage.SetTaskRunnerForTesting(task_runner);
 
-  const auto dst1 = DlpFileDestination(kExampleUrl1);
+  const auto dst1 = DlpFileDestination(GURL(kExampleUrl1));
   const auto dst2 = DlpFileDestination(data_controls::Component::kDrive);
 
   // Insertion
@@ -114,8 +114,8 @@ TEST_F(DlpFilesEventStorageTest, LimitEvents) {
   for (size_t inode = 0; inode < max_inode; ++inode) {
     for (size_t dst_index = 0; dst_index < max_dst_index; ++dst_index) {
       count++;
-      auto dst = DlpFileDestination("https://example" +
-                                    base::NumberToString(dst_index) + ".com/");
+      auto dst = DlpFileDestination(
+          GURL("https://example" + base::NumberToString(dst_index) + ".com/"));
       if (count <= kEntriesLimit) {
         ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(
             {inode, /*crtime=*/inode}, dst));

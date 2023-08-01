@@ -184,7 +184,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     destination.emplace(
         MapProtoToPolicyComponent(request.destination_component()));
   } else {
-    destination.emplace(request.destination_url());
+    destination.emplace(GURL(request.destination_url()));
   }
 
   policy::dlp::FileAction files_action = policy::dlp::FileAction::kTransfer;

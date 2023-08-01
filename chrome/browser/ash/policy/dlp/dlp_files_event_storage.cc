@@ -51,7 +51,7 @@ bool DlpFilesEventStorage::StoreEventAndCheckIfItShouldBeReported(
     return (dst.component().has_value() &&
             dst.component().value() !=
                 data_controls::Component::kUnknownComponent) ||
-           dst.url_or_path().has_value();
+           dst.url().has_value();
   }
 
   // Found existing (file_id, dst) pair, update it

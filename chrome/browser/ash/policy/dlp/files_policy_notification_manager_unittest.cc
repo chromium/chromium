@@ -276,8 +276,6 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  auto dst_url =
-      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -309,9 +307,9 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
 
   switch (GetPolicy()) {
     case Policy::kDlp:
-      fpnm_->ShowDlpWarning(
-          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      fpnm_->ShowDlpWarning(mock_cb.Get(), task_id,
+                            std::vector<base::FilePath>{src_file_path},
+                            DlpFileDestination(), dlp::FileAction::kCopy);
       break;
     case Policy::kEnterpriseConnectors:
       fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
@@ -352,8 +350,6 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  auto dst_url =
-      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -414,8 +410,6 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningCancelled) {
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  auto dst_url =
-      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -448,9 +442,9 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningCancelled) {
       mock_cb;
   switch (GetPolicy()) {
     case Policy::kDlp:
-      fpnm_->ShowDlpWarning(
-          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      fpnm_->ShowDlpWarning(mock_cb.Get(), task_id,
+                            std::vector<base::FilePath>{src_file_path},
+                            DlpFileDestination(), dlp::FileAction::kCopy);
       break;
     case Policy::kEnterpriseConnectors:
       fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
@@ -484,8 +478,6 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningResumed) {
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  auto dst_url =
-      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -520,9 +512,9 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningResumed) {
 
   switch (GetPolicy()) {
     case Policy::kDlp:
-      fpnm_->ShowDlpWarning(
-          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      fpnm_->ShowDlpWarning(mock_cb.Get(), task_id,
+                            std::vector<base::FilePath>{src_file_path},
+                            DlpFileDestination(), dlp::FileAction::kCopy);
       break;
     case Policy::kEnterpriseConnectors:
       fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
@@ -623,9 +615,9 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
 
   switch (GetPolicy()) {
     case Policy::kDlp:
-      fpnm_->ShowDlpWarning(
-          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      fpnm_->ShowDlpWarning(mock_cb.Get(), task_id,
+                            std::vector<base::FilePath>{src_file_path},
+                            DlpFileDestination(), dlp::FileAction::kCopy);
       break;
     case Policy::kEnterpriseConnectors:
       fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
@@ -660,7 +652,7 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
     case Policy::kDlp:
       fpnm_->ShowDlpWarning(
           base::DoNothing(), task_id, {base::FilePath(kFile1)},
-          DlpFileDestination("https://example.com"),
+          DlpFileDestination(GURL("https://example.com")),
           is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
       break;
     case Policy::kEnterpriseConnectors:
@@ -716,7 +708,7 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
       fpnm_->ShowDlpWarning(
           base::DoNothing(), task_id,
           {base::FilePath(kFile1), base::FilePath(kFile2)},
-          DlpFileDestination("https://example.com"),
+          DlpFileDestination(GURL("https://example.com")),
           is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
       break;
     case Policy::kEnterpriseConnectors:
@@ -1078,9 +1070,9 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
   auto src_file_path = base::FilePath(kFile1);
   testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
       mock_cb;
-  fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
-                        {src_file_path},
-                        DlpFileDestination("https://example.com"), action);
+  fpnm_->ShowDlpWarning(
+      mock_cb.Get(), /*task_id=*/absl::nullopt, {src_file_path},
+      DlpFileDestination(GURL("https://example.com")), action);
 
   absl::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
@@ -1112,7 +1104,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
       mock_cb;
   fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath(kFile1), base::FilePath(kFile2)},
-                        DlpFileDestination("https://example.com"), action);
+                        DlpFileDestination(GURL("https://example.com")),
+                        action);
 
   absl::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);

@@ -56,6 +56,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -81,6 +82,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 using blink::mojom::FileSystemFileInfo;
 using blink::mojom::NativeFileInfo;
@@ -418,7 +420,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
                                            request.files_paths().end());
   EXPECT_THAT(requested_files,
               testing::UnorderedElementsAreArray(expected_requested_files));
-  EXPECT_EQ(dst_url.path().value(), request.destination_url());
+  EXPECT_EQ(::dlp::DlpComponent::SYSTEM, request.destination_component());
   EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
   EXPECT_EQ(1u, request.io_task_id());
 }
@@ -542,7 +544,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ErrorResponse) {
                                            request.files_paths().end());
   EXPECT_THAT(requested_files,
               testing::UnorderedElementsAreArray(expected_requested_files));
-  EXPECT_EQ(dst_url.path().value(), request.destination_url());
+  EXPECT_EQ(::dlp::DlpComponent::SYSTEM, request.destination_component());
   EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
   EXPECT_FALSE(request.has_io_task_id());
 }
@@ -629,7 +631,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
                                            request.files_paths().end());
   EXPECT_THAT(requested_files,
               testing::UnorderedElementsAreArray(expected_requested_files));
-  EXPECT_EQ(dst_url.path().value(), request.destination_url());
+  EXPECT_EQ(::dlp::DlpComponent::SYSTEM, request.destination_component());
   EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
   EXPECT_EQ(1u, request.io_task_id());
 }
@@ -666,7 +668,7 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_EmptyList) {
 
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
-      {}, DlpFileDestination(kExampleUrl1), future.GetCallback());
+      {}, DlpFileDestination(GURL(kExampleUrl1)), future.GetCallback());
 
   std::vector<ui::SelectedFileInfo> filtered_uploads;
 
@@ -714,9 +716,9 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MixedFiles) {
 
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
-                                             DlpFileDestination(kExampleUrl1),
-                                             future.GetCallback());
+  files_controller_->FilterDisallowedUploads(
+      std::move(uploaded_files), DlpFileDestination(GURL(kExampleUrl1)),
+      future.GetCallback());
 
   std::vector<ui::SelectedFileInfo> filtered_uploads;
   filtered_uploads.emplace_back(files_urls[1].path(), files_urls[1].path());
@@ -780,7 +782,8 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
-      selected_files, DlpFileDestination(kExampleUrl1), future.GetCallback());
+      selected_files, DlpFileDestination(GURL(kExampleUrl1)),
+      future.GetCallback());
 
   ASSERT_EQ(3u, future.Get().size());
   EXPECT_EQ(selected_files, future.Take());
@@ -865,7 +868,8 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MultiFolder) {
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
-      selected_files, DlpFileDestination(kExampleUrl1), future.GetCallback());
+      selected_files, DlpFileDestination(GURL(kExampleUrl1)),
+      future.GetCallback());
 
   std::vector<ui::SelectedFileInfo> expected_filtered_uploads(
       {{sub_dir3.GetPath(), sub_dir3.GetPath()}});
@@ -1017,8 +1021,9 @@ TEST_F(DlpFilesControllerAshTest, GetDlpMetadata_WithDestination) {
   base::test::TestFuture<std::vector<DlpFilesControllerAsh::DlpFileMetadata>>
       future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDlpMetadata(
-      files_to_check, DlpFileDestination(kExampleUrl1), future.GetCallback());
+  files_controller_->GetDlpMetadata(files_to_check,
+                                    DlpFileDestination(GURL(kExampleUrl1)),
+                                    future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(dlp_metadata, future.Take());
 }
@@ -1151,7 +1156,7 @@ TEST_F(DlpFilesControllerAshTest, DownloadToLocalAllowed) {
   EXPECT_CALL(cb, Run(/*is_allowed=*/true)).Times(1);
 
   files_controller_->CheckIfDownloadAllowed(
-      DlpFileDestination(kExampleUrl1),
+      DlpFileDestination(GURL(kExampleUrl1)),
       base::FilePath(
           "/home/chronos/u-0123456789abcdef/MyFiles/Downloads/img.jpg"),
       cb.Get());
@@ -1296,7 +1301,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
       kInode2, kCrtime2, base::FilePath(kFilePath2), kExampleUrl2,
       kReferrerUrl2);
 
-  const std::string dst_url = "https://wetransfer.com/";
+  const GURL dst_url("https://wetransfer.com/");
   const std::string dst_pattern = "wetransfer.com";
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _, _))
@@ -1361,27 +1366,11 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
   EXPECT_CALL(*rules_manager_, GetReportingManager())
       .Times(::testing::AnyNumber());
 
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  ASSERT_TRUE(mount_points);
-  mount_points->RevokeAllFileSystems();
-
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
-      ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
-      storage::FileSystemMountOption(),
-      base::FilePath(file_manager::util::kRemovableMediaPath)));
-
-  auto dst_path = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(), "removable",
-      base::FilePath("MyUSB/path/in/removable"));
-  ASSERT_TRUE(dst_path.is_valid());
-
   std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files = {
       file1, file2};
   std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels =
       {{file1, ::dlp::RestrictionLevel::LEVEL_BLOCK},
        {file2, ::dlp::RestrictionLevel::LEVEL_ALLOW}};
-
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(files_levels)).Times(::testing::AnyNumber());
 
@@ -1411,8 +1400,8 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
     // Report `event2` after this call if `delay` is at least `cooldown_time`.
     files_controller_->IsFilesTransferRestricted(
         /*task_id=*/1234, transferred_files,
-        DlpFileDestination(dst_path.path().value()), dlp::FileAction::kTransfer,
-        cb.Get());
+        DlpFileDestination(data_controls::Component::kUsb),
+        dlp::FileAction::kTransfer, cb.Get());
 
     task_runner_->FastForwardBy(delay);
   }
@@ -1434,7 +1423,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
       kInode2, kCrtime2, base::FilePath(kFilePath2), kExampleUrl2,
       kReferrerUrl2);
 
-  const std::string dst_url = "https://wetransfer.com/";
+  const GURL dst_url("https://wetransfer.com/");
   const std::string dst_pattern = "wetransfer.com";
 
   EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
@@ -1617,8 +1606,7 @@ TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
   EXPECT_CALL(*rules_manager_, GetReportingManager()).Times(0);
 
   files_controller_->IsFilesTransferRestricted(
-      /*task_id=*/1234, transferred_files,
-      DlpFileDestination(my_files_dir_url_.path().value()),
+      /*task_id=*/1234, transferred_files, DlpFileDestination(),
       dlp::FileAction::kTransfer, cb.Get());
 
   ASSERT_EQ(events.size(), 0u);
@@ -1790,7 +1778,7 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
 
   files_controller_->IsFilesTransferRestricted(
       /*task_id=*/1234, transferred_files,
-      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kTransfer,
+      DlpFileDestination(expected_component), dlp::FileAction::kTransfer,
       cb.Get());
 
   ASSERT_EQ(events.size(), 2u);
@@ -1836,8 +1824,8 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
                           std::vector<base::FilePath>{dst_url.path()},
                           dlp::FileAction::kDownload));
 
-  files_controller_->CheckIfDownloadAllowed(DlpFileDestination(kExampleUrl1),
-                                            dst_url.path(), cb.Get());
+  files_controller_->CheckIfDownloadAllowed(
+      DlpFileDestination(GURL(kExampleUrl1)), dst_url.path(), cb.Get());
 
   ASSERT_EQ(events.size(), 1u);
 
@@ -1863,7 +1851,7 @@ TEST_P(DlpFilesExternalDestinationTest, FilePromptForDownload) {
   ASSERT_TRUE(dst_url.is_valid());
 
   EXPECT_TRUE(files_controller_->ShouldPromptBeforeDownload(
-      DlpFileDestination(kExampleUrl1), dst_url.path()));
+      DlpFileDestination(GURL(kExampleUrl1)), dst_url.path()));
 }
 
 class DlpFilesUrlDestinationTest
@@ -1955,7 +1943,7 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
 
   files_controller_->IsFilesTransferRestricted(
       /*task_id=*/absl::nullopt, transferred_files,
-      DlpFileDestination(destination_url), dlp::FileAction::kDownload,
+      DlpFileDestination(GURL(destination_url)), dlp::FileAction::kDownload,
       cb.Get());
 
   ASSERT_EQ(events.size(), disallowed_source_patterns.size());
@@ -2039,8 +2027,8 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
                             dlp::FileAction::kDownload));
   }
 
-  files_controller_->CheckIfDownloadAllowed(DlpFileDestination(kExampleUrl1),
-                                            dst_url.path(), cb.Get());
+  files_controller_->CheckIfDownloadAllowed(
+      DlpFileDestination(GURL(kExampleUrl1)), dst_url.path(), cb.Get());
 
   auto CreateEvent =
       [&](absl::optional<DlpRulesManager::Level> level) -> DlpPolicyEvent {
@@ -2209,8 +2197,8 @@ TEST_P(DlpFilesWarningDialogContentTest,
 
   files_controller_->IsFilesTransferRestricted(
       /*task_id=*/absl::nullopt, warned_files,
-      DlpFileDestination(dst_url.path().value()), transfer_info.files_action,
-      cb.Get());
+      DlpFileDestination(data_controls::Component::kUsb),
+      transfer_info.files_action, cb.Get());
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }
@@ -2460,8 +2448,8 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
 
   if (app_type == apps::AppType::kChromeApp) {
     EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
-    EXPECT_EQ(last_check_files_transfer_request.destination_url(),
-              std::string(extensions::kExtensionScheme) + "://" + app_id);
+    EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
+              GURL(std::string(extensions::kExtensionScheme) + "://" + app_id));
   } else if (app_type == apps::AppType::kArc) {
     EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
     EXPECT_EQ(last_check_files_transfer_request.destination_component(),
@@ -2479,8 +2467,8 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
 
   } else if (app_type == apps::AppType::kWeb) {
     EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
-    EXPECT_EQ(last_check_files_transfer_request.destination_url(),
-              kExampleUrl5);
+    EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
+              GURL(kExampleUrl5));
   }
 
   EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
