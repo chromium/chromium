@@ -5,7 +5,6 @@ accelerometer
 ambient-light-sensor
 attribution-reporting
 autoplay
-browsing-topics
 camera
 ch-device-memory
 ch-downlink
@@ -46,8 +45,6 @@ gyroscope
 hid
 identity-credentials-get
 idle-detection
-interest-cohort
-join-ad-interest-group
 keyboard-map
 local-fonts
 magnetometer
@@ -56,16 +53,12 @@ midi
 otp-credentials
 payment
 picture-in-picture
-private-aggregation
 private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-get
-run-ad-auction
 screen-wake-lock
 serial
 shared-autofill
-shared-storage
-shared-storage-select-url
 smart-card
 storage-access
 sync-xhr

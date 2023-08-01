@@ -1986,7 +1986,6 @@ interface Document : Node
     method adoptNode
     method append
     method ariaNotify
-    method browsingTopics
     method captureEvents
     method caretRangeFromPoint
     method clear
@@ -2713,18 +2712,6 @@ interface FederatedCredential : Credential
     getter protocol
     getter provider
     method constructor
-interface Fence
-    attribute @@toStringTag
-    method constructor
-    method getNestedConfigs
-    method reportEvent
-    method setReportEventDataForAutomaticBeacons
-interface FencedFrameConfig
-    attribute @@toStringTag
-    getter height
-    getter width
-    method constructor
-    method setSharedStorageContext
 interface File : Blob
     attribute @@toStringTag
     getter lastModified
@@ -3895,20 +3882,6 @@ interface HTMLEmbedElement : HTMLElement
     setter src
     setter type
     setter width
-interface HTMLFencedFrameElement : HTMLElement
-    static method canLoadOpaqueURL
-    attribute @@toStringTag
-    getter allow
-    getter config
-    getter height
-    getter sandbox
-    getter width
-    method constructor
-    setter allow
-    setter config
-    setter height
-    setter sandbox
-    setter width
 interface HTMLFieldSetElement : HTMLElement
     attribute @@toStringTag
     getter disabled
@@ -4078,7 +4051,6 @@ interface HTMLIFrameElement : HTMLElement
     getter allow
     getter allowFullscreen
     getter allowPaymentRequest
-    getter browsingTopics
     getter contentDocument
     getter contentWindow
     getter credentialless
@@ -4105,7 +4077,6 @@ interface HTMLIFrameElement : HTMLElement
     setter allow
     setter allowFullscreen
     setter allowPaymentRequest
-    setter browsingTopics
     setter credentialless
     setter csp
     setter frameBorder
@@ -6444,32 +6415,24 @@ interface Navigator
     getter webkitTemporaryStorage
     getter windowControlsOverlay
     getter xr
-    method adAuctionComponents
-    method canLoadAdAuctionFencedFrame
     method canShare
     method clearAppBadge
     method constructor
     method createHandwritingRecognizer
-    method deprecatedReplaceInURN
-    method deprecatedURNToURL
     method getBattery
     method getEnvironmentIntegrity
     method getGamepads
     method getInstalledRelatedApps
     method getUserMedia
     method javaEnabled
-    method joinAdInterestGroup
-    method leaveAdInterestGroup
     method queryHandwritingRecognizer
     method registerProtocolHandler
     method requestMIDIAccess
     method requestMediaKeySystemAccess
-    method runAdAuction
     method sendBeacon
     method setAppBadge
     method share
     method unregisterProtocolHandler
-    method updateAdInterestGroups
     method vibrate
     method webkitGetUserMedia
 interface NavigatorManagedData : EventTarget
@@ -9169,21 +9132,6 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
-interface SharedStorage
-    attribute @@asyncIterator
-    attribute @@toStringTag
-    getter worklet
-    method append
-    method clear
-    method constructor
-    method delete
-    method run
-    method selectURL
-    method set
-interface SharedStorageWorklet
-    attribute @@toStringTag
-    method addModule
-    method constructor
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
@@ -12343,7 +12291,6 @@ namespace console
     getter documentPictureInPicture
     getter event
     getter external
-    getter fence
     getter frameElement
     getter frames
     getter history
@@ -12506,7 +12453,6 @@ namespace console
     getter scrollbars
     getter self
     getter sessionStorage
-    getter sharedStorage
     getter speechSynthesis
     getter status
     getter statusbar
