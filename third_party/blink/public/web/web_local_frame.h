@@ -865,22 +865,19 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Testing ------------------------------------------------------------------
 
   // Get the total spool size (the bounding box of all the pages placed after
-  // oneanother vertically), when printing for testing. Even if we still only
-  // support a uniform page size, some pages may be rotated using
-  // page-orientation.
+  // oneanother vertically), when printing for testing.
   virtual gfx::Size SpoolSizeInPixelsForTesting(
-      const gfx::Size& page_size_in_pixels,
+      const WebPrintParams&,
       const WebVector<uint32_t>& pages) = 0;
-  virtual gfx::Size SpoolSizeInPixelsForTesting(
-      const gfx::Size& page_size_in_pixels,
-      uint32_t page_count) = 0;
+  virtual gfx::Size SpoolSizeInPixelsForTesting(const WebPrintParams&,
+                                                uint32_t page_count) = 0;
 
   // Prints the given pages of the frame into the canvas, with page boundaries
   // drawn as one pixel wide blue lines. By default, all pages are printed. This
   // method exists to support web tests.
   virtual void PrintPagesForTesting(
       cc::PaintCanvas*,
-      const gfx::Size& page_size_in_pixels,
+      const WebPrintParams&,
       const gfx::Size& spool_size_in_pixels,
       const WebVector<uint32_t>* pages = nullptr) = 0;
 

@@ -13541,7 +13541,8 @@ static void TestFramePrinting(WebLocalFrameImpl* frame) {
   WebPrintParams print_params((gfx::SizeF(page_size)));
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   cc::PaintRecorder recorder;
-  frame->PrintPagesForTesting(recorder.beginRecording(), page_size, page_size);
+  frame->PrintPagesForTesting(recorder.beginRecording(), print_params,
+                              page_size);
   frame->PrintEnd();
 }
 
@@ -13605,8 +13606,8 @@ std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
 
   frame->PrintBegin(print_params, WebNode());
   cc::PaintRecorder recorder;
-  frame->PrintPagesForTesting(recorder.beginRecording(), page_size, page_size,
-                              pages);
+  frame->PrintPagesForTesting(recorder.beginRecording(), print_params,
+                              page_size, pages);
   frame->PrintEnd();
 
   cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();

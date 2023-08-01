@@ -331,13 +331,13 @@ class CORE_EXPORT WebLocalFrameImpl final
   const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
-      const gfx::Size& page_size_in_pixels,
+      const WebPrintParams&,
       const WebVector<uint32_t>& pages) override;
-  gfx::Size SpoolSizeInPixelsForTesting(const gfx::Size& page_size_in_pixels,
+  gfx::Size SpoolSizeInPixelsForTesting(const WebPrintParams&,
                                         uint32_t page_count) override;
   void PrintPagesForTesting(
       cc::PaintCanvas*,
-      const gfx::Size& page_size_in_pixels,
+      const WebPrintParams&,
       const gfx::Size& spool_size_in_pixels,
       const WebVector<uint32_t>* pages = nullptr) override;
   gfx::Rect GetSelectionBoundsRectForTesting() const override;

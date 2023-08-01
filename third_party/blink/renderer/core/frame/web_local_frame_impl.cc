@@ -364,11 +364,10 @@ class ChromePrintContext : public PrintContext {
     canvas->drawPicture(context.EndRecording());
   }
 
-  void SpoolPagesWithBoundariesForTesting(
-      cc::PaintCanvas* canvas,
-      const gfx::SizeF& page_size_in_pixels,
-      const gfx::SizeF& spool_size_in_pixels,
-      const WebVector<uint32_t>* pages) {
+  void SpoolPagesWithBoundariesForTesting(cc::PaintCanvas* canvas,
+                                          const WebPrintParams& print_params,
+                                          const gfx::Size& spool_size_in_pixels,
+                                          const WebVector<uint32_t>* pages) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
@@ -379,7 +378,7 @@ class ChromePrintContext : public PrintContext {
         !GetFrame()->GetDocument()->GetLayoutView())
       return;
 
-    gfx::RectF all_pages_rect(spool_size_in_pixels);
+    gfx::Rect all_pages_rect(spool_size_in_pixels);
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
@@ -416,23 +415,26 @@ class ChromePrintContext : public PrintContext {
         context.Restore();
       }
 
-      AffineTransform transform;
-      transform.Translate(0, current_height);
-
-      WebPrintPageDescription description;
+      WebPrintPageDescription description =
+          print_params.default_page_description;
       GetFrame()->GetDocument()->GetPageDescription(page_index, &description);
+
+      AffineTransform transform;
+      transform.Translate(description.margin_left,
+                          current_height + description.margin_top);
+
       if (description.orientation == PageOrientation::kUpright) {
-        current_height += page_size_in_pixels.height() + 1;
+        current_height += description.size.height() + 1;
       } else {
         if (description.orientation == PageOrientation::kRotateRight) {
-          transform.Translate(page_size_in_pixels.height(), 0);
+          transform.Translate(description.size.height(), 0);
           transform.Rotate(90);
         } else {
           DCHECK_EQ(description.orientation, PageOrientation::kRotateLeft);
-          transform.Translate(0, page_size_in_pixels.width());
+          transform.Translate(0, description.size.width());
           transform.Rotate(-90);
         }
-        current_height += page_size_in_pixels.width() + 1;
+        current_height += description.size.width() + 1;
       }
 
       context.Save();
@@ -1951,9 +1953,9 @@ void WebLocalFrameImpl::GetPageDescription(
 }
 
 gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
-    const gfx::Size& page_size_in_pixels,
+    const WebPrintParams& print_params,
     const WebVector<uint32_t>& pages) {
-  int spool_width = page_size_in_pixels.width();
+  int spool_width = 0;
   int spool_height = 0;
 
   for (uint32_t page_index : pages) {
@@ -1961,36 +1963,37 @@ gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
     if (page_index != pages.front())
       spool_height++;
 
-    WebPrintPageDescription description;
+    WebPrintPageDescription description = print_params.default_page_description;
     GetFrame()->GetDocument()->GetPageDescription(page_index, &description);
+    gfx::Size page_size = gfx::ToCeiledSize(description.size);
     if (description.orientation == PageOrientation::kUpright) {
-      spool_height += page_size_in_pixels.height();
+      spool_width = std::max(spool_width, page_size.width());
+      spool_height += page_size.height();
     } else {
-      spool_height += page_size_in_pixels.width();
-      spool_width = std::max(spool_width, page_size_in_pixels.height());
+      spool_height += page_size.width();
+      spool_width = std::max(spool_width, page_size.height());
     }
   }
   return gfx::Size(spool_width, spool_height);
 }
 
 gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
-    const gfx::Size& page_size_in_pixels,
+    const WebPrintParams& print_params,
     uint32_t page_count) {
   WebVector<uint32_t> pages(page_count);
   std::iota(pages.begin(), pages.end(), 0);
-  return SpoolSizeInPixelsForTesting(page_size_in_pixels, pages);
+  return SpoolSizeInPixelsForTesting(print_params, pages);
 }
 
 void WebLocalFrameImpl::PrintPagesForTesting(
     cc::PaintCanvas* canvas,
-    const gfx::Size& page_size_in_pixels,
+    const WebPrintParams& print_params,
     const gfx::Size& spool_size_in_pixels,
     const WebVector<uint32_t>* pages) {
   DCHECK(print_context_);
 
   print_context_->SpoolPagesWithBoundariesForTesting(
-      canvas, gfx::SizeF(page_size_in_pixels), gfx::SizeF(spool_size_in_pixels),
-      pages);
+      canvas, print_params, spool_size_in_pixels, pages);
 }
 
 gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
