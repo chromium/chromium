@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
+#include <algorithm>
 #include <unordered_set>
 #include <utility>
 
@@ -263,6 +264,29 @@ void RecordProfileState(ProfileAttributesEntry* entry,
       suffix);
   profile_metrics::LogProfileDaysSinceLastUse(
       (base::Time::Now() - entry->GetActiveTime()).InDays(), suffix);
+}
+
+// Rotating between `from_index` to `to_index` by 1 step. Rotation is done to
+// the left or the right based on the index comparison.
+void Rotate(base::Value::List& list, size_t from_index, size_t to_index) {
+  CHECK_LT(from_index, list.size());
+  CHECK_LT(to_index, list.size());
+
+  // Rotating left.
+  if (from_index <= to_index) {
+    std::rotate(list.begin() + from_index, list.begin() + from_index + 1,
+                list.begin() + to_index + 1);
+    return;
+  }
+
+  // Rotating right;
+  // We invert the indices and work with the reverse iterator.
+  size_t inv_from_index = list.size() - from_index - 1;
+  size_t inv_to_index = list.size() - to_index - 1;
+
+  std::rotate(list.rbegin() + inv_from_index,
+              list.rbegin() + inv_from_index + 1,
+              list.rbegin() + inv_to_index + 1);
 }
 
 }  // namespace
@@ -575,6 +599,17 @@ void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
   }
 
   DCHECK_EQ(profile_keys_order.size(), GetNumberOfProfiles());
+}
+
+void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
+                                                       size_t to_index) {
+  ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
+  base::Value::List& profile_keys_order = update.Get();
+
+  // Apply the shift by rotating the element based on the indices.
+  // Element at `from_index` will be placed at `to_index` and the rest will
+  // shift left or right based on the index comparison.
+  Rotate(profile_keys_order, from_index, to_index);
 }
 
 base::flat_map<std::string, ProfileAttributesEntry*>

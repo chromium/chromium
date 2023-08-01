@@ -75,8 +75,8 @@ class ProfileAttributesStorage
   // affect the actual profile's data.
   void RemoveProfile(const base::FilePath& profile_path);
 
-  // Returns a vector containing one attributes entry per known profile. They
-  // are not sorted in any particular order.
+  // Returns a vector containing one attributes entry per known profile.
+  // They are not sorted in any particular order.
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes() const;
 
   // Returns all non-Guest profile attributes sorted by name.
@@ -91,6 +91,10 @@ class ProfileAttributesStorage
   // profile order stored.
   std::vector<ProfileAttributesEntry*>
   GetAllProfilesAttributesSortedForDisplay() const;
+
+  // Updates `prefs::kProfilesOrder`. Move profile keys at `from_index` and
+  // place it at `to_index` shifting all keys in between by 1 spot.
+  void UpdateProfilesOrderPref(size_t from_index, size_t to_index);
 
   // Conditionally returns the sorted list based on the feature flag
   // `kProfilesReordering`. It will return the sorted list based on the stored

@@ -269,6 +269,16 @@ class ProfileAttributesStorageTest : public testing::Test {
     storage()->AddProfile(std::move(params));
   }
 
+  const std::vector<std::string> EntriesToKeys(
+      const std::vector<ProfileAttributesEntry*>& entries) {
+    std::vector<std::string> keys;
+    keys.reserve(entries.size());
+    for (const ProfileAttributesEntry* entry : entries) {
+      keys.push_back(storage()->StorageKeyFromProfilePath(entry->GetPath()));
+    }
+    return keys;
+  }
+
   TestingProfileManager& testing_profile_manager() {
     return testing_profile_manager_;
   }
@@ -2076,6 +2086,94 @@ TEST_F(ProfileAttributesStorageTest, RecoverProfileOrderPrefAfterIssues) {
     storage()->EnsureProfilesOrderPrefIsInitializedForTesting();
     EXPECT_EQ(profiles_order, expected_recovered_keys);
   }
+}
+
+TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
+  DisableObserver();
+
+  AddSimpleTestingProfileWithName(u"A");
+  AddSimpleTestingProfileWithName(u"B");
+  AddSimpleTestingProfileWithName(u"C");
+  AddSimpleTestingProfileWithName(u"D");
+
+  {
+    std::vector<std::string> expected_keys{"A", "B", "C", "D"};
+    ASSERT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        expected_keys);
+  }
+
+  {
+    storage()->UpdateProfilesOrderPref(0, 1);
+    std::vector<std::string> expected_keys{"B", "A", "C", "D"};
+    EXPECT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        expected_keys);
+  }
+
+  {
+    storage()->UpdateProfilesOrderPref(3, 0);
+    std::vector<std::string> expected_keys{"D", "B", "A", "C"};
+    EXPECT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        expected_keys);
+  }
+}
+
+// This test makes sure that performing the inverse of an action will result in
+// the same initial result. Makes sure that there is a way to come back to the
+// original state.
+TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefIsSymetric) {
+  DisableObserver();
+
+  AddSimpleTestingProfileWithName(u"A");
+  AddSimpleTestingProfileWithName(u"B");
+  AddSimpleTestingProfileWithName(u"C");
+  AddSimpleTestingProfileWithName(u"D");
+
+  std::vector<std::string> initial_keys_order{"A", "B", "C", "D"};
+  ASSERT_EQ(
+      EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+      initial_keys_order);
+
+  int from_index = 1;
+  int to_index = 3;
+  {
+    // Initial shift.
+    storage()->UpdateProfilesOrderPref(from_index, to_index);
+    std::vector<std::string> expected_keys{"A", "C", "D", "B"};
+    EXPECT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        expected_keys);
+  }
+
+  // Perform the reverse of the initial shift by inverting the inputs.
+  storage()->UpdateProfilesOrderPref(to_index, from_index);
+  EXPECT_EQ(
+      EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+      initial_keys_order);
+}
+
+TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
+  DisableObserver();
+
+  AddSimpleTestingProfileWithName(u"A");
+  AddSimpleTestingProfileWithName(u"B");
+  AddSimpleTestingProfileWithName(u"C");
+
+  std::vector<std::string> initial_keys_order{"A", "B", "C"};
+  ASSERT_EQ(
+      EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+      initial_keys_order);
+
+  int index = 2;
+  // Use the same index as from and to.
+  storage()->UpdateProfilesOrderPref(index, index);
+
+  // No changes expected with the initial value.
+  EXPECT_EQ(
+      EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+      initial_keys_order);
 }
 
 class ProfileAttributesStorageTestWithProfileReorderingParam
