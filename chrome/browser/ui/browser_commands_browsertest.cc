@@ -138,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
 }
 
 // Check that the ThirdPartyCookieBreakageIndicator UKM is sent on Reload.
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadBreakageUKM) {
+// Disabled because of crbug.com/1468528
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, DISABLED_ReloadBreakageUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
