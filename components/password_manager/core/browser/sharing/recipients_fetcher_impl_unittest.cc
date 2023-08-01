@@ -15,12 +15,10 @@
 #include "components/sync/protocol/password_sharing_recipients.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
-
 namespace {
 
 using ::testing::_;
@@ -29,8 +27,8 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::StrictMock;
 
-// TODO(crbug.com/) Move this to a common test helper to simplyfy the setup in
-// tests and the maintainace later.
+// TODO(crbug.com/1455407): Move this to a common test helper to simplify the
+// setup in tests and the maintenance later.
 void SetupIdentityEnvironment(
     raw_ptr<signin::IdentityTestEnvironment> identity_test_env) {
   identity_test_env->MakePrimaryAccountAvailable("test@email.com",
@@ -199,5 +197,4 @@ TEST_F(RecipientsFetcherImplTest,
 TEST_F(RecipientsFetcherImplTest, FetchRecipientDuringAuthError) {}
 
 }  // namespace
-
 }  // namespace password_manager

@@ -18,13 +18,12 @@
 using sync_pb::PasswordSharingRecipientsResponse;
 
 namespace password_manager {
-
 namespace {
 
-bool hasServerRequestCompletedWithSuccess(
+bool HasServerRequestCompletedWithSuccess(
     const PasswordSharingRecipientsDownloader& request) {
-  return (request.GetHttpError() == net::HTTP_OK &&
-          request.GetNetError() == net::OK);
+  return request.GetHttpError() == net::HTTP_OK &&
+         request.GetNetError() == net::OK;
 }
 
 RecipientInfo ToRecipientInfo(const sync_pb::UserInfo& user_info) {
@@ -40,7 +39,7 @@ RecipientInfo ToRecipientInfo(const sync_pb::UserInfo& user_info) {
   return recipient_info;
 }
 
-}  // Namespace
+}  // namespace
 
 RecipientsFetcherImpl::RecipientsFetcherImpl(
     version_info::Channel channel,
@@ -70,7 +69,7 @@ void RecipientsFetcherImpl::FetchFamilyMembers(
 }
 
 void RecipientsFetcherImpl::ServerRequestCallback() {
-  if (!hasServerRequestCompletedWithSuccess(*pending_request_)) {
+  if (!HasServerRequestCompletedWithSuccess(*pending_request_)) {
     std::move(callback_).Run(std::vector<RecipientInfo>(),
                              FetchFamilyMembersRequestStatus::kNetworkError);
     return;
