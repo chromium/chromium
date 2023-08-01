@@ -127,14 +127,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   ImmersiveModeTitlebarViewController* __strong
       immersive_mode_titlebar_view_controller_;
 
-  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
-  // NSWindow on screen.
-  // This controller is used as a workaround for an AppKit bug that displays a
-  // black bar when changing a NSTitlebarAccessoryViewController's
-  // fullScreenMinHeight from zero to non-zero.
-  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
-  NSTitlebarAccessoryViewController* __strong thin_titlebar_view_controller_;
-
   ImmersiveModeMapper* __strong immersive_mode_mapper_;
   ImmersiveModeTitlebarObserver* __strong immersive_mode_titlebar_observer_;
 

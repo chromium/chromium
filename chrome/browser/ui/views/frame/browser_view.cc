@@ -699,11 +699,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   bool IsContentsSeparatorEnabled() const override {
-#if BUILDFLAG(IS_MAC)
-    if (browser_view_->immersive_mode_controller()->IsEnabled()) {
-      return false;
-    }
-#endif
     // Web app windows manage their own separator.
     // TODO(crbug.com/1012979): Make PWAs set the visibility of the ToolbarView
     // based on whether it is visible instead of setting the height to 0px. This

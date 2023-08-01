@@ -19,7 +19,7 @@
 
 namespace {
 
-const double kThinControllerHeight = 0.5;
+const double kMinHeight = 0.5;
 
 NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
   for (NSView* view in window.contentView.subviews) {
@@ -112,7 +112,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
   // triggering the repositioning when the toolbar is set to auto hide would
   // result in it being incorrectly positioned in that case.
   if (remote_cocoa::IsNSToolbarFullScreenWindow(self.view.window) &&
-      self.fullScreenMinHeight != 0 && !self.hidden) {
+      self.fullScreenMinHeight > kMinHeight && !self.hidden) {
     self.hidden = YES;
     self.hidden = NO;
   }
@@ -220,15 +220,6 @@ ImmersiveModeController::ImmersiveModeController(NSWindow* browser_window,
       addSubview:overlay_content_view];
   immersive_mode_titlebar_view_controller_.layoutAttribute =
       NSLayoutAttributeBottom;
-
-  thin_titlebar_view_controller_ =
-      [[NSTitlebarAccessoryViewController alloc] init];
-  thin_titlebar_view_controller_.view = [[NSView alloc] init];
-  thin_titlebar_view_controller_.view.wantsLayer = YES;
-  thin_titlebar_view_controller_.view.layer.backgroundColor =
-      NSColor.clearColor.CGColor;
-  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
-  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
 }
 
 ImmersiveModeController::~ImmersiveModeController() {
@@ -238,7 +229,6 @@ ImmersiveModeController::~ImmersiveModeController() {
   StopObservingChildWindows(overlay_window_);
 
   // Rollback the view shuffling from enablement.
-  [thin_titlebar_view_controller_ removeFromParentViewController];
   [overlay_content_view_ removeFromSuperview];
   overlay_window_.contentView = overlay_content_view_;
   [immersive_mode_titlebar_view_controller_ removeFromParentViewController];
@@ -268,14 +258,6 @@ void ImmersiveModeController::Enable() {
   [overlay_content_view_.centerYAnchor
       constraintEqualToAnchor:overlay_content_view_.superview.centerYAnchor]
       .active = YES;
-
-  thin_titlebar_view_controller_.hidden = YES;
-  [browser_window_
-      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
-
-  NSRect frame = thin_titlebar_view_controller_.view.frame;
-  frame.size.height = kThinControllerHeight;
-  thin_titlebar_view_controller_.view.frame = frame;
 }
 
 void ImmersiveModeController::FullscreenTransitionCompleted() {
@@ -335,7 +317,6 @@ void ImmersiveModeController::UpdateToolbarVisibility(
     case mojom::ToolbarVisibilityStyle::kAlways:
       immersive_mode_titlebar_view_controller_.fullScreenMinHeight =
           immersive_mode_titlebar_view_controller_.view.frame.size.height;
-      thin_titlebar_view_controller_.hidden = YES;
 
       // Top chrome is removed from the content view when the browser window
       // starts the fullscreen transition, however the request is asynchronous
@@ -362,42 +343,11 @@ void ImmersiveModeController::UpdateToolbarVisibility(
       break;
     case mojom::ToolbarVisibilityStyle::kAutohide:
       immersive_mode_titlebar_view_controller_.hidden = NO;
-
-      // TODO(https://crbug.com/1369643): Remove the thin controller.
-      // The thin titlebar controller keeps a tiny portion of the AppKit
-      // fullscreen NSWindow on screen as a workaround for
-      // https://crbug.com/1369643. Toggle to clear any artifacts from a
-      // previous state.
-      thin_titlebar_view_controller_.hidden = YES;
-      thin_titlebar_view_controller_.hidden = NO;
-
-      immersive_mode_titlebar_view_controller_.fullScreenMinHeight = 0;
+      // Workaround for https://crbug.com/1369643
+      immersive_mode_titlebar_view_controller_.fullScreenMinHeight = kMinHeight;
       browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
-      // TODO(https://crbug.com/1369643): Remove the thin controller.
-      // Needed when eventually exiting from content fullscreen and returning
-      // to mojom::ToolbarVisibilityStyle::kAlways. This is a workaround for
-      // https://crbug.com/1369643.
-      //
-      // We hit this situation when a window enters browser fullscreen, then
-      // enters content fullscreen. Exiting content fullscreen will drop the
-      // window back into browser fullscreen.
-      //
-      // We don't know what state we will be returning to when exiting content
-      // fullscreen, but `kAlways` is one of the options. Because of this we
-      // need to keep the thin controller visible during content fullscreen,
-      // otherwise we will trip https://crbug.com/1369643.
-      //
-      // Exiting content fullscreen and returning to `kAutohide` does not
-      // trigger https://crbug.com/1369643, but to keep things simple we keep
-      // the mitigation in place for all transitions out of content fullscreen.
-
-      // In short, when transitioning to `kNone` we need to take steps to
-      // mitigate https://crbug.com/1369643 which is triggered when we
-      // eventually transition out of `kNone`.
-      thin_titlebar_view_controller_.hidden = NO;
-
       immersive_mode_titlebar_view_controller_.hidden = YES;
       break;
   }
