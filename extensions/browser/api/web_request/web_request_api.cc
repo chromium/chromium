@@ -359,9 +359,9 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
     // raw_ptr::get() so we truly have a raw pointer to bind into the callback.
     remove_listener = base::BindOnce(
         &WebRequestAPI::UpdateActiveListener, weak_factory_.GetWeakPtr(),
-        details.browser_context.get(), update_type, details.extension_id,
-        sub_event_name, details.worker_thread_id,
-        details.service_worker_version_id);
+        base::UnsafeDanglingUntriaged(details.browser_context.get()),
+        update_type, details.extension_id, sub_event_name,
+        details.worker_thread_id, details.service_worker_version_id);
   }
 
   // This PostTask is necessary even though we are already on the UI thread to
