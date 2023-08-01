@@ -1187,7 +1187,7 @@ TEST_F(FieldTrialListTest, SerializeSharedMemoryRegionMetadata) {
   std::string serialized =
       FieldTrialList::SerializeSharedMemoryRegionMetadata(shm.region, &options);
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_ANDROID)
   int shm_fd = shm.region.GetPlatformHandle();
 #else
@@ -1195,7 +1195,7 @@ TEST_F(FieldTrialListTest, SerializeSharedMemoryRegionMetadata) {
 #endif  // BUILDFLAG(IS_ANDROID)
   // Pick an arbitrary FD number to use for the shmem FD in the child.
   options.fds_to_remap.emplace_back(std::make_pair(shm_fd, 42));
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
   CommandLine cmd_line = GetMultiProcessTestChildBaseCommandLine();
   cmd_line.AppendSwitchASCII("field_trials", serialized);
