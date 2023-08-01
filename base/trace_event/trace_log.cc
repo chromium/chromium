@@ -969,10 +969,8 @@ void TraceLog::InitializePerfettoIfNeeded() {
   if (perfetto::Tracing::IsInitialized())
     return;
   g_perfetto_initialized_by_tracelog = true;
-  auto* perfetto_platform = GetOrCreatePerfettoPlatform();
   perfetto::TracingInitArgs init_args;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
-  init_args.platform = perfetto_platform;
   init_args.disallow_merging_with_system_tracks = true;
   perfetto::Tracing::Initialize(init_args);
   TrackEvent::Register();
@@ -2187,14 +2185,6 @@ void TraceLog::SetTraceBufferForTesting(
 }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-tracing::PerfettoPlatform* TraceLog::GetOrCreatePerfettoPlatform() {
-  if (!perfetto_platform_) {
-    perfetto_platform_.reset(new tracing::PerfettoPlatform(
-        tracing::PerfettoPlatform::TaskRunnerType::kBuiltin));
-  }
-  return perfetto_platform_.get();
-}
-
 void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
   AutoLock lock(track_event_lock_);
   track_event_sessions_.emplace_back(args.internal_instance_index, *args.config,

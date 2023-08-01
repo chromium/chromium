@@ -44,10 +44,6 @@ class TraceProcessorStorage;
 namespace base {
 class RefCountedString;
 
-namespace tracing {
-class PerfettoPlatform;
-}  // namespace tracing
-
 namespace trace_event {
 
 struct TraceCategory;
@@ -519,7 +515,6 @@ class BASE_EXPORT TraceLog :
                      bool discard_events);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  tracing::PerfettoPlatform* GetOrCreatePerfettoPlatform();
   void OnTraceData(const char* data, size_t size, bool has_more);
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -630,7 +625,6 @@ class BASE_EXPORT TraceLog :
   std::atomic<UpdateDurationFunction> update_duration_override_{nullptr};
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  std::unique_ptr<::base::tracing::PerfettoPlatform> perfetto_platform_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
   std::vector<TrackEventSession> track_event_sessions_
