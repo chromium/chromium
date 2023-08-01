@@ -1615,7 +1615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NTP.OverscrollAction" enum="IOSNTPOverscrollAction"
-    expires_after="2023-09-03">
+    expires_after="2024-02-03">
   <owner>guiperez@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
