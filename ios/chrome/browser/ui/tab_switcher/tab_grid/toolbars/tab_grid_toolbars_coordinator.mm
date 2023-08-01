@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_coordinator.h"
 
 #import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
@@ -22,11 +23,18 @@
 }
 
 - (void)start {
-  _mediator = [[TabGridToolbarsMediator alloc] init];
-
   [self setupTopToolbar];
   [self setupBottomToolbar];
   [self updateToolbarButtons];
+}
+
+#pragma mark - Property Implementation.
+
+- (id<GridToolbarsMutator>)toolbarsMutator {
+  if (!_mediator) {
+    _mediator = [[TabGridToolbarsMediator alloc] init];
+  }
+  return _mediator;
 }
 
 #pragma mark - Private

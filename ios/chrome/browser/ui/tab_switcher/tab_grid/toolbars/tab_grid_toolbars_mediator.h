@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+
 // Mediates between model layer and top and bottom toolbar UI layer.
-@interface TabGridToolbarsMediator : NSObject
+@interface TabGridToolbarsMediator : NSObject <GridToolbarsMutator>
 
 @end
 

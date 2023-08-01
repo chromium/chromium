@@ -14,6 +14,7 @@
 
 class Browser;
 @protocol GridMediatorDelegate;
+@protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
 class WebStateList;
 
@@ -27,6 +28,8 @@ class WebStateList;
 @property(nonatomic, assign) Browser* browser;
 // Delegate to handle presenting the action sheet.
 @property(nonatomic, weak) id<GridMediatorDelegate> delegate;
+// Mutator to handle toolbars modification.
+@property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 // The list from the browser.
 @property(nonatomic, assign) WebStateList* webStateList;
 

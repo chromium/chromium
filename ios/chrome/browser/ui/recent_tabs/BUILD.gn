@@ -39,6 +39,8 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//ios/chrome/common/ui/favicon:favicon_constants",

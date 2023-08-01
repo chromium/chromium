@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_commands_wrangler.h"
 
+@protocol GridToolbarsMutator;
 @class TabGridBottomToolbar;
 @protocol TabGridToolbarsActionWrangler;
 @protocol TabGridToolbarsDelegateWrangler;
@@ -23,6 +24,9 @@
 // The toolbars.
 @property(nonatomic, strong) TabGridTopToolbar* topToolbar;
 @property(nonatomic, strong) TabGridBottomToolbar* bottomToolbar;
+
+// Mutator to handle toolbars modification.
+@property(nonatomic, readonly, weak) id<GridToolbarsMutator> toolbarsMutator;
 
 // Wrangler to manage actions/delegate, should be removed in a future
 // refactoring. Those should be moved to the Grid once the grid has a direct

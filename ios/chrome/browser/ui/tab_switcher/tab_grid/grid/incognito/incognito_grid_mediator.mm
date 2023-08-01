@@ -9,7 +9,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,8 +50,24 @@
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
+
+    [self configureToolbarsButtons];
   }
   // TODO(crbug.com/1457146): Implement.
+}
+
+#pragma mark - Private
+
+// Creates and send a tab grid toolbar configuration with button that should be
+// displayed when incognito grid is selected.
+- (void)configureToolbarsButtons {
+  TabGridToolbarsConfiguration* toolbarsConfiguration =
+      [[TabGridToolbarsConfiguration alloc] init];
+  toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
+  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.searchButton = YES;
+  toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
+  [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
 @end

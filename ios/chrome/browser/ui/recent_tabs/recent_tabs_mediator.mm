@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 
@@ -286,6 +288,16 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
              : SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_NO_SESSIONS;
 }
 
+// Creates and send a tab grid toolbar configuration with button that should be
+// displayed when recent grid is selected.
+- (void)configureToolbarsButtons {
+  TabGridToolbarsConfiguration* toolbarsConfiguration =
+      [[TabGridToolbarsConfiguration alloc] init];
+  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.searchButton = YES;
+  [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
 #pragma mark - RecentTabsTableViewControllerDelegate
 
 - (void)refreshSessionsView {
@@ -303,6 +315,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
     LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+    [self configureToolbarsButtons];
   }
   // TODO(crbug.com/1457146): Implement.
 }

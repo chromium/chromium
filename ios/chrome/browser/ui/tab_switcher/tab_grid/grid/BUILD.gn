@@ -120,6 +120,12 @@ source_set("grid_mediator_delegate") {
   deps = [ "//base" ]
 }
 
+source_set("grid_toolbars_mutator") {
+  sources = [ "grid_toolbars_mutator.h" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

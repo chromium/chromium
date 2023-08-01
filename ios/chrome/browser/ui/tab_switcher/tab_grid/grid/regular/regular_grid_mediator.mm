@@ -13,7 +13,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -69,6 +71,10 @@
       self.tabRestoreService
           ? self.tabRestoreService->entries().size() - old_size
           : 0;
+
+  // Update toolbar's buttons as the number of tabs changed so the options
+  // changed ("Undo" may be available now).
+  [self configureToolbarsButtons];
 }
 
 - (void)undoCloseAllItems {
@@ -83,6 +89,10 @@
   _closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
+
+  // Update toolbar's buttons as the number of tabs changed so the options
+  // changed.
+  [self configureToolbarsButtons];
 }
 
 - (void)discardSavedClosedItems {
@@ -92,6 +102,10 @@
   _syncedClosedTabsCount = 0;
   _closedSessionWindow = nil;
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+
+  // Update toolbar's buttons as the number of tabs changed so the options
+  // changed.
+  [self configureToolbarsButtons];
 }
 
 #pragma mark - TabGridPageMutator
@@ -100,11 +114,28 @@
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRegularPanel"));
+
+    [self configureToolbarsButtons];
   }
   // TODO(crbug.com/1457146): Implement.
 }
 
 #pragma mark - Private
+
+// Creates and send a tab grid toolbar configuration with button that should be
+// displayed when regular grid is selected.
+- (void)configureToolbarsButtons {
+  TabGridToolbarsConfiguration* toolbarsConfiguration =
+      [[TabGridToolbarsConfiguration alloc] init];
+  // TODO(crbug.com/1457146): This should take into account inactive tabs too.
+  toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
+  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.searchButton = YES;
+  toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
+  // TODO(crbug.com/1457146): This should take into account inactive tabs too.
+  toolbarsConfiguration.undoButton = _closedSessionWindow;
+  [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
 
 // Removes `self.syncedClosedTabsCount` most recent entries from the
 // TabRestoreService.

@@ -842,7 +842,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                faviconLoader:faviconLoader
                                                  syncService:service
                                                  browserList:browserList];
-
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
@@ -872,6 +871,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _mediator.regularPageMutator = self.regularTabsMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
   _mediator.remotePageMutator = self.remoteTabsMediator;
+
+  self.incognitoTabsMediator.toolbarsMutator =
+      _toolbarsCoordinator.toolbarsMutator;
+  self.regularTabsMediator.toolbarsMutator =
+      _toolbarsCoordinator.toolbarsMutator;
+  self.remoteTabsMediator.toolbarsMutator =
+      _toolbarsCoordinator.toolbarsMutator;
 
   self.snackbarCoordinator =
       [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
