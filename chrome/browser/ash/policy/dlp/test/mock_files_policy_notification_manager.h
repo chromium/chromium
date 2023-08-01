@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_MOCK_FILES_POLICY_NOTIFICATION_MANAGER_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_MOCK_FILES_POLICY_NOTIFICATION_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_TEST_MOCK_FILES_POLICY_NOTIFICATION_MANAGER_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_TEST_MOCK_FILES_POLICY_NOTIFICATION_MANAGER_H_
 
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
@@ -55,4 +55,4 @@ class MockFilesPolicyNotificationManager
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_MOCK_FILES_POLICY_NOTIFICATION_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_TEST_MOCK_FILES_POLICY_NOTIFICATION_MANAGER_H_

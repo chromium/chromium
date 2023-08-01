@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_FILES_CONTROLLER_ASH_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_FILES_CONTROLLER_ASH_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_TEST_MOCK_DLP_FILES_CONTROLLER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_TEST_MOCK_DLP_FILES_CONTROLLER_ASH_H_
 
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 
@@ -105,4 +105,4 @@ class MockDlpFilesControllerAsh : public DlpFilesControllerAsh {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_FILES_CONTROLLER_ASH_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_TEST_MOCK_DLP_FILES_CONTROLLER_ASH_H_
