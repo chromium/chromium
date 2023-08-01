@@ -5,7 +5,6 @@
 /**
  * @fileoverview A drop-down menu in the ChromeVox panel.
  */
-import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeCallbackManager} from '../common/bridge_callback_manager.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
