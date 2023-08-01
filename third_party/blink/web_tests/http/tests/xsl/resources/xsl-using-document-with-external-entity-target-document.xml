@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE p [
+<!ENTITY secretfile SYSTEM "file:///secret/file">
+<!ENTITY secreturl SYSTEM "http://example.com">
+]>
+<p>
+    &secretfile;
+    &secreturl;
+</p>
