@@ -187,6 +187,28 @@ AuthResult MapToAuthResult(cast_certificate::CastCertError error,
       RecordCertificateStatus(CastCertificateStatus::kUnexpectedFailed);
       return AuthResult("Failed verifying cast device certificate.",
                         AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA);
+    case cast_certificate::CastCertError::ERR_CERTS_REVOKED_BY_FALLBACK_CRL:
+      RecordCertificateStatus(
+          CastCertificateStatus::kCertificateRevokedByFallbackCRL);
+      if (!crl_required) {
+        AuthResult success;
+        success.set_flag(CastChannelFlag::kCertificateRevokedByFallbackCRL);
+        return success;
+      }
+      return AuthResult("Failed certificate revocation check by fallback crl.",
+                        AuthResult::ERROR_CERTS_REVOKED_BY_FALLBACK_CRL);
+    case cast_certificate::CastCertError::ERR_FALLBACK_CRL_INVALID:
+      RecordCertificateStatus(CastCertificateStatus::kInvalidFallbackCRL);
+      if (!crl_required) {
+        AuthResult success;
+        success.set_flag(CastChannelFlag::kInvalidFallbackCRL);
+        return success;
+      }
+      return AuthResult("Failed to provide a valid fallback CRL.",
+                        AuthResult::ERROR_FALLBACK_CRL_INVALID);
+    case cast_certificate::CastCertError::OK_FALLBACK_CRL:
+      return AuthResult("Fallback to fallback CRL.",
+                        AuthResult::ERROR_CRL_OK_FALLBACK_CRL);
     case cast_certificate::CastCertError::OK:
       return AuthResult();
   }

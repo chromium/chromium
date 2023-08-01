@@ -14653,6 +14653,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="CertRestrictionsFailed"/>
   <int value="8" label="CertsMissing"/>
   <int value="9" label="CertUnexpectedFailed"/>
+  <int value="10" label="InvalidFallbackCRL"/>
+  <int value="11" label="CertificateRevokedByFallbackCRL"/>
 </enum>
 
 <!-- Used as a bitfield, so values must be ascending powers-of-2. -->
@@ -14665,6 +14667,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="8" label="CRLMissing"/>
   <int value="16" label="CRLInvalid"/>
   <int value="32" label="CertificateRevoked"/>
+  <int value="64" label="InvalidFallbackCRL"/>
+  <int value="128" label="CertificateRevokedByFallbackCRL"/>
 </enum>
 
 <enum name="CastNonceStatus">

@@ -152,7 +152,9 @@ enum class CastChannelFlag : uint16_t {
   kCRLMissing = 1 << 3,
   kCRLInvalid = 1 << 4,
   kCertificateRevoked = 1 << 5,
-  kMaxValue = kCertificateRevoked,
+  kInvalidFallbackCRL = 1 << 6,
+  kCertificateRevokedByFallbackCRL = 1 << 7,
+  kMaxValue = kCertificateRevokedByFallbackCRL,
 };
 
 using CastChannelFlags = uint16_t;

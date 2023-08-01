@@ -54,6 +54,14 @@ enum class CastCertError {
   ERR_CRL_INVALID,
   // One of the certificates in the chain is revoked.
   ERR_CERTS_REVOKED,
+  // When verification is successful only after using the fallback CRL.
+  OK_FALLBACK_CRL,
+  // When the flag to use a fallback CRL is enabled but the build is too old and
+  // the fallback already expired.
+  ERR_FALLBACK_CRL_INVALID,
+  // When verification shows the certificate is revoked after using the fallback
+  // CRL.
+  ERR_CERTS_REVOKED_BY_FALLBACK_CRL,
   // An internal coding error.
   ERR_UNEXPECTED,
 };
