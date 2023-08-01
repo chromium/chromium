@@ -32,6 +32,12 @@ class HelpBubbleViewAshTestBase : public AshTestBase {
                                           bool with_progress);
 
   // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
+  // the specified `params`. Note that the returned help bubble view is owned
+  // by its widget.
+  HelpBubbleViewAsh* CreateHelpBubbleView(
+      user_education::HelpBubbleParams params);
+
+  // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
   // the specified `style`. Note that the returned help bubble view is owned
   // by its widget.
   HelpBubbleViewAsh* CreateHelpBubbleView(
@@ -40,12 +46,6 @@ class HelpBubbleViewAshTestBase : public AshTestBase {
  private:
   // AshTestBase:
   void SetUp() override;
-
-  // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
-  // the specified `params`. Note that the returned help bubble view is owned
-  // by its widget.
-  HelpBubbleViewAsh* CreateHelpBubbleView(
-      user_education::HelpBubbleParams params);
 
   // The test `widget_` to be used as an anchor for help bubble views.
   views::UniqueWidgetPtr widget_;

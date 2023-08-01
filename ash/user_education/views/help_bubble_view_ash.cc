@@ -69,6 +69,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
@@ -294,7 +295,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kDefaultButtonIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kFirstNonDefaultButtonIdForTesting);
-
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyIconIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyTextIdForTesting);
 
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
@@ -377,18 +378,31 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     progress_container->SetVisible(false);
   }
 
+  // A body icon provided from extended properties should take precedence over a
+  // body icon provided from help bubble `params` since extended properties are
+  // the ChromeOS-specific mechanism for overriding platform agnostic behaviors.
+  const gfx::VectorIcon* body_icon = params.body_icon;
+  if (auto body_icon_from_extended_properties =
+          user_education_util::GetHelpBubbleBodyIcon(
+              params.extended_properties)) {
+    body_icon = &body_icon_from_extended_properties->get();
+  }
+
   // Add the body icon (optional).
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
-  if (params.body_icon) {
+  if (body_icon && (body_icon != &gfx::kNoneIcon)) {
     icon_view_ = top_text_container->AddChildViewAt(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *params.body_icon, cros_tokens::kCrosSysDialogContainer,
-            kBodyIconSize)),
+        views::Builder<views::ImageView>()
+            .SetAccessibleName(params.body_icon_alt_text)
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                *body_icon, cros_tokens::kCrosSysDialogContainer,
+                kBodyIconSize))
+            .SetPreferredSize(
+                gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize))
+            .SetProperty(views::kElementIdentifierKey, kBodyIconIdForTesting)
+            .Build(),
         0);
-    icon_view_->SetPreferredSize(
-        gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize));
-    icon_view_->SetAccessibleName(params.body_icon_alt_text);
   }
 
   // Add title (optional) and body label.
