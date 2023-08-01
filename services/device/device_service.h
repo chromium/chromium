@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -261,11 +261,7 @@ class DeviceService : public mojom::DeviceService {
 #endif
 
 #if defined(IS_SERIAL_ENABLED_PLATFORM)
-  // Requests for the SerialPortManager interface must be bound to
-  // |serial_port_manager_| on |serial_port_manager_task_runner_| and it will
-  // be destroyed on that sequence.
-  std::unique_ptr<SerialPortManagerImpl> serial_port_manager_;
-  scoped_refptr<base::SequencedTaskRunner> serial_port_manager_task_runner_;
+  base::SequenceBound<SerialPortManagerImpl> serial_port_manager_;
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
