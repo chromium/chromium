@@ -7686,6 +7686,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "test-third-party-cookie-phaseout",
+    "owners": [ "selya@google.com" , "dylancutler@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "text-based-audio-descriptions",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120
