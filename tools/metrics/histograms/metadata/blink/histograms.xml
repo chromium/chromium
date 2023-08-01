@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesInKB" units="KB"
-    expires_after="2023-11-12">
+    expires_after="2024-01-28">
   <owner>magchen@chromium.org</owner>
   <owner>enga@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -956,7 +956,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.EffectiveZoom" units="%" expires_after="2023-11-23">
+<histogram name="Blink.EffectiveZoom" units="%" expires_after="2024-01-28">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

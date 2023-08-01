@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.Init.CreationToInitializationLatency"
-    units="ms" expires_after="2023-10-01">
+    units="ms" expires_after="2024-01-28">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -672,7 +672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.SelectionFailedReason"
-    enum="SegmentationSelectionFailureReason" expires_after="2024-01-21">
+    enum="SegmentationSelectionFailureReason" expires_after="2024-01-28">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

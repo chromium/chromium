@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.ResumeStep"
-    enum="MoveMigratorResumeStep" expires_after="M121">
+    enum="MoveMigratorResumeStep" expires_after="2024-01-28">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
@@ -1161,7 +1161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.TaskStatus"
-    enum="MoveMigratorTaskStatus" expires_after="M121">
+    enum="MoveMigratorTaskStatus" expires_after="2024-01-28">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
@@ -6678,7 +6678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.UserDataStatsRecorder.DataSize.TotalSize" units="MB"
-    expires_after="M121">
+    expires_after="2024-01-28">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
@@ -7436,7 +7436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.MultiWindowResizerClick" enum="Boolean"
-    expires_after="2023-11-25">
+    expires_after="2024-01-28">
   <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>

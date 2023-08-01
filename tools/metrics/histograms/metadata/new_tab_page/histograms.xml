@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
-    expires_after="2023-11-19">
+    expires_after="2024-01-28">
   <owner>justincohen@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad"
-    enum="CartDiscountConsentStatus" expires_after="2024-01-21">
+    enum="CartDiscountConsentStatus" expires_after="2024-01-28">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1394,7 +1394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisitedMigratedDefaultAppType"
-    enum="TypeOfDeletedMostVisitedApp" expires_after="2023-10-22">
+    enum="TypeOfDeletedMostVisitedApp" expires_after="2024-01-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
