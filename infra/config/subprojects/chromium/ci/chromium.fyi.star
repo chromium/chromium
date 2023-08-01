@@ -1286,6 +1286,7 @@ def build_perf_builder(description_html, **kwargs):
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
     kwargs.setdefault("use_clang_coverage", True)
+    kwargs.setdefault("siso_configs", [])
 
     return ci.builder(
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -1296,7 +1297,6 @@ def build_perf_builder(description_html, **kwargs):
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
-        siso_configs = [],
         notifies = ["chrome-build-perf"],
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         **kwargs
@@ -1368,6 +1368,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "andss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1458,6 +1459,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnxss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1541,6 +1543,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "winss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1630,6 +1633,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "crosss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 ci.builder(
