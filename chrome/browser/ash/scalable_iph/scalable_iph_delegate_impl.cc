@@ -86,8 +86,11 @@ const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
       action_type_urls(
           {{ActionType::kOpenChrome, "chrome://new-tab-page/"},
            {ActionType::kOpenPersonalizationApp, "chrome://personalization/"},
+           {ActionType::kOpenPlayStore,
+            "https://play.google.com/store/games?device=chromebook"},
            {ActionType::kOpenGoogleDocs,
             "https://docs.google.com/document/?usp=installed_webapp/"},
+           {ActionType::kOpenGooglePhotos, "https://photos.google.com/"},
            {ActionType::kOpenSettingsPrinter,
             "chrome://os-settings/cupsPrinters/"},
            {ActionType::kOpenPhoneHub, "chrome://os-settings/multidevice/"},
@@ -374,9 +377,15 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenPlayStore: {
+      bool app_launched = false;
       if (IsAppValidForProfile(profile_, arc::kPlayStoreAppId)) {
-        arc::LaunchApp(profile_, arc::kPlayStoreAppId, ui::EF_NONE,
-                       arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+        app_launched = arc::LaunchApp(
+            profile_, arc::kPlayStoreAppId, ui::EF_NONE,
+            arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+      }
+      if (!app_launched) {
+        OpenUrlForProfile(
+            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenPlayStore)));
       }
       break;
     }
@@ -386,9 +395,16 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenGooglePhotos: {
+      bool app_launched = false;
       if (IsAppValidForProfile(profile_, arc::kGooglePhotosAppId)) {
-        arc::LaunchApp(profile_, arc::kGooglePhotosAppId, ui::EF_NONE,
-                       arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+        app_launched = arc::LaunchApp(
+            profile_, arc::kGooglePhotosAppId, ui::EF_NONE,
+            arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+      }
+      if (!app_launched) {
+        OpenUrlForProfile(
+            profile_,
+            GURL(GetActionTypeURLs().at(ActionType::kOpenGooglePhotos)));
       }
       break;
     }
