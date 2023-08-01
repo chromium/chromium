@@ -79,11 +79,6 @@
   return self;
 }
 
-- (void)dealloc {
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!_browser);
-}
-
 - (void)shutdown {
   [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;

@@ -117,11 +117,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                                                     }];
 }
 
-- (void)dealloc {
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!_browserState);
-}
-
 - (void)teardownUI {
   if (!_browserState) {
     return;

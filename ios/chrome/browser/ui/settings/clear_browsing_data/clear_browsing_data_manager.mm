@@ -256,11 +256,6 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   _counterWrapperProducer = nil;
 }
 
-- (void)dealloc {
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!_counterWrapperProducer);
-}
-
 // Add items for types of browsing data to clear.
 - (void)addClearBrowsingDataItemsToModel:(ListModel*)model {
   // Data types section.

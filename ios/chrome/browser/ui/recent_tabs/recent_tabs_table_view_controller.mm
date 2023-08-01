@@ -202,11 +202,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return self;
 }
 
-- (void)dealloc {
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!self.signinPromoViewMediator);
-}
-
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier =
