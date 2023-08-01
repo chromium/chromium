@@ -181,7 +181,14 @@ export class PolicyTestRowElement extends CustomElement {
 
     // Change input type according to policy, set value to new input
     policyNameInput.value = initialValues.name;
-    this.changeInputType_(policyNameInput);
+
+    // Check if policy name is valid
+    if (policyNameInput.selectedIndex === -1) {
+      this.setInErrorState_(policyNameInput);
+    } else {
+      this.changeInputType_(policyNameInput);
+    }
+
     const policyValueInput =
         this.getRequiredElement<HTMLInputElement>('.value');
     if (this.inputType_ === String) {

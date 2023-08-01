@@ -47,29 +47,32 @@ function applyPoliciesFromFile(jsonFile: File) {
             getRequiredElement<HTMLInputElement>('import-policies-file-input');
 
         // Extension policies are ignored, they are not supported on this page
-        // TODO(b:293339258): Verify imported file is valid and display error
-        // message if invalid
-        const policies = JSON.parse(
-            reader.result as string)['policyValues']['chrome']['policies'];
+        try {
+          const policies = JSON.parse(
+              reader.result as string)['policyValues']['chrome']['policies'];
 
-        const policyTable =
-            getRequiredElement<PolicyTestTableElement>('policy-test-table');
+          const policyTable =
+              getRequiredElement<PolicyTestTableElement>('policy-test-table');
 
-        // Empty policy table
-        policyTable.clearRows();
+          // Empty policy table
+          policyTable.clearRows();
 
-        // Add row for each policy
-        for (const [key, value] of Object.entries(policies)) {
-          if ((key as string)[0] == '_') {
-            continue;
+          // Add row for each policy
+          for (const [key, value] of Object.entries(policies)) {
+            if (key.startsWith('_')) {
+              continue;
+            }
+
+            policyTable.addRow(
+                convertToPolicyInfo(key, value as {[key: string]: any}));
           }
 
-          policyTable.addRow(convertToPolicyInfo(
-              key as string, value as {[key: string]: any}));
+          // Reset files
+          fileInput.value = '';
+        } catch {
+          alert('Invalid file format.');
         }
 
-        // Reset files
-        fileInput.value = '';
       },
       false,
   );
