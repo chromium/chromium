@@ -43,10 +43,6 @@ class CookieJar : public GarbageCollected<CookieJar> {
   void OnBackendDisconnect();
   uint64_t GetSharedCookieVersion();
 
-  // Returns true if last_cookies_ is not guaranteed to be up to date and an IPC
-  // is needed to get the current cookie string.
-  bool IPCNeeded();
-
   // Updates the fake cookie cache after a
   // RestrictedCookieManager::GetCookiesString request returns.
   //
@@ -82,10 +78,6 @@ class CookieJar : public GarbageCollected<CookieJar> {
   base::ReadOnlySharedMemoryMapping mapping_;
 
   uint64_t last_version_ = network::mojom::blink::kInvalidCookieVersion;
-
-  // Last received cookie string. Null if there is no last cached-version. Can
-  // be empty since that is a valid cookie string.
-  String last_cookies_;
 };
 
 }  // namespace blink

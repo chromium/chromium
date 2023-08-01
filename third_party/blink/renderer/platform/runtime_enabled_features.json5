@@ -2879,10 +2879,6 @@
       origin_trial_feature_name: "ReduceAcceptLanguage"
     },
     {
-      name: "ReduceCookieIPCs",
-      status: "test",
-    },
-    {
       // If enabled, the deviceModel will be reduced to "K" and the
       // androidVersion will be reduced to a static "10" string in android
       // User-Agent string.
