@@ -112,7 +112,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.io.IOException;
 import java.util.HashSet;
 
-/** Test for {@link MainSettings}. Main purpose is to have a sanity check on the xml. */
+/** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
