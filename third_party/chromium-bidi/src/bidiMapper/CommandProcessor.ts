@@ -29,6 +29,7 @@ import type {Result} from '../utils/result.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
@@ -44,6 +45,7 @@ type CommandProcessorEvents = {
 };
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
+  #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #inputProcessor: InputProcessor;
   #scriptProcessor: ScriptProcessor;
@@ -66,6 +68,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     this.#parser = parser;
     this.#logger = logger;
     const preloadScriptStorage = new PreloadScriptStorage();
+    this.#browserProcessor = new BrowserProcessor(cdpConnection);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
@@ -92,11 +95,16 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     command: ChromiumBidi.Command
   ): Promise<ChromiumBidi.ResultData> {
     switch (command.method) {
-      case 'browser.close':
       case 'session.end':
       case 'session.new':
         // TODO: Implement.
         break;
+
+      // Browser domain
+      // keep-sorted start block=yes
+      case 'browser.close':
+        return this.#browserProcessor.close();
+      // keep-sorted end
 
       // Browsing Context domain
       // keep-sorted start block=yes
