@@ -898,8 +898,7 @@
                 "chromeos_lacros",
                 "ios",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
