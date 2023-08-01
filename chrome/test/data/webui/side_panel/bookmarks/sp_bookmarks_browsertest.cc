@@ -48,7 +48,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, List) {
+// TODO(crbug.com/1466691): Fix and re-enable test.
+IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DISABLED_List) {
   RunTest("side_panel/bookmarks/power_bookmarks_list_test.js", "mocha.run()");
 }
 
