@@ -51,13 +51,21 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
   SwitchToCurrentPage();
 }
 
-DownloadBubbleContentsView::~DownloadBubbleContentsView() = default;
+DownloadBubbleContentsView::~DownloadBubbleContentsView() {
+  security_view_->UpdateSecurityView(nullptr);
+}
+
+DownloadBubbleRowView* DownloadBubbleContentsView::GetPrimaryViewRowForTesting(
+    size_t index) {
+  return primary_view_->GetRowForTesting(index);  // IN-TEST
+}
 
 void DownloadBubbleContentsView::ShowPage(Page page) {
   if (page_ == page) {
     return;
   }
   page_ = page;
+  CHECK(page != Page::kSecurity || security_view_->IsInitialized());
   SwitchToCurrentPage();
 }
 

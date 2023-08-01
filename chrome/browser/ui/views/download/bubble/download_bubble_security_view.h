@@ -42,16 +42,26 @@ class DownloadBubbleSecurityView : public views::View,
   ~DownloadBubbleSecurityView() override;
 
   // Update the security view when a subpage is opened for a particular
-  // download.
+  // download. If the argument is nullptr, this view will be reset to a default
+  // state that is safe to destroy, and will no longer be initialized.
   void UpdateSecurityView(DownloadBubbleRowView* download_row_view);
 
   // Update the view after it is visible, in particular asking for focus and
   // announcing accessibility text.
   void UpdateAccessibilityTextAndFocus();
 
+  // Whether this view is properly associated with a download row. Method calls
+  // on this view do not make sense if not initialized.
+  bool IsInitialized() const { return download_row_view_ != nullptr; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DownloadBubbleSecurityViewTest,
                            VerifyLogWarningActions);
+
+  // Following method calls require this view to be initialized.
+
+  // Convenience for obtaining UI info from download_row_view_.
+  DownloadUIModel::BubbleUIInfo& GetUiInfo();
 
   void BackButtonPressed();
   void AddHeader();
@@ -92,7 +102,7 @@ class DownloadBubbleSecurityView : public views::View,
   // Minimum width for the subpage summary.
   int GetMinimumLabelWidth() const;
 
-  raw_ptr<DownloadBubbleRowView> download_row_view_;
+  raw_ptr<DownloadBubbleRowView> download_row_view_ = nullptr;
   DownloadUIModel::DownloadUIModelPtr model_;
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;

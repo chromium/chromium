@@ -63,6 +63,9 @@ class DownloadBubbleContentsView : public views::View {
   // Forwards to `security_view_`. (Does not switch to the security view.)
   void UpdateSecurityView(DownloadBubbleRowView* row);
 
+  // Gets the row view at the given index.
+  DownloadBubbleRowView* GetPrimaryViewRowForTesting(size_t index);
+
  private:
   // Switches to the page that should currently be showing.
   void SwitchToCurrentPage();

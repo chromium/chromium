@@ -140,5 +140,10 @@ int DownloadBubblePrimaryView::DefaultPreferredWidth() const {
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 }
 
+DownloadBubbleRowView* DownloadBubblePrimaryView::GetRowForTesting(
+    size_t index) {
+  return static_cast<DownloadBubbleRowView*>(row_list_view_->children()[index]);
+}
+
 BEGIN_METADATA(DownloadBubblePrimaryView, views::FlexLayoutView)
 END_METADATA

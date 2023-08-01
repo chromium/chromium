@@ -299,8 +299,12 @@ void DownloadBubbleSecurityView::OnCheckboxClicked() {
                                 DownloadBubbleSubpageAction::kClickedCheckbox);
 }
 
+DownloadUIModel::BubbleUIInfo& DownloadBubbleSecurityView::GetUiInfo() {
+  return download_row_view_->ui_info();
+}
+
 void DownloadBubbleSecurityView::UpdateIconAndText() {
-  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  DownloadUIModel::BubbleUIInfo& ui_info = GetUiInfo();
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *(ui_info.icon_model_override), ui_info.secondary_color,
       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
@@ -341,7 +345,7 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
 }
 
 void DownloadBubbleSecurityView::UpdateSecondaryIconAndText() {
-  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  DownloadUIModel::BubbleUIInfo& ui_info = GetUiInfo();
 
   secondary_icon_->SetVisible(!ui_info.warning_secondary_text.empty());
   secondary_styled_label_->SetVisible(!ui_info.warning_secondary_text.empty());
@@ -596,7 +600,7 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   secondary_button_ = nullptr;
-  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  DownloadUIModel::BubbleUIInfo& ui_info = GetUiInfo();
 
   if (ui_info.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
@@ -617,7 +621,7 @@ void DownloadBubbleSecurityView::UpdateButtons() {
 }
 
 void DownloadBubbleSecurityView::UpdateProgressBar() {
-  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  DownloadUIModel::BubbleUIInfo& ui_info = GetUiInfo();
   progress_bar_->SetVisible(ui_info.has_progress_bar);
   // The progress bar is only supported for deep scanning currently, which
   // requires a looping progress bar.
@@ -668,6 +672,14 @@ void DownloadBubbleSecurityView::RecordWarningActionTime(
 
 void DownloadBubbleSecurityView::UpdateSecurityView(
     DownloadBubbleRowView* download_row_view) {
+  if (!download_row_view) {
+    // Release the raw_ptr so that it is not dangling when the row view is
+    // destroyed.
+    download_row_view_ = nullptr;
+    warning_time_ = absl::nullopt;
+    model_ = nullptr;
+    return;
+  }
   warning_time_ = absl::optional<base::Time>(base::Time::Now());
   download_row_view_ = download_row_view;
   DCHECK(download_row_view_->model());
@@ -714,7 +726,10 @@ void DownloadBubbleSecurityView::UpdateViews() {
 }
 
 void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
-  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  if (!IsInitialized()) {
+    return;
+  }
+  DownloadUIModel::BubbleUIInfo& ui_info = GetUiInfo();
   // Announce that the subpage was opened to inform the user about the changes
   // in the UI.
 #if BUILDFLAG(IS_MAC)
@@ -757,6 +772,7 @@ DownloadBubbleSecurityView::~DownloadBubbleSecurityView() {
         DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
         DownloadItemWarningData::WarningAction::DISMISS);
   }
+  UpdateSecurityView(nullptr);
 }
 
 int DownloadBubbleSecurityView::GetMinimumBubbleWidth() const {
