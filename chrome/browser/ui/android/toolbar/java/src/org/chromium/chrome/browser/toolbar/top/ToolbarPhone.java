@@ -822,6 +822,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             case VisualState.INCOGNITO:
                 return ChromeColors.getDefaultThemeColor(getContext(), true);
             case VisualState.BRAND_COLOR:
+                if (mShouldShowModernizeVisualUpdate
+                        && mLocationBar.getPhoneCoordinator().hasFocus()) {
+                    return getToolbarDefaultColor();
+                }
                 return getToolbarDataProvider().getPrimaryColor();
             default:
                 assert false;
