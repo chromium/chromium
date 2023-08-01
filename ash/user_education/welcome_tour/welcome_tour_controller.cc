@@ -4,6 +4,7 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
@@ -258,6 +259,16 @@ WelcomeTourController::GetTutorialDescriptions() {
   return tutorial_descriptions_by_id;
 }
 
+void WelcomeTourController::OnAccessibilityControllerShutdown() {
+  accessibility_observation_.Reset();
+}
+
+void WelcomeTourController::OnAccessibilityStatusChanged() {
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    MaybeAbortWelcomeTour();
+  }
+}
+
 void WelcomeTourController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   MaybeStartWelcomeTour();
@@ -303,6 +314,11 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     }
   }
 
+  // Welcome Tour is not supported with ChromeVox enabled.
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    return;
+  }
+
   // Welcome Tour is not supported in tablet mode.
   if (TabletMode::IsInTabletMode()) {
     return;
@@ -342,6 +358,8 @@ void WelcomeTourController::OnWelcomeTourStarted() {
       base::BindRepeating(&WelcomeTourController::MaybeAbortWelcomeTour,
                           weak_ptr_factory_.GetWeakPtr()));
 
+  accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
+
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   notification_blocker_->Init();
 
@@ -375,6 +393,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
   accelerator_handler_.reset();
+  accessibility_observation_.Reset();
   notification_blocker_.reset();
   scrim_.reset();
   tablet_mode_observation_.Reset();

@@ -14,7 +14,7 @@
 namespace ash {
 
 // static
-constexpr std::array<WelcomeTourAcceleratorHandler::AllowedAction, 12>
+constexpr std::array<WelcomeTourAcceleratorHandler::AllowedAction, 13>
     WelcomeTourAcceleratorHandler::kAllowedActions;
 
 WelcomeTourAcceleratorHandler::WelcomeTourAcceleratorHandler(

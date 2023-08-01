@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -444,6 +445,56 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   ASSERT_TRUE(cancel_button);
   LeftClickOn(cancel_button);
   EXPECT_TRUE(ended_future.Wait());
+}
+
+// Verifies the Welcome Tour to be aborted if ChromeVox is enabled during tour.
+TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
+  // Start the Welcome Tour by logging in the primary user.
+  SimulateUserLogin("primary@test");
+
+  // Observe the `WelcomeTourController` for end events.
+  StrictMock<MockWelcomeTourControllerObserver> observer;
+  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
+      observation{&observer};
+  observation.Observe(WelcomeTourController::Get());
+
+  // Satisfy `ended_future` when an end event is received.
+  base::test::TestFuture<void> ended_future;
+  EXPECT_CALL(observer, OnWelcomeTourEnded)
+      .WillOnce(RunOnceClosure(ended_future.GetCallback()));
+
+  // Expect the Welcome Tour to be aborted when enabling ChromeVox during tour.
+  EXPECT_CALL(*user_education_delegate(),
+              AbortTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1)));
+
+  auto* const accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  accessibility_controller->SetSpokenFeedbackEnabled(true,
+                                                     A11Y_NOTIFICATION_NONE);
+  Mock::VerifyAndClearExpectations(user_education_delegate());
+  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+}
+
+// Checks that the Welcome Tour should NOT start if ChromeVox is enabled.
+TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
+  TestSessionControllerClient* const session = GetSessionControllerClient();
+  constexpr char kUserEmail[] = "primary@test";
+  session->AddUserSession(kUserEmail, user_manager::USER_TYPE_REGULAR);
+  session->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
+
+  // Enable the spoken feedback after the pref service is ready and before the
+  // session becomes active.
+  auto* const accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  accessibility_controller->SetSpokenFeedbackEnabled(true,
+                                                     A11Y_NOTIFICATION_NONE);
+  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+
+  // Start the Welcome Tour by activating the user session. Expect that the
+  // Welcome Tour is NOT started.
+  EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
+  session->SetSessionState(SessionState::ACTIVE);
+  Mock::VerifyAndClearExpectations(user_education_delegate());
 }
 
 // WelcomeTourControllerUserEligibilityTest ------------------------------------

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -20,6 +21,7 @@
 
 namespace ash {
 
+class AccessibilityControllerImpl;
 class SessionController;
 class WelcomeTourAcceleratorHandler;
 class WelcomeTourControllerObserver;
@@ -31,6 +33,7 @@ class WelcomeTourWindowMinimizer;
 // `WelcomeTourController` is owned by the `UserEducationController` and exists
 // if and only if the Welcome Tour feature is enabled.
 class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
+                                         public AccessibilityObserver,
                                          public SessionObserver,
                                          public TabletModeObserver {
  public:
@@ -54,6 +57,10 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // UserEducationFeatureController:
   std::map<TutorialId, user_education::TutorialDescription>
   GetTutorialDescriptions() override;
+
+  // AccessibilityObserver:
+  void OnAccessibilityControllerShutdown() override;
+  void OnAccessibilityStatusChanged() override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -96,6 +103,11 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // The collection of observers to be notified of events.
   base::ObserverList<WelcomeTourControllerObserver> observer_list_;
+
+  // The accessibility controller is observed only while the Welcome Tour is in
+  // progress, and will trigger an abort of the tour if ChromeVox is enabled.
+  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+      accessibility_observation_{this};
 
   // Sessions are observed only until the primary user session is activated for
   // the first time at which point the Welcome Tour is started.

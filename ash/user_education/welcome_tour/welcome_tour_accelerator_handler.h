@@ -25,7 +25,7 @@ class WelcomeTourAcceleratorHandler : public ui::EventHandler {
   };
 
   // The accelerator actions allowed during the Welcome Tour.
-  static constexpr std::array<AllowedAction, 12> kAllowedActions = {{
+  static constexpr std::array<AllowedAction, 13> kAllowedActions = {{
       {AcceleratorAction::kBrightnessDown, /*aborts_tour=*/false},
       {AcceleratorAction::kBrightnessUp, /*aborts_tour=*/false},
       {AcceleratorAction::kExit, /*aborts_tour=*/true},
@@ -35,6 +35,7 @@ class WelcomeTourAcceleratorHandler : public ui::EventHandler {
       {AcceleratorAction::kPrintUiHierarchies, /*aborts_tour=*/false},
       {AcceleratorAction::kSuspend, /*aborts_tour=*/true},
       {AcceleratorAction::kTakeScreenshot, /*aborts_tour=*/false},
+      {AcceleratorAction::kToggleSpokenFeedback, /*aborts_tour=*/true},
       {AcceleratorAction::kVolumeDown, /*aborts_tour=*/false},
       {AcceleratorAction::kVolumeMute, /*aborts_tour=*/false},
       {AcceleratorAction::kVolumeUp, /*aborts_tour=*/false},
