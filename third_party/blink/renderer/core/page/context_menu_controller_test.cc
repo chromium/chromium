@@ -2047,6 +2047,8 @@ TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
           <input type="password" id="not_heuristic"></textarea>
           <input id="not_related"></textarea>
           <input id="heuristic_password"></textarea>
+          <input id="MyPwd"></textarea>
+          <input id="moja_lOzinKa123"></textarea>
         </form>
       </html>
       )",
@@ -2055,7 +2057,7 @@ TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
   ASSERT_TRUE(IsA<HTMLDocument>(document));
 
   // Heuristics-based recognition is not needed, it is a clear password by
-  // input_field_type
+  // input_field_type.
   Element* not_heuristic_password =
       document->getElementById(AtomicString("not_heuristic"));
   EXPECT_TRUE(
@@ -2074,6 +2076,21 @@ TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
   Element* heuristic_password =
       document->getElementById(AtomicString("heuristic_password"));
   EXPECT_TRUE(ShowContextMenuForElement(heuristic_password, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
+
+  // Field is of type 'text' and has 'pwd' in its id. Therefore, is
+  // password type by heuristics.
+  Element* short_password = document->getElementById(AtomicString("MyPwd"));
+  EXPECT_TRUE(ShowContextMenuForElement(short_password, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
+
+  // Field is of type 'text' and has 'lozinka' (a foreign translation of
+  // password) in its id. Therefore, is password type by heuristics.
+  Element* foreign_password =
+      document->getElementById(AtomicString("moja_lOzinKa123"));
+  EXPECT_TRUE(ShowContextMenuForElement(foreign_password, kMenuSourceMouse));
   context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
 }

@@ -42,6 +42,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -91,6 +92,61 @@
 namespace blink {
 
 namespace {
+
+constexpr char kPasswordRe[] =
+    // Synonyms and abbreviations of password.
+    "pass(?:word|code)|pas(?:word|code)|pswrd|psw|pswd|pwd|parole|watchword|"
+
+    // Translations.
+    "pasahitza|parol|lozinka|sifr|contrasenya|heslo|adgangskode|losen|"
+    "wachtwoord|paswoord|salasana|passe|contrasinal|passwort|jelszo|"
+    "sandi|signum|slaptazodis|kata|passord|haslo|senha|geslo|contrasena|"
+    "khau";
+
+static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
+    Element* element) {
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+    if (input->type() == input_type_names::kPassword) {
+      return mojom::blink::ContextMenuDataInputFieldType::kPassword;
+    }
+    if (input->type() == input_type_names::kNumber) {
+      return mojom::blink::ContextMenuDataInputFieldType::kNumber;
+    }
+    if (input->type() == input_type_names::kTel) {
+      return mojom::blink::ContextMenuDataInputFieldType::kTelephone;
+    }
+    if (input->IsTextField()) {
+      return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
+    }
+    return mojom::blink::ContextMenuDataInputFieldType::kOther;
+  } else if (IsA<HTMLTextAreaElement>(element)) {
+    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
+  }
+  return mojom::blink::ContextMenuDataInputFieldType::kNone;
+}
+
+void SetInputFieldsData(Element* element, ContextMenuData& data) {
+  data.input_field_type = ComputeInputFieldType(element);
+
+  // Uses heuristics (finding 'password' and its short versions and translations
+  // in field name and id etc.) to recognize a field intended for password input
+  // of plain text HTML field type, and it is used to set the field
+  // is_password_type_by_heuristics.
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+    const AtomicString& id = input->GetIdAttribute();
+    const AtomicString& name = input->GetNameAttribute();
+
+    DEFINE_STATIC_LOCAL(Persistent<ScriptRegexp>, passwordRegexp,
+                        (MakeGarbageCollected<ScriptRegexp>(
+                            kPasswordRe, kTextCaseUnicodeInsensitive)));
+
+    data.is_password_type_by_heuristics =
+        (data.input_field_type ==
+         mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
+        (passwordRegexp->Match(id.GetString()) >= 0 ||
+         passwordRegexp->Match(name.GetString()) >= 0);
+  }
+}
 
 // Returns true if node or any of its ancestors have a context menu event
 // listener. Uses already_visited_nodes to track nodes which have already
@@ -345,43 +401,6 @@ static int ComputeEditFlags(Document& selected_document, Editor& editor) {
       edit_flags |= ContextMenuDataEditFlags::kCanSelectAll;
   }
   return edit_flags;
-}
-
-static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
-    Element* element) {
-  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    if (input->type() == input_type_names::kPassword)
-      return mojom::blink::ContextMenuDataInputFieldType::kPassword;
-    if (input->type() == input_type_names::kNumber)
-      return mojom::blink::ContextMenuDataInputFieldType::kNumber;
-    if (input->type() == input_type_names::kTel)
-      return mojom::blink::ContextMenuDataInputFieldType::kTelephone;
-    if (input->IsTextField())
-      return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-    return mojom::blink::ContextMenuDataInputFieldType::kOther;
-  } else if (IsA<HTMLTextAreaElement>(element)) {
-    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-  }
-  return mojom::blink::ContextMenuDataInputFieldType::kNone;
-}
-
-void SetInputFieldsData(Element* element, ContextMenuData& data) {
-  data.input_field_type = ComputeInputFieldType(element);
-
-  // Uses heuristics (finding 'password' in field name and id etc.) to recognize
-  // a field intended for password input of plain text HTML field type, and it
-  // is used to set the field is_password_type_by_heuristics.
-  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    const AtomicString& id = input->GetIdAttribute();
-    const AtomicString& name = input->GetNameAttribute();
-    data.is_password_type_by_heuristics =
-        (data.input_field_type ==
-         mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
-        (id.Contains("password", kTextCaseASCIIInsensitive) ||
-         name.Contains("password", kTextCaseASCIIInsensitive));
-    // TODO(crbug/1466053): Add other detectors (words similar to 'password' -
-    // e.g. 'psswrd', its abbreviations, translations etc).
-  }
 }
 
 static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
