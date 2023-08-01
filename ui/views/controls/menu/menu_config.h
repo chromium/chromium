@@ -42,9 +42,11 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Initialize menu config for CR2023
   void InitCR2023();
+  void InitPlatformCR2023();
 
-  // Font list used by menus.
+  // Font lists used by menus.
   gfx::FontList font_list;
+  gfx::FontList context_menu_font_list;
 
   // Menu border sizes. The vertical border size does not apply to menus with
   // rounded corners - those menus always use the corner radius as the vertical

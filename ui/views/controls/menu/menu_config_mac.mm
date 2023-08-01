@@ -38,7 +38,7 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
 namespace views {
 
 void MenuConfig::Init() {
-  font_list = gfx::FontList(gfx::Font(
+  context_menu_font_list = font_list = gfx::FontList(gfx::Font(
       new gfx::PlatformFontMac(gfx::PlatformFontMac::SystemFontType::kMenu)));
   check_selected_combobox_item = true;
   arrow_key_selection_wraps = false;
@@ -50,6 +50,10 @@ void MenuConfig::Init() {
   if (!features::IsChromeRefresh2023()) {
     InitMaterialMenuConfig(this);
   }
+}
+
+void MenuConfig::InitPlatformCR2023() {
+  context_menu_font_list = font_list;
 }
 
 }  // namespace views

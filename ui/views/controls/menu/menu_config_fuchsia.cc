@@ -8,4 +8,8 @@ namespace views {
 
 void MenuConfig::Init() {}
 
+void MenuConfig::InitPlatformCR2023() {
+  context_menu_font_list = font_list;
+}
+
 }  // namespace views

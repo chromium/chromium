@@ -876,9 +876,13 @@ const gfx::FontList MenuItemView::GetFontList() const {
       return *font_list;
     }
   }
-  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout())
+  auto* menu_controller = GetMenuController();
+  if (menu_controller && menu_controller->use_ash_system_ui_layout()) {
     return style::GetFont(style::CONTEXT_TOUCH_MENU, style::STYLE_PRIMARY);
-  return MenuConfig::instance().font_list;
+  }
+  return menu_controller && menu_controller->IsContextMenu()
+             ? MenuConfig::instance().context_menu_font_list
+             : MenuConfig::instance().font_list;
 }
 
 const absl::optional<SkColor> MenuItemView::GetMenuLabelColor() const {

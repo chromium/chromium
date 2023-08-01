@@ -16,7 +16,7 @@
 namespace views {
 
 void MenuConfig::Init() {
-  font_list =
+  context_menu_font_list = font_list =
       gfx::FontList(gfx::win::GetSystemFont(gfx::win::SystemFont::kMenu));
 
   BOOL show_cues;
@@ -37,6 +37,11 @@ void MenuConfig::Init() {
   if (use_bubble_border && !is_refresh) {
     corner_radius = 8;
   }
+}
+
+void MenuConfig::InitPlatformCR2023() {
+  // No platform specific CR2023 initialization needed.
+  // context_menu_font_list will use the default Windows system menu font.
 }
 
 }  // namespace views
