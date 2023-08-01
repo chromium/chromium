@@ -2823,7 +2823,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>ksakamoto@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2857,7 +2857,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
     expires_after="2024-01-07">
-  <owner>ksakamoto@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
