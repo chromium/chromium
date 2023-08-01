@@ -56,7 +56,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     auto* const service = GetTutorialService();
-    service->AbortTutorial(absl::nullopt);
+    service->CancelTutorialIfRunning();
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
   }
 
@@ -135,7 +135,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 
   void TearDownOnMainThread() override {
     auto* const service = GetTutorialService();
-    service->AbortTutorial(absl::nullopt);
+    service->CancelTutorialIfRunning();
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();

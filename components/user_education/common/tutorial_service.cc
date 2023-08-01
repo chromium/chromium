@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/time/time.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -48,17 +47,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
                                     ui::ElementContext context,
                                     CompletedCallback completed_callback,
                                     AbortedCallback aborted_callback) {
-  // End the current tutorial, if any.
-  if (running_tutorial_) {
-    if (is_final_bubble_) {
-      // The current tutorial is showing the final congratulatory bubble, so it
-      // is effectively complete.
-      CompleteTutorial();
-    } else {
-      running_tutorial_->Abort();
-    }
-  }
-  is_final_bubble_ = false;
+  CancelTutorialIfRunning();
 
   // Get the description from the tutorial registry.
   const TutorialDescription* const description =
@@ -87,6 +76,30 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
   // Start the tutorial and mark the params used to created it for restarting.
   most_recent_tutorial_id_ = id;
   running_tutorial_->Start();
+}
+
+bool TutorialService::CancelTutorialIfRunning(
+    absl::optional<TutorialIdentifier> id) {
+  if (!running_tutorial_) {
+    return false;
+  }
+
+  // If a specific tutorial was requested to be aborted, make sure that's the
+  // one that is running.
+  if (id.has_value() && most_recent_tutorial_id_ != id) {
+    return false;
+  }
+
+  if (is_final_bubble_) {
+    // The current tutorial is showing the final congratulatory bubble, so it
+    // is effectively complete.
+    CompleteTutorial();
+    is_final_bubble_ = false;
+  } else {
+    running_tutorial_->Abort();
+  }
+
+  return true;
 }
 
 void TutorialService::LogIPHLinkClicked(TutorialIdentifier id,

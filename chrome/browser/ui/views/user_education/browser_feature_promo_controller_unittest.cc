@@ -994,7 +994,7 @@ TEST_F(BrowserFeaturePromoControllerTest, StartsTutorial) {
       UserEducationServiceFactory::GetForProfile(browser()->profile())
           ->tutorial_service();
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
-  tutorial_service.AbortTutorial(absl::nullopt);
+  tutorial_service.CancelTutorialIfRunning();
 }
 
 // Test that a feature promo can perform a custom action.

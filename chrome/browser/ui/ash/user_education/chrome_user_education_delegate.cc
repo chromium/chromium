@@ -164,9 +164,7 @@ void ChromeUserEducationDelegate::AbortTutorial(
 
   auto& tutorial_service =
       UserEducationServiceFactory::GetForProfile(profile)->tutorial_service();
-  if (tutorial_service.IsRunningTutorial(ToString(tutorial_id))) {
-    tutorial_service.AbortTutorial(/*abort_step=*/absl::nullopt);
-  }
+  tutorial_service.CancelTutorialIfRunning(ToString(tutorial_id));
 }
 
 void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
