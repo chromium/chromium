@@ -794,21 +794,7 @@ void aom_dc_top_predictor_8x8_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8
 RTCD_EXTERN void (*aom_dc_top_predictor_8x8)(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 
 void aom_dist_wtd_comp_avg_pred_c(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride, const DIST_WTD_COMP_PARAMS *jcp_param);
-void aom_dist_wtd_comp_avg_pred_neon(uint8_t* comp_pred,
-                                     const uint8_t* pred,
-                                     int width,
-                                     int height,
-                                     const uint8_t* ref,
-                                     int ref_stride,
-                                     const DIST_WTD_COMP_PARAMS* jcp_param);
-RTCD_EXTERN void (*aom_dist_wtd_comp_avg_pred)(
-    uint8_t* comp_pred,
-    const uint8_t* pred,
-    int width,
-    int height,
-    const uint8_t* ref,
-    int ref_stride,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+#define aom_dist_wtd_comp_avg_pred aom_dist_wtd_comp_avg_pred_c
 
 unsigned int aom_dist_wtd_sad128x128_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad128x128_avg aom_dist_wtd_sad128x128_avg_c
@@ -3681,10 +3667,6 @@ static void setup_rtcd_internal(void)
     }
     aom_dc_top_predictor_8x8 = aom_dc_top_predictor_8x8_c;
     if (flags & HAS_NEON) aom_dc_top_predictor_8x8 = aom_dc_top_predictor_8x8_neon;
-    aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_c;
-    if (flags & HAS_NEON) {
-      aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_neon;
-    }
     aom_fdct4x4 = aom_fdct4x4_c;
     if (flags & HAS_NEON) aom_fdct4x4 = aom_fdct4x4_neon;
     aom_fdct4x4_lp = aom_fdct4x4_lp_c;
