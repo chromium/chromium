@@ -100,7 +100,8 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   }
 
   void WaitForAppUninstall(const std::string& app_id) {
-    Observe(&(app_service_proxy()->AppRegistryCache()));
+    app_registry_cache_observer_.Observe(
+        &(app_service_proxy()->AppRegistryCache()));
     app_id_ = app_id;
     base::RunLoop run_loop;
     quit_callback_ = run_loop.QuitClosure();
@@ -117,13 +118,13 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
         update.Readiness() == apps::Readiness::kUninstalledByUser &&
         !quit_callback_.is_null()) {
       std::move(quit_callback_).Run();
-      Observe(nullptr);
+      app_registry_cache_observer_.Reset();
     }
   }
 
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override {
-    Observe(nullptr);
+    app_registry_cache_observer_.Reset();
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -143,6 +144,10 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   apps::AppServiceTest app_service_test_;
   std::string app_id_;
   base::OnceClosure quit_callback_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 TEST_F(WebApkManagerTest, InstallsWebApkOnStartup) {

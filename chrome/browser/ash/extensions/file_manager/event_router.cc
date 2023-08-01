@@ -464,32 +464,6 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       file_watchers_;
 };
 
-// Observes App Service and notifies Files app when there are any changes in the
-// apps which might affect which file tasks are currently available, e.g. when
-// an app is installed or uninstalled.
-class RecalculateTasksObserver : public apps::AppRegistryCache::Observer {
- public:
-  explicit RecalculateTasksObserver(base::WeakPtr<EventRouter> event_router)
-      : event_router_(event_router) {}
-
-  // Tell Files app frontend that file tasks might have changed.
-  void OnAppUpdate(const apps::AppUpdate& update) override {
-    // TODO(petermarshall): Filter update more carefully.
-    if (!event_router_) {
-      return;
-    }
-    event_router_->BroadcastOnAppsUpdatedEvent();
-  }
-
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override {
-    apps::AppRegistryCache::Observer::Observe(nullptr);
-  }
-
- private:
-  base::WeakPtr<EventRouter> event_router_;
-};
-
 // Records mounted File System Provider type if known otherwise UNKNOWN.
 void RecordFileSystemProviderMountMetrics(const Volume& volume) {
   const ash::file_system_provider::ProviderId& provider_id =
@@ -639,8 +613,6 @@ EventRouter::EventRouter(Profile* profile)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Notification manager can call into Drive FS for dialog handling.
   notification_manager_->SetDriveFSEventRouter(drivefs_event_router_.get());
-  recalculate_tasks_observer_ =
-      std::make_unique<RecalculateTasksObserver>(weak_factory_.GetWeakPtr());
   ObserveEvents();
 }
 
@@ -718,12 +690,7 @@ void EventRouter::Shutdown() {
     guest_os_share_path->RemoveObserver(this);
   }
 
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile_);
-    DCHECK(proxy);
-    proxy->AppRegistryCache().RemoveObserver(recalculate_tasks_observer_.get());
-  }
+  app_registry_cache_observer_.Reset();
 
   auto* dlp_client = chromeos::DlpClient::Get();
   if (dlp_client) {
@@ -840,7 +807,7 @@ void EventRouter::ObserveEvents() {
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile_);
     DCHECK(proxy);
-    proxy->AppRegistryCache().AddObserver(recalculate_tasks_observer_.get());
+    app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
   }
 
   auto* dlp_client = chromeos::DlpClient::Get();
@@ -1632,6 +1599,18 @@ void EventRouter::OnFilesAddedToDlpDaemon(
     const std::vector<base::FilePath>& files) {
   OnFilesChanged(files, extensions::api::file_manager_private::ChangeType::
                             CHANGE_TYPE_ADD_OR_UPDATE);
+}
+
+// Observes App Service and notifies Files app when there are any changes in the
+// apps which might affect which file tasks are currently available, e.g. when
+// an app is installed or uninstalled.
+void EventRouter::OnAppUpdate(const apps::AppUpdate& update) {
+  BroadcastOnAppsUpdatedEvent();
+}
+
+void EventRouter::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
 }
 
 }  // namespace file_manager

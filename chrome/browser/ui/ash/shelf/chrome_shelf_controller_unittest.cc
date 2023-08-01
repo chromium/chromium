@@ -52,6 +52,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -558,8 +559,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     DCHECK(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
     app_service_test_.SetUp(profile());
-    Observe(&(apps::AppServiceProxyFactory::GetForProfile(profile())
-                  ->AppRegistryCache()));
+    app_registry_cache_observer_.Observe(
+        &(apps::AppServiceProxyFactory::GetForProfile(profile())
+              ->AppRegistryCache()));
 
     if (auto_start_arc_test_)
       arc_test_.SetUp(profile());
@@ -702,7 +704,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void TearDown() override {
-    Observe(nullptr);
+    app_registry_cache_observer_.Reset();
     arc_test_.TearDown();
     shelf_controller_ = nullptr;
     shelf_item_factory_.reset();
@@ -1293,7 +1295,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override {
-    Observe(nullptr);
+    app_registry_cache_observer_.Reset();
   }
 
   void UpdateSyncPinAssertion(const std::string& app_id,
@@ -1398,6 +1400,10 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       app_list_syncable_service_ = nullptr;
 
   PinAssertionMap pin_assertions_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
  private:
   TestBrowserWindow* CreateTestBrowserWindowAura() {

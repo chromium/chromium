@@ -102,7 +102,7 @@ void AppLaunchHandler::OnAppTypeInitialized(apps::AppType app_type) {
 
 void AppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void AppLaunchHandler::LaunchApps() {
@@ -117,7 +117,7 @@ void AppLaunchHandler::LaunchApps() {
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
   auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile_)
                      ->AppRegistryCache();
-  Observe(cache);
+  ObserveCache(cache);
   for (const auto app_type : cache->InitializedAppTypes()) {
     OnAppTypeInitialized(app_type);
   }
@@ -191,6 +191,14 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
       break;
   }
   restore_data_->RemoveApp(app_id);
+}
+
+void AppLaunchHandler::ObserveCache(apps::AppRegistryCache* source) {
+  DCHECK(source);
+  if (!app_registry_cache_observer_.IsObservingSource(source)) {
+    app_registry_cache_observer_.Reset();
+    app_registry_cache_observer_.Observe(source);
+  }
 }
 
 void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
