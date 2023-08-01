@@ -17,6 +17,7 @@
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -68,6 +69,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                        display_options),
       threat_details_in_progress_(false),
       threat_source_(unsafe_resources[0].threat_source),
+      threat_type_(unsafe_resources[0].threat_type),
       is_subresource_(unsafe_resources[0].is_subresource),
       history_service_(history_service),
       navigation_observer_manager_(navigation_observer_manager),
@@ -84,8 +86,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
             SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   }
 
-  if (!trigger_manager_)
+  if (!trigger_manager_) {
     return;
+  }
 
   // Start computing threat details. Trigger Manager will decide if it's safe to
   // begin collecting data at this time. The report will be sent only if the
@@ -118,7 +121,8 @@ SafeBrowsingBlockingPage::GetTypeForTesting() {
 }
 
 void SafeBrowsingBlockingPage::OnInterstitialClosing() {
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
     interstitial_interactions_ =
         sb_error_ui()->get_interstitial_interaction_data();
   }
@@ -131,7 +135,8 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
 
     // If kAntiPhishingTelemetry is enabled, add
     // CMD_CLOSE_INTERSTITIAL_WITHOUT_UI interaction to interactions.
-    if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+    if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+        base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
       interstitial_interactions_->insert_or_assign(
           security_interstitials::SecurityInterstitialCommand::
               CMD_CLOSE_INTERSTITIAL_WITHOUT_UI,
@@ -164,22 +169,31 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
           std::string(is_subresource_ ? ".Subresource" : ".Mainframe"),
       threat_details_in_progress_);
   // Not all interstitials collect threat details (eg., incognito mode).
-  if (!threat_details_in_progress_)
+  if (!threat_details_in_progress_) {
     return;
+  }
 
-  if (!trigger_manager_)
+  if (!trigger_manager_) {
     return;
+  }
 
   // Finish computing threat details. TriggerManager will decide if its safe to
   // send the report.
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
     trigger_manager_->SetInterstitialInteractions(
         std::move(interstitial_interactions_));
+  }
+  bool is_hats_candidate = false;
+  if (base::FeatureList::IsEnabled(kRedWarningSurvey)) {
+    is_hats_candidate = SafeBrowsingHatsDelegate::IsSurveyCandidate(
+        threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),
+        kRedWarningSurveyDidProceedFilter.Get());
   }
   bool report_sent = trigger_manager_->FinishCollectingThreatDetails(
       TriggerType::SECURITY_INTERSTITIAL, GetWebContentsKey(web_contents()),
       delay, did_proceed, num_visits,
-      sb_error_ui()->get_error_display_options());
+      sb_error_ui()->get_error_display_options(), is_hats_candidate);
 
   if (report_sent) {
     controller()->metrics_helper()->RecordUserInteraction(

@@ -31,5 +31,5 @@ const std::vector<std::string> GetExcludedCountries() {
   return {"cn"};
 }
 
-const char kUserActivityId[] = "user_activity_id";
+const char kUserActivityWithUrls[] = "user_activity_with_urls";
 }  // namespace safe_browsing

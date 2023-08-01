@@ -420,6 +420,14 @@ void BaseUIManager::SendThreatDetails(
   return;
 }
 
+// If HaTS surveys are enabled, then this gets called when the report is ready.
+void BaseUIManager::AttachThreatDetailsAndLaunchSurvey(
+    content::BrowserContext* browser_context,
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return;
+}
+
 // Record this domain in the given WebContents as either allowlisted or
 // pending allowlisted (if an interstitial is currently displayed). If an
 // existing AllowlistUrlSet does not yet exist, create a new AllowlistUrlSet.

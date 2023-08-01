@@ -448,7 +448,7 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       &safe_browsing::kRedWarningSurvey, kHatsSurveyTriggerRedWarning,
       safe_browsing::kRedWarningSurveyTriggerId.Get(),
       std::vector<std::string>{},
-      std::vector<std::string>{safe_browsing::kUserActivityId});
+      std::vector<std::string>{safe_browsing::kUserActivityWithUrls});
 
   return survey_configs;
 }

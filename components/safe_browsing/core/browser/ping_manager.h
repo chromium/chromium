@@ -101,6 +101,10 @@ class PingManager : public KeyedService {
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       bool attach_default_data = true);
 
+  // Launches a survey and attaches ThreatDetails to the survey response.
+  virtual void AttachThreatDetailsAndLaunchSurvey(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+
   // Only used for tests
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

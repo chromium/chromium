@@ -9,6 +9,8 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -198,7 +200,6 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report,
     bool attach_default_data) {
   SanitizeThreatDetailsReport(report.get());
-  std::string token_value = "";
   if (attach_default_data) {
     if (!get_user_population_callback_.is_null()) {
       *report->mutable_population() = get_user_population_callback_.Run();
@@ -209,9 +210,6 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
       base::UmaHistogramBoolean(
           "SafeBrowsing.ClientSafeBrowsingReport.IsPageLoadTokenNull",
           !token.has_token_value());
-      base::Base64UrlEncode(token.token_value(),
-                            base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                            &token_value);
       report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
           &token);
     }
@@ -226,17 +224,6 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     DLOG(ERROR) << "The threat report is empty.";
     return ReportThreatDetailsResult::EMPTY_REPORT;
   }
-  if (base::FeatureList::IsEnabled(kRedWarningSurvey)) {
-    if (hats_delegate_ &&
-        SafeBrowsingHatsDelegate::IsSurveyCandidate(
-            report->type(), kRedWarningSurveyReportTypeFilter.Get(),
-            report->did_proceed(), kRedWarningSurveyDidProceedFilter.Get())) {
-      hats_delegate_->LaunchRedWarningSurvey(base::DoNothing(),
-                                             base::DoNothing(),
-                                             {{kUserActivityId, token_value}});
-    }
-  }
-
   if (attach_default_data && get_should_fetch_access_token_.Run()) {
     token_fetcher_->Start(
         base::BindOnce(&PingManager::ReportThreatDetailsOnGotAccessToken,
@@ -259,6 +246,42 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
                      base::Unretained(webui_delegate_), std::move(report)));
 
   return ReportThreatDetailsResult::SUCCESS;
+}
+
+void PingManager::AttachThreatDetailsAndLaunchSurvey(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  static constexpr auto valid_report_types =
+      base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
+          {ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING,
+           ClientSafeBrowsingReportRequest::URL_PHISHING,
+           ClientSafeBrowsingReportRequest::URL_UNWANTED,
+           ClientSafeBrowsingReportRequest::URL_MALWARE});
+  CHECK(base::Contains(valid_report_types, report->type()));
+  SanitizeThreatDetailsReport(report.get());
+  if (!get_user_population_callback_.is_null()) {
+    *report->mutable_population() = get_user_population_callback_.Run();
+  }
+  if (!get_page_load_token_callback_.is_null()) {
+    ChromeUserPopulation::PageLoadToken token =
+        get_page_load_token_callback_.Run(GURL(report->page_url()));
+    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+        &token);
+  }
+  std::string serialized_report;
+  if (!report->SerializeToString(&serialized_report)) {
+    DLOG(ERROR) << "Unable to serialize the threat report.";
+    return;
+  }
+  if (serialized_report.empty()) {
+    DLOG(ERROR) << "The threat report is empty.";
+    return;
+  }
+  std::string url_encoded_serialized_report;
+  base::Base64UrlEncode(serialized_report,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &url_encoded_serialized_report);
+  hats_delegate_->LaunchRedWarningSurvey(
+      {{kUserActivityWithUrls, url_encoded_serialized_report}});
 }
 
 void PingManager::ReportThreatDetailsOnGotAccessToken(

@@ -209,7 +209,8 @@ bool TriggerManager::FinishCollectingThreatDetails(
     const base::TimeDelta& delay,
     bool did_proceed,
     int num_visits,
-    const SBErrorOptions& error_display_options) {
+    const SBErrorOptions& error_display_options,
+    bool is_hats_candidate) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Determine whether a report should be sent.
   bool should_send_report = CanSendReport(error_display_options, trigger_type);
@@ -246,10 +247,13 @@ bool TriggerManager::FinishCollectingThreatDetails(
     return false;
   }
 
-  if (should_send_report) {
+  // Trigger finishing the ThreatDetails collection if we should send the
+  // report to SB or if the user may see a HaTS survey.
+  if (should_send_report || is_hats_candidate) {
     // Find the data collector and tell it to finish collecting data. We expect
     // it to notify us when it's finished so we can clean up references to it.
-
+    collectors->threat_details->SetIsHatsCandidate(is_hats_candidate);
+    collectors->threat_details->SetShouldSendReport(should_send_report);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ThreatDetails::FinishCollection,

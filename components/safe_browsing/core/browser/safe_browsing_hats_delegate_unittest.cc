@@ -18,45 +18,39 @@ class SafeBrowsingHatsDelegateTest : public ::testing::Test {
 TEST_F(SafeBrowsingHatsDelegateTest, IsSurveyCandidateWithAllFilters) {
   // Validate all supported report types are included.
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_PHISHING, kAllReportTypeFilters,
-      true, kAllDidProceedFilters));
+      SB_THREAT_TYPE_URL_PHISHING, kAllReportTypeFilters, true,
+      kAllDidProceedFilters));
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_MALWARE, kAllReportTypeFilters,
-      false, kAllDidProceedFilters));
+      SB_THREAT_TYPE_URL_MALWARE, kAllReportTypeFilters, false,
+      kAllDidProceedFilters));
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_UNWANTED, kAllReportTypeFilters,
-      true, kAllDidProceedFilters));
+      SB_THREAT_TYPE_URL_UNWANTED, kAllReportTypeFilters, true,
+      kAllDidProceedFilters));
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING,
-      kAllReportTypeFilters, false, kAllDidProceedFilters));
-  // Validate unsupported report types are excluded.
+      SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, kAllReportTypeFilters, false,
+      kAllDidProceedFilters));
+  // Validate unsupported SB threat types are excluded.
   EXPECT_FALSE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_PASSWORD_PROTECTION_PHISHING,
-      kAllReportTypeFilters, true, kAllDidProceedFilters));
+      SB_THREAT_TYPE_SAVED_PASSWORD_REUSE, kAllReportTypeFilters, true,
+      kAllDidProceedFilters));
   EXPECT_FALSE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_SUSPICIOUS, kAllReportTypeFilters,
-      false, kAllDidProceedFilters));
+      SB_THREAT_TYPE_AD_SAMPLE, kAllReportTypeFilters, false,
+      kAllDidProceedFilters));
 }
 
 TEST_F(SafeBrowsingHatsDelegateTest, IsSurveyCandidateWithSomeFilters) {
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_MALWARE, kAllReportTypeFilters,
-      false, "FALSE"));
+      SB_THREAT_TYPE_URL_MALWARE, kAllReportTypeFilters, false, "FALSE"));
   EXPECT_FALSE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_MALWARE, kAllReportTypeFilters,
-      false, "TRUE"));
+      SB_THREAT_TYPE_URL_MALWARE, kAllReportTypeFilters, false, "TRUE"));
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_MALWARE, "URL_MALWARE", true,
-      "TRUE"));
+      SB_THREAT_TYPE_URL_MALWARE, "URL_MALWARE", true, "TRUE"));
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_MALWARE, "URL_MALWARE,URL_PHISHING",
-      true, "TRUE"));
+      SB_THREAT_TYPE_URL_MALWARE, "URL_MALWARE,URL_PHISHING", true, "TRUE"));
   EXPECT_TRUE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_PHISHING, "URL_MALWARE,URL_PHISHING",
-      true, "TRUE"));
+      SB_THREAT_TYPE_URL_PHISHING, "URL_MALWARE,URL_PHISHING", true, "TRUE"));
   EXPECT_FALSE(SafeBrowsingHatsDelegate::IsSurveyCandidate(
-      ClientSafeBrowsingReportRequest::URL_PHISHING, "URL_UNWANTED", true,
-      "TRUE"));
+      SB_THREAT_TYPE_URL_PHISHING, "URL_UNWANTED", true, "TRUE"));
 }
 
 }  // namespace safe_browsing

@@ -16,6 +16,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -47,6 +48,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 using content::BrowserThread;
 using content::NavigationEntry;
@@ -429,8 +431,9 @@ std::unique_ptr<ThreatDetails> ThreatDetails::NewThreatDetails(
     ThreatDetailsDoneCallback done_callback) {
   // Set up the factory if this has not been done already (tests do that
   // before this method is called).
-  if (!factory_)
+  if (!factory_) {
     factory_ = g_threat_details_factory_impl.Pointer();
+  }
   return factory_->CreateThreatDetails(
       ui_manager, web_contents, resource, url_loader_factory, history_service,
       referrer_chain_provider, trim_to_ad_tags, std::move(done_callback));
@@ -459,7 +462,9 @@ ThreatDetails::ThreatDetails(
       cache_collector_(std::make_unique<ThreatDetailsCacheCollector>()),
       done_callback_(std::move(done_callback)),
       all_done_expected_(false),
-      is_all_done_(false) {
+      is_all_done_(false),
+      is_hats_candidate_(false),
+      should_send_report_(false) {
   redirects_collector_ = std::make_unique<ThreatDetailsRedirectsCollector>(
       history_service ? history_service->AsWeakPtr()
                       : base::WeakPtr<history::HistoryService>());
@@ -473,7 +478,9 @@ ThreatDetails::ThreatDetails()
       num_visits_(0),
       trim_to_ad_tags_(false),
       all_done_expected_(false),
-      is_all_done_(false) {}
+      is_all_done_(false),
+      is_hats_candidate_(false),
+      should_send_report_(false) {}
 
 ThreatDetails::~ThreatDetails() = default;
 
@@ -519,14 +526,16 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
     const GURL& parent,
     const std::string& tagname,
     const std::vector<GURL>* children) {
-  if (!url.is_valid() || !IsReportableUrl(url))
+  if (!url.is_valid() || !IsReportableUrl(url)) {
     return nullptr;
+  }
 
   // Find (or create) the resource for the url.
   ClientSafeBrowsingReportRequest::Resource* url_resource =
       FindOrCreateResource(url);
-  if (!tagname.empty())
+  if (!tagname.empty()) {
     url_resource->set_tag_name(tagname);
+  }
   if (!parent.is_empty() && IsReportableUrl(parent)) {
     // Add the resource for the parent.
     ClientSafeBrowsingReportRequest::Resource* parent_resource =
@@ -547,8 +556,9 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
           break;
         }
       }
-      if (!duplicate_child)
+      if (!duplicate_child) {
         url_resource->add_child_ids(child_resource->id());
+      }
     }
   }
 
@@ -660,11 +670,13 @@ void ThreatDetails::StartCollection() {
     }
   }
 
-  if (IsReportableUrl(page_url))
+  if (IsReportableUrl(page_url)) {
     report_->set_page_url(page_url.spec());
+  }
 
-  if (IsReportableUrl(referrer_url))
+  if (IsReportableUrl(referrer_url)) {
     report_->set_referrer_url(referrer_url.spec());
+  }
 
   // Add the nodes, starting from the page url.
   AddUrl(page_url, GURL(), std::string(), nullptr);
@@ -685,8 +697,9 @@ void ThreatDetails::StartCollection() {
   GURL parent_url;
   // Set the original url as the parent of the first redirect url if it's not
   // empty.
-  if (!resource_.original_url.is_empty())
+  if (!resource_.original_url.is_empty()) {
     parent_url = resource_.original_url;
+  }
 
   // Set the previous redirect url as the parent of the next one
   for (size_t i = 0; i < resource_.redirect_urls.size(); ++i) {
@@ -695,8 +708,9 @@ void ThreatDetails::StartCollection() {
   }
 
   // Add the referrer url.
-  if (!referrer_url.is_empty())
+  if (!referrer_url.is_empty()) {
     AddUrl(referrer_url, GURL(), std::string(), nullptr);
+  }
 
   if (!resource_.IsMainPageLoadBlocked()) {
     // Get URLs of frames, scripts etc from the DOM.
@@ -750,8 +764,9 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
   const int sender_frame_tree_node_id = sender_rfh->GetFrameTreeNodeId();
   KeyToFrameTreeIdMap child_frame_tree_map;
   for (const mojom::ThreatDOMDetailsNodePtr& node : params) {
-    if (!node->child_frame_token)
+    if (!node->child_frame_token) {
       continue;
+    }
 
     const std::string cur_element_key =
         GetElementKey(sender_frame_tree_node_id, node->node_id);
@@ -777,17 +792,20 @@ void ThreatDetails::AddDOMDetails(
 
   // If we have already started getting redirects from history service,
   // don't modify state, otherwise will invalidate the iterators.
-  if (redirects_collector_->HasStarted())
+  if (redirects_collector_->HasStarted()) {
     return;
+  }
 
   // If we have already started collecting data from the HTTP cache, don't
   // modify our state.
-  if (cache_collector_->HasStarted())
+  if (cache_collector_->HasStarted()) {
     return;
+  }
 
   // Exit early if there are no nodes to process.
-  if (params.empty())
+  if (params.empty()) {
     return;
+  }
 
   // Copy FrameTreeNode IDs for the child frame into the combined mapping.
   iframe_key_to_frame_tree_id_map_.insert(child_frame_tree_map.begin(),
@@ -861,8 +879,9 @@ void ThreatDetails::OnRedirectionCollectionReady() {
   const std::vector<RedirectChain>& redirects =
       redirects_collector_->GetCollectedUrls();
 
-  for (size_t i = 0; i < redirects.size(); ++i)
-    AddRedirectUrlList(redirects[i]);
+  for (const auto& redirect : redirects) {
+    AddRedirectUrlList(redirect);
+  }
 
   // Call the cache collector
   cache_collector_->StartCacheCollection(
@@ -919,32 +938,45 @@ void ThreatDetails::OnCacheCollectionReady() {
       GetUrlApiTypeForThreatSource(resource_.threat_source));
 
   // Fill the referrer chain if applicable.
-  MaybeFillReferrerChain();
+  if (ShouldFillReferrerChain()) {
+    FillReferrerChain(report_->mutable_referrer_chain());
+  }
 
-  // Fill the interstitial interactions if applicable.
-  MaybeFillInterstitialInteractions();
+  // Fill interstitial interactions if applicable.
+  if (ShouldFillInterstitialInteractions()) {
+    FillInterstitialInteractions(report_->mutable_interstitial_interactions());
+  }
 
-  // Send the report, using the SafeBrowsingService.
-  ui_manager_->SendThreatDetails(browser_context_, std::move(report_));
+  // Add report to HaTS survey response if applicable.
+  MaybeAttachThreatDetailsAndLaunchSurvey();
+
+  // Send the report to Safe Browsing.
+  if (should_send_report_) {
+    ui_manager_->SendThreatDetails(browser_context_, std::move(report_));
+  }
 
   AllDone();
 }
 
-void ThreatDetails::MaybeFillReferrerChain() {
-  if (!referrer_chain_provider_)
-    return;
+bool ThreatDetails::ShouldFillReferrerChain() {
+  static constexpr auto valid_report_types =
+      base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
+          {ClientSafeBrowsingReportRequest::URL_SUSPICIOUS,
+           ClientSafeBrowsingReportRequest::APK_DOWNLOAD});
+  return base::Contains(valid_report_types, report_->type());
+}
 
-  if (!report_ ||
-      (report_->type() != ClientSafeBrowsingReportRequest::URL_SUSPICIOUS &&
-       report_->type() != ClientSafeBrowsingReportRequest::APK_DOWNLOAD)) {
+void ThreatDetails::FillReferrerChain(
+    google::protobuf::RepeatedPtrField<ReferrerChainEntry>*
+        out_referrer_chain) {
+  if (!referrer_chain_provider_) {
     return;
   }
-
   // We would have cancelled a prerender if it was blocked, so we can use the
   // primary main frame here.
   referrer_chain_provider_->IdentifyReferrerChainByRenderFrameHost(
       web_contents_->GetPrimaryMainFrame(), kThreatDetailsUserGestureLimit,
-      report_->mutable_referrer_chain());
+      out_referrer_chain);
 }
 
 // Helper function that converts SecurityInterstitialCommand to CSBRR
@@ -1008,15 +1040,22 @@ ClientSafeBrowsingReportRequest::InterstitialInteraction::
   return ClientSafeBrowsingReportRequest::InterstitialInteraction::UNSPECIFIED;
 }
 
-void ThreatDetails::MaybeFillInterstitialInteractions() {
-  if (!base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-      interstitial_interactions_ == nullptr) {
-    return;
+bool ThreatDetails::ShouldFillInterstitialInteractions() {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+    return false;
   }
-  if (!report_ ||
-      (report_->type() != ClientSafeBrowsingReportRequest::URL_PHISHING &&
-       report_->type() !=
-           ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING)) {
+  static constexpr auto valid_report_types =
+      base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
+          {ClientSafeBrowsingReportRequest::URL_PHISHING,
+           ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING});
+  return base::Contains(valid_report_types, report_->type());
+}
+
+void ThreatDetails::FillInterstitialInteractions(
+    google::protobuf::RepeatedPtrField<
+        ClientSafeBrowsingReportRequest::InterstitialInteraction>*
+        interstitial_interactions) {
+  if (interstitial_interactions_ == nullptr) {
     return;
   }
   for (auto const& interaction : *interstitial_interactions_) {
@@ -1032,11 +1071,27 @@ void ThreatDetails::MaybeFillInterstitialInteractions() {
     new_interstitial_interaction.set_last_interaction_timestamp_msec(
         interaction.second.last_timestamp);
 
-    // Add the InterstitialInteraction object to report's
-    // interstitial_interactions.
-    report_->mutable_interstitial_interactions()->Add()->Swap(
-        &new_interstitial_interaction);
+    // Add the InterstitialInteraction object to interstitial_interactions.
+    interstitial_interactions->Add()->Swap(&new_interstitial_interaction);
   }
+}
+
+void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {
+  if (!is_hats_candidate_) {
+    return;
+  }
+  // Copy fields useful for survey analysis.
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(report_->type());
+  report->set_repeat_visit(report_->repeat_visit());
+  report->set_did_proceed(report_->did_proceed());
+  report->set_url(report_->url());
+  report->set_page_url(report_->page_url());
+  report->set_referrer_url(report_->referrer_url());
+  FillReferrerChain(report->mutable_referrer_chain());
+  FillInterstitialInteractions(report->mutable_interstitial_interactions());
+  ui_manager_->AttachThreatDetailsAndLaunchSurvey(browser_context_,
+                                                  std::move(report));
 }
 
 void ThreatDetails::AllDone() {

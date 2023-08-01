@@ -134,6 +134,10 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
   // The threat source that triggers the blocking page.
   ThreatSource threat_source_;
+
+  // The threat type of the resource that triggered the blocking page.
+  SBThreatType threat_type_;
+
   // Whether the blocking page is triggered by subresource.
   bool is_subresource_;
 

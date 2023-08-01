@@ -117,7 +117,9 @@ class ThreatDetailsWrap : public ThreatDetails {
                       base::BindOnce(&ThreatDetailsWrap::ThreatDetailsDone,
                                      base::Unretained(this))),
         run_loop_(nullptr),
-        done_callback_count_(0) {}
+        done_callback_count_(0) {
+    SetShouldSendReport(true);
+  }
 
   ThreatDetailsWrap(
       SafeBrowsingUIManager* ui_manager,
@@ -137,7 +139,9 @@ class ThreatDetailsWrap : public ThreatDetails {
                       base::BindOnce(&ThreatDetailsWrap::ThreatDetailsDone,
                                      base::Unretained(this))),
         run_loop_(nullptr),
-        done_callback_count_(0) {}
+        done_callback_count_(0) {
+    SetShouldSendReport(true);
+  }
 
   ~ThreatDetailsWrap() override {}
 
@@ -185,6 +189,9 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)),
         report_sent_(false) {}
+  MOCK_METHOD2(AttachThreatDetailsAndLaunchSurvey,
+               void(content::BrowserContext* browser_context,
+                    std::unique_ptr<ClientSafeBrowsingReportRequest> report));
 
   MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
   MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
@@ -436,6 +443,52 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     WriteCacheEntry(kLandingURL, kLandingHeaders, kLandingData);
   }
 
+  void VerifyReferrerChainPresence(const SBThreatType& sb_threat_type,
+                                   bool is_hats_candidate,
+                                   bool should_send_report,
+                                   int expected_referrer_chain_size,
+                                   bool pull_referrer_chain) {
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        GURL(kLandingURL), web_contents());
+    navigation->SetReferrer(blink::mojom::Referrer::New(
+        GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
+    navigation->Commit();
+
+    UnsafeResource resource;
+    InitResource(sb_threat_type, ThreatSource::LOCAL_PVER4,
+                 true /* is_subresource */, GURL(kThreatURL), &resource);
+
+    ReferrerChain returned_referrer_chain;
+    if (pull_referrer_chain) {
+      returned_referrer_chain.Add()->set_url(kReferrerURL);
+      returned_referrer_chain.Add()->set_url(kSecondRedirectURL);
+      EXPECT_CALL(*referrer_chain_provider_,
+                  IdentifyReferrerChainByRenderFrameHost(
+                      web_contents()->GetPrimaryMainFrame(), _, _))
+          .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
+                          Return(ReferrerChainProvider::SUCCESS)));
+    } else {
+      EXPECT_CALL(*referrer_chain_provider_,
+                  IdentifyReferrerChainByRenderFrameHost(
+                      web_contents()->GetPrimaryMainFrame(), _, _))
+          .Times(0);
+    }
+
+    auto report = std::make_unique<ThreatDetailsWrap>(
+        ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
+        referrer_chain_provider_.get());
+    report->SetIsHatsCandidate(is_hats_candidate);
+    report->SetShouldSendReport(should_send_report);
+    report->StartCollection();
+
+    std::string serialized = WaitForThreatDetailsDone(
+        report.get(), true /* did_proceed*/, 1 /* num_visit */);
+
+    ClientSafeBrowsingReportRequest actual;
+    actual.ParseFromString(serialized);
+    EXPECT_EQ(actual.referrer_chain_size(), expected_referrer_chain_size);
+  }
+
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
   scoped_refptr<MockSafeBrowsingUIManager> ui_manager_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -553,6 +606,41 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
 
   VerifyResults(actual, expected);
 }
+// Tests referrer chain is pulled and always removed from report going to SB
+// when Hats is enabled.
+TEST_F(ThreatDetailsTest, ReferrerChainPulledWhenHatsEnabled) {
+  VerifyReferrerChainPresence(SB_THREAT_TYPE_URL_PHISHING,
+                              /*is_hats_candidate=*/true,
+                              /*should_send_report=*/false,
+                              /*expected_referrer_chain_size=*/0,
+                              /*pull_referrer_chain=*/true);
+  VerifyReferrerChainPresence(SB_THREAT_TYPE_URL_PHISHING,
+                              /*is_hats_candidate=*/true,
+                              /*should_send_report=*/true,
+                              /*expected_referrer_chain_size=*/0,
+                              /*pull_referrer_chain=*/true);
+}
+
+// Tests referrer chain is present for supported threat types when Hats is
+// disabled.
+TEST_F(ThreatDetailsTest, SupportedThreatTypesHaveReferrerChain_HatsDisabled) {
+  VerifyReferrerChainPresence(SB_THREAT_TYPE_URL_PHISHING,
+                              /*is_hats_candidate=*/false,
+                              /*should_send_report=*/true,
+                              /*expected_referrer_chain_size=*/0,
+                              /*pull_referrer_chain=*/false);
+  VerifyReferrerChainPresence(SB_THREAT_TYPE_SUSPICIOUS_SITE,
+                              /*is_hats_candidate=*/false,
+                              /*should_send_report=*/true,
+                              /*expected_referrer_chain_size=*/2,
+                              /*pull_referrer_chain=*/true);
+  VerifyReferrerChainPresence(SB_THREAT_TYPE_APK_DOWNLOAD,
+                              /*is_hats_candidate=*/false,
+                              /*should_send_report=*/true,
+                              /*expected_referrer_chain_size=*/2,
+                              /*pull_referrer_chain=*/true);
+}
+
 // Tests creating a simple threat report of a phishing page where the
 // subresource has a different original_url.
 TEST_F(ThreatDetailsTest, ThreatSubResourceWithOriginalUrl) {

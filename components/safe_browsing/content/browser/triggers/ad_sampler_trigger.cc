@@ -160,7 +160,8 @@ void AdSamplerTrigger::CreateAdSampleReport() {
           IgnoreResult(&TriggerManager::FinishCollectingThreatDetails),
           base::Unretained(trigger_manager_), TriggerType::AD_SAMPLE,
           GetWebContentsKey(web_contents()), base::TimeDelta(),
-          /*did_proceed=*/false, /*num_visits=*/0, error_options),
+          /*did_proceed=*/false, /*num_visits=*/0, error_options,
+          /*is_hats_candidate=*/false),
       base::Milliseconds(finish_report_delay_ms_));
 
   UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName, AD_SAMPLED,

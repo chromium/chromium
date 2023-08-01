@@ -14,11 +14,13 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
@@ -58,8 +60,14 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<ChromeSafeBrowsingHatsDelegate> hats_delegate = nullptr;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  hats_delegate = std::make_unique<ChromeSafeBrowsingHatsDelegate>(
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true));
+  // Do not serve HaTS surveys to users that have no choice in whether they
+  // bypass warnings.
+  hats_delegate =
+      profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled)
+          ? nullptr
+          : std::make_unique<ChromeSafeBrowsingHatsDelegate>(
+                HatsServiceFactory::GetForProfile(
+                    profile, /*create_if_necessary=*/true));
 #endif
   return PingManager::Create(
       GetV4ProtocolConfig(),
