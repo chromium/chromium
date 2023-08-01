@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -108,7 +109,13 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @Nullable OneshotSupplier<IncognitoReauthController>
                     incognitoReauthControllerSupplier) {
         mActivity = activity;
-        mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
+                    R.layout.tasks_view_layout, null);
+        } else {
+            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
+                    R.layout.tasks_view_layout_polish, null);
+        }
         mView.initialize(activityLifecycleDispatcher,
                 parentTabSupplier.hasValue() && parentTabSupplier.get().isIncognito(),
                 windowAndroid);

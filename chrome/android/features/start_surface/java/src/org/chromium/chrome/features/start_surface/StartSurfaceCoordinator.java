@@ -208,6 +208,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private ObservableSupplier<Profile> mProfileSupplier;
     private QueryTileSection mQueryTileSection;
     private boolean mIsMVTilesInitialized;
+    private final boolean mIsSurfacePolishEnabled;
 
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
         @Override
@@ -322,6 +323,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
         mIsStartSurfaceRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         TabSwitcher.Controller controller = null;
         Runnable initializeMVTilesRunnable = null;
         View logoContainerView = null;
@@ -867,8 +869,13 @@ public class StartSurfaceCoordinator implements StartSurface {
                     : TabSwitcherType.CAROUSEL;
         }
 
-        mView = (TasksView) LayoutInflater.from(mActivity).inflate(
-                R.layout.tasks_view_layout, null);
+        if (!mIsSurfacePolishEnabled) {
+            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
+                    R.layout.tasks_view_layout, null);
+        } else {
+            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
+                    R.layout.tasks_view_layout_polish, null);
+        }
         mView.setId(R.id.primary_tasks_surface_view);
         mView.initialize(mActivityLifecycleDispatcher,
                 mParentTabSupplier.hasValue() && mParentTabSupplier.get().isIncognito(),

@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -85,22 +83,10 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
         mCarouselTabSwitcherContainer =
                 (FrameLayout) findViewById(R.id.tab_switcher_module_container);
+        mMvTilesContainerLayout = findViewById(R.id.mv_tiles_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
 
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
-
-        View mMiddleSpacer = findViewById(R.id.start_surface_middle_spacer);
-        int insertionPoint = mHeaderView.indexOfChild(mMiddleSpacer) + 1;
-        if (ChromeFeatureList.sSurfacePolish.isEnabled()
-                && !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(getContext())) {
-            mMvTilesContainerLayout =
-                    (ViewGroup) LayoutInflater.from(getContext())
-                            .inflate(R.layout.mv_tiles_container_polish, this, false);
-        } else {
-            mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(getContext())
-                                              .inflate(R.layout.mv_tiles_container, this, false);
-        }
-        mHeaderView.addView(mMvTilesContainerLayout, insertionPoint);
 
         forceHeaderScrollable();
 
