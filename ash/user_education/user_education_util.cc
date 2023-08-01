@@ -4,7 +4,7 @@
 
 #include "ash/user_education/user_education_util.h"
 
-#include <set>
+#include <map>
 #include <vector>
 
 #include "ash/display/window_tree_host_manager.h"
@@ -13,11 +13,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_types.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/ranges/algorithm.h"
+#include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_education/common/help_bubble.h"
@@ -43,8 +42,11 @@ AccountId GetActiveAccountId(const SessionControllerImpl* session_controller) {
                             : AccountId();
 }
 
-std::set<raw_ptr<const gfx::VectorIcon>>& GetHelpBubbleBodyIconRegistry() {
-  static base::NoDestructor<std::set<raw_ptr<const gfx::VectorIcon>>> registry;
+std::map<std::string, raw_ptr<const gfx::VectorIcon>>&
+GetHelpBubbleBodyIconRegistry() {
+  static base::NoDestructor<
+      std::map<std::string, raw_ptr<const gfx::VectorIcon>>>
+      registry;
   return *registry;
 }
 
@@ -74,11 +76,19 @@ session_manager::SessionState GetSessionState(
 
 user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
     const gfx::VectorIcon& body_icon) {
-  GetHelpBubbleBodyIconRegistry().insert(&body_icon);
+  auto& registry = GetHelpBubbleBodyIconRegistry();
+
+  auto it = base::ranges::find(
+      registry, &body_icon,
+      &std::pair<const std::string, raw_ptr<const gfx::VectorIcon>>::second);
+
+  if (it == registry.end()) {
+    const auto token = base::UnguessableToken::Create();
+    it = registry.emplace(token.ToString(), &body_icon).first;
+  }
+
   user_education::HelpBubbleParams::ExtendedProperties extended_properties;
-  extended_properties.values().Set(
-      kHelpBubbleBodyIconKey,
-      base::NumberToString(reinterpret_cast<intptr_t>(&body_icon)));
+  extended_properties.values().Set(kHelpBubbleBodyIconKey, it->first);
   return extended_properties;
 }
 
@@ -118,17 +128,12 @@ absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
 GetHelpBubbleBodyIcon(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
-  if (const std::string* body_icon_str =
+  if (const std::string* body_icon =
           extended_properties.values().FindString(kHelpBubbleBodyIconKey)) {
-    int64_t body_icon_ptr;
-    if (base::StringToInt64(*body_icon_str, &body_icon_ptr)) {
-      const auto body_icon_intptr = base::checked_cast<intptr_t>(body_icon_ptr);
-      CHECK(base::Contains(GetHelpBubbleBodyIconRegistry(), body_icon_ptr,
-                           [](const raw_ptr<const gfx::VectorIcon>& icon) {
-                             return reinterpret_cast<intptr_t>(icon.get());
-                           }));
-      return *reinterpret_cast<const gfx::VectorIcon*>(body_icon_intptr);
-    }
+    auto& registry = GetHelpBubbleBodyIconRegistry();
+    auto it = registry.find(*body_icon);
+    CHECK(it != registry.end());
+    return *it->second;
   }
   return absl::nullopt;
 }

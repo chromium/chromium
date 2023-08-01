@@ -34,6 +34,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
@@ -46,11 +47,12 @@ WelcomeTourController* g_instance = nullptr;
 // Helpers ---------------------------------------------------------------------
 
 user_education::HelpBubbleParams::ExtendedProperties
-CreateHelpBubbleExtendedProperties(HelpBubbleId bubble_id) {
+CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id) {
   return user_education_util::CreateExtendedProperties(
-      user_education_util::CreateExtendedProperties(bubble_id),
+      user_education_util::CreateExtendedProperties(help_bubble_id),
+      user_education_util::CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM),
       user_education_util::CreateExtendedProperties(
-          ui::ModalType::MODAL_TYPE_SYSTEM));
+          /*body_icon=*/gfx::kNoneIcon));
 }
 
 int64_t GetPrimaryDisplayId() {

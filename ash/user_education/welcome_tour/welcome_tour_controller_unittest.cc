@@ -121,12 +121,15 @@ MATCHER_P6(BubbleStep,
            has_next_button,
            "") {
   namespace util = user_education_util;
+  const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode &&
-         util::GetHelpBubbleId(arg.extended_properties()) == help_bubble_id &&
+         util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
-         arg.next_button_callback().is_null() != has_next_button;
+         arg.next_button_callback().is_null() != has_next_button &&
+         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon;
 }
 
 MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {
