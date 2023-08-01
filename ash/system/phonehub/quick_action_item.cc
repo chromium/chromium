@@ -22,23 +22,19 @@ namespace ash {
 
 namespace {
 
-void ConfigureLabel(views::Label* label, int line_height, int font_size) {
+void ConfigureLabelProperties(views::Label* label) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetCanProcessEventsWithinSubtree(false);
+}
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
-                                          *label);
-  } else {
-    gfx::Font default_font;
-    gfx::Font label_font =
-        default_font.Derive(font_size - default_font.GetFontSize(),
-                            gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
-    gfx::FontList font_list(label_font);
-    label->SetFontList(font_list);
-  }
-
+void ConfigureLabelFonts(views::Label* label, int line_height, int font_size) {
+  gfx::Font default_font;
+  gfx::Font label_font =
+      default_font.Derive(font_size - default_font.GetFontSize(),
+                          gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
+  gfx::FontList font_list(label_font);
+  label->SetFontList(font_list);
   label->SetLineHeight(line_height);
 }
 
@@ -72,10 +68,22 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   label_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, 0, kUnifiedFeaturePodInterLabelPadding, 0)));
   sub_label_ = label_view->AddChildView(std::make_unique<views::Label>());
-  ConfigureLabel(label_, kUnifiedFeaturePodLabelLineHeight,
-                 kUnifiedFeaturePodLabelFontSize);
-  ConfigureLabel(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
-                 kUnifiedFeaturePodSubLabelFontSize);
+
+  ConfigureLabelProperties(label_);
+  ConfigureLabelProperties(sub_label_);
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    // StyleLabel() will configure the height, weight, font, etc.
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                          *label_);
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                          *sub_label_);
+  } else {
+    ConfigureLabelFonts(label_, kUnifiedFeaturePodLabelLineHeight,
+                        kUnifiedFeaturePodLabelFontSize);
+    ConfigureLabelFonts(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
+                        kUnifiedFeaturePodSubLabelFontSize);
+  }
 
   // TODO(b/281844561): Update |sub_label_color_| in accordance to the Phone Hub
   // specs. Needs additional logic for the EnableHotspotQuickAction controls.
