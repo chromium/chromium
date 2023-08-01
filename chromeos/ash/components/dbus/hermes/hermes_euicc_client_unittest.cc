@@ -161,10 +161,13 @@ void CopyRefreshSmdxProfilesResult(
 }
 
 void CopyInstallResult(HermesResponseStatus* dest_status,
+                       dbus::DBusResult* dest_dbus_result,
                        dbus::ObjectPath* dest_path,
                        HermesResponseStatus status,
+                       dbus::DBusResult dbus_result,
                        const dbus::ObjectPath* carrier_profile_path) {
   *dest_status = status;
+  *dest_dbus_result = dbus_result;
   if (carrier_profile_path) {
     *dest_path = *carrier_profile_path;
   }
@@ -237,10 +240,11 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
                   MatchInstallFromActivationCodeCall(kTestActivationCode,
                                                      kTestConfirmationCode),
                   _, _))
-      .Times(2)
+      .Times(3)
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
 
   HermesResponseStatus install_status;
+  dbus::DBusResult dbus_result;
   dbus::ObjectPath installed_profile_path(kInvalidPath);
 
   // Verify that client makes corresponding dbus method call with
@@ -251,10 +255,11 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   AddPendingMethodCallResult(std::move(response), nullptr);
   client_->InstallProfileFromActivationCode(
       test_euicc_path, kTestActivationCode, kTestConfirmationCode,
-      base::BindOnce(&CopyInstallResult, &install_status,
+      base::BindOnce(&CopyInstallResult, &install_status, &dbus_result,
                      &installed_profile_path));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(install_status, HermesResponseStatus::kSuccess);
+  EXPECT_EQ(dbus_result, dbus::DBusResult::kSuccess);
   EXPECT_EQ(installed_profile_path, test_carrier_path);
 
   // Verify that error responses are returned properly.
@@ -265,11 +270,25 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   AddPendingMethodCallResult(nullptr, std::move(error_response));
   client_->InstallProfileFromActivationCode(
       test_euicc_path, kTestActivationCode, kTestConfirmationCode,
-      base::BindOnce(&CopyInstallResult, &install_status,
+      base::BindOnce(&CopyInstallResult, &install_status, &dbus_result,
                      &installed_profile_path));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(install_status, HermesResponseStatus::kErrorInvalidActivationCode);
+  EXPECT_EQ(dbus_result, dbus::DBusResult::kErrorUnknown);
   EXPECT_EQ(installed_profile_path.value(), kInvalidPath);
+
+  // Verify that dbus errors are captured properly.
+  installed_profile_path = dbus::ObjectPath(kInvalidPath);
+  error_response = dbus::ErrorResponse::FromMethodCall(
+      &method_call, DBUS_ERROR_LIMITS_EXCEEDED, "");
+  AddPendingMethodCallResult(nullptr, std::move(error_response));
+  client_->InstallProfileFromActivationCode(
+      test_euicc_path, kTestActivationCode, kTestConfirmationCode,
+      base::BindOnce(&CopyInstallResult, &install_status, &dbus_result,
+                     &installed_profile_path));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(install_status, HermesResponseStatus::kErrorUnknownResponse);
+  EXPECT_EQ(dbus_result, dbus::DBusResult::kErrorLimitsExceeded);
 }
 
 TEST_F(HermesEuiccClientTest, TestInstallPendingProfile) {

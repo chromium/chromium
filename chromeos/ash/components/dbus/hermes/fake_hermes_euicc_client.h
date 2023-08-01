@@ -67,6 +67,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
       HermesResponseStatus status) override;
   void SetInteractiveDelay(base::TimeDelta delay) override;
   std::string GenerateFakeActivationCode() override;
+  std::string GetDBusErrorActivationCode() override;
   bool GetLastRefreshProfilesRestoreSlotArg() override;
 
   // HermesEuiccClient:

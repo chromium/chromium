@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "dbus/dbus_result.h"
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
@@ -26,6 +27,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   // and the object path for the profile that was just successfully installed.
   using InstallCarrierProfileCallback =
       base::OnceCallback<void(HermesResponseStatus status,
+                              dbus::DBusResult result,
                               const dbus::ObjectPath* carrier_profile_path)>;
 
   // Callback for the RefreshSmdxProfiles(). Callback returns the status code
@@ -120,6 +122,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // Returns a valid fake activation code that can be used to install
     // a new fake carrier profile.
     virtual std::string GenerateFakeActivationCode() = 0;
+
+    // Returns an activation code that will trigger no memory error from DBUS
+    // upon attempts to activate it.
+    virtual std::string GetDBusErrorActivationCode() = 0;
 
     // Returns true when the last call to RefreshInstalledProfiles was requested
     // with |restore_slot| set to true.

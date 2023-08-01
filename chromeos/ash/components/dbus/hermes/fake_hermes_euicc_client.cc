@@ -29,6 +29,7 @@ namespace {
 
 const char* kDefaultMccMnc = "310999";
 const char* kFakeActivationCodePrefix = "1$SMDP.GSMA.COM$00000-00000-00000-000";
+const char* kActivationCodeToTriggerDBusError = "no_memory";
 const char* kFakeProfilePathPrefix = "/org/chromium/Hermes/Profile/";
 const char* kFakeIccidPrefix = "10000000000000000";
 const char* kFakeProfileNamePrefix = "FakeCellularNetwork_";
@@ -274,6 +275,10 @@ std::string FakeHermesEuiccClient::GenerateFakeActivationCode() {
                             fake_profile_counter_++);
 }
 
+std::string FakeHermesEuiccClient::GetDBusErrorActivationCode() {
+  return kActivationCodeToTriggerDBusError;
+}
+
 bool FakeHermesEuiccClient::GetLastRefreshProfilesRestoreSlotArg() {
   return last_restore_slot_arg_;
 }
@@ -285,6 +290,7 @@ void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     InstallCarrierProfileCallback callback) {
   if (next_install_profile_result_.has_value()) {
     std::move(callback).Run(next_install_profile_result_.value(),
+                            dbus::DBusResult::kSuccess,
                             /*carrier_profile_path=*/nullptr);
     next_install_profile_result_ = absl::nullopt;
     return;
@@ -403,15 +409,22 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
   DVLOG(1) << "Installing profile from activation code: code="
            << activation_code << ", confirmation_code=" << confirmation_code;
   if (!error_status_queue_.empty()) {
-    std::move(callback).Run(error_status_queue_.front(), nullptr);
+    std::move(callback).Run(error_status_queue_.front(),
+                            dbus::DBusResult::kSuccess, nullptr);
     error_status_queue_.pop();
+    return;
+  }
+
+  if (activation_code == kActivationCodeToTriggerDBusError) {
+    std::move(callback).Run(HermesResponseStatus::kErrorUnknownResponse,
+                            dbus::DBusResult::kErrorNoMemory, nullptr);
     return;
   }
 
   if (!base::StartsWith(activation_code, kFakeActivationCodePrefix,
                         base::CompareCase::SENSITIVE)) {
     std::move(callback).Run(HermesResponseStatus::kErrorInvalidActivationCode,
-                            nullptr);
+                            dbus::DBusResult::kSuccess, nullptr);
     return;
   }
 
@@ -437,7 +450,8 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
   }
   CreateCellularService(euicc_path, profile_path);
 
-  std::move(callback).Run(HermesResponseStatus::kSuccess, &profile_path);
+  std::move(callback).Run(HermesResponseStatus::kSuccess,
+                          dbus::DBusResult::kSuccess, &profile_path);
 }
 
 void FakeHermesEuiccClient::DoInstallPendingProfile(

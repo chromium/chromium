@@ -11,9 +11,15 @@
 
 namespace ash::hermes_metrics {
 
-void LogInstallViaQrCodeResult(HermesResponseStatus status) {
+void LogInstallViaQrCodeResult(HermesResponseStatus status,
+                               dbus::DBusResult dbusResult) {
   base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallViaQrCode.Result",
                                 status);
+
+  if (status == HermesResponseStatus::kErrorUnknownResponse) {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.InstallViaQrCode.DBusResult", dbusResult);
+  }
 
   if (status == HermesResponseStatus::kSuccess ||
       !base::Contains(kHermesUserErrorCodes, status)) {

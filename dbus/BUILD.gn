@@ -14,6 +14,8 @@ component("dbus") {
     "bus.cc",
     "bus.h",
     "dbus_export.h",
+    "dbus_result.cc",
+    "dbus_result.h",
     "dbus_statistics.cc",
     "dbus_statistics.h",
     "exported_object.cc",

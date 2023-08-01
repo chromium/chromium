@@ -861,6 +861,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.InstallViaQrCode.DBusResult"
+    enum="DBusResult" expires_after="2023-12-31">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the dbus result for all eSIM installation attempts. This gets logged
+    only if we receive an unknown hermes response code.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.InstallViaQrCode.OperationResult"
     enum="NetworkCellularESimInstallResult" expires_after="2023-12-31">
   <obsolete>
