@@ -1,0 +1,87 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
+
+#include <string>
+
+#include "base/notreached.h"
+#include "base/time/time.h"
+
+namespace ash::welcome_tour_metrics {
+namespace {
+
+std::string ToString(Step step) {
+  switch (step) {
+    case Step::kDialog:
+      return "Dialog";
+    case Step::kExploreApp:
+      return "ExploreApp";
+    case Step::kExploreAppWindow:
+      return "ExploreAppWindow";
+    case Step::kHomeButton:
+      return "HomeButton";
+    case Step::kSearch:
+      return "Search";
+    case Step::kSettingsApp:
+      return "SettingsApp";
+    case Step::kShelf:
+      return "Shelf";
+    case Step::kStatusArea:
+      return "StatusArea";
+  }
+  NOTREACHED_NORETURN();
+}
+
+std::string ToString(Interaction interaction) {
+  switch (interaction) {
+    case Interaction::kExploreApp:
+      return "ExploreApp";
+    case Interaction::kFilesApp:
+      return "FilesApp";
+    case Interaction::kLauncher:
+      return "Launcher";
+    case Interaction::kQuickSettings:
+      return "QuickSettings";
+    case Interaction::kSearch:
+      return "Search";
+    case Interaction::kSettingsApp:
+      return "SettingsApp";
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
+void RecordStepAborted(Step step) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Aborted`.";
+}
+
+void RecordStepDuration(Step step, base::TimeDelta delta) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Duration." << ToString(step)
+                   << "`.";
+}
+
+void RecordStepShown(Step step) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Shown`.";
+}
+
+void RecordTimeToInteraction(Interaction interaction, base::TimeDelta delta) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.TimeToInteraction."
+                   << ToString(interaction) << "`.";
+}
+
+void RecordTourAborted(AbortedReason reason) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Aborted`.";
+}
+
+void RecordTourDuration(Step step, base::TimeDelta delta) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Duration`.";
+}
+
+void RecordTourPrevented(PreventedReason reason) {
+  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Prevented`.";
+}
+
+}  // namespace ash::welcome_tour_metrics
