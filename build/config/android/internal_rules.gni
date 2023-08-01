@@ -1929,6 +1929,9 @@ if (enable_java_templates) {
         "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:deps_info:javac_full_classpath_targets)",
       ]
+      if (auto_add_missing_java_deps) {
+        args += [ "--auto-add-deps" ]
+      }
       if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
       }

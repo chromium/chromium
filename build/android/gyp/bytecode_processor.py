@@ -24,6 +24,11 @@ sys.path.append(str(_SRC_PATH / 'tools/android/modularization/gn'))
 from dep_operations import NO_VALID_GN_STR
 
 
+# This is a temporary constant to make reverts easier (if necessary).
+# TODO(crbug.com/1099522): Remove this and make jdeps on by default.
+_USE_JDEPS = False
+
+
 def _ShouldIgnoreDep(dep_name: str):
   if 'gen.base_module.R' in dep_name:
     return True
@@ -83,6 +88,7 @@ def _EnsureDirectClasspathIsComplete(
     full_classpath_jars: List[str],
     full_classpath_gn_targets: List[str],
     warnings_as_errors: bool,
+    auto_add_deps: bool,
 ):
   logging.info('Parsing %d direct classpath jars', len(sdk_classpath_jars))
   sdk_classpath_deps = set()
@@ -152,8 +158,7 @@ def _EnsureDirectClasspathIsComplete(
       if warnings_as_errors:
         sys.exit(1)
 
-    # TODO(https://crbug.com/1099522): This is better as a GN arg.
-    if os.environ.get('AUTO_ADD_MISSING_DEPS') != '1':
+    if not auto_add_deps:
       print_and_maybe_exit()
     else:
       # Normalize chrome_public_apk__java to chrome_public_apk.
@@ -225,6 +230,11 @@ def main(argv):
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
+  parser.add_argument(
+      '--auto-add-deps',
+      action='store_true',
+      help='Attempt to automatically add missing deps to the corresponding '
+      'BUILD.gn file.')
   args = parser.parse_args(argv)
 
   if server_utils.MaybeRunCommand(name=args.target_name,
@@ -249,7 +259,7 @@ def main(argv):
   verbose = '--verbose' if args.verbose else '--not-verbose'
 
   # TODO(https://crbug.com/1099522): Make jdeps the default.
-  if os.environ.get('BYTECODE_PROCESSOR_USE_JDEPS'):
+  if _USE_JDEPS:
     logging.info('Processed args for %s, starting direct classpath check.',
                  args.target_name)
     _EnsureDirectClasspathIsComplete(
@@ -261,6 +271,7 @@ def main(argv):
         full_classpath_jars=args.full_classpath_jars,
         full_classpath_gn_targets=args.full_classpath_gn_targets,
         warnings_as_errors=args.warnings_as_errors,
+        auto_add_deps=args.auto_add_deps,
     )
     logging.info('Check completed.')
   else:
