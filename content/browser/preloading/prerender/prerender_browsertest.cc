@@ -7556,6 +7556,16 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
         {});
   }
 
+  void SetUp() override {
+#if !BUILDFLAG(IS_ANDROID)
+    PrerenderBrowserTest::SetUp();
+#else
+    // TODO(crbug.com/1449163): Add the implementation of pointer interaction on
+    // Android to the function below.
+    GTEST_SKIP();
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+
   void InsertAnchor(const GURL url) {
     const std::string script = R"(
       const anchor = document.createElement('a');
@@ -7567,6 +7577,7 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
   }
 
   void ResetPointerPosition() {
+#if !BUILDFLAG(IS_ANDROID)
     InputEventAckWaiter waiter(
         web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
         blink::WebInputEvent::Type::kMouseMove);
@@ -7574,9 +7585,16 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
                        blink::WebMouseEvent::Button::kNoButton,
                        gfx::Point(0, 0));
     waiter.Wait();
+#else
+    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
+    // work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void PointerHoverToAnchor(const GURL& url) {
+    ResetPointerPosition();
+
+#if !BUILDFLAG(IS_ANDROID)
     const auto point = CalculateCenterPointOfAnchorElement(url);
     InputEventAckWaiter waiter(
         web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
@@ -7584,9 +7602,16 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
     SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
                        blink::WebMouseEvent::Button::kNoButton, point);
     waiter.Wait();
+#else
+    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
+    // work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void PointerDownToAnchor(const GURL& url) {
+    ResetPointerPosition();
+
+#if !BUILDFLAG(IS_ANDROID)
     const auto point = CalculateCenterPointOfAnchorElement(url);
     InputEventAckWaiter waiter(
         web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
@@ -7594,9 +7619,14 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
     SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseDown,
                                blink::WebMouseEvent::Button::kLeft, point);
     waiter.Wait();
+#else
+    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
+    // work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void PointerUpToAnchor(const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
     const auto point = CalculateCenterPointOfAnchorElement(url);
     InputEventAckWaiter waiter(
         web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
@@ -7604,10 +7634,13 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
     SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseUp,
                                blink::WebMouseEvent::Button::kLeft, point);
     waiter.Wait();
+#else
+    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
+    // work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void ClickAnchor(const GURL url) {
-    ResetPointerPosition();
     PointerDownToAnchor(url);
     PointerUpToAnchor(url);
   }
@@ -7732,9 +7765,6 @@ class PreloadingDeciderObserverForPrerenderTesting
 
 }  // namespace
 
-// TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make these tests work
-// for Android.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests speculation rules prerendering where the eagerness is "eager".
 // The default eagerness of list rules is "eager", so its behavior should be
 // same to normal speculation rules prerendering.
@@ -7764,7 +7794,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
   // Activate the prerendered page by clicking the anchor.
   int host_id = GetHostForUrl(prerendering_url);
   test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
-  ResetPointerPosition();
   PointerDownToAnchor(prerendering_url);
   PointerUpToAnchor(prerendering_url);
   prerender_observer.WaitForActivation();
@@ -7800,7 +7829,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
 
   // Hover the anchor of the prerendering page. When eagerness is "moderate",
   // this interaction invokes the creation of |PrerenderHost|.
-  ResetPointerPosition();
   PointerHoverToAnchor(prerendering_url);
   preloading_decider_observer.WaitOnPointerHover();
   WaitForPrerenderLoadCompletion(prerendering_url);
@@ -7848,7 +7876,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
   // "conservative", PointerDown interaction invokes the creation of
   // |PrerenderHost| and this host will be activated on the navigation triggered
   // by the series of actions(PointerDown, PointerUp) on clicking.
-  ResetPointerPosition();
   PointerDownToAnchor(prerendering_url);
   preloading_decider_observer.WaitOnPointerDown();
   WaitForPrerenderLoadCompletion(prerendering_url);
@@ -7863,7 +7890,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
   EXPECT_TRUE(prerender_observer.was_activated());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PrerenderWithBackForwardCacheBrowserTest,
@@ -8101,7 +8127,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
 
   // Navigate to a next page.
   ASSERT_TRUE(NavigateToURL(shell(), next_url));
-  ResetPointerPosition();
   RenderFrameHostImpl* rfh_next = current_frame_host();
   InsertAnchor(prerendering_url);
 
@@ -8131,7 +8156,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
   // Navigate forward. The next page should be restored from the BFCache.
   GoForward();
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), next_url);
-  ResetPointerPosition();
   ExpectRestored(FROM_HERE);
 
   if (GetSpeculationEagerness() == blink::mojom::SpeculationEagerness::kEager) {
@@ -8164,9 +8188,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
         prerendering_url, blink::mojom::SpeculationAction::kPrerender));
 
-// TODO(crbug.com/1449163): Simulate |WebGestureEvent| on
-// |PrerenderEagernessBrowserTest| to make these codes work for Android.
-#if !BUILDFLAG(IS_ANDROID)
     // Trigger and activate the non-eager prerender.
     {
       TestActivationManager activation_manager(web_contents(),
@@ -8176,7 +8197,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
       ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
       ASSERT_TRUE(activation_manager.was_activated());
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -8249,11 +8269,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
       EXPECT_FALSE(HasHostForUrl(prerendering_url_a));
       EXPECT_FALSE(HasHostForUrl(prerendering_url_b));
     }
-  }
-// TODO(crbug.com/1449163): Simulate |WebGestureEvent| on
-// |PrerenderEagernessBrowserTest| to make these codes work for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  else {
+  } else {
     auto* preloading_decider =
         PreloadingDecider::GetOrCreateForCurrentDocument(rfh_initial);
 
@@ -8339,7 +8355,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
           prerendering_url_a, blink::mojom::SpeculationAction::kPrerender));
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Tests that PrerenderHostRegistry can hold up to two prerendering for the
