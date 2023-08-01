@@ -74,6 +74,13 @@ void EventAckData::DecrementInflightEvent(
       /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
       /*bucket_count=*/100);
 
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker",
+      /*time=*/base::TimeTicks::Now() -
+          request_info_iter->second.dispatch_start_time,
+      /*minimum=*/base::Seconds(1), /*maximum=*/base::Days(1),
+      /*bucket_count=*/100);
+
   base::Uuid request_uuid = std::move(request_info_iter->second.request_uuid);
   bool start_ok = request_info_iter->second.start_ok;
   unacked_events_.erase(request_info_iter);

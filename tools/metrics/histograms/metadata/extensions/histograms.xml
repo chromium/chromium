@@ -1251,6 +1251,32 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded every time an event is dispatched to an extension.</summary>
 </histogram>
 
+<histogram
+    name="Extensions.Events.DispatchToAckLongTime.{BackgroundContextType}"
+    units="microseconds" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the time it took for the event to be sent to the event router for
+    dispatch for background page of type {BackgroundContextType}. Reports
+    samples at seconds granualarity up to 1 day. This is meant to investigate an
+    appropriate time maximum for
+    Extensions.Events.DispatchToAckTime.{BackgroundContextType}.
+  </summary>
+  <token key="BackgroundContextType">
+    <variant name="ExtensionServiceWorker"
+        summary="service worker. Emitted shortly after extensions browser
+                 code receives the ack from the renderer that it fired the
+                 event in the service worker. &quot;shortly&quot; because
+                 there is a function call between the receipt by the browser
+                 and recording the value. Note: this may include some amount
+                 of execution time of the extension service worker JS
+                 listener"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.Events.DispatchToAckTime.{BackgroundContextType}"
     units="microseconds" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->

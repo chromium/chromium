@@ -349,6 +349,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker",
       /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker",
+      /*expected_count=*/2);
 }
 
 // After browser restarts, this test step ensures that opening a tab fires
