@@ -37,6 +37,7 @@
 #endif  // #if BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
@@ -695,5 +696,75 @@ INSTANTIATE_TEST_SUITE_P(
                      /*will_trigger_user_inline_flow=*/testing::Bool()));
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class DeviceTrustBrowserTestForUnmanagedDevices
+    : public DeviceTrustBrowserTest,
+      public testing::WithParamInterface<
+          /* 3 boolean variables that define the flow on unmanaged devices
+          (crOS):
+          - if the user is managed
+          - if user-level inline flow is enabled
+          - if UnmanagedDeviceDeviceTrustConnectorEnabled feature is enabled*/
+          testing::tuple<bool, bool, bool>> {
+ protected:
+  DeviceTrustBrowserTestForUnmanagedDevices()
+      : DeviceTrustBrowserTest(DeviceTrustConnectorState({
+            .affiliated = false,
+            .cloud_user_management_level = DeviceTrustManagementLevel({
+                .is_managed = testing::get<0>(GetParam()),
+                .is_inline_policy_enabled = testing::get<1>(GetParam()),
+            }),
+        })) {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled,
+        is_unmanaged_device_feature_enabled());
+  }
+
+  bool is_user_managed() { return testing::get<0>(GetParam()); }
+  bool is_user_inline_flow_enabled() { return testing::get<1>(GetParam()); }
+  bool is_unmanaged_device_feature_enabled() {
+    return testing::get<2>(GetParam());
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestForUnmanagedDevices,
+                       AttestationFullFlow) {
+  TriggerUrlNavigation();
+
+  if (!is_unmanaged_device_feature_enabled() || !is_user_managed() ||
+      !is_user_inline_flow_enabled()) {
+    VerifyNoInlineFlowOccurred();
+    return;
+  }
+
+  VerifyAttestationFlowSuccessful();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUser,
+    DeviceTrustBrowserTestForUnmanagedDevices,
+    testing::Combine(
+        /*is_user_managed=*/testing::Values(true),
+        /*is_user_inline_flow_enabled=*/testing::Bool(),
+        /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
+INSTANTIATE_TEST_SUITE_P(
+    UnmanagedUser,
+    DeviceTrustBrowserTestForUnmanagedDevices,
+    testing::Combine(
+        /*is_user_managed=*/testing::Values(false),
+        /*is_user_inline_flow_enabled=*/testing::Values(false),
+        /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    FeatureFlag,
+    DeviceTrustBrowserTestForUnmanagedDevices,
+    testing::Combine(
+        /*is_user_managed=*/testing::Values(true),
+        /*is_user_inline_flow_enabled=*/testing::Values(true),
+        /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors::test
