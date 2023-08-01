@@ -29,6 +29,8 @@ public class PasswordMigrationWarningIntroFragment extends Fragment {
         mMoreOptionsCallback = moreOptionsCallback;
     }
 
+    public PasswordMigrationWarningIntroFragment() {}
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         TextViewWithLeading subtitleView = view.findViewById(R.id.migration_warning_sheet_subtitle);
