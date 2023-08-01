@@ -14,10 +14,6 @@
 #include "device/fido/mac/fake_keychain.h"
 #include "device/fido/mac/fake_touch_id_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device::fido::mac {
 
 static ScopedTouchIdTestEnvironment* g_current_environment = nullptr;

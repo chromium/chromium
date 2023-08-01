@@ -16,10 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kTestUUID[] = "00000000-1111-2222-3333-444444444444";
 }  // namespace

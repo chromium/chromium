@@ -18,10 +18,6 @@
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Undocumented API for accessing the Bluetooth transmit power level.
 // Similar to the API defined here [ http://goo.gl/20Q5vE ].
 @interface IOBluetoothHostController (UndocumentedAPI)

@@ -8,10 +8,6 @@
 #import "device/bluetooth/test/bluetooth_test_mac.h"
 #import "device/bluetooth/test/mock_bluetooth_cbperipheral_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation MockCentralManager {
   NSMutableDictionary* __strong _connectedMockPeripheralPerServiceUUID;
   NSMutableArray* __strong _retrieveConnectedPeripheralServiceUUIDs;

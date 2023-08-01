@@ -13,10 +13,6 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 class BluetoothLowEnergyAdapterApple;
 class BluetoothLowEnergyAdvertisementManagerMac;

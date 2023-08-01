@@ -16,10 +16,6 @@
 #include "device/fido/mac/icloud_keychain_sys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NSWindow;
 
 namespace device::fido::icloud_keychain {

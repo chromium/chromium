@@ -9,10 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 
 // This class exists to bridge between the Objective-C

@@ -10,10 +10,6 @@
 #include "device/bluetooth/test/mock_bluetooth_cbdescriptor_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbservice_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::mac::ObjCCast;
 
 @implementation MockCBPeripheral {

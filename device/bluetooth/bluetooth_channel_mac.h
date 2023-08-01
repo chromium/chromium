@@ -12,10 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class IOBluetoothDevice;
 
 namespace device {

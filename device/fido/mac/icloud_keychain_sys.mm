@@ -13,10 +13,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/mac/icloud_keychain_internals.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // This function is needed by the interfaces below, but interfaces must be

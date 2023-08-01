@@ -12,10 +12,6 @@
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #import "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::mac::ObjCCast;
 
 namespace device {

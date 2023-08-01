@@ -18,10 +18,6 @@
 #include "device/gamepad/hid_writer_mac.h"
 #include "device/gamepad/xbox_hid_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 
 namespace {

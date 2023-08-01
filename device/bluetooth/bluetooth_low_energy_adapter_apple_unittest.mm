@@ -38,10 +38,6 @@
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kTestPropertyListFileName[] = "test_property_list_file.plist";

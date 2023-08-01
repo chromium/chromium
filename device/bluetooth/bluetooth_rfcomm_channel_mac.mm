@@ -11,10 +11,6 @@
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A simple delegate class for an open RFCOMM channel that forwards methods to
 // its wrapped |channel_|.
 @interface BluetoothRfcommChannelDelegate

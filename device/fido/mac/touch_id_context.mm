@@ -24,10 +24,6 @@
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/keychain.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device::fido::mac {
 
 namespace {

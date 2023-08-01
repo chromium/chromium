@@ -22,10 +22,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service_mac.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 
 BluetoothLowEnergyDeviceMac::BluetoothLowEnergyDeviceMac(

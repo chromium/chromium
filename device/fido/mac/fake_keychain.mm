@@ -19,10 +19,6 @@
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/keychain.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device::fido::mac {
 
 FakeKeychain::FakeKeychain(const std::string& keychain_access_group)

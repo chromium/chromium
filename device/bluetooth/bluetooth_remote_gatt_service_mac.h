@@ -13,10 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class CBCharacteristic;
 @class CBDescriptor;
 @class CBPeripheral;

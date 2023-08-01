@@ -7,10 +7,6 @@
 #include "base/mac/foundation_util.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::mac::ObjCCast;
 
 @interface MockCBDescriptor () {

@@ -24,10 +24,6 @@
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device::fido::mac {
 
 using base::ScopedCFTypeRef;
