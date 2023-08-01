@@ -121,7 +121,7 @@ class WebAppToolbarButtonContainer : public views::View,
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
   // ContentSettingImageView::Delegate:
-  bool ShouldHideContentSettingImage() override;
+  bool ShouldHideContentSettingImage(ImageType type) override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;

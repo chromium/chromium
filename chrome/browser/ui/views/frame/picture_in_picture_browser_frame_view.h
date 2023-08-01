@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -112,7 +113,7 @@ class PictureInPictureBrowserFrameView
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
   // ContentSettingImageView::Delegate:
-  bool ShouldHideContentSettingImage() override;
+  bool ShouldHideContentSettingImage(ImageType type) override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
