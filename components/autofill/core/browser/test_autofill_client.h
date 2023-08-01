@@ -691,7 +691,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
-  std::unique_ptr<testing::NiceMock<MockIBANManager>> mock_iban_manager_;
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
@@ -708,12 +707,12 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 
-  // AutofillOfferManager and TestFormDataImporter must be destroyed before
-  // TestPersonalDataManager, because the former's destructors refer to the
-  // latter.
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
+  // The below objects must be destroyed before `TestPersonalDataManager`
+  // because they keep a reference to it.
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
+  std::unique_ptr<testing::NiceMock<MockIBANManager>> mock_iban_manager_;
 
   GURL form_origin_{"https://example.test"};
   ukm::SourceId source_id_ = -1;

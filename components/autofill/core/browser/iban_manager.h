@@ -79,8 +79,7 @@ class IBANManager : public SingleFieldFormFiller,
   void SendIBANSuggestions(const std::vector<IBAN*>& ibans,
                            const QueryHandler& query_handler);
 
-  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_ =
-      nullptr;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   UmaRecorder uma_recorder_;
 
