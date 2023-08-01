@@ -10,6 +10,7 @@
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
@@ -40,6 +41,16 @@ constexpr base::TimeDelta kExistingMiniViewsAnimationDuration =
     base::Milliseconds(250);
 constexpr base::TimeDelta kExistingMiniViewsAnimationDurationCrOSNext =
     base::Milliseconds(150);
+
+constexpr base::TimeDelta kNewMiniViewsAnimationDelayDuration =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kNewMiniViewsAnimationFadeDelayDuration =
+    base::Milliseconds(100);
+
+constexpr base::TimeDelta kNewMiniViewsScaleAnimationDuration =
+    base::Milliseconds(150);
+constexpr base::TimeDelta kNewMiniViewsFadeInAnimationDuration =
+    base::Milliseconds(100);
 
 constexpr base::TimeDelta kRemovedMiniViewsFadeOutDuration =
     base::Milliseconds(200);
@@ -161,6 +172,38 @@ void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
   InitScopedAnimationSettings(&settings, animation_duration);
   layer->SetTransform(kEndTransform);
   layer->SetOpacity(1.f);
+}
+
+// Performs the CrOS Next spawn animation for the given mini `view`.
+void CrOSNextScaleUpAndFadeInView(DeskMiniView* view) {
+  ui::Layer* preview_layer = view->desk_preview()->layer();
+  ui::Layer* view_layer = view->layer();
+
+  // Minimize the view to top center point.
+  const gfx::Transform initial_state =
+      gfx::GetScaleTransform(view->GetLocalBounds().top_center(), 0.1f);
+
+  // Hide the view before scale up animation starts.
+  view_layer->SetOpacity(0.f);
+  preview_layer->SetTransform(initial_state);
+
+  // Uses animation builder so that we can use `views::AnimationAbortHandle`.
+  // Setting abort handle is important as it manages to abort ongoing
+  // animation as documented in `DeskMiniView::animation_abort_handle_`.
+  views::AnimationBuilder animation_builder;
+  view->set_animation_abort_handle(animation_builder.GetAbortHandle());
+
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .At(kNewMiniViewsAnimationFadeDelayDuration)
+      .SetDuration(kNewMiniViewsFadeInAnimationDuration)
+      .SetOpacity(view_layer, 1.f)
+      .At(kNewMiniViewsAnimationDelayDuration)
+      .SetDuration(kNewMiniViewsScaleAnimationDuration)
+      .SetTransform(preview_layer, gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void PositionWindowsInOverview() {
@@ -400,7 +443,7 @@ void PerformNewDeskMiniViewAnimation(
   for (auto* mini_view : new_mini_views) {
     if (chromeos::features::IsJellyrollEnabled()) {
       if (!mini_view->desk()->is_desk_being_removed()) {
-        ScaleUpAndFadeInView(mini_view, mini_view->bounds().CenterPoint().x());
+        CrOSNextScaleUpAndFadeInView(mini_view);
       }
     } else {
       ui::Layer* layer = mini_view->layer();
