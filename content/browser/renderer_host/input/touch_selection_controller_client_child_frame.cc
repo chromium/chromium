@@ -48,6 +48,10 @@ void TouchSelectionControllerClientChildFrame::OnSwipeToMoveCursorEnd() {
   manager_->OnSwipeToMoveCursorEnd();
 }
 
+void TouchSelectionControllerClientChildFrame::OnHitTestRegionUpdated() {
+  manager_->OnClientHitTestRegionUpdated(this);
+}
+
 void TouchSelectionControllerClientChildFrame::
     TransformSelectionBoundsAndUpdate() {
   gfx::SelectionBound transformed_selection_start(selection_start_);

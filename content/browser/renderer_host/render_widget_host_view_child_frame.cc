@@ -719,6 +719,10 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
        blink::mojom::kMaxChildFrameScreenRectMovement)) {
     last_stable_screen_rect_ = *screen_rect;
     screen_rect_stable_since_ = base::TimeTicks::Now();
+
+    if (selection_controller_client_) {
+      selection_controller_client_->OnHitTestRegionUpdated();
+    }
   }
 }
 

@@ -34,6 +34,11 @@ class CONTENT_EXPORT TouchSelectionControllerClientManager {
 
   virtual void OnSwipeToMoveCursorEnd() = 0;
 
+  // Used by clients to notify the manager that the client's hit test region has
+  // updated, to allow selection bounds to be updated if needed.
+  virtual void OnClientHitTestRegionUpdated(
+      ui::TouchSelectionControllerClient* client) = 0;
+
   // The manager uses this class' methods to notify observers about important
   // events.
   class CONTENT_EXPORT Observer : public base::CheckedObserver {

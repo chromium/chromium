@@ -68,6 +68,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   void DidStopFlinging() override;
   void OnSwipeToMoveCursorBegin() override;
   void OnSwipeToMoveCursorEnd() override;
+  void OnClientHitTestRegionUpdated(
+      ui::TouchSelectionControllerClient* client) override;
   void UpdateClientSelectionBounds(
       const gfx::SelectionBound& start,
       const gfx::SelectionBound& end,

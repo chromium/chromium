@@ -217,6 +217,17 @@ void TouchSelectionControllerClientAura::OnSwipeToMoveCursorEnd() {
   OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
 }
 
+void TouchSelectionControllerClientAura::OnClientHitTestRegionUpdated(
+    ui::TouchSelectionControllerClient* client) {
+  if (client != active_client_ || !GetTouchSelectionController() ||
+      GetTouchSelectionController()->active_status() ==
+          ui::TouchSelectionController::INACTIVE) {
+    return;
+  }
+
+  active_client_->DidScroll();
+}
+
 void TouchSelectionControllerClientAura::UpdateClientSelectionBounds(
     const gfx::SelectionBound& start,
     const gfx::SelectionBound& end) {

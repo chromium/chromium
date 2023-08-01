@@ -63,6 +63,14 @@ bool JSONToPoint(const std::string& str, gfx::PointF* point) {
   return true;
 }
 
+gfx::RectF ConvertRectFToChildCoords(RenderWidgetHostViewAura* parent,
+                                     RenderWidgetHostViewChildFrame* child,
+                                     const gfx::RectF rect) {
+  return gfx::BoundingRect(
+      child->TransformRootPointToViewCoordSpace(rect.origin()),
+      child->TransformRootPointToViewCoordSpace(rect.bottom_right()));
+}
+
 // A mock touch selection menu runner to use whenever a default one is not
 // installed.
 class TestTouchSelectionMenuRunner : public ui::TouchSelectionMenuRunner {
@@ -755,6 +763,110 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       selection_controller->GetStartPosition();
   EXPECT_EQ(scroll_delta,
             final_start_handle_position - initial_start_handle_position);
+}
+
+// Tests that the selection handles in a child view have their bounds updated
+// when the main view is resized.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
+                       SelectionHandlesIsolatedIframeMainViewResized) {
+  // Set the test page up.
+  const GURL test_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(DepictFrameTree(*root),
+            " Site A\n"
+            "   +--Site A\n"
+            "Where A = http://a.com/");
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_EQ(root->child_count(), 1u);
+  FrameTreeNode* child = root->child_at(0);
+
+  RenderWidgetHostViewAura* parent_view =
+      static_cast<RenderWidgetHostViewAura*>(
+          root->current_frame_host()->GetRenderWidgetHost()->GetView());
+  TestTouchSelectionControllerClientAura* parent_selection_controller_client =
+      new TestTouchSelectionControllerClientAura(parent_view, true);
+  parent_view->SetSelectionControllerClientForTest(
+      base::WrapUnique(parent_selection_controller_client));
+  parent_view->SetSize(gfx::Size(600, 500));
+  WaitForHitTestData(root->current_frame_host());
+
+  const GURL child_url(
+      embedded_test_server()->GetURL("b.com", "/touch_selection.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, child_url));
+  EXPECT_EQ(DepictFrameTree(*root),
+            " Site A ------------ proxies for B\n"
+            "   +--Site B ------- proxies for A\n"
+            "Where A = http://a.com/\n"
+            "      B = http://b.com/");
+
+  // The child will change with the cross-site navigation. It shouldn't change
+  // after this.
+  child = root->child_at(0);
+  WaitForHitTestData(child->current_frame_host());
+
+  RenderWidgetHostViewChildFrame* child_view =
+      static_cast<RenderWidgetHostViewChildFrame*>(
+          child->current_frame_host()->GetRenderWidgetHost()->GetView());
+
+  EXPECT_EQ(child_url, observer.last_navigation_url());
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+
+  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
+            parent_view->selection_controller()->active_status());
+  EXPECT_EQ(gfx::RectF(),
+            parent_view->selection_controller()->GetVisibleRectBetweenBounds());
+
+  // Find the location of some text in the child view to select.
+  gfx::PointF point_in_text;
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()")
+                  .ExtractString(),
+              &point_in_text);
+  point_in_text = child_view->TransformPointToRootCoordSpaceF(point_in_text);
+
+  // Long press to show selection handles.
+  parent_selection_controller_client->InitWaitForSelectionEvent(
+      ui::SELECTION_HANDLES_SHOWN);
+  SelectWithLongPress(gfx::Point(point_in_text.x(), point_in_text.y()),
+                      child_view);
+  parent_selection_controller_client->Wait();
+
+  // Selection handles should be shown.
+  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
+            parent_view->selection_controller()->active_status());
+  const gfx::RectF initial_selection_bounds_in_parent_coords =
+      parent_view->selection_controller()->GetRectBetweenBounds();
+  EXPECT_NE(initial_selection_bounds_in_parent_coords, gfx::RectF());
+
+  // Compute selection bounds in child view coordinates, to help determine the
+  // expected selection bounds after resizing the parent view.
+  const gfx::RectF initial_selection_bounds_in_child_coords =
+      ConvertRectFToChildCoords(parent_view, child_view,
+                                initial_selection_bounds_in_parent_coords);
+
+  // Resize the parent view.
+  parent_selection_controller_client->InitWaitForSelectionEvent(
+      ui::SELECTION_HANDLES_MOVED);
+  parent_view->SetSize(gfx::Size(200, 200));
+  parent_selection_controller_client->Wait();
+
+  // Resizing the parent view changes the position of the child view within this
+  // parent, so we expect the selection handles to have moved and the selection
+  // bounds in the parent view to have changed.
+  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
+            parent_view->selection_controller()->active_status());
+  const gfx::RectF new_selection_bounds_in_parent_coords =
+      parent_view->selection_controller()->GetRectBetweenBounds();
+  EXPECT_NE(new_selection_bounds_in_parent_coords, gfx::RectF());
+  EXPECT_NE(new_selection_bounds_in_parent_coords,
+            initial_selection_bounds_in_parent_coords);
+  // The selection bounds should remain the same in child view coordinates.
+  EXPECT_EQ(ConvertRectFToChildCoords(parent_view, child_view,
+                                      new_selection_bounds_in_parent_coords),
+            initial_selection_bounds_in_child_coords);
 }
 
 // Tests that tapping in a textfield brings up the insertion handle, but not the
