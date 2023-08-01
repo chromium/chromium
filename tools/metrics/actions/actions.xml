@@ -24773,6 +24773,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Open_Sys_Internals">
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <description>
+    Number of times that chrome://sys-internals is accessed.
+  </description>
+</action>
+
 <action name="OpenActiveTabInPwaWindow">
   <owner>alancutter@chromium.org</owner>
   <description>
