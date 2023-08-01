@@ -5302,13 +5302,16 @@
     Managed Development Environment
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_WINDOW_TITLE" desc="Title for the installer window while Bruschetta (codename) is installing." translateable="false">
-    Bruschetta Installer
+    <ph name="VM_NAME">$1<ex>Managed VM</ex></ph> Installer
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_INSTALL_BUTTON" desc="Label for the button in the Bruschetta (codename) installer dialog to begin installing.">
     Install
   </message>
-  <message name="IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE" desc="Title for the installer for Bruschetta (codename).">
+  <message name="IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE" desc="In-window title for when the installer for Bruschetta (codename) first opens.">
     Welcome
+  </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_MESSAGE" desc="More detailed message for when the installer for Bruschetta (codename) first opens." translateable="false">
+    Select which version of <ph name="VM_NAME">$1<ex>Managed VM</ex></ph> to install.
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE" desc="Title for the installer while Bruschetta (codename) is installing.">
     Installing
