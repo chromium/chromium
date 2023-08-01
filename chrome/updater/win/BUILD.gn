@@ -61,13 +61,13 @@ executable("updater_test") {
 
 copy("signing") {
   sources = [
-    "$root_out_dir/certificate_tag.exe",
+    "$root_out_dir/tag.exe",
     "//chrome/tools/build/win/resedit.py",
     "//third_party/lzma_sdk/bin/win64/7zr.exe",
     "signing/sign.py",
   ]
 
-  deps = [ "//chrome/updater/tools:certificate_tag" ]
+  deps = [ "//chrome/updater/tools:tag" ]
 
   outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
 }

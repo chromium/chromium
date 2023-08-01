@@ -84,11 +84,10 @@ class Signer:
         """Adds the tagging cert. Returns the path to the tagged file."""
         out_file = os.path.join(tempfile.mkdtemp(dir=self._tmpdir),
                                 'tagged_file')
-        subprocess.run([
-            self._tagging_exe, '--set-superfluous-cert-tag',
-            '--out=%s' % out_file, in_file
-        ],
-                       check=True)
+        subprocess.run(
+            [self._tagging_exe, '--set-tag',
+             '--out=%s' % out_file, in_file],
+            check=True)
         return out_file
 
     def _sign_item(self, in_file):
@@ -224,11 +223,11 @@ def main():
         '--signtool',
         default='signtool.exe',
         help='The path to the signtool executable. Look in depot_tools.')
-    parser.add_argument('--certificate_tag',
+    parser.add_argument('--tagging_exe',
                         default=os.path.join(
                             os.path.realpath(os.path.dirname(__file__)),
-                            'certificate_tag.exe'),
-                        help='The path to the certificate_tag executable.')
+                            'tag.exe'),
+                        help='The path to the tagging executable.')
     parser.add_argument(
         '--identity',
         default='Google',
@@ -267,7 +266,7 @@ def main():
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as tmpdir:
         shutil.move(
-            Signer(tmpdir, args.lzma_7z, args.signtool, args.certificate_tag,
+            Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
                    args.identity, args.certificate_file_path,
                    args.certificate_password).sign_metainstaller(
                        args.in_file, args.appid, args.installer_path,

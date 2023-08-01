@@ -471,6 +471,7 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
   // The bundle name inherits the first app's name, if not set.
   if (args->bundle_name.empty() && !args->apps.empty())
     args->bundle_name = args->apps[0].app_name;
+  args->tag_string = tag;
   args->attributes = attributes;
 
   return ErrorCode::kSuccess;
@@ -562,12 +563,15 @@ absl::optional<tagging::TagArgs> ParseTagBuffer(
 
   const std::string tag_string = ReadTag(tag_buffer.begin(), tag_buffer.end());
   if (tag_string.empty()) {
+    LOG(ERROR) << __func__ << ": Tag not found in file.";
     return {};
   }
 
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
   if (error != tagging::ErrorCode::kSuccess) {
+    LOG(ERROR) << __func__ << ": Invalid tag string: " << tag_string << ": "
+               << error;
     return {};
   }
   return tag_args;
@@ -851,15 +855,17 @@ absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {
   return ParseTagBuffer(ReadFileTail(filename));
 }
 
-bool MsiWriteTag(const base::FilePath& in_file,
+bool MsiWriteTag(const base::FilePath& file,
                  const std::string& tag_string,
-                 const base::FilePath& out_file) {
+                 base::FilePath out_file) {
   if (tag_string.empty()) {
+    LOG(ERROR) << __func__ << ": empty tag string.";
     return false;
   }
 
   // Check if the file is already tagged.
-  if (MsiReadTag(in_file)) {
+  if (MsiReadTag(file)) {
+    LOG(ERROR) << __func__ << ": file already tagged: " << file;
     return false;
   }
 
@@ -867,10 +873,14 @@ bool MsiWriteTag(const base::FilePath& in_file,
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
   if (error != tagging::ErrorCode::kSuccess) {
+    LOG(ERROR) << __func__ << ": Invalid tag string: " << tag_string << ": "
+               << error;
     return false;
   }
 
-  if (!base::CopyFile(in_file, out_file)) {
+  if (out_file.empty()) {
+    out_file = file;
+  } else if (!base::CopyFile(file, out_file)) {
     return false;
   }
   base::File out(out_file, base::File::FLAG_OPEN | base::File::FLAG_APPEND);

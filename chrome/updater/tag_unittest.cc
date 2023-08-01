@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -1363,15 +1364,26 @@ TEST_F(MsiTagTest, MsiWriteTag) {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     base::FilePath out_file;
     ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
+    const base::FilePath in_out_file = out_file.AddExtensionASCII(".msi");
+    const base::FilePath msi_file_path =
+        GetMsiFilePath(test_case.msi_file_name);
+    ASSERT_TRUE(base::CopyFile(msi_file_path, in_out_file));
 
-    ASSERT_EQ(tagging::MsiWriteTag(GetMsiFilePath(test_case.msi_file_name),
-                                   test_case.tag_string, out_file),
-              test_case.expected_success);
-    if (test_case.expected_success) {
-      tagging::TagArgs tag_args;
-      ASSERT_EQ(tagging::Parse(test_case.tag_string, {}, &tag_args),
-                tagging::ErrorCode::kSuccess);
-      test::ExpectTagArgsEqual(tagging::MsiReadTag(out_file).value(), tag_args);
+    for (const auto& [msi_file, out_msi_file] :
+         {std::make_pair(msi_file_path, out_file),
+          std::make_pair(in_out_file, base::FilePath())}) {
+      ASSERT_EQ(
+          tagging::MsiWriteTag(msi_file, test_case.tag_string, out_msi_file),
+          test_case.expected_success);
+      if (test_case.expected_success) {
+        tagging::TagArgs tag_args;
+        ASSERT_EQ(tagging::Parse(test_case.tag_string, {}, &tag_args),
+                  tagging::ErrorCode::kSuccess);
+        test::ExpectTagArgsEqual(
+            tagging::MsiReadTag(!out_msi_file.empty() ? out_msi_file : msi_file)
+                .value(),
+            tag_args);
+      }
     }
   }
 }

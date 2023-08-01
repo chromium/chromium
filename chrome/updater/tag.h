@@ -10,12 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class FilePath;
-}
 
 namespace updater {
 namespace tagging {
@@ -114,6 +111,9 @@ struct TagArgs {
 
   // List of apps to install.
   std::vector<AppArgs> apps;
+
+  // The original tag string.
+  std::string tag_string;
 
   // Vector of name/value attributes from the tag.
   std::vector<std::pair<std::string, std::string>> attributes;
@@ -286,10 +286,11 @@ bool ExeWriteTag(const base::FilePath& in_file,
 // Extracts a tag from the end of the MSI `filename`.
 absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename);
 
-// Tags `in_file` with `tag_string` and writes the result to `out_file`.
-bool MsiWriteTag(const base::FilePath& in_file,
+// Tags `file` with `tag_string` and writes the result to `file` by default, or
+// to `out_file` if `out_file` is provided.
+bool MsiWriteTag(const base::FilePath& file,
                  const std::string& tag_string,
-                 const base::FilePath& out_file);
+                 base::FilePath out_file = {});
 
 }  // namespace tagging
 }  // namespace updater
