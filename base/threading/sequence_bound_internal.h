@@ -67,9 +67,11 @@ struct CrossThreadTraits {
 template <typename T, typename CrossThreadTraits>
 class Storage {
  public:
-  using Ptr = T*;
+  using element_type = T;
 
-  Ptr get() const { return ptr_; }
+  bool is_null() const { return ptr_ == nullptr; }
+  auto GetPtrForBind() const { return CrossThreadTraits::Unretained(ptr_); }
+  auto GetRefForBind() const { return std::cref(*ptr_); }
 
   // Marked NO_SANITIZE because cfi doesn't like casting uninitialized memory to
   // `T*`. However, this is safe here because:
@@ -91,7 +93,7 @@ class Storage {
     // AlignedAlloc() requires alignment be a multiple of sizeof(void*).
     alloc_ = AlignedAlloc(
         sizeof(T), sizeof(void*) > alignof(T) ? sizeof(void*) : alignof(T));
-    ptr_ = reinterpret_cast<Ptr>(alloc_.get());
+    ptr_ = reinterpret_cast<T*>(alloc_.get());
 
     // Ensure that `ptr_` will be initialized.
     CrossThreadTraits::PostTask(
@@ -155,9 +157,11 @@ class Storage {
 template <typename T, typename CrossThreadTraits>
 struct Storage<std::unique_ptr<T>, CrossThreadTraits> {
  public:
-  using Ptr = T*;
+  using element_type = T;
 
-  Ptr get() const { return ptr_; }
+  bool is_null() const { return ptr_ == nullptr; }
+  auto GetPtrForBind() const { return CrossThreadTraits::Unretained(ptr_); }
+  auto GetRefForBind() const { return std::cref(*ptr_); }
 
   template <typename U>
   void Construct(SequencedTaskRunner& task_runner, std::unique_ptr<U> arg) {
