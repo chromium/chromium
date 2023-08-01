@@ -47,7 +47,7 @@ public class TabModelUtils {
      */
     public static boolean closeTabById(TabModel model, int tabId, boolean canUndo) {
         Tab tab = TabModelUtils.getTabById(model, tabId);
-        if (tab == null) return false;
+        if (tab == null || tab.isClosing()) return false;
 
         return model.closeTab(tab, true, false, canUndo);
     }
@@ -177,8 +177,6 @@ public class TabModelUtils {
      * @param tabId The ID of the Tab whose children should be returned.
      */
     public static List<Tab> getChildTabs(TabList model, int tabId) {
-        Tab tab = model.getTabAt(tabId);
-
         ArrayList<Tab> childTabs = new ArrayList<Tab>();
         for (int i = 0; i < model.getCount(); i++) {
             if (CriticalPersistedTabData.from(model.getTabAt(i)).getParentId() == tabId) {

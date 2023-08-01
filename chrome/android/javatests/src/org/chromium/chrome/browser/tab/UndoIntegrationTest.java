@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.ui.test.util.UiRestriction.RESTRICTION_TYPE_TABLET;
+
+import android.os.SystemClock;
 
 import androidx.test.filters.LargeTest;
 
@@ -22,6 +25,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -29,6 +34,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -111,5 +117,30 @@ public class UndoIntegrationTest {
             Assert.assertEquals(
                     "Model has more than the expected about:blank tab", 1, model.getCount());
         });
+    }
+
+    // Regression test for crbug/1465745.
+    @Test
+    @LargeTest
+    @Restriction(RESTRICTION_TYPE_TABLET)
+    public void testTabletCloseTabAndCommitDoesNotCrash() {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        sActivityTestRule.loadUrlInNewTab("about:blank");
+        TabStripUtils.settleDownCompositor(
+                TabStripUtils.getStripLayoutHelperManager(cta).getStripLayoutHelper(false));
+
+        TabModel model = cta.getTabModelSelector().getModel(/*isIncognito=*/false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            closeTabViaButton(cta, model.getTabAt(1).getId());
+            closeTabViaButton(cta, model.getTabAt(0).getId());
+
+            model.commitAllTabClosures();
+        });
+    }
+
+    private void closeTabViaButton(ChromeTabbedActivity cta, int tabId) {
+        final StripLayoutTab tab =
+                TabStripUtils.findStripLayoutTab(cta, /*isIncognito=*/false, tabId);
+        tab.getCloseButton().handleClick(SystemClock.uptimeMillis());
     }
 }

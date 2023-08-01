@@ -51,6 +51,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -92,7 +94,7 @@ import java.util.List;
         ChromeFeatureList.TAB_GROUPS_FOR_TABLETS,
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
-
+@LooperMode(Mode.LEGACY)
 public class StripLayoutHelperTest {
     // clang-format on
     @Rule
@@ -1833,7 +1835,7 @@ public class StripLayoutHelperTest {
 
         // Assert: Tab is closed and animations are still running.
         int expectedTabCount = 14;
-        assertEquals("Unexpected tabs count.", expectedTabCount,
+        assertEquals("Unexpected tabs count", expectedTabCount,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
         assertTrue("MultiStepAnimations should still be running.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());

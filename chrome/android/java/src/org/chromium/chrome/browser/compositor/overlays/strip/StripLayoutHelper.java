@@ -1634,12 +1634,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             if (tab.isDying()) tabsToRemove.add(tab);
         }
 
-        // 3. Pass the close notifications to the model.
-        for (StripLayoutTab tab : tabsToRemove) {
-            TabModelUtils.closeTabById(mModel, tab.getId(), true);
-        }
+        if (tabsToRemove.isEmpty()) return;
 
-        if (!tabsToRemove.isEmpty()) mUpdateHost.requestUpdate();
+        // 3. Pass the close notifications to the model if the tab isn't already closing.
+        //    Do this as a post task as if more tabs are added inside commit all tab closures that
+        //    is a concurrent modification exception.
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
+            for (StripLayoutTab tab : tabsToRemove) {
+                TabModelUtils.closeTabById(mModel, tab.getId(), true);
+            }
+
+            if (!tabsToRemove.isEmpty()) mUpdateHost.requestUpdate();
+        });
     }
 
     private void updateSpinners(long time) {
