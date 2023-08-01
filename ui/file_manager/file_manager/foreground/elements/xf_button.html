@@ -92,19 +92,31 @@
   #dismiss,
   #extra-button,
   #cancel,
+  #dismiss-jelly,
+  #extra-button-jelly,
+  #cancel-jelly,
   #icon {
     display: none;
   }
 
   :host([data-category='dismiss']) #dismiss,
+  :host([data-category='dismiss']) #dismiss-jelly,
   :host([data-category='extra-button']) #extra-button,
+  :host([data-category='extra-button']) #extra-button-jelly,
   :host([data-category='cancel']) #cancel,
+  :host([data-category='cancel']) #cancel-jelly,
   :host([data-category='collapse']) #icon,
   :host([data-category='expand']) #icon {
     display: inline-block;
   }
 </style>
-<cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
-<cr-button id='extra-button'></cr-button>
-<cr-button id='cancel'>$i18n{CANCEL_LABEL}</cr-button>
+<xf-jellybean>
+  <cr-button slot="old" id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
+  <cr-button slot="old" id='extra-button'></cr-button>
+  <cr-button slot="old" id='cancel'>$i18n{CANCEL_LABEL}</cr-button>
+
+  <cros-button slot="jelly" id='dismiss-jelly' button-style="floating" label="$i18n{DRIVE_WELCOME_DISMISS}"></cros-button>
+  <cros-button slot="jelly" id='extra-button-jelly' button-style="floating"></cros-button>
+  <cros-button slot="jelly" id='cancel-jelly' button-style="floating" label="$i18n{CANCEL_LABEL}"></cros-button>
+</xf-jellybean>
 <cr-icon-button id='icon'></cr-icon-button>

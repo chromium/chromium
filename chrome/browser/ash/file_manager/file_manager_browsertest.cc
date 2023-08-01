@@ -2400,6 +2400,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
         TestCase("trashPermanentlyDelete"),
         TestCase("trashRestoreFromToast"),
+        TestCase("trashRestoreFromToast").EnableCrosComponents(),
         TestCase("trashRestoreFromTrash"),
         TestCase("trashRestoreFromTrashShortcut"),
         TestCase("trashEmptyTrash")
@@ -2425,6 +2426,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashEnsureOldEntriesArePeriodicallyRemoved"),
         TestCase("trashDragDropOutOfTrashPerformsRestoration"),
         TestCase("trashRestorationDialogInProgressDoesntShowUndo"),
+        TestCase("trashRestorationDialogInProgressDoesntShowUndo")
+            .EnableCrosComponents(),
         TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot"),
         TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree"),
         TestCase("trashCantRestoreWhenParentDoesntExist"),
