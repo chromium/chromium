@@ -616,7 +616,7 @@ bool PrintJob::PostTask(const base::Location& from_here,
 void PrintJob::HoldUntilStopIsCalled() {
 }
 
-void PrintJob::set_job_pending(bool pending) {
+void PrintJob::set_job_pending_for_testing(bool pending) {
   is_job_pending_ = pending;
 }
 

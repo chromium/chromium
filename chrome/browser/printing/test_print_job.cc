@@ -36,15 +36,15 @@ void TestPrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
 }
 
 void TestPrintJob::StartPrinting() {
-  set_job_pending(true);
+  set_job_pending_for_testing(true);
 }
 
 void TestPrintJob::Stop() {
-  set_job_pending(false);
+  set_job_pending_for_testing(false);
 }
 
 void TestPrintJob::Cancel() {
-  set_job_pending(false);
+  set_job_pending_for_testing(false);
 }
 
 void TestPrintJob::OnFailed() {}
@@ -85,7 +85,7 @@ void TestPrintJob::StartPdfToTextConversion(
 #endif  // BUILDFLAG(IS_WIN)
 
 TestPrintJob::~TestPrintJob() {
-  set_job_pending(false);
+  set_job_pending_for_testing(false);
 }
 
 }  // namespace printing

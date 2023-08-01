@@ -176,8 +176,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // testing contexts.
   PrintJob();
 
-  // The functions below are used for tests only.
-  void set_job_pending(bool pending);
+  void set_job_pending_for_testing(bool pending);
 
   // Updates `document_` to a new instance. Protected so that tests can access
   // it.
