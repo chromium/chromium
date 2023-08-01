@@ -45,6 +45,7 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -4089,7 +4090,7 @@ class ContinuousOverviewAnimationTest
 
 // Tests that continuous scrolls slowly shrink active windows and increase the
 // opacity of minimized windows, regardless of the state of `NaturalScroll`.
-TEST_P(ContinuousOverviewAnimationTest, PositionWindows) {
+TEST_P(ContinuousOverviewAnimationTest, WindowSizesAndOpacities) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window3(CreateTestWindow());
@@ -4154,6 +4155,73 @@ TEST_P(ContinuousOverviewAnimationTest, PositionWindows) {
                       ->opacity();
   EXPECT_NE(opacity, 1.f);
   EXPECT_NE(opacity, 0.f);
+}
+
+// Test that the rounded corners and shadows are shown at the correct times
+// throughout a continuous scroll.
+TEST_P(ContinuousOverviewAnimationTest, WindowCornerRadiiAndShadows) {
+  std::unique_ptr<aura::Window> active_window(CreateTestWindow());
+  std::unique_ptr<aura::Window> minimized_window(CreateTestWindow());
+  WindowState::Get(minimized_window.get())->Minimize();
+
+  // Swipe up a little bit and keep the fingers rested on the trackpad so
+  // that the window placements are paused.
+  const float short_scroll = 50.f;
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* active_item = GetOverviewItemForWindow(active_window.get());
+  OverviewItem* minimized_item =
+      GetOverviewItemForWindow(minimized_window.get());
+
+  // If a window is minimized, it should immediately show rounded corners.
+  // Otherwise, retain sharp corners until the enter animation ends.
+  EXPECT_FALSE(HasRoundedCorner(active_item));
+  EXPECT_TRUE(HasRoundedCorner(minimized_item));
+
+  // If a window is minimized, it should hide its shadows until the enter
+  // animation ends. Otherwise, retain its shadow the entire time.
+  EXPECT_FALSE(GetShadowBounds(active_item).IsEmpty());
+  EXPECT_TRUE(GetShadowBounds(minimized_item).IsEmpty());
+
+  // Reset.
+  ToggleOverview();
+  ASSERT_FALSE(InOverviewSession());
+
+  // Give us some time to check the entry animation since we will be triggering
+  // it by scrolling up and then lifting the fingers off of the trackpad.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Scroll up more than 50% of the threshold then let go of the trackpad.
+  const float medium_scroll =
+      (WmGestureHandler::kVerticalThresholdDp / 2.f) + 1.f;
+  ThreeFingerScroll(0, medium_scroll, /*complete_scroll=*/true);
+
+  // Get the overview items again since this is a new overview session.
+  active_item = GetOverviewItemForWindow(active_window.get());
+  minimized_item = GetOverviewItemForWindow(minimized_window.get());
+
+  // During the entry animation, the non-minimized windows do not show their
+  // rounded corners or shadows until the animation is complete. Minimized
+  // windows always have rounded corners and immediately show their shadows.
+  // TODO(b/293923755): Both minimized and non-minimized windows should show
+  // their shadow after the animation is complete.
+  EXPECT_FALSE(HasRoundedCorner(active_item));
+  EXPECT_TRUE(GetShadowBounds(active_item).IsEmpty());
+  EXPECT_TRUE(HasRoundedCorner(minimized_item));
+  EXPECT_FALSE(GetShadowBounds(minimized_item).IsEmpty());
+
+  // Ensure overview has been entered completely.
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
+  ASSERT_TRUE(InOverviewSession());
+
+  // All items should have rounded corners and shadows.
+  EXPECT_TRUE(HasRoundedCorner(active_item));
+  EXPECT_TRUE(HasRoundedCorner(minimized_item));
+  EXPECT_FALSE(GetShadowBounds(active_item).IsEmpty());
+  EXPECT_FALSE(GetShadowBounds(minimized_item).IsEmpty());
 }
 
 // Tests that scrolls enter/exit overview mode as expected, regardless of the

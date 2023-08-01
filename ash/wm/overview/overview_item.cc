@@ -797,7 +797,8 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
       features::IsContinuousOverviewScrollAnimationEnabled() &&
       Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
   bool show_rounded_corners_for_start_animation = false;
-  if (features::IsContinuousOverviewScrollAnimationEnabled()) {
+  if (features::IsContinuousOverviewScrollAnimationEnabled() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     show_rounded_corners_for_start_animation =
         transform_window_.IsMinimized() || !continuous_scroll_in_progress;
   } else {
@@ -817,18 +818,25 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   // In addition, the shadow should be hidden if
   // 1) this overview item is the drop target window or
   // 2) this overview item is in animation.
-  // 3) this overview item is minimized and we are in a continuous scroll.
-  const bool continuous_scroll_and_show_shadow =
-      !continuous_scroll_in_progress ||
-      (continuous_scroll_in_progress && !transform_window_.IsMinimized());
+  // If a continuous scroll is in progress, minimized windows have rounded
+  // corners but no shadows.
+  bool should_show_shadow_for_rounded_corners = false;
+  if (features::IsContinuousOverviewScrollAnimationEnabled()) {
+    should_show_shadow_for_rounded_corners =
+        !continuous_scroll_in_progress ||
+        (continuous_scroll_in_progress && !transform_window_.IsMinimized());
+  } else {
+    should_show_shadow_for_rounded_corners = should_show_rounded_corners;
+  }
+
   const bool should_show_shadow =
-      should_show_rounded_corners &&
+      should_show_shadow_for_rounded_corners &&
       !overview_grid_->IsDropTargetWindow(GetWindow()) &&
       !transform_window_.GetOverviewWindow()
            ->layer()
            ->GetAnimator()
-           ->is_animating() &&
-      continuous_scroll_and_show_shadow;
+           ->is_animating();
+
   if (should_show_shadow) {
     // The shadow should always match the size of the item minus the border
     // instead of the transformed window or preview view, since for the window
