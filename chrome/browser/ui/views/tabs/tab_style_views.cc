@@ -1090,9 +1090,6 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
                      TabStyle::RenderUnits::kPixels) const override;
   void PaintBackgroundHover(gfx::Canvas* canvas, float scale) const override;
   SkColor GetTabSeparatorColor() const override;
-  bool ShouldPaintTabBackgroundColor(
-      TabStyle::TabSelectionState selection_state,
-      bool has_custom_background) const override;
 
  protected:
   float GetSeparatorOpacity(bool for_layout, bool leading) const override;
@@ -1226,15 +1223,6 @@ SkColor ChromeRefresh2023TabStyleViews::GetTabSeparatorColor() const {
   return cp->GetColor(tab()->GetWidget()->ShouldPaintAsActive()
                           ? kColorTabDividerFrameActive
                           : kColorTabDividerFrameInactive);
-}
-
-bool ChromeRefresh2023TabStyleViews::ShouldPaintTabBackgroundColor(
-    TabStyle::TabSelectionState selection_state,
-    bool has_custom_background) const {
-  return (selection_state == TabStyle::TabSelectionState::kActive ||
-          selection_state == TabStyle::TabSelectionState::kSelected) &&
-         GM2TabStyleViews::ShouldPaintTabBackgroundColor(selection_state,
-                                                         has_custom_background);
 }
 
 float ChromeRefresh2023TabStyleViews::GetSeparatorOpacity(bool for_layout,
