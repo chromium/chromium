@@ -4129,6 +4129,8 @@ static_library("test_support") {
     "frame_sink/test/test_layer_tree_frame_sink.h",
     "frame_throttler/mock_frame_throttling_observer.cc",
     "frame_throttler/mock_frame_throttling_observer.h",
+    "game_dashboard/game_dashboard_context_test_api.cc",
+    "game_dashboard/game_dashboard_context_test_api.h",
     "game_dashboard/test_game_dashboard_delegate.cc",
     "game_dashboard/test_game_dashboard_delegate.h",
     "glanceables/tasks/fake_glanceables_tasks_client.cc",

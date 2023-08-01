@@ -28,7 +28,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
@@ -59,7 +58,6 @@ std::unique_ptr<FeatureTile> CreateTile(base::RepeatingClosure callback,
   auto tile =
       std::make_unique<FeatureTile>(std::move(callback), is_togglable, type);
   tile->SetID(id);
-  tile->SetVisible(true);
   tile->SetVectorIcon(icon);
   tile->SetLabel(text);
   tile->SetTooltipText(text);
@@ -192,7 +190,7 @@ class GameDashboardMainMenuView::FeatureDetailsRow : public views::Button {
 
     // Set up highlight and focus ring for the whole row.
     StyleUtil::SetUpInkDropForButton(
-        /*host=*/this, gfx::Insets(), /*highlight_on_hover=*/true,
+        /*button=*/this, gfx::Insets(), /*highlight_on_hover=*/true,
         /*highlight_on_focus=*/true, /*background_color=*/
         GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
 
@@ -336,7 +334,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
 
   if (base::FeatureList::IsEnabled(
           features::kFeatureManagementGameDashboardRecordGame)) {
-    container->AddChildView(CreateTile(
+    record_game_tile_ = container->AddChildView(CreateTile(
         base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
                             base::Unretained(this)),
         /*is_togglable=*/false, FeatureTile::TileType::kCompact,

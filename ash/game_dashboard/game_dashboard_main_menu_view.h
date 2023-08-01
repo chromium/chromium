@@ -5,6 +5,7 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -18,7 +19,8 @@ class Switch;
 
 // GameDashboardMainMenuView is the expanded menu view attached to the game
 // dashboard button.
-class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
+class ASH_EXPORT GameDashboardMainMenuView
+    : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(GameDashboardMainMenuView);
 
@@ -32,6 +34,8 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   ~GameDashboardMainMenuView() override;
 
  private:
+  friend class GameDashboardContextTestApi;
+
   class FeatureDetailsRow;
 
   // Callbacks for the tiles and buttons in the main menu view.
@@ -89,10 +93,25 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 
+  // Shortcut Tiles:
+  // Toolbar button to toggle the `GameDashboardToolbarView`.
   raw_ptr<FeatureTile> toolbar_tile_ = nullptr;
+
+  // Game controls button to toggle the Game Controls UI visibility.
   raw_ptr<FeatureTile> game_controls_tile_ = nullptr;
+
+  // Record game button to start recording the game window. This will open the
+  // screen capture tool, allowing the user to select recording options.
+  raw_ptr<FeatureTile> record_game_tile_ = nullptr;
+
+  // Game Controls details:
+  // Feature row to configure Game Controls.
   raw_ptr<FeatureDetailsRow> game_controls_details_ = nullptr;
+
+  // Setup button to configure Game Controls for the current game window.
   raw_ptr<PillButton> game_controls_setup_button_ = nullptr;
+
+  // Hint button to toggle the Game Controls hint UI.
   raw_ptr<Switch> game_controls_hint_switch_ = nullptr;
 };
 

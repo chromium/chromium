@@ -5,7 +5,9 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_TOOLBAR_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_TOOLBAR_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
@@ -16,8 +18,8 @@ class IconButton;
 // GameDashboardToolbarView is the movable toolbar that's attached to the game
 // window. It contains various quick action tiles for users to access without
 // having to open the entire main menu view.
-class GameDashboardToolbarView : public views::BoxLayoutView,
-                                 public aura::WindowObserver {
+class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
+                                            public aura::WindowObserver {
  public:
   METADATA_HEADER(GameDashboardToolbarView);
 
@@ -27,6 +29,8 @@ class GameDashboardToolbarView : public views::BoxLayoutView,
   ~GameDashboardToolbarView() override;
 
  private:
+  friend class GameDashboardContextTestApi;
+
   // Used for testing. Starts at 1 because view IDs should not be 0.
   enum class ToolbarViewId : int32_t {
     kGamepadButton = 1,
@@ -34,8 +38,6 @@ class GameDashboardToolbarView : public views::BoxLayoutView,
     kScreenRecordButton = 3,
     kScreenshotButton = 4,
   };
-
-  friend class GameDashboardContextTest;
 
   // Callbacks for the tiles and buttons in the toolbar view.
   // Expands or collapses the toolbar by iterating through the toolbar's
@@ -61,10 +63,14 @@ class GameDashboardToolbarView : public views::BoxLayoutView,
 
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
-  raw_ptr<IconButton, ExperimentalAsh> gamepad_button_;
+  raw_ptr<IconButton, ExperimentalAsh> gamepad_button_ = nullptr;
 
   // Game Controls toggle button for enabling or disabling the feature.
-  raw_ptr<IconButton, ExperimentalAsh> game_controls_button_;
+  raw_ptr<IconButton, ExperimentalAsh> game_controls_button_ = nullptr;
+
+  // Record game button to start recording the game window, skipping the
+  // countdown timer and preset screen capture options.
+  raw_ptr<IconButton, ExperimentalAsh> record_game_button_ = nullptr;
 
   // The current state indicating if the toolbar view is expanded or collapsed.
   bool is_expanded_ = true;

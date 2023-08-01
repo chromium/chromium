@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "ash/game_dashboard/game_dashboard_context.h"
+
+#include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
-#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
@@ -27,15 +28,12 @@
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
-#include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 
@@ -50,45 +48,37 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   void TearDown() override {
     game_window_.reset();
+    test_api_.reset();
     GameDashboardTestBase::TearDown();
   }
 
-  GameDashboardWidget* GetMainMenuButtonWidget() {
-    return game_context_->main_menu_button_widget_.get();
-  }
-
-  views::Widget* GetMainMenuDialogWidget() {
-    return game_context_->main_menu_widget_.get();
-  }
-
-  GameDashboardWidget* GetToolbarWidget() {
-    return game_context_->toolbar_widget_.get();
-  }
-
-  views::View* GetMainMenuViewById(int tile_view_id) {
-    CHECK(GetMainMenuDialogWidget())
-        << "The main menu must be opened first before trying to retrieve a "
-           "main menu View.";
-    return GetMainMenuDialogWidget()->GetContentsView()->GetViewByID(
-        tile_view_id);
+  int GetToolbarHeight() {
+    CHECK(test_api_->GetToolbarWidget())
+        << "The toolbar must be opened first before trying to retrieve its "
+           "height.";
+    return test_api_->GetToolbarWidget()->GetWindowBoundsInScreen().height();
   }
 
   // If `is_arc_window` is true, this function creates the window as an ARC
   // game window. Otherwise, it creates the window as a GeForceNow window.
   void CreateGameWindow(bool is_arc_window) {
     ASSERT_FALSE(game_window_);
+    ASSERT_FALSE(test_api_);
     game_window_ =
         CreateAppWindow((is_arc_window ? TestGameDashboardDelegate::kGameAppId
                                        : extension_misc::kGeForceNowAppId),
                         (is_arc_window ? AppType::ARC_APP : AppType::NON_APP),
                         gfx::Rect(0, 0, 400, 200));
-    game_context_ = GameDashboardController::Get()->GetGameDashboardContext(
+    auto* context = GameDashboardController::Get()->GetGameDashboardContext(
         game_window_.get());
-    DCHECK(game_context_);
+    ASSERT_TRUE(context);
+    test_api_ = std::make_unique<GameDashboardContextTestApi>(
+        context, GetEventGenerator());
+    ASSERT_TRUE(test_api_);
   }
 
-  // Opens the menu and checks Game Controls UI states. Then closes the menu in
-  // the end.
+  // Opens the main menu and toolbar, and checks Game Controls UI states. At the
+  // end of the test, closes the main menu and toolbar.
   // `tile_states` is about feature tile states, {expect_exists, expect_enabled,
   // expect_toggled}.
   // `details_row_states` is about Game Controls details row, {expect_exist,
@@ -99,102 +89,61 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   void OpenMenuCheckGameControlsUIState(std::array<bool, 3> tile_states,
                                         std::array<bool, 2> details_row_states,
                                         std::array<bool, 3> hint_states,
-                                        bool setup_exist) {
-    auto* menu_button = GetMainMenuButtonWidget()->GetContentsView();
-    // Opens the main menu.
-    LeftClickOn(menu_button);
+                                        bool setup_exists) {
+    test_api_->OpenTheMainMenu();
 
-    auto* tile = static_cast<FeatureTile*>(
-        GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+    auto* tile = test_api_->GetMainMenuGameControlsTile();
     if (tile_states[0]) {
-      EXPECT_TRUE(tile);
+      ASSERT_TRUE(tile);
       EXPECT_EQ(tile_states[1], tile->GetEnabled());
       EXPECT_EQ(tile_states[2], tile->IsToggled());
     } else {
       EXPECT_FALSE(tile);
     }
 
-    auto* details_row = GetMainMenuViewById(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
+    auto* details_row = test_api_->GetMainMenuGameControlsDetailsButton();
     if (details_row_states[0]) {
-      EXPECT_TRUE(details_row);
+      ASSERT_TRUE(details_row);
       EXPECT_EQ(details_row_states[1], details_row->GetEnabled());
     } else {
       EXPECT_FALSE(details_row);
     }
 
-    auto* switch_button = static_cast<Switch*>(
-        GetMainMenuViewById(VIEW_ID_GD_CONTROLS_HINT_SWITCH));
+    auto* switch_button = test_api_->GetMainMenuGameControlsHintSwitch();
     if (hint_states[0]) {
-      EXPECT_TRUE(switch_button);
+      ASSERT_TRUE(switch_button);
       EXPECT_EQ(hint_states[1], switch_button->GetEnabled());
       EXPECT_EQ(hint_states[2], switch_button->GetIsOn());
     } else {
       EXPECT_FALSE(switch_button);
     }
 
-    auto* setup_button = static_cast<PillButton*>(
-        GetMainMenuViewById(VIEW_ID_GD_CONTROLS_SETUP_BUTTON));
-    if (setup_exist) {
+    auto* setup_button = test_api_->GetMainMenuGameControlsSetupButton();
+    if (setup_exists) {
       EXPECT_TRUE(setup_button);
     } else {
       EXPECT_FALSE(setup_button);
     }
 
-    // Open toolbar and check the button state on toolbar.
-    LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+    // Open toolbar and check the toolbar's game controls button state.
+    test_api_->OpenTheToolbar();
     // The button state has the same state as the feature tile on the main menu.
-    auto* toolbar_button = GetToolbarGameControlsButton();
+    auto* game_controls_button = test_api_->GetToolbarGameControlsButton();
     if (tile_states[0]) {
-      EXPECT_TRUE(toolbar_button);
-      EXPECT_EQ(tile_states[1], toolbar_button->GetEnabled());
-      EXPECT_EQ(tile_states[2], toolbar_button->toggled());
+      ASSERT_TRUE(game_controls_button);
+      EXPECT_EQ(tile_states[1], game_controls_button->GetEnabled());
+      EXPECT_EQ(tile_states[2], game_controls_button->toggled());
     } else {
-      EXPECT_FALSE(toolbar_button);
+      EXPECT_FALSE(game_controls_button);
     }
-    // Close toolbar.
-    LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
 
-    // Closes the main menu.
-    LeftClickOn(menu_button);
-  }
-
-  IconButton* GetToolbarGameControlsButton() {
-    return GetToolbarViewById(base::to_underlying(
-        GameDashboardToolbarView::ToolbarViewId::kGameControlsButton));
-  }
-
-  IconButton* GetToolbarScreenRecordButton() {
-    return GetToolbarViewById(base::to_underlying(
-        GameDashboardToolbarView::ToolbarViewId::kScreenRecordButton));
-  }
-
-  IconButton* GetToolbarScreenshotButton() {
-    return GetToolbarViewById(base::to_underlying(
-        GameDashboardToolbarView::ToolbarViewId::kScreenshotButton));
-  }
-
-  IconButton* GetToolbarGamepadButton() {
-    return GetToolbarViewById(base::to_underlying(
-        GameDashboardToolbarView::ToolbarViewId::kGamepadButton));
-  }
-
-  int GetToolbarHeight() {
-    CHECK(GetToolbarWidget()) << "The toolbar must be opened first before "
-                                 "trying to retrieve its height.";
-    return GetToolbarWidget()->GetContentsView()->GetPreferredSize().height();
+    test_api_->CloseTheToolbar();
+    test_api_->CloseTheMainMenu();
   }
 
  protected:
   std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<GameDashboardContext, ExperimentalAsh> game_context_;
-
- private:
-  IconButton* GetToolbarViewById(int button_id) {
-    CHECK(GetToolbarWidget()) << "The toolbar must be opened first before "
-                                 "trying to retrieve an button from it.";
-    return static_cast<IconButton*>(
-        GetToolbarWidget()->GetContentsView()->GetViewByID(button_id));
-  }
+  std::unique_ptr<GameDashboardContextTestApi> test_api_;
 };
 
 // Verifies Game Controls tile state.
@@ -209,8 +158,9 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   game_window_->SetProperty(kArcGameControlsFlagsKey,
                             ArcGameControlsFlag::kKnown);
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/{/*expect_exists=*/false, /*expect_enabled=*/false,
-                       /*expect_toggled=*/false},
+      /*tile_states=*/
+      {/*expect_exists=*/false, /*expect_enabled=*/false,
+       /*expect_toggled=*/false},
       /*details_row_states=*/
       {/*expect_exists=*/false, /*expect_enabled=*/false},
       /*hint_states=*/
@@ -223,8 +173,9 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                        ArcGameControlsFlag::kAvailable));
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
-                       /*expect_toggled=*/false},
+      /*tile_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/true,
+       /*expect_toggled=*/false},
       /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false},
       /*hint_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
@@ -238,12 +189,13 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
           ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
           ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled));
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false,
-                       /*expect_toggled=*/false},
+      /*tile_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/false,
+       /*expect_toggled=*/false},
       /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*hint_states=*/
       {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
-      /*setup_states=*/true);
+      /*setup_exists=*/true);
 
   // Game controls is available, not empty and enabled.
   game_window_->SetProperty(
@@ -252,17 +204,19 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
                                        ArcGameControlsFlag::kAvailable |
                                        ArcGameControlsFlag::kEnabled));
   OpenMenuCheckGameControlsUIState(
-      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
-                       /*expect_toggled=*/true},
+      /*tile_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/true,
+       /*expect_toggled=*/true},
       /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*hint_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
-      /*setup_states=*/false);
+      /*setup_exists=*/false);
 }
 
 // Verifies Game Controls button logics.
 TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   CreateGameWindow(/*is_arc_window=*/true);
+
   // Game controls is available, not empty, enabled and hint on.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
@@ -273,45 +227,36 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
       game_window_->GetProperty(kArcGameControlsFlagsKey),
       ArcGameControlsFlag::kMenu));
 
-  // Open the main menu and disable Game Controls.
-  auto* menu_button = GetMainMenuButtonWidget()->GetContentsView();
-  LeftClickOn(menu_button);
+  test_api_->OpenTheMainMenu();
+  // Disable Game Controls.
   EXPECT_TRUE(game_dashboard_utils::IsFlagSet(
       game_window_->GetProperty(kArcGameControlsFlagsKey),
       ArcGameControlsFlag::kMenu));
+  test_api_->OpenTheToolbar();
 
-  // Open the quick toolbar.
-  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-  auto* toolbar_button = GetToolbarGameControlsButton();
-
-  auto* tile =
-      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-  auto* detail_row = GetMainMenuViewById(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
-  auto* switch_button = static_cast<Switch*>(
-      GetMainMenuViewById(VIEW_ID_GD_CONTROLS_HINT_SWITCH));
+  auto* detail_row = test_api_->GetMainMenuGameControlsDetailsButton();
+  auto* switch_button = test_api_->GetMainMenuGameControlsHintSwitch();
+  auto* game_controls_button = test_api_->GetToolbarGameControlsButton();
   EXPECT_TRUE(detail_row->GetEnabled());
   EXPECT_TRUE(switch_button->GetEnabled());
   EXPECT_TRUE(switch_button->GetIsOn());
-  EXPECT_TRUE(toolbar_button->GetEnabled());
-  EXPECT_TRUE(toolbar_button->toggled());
+  EXPECT_TRUE(game_controls_button->GetEnabled());
+  EXPECT_TRUE(game_controls_button->toggled());
   // Disable Game Controls.
-  LeftClickOn(tile);
+  LeftClickOn(test_api_->GetMainMenuGameControlsTile());
   EXPECT_FALSE(detail_row->GetEnabled());
   EXPECT_FALSE(switch_button->GetEnabled());
   EXPECT_FALSE(switch_button->GetIsOn());
   // Toolbar button should also get updated.
-  EXPECT_TRUE(toolbar_button->GetEnabled());
-  EXPECT_FALSE(toolbar_button->toggled());
+  EXPECT_TRUE(game_controls_button->GetEnabled());
+  EXPECT_FALSE(game_controls_button->toggled());
 
   EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
       game_window_->GetProperty(kArcGameControlsFlagsKey),
       ArcGameControlsFlag::kEnabled));
 
-  // Close the quick toolbar.
-  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-
-  // Close the main menu.
-  LeftClickOn(menu_button);
+  test_api_->CloseTheToolbar();
+  test_api_->CloseTheMainMenu();
   EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
       game_window_->GetProperty(kArcGameControlsFlagsKey),
       ArcGameControlsFlag::kMenu));
@@ -325,29 +270,25 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
       /*setup_exists=*/false);
 
-  // Open the main menu, enable Game Controls and switch hint button off.
-  LeftClickOn(menu_button);
-  tile =
-      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-  detail_row = GetMainMenuViewById(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
-  switch_button = static_cast<Switch*>(
-      GetMainMenuViewById(VIEW_ID_GD_CONTROLS_HINT_SWITCH));
-  // Open the quick toolbar.
-  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-  toolbar_button = GetToolbarGameControlsButton();
+  // Open the main menu and toolbar. Enable Game Controls and switch hint button
+  // off.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  detail_row = test_api_->GetMainMenuGameControlsDetailsButton();
+  switch_button = test_api_->GetMainMenuGameControlsHintSwitch();
+  game_controls_button = test_api_->GetToolbarGameControlsButton();
   // Enable Game Controls.
-  LeftClickOn(tile);
+  LeftClickOn(test_api_->GetMainMenuGameControlsTile());
   EXPECT_TRUE(detail_row->GetEnabled());
   EXPECT_TRUE(switch_button->GetEnabled());
   EXPECT_TRUE(switch_button->GetIsOn());
-  EXPECT_TRUE(toolbar_button->GetEnabled());
-  EXPECT_TRUE(toolbar_button->toggled());
+  EXPECT_TRUE(game_controls_button->GetEnabled());
+  EXPECT_TRUE(game_controls_button->toggled());
   // Switch hint off.
   LeftClickOn(switch_button);
   EXPECT_FALSE(switch_button->GetIsOn());
-  // Close the quick toolbar and main menu.
-  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-  LeftClickOn(menu_button);
+  test_api_->CloseTheToolbar();
+  test_api_->CloseTheMainMenu();
 
   // Open the main menu again to check if the states are preserved and close it.
   OpenMenuCheckGameControlsUIState(
@@ -390,8 +331,9 @@ TEST_P(GameTypeGameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
   const gfx::Point expected_button_center_point(
       game_window_->GetBoundsInScreen().top_center().x(),
       frame_header->GetHeaderHeight() / 2);
-  EXPECT_EQ(expected_button_center_point,
-            GetMainMenuButtonWidget()->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_EQ(expected_button_center_point, test_api_->GetMainMenuButtonWidget()
+                                              ->GetWindowBoundsInScreen()
+                                              .CenterPoint());
 }
 
 // Verifies the main menu button widget bounds are updated, relative to the
@@ -400,34 +342,32 @@ TEST_P(GameTypeGameDashboardContextTest,
        MainMenuButtonWidget_MoveWindowAndVerifyLocation) {
   const gfx::Vector2d move_vector = gfx::Vector2d(100, 200);
   const gfx::Rect expected_widget_location =
-      GetMainMenuButtonWidget()->GetWindowBoundsInScreen() + move_vector;
+      test_api_->GetMainMenuButtonWidget()->GetWindowBoundsInScreen() +
+      move_vector;
 
   game_window_->SetBoundsInScreen(
       game_window_->GetBoundsInScreen() + move_vector, GetPrimaryDisplay());
 
   EXPECT_EQ(expected_widget_location,
-            GetMainMenuButtonWidget()->GetWindowBoundsInScreen());
+            test_api_->GetMainMenuButtonWidget()->GetWindowBoundsInScreen());
 }
 
 // Verifies clicking the main menu button will open the main menu widget.
 TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
-  // Verifies the initial state.
-  EXPECT_FALSE(GetMainMenuDialogWidget());
+  // Verifies the main menu is closed.
+  EXPECT_FALSE(test_api_->GetMainMenuWidget());
 
   if (IsArcGame()) {
     // Main menu button is not enabled util the Game Controls state is known.
-    EXPECT_FALSE(GetMainMenuButtonWidget()->GetContentsView()->GetEnabled());
-    LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-    EXPECT_FALSE(GetMainMenuDialogWidget());
+    EXPECT_FALSE(test_api_->GetMainMenuButton()->GetEnabled());
+    LeftClickOn(test_api_->GetMainMenuButton());
+    EXPECT_FALSE(test_api_->GetMainMenuWidget());
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
 
-  // Opens main menu dialog.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-
-  // Verifies that the menu is visible.
-  EXPECT_TRUE(GetMainMenuDialogWidget());
+  // Open the main menu dialog and verify the main menu is open.
+  test_api_->OpenTheMainMenu();
 }
 
 // Verifies clicking the main menu button will close the main menu widget if
@@ -437,21 +377,16 @@ TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuButtonWidget) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
+  // Open the main menu widget and verify the main menu open.
+  test_api_->OpenTheMainMenu();
 
-  // Opens the main menu widget and Verifies the initial state.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  EXPECT_TRUE(GetMainMenuDialogWidget());
-
-  // Closes the main menu dialog.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-
-  // Verifies that the menu is no longer visible.
-  EXPECT_FALSE(GetMainMenuDialogWidget());
+  // Close the main menu dialog and verify the main menu is closed.
+  test_api_->CloseTheMainMenu();
 }
 
 // Verifies the main menu shows all items allowed.
 TEST_P(GameTypeGameDashboardContextTest,
-       MainMenuDialogWidget_AvailabelFeatures) {
+       MainMenuDialogWidget_AvailableFeatures) {
   if (IsArcGame()) {
     game_window_->SetProperty(
         kArcGameControlsFlagsKey,
@@ -459,24 +394,22 @@ TEST_P(GameTypeGameDashboardContextTest,
                                          ArcGameControlsFlag::kAvailable));
   }
 
-  // Open the main menu.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  ASSERT_TRUE(GetMainMenuDialogWidget());
+  test_api_->OpenTheMainMenu();
 
   // Verify whether each element available in the main menu is available as
   // expected.
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_FEEDBACK_BUTTON));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_HELP_BUTTON));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
+  EXPECT_TRUE(test_api_->GetMainMenuToolbarTile());
+  EXPECT_TRUE(test_api_->GetMainMenuRecordGameTile());
+  EXPECT_TRUE(test_api_->GetMainMenuScreenshotTile());
+  EXPECT_TRUE(test_api_->GetMainMenuFeedbackButton());
+  EXPECT_TRUE(test_api_->GetMainMenuHelpButton());
+  EXPECT_TRUE(test_api_->GetMainMenuSettingsButton());
   if (IsArcGame()) {
-    EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-    EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
+    EXPECT_TRUE(test_api_->GetMainMenuGameControlsTile());
+    EXPECT_TRUE(test_api_->GetMainMenuScreenSizeSettingsButton());
   } else {
-    EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-    EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
+    EXPECT_FALSE(test_api_->GetMainMenuGameControlsTile());
+    EXPECT_FALSE(test_api_->GetMainMenuScreenSizeSettingsButton());
   }
 }
 
@@ -492,13 +425,10 @@ TEST_P(GameTypeGameDashboardContextTest,
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
-
-  // Open the main menu.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  ASSERT_TRUE(GetMainMenuDialogWidget());
+  test_api_->OpenTheMainMenu();
 
   // Verify that the record game tile is unavailable in the main menu.
-  EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
+  EXPECT_FALSE(test_api_->GetMainMenuRecordGameTile());
 }
 
 // Verifies the main menu screenshot tile will take a screenshot of the game
@@ -508,10 +438,10 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromMainMenu) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
+  test_api_->OpenTheMainMenu();
+
   // Retrieve the screenshot button and verify the initial state.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  FeatureTile* screenshot_tile = static_cast<FeatureTile*>(
-      GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
+  auto* screenshot_tile = test_api_->GetMainMenuScreenshotTile();
   ASSERT_TRUE(screenshot_tile);
 
   LeftClickOn(screenshot_tile);
@@ -528,17 +458,18 @@ TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
+  test_api_->OpenTheMainMenu();
+
   // Retrieve the video record tile and verify the initial state.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  FeatureTile* record_game_tile = static_cast<FeatureTile*>(
-      GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
+  auto* record_game_tile = test_api_->GetMainMenuRecordGameTile();
   ASSERT_TRUE(record_game_tile);
 
   LeftClickOn(record_game_tile);
 
-  // Start video recording from `CaptureModeBarView`
+  // Start video recording from `CaptureModeBarView`.
   auto* recording_button = GetStartRecordingButton();
   ASSERT_TRUE(recording_button);
+
   LeftClickOn(recording_button);
   WaitForRecordingToStart();
   EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
@@ -558,34 +489,33 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
         static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                          ArcGameControlsFlag::kAvailable));
   }
+
+  test_api_->OpenTheMainMenu();
+
   // Retrieve the toolbar button and verify the toolbar widget is not available.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  FeatureTile* toolbar_tile =
-      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+  auto* toolbar_tile = test_api_->GetMainMenuToolbarTile();
   ASSERT_TRUE(toolbar_tile);
   EXPECT_FALSE(toolbar_tile->IsToggled());
-  EXPECT_FALSE(GetToolbarWidget());
 
-  LeftClickOn(toolbar_tile);
+  test_api_->OpenTheToolbar();
 
-  // Verify that the toolbar widget is now available and is toggled on.
-  EXPECT_TRUE(GetToolbarWidget());
-  EXPECT_TRUE(toolbar_tile->IsToggled());
+  // Verify that the toolbar widget is now available.
+  EXPECT_TRUE(test_api_->GetToolbarWidget());
 
   // Verify available feature buttons.
-  EXPECT_TRUE(GetToolbarGamepadButton());
-  EXPECT_TRUE(GetToolbarScreenRecordButton());
-  EXPECT_TRUE(GetToolbarScreenshotButton());
+  EXPECT_TRUE(test_api_->GetToolbarGamepadButton());
+  EXPECT_TRUE(test_api_->GetToolbarRecordGameButton());
+  EXPECT_TRUE(test_api_->GetToolbarScreenshotButton());
   if (IsArcGame()) {
-    EXPECT_TRUE(GetToolbarGameControlsButton());
+    EXPECT_TRUE(test_api_->GetToolbarGameControlsButton());
   } else {
-    EXPECT_FALSE(GetToolbarGameControlsButton());
+    EXPECT_FALSE(test_api_->GetToolbarGameControlsButton());
   }
 
-  LeftClickOn(toolbar_tile);
+  test_api_->CloseTheToolbar();
 
   // Verify that the toolbar widget is no longer available and is toggled off.
-  EXPECT_FALSE(GetToolbarWidget());
+  EXPECT_FALSE(test_api_->GetToolbarWidget());
   EXPECT_FALSE(toolbar_tile->IsToggled());
 }
 
@@ -596,14 +526,12 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromToolbar) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
-  // Retrieve the toolbar via the main menu.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  LeftClickOn(
-      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE)));
-  ASSERT_TRUE(GetToolbarWidget());
+  // Open the toolbar via the main menu.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
 
   // Click on the screenshot button within the toolbar.
-  IconButton* screenshot_button = GetToolbarScreenshotButton();
+  IconButton* screenshot_button = test_api_->GetToolbarScreenshotButton();
   ASSERT_TRUE(screenshot_button);
   LeftClickOn(screenshot_button);
 
@@ -620,16 +548,13 @@ TEST_P(GameTypeGameDashboardContextTest, CollapseAndExpandToolbarWidget) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
-  // Retrieve the toolbar via the main menu.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  LeftClickOn(
-      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE)));
-  ASSERT_TRUE(GetToolbarWidget());
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
   const int initial_height = GetToolbarHeight();
   EXPECT_NE(initial_height, 0);
 
   // Click on the gamepad button within the toolbar.
-  IconButton* gamepad_button = GetToolbarGamepadButton();
+  auto* gamepad_button = test_api_->GetToolbarGamepadButton();
   ASSERT_TRUE(gamepad_button);
   LeftClickOn(gamepad_button);
   int updated_height = GetToolbarHeight();
@@ -655,15 +580,11 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
 
-  // Retrieve the toolbar via the main menu.
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  LeftClickOn(
-      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE)));
-  ASSERT_TRUE(GetToolbarWidget());
-
-  const GameDashboardWidget* widgets[] = {GetMainMenuButtonWidget(),
-                                          GetToolbarWidget()};
+  const GameDashboardWidget* widgets[] = {test_api_->GetMainMenuButtonWidget(),
+                                          test_api_->GetToolbarWidget()};
 
   for (auto* widget : widgets) {
     auto color_provider_key = widget->GetColorProviderKey();

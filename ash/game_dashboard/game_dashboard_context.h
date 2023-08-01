@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_H_
 
 #include "ash/game_dashboard/game_dashboard_widget.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -15,6 +16,9 @@ class Window;
 }  // namespace aura
 
 namespace ash {
+
+class GameDashboardMainMenuView;
+class GameDashboardToolbarView;
 
 // This class manages Game Dashboard related UI for a given `aura::Window`, and
 // its instance is managed by the `GameDashboardController`.
@@ -52,10 +56,10 @@ class GameDashboardContext {
   bool IsToolbarVisible() const;
 
  private:
+  friend class GameDashboardContextTestApi;
+
   // Indicator for the 4 quadrants that the toolbar is able to be placed.
   enum ToolbarSnapLocation { kTopLeft, kTopRight, kBottomLeft, kBottomRight };
-
-  friend class GameDashboardContextTest;
 
   // Creates a main menu button widget and adds it as a sibling of the game
   // window.
@@ -86,6 +90,14 @@ class GameDashboardContext {
 
   // The indicator of the current corner that the toolbar is placed.
   ToolbarSnapLocation toolbar_snap_location_;
+
+  // The `GameDashboardMainMenuView` when the user presses the main menu button.
+  // Owned by the views hierarchy.
+  raw_ptr<GameDashboardMainMenuView, ExperimentalAsh> main_menu_view_ = nullptr;
+
+  // The `GameDashboardToolbarView` when the user makes the toolbar visible.
+  // Owned by the views hierarchy.
+  raw_ptr<GameDashboardToolbarView, ExperimentalAsh> toolbar_view_ = nullptr;
 
   base::WeakPtrFactory<GameDashboardContext> weak_ptr_factory_{this};
 };

@@ -108,7 +108,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
   MayAddGameControlsTile();
 
   // TODO(b/273641250): Filter out record game button based on device info.
-  AddChildView(CreateIconButton(
+  record_game_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnRecordButtonPressed,
                           base::Unretained(this)),
       &kGdRecordGameIcon,

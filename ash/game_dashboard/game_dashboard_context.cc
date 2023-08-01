@@ -81,21 +81,26 @@ void GameDashboardContext::SetMainMenuButtonEnabled(bool enable) {
 
 void GameDashboardContext::ToggleMainMenu() {
   if (!main_menu_widget_) {
-    auto menu_delegate = std::make_unique<GameDashboardMainMenuView>(this);
+    auto widget_delegate = std::make_unique<GameDashboardMainMenuView>(this);
+    DCHECK(!main_menu_view_);
+    main_menu_view_ = widget_delegate.get();
     main_menu_widget_ =
         base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
-            std::move(menu_delegate)));
+            std::move(widget_delegate)));
     main_menu_widget_->Show();
   } else {
+    main_menu_view_ = nullptr;
     main_menu_widget_.reset();
   }
 }
 
 bool GameDashboardContext::ToggleToolbar() {
   if (!toolbar_widget_) {
+    auto view = std::make_unique<GameDashboardToolbarView>(this);
+    DCHECK(!toolbar_view_);
+    toolbar_view_ = view.get();
     toolbar_widget_ = CreateTransientChildWidget(
-        game_window_, "GameDashboardToolbar",
-        std::make_unique<GameDashboardToolbarView>(this));
+        game_window_, "GameDashboardToolbar", std::move(view));
     DCHECK_EQ(game_window_,
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
     MaybeUpdateToolbarWidgetBounds();
@@ -103,6 +108,7 @@ bool GameDashboardContext::ToggleToolbar() {
     return true;
   }
 
+  toolbar_view_ = nullptr;
   toolbar_widget_.reset();
   return false;
 }
