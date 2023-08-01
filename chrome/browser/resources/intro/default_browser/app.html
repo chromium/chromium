@@ -1,1 +1,122 @@
-Under construction.
+<style include="tangible-sync-style-shared">
+  :host {
+    --cr-button-height: 36px;
+    --btn-container-height:
+        calc(2 * var(--btn-margin) + var(--cr-button-height));
+    --btn-margin: 24px;
+    /* TODO(crbug.com/1465822): Update illustration url. */
+    --illustration-image-url: url(images/product-logo.svg);
+    --illustration-margin-top: 50px;
+    --illustration-size: 90px;
+    --left-background-image-url: url(images/left_illustration.svg);
+    --right-background-image-url: url(images/right_illustration.svg);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --left-background-image-url: url(images/left_illustration_dark.svg);
+      --right-background-image-url: url(images/right_illustration_dark.svg);
+    }
+  }
+
+  @media screen and ((max-width: 780px) or (max-height: 600px)) {
+    :host {
+      --illustration-size: 60px;
+    }
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+  }
+
+  p {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .tangible-sync-style-left-banner {
+    content: var(--left-background-image-url);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: var(--right-background-image-url);
+  }
+
+  .tangible-sync-style-left-banner,
+  .tangible-sync-style-right-banner {
+    position: fixed;
+  }
+
+  #safeZone {
+    box-sizing: border-box;
+    display: flex;
+    height: calc(100% - var(--btn-container-height));
+    justify-content: center;
+    overflow-y: auto;
+    position: fixed;
+    width: 100vw;
+  }
+
+  #contentArea {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    text-align: center;
+  }
+
+  #illustration {
+    content: var(--illustration-image-url);
+    margin-top: var(--illustration-margin-top);
+    width: var(--illustration-size);
+  }
+
+  #buttonRow {
+    bottom: 0;
+    display: flex;
+    height: var(--btn-container-height);
+    justify-content: flex-end;
+    position: fixed;
+    width: 100vw;
+  }
+
+  #buttonContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 0 var(--btn-margin);
+  }
+
+  <if expr="is_win">
+  #buttonContainer {
+    flex-flow: row-reverse;
+  }
+  </if>
+
+  #buttonContainer > cr-button {
+    margin-top: var(--btn-margin);
+  }
+</style>
+
+<img class="tangible-sync-style-left-banner" alt="">
+<img class="tangible-sync-style-right-banner" alt="">
+
+<div id="safeZone" class="tangible-sync-style">
+  <div id="contentArea">
+    <img id="illustration" alt="">
+    <h1 class="title">$i18n{setAsDefaultHeader}</h1>
+    <p class="subtitle">$i18n{setAsDefaultSubHeader}</p>
+  </div>
+</div>
+
+<div id="buttonRow">
+  <div id="buttonContainer">
+    <cr-button id="setAsDefaultSkip" on-click="onSkipDefaultBrowserClick_">
+      $i18n{skip}
+    </cr-button>
+    <cr-button id="setAsDefaultConfirm" class="action-button"
+        on-click="onConfirmDefaultBrowserClick_">
+      $i18n{setAsDefaultConfirm}
+    </cr-button>
+  </div>
+</div>
