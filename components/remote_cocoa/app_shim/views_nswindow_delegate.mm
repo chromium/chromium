@@ -41,8 +41,6 @@
   absl::optional<bool> _resizingHorizontally;
 }
 
-@synthesize willCloseLater;
-
 - (instancetype)initWithBridgedNativeWidget:
     (remote_cocoa::NativeWidgetNSWindowBridge*)parent {
   DCHECK(parent);

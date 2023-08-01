@@ -230,21 +230,9 @@ NSComparisonResult SubviewSorter(__kindof NSView* lhs,
 // |child_windows| array ignoring the windows added by AppKit.
 NSUInteger CountBridgedWindows(NSArray* child_windows) {
   NSUInteger count = 0;
-
-  for (NSWindow* child in child_windows) {
-    ViewsNSWindowDelegate* viewsDelegate =
-        base::mac::ObjCCast<ViewsNSWindowDelegate>([child delegate]);
-
-    // The child may be in an intermediary state where it's been removed from
-    // Views but not from the childWindow list (see the description of
-    // -willCloseLater in ViewsNSWindowDelegate). Child windows in this state
-    // essentially do not exist, so we should not count them.
-    if ([viewsDelegate willCloseLater]) {
-      continue;
-    } else if (viewsDelegate != nil) {
+  for (NSWindow* child in child_windows)
+    if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]])
       ++count;
-    }
-  }
 
   return count;
 }
@@ -773,11 +761,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // DCHECK(![window_ attachedSheet]);
 
     [window_ orderOut:nil];
-
-    NativeWidgetMacNSWindow* parentWindow =
-        base::mac::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-    DCHECK(!window_visible_ ||
-           [parentWindow willRemoveChildOnActivation:window_]);
+    DCHECK(!window_visible_);
     return;
   } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
     [window_ miniaturize:nil];

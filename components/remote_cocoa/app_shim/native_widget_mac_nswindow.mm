@@ -10,7 +10,6 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
-#import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -56,9 +55,8 @@ void OrderChildWindow(NSWindow* child_window,
   // `ordered_children` sorts children windows back to front.
   NSArray<NSWindow*>* children = [[child_window parentWindow] childWindows];
   std::vector<std::pair<NSInteger, NSWindow*>> ordered_children;
-  for (NSWindow* child in children) {
+  for (NSWindow* child in children)
     ordered_children.emplace_back([child orderedIndex], child);
-  }
   std::sort(ordered_children.begin(), ordered_children.end(), std::greater<>());
 
   // If `other_window` is nullptr, place `child_window` in front of (or behind)
@@ -69,23 +67,20 @@ void OrderChildWindow(NSWindow* child_window,
                        : parent;
   }
 
-  if (child_window == other_window) {
+  if (child_window == other_window)
     return;
-  }
 
   const bool relative_to_parent = parent == other_window;
   DCHECK(ordering_mode != NSWindowBelow || !relative_to_parent)
       << "Placing a child window behind its parent is not supported.";
 
-  for (NSWindow* child in children) {
+  for (NSWindow* child in children)
     [parent removeChildWindow:child];
-  }
 
   // If `relative_to_parent` is true, `child_window` is the first child of its
   // parent.
-  if (relative_to_parent) {
+  if (relative_to_parent)
     [parent addChildWindow:child_window ordered:NSWindowAbove];
-  }
 
   // Re-parent children windows in the desired order.
   for (auto [ordered_index, child] : ordered_children) {
@@ -118,9 +113,7 @@ void OrderChildWindow(NSWindow* child_window,
 - (void)_regularMinimizeToDock;
 @end
 
-@interface NativeWidgetMacNSWindow () <NSKeyedArchiverDelegate> {
-  NSMutableArray<NSWindow*>* _childWindowsToRemove;
-}
+@interface NativeWidgetMacNSWindow () <NSKeyedArchiverDelegate>
 - (ViewsNSWindowDelegate*)viewsNSWindowDelegate;
 - (BOOL)hasViewsMenuActive;
 - (id<NSAccessibility>)rootAccessibilityObject;
@@ -128,10 +121,6 @@ void OrderChildWindow(NSWindow* child_window,
 // Private API on NSWindow, determines whether the title is drawn on the title
 // bar. The title is still visible in menus, Expose, etc.
 - (BOOL)_isTitleHidden;
-
-// Completes the processing of child windows whose removal was deferred while
-// we were fullscreen and not in the active space.
-- (void)processDeferredChildRemovals;
 @end
 
 // Use this category to implement mouseDown: on multiple frame view classes
@@ -250,19 +239,7 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 - (void)removeChildWindow:(NSWindow*)childWin {
-  if (![self isOnActiveSpace]) {
-    // We're not on the active space, so defer removal to avoid triggering a
-    // space change.
-    [self removeChildOnActivation:childWin];
-  } else {
-    [super removeChildWindow:childWin];
-  }
-
-  // If there's a windowRemoved handler, we'll call it even if we've deferred
-  // the actual NSWindow removal via -removeChildOnActivation:. As far as
-  // Chrome is concerned, the child window no longer exists (for example, it's
-  // no longer in self.ordered_children). The removeChildWindow: that finally
-  // removes the child will happen at some future date.
+  [super removeChildWindow:childWin];
   if (self.childWindowRemovedHandler) {
     self.childWindowRemovedHandler(childWin);
   }
@@ -574,18 +551,7 @@ void OrderChildWindow(NSWindow* child_window,
 
 - (void)orderOut:(id)sender {
   _miniaturizationInProgress = NO;
-
-  // If we're a child window and our parent is in fullscreen and it's not the
-  // active space, arrange for our removal after our parent becomes the
-  // active window to avoid triggering a space switch.
-  NativeWidgetMacNSWindow* parentWindow =
-      base::mac::ObjCCast<NativeWidgetMacNSWindow>([self parentWindow]);
-  if ([parentWindow isFullScreen] && ![parentWindow isOnActiveSpace]) {
-    [parentWindow removeChildOnActivation:self];
-  } else {
-    [self processDeferredChildRemovals];
-    [super orderOut:sender];
-  }
+  [super orderOut:sender];
 }
 
 // NSResponder implementation.
@@ -764,61 +730,6 @@ void OrderChildWindow(NSWindow* child_window,
   // from NSWindow's behavior can easily break VoiceOver integration.
   NSString* viewsValue = self.rootAccessibilityObject.accessibilityTitle;
   return viewsValue ? viewsValue : [super accessibilityTitle];
-}
-
-- (BOOL)isFullScreen {
-  return (self.styleMask & NSWindowStyleMaskFullScreen) ==
-         NSWindowStyleMaskFullScreen;
-}
-
-- (void)removeChildOnActivation:(NSWindow*)childWindow {
-  if (_childWindowsToRemove == nil) {
-    _childWindowsToRemove = [[NSMutableArray alloc] init];
-  }
-
-  // Ignore if a duplicate request.
-  if ([_childWindowsToRemove containsObject:childWindow]) {
-    return;
-  }
-
-  // Hide `childWindow` by making it transparent and schedule it for deferred
-  // removal.
-  childWindow.alphaValue = 0.0;
-  [_childWindowsToRemove addObject:childWindow];
-
-  // Make a note that its closing is deferred.
-  ViewsNSWindowDelegate* windowDelegate =
-      base::mac::ObjCCast<ViewsNSWindowDelegate>([childWindow delegate]);
-  [windowDelegate setWillCloseLater:YES];
-}
-
-- (BOOL)willRemoveChildOnActivation:(NSWindow*)aWindow {
-  return [_childWindowsToRemove containsObject:aWindow];
-}
-
-- (BOOL)hasDeferredChildWindowRemovalsForTesting {
-  return _childWindowsToRemove.count > 0;
-}
-
-- (void)processDeferredChildRemovals {
-  for (NSWindow* window in _childWindowsToRemove) {
-    [window orderOut:nil];
-  }
-  [_childWindowsToRemove removeAllObjects];
-}
-
-- (void)becomeMainWindow {
-  [super becomeMainWindow];
-
-  [self processDeferredChildRemovals];
-}
-
-- (void)toggleFullScreen:(id)sender {
-  [super toggleFullScreen:sender];
-
-  // We're either entering fullscreen or exiting - either way, process the
-  // deferred children.
-  [self processDeferredChildRemovals];
 }
 
 @end
