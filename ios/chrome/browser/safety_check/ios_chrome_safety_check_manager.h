@@ -66,6 +66,7 @@ class IOSChromeSafetyCheckManager
  public:
   explicit IOSChromeSafetyCheckManager(
       PrefService* pref_service,
+      PrefService* local_pref_service,
       scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
       const scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -118,8 +119,13 @@ class IOSChromeSafetyCheckManager
   void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
   void PasswordCheckStatusChangedForTesting(PasswordCheckState state);
   void InsecureCredentialsChangedForTesting();
+  void RestorePreviousSafetyCheckStateForTesting();
 
  private:
+  // Restores the Safety Check Manager with the previous check states, if any,
+  // from Prefs.
+  void RestorePreviousSafetyCheckState();
+
   // Starts the asynchronous Password check, and notifies any observers of the
   // change.
   void StartPasswordCheck();
@@ -286,6 +292,11 @@ class IOSChromeSafetyCheckManager
   // Weak pointer to the pref service, which checks the user's Enhanced Safe
   // Browsing state.
   raw_ptr<PrefService> pref_service_;
+
+  // Weak pointer to the local-state pref service, which stores information
+  // about the latest Safety Check run (e.g. the results of each check, the
+  // timestamp of the run, etc.)
+  raw_ptr<PrefService> local_pref_service_;
 
   // Registrar for pref changes notifications.
   PrefChangeRegistrar pref_change_registrar_;

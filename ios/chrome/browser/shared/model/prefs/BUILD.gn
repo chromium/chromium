@@ -74,6 +74,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",

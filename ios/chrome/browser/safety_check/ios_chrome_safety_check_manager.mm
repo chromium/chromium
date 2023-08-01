@@ -14,6 +14,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
@@ -24,12 +25,15 @@
 
 IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
     PrefService* pref_service,
+    PrefService* local_pref_service,
     scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
     const scoped_refptr<base::SequencedTaskRunner> task_runner)
     : pref_service_(pref_service),
+      local_pref_service_(local_pref_service),
       password_check_manager_(password_check_manager),
       task_runner_(task_runner) {
   CHECK(pref_service_);
+  CHECK(local_pref_service_);
   CHECK(password_check_manager_);
   CHECK(task_runner_);
 
@@ -48,6 +52,8 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
       base::BindRepeating(
           &IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState,
           weak_ptr_factory_.GetWeakPtr()));
+
+  RestorePreviousSafetyCheckState();
 }
 
 IOSChromeSafetyCheckManager::~IOSChromeSafetyCheckManager() {
@@ -66,6 +72,7 @@ void IOSChromeSafetyCheckManager::Shutdown() {
 
   pref_change_registrar_.RemoveAll();
   pref_service_ = nullptr;
+  local_pref_service_ = nullptr;
 }
 
 void IOSChromeSafetyCheckManager::StartSafetyCheck() {
@@ -94,6 +101,39 @@ void IOSChromeSafetyCheckManager::StopSafetyCheck() {
 
   StopPasswordCheck();
   StopUpdateChromeCheck();
+}
+
+void IOSChromeSafetyCheckManager::RestorePreviousSafetyCheckState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  absl::optional<SafeBrowsingSafetyCheckState> safe_browsing_check_state =
+      SafeBrowsingSafetyCheckStateForName(local_pref_service_->GetString(
+          prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult));
+
+  if (safe_browsing_check_state.has_value() &&
+      safe_browsing_check_state.value() !=
+          SafeBrowsingSafetyCheckState::kRunning) {
+    SetSafeBrowsingCheckState(safe_browsing_check_state.value());
+  }
+
+  absl::optional<PasswordSafetyCheckState> password_check_state =
+      PasswordSafetyCheckStateForName(local_pref_service_->GetString(
+          prefs::kIosSafetyCheckManagerPasswordCheckResult));
+
+  if (password_check_state.has_value() &&
+      password_check_state.value() != PasswordSafetyCheckState::kRunning) {
+    SetPasswordCheckState(password_check_state.value());
+  }
+
+  absl::optional<UpdateChromeSafetyCheckState> update_chrome_check_state =
+      UpdateChromeSafetyCheckStateForName(local_pref_service_->GetString(
+          prefs::kIosSafetyCheckManagerUpdateCheckResult));
+
+  if (update_chrome_check_state.has_value() &&
+      update_chrome_check_state.value() !=
+          UpdateChromeSafetyCheckState::kRunning) {
+    SetUpdateChromeCheckState(update_chrome_check_state.value());
+  }
 }
 
 void IOSChromeSafetyCheckManager::StartPasswordCheck() {
@@ -200,7 +240,16 @@ IOSChromeSafetyCheckManager::GetUpdateChromeCheckState() const {
 void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
     SafeBrowsingSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (safe_browsing_check_state_ == state) {
+    return;
+  }
+
   safe_browsing_check_state_ = state;
+
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
+      NameForSafetyCheckState(state));
 
   for (auto& observer : observers_) {
     observer.SafeBrowsingCheckStateChanged(safe_browsing_check_state_);
@@ -211,7 +260,6 @@ void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
 void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
     PasswordCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(password_check_manager_);
 
   // If the Password check reports the device is offline, propogate this
   // information to the Update Chrome check.
@@ -231,7 +279,6 @@ void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
 // TODO(crbug.com/1462786): Add UMA logs related to the Password check.
 void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(password_check_manager_);
 
   PasswordCheckState state = password_check_manager_->GetPasswordCheckState();
 
@@ -255,11 +302,15 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
     PasswordSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ignore_password_check_changes_) {
+  if (password_check_state_ == state || ignore_password_check_changes_) {
     return;
   }
 
   password_check_state_ = state;
+
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerPasswordCheckResult,
+      NameForSafetyCheckState(state));
 
   for (auto& observer : observers_) {
     observer.PasswordCheckStateChanged(password_check_state_);
@@ -273,11 +324,14 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
     UpdateChromeSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ignore_omaha_changes_) {
+  if (update_chrome_check_state_ == state || ignore_omaha_changes_) {
     return;
   }
 
   update_chrome_check_state_ = state;
+
+  local_pref_service_->SetString(prefs::kIosSafetyCheckManagerUpdateCheckResult,
+                                 NameForSafetyCheckState(state));
 
   for (auto& observer : observers_) {
     observer.UpdateChromeCheckStateChanged(update_chrome_check_state_);
@@ -303,7 +357,6 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeDetails(
 // TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
 void IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(pref_service_);
 
   if (pref_service_->IsManagedPreference(prefs::kSafeBrowsingEnabled)) {
     SetSafeBrowsingCheckState(SafeBrowsingSafetyCheckState::kManaged);
@@ -458,4 +511,8 @@ void IOSChromeSafetyCheckManager::InsecureCredentialsChangedForTesting() {
 void IOSChromeSafetyCheckManager::PasswordCheckStatusChangedForTesting(
     PasswordCheckState state) {
   PasswordCheckStatusChanged(state);
+}
+
+void IOSChromeSafetyCheckManager::RestorePreviousSafetyCheckStateForTesting() {
+  RestorePreviousSafetyCheckState();
 }

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -43,8 +44,25 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* registry = pref_service_->registry();
+
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+
+    local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    PrefRegistrySimple* local_registry = local_pref_service_->registry();
+
+    local_registry->RegisterStringPref(
+        prefs::kIosSafetyCheckManagerPasswordCheckResult,
+        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
+        PrefRegistry::LOSSY_PREF);
+    local_registry->RegisterStringPref(
+        prefs::kIosSafetyCheckManagerUpdateCheckResult,
+        NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
+        PrefRegistry::LOSSY_PREF);
+    local_registry->RegisterStringPref(
+        prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
+        NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
+        PrefRegistry::LOSSY_PREF);
 
     TestChromeBrowserState::Builder builder;
 
@@ -65,7 +83,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
             browser_state_.get());
 
     safety_check_manager_ = std::make_unique<IOSChromeSafetyCheckManager>(
-        pref_service_.get(), password_check_manager_,
+        pref_service_.get(), local_pref_service_.get(), password_check_manager_,
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
@@ -83,6 +101,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
   std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
 };
 
 std::vector<password_manager::CredentialUIEntry>
@@ -115,7 +134,7 @@ UpgradeRecommendedDetails OutdatedAppDetails() {
 
   details.is_up_to_date = false;
   details.next_version = "9999.9999.9999.9999";
-  details.upgrade_url = GURL("http://foobar.org");
+  details.upgrade_url = GURL("http://orgForName.org");
 
   return details;
 }
@@ -589,10 +608,12 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   safety_check_manager_->StopSafetyCheck();
 
+  task_environment_.RunUntilIdle();
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
-            PasswordSafetyCheckState::kDefault);
+            PasswordSafetyCheckState::kDisabled);
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kSafe);
   EXPECT_EQ(safety_check_manager_->GetRunningCheckStateForTesting(),
@@ -720,4 +741,265 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
             PasswordSafetyCheckState::kDefault);
+}
+
+// Tests correctly generating a string representation of
+// `UpdateChromeSafetyCheckState`.
+TEST_F(IOSChromeSafetyCheckManagerTest, CreatesUpdateChromeSafetyCheckName) {
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
+            "UpdateChromeSafetyCheckState::kDefault");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kUpToDate),
+            "UpdateChromeSafetyCheckState::kUpToDate");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kOutOfDate),
+            "UpdateChromeSafetyCheckState::kOutOfDate");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kManaged),
+            "UpdateChromeSafetyCheckState::kManaged");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kRunning),
+            "UpdateChromeSafetyCheckState::kRunning");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kOmahaError),
+            "UpdateChromeSafetyCheckState::kOmahaError");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kNetError),
+            "UpdateChromeSafetyCheckState::kNetError");
+
+  EXPECT_EQ(NameForSafetyCheckState(UpdateChromeSafetyCheckState::kChannel),
+            "UpdateChromeSafetyCheckState::kChannel");
+}
+
+// Tests correctly finding the corresponding `UpdateChromeSafetyCheckState`
+// given its string representation.
+TEST_F(IOSChromeSafetyCheckManagerTest, FindsUpdateChromeSafetyCheckFromName) {
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kDefault")
+                .value(),
+            UpdateChromeSafetyCheckState::kDefault);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kUpToDate")
+                .value(),
+            UpdateChromeSafetyCheckState::kUpToDate);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kOutOfDate")
+                .value(),
+            UpdateChromeSafetyCheckState::kOutOfDate);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kManaged")
+                .value(),
+            UpdateChromeSafetyCheckState::kManaged);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kRunning")
+                .value(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kOmahaError")
+                .value(),
+            UpdateChromeSafetyCheckState::kOmahaError);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kNetError")
+                .value(),
+            UpdateChromeSafetyCheckState::kNetError);
+
+  EXPECT_EQ(UpdateChromeSafetyCheckStateForName(
+                "UpdateChromeSafetyCheckState::kChannel")
+                .value(),
+            UpdateChromeSafetyCheckState::kChannel);
+
+  // Invalid cases
+  EXPECT_FALSE(UpdateChromeSafetyCheckStateForName(
+                   "UpdateChromeSafetyCheckState::kFoobar")
+                   .has_value());
+}
+
+// Tests correctly generating a string representation of
+// `PasswordSafetyCheckState`.
+TEST_F(IOSChromeSafetyCheckManagerTest, CreatesPasswordSafetyCheckName) {
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
+            "PasswordSafetyCheckState::kDefault");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kSafe),
+            "PasswordSafetyCheckState::kSafe");
+
+  EXPECT_EQ(NameForSafetyCheckState(
+                PasswordSafetyCheckState::kUnmutedCompromisedPasswords),
+            "PasswordSafetyCheckState::kUnmutedCompromisedPasswords");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kReusedPasswords),
+            "PasswordSafetyCheckState::kReusedPasswords");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kWeakPasswords),
+            "PasswordSafetyCheckState::kWeakPasswords");
+
+  EXPECT_EQ(
+      NameForSafetyCheckState(PasswordSafetyCheckState::kDismissedWarnings),
+      "PasswordSafetyCheckState::kDismissedWarnings");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kRunning),
+            "PasswordSafetyCheckState::kRunning");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kDisabled),
+            "PasswordSafetyCheckState::kDisabled");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kError),
+            "PasswordSafetyCheckState::kError");
+
+  EXPECT_EQ(NameForSafetyCheckState(PasswordSafetyCheckState::kSignedOut),
+            "PasswordSafetyCheckState::kSignedOut");
+}
+
+// Tests correctly finding the corresponding `PasswordSafetyCheckState` given
+// its string representation.
+TEST_F(IOSChromeSafetyCheckManagerTest, FindsPasswordSafetyCheckFromName) {
+  EXPECT_EQ(
+      PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kDefault")
+          .value(),
+      PasswordSafetyCheckState::kDefault);
+
+  EXPECT_EQ(PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kSafe")
+                .value(),
+            PasswordSafetyCheckState::kSafe);
+
+  EXPECT_EQ(PasswordSafetyCheckStateForName(
+                "PasswordSafetyCheckState::kUnmutedCompromisedPasswords")
+                .value(),
+            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  EXPECT_EQ(PasswordSafetyCheckStateForName(
+                "PasswordSafetyCheckState::kReusedPasswords")
+                .value(),
+            PasswordSafetyCheckState::kReusedPasswords);
+
+  EXPECT_EQ(PasswordSafetyCheckStateForName(
+                "PasswordSafetyCheckState::kWeakPasswords")
+                .value(),
+            PasswordSafetyCheckState::kWeakPasswords);
+
+  EXPECT_EQ(PasswordSafetyCheckStateForName(
+                "PasswordSafetyCheckState::kDismissedWarnings")
+                .value(),
+            PasswordSafetyCheckState::kDismissedWarnings);
+
+  EXPECT_EQ(
+      PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kRunning")
+          .value(),
+      PasswordSafetyCheckState::kRunning);
+
+  EXPECT_EQ(
+      PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kDisabled")
+          .value(),
+      PasswordSafetyCheckState::kDisabled);
+
+  EXPECT_EQ(PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kError")
+                .value(),
+            PasswordSafetyCheckState::kError);
+
+  EXPECT_EQ(
+      PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kSignedOut")
+          .value(),
+      PasswordSafetyCheckState::kSignedOut);
+
+  // Invalid cases
+  EXPECT_FALSE(
+      PasswordSafetyCheckStateForName("PasswordSafetyCheckState::kFoobar")
+          .has_value());
+}
+
+// Tests correctly generating a string representation of
+// `SafeBrowsingSafetyCheckState`.
+TEST_F(IOSChromeSafetyCheckManagerTest, CreatesSafeBrowsingSafetyCheckName) {
+  EXPECT_EQ(NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
+            "SafeBrowsingSafetyCheckState::kDefault");
+  EXPECT_EQ(NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kManaged),
+            "SafeBrowsingSafetyCheckState::kManaged");
+  EXPECT_EQ(NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kRunning),
+            "SafeBrowsingSafetyCheckState::kRunning");
+  EXPECT_EQ(NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kSafe),
+            "SafeBrowsingSafetyCheckState::kSafe");
+  EXPECT_EQ(NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kUnsafe),
+            "SafeBrowsingSafetyCheckState::kUnsafe");
+}
+
+// Tests correctly finding the corresponding `SafeBrowsingSafetyCheckState`
+// given its string representation.
+TEST_F(IOSChromeSafetyCheckManagerTest, FindsSafeBrowsingSafetyCheckFromName) {
+  EXPECT_EQ(SafeBrowsingSafetyCheckStateForName(
+                "SafeBrowsingSafetyCheckState::kDefault")
+                .value(),
+            SafeBrowsingSafetyCheckState::kDefault);
+
+  EXPECT_EQ(SafeBrowsingSafetyCheckStateForName(
+                "SafeBrowsingSafetyCheckState::kManaged")
+                .value(),
+            SafeBrowsingSafetyCheckState::kManaged);
+
+  EXPECT_EQ(SafeBrowsingSafetyCheckStateForName(
+                "SafeBrowsingSafetyCheckState::kRunning")
+                .value(),
+            SafeBrowsingSafetyCheckState::kRunning);
+
+  EXPECT_EQ(
+      SafeBrowsingSafetyCheckStateForName("SafeBrowsingSafetyCheckState::kSafe")
+          .value(),
+      SafeBrowsingSafetyCheckState::kSafe);
+
+  EXPECT_EQ(SafeBrowsingSafetyCheckStateForName(
+                "SafeBrowsingSafetyCheckState::kUnsafe")
+                .value(),
+            SafeBrowsingSafetyCheckState::kUnsafe);
+}
+
+// Tests `RestorePreviousSafetyCheckState()` correctly loads previous Safety
+// Check states from Prefs.
+TEST_F(IOSChromeSafetyCheckManagerTest, LoadsPreviousCheckStatesFromPrefs) {
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerPasswordCheckResult,
+      NameForSafetyCheckState(PasswordSafetyCheckState::kError));
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerUpdateCheckResult,
+      NameForSafetyCheckState(UpdateChromeSafetyCheckState::kOutOfDate));
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
+      NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kSafe));
+
+  safety_check_manager_->RestorePreviousSafetyCheckStateForTesting();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kError);
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kOutOfDate);
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kSafe);
+}
+
+// Tests `RestorePreviousSafetyCheckState()` correctly loads previous Safety
+// Check states from Prefs. and ignores running states.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       LoadsPreviousCheckStatesFromPrefsButIgnoresRunningStates) {
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerPasswordCheckResult,
+      NameForSafetyCheckState(PasswordSafetyCheckState::kRunning));
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerUpdateCheckResult,
+      NameForSafetyCheckState(UpdateChromeSafetyCheckState::kOutOfDate));
+  local_pref_service_->SetString(
+      prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
+      NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kRunning));
+
+  safety_check_manager_->RestorePreviousSafetyCheckStateForTesting();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kOutOfDate);
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kDefault);
 }

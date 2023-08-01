@@ -196,6 +196,21 @@ const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 const char kIosPromosManagerSingleDisplayActivePromos[] =
     "ios.promos_manager.single_display_active_promos";
 
+// String preference containing the Password Check result from the most recent
+// Safety Check run (using the new Safety Check Manager).
+const char kIosSafetyCheckManagerPasswordCheckResult[] =
+    "ios.safety_check_manager.password_check_result";
+
+// String preference containing the Update Check result from the most recent
+// Safety Check run (using the new Safety Check Manager).
+const char kIosSafetyCheckManagerUpdateCheckResult[] =
+    "ios.safety_check_manager.update_check_result";
+
+// String preference containing the Safe Browsing Check result from the most
+// recent Safety Check run (using the new Safety Check Manager).
+const char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
+    "ios.safety_check_manager.safe_browsing_check_result";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in settings view.
 const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";

@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -277,6 +278,20 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // since a freshness signal of the Most Visited Sites.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
+
+  // Preferences related to the new Safety Check Manager.
+  registry->RegisterStringPref(
+      prefs::kIosSafetyCheckManagerPasswordCheckResult,
+      NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
+      PrefRegistry::LOSSY_PREF);
+  registry->RegisterStringPref(
+      prefs::kIosSafetyCheckManagerUpdateCheckResult,
+      NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
+      PrefRegistry::LOSSY_PREF);
+  registry->RegisterStringPref(
+      prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
+      NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
+      PrefRegistry::LOSSY_PREF);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

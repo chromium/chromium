@@ -20,6 +20,7 @@ source_set("safety_check") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
     "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common",
@@ -40,14 +41,21 @@ source_set("factory") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
 
 source_set("constants") {
-  sources = [ "ios_chrome_safety_check_manager_constants.h" ]
-  public_deps = [ "//base" ]
+  sources = [
+    "ios_chrome_safety_check_manager_constants.cc",
+    "ios_chrome_safety_check_manager_constants.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
 
 source_set("utils") {
@@ -82,6 +90,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",

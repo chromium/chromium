@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The amount of time (inclusive) to wait for an Omaha response before
 // considering the request an Omaha error.
@@ -13,10 +14,10 @@ const base::TimeDelta kOmahaNetworkWaitTime = base::Seconds(30);
 
 // Enum with all possible states of the update check.
 enum class UpdateChromeSafetyCheckState {
-  // When the user is up to date.
-  kUpToDate,
   // When the check has not been run yet.
   kDefault,
+  // When the user is up to date.
+  kUpToDate,
   // When the user is out of date.
   kOutOfDate,
   // When the user is managed.
@@ -33,6 +34,8 @@ enum class UpdateChromeSafetyCheckState {
 
 // Enum with all possible states of the password check.
 enum class PasswordSafetyCheckState {
+  // When check has not been run yet.
+  kDefault,
   // When no compromised passwords were detected.
   kSafe,
   // When user has unmuted compromised passwords.
@@ -43,8 +46,6 @@ enum class PasswordSafetyCheckState {
   kWeakPasswords,
   // When user has dismissed warnings.
   kDismissedWarnings,
-  // When check has not been run yet.
-  kDefault,
   // When password check is running.
   kRunning,
   // When user has no passwords and check can't be performed.
@@ -78,5 +79,31 @@ enum class RunningSafetyCheckState {
   // When the check is running.
   kRunning,
 };
+
+// Returns string representation of UpdateChromeSafetyCheckState `check_state`.
+const std::string NameForSafetyCheckState(
+    UpdateChromeSafetyCheckState check_state);
+
+// Returns string representation of PasswordSafetyCheckState `check_state`.
+const std::string NameForSafetyCheckState(PasswordSafetyCheckState check_state);
+
+// Returns string representation of SafeBrowsingSafetyCheckState `check_state`.
+const std::string NameForSafetyCheckState(
+    SafeBrowsingSafetyCheckState check_state);
+
+// Returns UpdateChromeSafetyCheckState given its string representation
+// `check_state`.
+absl::optional<UpdateChromeSafetyCheckState>
+UpdateChromeSafetyCheckStateForName(const std::string& check_state);
+
+// Returns PasswordSafetyCheckState given its string representation
+// `check_state`.
+absl::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
+    const std::string& check_state);
+
+// Returns SafeBrowsingSafetyCheckState given its string representation
+// `check_state`.
+absl::optional<SafeBrowsingSafetyCheckState>
+SafeBrowsingSafetyCheckStateForName(const std::string& check_state);
 
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
