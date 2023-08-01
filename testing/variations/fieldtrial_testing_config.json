@@ -11750,6 +11750,7 @@
                         "KAnonymityServiceOHTTPRequests",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
+                        "PrivacySandboxAdsAPIsM1Override",
                         "PrivateAggregationApi",
                         "SharedStorageAPI"
                     ]
@@ -11775,6 +11776,7 @@
                         "FencedFramesAPIChanges",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
+                        "PrivacySandboxAdsAPIsM1Override",
                         "PrivacySandboxSettings3",
                         "PrivateAggregationApi",
                         "SharedStorageAPI"

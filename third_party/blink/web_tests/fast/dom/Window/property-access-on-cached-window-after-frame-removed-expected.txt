@@ -9,6 +9,7 @@ PASS childWindow.crossOriginIsolated is false
 PASS childWindow.devicePixelRatio is 0
 PASS childWindow.documentPictureInPicture.onenter is null
 PASS childWindow.documentPictureInPicture.window is null
+PASS childWindow.fence is null
 PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0
 PASS childWindow.isSecureContext is true

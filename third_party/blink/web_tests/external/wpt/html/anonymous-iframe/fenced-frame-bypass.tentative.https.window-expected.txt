@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Error: assert_implements: HTMLFencedFrameElement is not supported. undefined
+FAIL fenced-frame-bypass promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 Harness: the test ran to completion.
 
