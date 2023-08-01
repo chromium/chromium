@@ -63,6 +63,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillPage) {
   RunTest("settings/autofill_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
+  RunTest("settings/autofill_section_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, BatteryPage) {
   RunTest("settings/battery_page_test.js", "mocha.run()");
 }
@@ -945,6 +949,17 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
   RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
+}
+
+// TODO(crbug.com/1403969): SafeBrowsing suite is flaky on Mac.
+// TODO(crbug.com/1404109): SafeBrowsing suite is flaky on Linux and LaCrOS.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SafeBrowsing DISABLED_SafeBrowsing
+#else
+#define MAYBE_SafeBrowsing SafeBrowsing
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, MAYBE_SafeBrowsing) {
+  RunTest("settings/security_page_test.js", "runMochaSuite('SafeBrowsing')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
