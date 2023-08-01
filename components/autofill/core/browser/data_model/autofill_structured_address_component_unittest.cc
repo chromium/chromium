@@ -188,30 +188,6 @@ class TestCompoundNameCustomAffixedFormatAddressComponent
   TestAtomicLastNameAddressComponent last_name{this};
 };
 
-// Creates a compound name with a custom format with unsupported token.
-class TestCompoundNameCustomFormatWithUnsupportedTokenAddressComponent
-    : public AddressComponent {
- public:
-  TestCompoundNameCustomFormatWithUnsupportedTokenAddressComponent()
-      : TestCompoundNameCustomFormatWithUnsupportedTokenAddressComponent(
-            nullptr) {}
-  explicit TestCompoundNameCustomFormatWithUnsupportedTokenAddressComponent(
-      AddressComponent* parent)
-      : AddressComponent(NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
-
-  // Introduce a custom format with a leading last name.
-  std::u16string GetBestFormatString() const override {
-    return u"${NAME_LAST}, ${NAME_FIRST} ${NOT_SUPPORTED}";
-  }
-
- private:
-  TestAtomicFirstNameAddressComponent first_name{this};
-  TestAtomicMiddleNameAddressComponent middle_name{this};
-  TestAtomicLastNameAddressComponent last_name{this};
-};
-
 class TestAtomicTitleAddressComponent : public AddressComponent {
  public:
   TestAtomicTitleAddressComponent()
@@ -703,32 +679,6 @@ TEST(AutofillStructuredAddressAddressComponent,
   std::u16string actual_result =
       compound_component.GetBestFormatStringForTesting();
   EXPECT_EQ(expected_result, actual_result);
-}
-
-// Tests formatting the unstructured value from the subcomponents with an
-// unsupported token.
-TEST(AutofillStructuredAddressAddressComponent,
-     FormatValueFromSubcomponents_UnsupportedToken) {
-  std::u16string first_name = u"Winston";
-  std::u16string middle_name = u"O'Brien";
-  std::u16string last_name = u"Smith";
-
-  // Create a compound component and set the values.
-  TestCompoundNameCustomFormatWithUnsupportedTokenAddressComponent
-      compound_component;
-  compound_component.SetValueForType(NAME_FIRST, first_name,
-                                     VerificationStatus::kUserVerified);
-  compound_component.SetValueForType(NAME_MIDDLE, middle_name,
-                                     VerificationStatus::kUserVerified);
-  compound_component.SetValueForType(NAME_LAST, last_name,
-                                     VerificationStatus::kUserVerified);
-
-  compound_component.FormatValueFromSubcomponentsForTesting();
-
-  std::u16string expected_value = u"Smith, Winston ${NOT_SUPPORTED}";
-  std::u16string actual_value = compound_component.GetValue();
-
-  EXPECT_EQ(expected_value, actual_value);
 }
 
 // Tests formatting the unstructured value from the subcomponents.

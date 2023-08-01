@@ -353,12 +353,6 @@ class AddressComponent {
   // Returns a reference to the root node of the tree for testing.
   AddressComponent& GetRootNodeForTesting() { return GetRootNode(); }
 
-  // Replaces placeholder values in the best format string with the
-  // corresponding values.
-  std::u16string GetReplacedPlaceholderTypesWithValuesForTesting() const {
-    return ReplacePlaceholderTypesWithValues(GetBestFormatString());
-  }
-
   // Returns a vector containing the |storage_types_| of all direct
   // subcomponents.
   std::vector<ServerFieldType> GetSubcomponentTypesForTesting() const {
@@ -530,11 +524,7 @@ class AddressComponent {
 
   // Replaces placeholder values with the corresponding values.
   std::u16string ReplacePlaceholderTypesWithValues(
-      const std::u16string& format) const;
-
-  // Replaces placeholder values with the corresponding values.
-  std::u16string ReplacePlaceholderTypesWithValuesRegexVersion(
-      const std::u16string& format) const;
+      std::u16string_view format) const;
 
   // This method uses regular expressions acquired by
   // |GetParseRegularExpressionsByRelevance| to parse |value_| into the values
