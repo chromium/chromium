@@ -65,6 +65,9 @@ ConsentDialogCoordinator::CreateDeviceSignalsConsentDialogModel() {
               .SetId(kDeviceSignalsConsentCancelButtonElementId))
       .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
       .AddParagraph(ui::DialogModelLabel(GetDialogBodyText()))
+      .SetCloseActionCallback(
+          base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogClose,
+                         weak_ptr_factory_.GetWeakPtr()))
       .Build();
 }
 
@@ -149,6 +152,13 @@ void ConsentDialogCoordinator::OnConsentDialogCancel() {
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileLocked));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ConsentDialogCoordinator::OnConsentDialogClose() {
+  if (dialog_widget_->closed_reason() ==
+      views::Widget::ClosedReason::kEscKeyPressed) {
+    OnConsentDialogCancel();
+  }
 }
 
 void ConsentDialogCoordinator::OnConsentPreferenceUpdated(
