@@ -42,7 +42,10 @@ class ArcDiskQuotaBridgeFactory
 };
 
 bool IsAndroidUid(uint32_t uid) {
-  return kAndroidUidStart <= uid && uid <= kAndroidUidEnd;
+  const uint32_t android_uid_end = GetArcAndroidSdkVersionAsInt() < kArcVersionT
+                                       ? kAndroidUidEndBeforeT
+                                       : kAndroidUidEndAfterT;
+  return kAndroidUidStart <= uid && uid <= android_uid_end;
 }
 
 bool IsAndroidGid(uint32_t gid) {
@@ -50,7 +53,7 @@ bool IsAndroidGid(uint32_t gid) {
 }
 
 bool IsAndroidProjectId(uint32_t project_id) {
-  uint32_t project_id_for_android_apps_end =
+  const uint32_t project_id_for_android_apps_end =
       GetArcAndroidSdkVersionAsInt() < kArcVersionT
           ? kProjectIdForAndroidAppsEndBeforeT
           : kProjectIdForAndroidAppsEndAfterT;

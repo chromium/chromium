@@ -33,9 +33,12 @@ constexpr gid_t kArcGidShift = 655360;
 // The smallest UID in Android that is tracked by installd. This is set to be
 // the minimum possible uid that Android process can have.
 constexpr uid_t kAndroidUidStart = 0;
-// The largest UID in Android that is tracked by installd. This is from
-// AID_APP_END in android_filesystem_config.h.
-constexpr uid_t kAndroidUidEnd = 19999;
+// The largest Android UID for which GetCurrentSpaceForUid() could be called by
+// installd, based on the numbers in android_filesystem_config.h. The limit
+// differs before and after T; it has been AID_APP_END before T, but from T it's
+// AID_SDK_SANDBOX_PROCESS_END.
+constexpr uid_t kAndroidUidEndBeforeT = 19999;
+constexpr uid_t kAndroidUidEndAfterT = 29999;
 
 // The following section describes the GID that are tracked by installd.
 // Installd tracks different kinds of GID types: Cache, External, Shared, and

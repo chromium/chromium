@@ -82,33 +82,6 @@ TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForUid_Success) {
-  const std::vector<std::pair<uint32_t, int64_t>>
-      valid_android_uid_and_expected_space = {
-          {kAndroidUidStart, 100},
-          {(kAndroidUidStart + kAndroidUidEnd) / 2, 200},
-          {kAndroidUidEnd, 300},
-      };
-  for (const auto& [uid, space] : valid_android_uid_and_expected_space) {
-    ash::FakeSpacedClient::Get()->set_quota_current_space_uid(
-        uid + kArcUidShift, space);
-  }
-
-  for (const auto& [uid, space] : valid_android_uid_and_expected_space) {
-    base::test::TestFuture<int64_t> future;
-    bridge()->GetCurrentSpaceForUid(uid, future.GetCallback());
-    EXPECT_EQ(future.Get(), space);
-  }
-}
-
-TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForUid_InvalidId) {
-  constexpr uint32_t kInvalidAndroidUid = kAndroidUidEnd + 1;
-
-  base::test::TestFuture<int64_t> future;
-  bridge()->GetCurrentSpaceForUid(kInvalidAndroidUid, future.GetCallback());
-  EXPECT_EQ(future.Get(), -1);
-}
-
 TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForGid_Success) {
   const std::vector<std::pair<uint32_t, int64_t>>
       valid_android_gid_and_expected_space = {
@@ -139,6 +112,49 @@ TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForGid_InvalidId) {
 class ArcDiskQuotaBridgeWithArcVersionTest
     : public ArcDiskQuotaBridgeTest,
       public ::testing::WithParamInterface<int> {};
+
+TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+       GetQuotaCurrentSpaceForUid_Success) {
+  const int arc_sdk_version = GetParam();
+  const auto scoped_version_info =
+      SetArcAndroidSdkVersionForTesting(arc_sdk_version);
+  const uint32_t kAndroidUidEnd = arc_sdk_version < kArcVersionT
+                                      ? kAndroidUidEndBeforeT
+                                      : kAndroidUidEndAfterT;
+
+  const std::vector<std::pair<uint32_t, int64_t>>
+      valid_android_uid_and_expected_space = {
+          {kAndroidUidStart, 100},
+          {(kAndroidUidStart + kAndroidUidEnd) / 2, 200},
+          {kAndroidUidEnd, 300},
+      };
+  for (const auto& [uid, space] : valid_android_uid_and_expected_space) {
+    ash::FakeSpacedClient::Get()->set_quota_current_space_uid(
+        uid + kArcUidShift, space);
+  }
+
+  for (const auto& [uid, space] : valid_android_uid_and_expected_space) {
+    base::test::TestFuture<int64_t> future;
+    bridge()->GetCurrentSpaceForUid(uid, future.GetCallback());
+    EXPECT_EQ(future.Get(), space);
+  }
+}
+
+TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+       GetQuotaCurrentSpaceForUid_InvalidId) {
+  const int arc_sdk_version = GetParam();
+  const auto scoped_version_info =
+      SetArcAndroidSdkVersionForTesting(arc_sdk_version);
+  const uint32_t kAndroidUidEnd = arc_sdk_version < kArcVersionT
+                                      ? kAndroidUidEndBeforeT
+                                      : kAndroidUidEndAfterT;
+
+  const uint32_t kInvalidAndroidUid = kAndroidUidEnd + 1;
+
+  base::test::TestFuture<int64_t> future;
+  bridge()->GetCurrentSpaceForUid(kInvalidAndroidUid, future.GetCallback());
+  EXPECT_EQ(future.Get(), -1);
+}
 
 TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
        GetQuotaCurrentSpaceForProjectId_Success) {
