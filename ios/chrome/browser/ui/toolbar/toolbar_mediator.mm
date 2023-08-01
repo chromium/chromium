@@ -36,12 +36,16 @@ namespace {
 /// The time delta for a user to be considered as a new user.
 const base::TimeDelta kNewUserTimeDelta = base::Days(60);
 
+/// Returns whether it's first run.
+BOOL IsFirstRun() {
+  return FirstRun::IsChromeFirstRun() ||
+         experimental_flags::AlwaysDisplayFirstRun();
+}
+
 /// Returns wheter the user has seen first run recently (`kNewUserTimeDelta`).
 BOOL IsNewUser() {
   // Use the first_run age to determine the user is new on this device.
-  BOOL isFirstRun = FirstRun::IsChromeFirstRun() ||
-                    experimental_flags::AlwaysDisplayFirstRun();
-  if (isFirstRun) {
+  if (IsFirstRun()) {
     return YES;
   }
   absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
@@ -127,6 +131,11 @@ BOOL ShouldSwitchOmniboxToBottom(
   UITraitCollection* _toolbarTraitCollection;
   /// Preferred toolbar to contain the omnibox.
   ToolbarType _preferredOmniboxPosition;
+
+  /// Whether SafariSwitcher should be checked on FRE.
+  BOOL _shouldCheckSafariSwitcherOnFRE;
+  /// Whether the NTP was shown in FRE.
+  BOOL _hasEnteredNTPOnFRE;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -143,6 +152,15 @@ BOOL ShouldSwitchOmniboxToBottom(
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserverBridge.get());
+
+    if (IsBottomOmniboxSteadyStateEnabled()) {
+      std::string featureParam = base::GetFieldTrialParamValueByFeature(
+          kBottomOmniboxDefaultSetting, kBottomOmniboxDefaultSettingParam);
+      if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
+        // Device switcher data is not available in incognito.
+        _shouldCheckSafariSwitcherOnFRE = !isIncognito && IsFirstRun();
+      }
+    }
   }
   return self;
 }
@@ -261,6 +279,9 @@ BOOL ShouldSwitchOmniboxToBottom(
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   _isNTP = NTPHelper && NTPHelper->IsActive();
   if (IsBottomOmniboxSteadyStateEnabled()) {
+    if (_shouldCheckSafariSwitcherOnFRE) {
+      [self checkSafariSwitcherOnFRE];
+    }
     [self updateOmniboxPosition];
   }
 }
@@ -302,6 +323,33 @@ BOOL ShouldSwitchOmniboxToBottom(
 }
 
 #pragma mark Default omnibox position
+
+/// Verifies if the user is a safari switcher on FRE.
+- (void)checkSafariSwitcherOnFRE {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(_shouldCheckSafariSwitcherOnFRE);
+  CHECK(self.deviceSwitcherResultDispatcher);
+  CHECK(self.prefService);
+
+  if (_isNTP) {
+    _hasEnteredNTPOnFRE = YES;
+  } else if (_hasEnteredNTPOnFRE) {
+    // Check device switcher data when the user leaves NTP on FRE, as data is
+    // only available on sync and takes time to fetch. This is only executed
+    // once, if the data is unavailable user may still see the bottom omnibox on
+    // next restart (see. `updateOmniboxDefaultPosition`).
+    _shouldCheckSafariSwitcherOnFRE = NO;
+    segmentation_platform::ClassificationResult result =
+        self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
+    if (result.status == segmentation_platform::PredictionStatus::kSucceeded) {
+      if (ShouldSwitchOmniboxToBottom(result)) {
+        self.prefService->SetDefaultPrefValue(prefs::kBottomOmnibox,
+                                              base::Value(YES));
+        self.prefService->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
+      }
+    }
+  }
+}
 
 /// Updates the default setting for bottom omnibox.
 - (void)updateOmniboxDefaultPosition {
