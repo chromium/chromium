@@ -74,10 +74,26 @@ enum XhrResponseCode {
     kInvalidAccountEmail = 4,
 };
 
+// Net error codes used by PWA,
+// Defined in google3/third_party/javascript/closure/net/errorcode.js.
+enum JsNetErrorCode {
+  kNoError = 0,
+  kAccessDenied = 1,
+  kFileNotFound = 2,
+  kFFSilentError = 3,
+  kCustomError = 4,
+  kException = 5,
+  kHttpError = 6,
+  kAbort = 7,
+  kTimeout = 8,
+  kOffline = 9,
+};
+
 // XhrResponse sent from the browser process the JS WebUI.
 struct XhrResponse {
-    string response;
-    XhrResponseCode response_code;
+   string response;
+   XhrResponseCode response_code;
+   JsNetErrorCode? net_error_code;
 };
 
 // The HTTP request type that comes from the JS WebUI.

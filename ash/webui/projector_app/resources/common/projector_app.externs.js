@@ -215,6 +215,12 @@ projectorApp.XhrResponse.prototype.response;
 projectorApp.XhrResponse.prototype.error;
 
 /**
+ * The error code from associated with the XHR request.
+ * @type {number|undefined}
+ */
+projectorApp.XhrResponse.prototype.errorCode;
+
+/**
  * The new screen cast enabled state.
  * chrome.
  * @record

@@ -41,8 +41,7 @@ class ProjectorXhrSender {
   // contains the response text if success, empty otherwise. `response_code`
   // contains the response code.
   using SendRequestCallback =
-      base::OnceCallback<void(const std::string& response_body,
-                              projector::mojom::XhrResponseCode error)>;
+      base::OnceCallback<void(projector::mojom::XhrResponsePtr)>;
 
   explicit ProjectorXhrSender(
       network::mojom::URLLoaderFactory* url_loader_factory);
