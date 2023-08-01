@@ -6829,7 +6829,7 @@ To shut down the device, press and hold the power button on the device again.
         Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, recommended apps, special offers, and the newest Chromebook features.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the home button as part of the System UI Welcome Tour.">
-        Use apps to do everything you need on your Chromebook. You can find your apps in the Launcher. You can also press the Launcher key on the keyboard.
+        Your Chromebook comes with built-in apps to help you get stuff done. Find your apps in the Launcher.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the search box as part of the System UI Welcome Tour.">
         Search for your files, apps, and more in the Launcher. You can also get answers to questions about your Chromebook.
