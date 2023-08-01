@@ -225,6 +225,36 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-x64-rel",
+    mirrors = ["ci/android-cronet-x64-rel"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg",
+    mirrors = ["ci/android-cronet-arm64-dbg"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg-12-tests",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-12-tests",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg-13-tests",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-13-tests",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x86-dbg",
     mirrors = [
         "ci/android-cronet-x86-dbg",
@@ -282,6 +312,15 @@ try_.builder(
     mirrors = [
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-pie-tests",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x86-dbg-nougat-tests",
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-nougat-tests",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
