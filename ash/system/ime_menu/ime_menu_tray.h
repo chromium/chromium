@@ -45,11 +45,6 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   // voice.
   void ShowKeyboardWithKeyset(input_method::ImeKeyset keyset);
 
-  // Returns true if the menu should show emoji, handwriting and voice buttons
-  // on the bottom. Otherwise, the menu will show a 'Customize...' bottom row
-  // for non-MD UI, and a Settings button in the title row for MD.
-  bool ShouldShowBottomButtons();
-
   // Returns whether the virtual keyboard toggle should be shown in shown in the
   // opt-in IME menu.
   bool ShouldShowKeyboardToggle() const;
@@ -82,6 +77,10 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
 
   // VirtualKeyboardObserver:
   void OnKeyboardSuppressionChanged(bool suppressed) override;
+
+  // Returns true if any of the bottom buttons in the IME tray bubble are shown.
+  // Only used in test code.
+  bool AnyBottomButtonShownForTest() const;
 
  private:
   friend class ImeMenuTrayTest;

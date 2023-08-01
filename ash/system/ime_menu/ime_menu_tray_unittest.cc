@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/ime_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -34,6 +35,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -50,8 +52,9 @@ ImeMenuTray* GetTray() {
 void SetCurrentIme(const std::string& current_ime_id,
                    const std::vector<ImeInfo>& available_imes) {
   std::vector<ImeInfo> available_ime_ptrs;
-  for (const auto& ime : available_imes)
+  for (const auto& ime : available_imes) {
     available_ime_ptrs.push_back(ime);
+  }
   Shell::Get()->ime_controller()->RefreshIme(current_ime_id,
                                              std::move(available_ime_ptrs),
                                              std::vector<ImeMenuItem>());
@@ -95,6 +98,8 @@ class ImeMenuTrayTest : public AshTestBase,
 
   // Returns true if handwirting input is enabled for the current keyboard.
   bool IsHandwritingEnabled() { return GetTray()->is_handwriting_enabled_; }
+
+  bool IsQsRevampEnabled() { return GetParam(); }
 
   // Returns true if voice input is enabled for the current keyboard.
   bool IsVoiceEnabled() { return GetTray()->is_voice_enabled_; }
@@ -140,8 +145,9 @@ class ImeMenuTrayTest : public AshTestBase,
       ime.first->GetAccessibleNodeData(&node_data);
       const auto checked_state = static_cast<ax::mojom::CheckedState>(
           node_data.GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
-      if (checked_state == ax::mojom::CheckedState::kTrue)
+      if (checked_state == ax::mojom::CheckedState::kTrue) {
         EXPECT_EQ(expected_current_ime.id, ime.second);
+      }
     }
   }
 
@@ -152,8 +158,9 @@ class ImeMenuTrayTest : public AshTestBase,
   }
 
   bool MenuHasOnScreenKeyboardToggle() const {
-    if (!GetTray()->ime_list_view_)
+    if (!GetTray()->ime_list_view_) {
       return false;
+    }
     return ImeListViewTestApi(GetTray()->ime_list_view_).GetToggleView();
   }
 
@@ -425,13 +432,21 @@ TEST_P(ImeMenuTrayTest, ShouldShowBottomButtons) {
       true /* hanwriting input enabled */, true /* voice input enabled */);
 
   FocusInInputContext(ui::TEXT_INPUT_TYPE_TEXT);
-  EXPECT_TRUE(GetTray()->ShouldShowBottomButtons());
+  GetTray()->ShowBubble();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetTray()->AnyBottomButtonShownForTest());
   EXPECT_TRUE(IsEmojiEnabled());
   EXPECT_TRUE(IsHandwritingEnabled());
   EXPECT_TRUE(IsVoiceEnabled());
 
   FocusInInputContext(ui::TEXT_INPUT_TYPE_PASSWORD);
-  EXPECT_FALSE(GetTray()->ShouldShowBottomButtons());
+
+  GetTray()->CloseBubble();
+  GetTray()->ShowBubble();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetTray()->AnyBottomButtonShownForTest());
   EXPECT_FALSE(IsEmojiEnabled());
   EXPECT_FALSE(IsHandwritingEnabled());
   EXPECT_FALSE(IsVoiceEnabled());
@@ -445,7 +460,10 @@ TEST_P(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
       true /* ui enabled */, false /* emoji input disabled */,
       true /* hanwriting input enabled */, true /* voice input enabled */);
 
-  EXPECT_TRUE(GetTray()->ShouldShowBottomButtons());
+  GetTray()->ShowBubble();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetTray()->AnyBottomButtonShownForTest());
   EXPECT_FALSE(IsEmojiEnabled());
   EXPECT_TRUE(IsHandwritingEnabled());
   EXPECT_TRUE(IsVoiceEnabled());
@@ -455,7 +473,11 @@ TEST_P(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
       true /* ui enabled */, true /* emoji input enabled */,
       false /* hanwriting input disabled */, false /* voice input disabled */);
 
-  EXPECT_TRUE(GetTray()->ShouldShowBottomButtons());
+  GetTray()->CloseBubble();
+  GetTray()->ShowBubble();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetTray()->AnyBottomButtonShownForTest());
   EXPECT_TRUE(IsEmojiEnabled());
   EXPECT_FALSE(IsHandwritingEnabled());
   EXPECT_FALSE(IsVoiceEnabled());
@@ -581,6 +603,36 @@ TEST_P(ImeMenuTrayTest, HideVoiceButtonWhenDictationEnabled) {
   // Voice button should be hidden.
   views::View* voice_button = GetVoiceButton();
   EXPECT_FALSE(voice_button);
+}
+
+TEST_P(ImeMenuTrayTest, ImeMenuHasBottomInsetsOnLockScreen) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+  Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+      true /* ui enabled */, true /* emoji input enabled */,
+      true /* hanwriting input enabled */, true /* voice input enabled */);
+
+  // SHow IME tray bubble.
+  GetTray()->ShowBubble();
+
+  // Make sure there is no margin when the screen is unlocked.
+  gfx::Insets* container_margins =
+      GetTray()
+          ->GetBubbleView()
+          ->GetViewByID(VIEW_ID_IME_LIST_VIEW_SCROLLER)
+          ->GetProperty(views::kMarginsKey);
+  EXPECT_EQ(container_margins->bottom(), 0);
+
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+
+  // Make sure the margin is updated when the screen is locked.
+  GetTray()->ShowBubble();
+  container_margins = GetTray()
+                          ->GetBubbleView()
+                          ->GetViewByID(VIEW_ID_IME_LIST_VIEW_SCROLLER)
+                          ->GetProperty(views::kMarginsKey);
+  EXPECT_GT(container_margins->bottom(), 0);
 }
 
 }  // namespace ash

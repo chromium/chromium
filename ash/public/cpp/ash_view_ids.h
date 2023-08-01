@@ -48,6 +48,12 @@ enum ViewID {
   VIEW_ID_GD_SCREENSHOT_TILE,
   VIEW_ID_GD_TOOLBAR_TILE,
 
+  // IME menu buble elements.
+  VIEW_ID_IME_BUTTONS_VIEW,
+  VIEW_ID_IME_LIST_VIEW_SCROLLER,
+  VIEW_ID_IME_MENU_LIST_VIEW,
+  VIEW_ID_IME_TITLE_VIEW,
+
   // The entry to add wifi network in the quick settings network subpage.
   VIEW_ID_JOIN_NETWORK_ENTRY,
 

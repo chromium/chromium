@@ -15,6 +15,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/virtual_keyboard_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -81,9 +82,14 @@ constexpr auto kTitleViewPadding =
 // between the floating menu and the IME tray in kiosk session (dp).
 constexpr auto kKioskBubbleViewPadding = gfx::Insets::TLBR(-19, 0, 27, 0);
 
-// For QsRevamp the scroll view has no margin at the top or bottom to make it
-// flush with the header and footer.
+// For QsRevamp the scroll view has no margin when the bottom buttons are shown
+// at the top or bottom to make it flush with the header and footer.
 constexpr auto kQsScrollViewMargin = gfx::Insets::TLBR(0, 16, 0, 16);
+
+// When the bottom buttons are not shown (e.g Lockscreen) we need to have a 16px
+// inset on the bottom in addition to the existing insets.
+constexpr auto kQsScrollViewMarginWithoutBottomButtons =
+    gfx::Insets::TLBR(0, 16, 16, 16);
 
 // Returns the height range of ImeListView.
 gfx::Range GetImeListViewRange() {
@@ -117,6 +123,42 @@ bool IsInPasswordInputContext() {
 // Returns true if it is Kiosk Session.
 bool IsKioskSession() {
   return Shell::Get()->session_controller()->IsRunningInAppMode();
+}
+
+bool ShouldShowVoiceButton() {
+  auto* ime_controller = Shell::Get()->ime_controller();
+  if (!ash::features::IsImeTrayHideVoiceButtonEnabled()) {
+    return ime_controller->is_voice_enabled();
+  }
+  const bool is_dictation_enabled =
+      Shell::Get()
+          ->accessibility_controller()
+          ->GetFeature(A11yFeatureType::kDictation)
+          .enabled();
+
+  // Only enable voice button in IME tray if the function is enabled and
+  // the accessibility dictation is not enabled in the shelf.
+  return ime_controller->is_voice_enabled() && !is_dictation_enabled;
+}
+
+// Returns true if the menu should show emoji, handwriting and voice buttons
+// on the bottom.
+bool ShouldShowBottomButtons() {
+  // Emoji, handwriting and voice input is not supported for these cases:
+  // 1) third party IME extensions.
+  // 2) login/lock screen.
+  // 3) password input client.
+  auto* ime_controller = Shell::Get()->ime_controller();
+  bool bottom_buttons_enabled =
+      ime_controller->is_extra_input_options_enabled() &&
+      !ime_controller->current_ime().third_party && !IsInLoginOrLockScreen() &&
+      !IsInPasswordInputContext();
+  if (!bottom_buttons_enabled) {
+    return false;
+  }
+
+  return ime_controller->is_emoji_enabled() ||
+         ime_controller->is_handwriting_enabled() || ShouldShowVoiceButton();
 }
 
 class ImeMenuLabel : public views::Label {
@@ -163,6 +205,7 @@ class ImeTitleView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(ImeTitleView);
   ImeTitleView() {
+    SetID(VIEW_ID_IME_TITLE_VIEW);
     // QsRevamp doesn't show a separator between title area and list.
     if (!features::IsQsRevampEnabled()) {
       SetBorder(views::CreatePaddedBorder(
@@ -229,7 +272,7 @@ class ImeButtonsView : public views::View {
                  bool show_voice)
       : ime_menu_tray_(ime_menu_tray) {
     DCHECK(ime_menu_tray_);
-
+    SetID(VIEW_ID_IME_BUTTONS_VIEW);
     Init(show_emoji, show_handwriting, show_voice);
   }
   ImeButtonsView(const ImeButtonsView&) = delete;
@@ -238,9 +281,9 @@ class ImeButtonsView : public views::View {
   ~ImeButtonsView() override = default;
 
   void KeysetButtonPressed(input_method::ImeKeyset keyset) {
-    // TODO(dcheng): When https://crbug.com/742517 is fixed, Mojo will generate
-    // a constant for the number of values in the enum. For now, we just define
-    // it here and keep it in sync with the enum.
+    // TODO(dcheng): When https://crbug.com/742517 is fixed, Mojo will
+    // generate a constant for the number of values in the enum. For now, we
+    // just define it here and keep it in sync with the enum.
     const int kImeKeysetUmaBoundary = 4;
     UMA_HISTOGRAM_ENUMERATION("InputMethod.ImeMenu.EmojiHandwritingVoiceButton",
                               keyset, kImeKeysetUmaBoundary);
@@ -307,13 +350,15 @@ class ImeButtonsView : public views::View {
 BEGIN_METADATA(ImeButtonsView, views::View)
 END_METADATA
 
-// A list of available IMEs shown in the opt-in IME menu, which has a different
-// height depending on the number of IMEs in the list.
+// A list of available IMEs shown in the opt-in IME menu, which has a
+// different height depending on the number of IMEs in the list.
 class ImeMenuListView : public ImeListView {
  public:
   METADATA_HEADER(ImeMenuListView);
 
-  ImeMenuListView() : ImeMenuListView(std::make_unique<Delegate>()) {}
+  ImeMenuListView() : ImeMenuListView(std::make_unique<Delegate>()) {
+    SetID(VIEW_ID_IME_MENU_LIST_VIEW);
+  }
   ImeMenuListView(const ImeMenuListView&) = delete;
   ImeMenuListView& operator=(const ImeMenuListView&) = delete;
 
@@ -331,7 +376,9 @@ class ImeMenuListView : public ImeListView {
     void TransitionToMainView(bool restore_focus) override {}
     void CloseBubble() override {}
     gfx::Insets GetScrollViewMargin() const override {
-      return kQsScrollViewMargin;
+      return ShouldShowBottomButtons()
+                 ? kQsScrollViewMargin
+                 : kQsScrollViewMarginWithoutBottomButtons;
     }
   };
 
@@ -407,8 +454,16 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
                        ImeListView::SHOW_SINGLE_IME);
 
   if (ShouldShowBottomButtons()) {
+    auto* ime_controller = Shell::Get()->ime_controller();
+
+    is_emoji_enabled_ = ime_controller->is_emoji_enabled();
+    is_handwriting_enabled_ = ime_controller->is_handwriting_enabled();
+    is_voice_enabled_ = ShouldShowVoiceButton();
+
     bubble_view->AddChildView(std::make_unique<ImeButtonsView>(
         this, is_emoji_enabled_, is_handwriting_enabled_, is_voice_enabled_));
+  } else {
+    is_emoji_enabled_ = is_handwriting_enabled_ = is_voice_enabled_ = false;
   }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
@@ -429,43 +484,6 @@ void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
         ->virtual_keyboard_controller()
         ->ForceShowKeyboardWithKeyset(keyset);
   }
-}
-
-bool ImeMenuTray::ShouldShowBottomButtons() {
-  // Emoji, handwriting and voice input is not supported for these cases:
-  // 1) third party IME extensions.
-  // 2) login/lock screen.
-  // 3) password input client.
-
-  const bool should_show_bottom_buttons =
-      ime_controller_->is_extra_input_options_enabled() &&
-      !ime_controller_->current_ime().third_party && !IsInLoginOrLockScreen() &&
-      !IsInPasswordInputContext();
-
-  if (!should_show_bottom_buttons) {
-    is_emoji_enabled_ = is_handwriting_enabled_ = is_voice_enabled_ = false;
-    return false;
-  }
-
-  is_emoji_enabled_ = ime_controller_->is_emoji_enabled();
-  is_handwriting_enabled_ = ime_controller_->is_handwriting_enabled();
-
-  if (ash::features::IsImeTrayHideVoiceButtonEnabled()) {
-    const bool is_dictation_enabled =
-        Shell::Get()
-            ->accessibility_controller()
-            ->GetFeature(A11yFeatureType::kDictation)
-            .enabled();
-
-    // Only enable voice button in IME tray if the function is enabled and
-    // the accessibility dictation is not enabled in the shelf.
-    is_voice_enabled_ =
-        ime_controller_->is_voice_enabled() && !is_dictation_enabled;
-  } else {
-    is_voice_enabled_ = ime_controller_->is_voice_enabled();
-  }
-
-  return is_emoji_enabled_ || is_handwriting_enabled_ || is_voice_enabled_;
 }
 
 bool ImeMenuTray::ShouldShowKeyboardToggle() const {
@@ -606,6 +624,10 @@ void ImeMenuTray::OnKeyboardSuppressionChanged(bool suppressed) {
   if (suppressed != keyboard_suppressed_ && bubble_)
     CloseBubble();
   keyboard_suppressed_ = suppressed;
+}
+
+bool ImeMenuTray::AnyBottomButtonShownForTest() const {
+  return is_emoji_enabled_ || is_handwriting_enabled_ || is_voice_enabled_;
 }
 
 void ImeMenuTray::UpdateTrayLabel() {

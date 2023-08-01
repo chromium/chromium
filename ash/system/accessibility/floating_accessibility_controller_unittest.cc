@@ -252,7 +252,7 @@ TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayBottomButtons) {
   features_.InitAndEnableFeature(features::kKioskEnableImeButton);
 
   SetUpVisibleMenu();
-  EXPECT_FALSE(GetImeTray()->ShouldShowBottomButtons());
+  EXPECT_FALSE(GetImeTray()->AnyBottomButtonShownForTest());
 }
 
 TEST_F(FloatingAccessibilityControllerTest,
