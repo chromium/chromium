@@ -1333,6 +1333,9 @@ crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-pres
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
 
+# external/wpt/scroll-animations/ failures
+crbug.com/1469282 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Pass Timeout ]
+crbug.com/1469282 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Pass Timeout ]
 
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
@@ -2737,7 +2740,6 @@ crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ 
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-002.html [ Failure ]
@@ -2797,7 +2799,6 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-
 crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
-crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]
