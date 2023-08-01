@@ -29,6 +29,9 @@ class WebState;
               webState:(web::WebState*)webState
     baseViewController:(UIViewController*)baseViewController;
 
+// Stops the image copier.
+- (void)stop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_COPIER_H_

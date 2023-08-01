@@ -81,6 +81,12 @@ const int kNoActiveCopy = 0;
   return self;
 }
 
+- (void)stop {
+  self.browser = nullptr;
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+}
+
 - (void)copyImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState
