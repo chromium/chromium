@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/copy_lchars_from_uchar_source.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -97,6 +98,14 @@ UChar32 String::CharacterStartingAt(unsigned i) const {
   if (!impl_ || i >= impl_->length())
     return 0;
   return impl_->CharacterStartingAt(i);
+}
+
+CodePointIterator String::begin() const {
+  return CodePointIterator(*this);
+}
+
+CodePointIterator String::end() const {
+  return CodePointIterator::End(*this);
 }
 
 void String::Ensure16Bit() {

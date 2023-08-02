@@ -295,11 +295,11 @@ unsigned StringView::NextCodePointOffset(unsigned i) const {
 }
 
 CodePointIterator StringView::begin() const {
-  return CodePointIterator(*this, 0u);
+  return CodePointIterator(*this);
 }
 
 CodePointIterator StringView::end() const {
-  return CodePointIterator(*this, length_);
+  return CodePointIterator::End(*this);
 }
 
 }  // namespace WTF
