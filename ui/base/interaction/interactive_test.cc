@@ -4,22 +4,21 @@
 
 #include "ui/base/interaction/interactive_test.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
-#include "ui/base/interaction/state_observer.h"
 
 namespace ui::test {
 
@@ -375,40 +374,43 @@ bool InteractiveTestApi::RunTestSequenceImpl(
 // static
 InteractiveTestApi::FindElementCallback
 InteractiveTestApi::GetFindElementCallback(AbsoluteElementSpecifier spec) {
-  if (TrackedElement** el = absl::get_if<TrackedElement*>(&spec)) {
-    CHECK(*el) << "NameView(TrackedElement*): view must be set.";
-    return base::BindOnce(
-        [](const SafeElementReference& ref, TrackedElement*) {
-          LOG_IF(ERROR, !ref.get())
-              << "NameElement(TrackedElement*): element ceased to be valid "
-                 "before step was executed.";
-          return ref.get();
-        },
-        SafeElementReference(*el));
-  }
-
-  if (std::reference_wrapper<TrackedElement*>* el =
-          absl::get_if<std::reference_wrapper<TrackedElement*>>(&spec)) {
-    return base::BindOnce(
-        [](std::reference_wrapper<TrackedElement*> el, TrackedElement*) {
-          LOG_IF(ERROR, !el.get())
-              << "NameElement(ref(TrackedElement*)): element pointer is null.";
-          return el.get();
-        },
-        *el);
-  }
-
   using ContextCallback = base::OnceCallback<TrackedElement*(ElementContext)>;
-  if (auto* callback = absl::get_if<ContextCallback>(&spec)) {
-    return base::BindOnce(
-        [](ContextCallback callback, TrackedElement* relative_to) {
-          return std::move(callback).Run(relative_to->context());
-        },
-        std::move(*callback));
-  }
-
-  return base::RectifyCallback<FindElementCallback>(
-      std::move(absl::get<base::OnceCallback<TrackedElement*()>>(spec)));
+  return absl::visit(
+      base::Overloaded{
+          [](TrackedElement* el) {
+            CHECK(el) << "NameView(TrackedElement*): view must be set.";
+            return base::BindOnce(
+                [](const SafeElementReference& ref, TrackedElement*) {
+                  LOG_IF(ERROR, !ref.get()) << "NameElement(TrackedElement*): "
+                                               "element ceased to be valid "
+                                               "before step was executed.";
+                  return ref.get();
+                },
+                SafeElementReference(el));
+          },
+          [](std::reference_wrapper<TrackedElement*> ref) {
+            return base::BindOnce(
+                [](std::reference_wrapper<TrackedElement*> ref,
+                   TrackedElement*) {
+                  LOG_IF(ERROR, !ref.get()) << "NameElement(TrackedElement*): "
+                                               "element ceased to be valid "
+                                               "before step was executed.";
+                  return ref.get();
+                },
+                ref);
+          },
+          [](ContextCallback& callback) {
+            return base::BindOnce(
+                [](ContextCallback callback, TrackedElement* relative_to) {
+                  return std::move(callback).Run(relative_to->context());
+                },
+                std::move(callback));
+          },
+          [](base::OnceCallback<TrackedElement*()>& callback) {
+            return base::RectifyCallback<FindElementCallback>(
+                std::move(callback));
+          }},
+      spec);
 }
 
 // static

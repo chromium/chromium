@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
                })),
       // Move the mouse to the point. Use the gfx::Point* version so we can
       // dynamically receive the value calculated in the previous step.
-      MoveMouseTo(&p1),
+      MoveMouseTo(std::ref(p1)),
       // Verify that the mouse has been moved to the correct point.
       Check(base::BindLambdaForTesting([&]() {
         gfx::Rect rect(p1, gfx::Size());

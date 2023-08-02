@@ -6,6 +6,8 @@
 
 #include <functional>
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -205,58 +207,66 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
 // static
 InteractiveViewsTestApi::FindViewCallback
 InteractiveViewsTestApi::GetFindViewCallback(AbsoluteViewSpecifier spec) {
-  if (View** view = absl::get_if<View*>(&spec)) {
-    CHECK(*view) << "NameView(View*): view must be set.";
-    return base::BindOnce(
-        [](const std::unique_ptr<ViewTracker>& ref, View*) {
-          LOG_IF(ERROR, !ref->view()) << "NameView(View*): view ceased to be "
-                                         "valid before step was executed.";
-          return ref->view();
-        },
-        std::make_unique<ViewTracker>(*view));
-  }
-
-  if (std::reference_wrapper<View*>* view =
-          absl::get_if<std::reference_wrapper<View*>>(&spec)) {
-    return base::BindOnce(
-        [](std::reference_wrapper<View*> view, View*) {
-          LOG_IF(ERROR, !view.get())
-              << "NameView(ref(View*)): view pointer is null.";
-          return view.get();
-        },
-        *view);
-  }
-
-  return base::RectifyCallback<FindViewCallback>(
-      std::move(absl::get<base::OnceCallback<View*()>>(spec)));
+  return absl::visit(
+      base::Overloaded{
+          [](View* view) {
+            CHECK(view) << "NameView(View*): view must be set.";
+            return base::BindOnce(
+                [](const std::unique_ptr<ViewTracker>& ref, View*) {
+                  LOG_IF(ERROR, !ref->view())
+                      << "NameView(View*): view ceased to be "
+                         "valid before step was executed.";
+                  return ref->view();
+                },
+                std::make_unique<ViewTracker>(view));
+          },
+          [](std::reference_wrapper<View*> ref) {
+            return base::BindOnce(
+                [](std::reference_wrapper<View*> ref, View*) {
+                  LOG_IF(ERROR, !ref.get())
+                      << "NameView(View*): view ceased to be "
+                         "valid before step was executed.";
+                  return ref.get();
+                },
+                ref);
+          },
+          [](base::OnceCallback<View*()>& callback) {
+            return base::RectifyCallback<FindViewCallback>(std::move(callback));
+          }},
+      spec);
 }
 
 // static
 InteractiveViewsTestApi::FindViewCallback
 InteractiveViewsTestApi::GetFindViewCallback(ChildViewSpecifier spec) {
-  if (size_t* index = absl::get_if<size_t>(&spec)) {
-    return base::BindOnce(
-        [](size_t index, View* parent) -> View* {
-          if (index >= parent->children().size()) {
-            LOG(ERROR) << "NameChildView(int): Child index out of bounds; got "
-                       << index << " but only " << parent->children().size()
-                       << " children.";
-            return nullptr;
-          }
-          return parent->children()[index];
-        },
-        *index);
-  }
-
-  return base::BindOnce(
-      [](ViewMatcher matcher, View* parent) -> View* {
-        auto* const result =
-            FindMatchingView(parent, matcher, /*recursive =*/false);
-        LOG_IF(ERROR, !result)
-            << "NameChildView(ViewMatcher): No child matches matcher.";
-        return result;
-      },
-      absl::get<ViewMatcher>(spec));
+  return absl::visit(
+      base::Overloaded{
+          [](size_t index) {
+            return base::BindOnce(
+                [](size_t index, View* parent) -> View* {
+                  if (index >= parent->children().size()) {
+                    LOG(ERROR)
+                        << "NameChildView(int): Child index out of bounds; got "
+                        << index << " but only " << parent->children().size()
+                        << " children.";
+                    return nullptr;
+                  }
+                  return parent->children()[index];
+                },
+                index);
+          },
+          [](ViewMatcher& matcher) {
+            return base::BindOnce(
+                [](ViewMatcher matcher, View* parent) -> View* {
+                  auto* const result =
+                      FindMatchingView(parent, matcher, /*recursive =*/false);
+                  LOG_IF(ERROR, !result) << "NameChildView(ViewMatcher): No "
+                                            "child matches matcher.";
+                  return result;
+                },
+                std::move(matcher));
+          }},
+      spec);
 }
 
 // static
@@ -290,36 +300,41 @@ void InteractiveViewsTestApi::SetContextWidget(Widget* widget) {
 // static
 InteractiveViewsTestApi::RelativePositionCallback
 InteractiveViewsTestApi::GetPositionCallback(AbsolutePositionSpecifier spec) {
-  if (auto* point = absl::get_if<gfx::Point>(&spec)) {
-    return base::BindOnce([](gfx::Point p, ui::TrackedElement*) { return p; },
-                          *point);
-  }
-
-  if (auto** point = absl::get_if<gfx::Point*>(&spec)) {
-    return base::BindOnce([](gfx::Point* p, ui::TrackedElement*) { return *p; },
-                          base::Unretained(*point));
-  }
-
-  CHECK(absl::holds_alternative<AbsolutePositionCallback>(spec));
-  return base::RectifyCallback<RelativePositionCallback>(
-      std::move(absl::get<AbsolutePositionCallback>(spec)));
+  return absl::visit(
+      base::Overloaded{
+          [](const gfx::Point& point) {
+            return base::BindOnce(
+                [](gfx::Point p, ui::TrackedElement*) { return p; }, point);
+          },
+          [](std::reference_wrapper<gfx::Point> point) {
+            return base::BindOnce([](std::reference_wrapper<gfx::Point> p,
+                                     ui::TrackedElement*) { return p.get(); },
+                                  point);
+          },
+          [](AbsolutePositionCallback& callback) {
+            return base::RectifyCallback<RelativePositionCallback>(
+                std::move(callback));
+          }},
+      spec);
 }
 
 // static
 InteractiveViewsTestApi::RelativePositionCallback
 InteractiveViewsTestApi::GetPositionCallback(RelativePositionSpecifier spec) {
-  if (auto* cb = absl::get_if<RelativePositionCallback>(&spec)) {
-    return std::move(*cb);
-  }
-
-  CHECK(absl::holds_alternative<CenterPoint>(spec));
-  return base::BindOnce([](ui::TrackedElement* el) {
-    CHECK(el->IsA<views::TrackedElementViews>());
-    return el->AsA<views::TrackedElementViews>()
-        ->view()
-        ->GetBoundsInScreen()
-        .CenterPoint();
-  });
+  return absl::visit(
+      base::Overloaded{[](RelativePositionCallback& callback) {
+                         return std::move(callback);
+                       },
+                       [](CenterPoint) {
+                         return base::BindOnce([](ui::TrackedElement* el) {
+                           CHECK(el->IsA<views::TrackedElementViews>());
+                           return el->AsA<views::TrackedElementViews>()
+                               ->view()
+                               ->GetBoundsInScreen()
+                               .CenterPoint();
+                         });
+                       }},
+      spec);
 }
 
 }  // namespace views::test

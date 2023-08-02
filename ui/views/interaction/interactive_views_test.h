@@ -259,11 +259,11 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       // created; use gfx::Point* if you want to capture a point during sequence
       // execution.
       gfx::Point,
-      // As above, but the position is read from the memory address on execution
+      // As above, but the position is read from the reference on execution
       // instead of copied when the test sequence is constructed. Use this when
       // you want to calculate and cache a point during test execution for later
       // use. The pointer must remain valid through the end of the test.
-      gfx::Point*,
+      std::reference_wrapper<gfx::Point>,
       // Use the return value of the supplied callback
       AbsolutePositionCallback>;
 

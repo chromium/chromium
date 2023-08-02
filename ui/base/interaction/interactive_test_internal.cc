@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,21 +155,20 @@ void InteractiveTestPrivate::OnSequenceAborted(
 
 void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
                     ElementSpecifier element) {
-  if (auto* id = absl::get_if<ElementIdentifier>(&element)) {
-    builder.SetElementID(*id);
-  } else {
-    CHECK(absl::holds_alternative<base::StringPiece>(element));
-    builder.SetElementName(absl::get<base::StringPiece>(element));
-  }
+  absl::visit(
+      base::Overloaded{
+          [&builder](ElementIdentifier id) { builder.SetElementID(id); },
+          [&builder](base::StringPiece name) { builder.SetElementName(name); }},
+      element);
 }
 
 std::string DescribeElement(ElementSpecifier element) {
-  if (auto* id = absl::get_if<ElementIdentifier>(&element)) {
-    return id->GetName();
-  }
-  CHECK(absl::holds_alternative<base::StringPiece>(element));
-  return base::StringPrintf("\"%s\"",
-                            absl::get<base::StringPiece>(element).data());
+  return absl::visit(
+      base::Overloaded{[](ElementIdentifier id) { return id.GetName(); },
+                       [](base::StringPiece name) {
+                         return base::StringPrintf("\"%s\"", name.data());
+                       }},
+      element);
 }
 
 InteractionSequence::Builder BuildSubsequence(
