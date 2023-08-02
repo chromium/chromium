@@ -14,10 +14,10 @@ import {request_options_with_mediation_required} from './fedcm-helper.sub.js';
 // }
 
 window.onload = async () => {
+  // Use this variable to stop trying to select an account once the get() promise is resolved.
+  let cancelHelper = false;
   try {
     const credentialPromise = navigator.credentials.get(request_options_with_mediation_required());
-    // Use this variable to stop trying to select an account once the get() promise is resolved.
-    let cancelHelper = false;
     async function helper() {
       try {
         if (cancelHelper)

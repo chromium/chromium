@@ -5,13 +5,13 @@
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_FEDCM_MANAGER_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_FEDCM_MANAGER_H_
 
-#include "base/functional/callback_forward.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom.h"
 
 namespace content {
 
 class RenderFrameHost;
+class RenderFrameHostImpl;
 
 class WebTestFedCmManager
     : public blink::test::mojom::FederatedAuthRequestAutomation {
@@ -30,7 +30,7 @@ class WebTestFedCmManager
                           SelectFedCmAccountCallback) override;
 
  private:
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };
 
 }  // namespace content

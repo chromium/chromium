@@ -4,22 +4,27 @@
 
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "content/public/browser/page.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 WebTestFedCmManager::WebTestFedCmManager(RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {}
+    : render_frame_host_(
+          static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr()) {}
 
 WebTestFedCmManager::~WebTestFedCmManager() = default;
 
 void WebTestFedCmManager::GetFedCmDialogTitle(
     blink::test::mojom::FederatedAuthRequestAutomation::
         GetFedCmDialogTitleCallback callback) {
+  if (!render_frame_host_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
   FederatedAuthRequestPageData* page_data =
       PageUserData<FederatedAuthRequestPageData>::GetForPage(
           render_frame_host_->GetPage());
@@ -45,6 +50,10 @@ void WebTestFedCmManager::GetFedCmDialogTitle(
 void WebTestFedCmManager::SelectFedCmAccount(
     uint32_t account_index,
     SelectFedCmAccountCallback callback) {
+  if (!render_frame_host_) {
+    std::move(callback).Run(false);
+    return;
+  }
   FederatedAuthRequestPageData* page_data =
       PageUserData<FederatedAuthRequestPageData>::GetForPage(
           render_frame_host_->GetPage());
