@@ -11,14 +11,23 @@
 
   #help {
     align-items: flex-start;
-    color: var(--cros-text-color-disabled);
     display: flex;
     flex-direction: row;
-    font-size: 9px;
-    line-height: 12px;
     margin-inline-end: 24px;
     margin-inline-start: 24px;
     padding: 8px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #help {
+    color: var(--cros-text-color-disabled);
+    font-size: 9px;
+    line-height: 12px;
+  }
+
+  :host-context(body.jelly-enabled) #help {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-annotation-2-font);
   }
 
   #helpText {
@@ -27,35 +36,74 @@
 
   #infoIcon {
     flex-shrink: 0;
-    height: 20px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #infoIcon {
     margin-inline-end: 12px;
+    height: 20px;
     width: 20px;
   }
 
-  .icon-help-state {
+  :host-context(body.jelly-enabled) #infoIcon {
+    margin-inline-end: 8px;
+    height: 16px;
+    width: 16px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) .icon-help-state {
     fill: var(--cros-icon-color-disabled);
   }
 
-  .icon-error-state {
+  :host-context(body.jelly-enabled) .icon-help-state {
+    fill: var(--cros-sys-secondary);
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) .icon-error-state {
     fill: var(--cros-icon-color-alert);
+  }
+
+  :host-context(body.jelly-enabled) .icon-error-state {
+    fill: var(--cros-sys-error);
   }
 
   #error {
     align-items: flex-start;
     display: flex;
     flex-direction: column;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #error {
     font-size: 12px;
   }
 
   #errorTitle {
-    color: var(--cros-text-color-alert);
-    font-weight: bold;
     margin-bottom: 3px;
   }
 
-  #errorDescription {
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorTitle {
+    color: var(--cros-text-color-alert);
+    font-weight: bold;
+  }
+
+  :host-context(body.jelly-enabled) #errorTitle {
+    color: var(--cros-sys-error);
+    font: var(--cros-button-2-font);
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorDescription {
     color: var(--cros-text-color-secondary);
     line-height: 13px;
+  }
+
+  :host-context(body.jelly-enabled) #errorDescription {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-annotation-2-font);
   }
 
   cr-lottie {

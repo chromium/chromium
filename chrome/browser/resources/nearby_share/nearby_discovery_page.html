@@ -28,26 +28,55 @@
     align-items: flex-start;
     display: flex;
     flex-direction: column;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #error {
     font-size: 12px;
   }
 
-  #errorTitle {
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorTitle {
     color: var(--cros-text-color-alert);
     font-weight: bold;
     margin: 3px 0;
   }
 
-  #errorDescription {
+  :host-context(body.jelly-enabled) #errorTitle {
+    color: var(--cros-sys-error);
+    font: var(--cros-button-2-font);
+    margin-bottom: 3px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorDescription {
     color: var(--cros-text-color-secondary);
     line-height: 13px;
   }
 
+  :host-context(body.jelly-enabled) #errorDescription {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-annotation-2-font);
+  }
+
   #errorIcon {
-    fill: var(--cros-icon-color-alert);
     flex-shrink: 0;
-    height: 20px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorIcon {
+    fill: var(--cros-icon-color-alert);
     margin-inline-end: 12px;
+    height: 20px;
     width: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #errorIcon {
+    fill: var(--cros-sys-error);
+    margin-inline-end: 8px;
+    margin-top: 2px;
+    height: 16px;
+    width: 16px;
   }
 
   #help {
@@ -80,9 +109,20 @@
 
   #infoIcon {
     flex-shrink: 0;
-    height: 20px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #infoIcon {
     margin-inline-end: 12px;
+    height: 20px;
     width: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #infoIcon {
+    fill: var(--cros-sys-secondary);
+    margin-inline-end: 8px;
+    height: 16px;
+    width: 16px;
   }
 
   #process-row {
