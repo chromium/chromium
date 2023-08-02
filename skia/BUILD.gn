@@ -774,22 +774,17 @@ if (current_cpu == "x86" || current_cpu == "x64") {
   }
   skia_source_set("skia_opts_hsw") {
     sources = skia_opts.hsw_sources
-    cflags = []
     if (!is_win) {
-      cflags += [
+      cflags = [
         "-mavx2",
         "-mbmi",
         "-mbmi2",
         "-mf16c",
         "-mfma",
-        "-fomit-frame-pointer",
       ]
     }
     if (is_win) {
-      cflags += [
-        "/arch:AVX2",
-        "/Oy",
-      ]
+      cflags = [ "/arch:AVX2" ]
     }
     visibility = [ ":skia_opts" ]
   }
