@@ -204,6 +204,41 @@ enum class OfficeFilesUseOutsideDriveHook {
   kMaxValue = OPEN_FROM_FILES_APP,
 };
 
+// UMA metric name that tracks the result of using a MS Office file outside
+// of Drive.
+constexpr char kOfficeOpenExtensionOneDriveMetricName[] =
+    "FileBrowser.OfficeFiles.Open.FileType.OneDrive";
+
+// List of file extensions that are used when opening a file with the
+// "open-in-office" task. The enum values must be kept in sync with
+// OfficeOpenExtensions in tools/metrics/histograms/enums.xml.
+enum class OfficeOpenExtensions {
+  kOther,
+  kDoc,
+  kDocm,
+  kDocx,
+  kDotm,
+  kDotx,
+  kOdp,
+  kOds,
+  kOdt,
+  kPot,
+  kPotm,
+  kPotx,
+  kPpam,
+  kPps,
+  kPpsm,
+  kPpsx,
+  kPpt,
+  kPptm,
+  kPptx,
+  kXls,
+  kXlsb,
+  kXlsm,
+  kXlsx,
+  kMaxValue = kXlsx,
+};
+
 // Describes a task.
 // See the comment above for <app-id>, <task-type>, and <action-id>.
 struct TaskDescriptor {

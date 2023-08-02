@@ -132,6 +132,33 @@ constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPdfFileExtension[] = ".pdf";
 constexpr char kEncryptedMimeType[] = "application/vnd.google-gsuite.encrypted";
 
+// The map with pairs Office file extensions with their corresponding
+// `OfficeOpenExtensions` enum.
+const base::NoDestructor<base::flat_map<std::string, OfficeOpenExtensions>>
+    kExtensionToOfficeOpenExtensionsEnum(
+        {{".doc", OfficeOpenExtensions::kDoc},
+         {".docm", OfficeOpenExtensions::kDocm},
+         {".docx", OfficeOpenExtensions::kDocx},
+         {".dotm", OfficeOpenExtensions::kDotm},
+         {".dotx", OfficeOpenExtensions::kDotx},
+         {".odp", OfficeOpenExtensions::kOdp},
+         {".ods", OfficeOpenExtensions::kOds},
+         {".odt", OfficeOpenExtensions::kOdt},
+         {".pot", OfficeOpenExtensions::kPot},
+         {".potm", OfficeOpenExtensions::kPotm},
+         {".potx", OfficeOpenExtensions::kPotx},
+         {".ppam", OfficeOpenExtensions::kPpam},
+         {".pps", OfficeOpenExtensions::kPps},
+         {".ppsm", OfficeOpenExtensions::kPpsm},
+         {".ppsx", OfficeOpenExtensions::kPpsx},
+         {".ppt", OfficeOpenExtensions::kPpt},
+         {".pptm", OfficeOpenExtensions::kPptm},
+         {".pptx", OfficeOpenExtensions::kPptx},
+         {".xls", OfficeOpenExtensions::kXls},
+         {".xlsb", OfficeOpenExtensions::kXlsb},
+         {".xlsm", OfficeOpenExtensions::kXlsm},
+         {".xlsx", OfficeOpenExtensions::kXlsx}});
+
 base::Value& GetDebugBaseValueForExecuteFileTask() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static base::NoDestructor<base::Value> instance;
@@ -571,6 +598,14 @@ void RecordDriveOfflineUMAs(Profile* profile,
   }
 }
 
+OfficeOpenExtensions GetOfficeOpenExtension(const FileSystemURL& url) {
+  const std::string extension = base::ToLowerASCII(url.path().FinalExtension());
+  if (!kExtensionToOfficeOpenExtensionsEnum->contains(extension)) {
+    return OfficeOpenExtensions::kOther;
+  }
+  return kExtensionToOfficeOpenExtensionsEnum->at(extension);
+}
+
 }  // namespace
 
 ResultingTasks::ResultingTasks() = default;
@@ -902,6 +937,11 @@ bool ExecuteFileTask(Profile* profile,
     return true;
   }
   if (IsOpenInOfficeTask(task)) {
+    for (const FileSystemURL& file_url : file_urls) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kOfficeOpenExtensionOneDriveMetricName,
+          GetOfficeOpenExtension(file_url));
+    }
     const bool started =
         ExecuteOpenInOfficeTask(profile, task, file_urls, modal_parent);
     if (done) {

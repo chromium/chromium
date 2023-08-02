@@ -77704,6 +77704,32 @@ Called by update_net_trust_anchors.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="OfficeOpenExtensions">
+  <int value="0" label="other"/>
+  <int value="1" label=".doc"/>
+  <int value="2" label=".docm"/>
+  <int value="3" label=".docx"/>
+  <int value="4" label=".dotm"/>
+  <int value="5" label=".dotx"/>
+  <int value="6" label=".odp"/>
+  <int value="7" label=".ods"/>
+  <int value="8" label=".odt"/>
+  <int value="9" label=".pot"/>
+  <int value="10" label=".potm"/>
+  <int value="11" label=".potx"/>
+  <int value="12" label=".ppam"/>
+  <int value="13" label=".pps"/>
+  <int value="14" label=".ppsm"/>
+  <int value="15" label=".ppsx"/>
+  <int value="16" label=".ppt"/>
+  <int value="17" label=".pptm"/>
+  <int value="18" label=".pptx"/>
+  <int value="19" label=".xls"/>
+  <int value="20" label=".xlsb"/>
+  <int value="21" label=".xlsm"/>
+  <int value="22" label=".xlsx"/>
+</enum>
+
 <enum name="OfficeSetupFileHandler">
   <int value="0" label="Google Docs"/>
   <int value="1" label="Google Sheets"/>
