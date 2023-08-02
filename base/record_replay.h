@@ -348,6 +348,10 @@ public:
   }
 };
 
+typedef void (*ResetPaintSurfaceCallback)();
+void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface);
+void DoResetPaintSurface();
+
 } // namespace recordreplay
 
 #endif // BASE_RECORD_REPLAY_H_
