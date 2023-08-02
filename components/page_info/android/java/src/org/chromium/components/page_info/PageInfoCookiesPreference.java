@@ -115,8 +115,9 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
             mCookieSwitch.setTitle(R.string.page_info_all_cookies_block);
         }
 
-        mCookieInUse.setIcon(
-                SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
+        mCookieInUse.setIcon(SettingsUtils.getTintedIcon(getContext(),
+                PageInfoFeatures.USER_BYPASS_UI.isEnabled() ? R.drawable.gm_database_24
+                                                            : R.drawable.permission_cookie));
         mCookieInUse.setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
         // Disabling enables passthrough of clicks to the main preference.

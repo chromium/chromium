@@ -49,6 +49,7 @@ android_resources("java_resources") {
     "java/res/xml/page_info_cookie_preference_user_bypass.xml",
   ]
   deps = [
+    "//components/browser_ui/site_settings/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/permissions/android:java_resources",
     "//components/strings:components_strings_grd",
