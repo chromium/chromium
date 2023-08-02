@@ -27,13 +27,10 @@
 namespace {
 
 // Jelly colors should only be considered enabled when jelly styling is
-// enabled for OS Feedback and the OS Feedback app is being used. Listener is
-// added here to enable correct coloring in child web dialogs when launched
-// from OS Feedback.
+// enabled for Feedback on ChromeOS.
 bool IsJellyColorsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsJellyEnabledForOsFeedback() &&
-         base::FeatureList::IsEnabled(ash::features::kOsFeedback);
+  return ash::features::IsJellyEnabledForOsFeedback();
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
