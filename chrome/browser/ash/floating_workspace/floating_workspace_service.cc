@@ -97,9 +97,6 @@ FloatingWorkspaceService::FloatingWorkspaceService(
       initialization_timestamp_(base::TimeTicks::Now()) {}
 
 FloatingWorkspaceService::~FloatingWorkspaceService() {
-  if (is_testing_)
-    return;
-
   if (timer_.IsRunning()) {
     StopCaptureAndUploadActiveDesk();
   }
