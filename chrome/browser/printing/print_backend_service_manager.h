@@ -709,9 +709,9 @@ class PrintBackendServiceManager {
   std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_keys_;
 
   // Override of service to use for testing.
-  raw_ptr<mojo::Remote<mojom::PrintBackendService>, LeakedDanglingUntriaged>
+  raw_ptr<mojo::Remote<mojom::PrintBackendService>>
       sandboxed_service_remote_for_test_ = nullptr;
-  raw_ptr<mojo::Remote<mojom::PrintBackendService>, LeakedDanglingUntriaged>
+  raw_ptr<mojo::Remote<mojom::PrintBackendService>>
       unsandboxed_service_remote_for_test_ = nullptr;
 };
 

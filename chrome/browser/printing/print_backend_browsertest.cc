@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/common/chrome_paths.h"
@@ -141,6 +142,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDown();
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+    PrintBackendServiceManager::ResetForTesting();
   }
 
   // Load the test backend with a default printer driver.
