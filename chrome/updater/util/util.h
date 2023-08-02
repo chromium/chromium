@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
@@ -46,7 +47,7 @@ template <typename T>
 std::ostream& operator<<(
     typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream,
     const T& e) {
-  return stream << static_cast<typename std::underlying_type<T>::type>(e);
+  return stream << base::to_underlying(e);
 }
 
 namespace tagging {
