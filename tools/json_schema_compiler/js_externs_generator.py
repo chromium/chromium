@@ -127,7 +127,7 @@ class _Generator(object):
 
     if js_type.description:
       for line in js_type.description.splitlines():
-        c.Append(line)
+        c.Comment(line, comment_prefix='')
 
     if js_type.jsexterns:
       for line in js_type.jsexterns.splitlines():

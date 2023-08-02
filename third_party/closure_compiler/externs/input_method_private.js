@@ -27,7 +27,8 @@ chrome.inputMethodPrivate.MenuItemStyle = {
 };
 
 /**
- * A menu item used by an input method to interact with the user from the language menu.
+ * A menu item used by an input method to interact with the user from the
+ * language menu.
  * @typedef {{
  *   id: string,
  *   label: (string|undefined),

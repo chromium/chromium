@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,8 @@ chrome.extensionTypes.CSSOrigin = {
 };
 
 /**
- * Details of the script or CSS to inject. Either the code or the file property must be set, but both may not be set at the same time.
+ * Details of the script or CSS to inject. Either the code or the file property
+ * must be set, but both may not be set at the same time.
  * @typedef {{
  *   code: (string|undefined),
  *   file: (string|undefined),
@@ -71,7 +72,8 @@ chrome.extensionTypes.CSSOrigin = {
 chrome.extensionTypes.InjectDetails;
 
 /**
- * Details of the CSS to remove. Either the code or the file property must be set, but both may not be set at the same time.
+ * Details of the CSS to remove. Either the code or the file property must be
+ * set, but both may not be set at the same time.
  * @typedef {{
  *   code: (string|undefined),
  *   file: (string|undefined),

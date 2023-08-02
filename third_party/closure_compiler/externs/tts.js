@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,14 +52,17 @@ chrome.tts.VoiceGender = {
 chrome.tts.TtsOptions = function() {};
 
 /**
- * If true, enqueues this utterance if TTS is already in progress. If false (the default), interrupts any current speech and flushes the speech queue before speaking this new utterance.
+ * If true, enqueues this utterance if TTS is already in progress. If false (the
+ * default), interrupts any current speech and flushes the speech queue before
+ * speaking this new utterance.
  * @type {(boolean|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-enqueue
  */
 chrome.tts.TtsOptions.prototype.enqueue;
 
 /**
- * The name of the voice to use for synthesis. If empty, uses any available voice.
+ * The name of the voice to use for synthesis. If empty, uses any available
+ * voice.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-voiceName
  */
@@ -73,7 +76,8 @@ chrome.tts.TtsOptions.prototype.voiceName;
 chrome.tts.TtsOptions.prototype.extensionId;
 
 /**
- * The language to be used for synthesis, in the form <em>language</em>-<em>region</em>. Examples: 'en', 'en-US', 'en-GB', 'zh-CN'.
+ * The language to be used for synthesis, in the form
+ * <em>language</em>-<em>region</em>. Examples: 'en', 'en-US', 'en-GB', 'zh-CN'.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-lang
  */
@@ -87,21 +91,28 @@ chrome.tts.TtsOptions.prototype.lang;
 chrome.tts.TtsOptions.prototype.gender;
 
 /**
- * Speaking rate relative to the default rate for this voice. 1.0 is the default rate, normally around 180 to 220 words per minute. 2.0 is twice as fast, and 0.5 is half as fast. Values below 0.1 or above 10.0 are strictly disallowed, but many voices will constrain the minimum and maximum rates further&mdash;for example a particular voice may not actually speak faster than 3 times normal even if you specify a value larger than 3.0.
+ * Speaking rate relative to the default rate for this voice. 1.0 is the default
+ * rate, normally around 180 to 220 words per minute. 2.0 is twice as fast, and
+ * 0.5 is half as fast. Values below 0.1 or above 10.0 are strictly disallowed,
+ * but many voices will constrain the minimum and maximum rates
+ * further&mdash;for example a particular voice may not actually speak faster
+ * than 3 times normal even if you specify a value larger than 3.0.
  * @type {(number|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-rate
  */
 chrome.tts.TtsOptions.prototype.rate;
 
 /**
- * Speaking pitch between 0 and 2 inclusive, with 0 being lowest and 2 being highest. 1.0 corresponds to a voice's default pitch.
+ * Speaking pitch between 0 and 2 inclusive, with 0 being lowest and 2 being
+ * highest. 1.0 corresponds to a voice's default pitch.
  * @type {(number|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-pitch
  */
 chrome.tts.TtsOptions.prototype.pitch;
 
 /**
- * Speaking volume between 0 and 1 inclusive, with 0 being lowest and 1 being highest, with a default of 1.0.
+ * Speaking volume between 0 and 1 inclusive, with 0 being lowest and 1 being
+ * highest, with a default of 1.0.
  * @type {(number|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-volume
  */
@@ -115,7 +126,8 @@ chrome.tts.TtsOptions.prototype.volume;
 chrome.tts.TtsOptions.prototype.requiredEventTypes;
 
 /**
- * The TTS event types that you are interested in listening to. If missing, all event types may be sent.
+ * The TTS event types that you are interested in listening to. If missing, all
+ * event types may be sent.
  * @type {(!Array<string>|undefined)}
  * @see https://developer.chrome.com/extensions/tts#type-desiredEventTypes
  */
