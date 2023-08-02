@@ -76,7 +76,8 @@ class ScalableIphDelegateImpl
   void OnNetworkStateList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
-  void NotifyUnlockedOrSuspendDone();
+  void NotifyLockStateChanged(bool locked);
+  void NotifySuspendDoneWithoutLockScreen();
   void OnNudgeButtonClicked(const std::string& bubble_id,
                             scalable_iph::ScalableIphDelegate::Action action);
   void OnNudgeDismissed(const std::string& bubble_id);

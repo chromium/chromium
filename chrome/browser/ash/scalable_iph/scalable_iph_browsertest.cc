@@ -325,6 +325,30 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, NoTimeTickEventWithLockScreen) {
+  // We test unlocked event inside ScalableIph service. Make sure that
+  // ScalableIph service is running.
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  ASSERT_TRUE(scalable_iph);
+
+  // Fast forward by 3 mins. The interval of time tick event is 5 mins. No time
+  // tick event should be observed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameFiveMinTick))
+      .Times(0);
+  task_runner()->FastForwardBy(base::Minutes(3));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  // Fast forward by another 3 mins. The total of fast forwarded time is 6 mins.
+  // But a time tick event will not be observed because device is locked.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameFiveMinTick))
+      .Times(0);
+  ash::ScreenLockerTester tester;
+  tester.Lock();
+  task_runner()->FastForwardBy(base::Minutes(3));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
 // TODO(crbug.com/1468580): Flaky test.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_UnlockedEvent) {
   // We test unlocked event inside ScalableIph service. Make sure that

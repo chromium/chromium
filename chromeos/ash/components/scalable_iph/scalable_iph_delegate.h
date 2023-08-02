@@ -25,9 +25,13 @@ class ScalableIphDelegate {
    public:
     virtual void OnConnectionChanged(bool online) {}
 
-    // Called when device is unlocked. If lock screen is not set up, it will be
-    // called when the system resumes from suspension.
-    virtual void OnUnlockedOrSuspendDone() {}
+    // Called when the device enables lock screen, and every time the lock state
+    // changes.
+    virtual void OnLockStateChanged(bool locked) {}
+
+    // Called when the device does not enables lock screen, and every time the
+    // system resumes from suspension.
+    virtual void OnSuspendDoneWithoutLockScreen() {}
 
     // Called when the visibility of an app list has changed.
     virtual void OnAppListVisibilityChanged(bool shown) {}

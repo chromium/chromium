@@ -93,7 +93,8 @@ class ScalableIph : public KeyedService,
 
   // ScalableIphDelegate::Observer:
   void OnConnectionChanged(bool online) override;
-  void OnUnlockedOrSuspendDone() override;
+  void OnLockStateChanged(bool locked) override;
+  void OnSuspendDoneWithoutLockScreen() override;
   void OnAppListVisibilityChanged(bool shown) override;
 
   // IphSession::Delegate:
@@ -133,6 +134,7 @@ class ScalableIph : public KeyedService,
   std::unique_ptr<ScalableIphDelegate> delegate_;
   base::RepeatingTimer timer_;
   bool online_ = false;
+  bool locked_ = false;
 
   std::vector<const base::Feature*> feature_list_for_testing_;
 

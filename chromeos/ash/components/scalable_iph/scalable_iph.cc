@@ -322,7 +322,17 @@ void ScalableIph::OnConnectionChanged(bool online) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ScalableIph::OnUnlockedOrSuspendDone() {
+void ScalableIph::OnLockStateChanged(bool locked) {
+  DCHECK_NE(locked_, locked);
+  locked_ = locked;
+
+  if (!locked_) {
+    RecordEvent(Event::kUnlocked);
+  }
+}
+
+void ScalableIph::OnSuspendDoneWithoutLockScreen() {
+  DCHECK(!locked_);
   RecordEvent(Event::kUnlocked);
 }
 
@@ -378,6 +388,11 @@ void ScalableIph::EnsureTimerStarted() {
 }
 
 void ScalableIph::RecordTimeTickEvent() {
+  // Do not record timer event when device is locked.
+  if (locked_) {
+    return;
+  }
+
   RecordEvent(Event::kFiveMinTick);
 }
 

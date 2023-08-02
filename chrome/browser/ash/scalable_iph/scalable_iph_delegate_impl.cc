@@ -473,10 +473,7 @@ void ScalableIphDelegateImpl::OnShellDestroying() {
 }
 
 void ScalableIphDelegateImpl::OnLockStateChanged(bool locked) {
-  if (locked) {
-    return;
-  }
-  NotifyUnlockedOrSuspendDone();
+  NotifyLockStateChanged(locked);
 }
 
 void ScalableIphDelegateImpl::SuspendDone(base::TimeDelta sleep_duration) {
@@ -484,7 +481,7 @@ void ScalableIphDelegateImpl::SuspendDone(base::TimeDelta sleep_duration) {
   if (ash::LockScreen::HasInstance()) {
     return;
   }
-  NotifyUnlockedOrSuspendDone();
+  NotifySuspendDoneWithoutLockScreen();
 }
 
 void ScalableIphDelegateImpl::OnAppListVisibilityChanged(bool shown,
@@ -518,9 +515,15 @@ void ScalableIphDelegateImpl::OnNetworkStateList(
   SetHasOnlineNetwork(HasOnlineNetwork(networks));
 }
 
-void ScalableIphDelegateImpl::NotifyUnlockedOrSuspendDone() {
+void ScalableIphDelegateImpl::NotifyLockStateChanged(bool locked) {
   for (DelegateObserver& observer : observers_) {
-    observer.OnUnlockedOrSuspendDone();
+    observer.OnLockStateChanged(locked);
+  }
+}
+
+void ScalableIphDelegateImpl::NotifySuspendDoneWithoutLockScreen() {
+  for (DelegateObserver& observer : observers_) {
+    observer.OnSuspendDoneWithoutLockScreen();
   }
 }
 
