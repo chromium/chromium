@@ -116,7 +116,6 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableAfter2ndSigninScreen) {
 
   // Navigate to gaia info screen.
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  test::OobeJS().TapOnPath({"user-creation", "selfButton"});
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
 
   if (features::IsOobeGaiaInfoScreenEnabled()) {

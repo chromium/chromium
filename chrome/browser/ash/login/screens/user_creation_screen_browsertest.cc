@@ -65,9 +65,7 @@ class UserCreationScreenTest
     : public OobeBaseTest,
       public UserCreationScreen::UserCreationScreenExitTestDelegate {
  public:
-  UserCreationScreenTest() : OobeBaseTest() {
-    feature_list_.InitWithFeatures({}, {ash::features::kOobeSoftwareUpdate});
-  }
+  UserCreationScreenTest() = default;
   ~UserCreationScreenTest() override = default;
 
   void SetUpOnMainThread() override {

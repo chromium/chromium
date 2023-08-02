@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
@@ -100,21 +98,6 @@ void ExitUpdateScreenNoUpdate() {
   screen->GetVersionUpdaterForTesting()->UpdateStatusChangedForTesting(status);
 }
 
-void WaitForConsumerUpdateScreen() {
-  WaitFor(ConsumerUpdateScreenView::kScreenId);
-  OobeJS().CreateVisibilityWaiter(true, {"consumer-update"})->Wait();
-}
-
-void ExitConsumerUpdateScreenNoUpdate() {
-  update_engine::StatusResult status;
-  status.set_current_operation(update_engine::Operation::ERROR);
-
-  ConsumerUpdateScreen* screen =
-      WizardController::default_controller()->GetScreen<ConsumerUpdateScreen>();
-  screen->get_version_updater_for_testing()->UpdateStatusChangedForTesting(
-      status);
-}
-
 void WaitForFingerprintScreen() {
   LOG(INFO) << "Waiting for 'fingerprint-setup' screen.";
   OobeScreenWaiter(FingerprintSetupScreenView::kScreenId).Wait();
@@ -170,10 +153,6 @@ void WaitForEnrollmentScreen() {
 
 void WaitForUserCreationScreen() {
   WaitFor(UserCreationView::kScreenId);
-}
-
-void TapForPersonalUseCrRadioButton() {
-  OobeJS().TapOnPath({"user-creation", "selfButton"});
 }
 
 void TapUserCreationNext() {

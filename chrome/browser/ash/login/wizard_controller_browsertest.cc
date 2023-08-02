@@ -3158,8 +3158,6 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccount) {
 
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childAccountButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childSetupNextButton"});
   OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
@@ -3180,12 +3178,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, GoBackToGaiaInfo) {
 
   test::OobeJS().ClickOnPath(
       {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
-
-  if (features::IsOobeSoftwareUpdateEnabled()) {
-    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  } else {
-    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
-  }
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
@@ -3209,9 +3202,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
 
 class GoingBackFromGaiaScreenInChildFlowTest
     : public GaiaInfoTest,
-      public testing::WithParamInterface<std::tuple<bool, std::string>> {
-  FakeGaiaMixin fake_gaia_{&mixin_host_};
-};
+      public testing::WithParamInterface<std::tuple<bool, std::string>> {};
 
 IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
                        SkippingGaiaInfoScreen) {
@@ -3224,8 +3215,6 @@ IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
 
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childAccountButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childSetupNextButton"});
   test::OobeJS().ClickOnPath({"add-child", std::get<1>(GetParam())});
   test::OobeJS().ClickOnPath({"add-child", "childNextButton"});
 
