@@ -1,0 +1,23 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField controlsIds=group
+++++++++genericContainer
+++++++textField detailsIds=group
+++++++++genericContainer
+++++++textField invalidState=true errorMessageIds=group
+++++++++genericContainer
+++++++textField flowtoIds=group
+++++++++genericContainer
+++++++group
+++++++++staticText name='controls target'
+++++++++++inlineTextBox name='controls target'
+++++++group
+++++++++staticText name='details target'
+++++++++++inlineTextBox name='details target'
+++++++group
+++++++++staticText name='errormessage target'
+++++++++++inlineTextBox name='errormessage target'
+++++++group
+++++++++staticText name='flowto target'
+++++++++++inlineTextBox name='flowto target'

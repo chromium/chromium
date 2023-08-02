@@ -1617,6 +1617,8 @@ data/accessibility/aria/input-text-aria-placeholder-expected-win.txt
 data/accessibility/aria/input-text-aria-placeholder.html
 data/accessibility/aria/label-with-selected-option-expected-blink.txt
 data/accessibility/aria/label-with-selected-option.html
+data/accessibility/aria/missing-relation-targets-added-later-expected-blink.txt
+data/accessibility/aria/missing-relation-targets-added-later.html
 data/accessibility/aria/presentational-expected-android-external.txt
 data/accessibility/aria/presentational-expected-auralinux.txt
 data/accessibility/aria/presentational-expected-blink.txt

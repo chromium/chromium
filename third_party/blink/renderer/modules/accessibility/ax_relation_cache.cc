@@ -717,4 +717,67 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
   }
 }
 
+void AXRelationCache::RegisterIncompleteRelation(
+    AXObject* source,
+    const QualifiedName& relation_attr) {
+  DCHECK(source);
+  Element* source_element = source->GetElement();
+  if (!source_element) {
+    return;
+  }
+
+  AtomicString relation_value = source_element->getAttribute(relation_attr);
+  if (relation_value.IsNull()) {
+    return;
+  }
+  String relation_value_as_string =
+      relation_value.GetString().SimplifyWhiteSpace();
+  Vector<String> tokens;
+  relation_value_as_string.Split(' ', tokens);
+
+  // Lookup each id within the same tree scope.
+  for (auto id : tokens) {
+    if (!source_element->GetTreeScope().getElementById(AtomicString(id))) {
+      // Missing id: store source AXID so that it can be marked dirty once
+      // the target node becomes available in the DOM.
+      auto entry = incomplete_relations_.insert(id, Vector<AXID>());
+      entry.stored_value->value.push_back(source->AXObjectID());
+    }
+  }
+}
+
+void AXRelationCache::RegisterIncompleteRelations(AXObject* source) {
+  // When a new relation is discovered to have a target id that's missing from
+  // the tree, record the incomplete relation so that when the id appears in the
+  // tree, the source node can be reserialized with completed relation. Note:
+  // aria-owns, aria-labelledy, aria-describedby affect more than just the
+  // serialized relation property itself, and thus handled separately.
+  DCHECK(source);
+  const QualifiedName relation_attrs[] = {
+      html_names::kAriaControlsAttr, html_names::kAriaDetailsAttr,
+      html_names::kAriaErrormessageAttr, html_names::kAriaFlowtoAttr};
+
+  for (const QualifiedName& relation_attr : relation_attrs) {
+    RegisterIncompleteRelation(source, relation_attr);
+  }
+}
+
+void AXRelationCache::ProcessCompletedRelationsForNewId(
+    const AtomicString& id) {
+  // When a new ID becomes available in the tree, we need to reserialize all
+  // of the nodes that pointed to it with a relation attribute.
+  auto iter = incomplete_relations_.find(id);
+  if (iter == incomplete_relations_.end()) {
+    return;
+  }
+
+  for (AXID source_axid : iter->value) {
+    if (AXObject* obj = object_cache_->ObjectFromAXID(source_axid)) {
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
+    }
+  }
+
+  incomplete_relations_.erase(iter);
+}
+
 }  // namespace blink

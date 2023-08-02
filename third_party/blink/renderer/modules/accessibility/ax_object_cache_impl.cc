@@ -1430,6 +1430,11 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
 
+  // Register incomplete relations with the relation cache, so that when the
+  // target id shows up at a later time, the source node can be reserialized
+  // with the completed relation.
+  relation_cache_->RegisterIncompleteRelations(new_obj);
+
   return new_obj;
 }
 
@@ -3580,6 +3585,14 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
 
   DCHECK_EQ(obj->GetNode(), &node);
 
+  // Process completed relations for new ids.
+  if (Element* element = DynamicTo<Element>(node)) {
+    const AtomicString& id = element->GetIdAttribute();
+    if (!id.IsNull()) {
+      relation_cache_->ProcessCompletedRelationsForNewId(id);
+    }
+  }
+
   // Check whether aria-activedescendant on the focused object points to
   // |obj|. If so, fire activedescendantchanged event now. This is only for
   // ARIA active descendants, not in a native control like a listbox, which
@@ -3738,6 +3751,14 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
           DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromAriaHasPopup,
                           element);
         }
+      }
+    } else if (attr_name == html_names::kAriaControlsAttr ||
+               attr_name == html_names::kAriaDetailsAttr ||
+               attr_name == html_names::kAriaErrormessageAttr ||
+               attr_name == html_names::kAriaFlowtoAttr) {
+      MarkElementDirty(element);
+      if (AXObject* obj = SafeGet(element)) {
+        relation_cache_->RegisterIncompleteRelation(obj, attr_name);
       }
     } else {
       MarkElementDirty(element);
@@ -4294,18 +4315,6 @@ void AXObjectCacheImpl::ClearTextOperationInNodeIdMap() {
 void AXObjectCacheImpl::MarkElementDirtyWithCleanLayout(const Node* element) {
   // Warning, if no AXObject exists for element, nothing is marked dirty.
   MarkAXObjectDirtyWithCleanLayout(Get(element));
-}
-
-void AXObjectCacheImpl::MarkIncompleteAXObjectsDirty() {
-  for (AXID id : incomplete_objects_) {
-    MarkAXObjectDirty(ObjectFromAXID(id));
-  }
-  incomplete_objects_.clear();
-}
-
-void AXObjectCacheImpl::QueueIncompleteAXObject(AXObject* obj) {
-  DCHECK(!obj->IsDetached());
-  incomplete_objects_.push_back(obj->AXObjectID());
 }
 
 AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
