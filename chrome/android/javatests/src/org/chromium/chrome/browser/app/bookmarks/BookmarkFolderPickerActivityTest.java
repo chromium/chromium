@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -87,6 +88,7 @@ public class BookmarkFolderPickerActivityTest {
     @Test
     @MediumTest
     @Feature({"Bookmark"})
+    @DisabledTest(message = "https://crbug.com/1469705")
     public void testMoveBookmark() throws ExecutionException, TimeoutException {
         BookmarkId bookmark =
                 addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
