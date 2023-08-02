@@ -39,7 +39,7 @@ void ShowChildPage(Profile* profile,
   ChildWebDialog* child_dialog = new ChildWebDialog(
       profile, dialog->GetWidget(), url, title,
       /*modal_type=*/
-      isParentModal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE, args,
+      isParentModal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE, args,
       dialog_width, dialog_height, can_resize, can_minimize);
 
   child_dialog->Show();
