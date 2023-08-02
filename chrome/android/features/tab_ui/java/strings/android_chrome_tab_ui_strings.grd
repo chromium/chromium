@@ -552,7 +552,7 @@
         Close all Incognito tabs?
       </message>
       <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the message of the dialog.">
-        Your activity in these Incognito tabs will be cleared from this device
+        Your activity in these Incognito tabs will be removed from this device
       </message>
     </messages>
   </release>
