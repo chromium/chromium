@@ -810,6 +810,25 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
   EXPECT_TRUE(widget->IsClosed());
 }
 
+// Tests that dragging an overview item with multiple displays and then exiting
+// overview does not result in a u-a-f. Regression test for b/293867778.
+TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
+  UpdateDisplay("600x400,600x400");
+
+  auto window = CreateAppWindow();
+
+  ToggleOverview();
+  auto* generator = GetEventGenerator();
+  OverviewItem* item = GetOverviewItemForWindow(window.get());
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  generator->MoveMouseBy(20, 20);
+
+  // Exit overview without completing the drag.
+  ToggleOverview();
+}
+
 // Tests entering overview mode with two windows and selecting one.
 TEST_P(OverviewSessionTest, FullscreenWindow) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());

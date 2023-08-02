@@ -307,6 +307,7 @@ void OverviewItem::Shutdown() {
                                /*show_window=*/false);
   }
 
+  DestroyMirrorsForDragging();
   item_widget_.reset();
   overview_item_view_ = nullptr;
 }
