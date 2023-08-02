@@ -42,9 +42,6 @@ const int kAlternateUrlTimeout = 15;
 // alternate URL.
 const int kAlternateUrlPollInterval = 200;
 
-constexpr char kUploadResultMetricName[] =
-    "FileBrowser.OfficeFiles.Open.UploadResult.GoogleDrive";
-
 // Runs the callback provided to `DriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
                   DriveUploadHandler::UploadCallback callback,
@@ -214,13 +211,12 @@ void DriveUploadHandler::OnEndCopy(GURL hosted_url,
     return;
   }
   copy_ended_ = true;
-  UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result);
 
   // If copy to Drive was successful and intended operation is a copy, no delete
   // is required.
   if (result == OfficeFilesUploadResult::kSuccess &&
       upload_type_ == UploadType::kCopy) {
-    OnEndUpload(hosted_url, error_message);
+    OnEndUpload(hosted_url, result, error_message);
     return;
   }
 
@@ -231,13 +227,13 @@ void DriveUploadHandler::OnEndCopy(GURL hosted_url,
       drive_integration_service_->GetRelativeDrivePath(
           observed_absolute_dest_path_, &rel_path);
   if (!destination_file_exists) {
-    OnEndUpload(hosted_url, error_message);
+    OnEndUpload(hosted_url, result, error_message);
     return;
   }
 
-  end_upload_callback_ =
-      base::BindOnce(&DriveUploadHandler::OnEndUpload,
-                     weak_ptr_factory_.GetWeakPtr(), hosted_url, error_message);
+  end_upload_callback_ = base::BindOnce(&DriveUploadHandler::OnEndUpload,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        hosted_url, result, error_message);
 
   ConvertToMoveOrUndoUpload(result);
 }
@@ -266,7 +262,13 @@ void DriveUploadHandler::ConvertToMoveOrUndoUpload(
 }
 
 void DriveUploadHandler::OnEndUpload(GURL hosted_url,
+                                     OfficeFilesUploadResult result,
                                      std::string error_message) {
+  UMA_HISTOGRAM_ENUMERATION(kGoogleDriveUploadResultMetricName, result);
+  if (result != OfficeFilesUploadResult::kSuccess) {
+    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
+                              OfficeTaskResult::kFailedToUpload);
+  }
   // TODO (b/243095484) Define error behavior on invalid hosted URL.
   observed_relative_drive_path_.clear();
   // Stop suppressing Drive events for the observed file.

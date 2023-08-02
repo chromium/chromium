@@ -163,11 +163,14 @@ export class MoveConfirmationPageElement extends HTMLElement {
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
       this.proxy.handler.recordCancel(
           MetricsRecordedSetupPage.kMoveConfirmationOneDrive);
+      this.proxy.handler.respondWithUserActionAndClose(
+          UserAction.kCancelOneDrive);
     } else {
       this.proxy.handler.recordCancel(
           MetricsRecordedSetupPage.kMoveConfirmationGoogleDrive);
+      this.proxy.handler.respondWithUserActionAndClose(
+          UserAction.kCancelGoogleDrive);
     }
-    this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
   }
 
   private onPlayPauseButtonClick(): void {

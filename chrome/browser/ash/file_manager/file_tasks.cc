@@ -481,7 +481,6 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       !integration_service->GetDriveFsInterface()) {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
                               OfficeDriveOpenErrors::kDriveFsInterface);
-
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
         ash::office_fallback::FallbackReason::kDriveUnavailable);
@@ -1060,9 +1059,6 @@ void GetDebugJSONForKeyForExecuteFileTask(
 
 void LaunchQuickOffice(Profile* profile,
                        const std::vector<FileSystemURL>& file_urls) {
-  UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
-                            OfficeTaskResult::FALLBACK_QUICKOFFICE);
-
   const TaskDescriptor quick_office_task(
       extension_misc::kQuickOfficeComponentExtensionId, TASK_TYPE_FILE_HANDLER,
       kActionIdQuickOffice);
@@ -1088,12 +1084,31 @@ void OnDialogChoiceReceived(Profile* profile,
                             gfx::NativeWindow modal_parent,
                             const std::string& choice) {
   if (choice == ash::office_fallback::kDialogChoiceQuickOffice) {
+    if (IsWebDriveOfficeTask(task)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+          ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice);
+    } else if (IsOpenInOfficeTask(task)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          ash::cloud_upload::kOneDriveTaskResultMetricName,
+          ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice);
+    }
     LaunchQuickOffice(profile, file_urls);
   } else if (choice == ash::office_fallback::kDialogChoiceTryAgain) {
     if (IsWebDriveOfficeTask(task)) {
       ExecuteWebDriveOfficeTask(profile, task, file_urls, modal_parent);
     } else if (IsOpenInOfficeTask(task)) {
       ExecuteOpenInOfficeTask(profile, task, file_urls, modal_parent);
+    }
+  } else if (choice == ash::office_fallback::kDialogChoiceCancel) {
+    if (IsWebDriveOfficeTask(task)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+          ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
+    } else if (IsOpenInOfficeTask(task)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          ash::cloud_upload::kOneDriveTaskResultMetricName,
+          ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
     }
   }
 }

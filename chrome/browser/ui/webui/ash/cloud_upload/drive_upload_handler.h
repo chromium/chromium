@@ -79,7 +79,9 @@ class DriveUploadHandler
 
   // Ends the upload by showing any complete or error notifications. Runs the
   // upload callback.
-  void OnEndUpload(GURL hosted_url, std::string error_message = "");
+  void OnEndUpload(GURL hosted_url,
+                   OfficeFilesUploadResult result,
+                   std::string error_message = "");
 
   // Callback for when ImmediatelyUpload() is called on DriveFS.
   void ImmediatelyUploadDone(drive::FileError error);

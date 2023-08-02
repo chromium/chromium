@@ -159,21 +159,6 @@ std::string TaskTypeToString(TaskType task_type);
 constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
 constexpr char kOneDriveErrorMetricName[] =
     "FileBrowser.OfficeFiles.Errors.OneDrive";
-constexpr char kDriveTaskResultMetricName[] =
-    "FileBrowser.OfficeFiles.TaskResult.Drive";
-
-// List of UMA enum value for Web Drive Office task results. The enum values
-// must be kept in sync with OfficeTaskResult in
-// tools/metrics/histograms/enums.xml.
-enum class OfficeTaskResult {
-  FALLBACK_QUICKOFFICE = 0,
-  FALLBACK_OTHER = 1,
-  OPENED = 2,
-  MOVED = 3,
-  CANCELLED = 4,
-  FAILED = 5,
-  kMaxValue = FAILED,
-};
 
 // List of UMA enum values for Office File Handler task results for Drive. The
 // enum values must be kept in sync with OfficeDriveOpenErrors in

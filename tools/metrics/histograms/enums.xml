@@ -77640,7 +77640,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Cloud quota full"/>
   <int value="13" label="Cloud error"/>
   <int value="14" label="No connectivity to cloud or sync disabled"/>
-  <int value="15" label="Failed to generate destination file system URL"/>
+  <int value="15" label="Failed to generate destination folder URL"/>
+  <int value="16" label="Invalid uploaded file URL"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">
@@ -77772,7 +77773,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Opened"/>
   <int value="3" label="Moved"/>
   <int value="4" label="Cancelled"/>
-  <int value="5" label="Failed"/>
+  <int value="5" label="Failed to upload"/>
+  <int value="6" label="Failed to open"/>
+  <int value="7" label="Copied"/>
 </enum>
 
 <enum name="OfflineCapableReason">

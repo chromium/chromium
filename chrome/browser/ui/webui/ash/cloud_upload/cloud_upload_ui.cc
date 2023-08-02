@@ -154,6 +154,12 @@ void CloudUploadUI::RespondWithUserActionAndCloseDialog(
     case mojom::UserAction::kCancel:
       args.Append(kUserActionCancel);
       break;
+    case mojom::UserAction::kCancelGoogleDrive:
+      args.Append(kUserActionCancelGoogleDrive);
+      break;
+    case mojom::UserAction::kCancelOneDrive:
+      args.Append(kUserActionCancelOneDrive);
+      break;
     case mojom::UserAction::kSetUpOneDrive:
       args.Append(kUserActionSetUpOneDrive);
       break;

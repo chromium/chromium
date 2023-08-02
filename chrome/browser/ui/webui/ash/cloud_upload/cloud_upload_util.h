@@ -43,10 +43,37 @@ enum class UploadType {
   kMaxValue = kMove,
 };
 
+constexpr char kGoogleDriveTaskResultMetricName[] =
+    "FileBrowser.OfficeFiles.TaskResult.Drive";
+constexpr char kOneDriveTaskResultMetricName[] =
+    "FileBrowser.OfficeFiles.TaskResult.OneDrive";
+constexpr char kGoogleDriveUploadResultMetricName[] =
+    "FileBrowser.OfficeFiles.Open.UploadResult.GoogleDrive";
+constexpr char kOneDriveUploadResultMetricName[] =
+    "FileBrowser.OfficeFiles.Open.UploadResult.OneDrive";
+
+// List of UMA enum value for Web Drive Office task results. The enum values
+// must be kept in sync with OfficeTaskResult in
+// tools/metrics/histograms/enums.xml.
+enum class OfficeTaskResult {
+  kFallbackQuickOffice = 0,
+  kFallbackOther = 1,
+  kOpened = 2,
+  kMoved = 3,
+  kCancelled = 4,
+  kFailedToUpload = 5,
+  kFailedToOpen = 6,
+  kCopied = 7,
+  kMaxValue = kCopied,
+};
+
 // The result of the "Upload to cloud" workflow for Office files.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// The enum values must be kept in sync with OfficeFilesUploadResult in
+// tools/metrics/histograms/enums.xml.
 enum class OfficeFilesUploadResult {
   kSuccess = 0,
   kOtherError = 1,
@@ -64,7 +91,8 @@ enum class OfficeFilesUploadResult {
   kCloudError = 13,
   kNoConnection = 14,
   kDestinationUrlError = 15,
-  kMaxValue = kDestinationUrlError,
+  kInvalidURL = 16,
+  kMaxValue = kInvalidURL,
 };
 
 // Query actions for this path to get ODFS Metadata.

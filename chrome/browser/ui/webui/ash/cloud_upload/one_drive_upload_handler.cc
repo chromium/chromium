@@ -154,6 +154,10 @@ void OneDriveUploadHandler::OnEndUpload(
     base::expected<storage::FileSystemURL, std::string> url_or_error,
     OfficeFilesUploadResult result_metric) {
   UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result_metric);
+  if (result_metric != OfficeFilesUploadResult::kSuccess) {
+    UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
+                              OfficeTaskResult::kFailedToUpload);
+  }
   // Resolve notifications.
   if (notification_manager_) {
     if (url_or_error.has_value()) {

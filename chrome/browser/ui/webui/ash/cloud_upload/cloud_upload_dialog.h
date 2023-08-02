@@ -68,6 +68,8 @@ struct ODFSFileSystemAndPath {
 
 // The string conversions of ash::cloud_upload::mojom::UserAction.
 const char kUserActionCancel[] = "cancel";
+const char kUserActionCancelGoogleDrive[] = "cancel-drive";
+const char kUserActionCancelOneDrive[] = "cancel-onedrive";
 const char kUserActionSetUpOneDrive[] = "setup-onedrive";
 const char kUserActionUploadToGoogleDrive[] = "upload-drive";
 const char kUserActionUploadToOneDrive[] = "upload-onedrive";
@@ -162,7 +164,7 @@ class CloudOpenTask : public BrowserListObserver,
   bool ExecuteInternal();
   void OpenOrMoveFiles();
   void OpenAlreadyHostedDriveUrls();
-  void OpenODFSUrls();
+  void OpenODFSUrls(const OfficeTaskResult task_result_uma);
   void OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
   void CheckEmailAndOpenURLs(
       const std::string& android_onedrive_email,

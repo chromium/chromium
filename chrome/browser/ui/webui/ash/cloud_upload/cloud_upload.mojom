@@ -7,6 +7,8 @@ module ash.cloud_upload.mojom;
 // The selected action when the user closes the dialog.
 enum UserAction {
   kCancel,
+  kCancelGoogleDrive,
+  kCancelOneDrive,
   kSetUpOneDrive,
   kUploadToGoogleDrive,
   kUploadToOneDrive,

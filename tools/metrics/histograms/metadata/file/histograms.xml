@@ -1105,8 +1105,8 @@ chromium-metrics-reviews@google.com.
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Chrome OS File Browser: Records the result of the upload-to-cloud workflow
-    for office files.
+    Chrome OS File Browser: Records the upload result of the &quot;upload and
+    open&quot; workflow for Office files.
   </summary>
   <token key="ProviderName">
     <variant name="GoogleDrive"
