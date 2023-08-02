@@ -126,7 +126,10 @@ suite('<os-settings-ui> menu', () => {
     assertTrue(floatingMenu.advancedOpened);
 
     // Collapse 'Advanced' in the menu.
-    drawerMenu.$.advancedButton.click();
+    const advancedButton =
+        drawerMenu.shadowRoot.querySelector('#advancedButton');
+    assertTrue(!!advancedButton);
+    advancedButton.click();
     flush();
 
     // Collapsing it in the menu should not collapse it in the main area.
@@ -135,7 +138,7 @@ suite('<os-settings-ui> menu', () => {
     assertFalse(floatingMenu.advancedOpened);
 
     // Expand both 'Advanced's again.
-    drawerMenu.$.advancedButton.click();
+    advancedButton.click();
     flush();
 
     // Collapse 'Advanced' in the main area.

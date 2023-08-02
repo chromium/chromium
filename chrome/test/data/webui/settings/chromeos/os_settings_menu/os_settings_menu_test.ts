@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, OsSettingsMenuElement, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, IronCollapseElement, IronSelectorElement, OsSettingsMenuElement, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -18,6 +18,7 @@ suite('<os-settings-menu>', () => {
     settingsMenu = document.createElement('os-settings-menu');
     settingsMenu.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(settingsMenu);
+    flush();
   });
 
   teardown(() => {
@@ -29,11 +30,16 @@ suite('<os-settings-menu>', () => {
     assertFalse(settingsMenu.advancedOpened);
     settingsMenu.advancedOpened = true;
     flush();
-    assertTrue(settingsMenu.$.advancedSubmenu.opened);
+
+    const advancedCollapse =
+        settingsMenu.shadowRoot!.querySelector<IronCollapseElement>(
+            '#advancedCollapse');
+    assertTrue(!!advancedCollapse);
+    assertTrue(advancedCollapse.opened);
 
     settingsMenu.advancedOpened = false;
     flush();
-    assertFalse(settingsMenu.$.advancedSubmenu.opened);
+    assertFalse(advancedCollapse.opened);
   });
 
   test('tapAdvanced', () => {
@@ -46,11 +52,16 @@ suite('<os-settings-menu>', () => {
 
     advancedToggle.click();
     flush();
-    assertTrue(settingsMenu.$.advancedSubmenu.opened);
+
+    const advancedCollapse =
+        settingsMenu.shadowRoot!.querySelector<IronCollapseElement>(
+            '#advancedCollapse');
+    assertTrue(!!advancedCollapse);
+    assertTrue(advancedCollapse.opened);
 
     advancedToggle.click();
     flush();
-    assertFalse(settingsMenu.$.advancedSubmenu.opened);
+    assertFalse(advancedCollapse.opened);
   });
 
   test('upAndDownIcons', () => {
@@ -102,33 +113,39 @@ suite('<os-settings-menu> reset', () => {
   });
 
   test('openResetSection', () => {
-    const selector = settingsMenu.$.subMenu;
-    const path = new window.URL(selector.selected as string).pathname;
+    const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
+        '#advancedSubmenu');
+    assertTrue(!!submenu);
+    const path = new window.URL(submenu.selected as string).pathname;
     assertEquals('/osReset', path);
   });
 
   test('navigateToAnotherSection', () => {
-    const selector = settingsMenu.$.subMenu;
-    let path = new window.URL(selector.selected as string).pathname;
+    const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
+        '#advancedSubmenu');
+    assertTrue(!!submenu);
+    let path = new window.URL(submenu.selected as string).pathname;
     assertEquals('/osReset', path);
 
     Router.getInstance().navigateTo(routes.BLUETOOTH);
     flush();
 
-    path = new window.URL(selector.selected as string).pathname;
+    path = new window.URL(submenu.selected as string).pathname;
     assertEquals('/bluetooth', path);
   });
 
   test('navigateToBasic', () => {
-    const selector = settingsMenu.$.subMenu;
-    const path = new window.URL(selector.selected as string).pathname;
+    const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
+        '#advancedSubmenu');
+    assertTrue(!!submenu);
+    const path = new window.URL(submenu.selected as string).pathname;
     assertEquals('/osReset', path);
 
     Router.getInstance().navigateTo(routes.BASIC);
     flush();
 
     // BASIC has no sub page selected.
-    assertEquals('', selector.selected);
+    assertEquals('', submenu.selected);
   });
 });
 

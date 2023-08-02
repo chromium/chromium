@@ -151,10 +151,6 @@ suite('<os-settings-ui> page visibility', () => {
       href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
     },
     {
-      sectionName: 'kSearchAndAssistant',
-      href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
-    },
-    {
       sectionName: 'kPrivacyAndSecurity',
       href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
     },
@@ -166,32 +162,8 @@ suite('<os-settings-ui> page visibility', () => {
       sectionName: 'kAccessibility',
       href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
     },
-
-    // Advanced pages
-    {
-      sectionName: 'kDateAndTime',
-      href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kLanguagesAndInput',
-      href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kFiles',
-      href: `/${routesMojom.FILES_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kPrinting',
-      href: `/${routesMojom.PRINTING_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kCrostini',
-      href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kReset',
-      href: `/${routesMojom.RESET_SECTION_PATH}`,
-    },
+    // TODO(b/292678609) Include test for kSystemPreferences Section once there
+    // is a corresponding L1 page.
   ];
 
   for (const {sectionName, href} of menuItemData) {

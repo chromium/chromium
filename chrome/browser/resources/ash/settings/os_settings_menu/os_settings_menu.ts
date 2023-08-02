@@ -15,7 +15,6 @@ import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -40,8 +39,6 @@ export interface OsSettingsMenuElement {
   $: {
     topMenu: IronSelectorElement,
     topMenuRepeat: DomRepeat,
-    subMenu: IronSelectorElement,
-    advancedSubmenu: IronCollapseElement,
   };
 }
 
@@ -96,6 +93,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         type: String,
         value: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -103,6 +108,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   pageAvailability: OsPageAvailability;
   private basicMenuItems_: MenuItemData[];
   private advancedMenuItems_: MenuItemData[];
+  private isRevampWayfindingEnabled_: boolean;
   private selectedUrl_: string;
 
   override ready(): void {
@@ -146,7 +152,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
   private computeBasicMenuItems_(): MenuItemData[] {
     let basicMenuItems: MenuItemData[];
-    if (isRevampWayfindingEnabled()) {
+    if (this.isRevampWayfindingEnabled_) {
       basicMenuItems = [
         {
           section: Section.kNetwork,
@@ -189,12 +195,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
           icon: 'os-settings:paint-brush',
           label: this.i18n('personalizationPageTitle'),
-        },
-        {
-          section: Section.kSearchAndAssistant,
-          href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
-          icon: 'cr:search',
-          label: this.i18n('osSearchPageTitle'),
         },
         {
           section: Section.kPrivacyAndSecurity,
@@ -297,6 +297,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   private computeAdvancedMenuItems_(): MenuItemData[] {
+    // When OsSettingsRevampWayfinding is enabled, there is no Advanced menu.
+    if (this.isRevampWayfindingEnabled_) {
+      return [];
+    }
+
     const advancedMenuItems: MenuItemData[] = [
       {
         section: Section.kDateAndTime,

@@ -46,6 +46,20 @@ suite('<os-settings-menu> menu item visibility', () => {
         `a.item[href="${href}"]`);
   }
 
+  test('Advanced toggle and collapsible menu are not visible', () => {
+    const advancedButton =
+        settingsMenu.shadowRoot!.querySelector('#advancedButton');
+    assertFalse(isVisible(advancedButton));
+
+    const advancedCollapse =
+        settingsMenu.shadowRoot!.querySelector('#advancedCollapse');
+    assertFalse(isVisible(advancedCollapse));
+
+    const advancedSubmenu =
+        settingsMenu.shadowRoot!.querySelector('#advancedSubmenu');
+    assertFalse(isVisible(advancedSubmenu));
+  });
+
   test('About page menu item should always be visible', () => {
     const href = `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`;
     const menuItem = queryMenuItemByHref(href);
@@ -83,10 +97,6 @@ suite('<os-settings-menu> menu item visibility', () => {
       href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
     },
     {
-      sectionName: 'kSearchAndAssistant',
-      href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
-    },
-    {
       sectionName: 'kPrivacyAndSecurity',
       href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
     },
@@ -101,32 +111,6 @@ suite('<os-settings-menu> menu item visibility', () => {
     {
       sectionName: 'kSystemPreferences',
       href: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
-    },
-
-    // Advanced pages
-    {
-      sectionName: 'kDateAndTime',
-      href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kLanguagesAndInput',
-      href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kFiles',
-      href: `/${routesMojom.FILES_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kPrinting',
-      href: `/${routesMojom.PRINTING_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kCrostini',
-      href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kReset',
-      href: `/${routesMojom.RESET_SECTION_PATH}`,
     },
   ];
 
