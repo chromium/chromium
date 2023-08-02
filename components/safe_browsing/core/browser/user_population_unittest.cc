@@ -118,14 +118,14 @@ TEST(GetUserPopulationTest, PopulatesSync) {
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population = GetUserPopulation(
-      pref_service.get(), false, /*is_history_sync_enabled=*/true, false, false,
+      pref_service.get(), false, /*is_history_sync_active=*/true, false, false,
       nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
       absl::optional<size_t>());
   EXPECT_TRUE(population.is_history_sync_enabled());
 
   population = GetUserPopulation(
-      pref_service.get(), false, /*is_history_sync_enabled=*/false, false,
-      false, nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
+      pref_service.get(), false, /*is_history_sync_active=*/false, false, false,
+      nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
       absl::optional<size_t>());
   EXPECT_FALSE(population.is_history_sync_enabled());
 }

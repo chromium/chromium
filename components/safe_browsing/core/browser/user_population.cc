@@ -33,7 +33,7 @@ ChromeUserPopulation::UserPopulation GetUserPopulationPref(PrefService* prefs) {
 ChromeUserPopulation GetUserPopulation(
     PrefService* prefs,
     bool is_incognito,
-    bool is_history_sync_enabled,
+    bool is_history_sync_active,
     bool is_signed_in,
     bool is_under_advanced_protection,
     const policy::BrowserPolicyConnector* browser_policy_connector,
@@ -51,7 +51,7 @@ ChromeUserPopulation GetUserPopulation(
 
   population.set_is_incognito(is_incognito);
 
-  population.set_is_history_sync_enabled(is_history_sync_enabled);
+  population.set_is_history_sync_enabled(is_history_sync_active);
 
   population.set_is_under_advanced_protection(is_under_advanced_protection);
 

@@ -19,7 +19,7 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserContext(
   return safe_browsing::GetUserPopulation(
       browser_context_impl->pref_service(),
       browser_context_impl->IsOffTheRecord(),
-      /*is_history_sync_enabled=*/false,
+      /*is_history_sync_active=*/false,
       /*is_signed_in=*/false,
       /*is_under_advanced_protection=*/false,
       /*browser_policy_connector=*/nullptr,

@@ -30,7 +30,7 @@ ChromeUserPopulation GetUserPopulation(
     // The below may be null.
     PrefService* prefs,
     bool is_incognito,
-    bool is_history_sync_enabled,
+    bool is_history_sync_active,
     bool is_signed_in,
     bool is_under_advanced_protection,
     // The below may be null.

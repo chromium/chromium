@@ -22,8 +22,8 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
     ChromeBrowserState* browser_state) {
   syncer::SyncService* sync =
       SyncServiceFactory::GetForBrowserState(browser_state);
-  bool is_history_sync_enabled =
-      sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
+  bool is_history_sync_active =
+      sync && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
@@ -32,7 +32,7 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
       safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
   return safe_browsing::GetUserPopulation(
       browser_state->GetPrefs(), browser_state->IsOffTheRecord(),
-      is_history_sync_enabled, is_signed_in,
+      is_history_sync_active, is_signed_in,
       /*is_under_advanced_protection=*/false,
       GetApplicationContext()->GetBrowserPolicyConnector(),
       /*num_profiles=*/absl::nullopt,

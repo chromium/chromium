@@ -68,8 +68,8 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
     return ChromeUserPopulation();
 
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
-  bool is_history_sync_enabled =
-      sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
+  bool is_history_sync_active =
+      sync && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -104,7 +104,7 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
   }
 
   ChromeUserPopulation population = GetUserPopulation(
-      profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_enabled,
+      profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_active,
       is_signed_in, is_under_advanced_protection,
       g_browser_process->browser_policy_connector(), std::move(num_profiles),
       std::move(num_loaded_profiles), std::move(num_open_profiles));
