@@ -31,6 +31,7 @@ BASE_DECLARE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeFeature);
+BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHDownloadToolbarButtonFeature);
 BASE_DECLARE_FEATURE(kIPHExtensionsMenuFeature);
 BASE_DECLARE_FEATURE(kIPHExtensionsRequestAccessButtonFeature);

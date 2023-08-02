@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/user_education/open_page_and_show_help_bubble.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -60,6 +61,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -332,6 +334,32 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)));
+
+  // kIPHDesktopCustomizeChromeRefreshFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+          kTopContainerElementId, IDS_IPH_CUSTOMIZE_CHROME_REFRESH_BODY,
+          IDS_IPH_CUSTOMIZE_CHROME_REFRESH_CUSTOM_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                OpenPageAndShowHelpBubble::Params params;
+                params.bubble_anchor_id =
+                    NewTabPageUI::kCustomizeChromeButtonElementId;
+                params.bubble_arrow =
+                    user_education::HelpBubbleArrow::kBottomRight;
+                params.bubble_text = l10n_util::GetStringUTF16(
+                    IDS_IPH_CUSTOMIZE_CHROME_REFRESH_POINTER_BODY);
+                OpenPageAndShowHelpBubble::Start(browser, std::move(params));
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
+          .SetCustomActionIsDefault(false)
+          .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)));
 
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(

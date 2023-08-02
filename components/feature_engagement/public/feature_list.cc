@@ -146,6 +146,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHCompanionSidePanelRegionSearchFeature,
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,
+    &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDownloadToolbarButtonFeature,
     &kIPHExtensionsMenuFeature,
     &kIPHExtensionsRequestAccessButtonFeature,
