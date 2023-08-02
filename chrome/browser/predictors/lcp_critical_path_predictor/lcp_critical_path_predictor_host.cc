@@ -32,11 +32,13 @@ void LCPCriticalPathPredictorHost::SetLcpElementLocator(
   // `LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit()` stores
   // `LcpCriticalPathPredictorPageLoadMetricsObserver` in `PageData` as a weak
   // pointer. This weak pointer can be deleted at any time.
-  if (auto* plmo =
+  if (auto* page_data =
           LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-              render_frame_host().GetPage())
-              ->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-    plmo->SetLcpElementLocator(lcp_element_locator);
+              render_frame_host().GetPage())) {
+    if (auto* plmo =
+            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+      plmo->SetLcpElementLocator(lcp_element_locator);
+    }
   }
 }
 
