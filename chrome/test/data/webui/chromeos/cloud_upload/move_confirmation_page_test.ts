@@ -8,6 +8,7 @@ import {DialogPage, OperationType, UserAction} from 'chrome://cloud-upload/cloud
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudProvider, MoveConfirmationPageElement} from 'chrome://cloud-upload/move_confirmation_page.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrosLottieEvent} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -42,6 +43,15 @@ suite('<move-confirmation-page>', () => {
       'googleDrive': 'Google Drive',
     });
 
+    // Define promise to wait for a `CrosLottieEvent.INITIALIZED` event.
+    let resolveFunction: () => void;
+    const animationInitializedPromise = new Promise<void>((resolve) => {
+      resolveFunction = resolve;
+    });
+    document.addEventListener(CrosLottieEvent.INITIALIZED, () => {
+      resolveFunction();
+    });
+
     // Creates and attaches the <move-confirmation-page> element to the DOM
     // tree.
     moveConfirmationPageApp =
@@ -64,6 +74,10 @@ suite('<move-confirmation-page>', () => {
       default:
         assertNotReached();
     }
+
+    // Ensure that the animation within the move confirmation page has been
+    // initialized to avoid race conditions when the test exits.
+    await animationInitializedPromise;
   }
 
   /**
@@ -80,6 +94,7 @@ suite('<move-confirmation-page>', () => {
    * the <move-confirmation-page> component.
    */
   teardown(() => {
+    moveConfirmationPageApp.$('.action-button').click();
     loadTimeData.resetForTesting();
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;

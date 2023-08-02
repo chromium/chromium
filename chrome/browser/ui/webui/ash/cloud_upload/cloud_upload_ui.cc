@@ -113,6 +113,15 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types "
+      // Required by lottie.
+      "lottie-worker-script-loader webui-test-script "
+      // Required by lit-html.
+      "lit-html "
+      // Required by polymer.
+      "polymer-html-literal polymer-template-event-attribute-policy;");
 }
 
 CloudUploadUI::~CloudUploadUI() = default;

@@ -8,10 +8,8 @@ build_webui("build") {
   grd_prefix = "cloud_upload"
 
   static_files = [
-    "animations/move_confirmation_drive_dark.json",
-    "animations/move_confirmation_drive_light.json",
-    "animations/move_confirmation_onedrive_dark.json",
-    "animations/move_confirmation_onedrive_light.json",
+    "animations/move_confirmation_drive.json",
+    "animations/move_confirmation_onedrive.json",
     "icons/check.svg",
     "icons/chevron.svg",
     "icons/docs.svg",
@@ -61,6 +59,7 @@ build_webui("build") {
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//third_party/cros-components:cros_components_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

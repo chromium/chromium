@@ -129,6 +129,12 @@
     width: 512px;
   }
 
+  #animation {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+  }
+
   #playPauseIcon {
     /* No dynamic color required here. */
     background-color: rgba(0, 0, 0, 0.6);
@@ -176,7 +182,7 @@
 
 <!-- TODO(b/258071752): Use localized strings -->
 <div class="animation-wrapper">
-  <cr-lottie id="animation" aria-hidden="true" autoplay></cr-lottie>
+  <!-- <cros-lottie-renderer> created dynamically -->
   <cr-button id="playPauseIcon" class="pause" aria-label="$i18n{animationPlayText}">
     <div class="icon"></div>
   </cr-button>

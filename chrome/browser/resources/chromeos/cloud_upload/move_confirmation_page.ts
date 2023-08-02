@@ -4,10 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import type {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsRecordedSetupPage, OperationType, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
@@ -27,6 +27,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
   private proxy: CloudUploadBrowserProxy =
       CloudUploadBrowserProxy.getInstance();
   private cloudProvider: CloudProvider|undefined;
+  private animationPlayer: LottieRenderer|undefined;
   private playPauseButton: HTMLElement|undefined;
 
   constructor() {
@@ -71,12 +72,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
     const providerName = this.getProviderName(this.cloudProvider);
 
     // Animation.
-    this.updateAnimation(
-        window.matchMedia('(prefers-color-scheme: dark)').matches);
-    window.matchMedia('(prefers-color-scheme: dark)')
-        .addEventListener('change', event => {
-          this.updateAnimation(event.matches);
-        });
+    this.updateAnimation();
 
     // Title.
     const titleElement = this.$<HTMLElement>('#title')!;
@@ -135,14 +131,27 @@ export class MoveConfirmationPageElement extends HTMLElement {
     return loadTimeData.getString('googleDrive');
   }
 
-  private updateAnimation(isDarkMode: boolean) {
+  private createAnimation(animationUrl: string) {
+    this.animationPlayer = document.createElement('cros-lottie-renderer');
+    this.animationPlayer.id = 'animation';
+    this.animationPlayer.setAttribute('asset-url', animationUrl);
+    this.animationPlayer.setAttribute('dynamic', 'true');
+    this.animationPlayer.setAttribute('aria-hidden', 'true');
+    this.animationPlayer.autoplay = true;
+    const animationWrapper = this.$<HTMLElement>('.animation-wrapper')!;
+    const playPauseIcon = this.$<HTMLElement>('#playPauseIcon')!;
+    animationWrapper.insertBefore(this.animationPlayer, playPauseIcon);
+  }
+
+  private updateAnimation() {
     const provider =
         this.cloudProvider === CloudProvider.ONE_DRIVE ? 'onedrive' : 'drive';
-    const colorScheme = isDarkMode ? 'dark' : 'light';
-    const animationUrl =
-        `animations/move_confirmation_${provider}_${colorScheme}.json`;
-    this.shadowRoot!.querySelector('cr-lottie')!.setAttribute(
-        'animation-url', animationUrl);
+    const animationUrl = `animations/move_confirmation_${provider}.json`;
+    if (!this.animationPlayer) {
+      this.createAnimation(animationUrl);
+    } else {
+      this.animationPlayer.setAttribute('asset-url', animationUrl);
+    }
   }
 
   private onActionButtonClick(): void {
@@ -174,16 +183,16 @@ export class MoveConfirmationPageElement extends HTMLElement {
   }
 
   private onPlayPauseButtonClick(): void {
-    const animation = this.$<CrLottieElement>('#animation')!;
+    const animation = this.$<LottieRenderer>('#animation')!;
     const shouldPlay = this.playPauseButton!.className === 'play';
     if (shouldPlay) {
-      animation.setPlay(true);
+      animation.play();
       // Update button to Pause.
       this.playPauseButton!.className = 'pause';
       this.playPauseButton!.ariaLabel =
           loadTimeData.getString('animationPauseText');
     } else {
-      animation.setPlay(false);
+      animation.pause();
       // Update button to Play.
       this.playPauseButton!.className = 'play';
       this.playPauseButton!.ariaLabel =
