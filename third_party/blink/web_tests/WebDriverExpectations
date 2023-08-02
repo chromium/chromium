@@ -832,3 +832,14 @@ crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/
 
 # Sheriff 2023-07-21
 crbug.com/1466764 [ Linux ] external/wpt/webdriver/tests/classic/is_element_selected/selected.py>>test_stale_element_reference[child_context] [ Failure Pass ]
+
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/accept_alert/accept.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/add_cookie/add.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/add_cookie/user_prompts.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/back/user_prompts.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/close_window/close.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/delete_all_cookies/user_prompts.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/delete_cookie/user_prompts.py>>test_* [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/delete_session/delete.py>>test_dismissed_beforeunload_prompt [ Failure Timeout ]
+crbug.com/1469659 [ Linux ] external/wpt/webdriver/tests/classic/dismiss_alert/dismiss.py>>test_dismiss_alert [ Failure Timeout ]
