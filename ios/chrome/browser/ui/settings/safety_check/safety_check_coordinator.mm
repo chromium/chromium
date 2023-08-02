@@ -25,8 +25,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
@@ -119,7 +118,7 @@ using password_manager::WarningType;
          passwordCheckManager:passwordCheckManager
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
-                  syncService:SyncSetupServiceFactory::GetForBrowserState(
+                  syncService:SyncServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())];
 
   self.mediator.consumer = self.viewController;

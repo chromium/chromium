@@ -14,12 +14,15 @@
 // Webpage with safe browsing toggle.
 extern const char kSafeBrowsingStringURL[];
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 class AuthenticationService;
 class IOSChromePasswordCheckManager;
 class PrefService;
 @protocol SafetyCheckConsumer;
 @protocol SafetyCheckNavigationCommands;
-class SyncSetupService;
 
 @class SafetyCheckTableViewController;
 
@@ -37,7 +40,7 @@ class SyncSetupService;
                        (scoped_refptr<IOSChromePasswordCheckManager>)
                            passwordCheckManager
                             authService:(AuthenticationService*)authService
-                            syncService:(SyncSetupService*)syncService
+                            syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
