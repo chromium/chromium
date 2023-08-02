@@ -633,7 +633,7 @@ template <typename ProtoTestcase,
 bool Testcase<ProtoTestcase, ProtoAction, kMaxActionCount, kMaxActionSize>::
     IsFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!proto_testcase_.actions_size()) {
+  if (!proto_testcase_.actions_size() || !proto_testcase_.sequences_size()) {
     return true;
   }
 
