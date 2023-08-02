@@ -100,8 +100,7 @@ ProgressStatus::ProgressStatus(ProgressStatus&& other) = default;
 ProgressStatus& ProgressStatus::operator=(ProgressStatus&& other) = default;
 
 bool ProgressStatus::IsPaused() const {
-  // Return true if paused for any reason other than policy warning.
-  return state == State::kPaused && !pause_params.policy_params.has_value();
+  return state == State::kPaused;
 }
 
 bool ProgressStatus::IsCompleted() const {
@@ -111,7 +110,7 @@ bool ProgressStatus::IsCompleted() const {
 
 bool ProgressStatus::HasWarning() const {
   // We should show a warning if the task is paused because of policy.
-  return state == State::kPaused && pause_params.policy_params.has_value();
+  return IsPaused() && pause_params.policy_params.has_value();
 }
 
 bool ProgressStatus::HasPolicyError() const {

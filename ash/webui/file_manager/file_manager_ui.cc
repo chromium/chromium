@@ -148,6 +148,9 @@ FileManagerUI::~FileManagerUI() {
   if (!instance_count_) {
     delegate_->ProgressPausedTasks();
     delegate_->ShouldPollDriveHostedPinStates(false);
+    // There might be some tasks blocked by policy that already completed, but
+    // still have a notification so notify FPNM to show them if necessary.
+    delegate_->ShowPolicyNotifications();
   }
 }
 
