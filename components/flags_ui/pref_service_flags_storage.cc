@@ -60,6 +60,17 @@ void PrefServiceFlagsStorage::SetOriginListFlag(
   update->SetByDottedPath(internal_entry_name, origin_list_value);
 }
 
+std::string PrefServiceFlagsStorage::GetStringFlag(
+    const std::string& internal_entry_name) const {
+  return GetOriginListFlag(internal_entry_name);
+}
+
+void PrefServiceFlagsStorage::SetStringFlag(
+    const std::string& internal_entry_name,
+    const std::string& string_value) {
+  SetOriginListFlag(internal_entry_name, string_value);
+}
+
 void PrefServiceFlagsStorage::CommitPendingWrites() {
   prefs_->CommitPendingWrite();
 }

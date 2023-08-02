@@ -105,6 +105,22 @@ export class FlagsExperimentElement extends CustomElement {
       this.getRequiredElement('.textarea-container').appendChild(textarea);
     }
 
+    if (feature.string_value !== undefined) {
+      const textbox = document.createElement('input');
+      textbox.dataset['internalName'] = feature.internal_name;
+      textbox.value = feature.string_value;
+      textbox.setAttribute('aria-labelledby', `${feature.internal_name}_name`);
+      textbox.onchange = (e) => {
+        e.stopPropagation();
+        this.handleSetStringFlag_(textbox.value);
+        textbox.dispatchEvent(new Event('input-change', {
+          bubbles: true,
+          composed: true,
+        }));
+      };
+      this.getRequiredElement('.input-container').appendChild(textbox);
+    }
+
     const permalink = this.getRequiredElement<HTMLAnchorElement>('.permalink');
     permalink.href = `#${feature.internal_name}`;
     permalink.textContent = `#${feature.internal_name}`;
@@ -196,6 +212,10 @@ export class FlagsExperimentElement extends CustomElement {
     return this.$<HTMLTextAreaElement>('textarea');
   }
 
+  getTextbox(): HTMLInputElement|null {
+    return this.$<HTMLInputElement>('input');
+  }
+
   /**
    * Looks for and highlights the first match on any of the
    * component's title, body, and permalink text. Resets
@@ -276,6 +296,19 @@ export class FlagsExperimentElement extends CustomElement {
     assert(this.feature_.origin_list_value !== undefined);
 
     FlagsBrowserProxyImpl.getInstance().setOriginListFlag(
+        this.feature_.internal_name, value);
+  }
+
+  /**
+   * Invoked when the value of an input is changed.
+   * @param value The value of the input.
+   */
+  private handleSetStringFlag_(value: string) {
+    /* This function is an onchange handler, which can be invoked during page
+     * restore - see https://crbug.com/1038638. */
+    assert(this.feature_);
+
+    FlagsBrowserProxyImpl.getInstance().setStringFlag(
         this.feature_.internal_name, value);
   }
 }

@@ -102,6 +102,11 @@ void SetOriginListFlag(const std::string& internal_name,
                        const std::string& value,
                        flags_ui::FlagsStorage* flags_storage);
 
+// Sets a flag value with a string given by |value|.
+void SetStringFlag(const std::string& internal_name,
+                   const std::string& value,
+                   flags_ui::FlagsStorage* flags_storage);
+
 // Removes all switches that were added to a command line by a previous call to
 // |ConvertFlagsToSwitches()|.
 void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list);

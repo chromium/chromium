@@ -52,6 +52,9 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
   // Callback for the "setOriginListFlag" message.
   void HandleSetOriginListFlagMessage(const base::Value::List& args);
 
+  // Callback for the "setStringFlag" message.
+  void HandleSetStringFlagMessage(const base::Value::List& args);
+
   // Callback for the "restartBrowser" message. Restores all tabs on restart.
   void HandleRestartBrowser(const base::Value::List& args);
 

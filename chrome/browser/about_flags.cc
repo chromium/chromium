@@ -11136,6 +11136,13 @@ void SetOriginListFlag(const std::string& internal_name,
                                                           flags_storage);
 }
 
+void SetStringFlag(const std::string& internal_name,
+                   const std::string& value,
+                   flags_ui::FlagsStorage* flags_storage) {
+  FlagsStateSingleton::GetFlagsState()->SetStringFlag(internal_name, value,
+                                                      flags_storage);
+}
+
 void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list) {
   FlagsStateSingleton::GetFlagsState()->RemoveFlagsSwitches(switch_list);
 }

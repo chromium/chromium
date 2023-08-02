@@ -18,6 +18,7 @@ export interface Feature {
   is_default: boolean;
   supported_platforms: string[];
   origin_list_value?: string;
+  string_value?: string;
   options?: Array<{
     internal_name: string,
     description: string,
@@ -49,6 +50,7 @@ export interface FlagsBrowserProxy {
   enableExperimentalFeature(internalName: string, enable: boolean): void;
   selectExperimentalFeature(internalName: string, index: number): void;
   setOriginListFlag(internalName: string, value: string): void;
+  setStringFlag(internalName: string, value: string): void;
 }
 
 export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
@@ -83,6 +85,10 @@ export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
 
   setOriginListFlag(internalName: string, value: string) {
     chrome.send('setOriginListFlag', [internalName, value]);
+  }
+
+  setStringFlag(internalName: string, value: string) {
+    chrome.send('setStringFlag', [internalName, value]);
   }
 
   static getInstance(): FlagsBrowserProxy {

@@ -50,7 +50,9 @@ std::set<std::string> GetAllPublicSwitchesAndFeaturesForTesting() {
         result.insert(entry.switches.command_line_switch);
         break;
       case flags_ui::FeatureEntry::ORIGIN_LIST_VALUE:
-        // Do nothing, origin list values are not added as feature flags.
+      case flags_ui::FeatureEntry::STRING_VALUE:
+        // Do nothing, origin list values and string values are not added as
+        // feature flags.
         break;
       case flags_ui::FeatureEntry::MULTI_VALUE:
         for (int j = 0; j < entry.NumOptions(); ++j) {

@@ -234,6 +234,13 @@ function renderExperiments(
         return false;
       });
     }
+    const textbox = experiment.getTextbox();
+    if (textbox) {
+      experiment.addEventListener('input-change', () => {
+        showRestartToast(true);
+        return false;
+      });
+    }
     fragment.appendChild(experiment);
   }
   container.replaceChildren(fragment);

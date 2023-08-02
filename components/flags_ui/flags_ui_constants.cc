@@ -12,6 +12,7 @@ namespace flags_ui {
 const char kEnableExperimentalFeature[] = "enableExperimentalFeature";
 const char kRequestExperimentalFeatures[] = "requestExperimentalFeatures";
 const char kSetOriginListFlag[] = "setOriginListFlag";
+const char kSetStringFlag[] = "setStringFlag";
 const char kResetAllFlags[] = "resetAllFlags";
 #if BUILDFLAG(IS_CHROMEOS)
 const char kCrosUrlFlagsRedirect[] = "crosUrlFlagsRedirect";

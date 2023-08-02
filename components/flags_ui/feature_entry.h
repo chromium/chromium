@@ -80,6 +80,10 @@ struct FeatureEntry {
     // disabled like SINGLE_VALUE.
     ORIGIN_LIST_VALUE,
 
+    // Corresponds to a command line switch where the value is an arbitrary
+    // string. Default state is disabled like SINGLE_VALUE.
+    STRING_VALUE,
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // The below two types are for *platform* features -- that is, those defined
     // and queried via platform2/featured/feature_library.h. Such features

@@ -36,6 +36,7 @@ bool FeatureEntry::InternalNameMatches(const std::string& name) const {
     case FeatureEntry::SINGLE_VALUE:
     case FeatureEntry::SINGLE_DISABLE_VALUE:
     case FeatureEntry::ORIGIN_LIST_VALUE:
+    case FeatureEntry::STRING_VALUE:
       return name.size() == internal_name_length;
 
     case FeatureEntry::MULTI_VALUE:
@@ -199,6 +200,7 @@ bool FeatureEntry::IsValid() const {
     case FeatureEntry::SINGLE_VALUE:
     case FeatureEntry::SINGLE_DISABLE_VALUE:
     case FeatureEntry::ORIGIN_LIST_VALUE:
+    case FeatureEntry::STRING_VALUE:
       return true;
     case FeatureEntry::MULTI_VALUE:
       if (choices.size() == 0) {

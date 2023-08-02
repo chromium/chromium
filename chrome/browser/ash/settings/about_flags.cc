@@ -141,6 +141,14 @@ void ReadOnlyFlagsStorage::SetOriginListFlag(
     const std::string& internal_entry_name,
     const std::string& origin_list_value) {}
 
+std::string ReadOnlyFlagsStorage::GetStringFlag(
+    const std::string& internal_entry_name) const {
+  return GetOriginListFlag(internal_entry_name);
+}
+
+void ReadOnlyFlagsStorage::SetStringFlag(const std::string& internal_entry_name,
+                                         const std::string& string_value) {}
+
 FeatureFlagsUpdate::FeatureFlagsUpdate(
     const ::flags_ui::FlagsStorage& flags_storage,
     PrefService* profile_prefs) {
