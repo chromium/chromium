@@ -32,11 +32,11 @@ static constexpr int kVideoSubclass = 1;
 static constexpr int kXUSubtype = 6;
 
 typedef struct {
-  uint8_t klength;
+  uint8_t kLength;
   uint8_t kType;
   uint8_t kSubtype;
   uint8_t kUnitId;
-  uint8_t kGuid[16];
+  uint8_t kGuidLe[kGuidSize];  // little-endian from camera
 } kXuInterface;
 
 class RealDelegate : public XuCameraService::Delegate {
@@ -148,10 +148,10 @@ void XuCameraService::SetDelegate(Delegate* delegate) {
 }
 
 void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
-                                const std::vector<uint8_t>& guid,
+                                const std::vector<uint8_t>& guid_le,
                                 GetUnitIdCallback callback) {
   // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
-  auto unitId = guid_unitid_map_.find(guid);
+  auto unitId = guid_unitid_map_.find(guid_le);
   if (unitId != guid_unitid_map_.end()) {
     VLOG(4) << __func__
             << ": UnitId found: " << static_cast<char>(unitId->second);
@@ -166,11 +166,11 @@ void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
   usb_manager_->GetDevices(
       std::move(options),
       base::BindOnce(&XuCameraService::OnGetDevices, weak_factory_.GetWeakPtr(),
-                     guid, std::move(callback)));
+                     guid_le, std::move(callback)));
 }
 
 void XuCameraService::OnGetDevices(
-    const std::vector<uint8_t>& guid,
+    const std::vector<uint8_t>& guid_le,
     GetUnitIdCallback callback,
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   for (const auto& device_info : devices) {
@@ -191,8 +191,10 @@ void XuCameraService::OnGetDevices(
                   (cur + (int)sizeof(curXuInterface)) < end) {
                 std::memcpy(&curXuInterface, &data_ptr[cur],
                             sizeof(curXuInterface));
-                guid_unitid_map_.insert({ProcessGuid(curXuInterface.kGuid),
-                                         curXuInterface.kUnitId});
+                std::vector<uint8_t> curXuInterface_guid_le(
+                    curXuInterface.kGuidLe, curXuInterface.kGuidLe + kGuidSize);
+                guid_unitid_map_.insert(
+                    {curXuInterface_guid_le, curXuInterface.kUnitId});
               }
               cur += static_cast<int>(data_ptr[cur]);
             }
@@ -202,7 +204,7 @@ void XuCameraService::OnGetDevices(
     }
   }
 
-  auto unitId = guid_unitid_map_.find(guid);
+  auto unitId = guid_unitid_map_.find(guid_le);
   if (unitId != guid_unitid_map_.end()) {
     VLOG(4) << __func__
             << ": UnitId found: " << static_cast<char>(unitId->second);
@@ -212,33 +214,6 @@ void XuCameraService::OnGetDevices(
 
   VLOG(4) << __func__ << ": UnitId not found";
   std::move(callback).Run(ENOSYS, '0');
-}
-
-std::vector<uint8_t> XuCameraService::ProcessGuid(
-    uint8_t unprocessed_guid[kGuidSize]) {
-  std::vector<uint8_t> guid(kGuidSize);
-  /* GUID consist of 5 combined values
-   * [0-3], [4-5], [6-7]. [8-9]. [10-15]
-   * The first 3 values are stored in little Endian and need to be
-   * converted to big endian form the correct GUID
-   */
-  guid[0] = unprocessed_guid[3];
-  guid[1] = unprocessed_guid[2];
-  guid[2] = unprocessed_guid[1];
-  guid[3] = unprocessed_guid[0];
-  guid[4] = unprocessed_guid[5];
-  guid[5] = unprocessed_guid[4];
-  guid[6] = unprocessed_guid[7];
-  guid[7] = unprocessed_guid[6];
-  guid[8] = unprocessed_guid[8];
-  guid[9] = unprocessed_guid[9];
-  guid[10] = unprocessed_guid[10];
-  guid[11] = unprocessed_guid[11];
-  guid[12] = unprocessed_guid[12];
-  guid[13] = unprocessed_guid[13];
-  guid[14] = unprocessed_guid[14];
-  guid[15] = unprocessed_guid[15];
-  return guid;
 }
 
 void XuCameraService::MapCtrl(const mojom::WebcamIdPtr id,
