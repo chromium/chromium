@@ -1413,7 +1413,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   // NOTE: The initial value of these flags is indeterminate since
   // they could get unwanted values from a MPC hit; they are in
   // a raredata field group, so CopyNonInheritedFromCached will clobber
-  // them despite custom_copy, and we always need to set them.
+  // them despite reset_on_new_style, and we always need to set them.
   // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
   // can remove the cache-busting for ::highlight() in IsStyleCacheable
   state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(

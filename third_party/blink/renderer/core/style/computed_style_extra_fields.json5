@@ -3,9 +3,17 @@
 // generate, but are not CSS properties.
 
   parameters: {
-    // If true, we do not include this field in ComputedStyleBase::InheritFrom
-    // and ComputedStyleBase::CopyNonInheritedFromCached.
-    custom_copy: {
+    // If true, this field will be reset whenever we create a new ComputedStyle;
+    // it will not be (automatically) kept from any previous styles, but will be
+    // set to the initial value. Specifically, neither ComputedStyleBase::InheritFrom
+    // nor ComputedStyleBase::CopyNonInheritedFromCached will touch this field.
+    //
+    // NOTE: We do not currently do this correctly for fields in subgroups;
+    // they will be copied wholesale together with the subgroup. We could fix it,
+    // but it would make copy-on-write much less efficient for many cases,
+    // so it's probably best to just disallow reset_on_new_style fields that are
+    // not on top-level.
+    reset_on_new_style: {
       default: false,
     },
 
@@ -31,7 +39,7 @@
       name: "IsLink",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     {
@@ -102,7 +110,7 @@
       name: "HasAttrContent",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     // Whether this style is affected by these pseudo-classes.
@@ -110,28 +118,28 @@
       name: "AffectedByFocusWithin",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     {
       name: "AffectedByHover",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     {
       name: "AffectedByActive",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     {
       name: "AffectedByDrag",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     // A non-inherited property references a variable or @apply is used
@@ -139,7 +147,7 @@
       name: "HasVariableReferenceFromNonInheritedProperty",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     // A property references a variable that needs to be resolved
@@ -162,7 +170,7 @@
       name: "ChildHasExplicitInheritance",
       field_template: "monotonic_flag",
       default_value: "false",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
       mutable: true,
     },
@@ -228,7 +236,7 @@
       field_size: 6,
       default_value: "PseudoId::kPseudoIdNone",
       type_name: "PseudoId",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     {
@@ -237,7 +245,7 @@
       field_size: 12,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
       computed_style_custom_functions: ["getter"],
     },
@@ -250,7 +258,7 @@
       field_group: "*",
       default_value: "false",
       type_name: "bool",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     // Whether any highlight pseudo selectors were found when collecting non-UA
@@ -262,7 +270,7 @@
       field_group: "*",
       default_value: "false",
       type_name: "bool",
-      custom_copy: true,
+      reset_on_new_style: true,
       custom_compare: true,
     },
     // Used by ::highlight
@@ -284,7 +292,7 @@
       wrapper_pointer_name: "std::unique_ptr",
       default_value: "nullptr",
       computed_style_custom_functions: ["setter", "getter"],
-      custom_copy: true,
+      reset_on_new_style: true,
     },
     // FIXME: vertical align is actually a CSS property, but since we don't support union fields
     // which can be either a keyword or Length, this is specified in this file for now. Remove this
@@ -761,7 +769,7 @@
       field_template: "derived_flag",
       derived_from: "CalculateIsStackingContextWithoutContainment",
       mutable: true,
-      custom_copy: true,
+      reset_on_new_style: true,
     },
     // A stacking context is forced a few situations, e.g.:
     //
@@ -1129,7 +1137,7 @@
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
       custom_compare: true,
-      custom_copy: true,
+      reset_on_new_style: true,
     },
     {
       // https://drafts.csswg.org/css-contain-2/#skips-its-contents

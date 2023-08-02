@@ -90,7 +90,7 @@ def validate_property(prop, props_by_name):
     if prop.field_template == 'derived_flag':
         assert prop.mutable, 'Derived flags must be mutable [%s]' % name
         assert not prop.field_group, 'Derived flags may not have field groups [%s]' % name
-        assert prop.custom_copy, 'Derived flags must have custom_copy [%s]' % name
+        assert prop.reset_on_new_style, 'Derived flags must have reset_on_new_style [%s]' % name
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -206,7 +206,7 @@ def generate_property_class(parameters):
     additional = {
         'aliases': [],
         'custom_compare': False,
-        'custom_copy': False,
+        'reset_on_new_style': False,
         'mutable': False,
         'name': None,
         'alternative': None,
@@ -546,7 +546,7 @@ class CSSProperties(object):
                         property_.wrapper_pointer_name, type_name)
 
         # Default values for extra parameters in computed_style_extra_fields.json5.
-        set_if_none(property_, 'custom_copy', False)
+        set_if_none(property_, 'reset_on_new_style', False)
         set_if_none(property_, 'custom_compare', False)
         set_if_none(property_, 'mutable', False)
 
