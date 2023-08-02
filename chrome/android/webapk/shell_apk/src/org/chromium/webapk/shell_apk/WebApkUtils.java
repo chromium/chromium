@@ -15,6 +15,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -342,6 +343,12 @@ public class WebApkUtils {
         } catch (Resources.NotFoundException e) {
         }
         return false;
+    }
+
+    /** Returns whether the system is in dark mode */
+    public static boolean inDarkMode(Context context) {
+        return (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
     }
 
     private static boolean isAutomotive(Context context) {

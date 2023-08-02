@@ -7,4 +7,5 @@ found in the LICENSE file.
 
 <resources>
   <color name="background_color_non_empty">{{{background_color_xml}}}</color>
+  <color name="dark_background_color_non_empty">{{{dark_background_color_xml}}}</color>
 </resources>

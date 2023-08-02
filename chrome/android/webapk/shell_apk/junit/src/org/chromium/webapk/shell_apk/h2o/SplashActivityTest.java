@@ -4,6 +4,7 @@
 
 package org.chromium.webapk.shell_apk.h2o;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -17,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -230,6 +232,23 @@ public final class SplashActivityTest {
 
         assertNotNull(mShadowApplication.getNextStartedActivity());
         assertFalse(splashActivityController.get().isFinishing());
+    }
+
+    /**
+     * Test that SplashActivity sets the correct dark theme color when the system is in night mode.
+     */
+    @Test
+    @Config(qualifiers = "night")
+    public void testSplashScreenStatusBarWhenNightMode() {
+        ActivityController<SplashActivity> splashActivityController =
+                Robolectric.buildActivity(SplashActivity.class, new Intent());
+        setAppTaskTopActivity(splashActivityController.get().getTaskId(), new Activity());
+
+        Bundle metadata = new Bundle();
+        metadata.putString(WebApkMetaDataKeys.DARK_THEME_COLOR, "4280295456L");
+        splashActivityController.get().updateStatusBar(metadata);
+        assertEquals(Color.parseColor("#202020"),
+                splashActivityController.get().getWindow().getStatusBarColor());
     }
 
     /**
