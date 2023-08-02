@@ -324,7 +324,9 @@ bool PrefProvider::RenewContentSetting(
       [&](Rule& rule) -> bool {
         // Only settings whose lifetimes are non-zero can be
         // renewed.
-        CHECK_NE(rule.metadata.lifetime(), base::TimeDelta());
+        if (rule.metadata.lifetime().is_zero()) {
+          return false;
+        }
 
         if (rule.metadata.expiration() < clock_->Now()) {
           return false;
