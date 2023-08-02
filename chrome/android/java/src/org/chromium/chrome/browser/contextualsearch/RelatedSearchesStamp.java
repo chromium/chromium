@@ -209,11 +209,12 @@ class RelatedSearchesStamp {
     private String buildRelatedSearchesStamp(boolean isLanguageRestricted) {
         String experimentConfigStamp =
                 ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp();
-        if (TextUtils.isEmpty(experimentConfigStamp)) experimentConfigStamp = NO_EXPERIMENT_STAMP;
-        StringBuilder stampBuilder = new StringBuilder().append(experimentConfigStamp);
-        if (isLanguageRestricted) stampBuilder.append(RELATED_SEARCHES_LANGUAGE_RESTRICTION);
+        String ret = experimentConfigStamp;
+        if (isLanguageRestricted) {
+            ret += RELATED_SEARCHES_LANGUAGE_RESTRICTION;
+        }
 
-        return stampBuilder.toString();
+        return ret;
     }
 
     /**

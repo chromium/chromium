@@ -33,7 +33,7 @@ public class ContextualSearchFieldTrial {
     // languages specified in the "language_allowlist".
     static final String RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME =
             "all_languages";
-    private static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
+    static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
     private static final String RELATED_SEARCHES_CONFIG_DEFAULT_STAMP = "1Rs";
 
     static final String CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME =

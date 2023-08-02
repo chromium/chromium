@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -18,10 +17,8 @@ import android.text.TextUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,45 +27,23 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  * Tests the {@link RelatedSearchesStamp} class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {RelatedSearchesStampTest.ShadowChromeFeatureList.class,
-                RelatedSearchesStampTest.ShadowContextualSearchFieldTrial.class})
 public class RelatedSearchesStampTest {
-    /** Here are the requirements that are set up in the configuration. */
-    private static final String RELATED_SEARCHES_NEEDS_URL = "needs_url";
-    private static final String RELATED_SEARCHES_NEEDS_CONTENT = "needs_content";
-    private static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST = "language_allowlist";
-    private static final String RELATED_SEARCHES_ALL_LANGUAGES = "all_languages";
-
     /** The "stamp" encodes the experiment and its processing history, and is built from these. */
-    private static final String RELATED_SEARCHES_STAMP_VERSION = "1";
-    private static final String RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE = "R";
-    private static final String RELATED_SEARCHES_NO_EXPERIMENT = "n";
-    private static final String RELATED_SEARCHES_URL_EXPERIMENT = "u";
-    private static final String RELATED_SEARCHES_CONTENT_EXPERIMENT = "c";
-    private static final String RELATED_SEARCHES_BOTH_EXPERIMENT = "b";
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
-    private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
-    private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
 
     /**
      * The stamps to use for various experiment configurations. Note that users still may need
      * the ability to send everything in order to keep the experiment populations balanced.
      */
-    private static final String CONFIG_STAMP_URL_ONLY = RELATED_SEARCHES_STAMP_VERSION
-            + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_URL_EXPERIMENT;
-    private static final String CONFIG_STAMP_CONTENT_ONLY = RELATED_SEARCHES_STAMP_VERSION
-            + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_CONTENT_EXPERIMENT;
-    private static final String CONFIG_STAMP_BOTH = RELATED_SEARCHES_STAMP_VERSION
-            + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_BOTH_EXPERIMENT;
-    private static final String EXPECTED_DEFAULT_STAMP = RELATED_SEARCHES_STAMP_VERSION
-            + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_NO_EXPERIMENT;
-    private static final String EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED =
-            EXPECTED_DEFAULT_STAMP + RELATED_SEARCHES_LANGUAGE_RESTRICTION;
+    private static final String CONFIG_STAMP_URL_ONLY = "1Ru";
+    private static final String CONFIG_STAMP_CONTENT_ONLY = "1Rc";
+    private static final String CONFIG_STAMP_BOTH = "1Rb";
+    private static final String EXPECTED_DEFAULT_STAMP = "1Rs";
+    private static final String EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED = "1Rsl";
 
     /** The stamp CGI parameter. */
     private static final String RELATED_SEARCHES_STAMP_PARAM = "ctxsl_rs";
-    private static final String EXPECTED_POSITION_ENDING =
-            RELATED_SEARCHES_USER_INTERACTION + RELATED_SEARCHES_SELECTED_POSITION;
+    private static final String EXPECTED_POSITION_ENDING = "Up";
     private static final Uri SAMPLE_URI =
             Uri.parse("https://www.google.com/search?q=query&ctxsl_rs=" + EXPECTED_DEFAULT_STAMP);
 
@@ -77,93 +52,16 @@ public class RelatedSearchesStampTest {
     private static final String GERMAN = "de";
     private static final String ENGLISH_AND_SPANISH = ENGLISH + "," + SPANISH;
 
-    /**
-     * Values to return from Shadows.
-     * These must be static because the original and shadow methods are static.
-     */
-    private static String sRelatedSearchesLanguageAllowlist;
-    // These need to be Boolean instead of boolean so they can be static.
-    private static Boolean sRelatedSearchesNeedsUrl;
-    private static Boolean sRelatedSearchesNeedsContent;
-    private static Boolean sRelatedSearchesSupportAllLanguages;
-    private static String sRelatedSearchesExperimentConfigurationStamp;
-
-    //=========================================================================================
-    // Shadow classes are used to override static methods to enable them to return test values.
-    //=========================================================================================
-
-    /**
-     * Shadows the ChromeFeatureList class.
-     * Note that isEnabled must be shadowed and that all methods here need to be protected.
-     * Also all method signatures must match or a silent failure to shadow will occur.
-     */
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        @Implementation
-        protected static boolean getFieldTrialParamByFeatureAsBoolean(
-                String featureName, String paramName, boolean defaultValue) {
-            assertThat(featureName, is(ChromeFeatureList.RELATED_SEARCHES));
-            assertThat(paramName,
-                    anyOf(is(ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME),
-                            is(ContextualSearchFieldTrial
-                                            .RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME)));
-            if (paramName.equals(
-                        ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME)) {
-                return sRelatedSearchesNeedsUrl == null ? defaultValue : sRelatedSearchesNeedsUrl;
-            } else if (paramName.equals(ContextualSearchFieldTrial
-                                                .RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME)) {
-                return sRelatedSearchesNeedsContent == null ? defaultValue
-                                                            : sRelatedSearchesNeedsContent;
-            }
-            return defaultValue;
-        }
-
-        @Implementation
-        protected static boolean isEnabled(String featureName) {
-            return true;
-        }
-    }
-
-    /**
-     * Shadows the ContextualSearchFieldTrial class.
-     * Note that all methods here need to be protected regardless of the access of the
-     * method being shadowed.
-     */
-    @Implements(ContextualSearchFieldTrial.class)
-    static class ShadowContextualSearchFieldTrial {
-        @Implementation
-        protected static String getRelatedSearchesParam(String paramName) {
-            // The code under test only calls this method for this particular param.
-            assertThat(paramName, is(RELATED_SEARCHES_LANGUAGE_ALLOWLIST));
-            return sRelatedSearchesLanguageAllowlist;
-        }
-
-        @Implementation
-        protected static String getRelatedSearchesExperimentConfigurationStamp() {
-            return sRelatedSearchesExperimentConfigurationStamp;
-        }
-
-        @Implementation
-        protected static boolean isRelatedSearchesParamEnabled(String relatedSearchesParamName) {
-            if (relatedSearchesParamName.equals(RELATED_SEARCHES_NEEDS_URL)) {
-                return sRelatedSearchesNeedsUrl;
-            } else if (relatedSearchesParamName.equals(RELATED_SEARCHES_NEEDS_CONTENT)) {
-                return sRelatedSearchesNeedsContent;
-            } else {
-                assertThat(relatedSearchesParamName, is(RELATED_SEARCHES_ALL_LANGUAGES));
-                return sRelatedSearchesSupportAllLanguages;
-            }
-        }
-    }
-
     private ContextualSearchPolicy mPolicy;
-
+    private FeatureList.TestValues mFeatureListValues;
     /** Our instance under test. */
     private RelatedSearchesStamp mStamp;
 
     @Before
     public void setup() {
-        resetShadows();
+        mFeatureListValues = new FeatureList.TestValues();
+        FeatureList.setTestValues(mFeatureListValues);
+        mFeatureListValues.addFeatureFlagOverride(ChromeFeatureList.RELATED_SEARCHES, true);
         mPolicy = new ContextualSearchPolicy(null, null);
         mStamp = new RelatedSearchesStamp(mPolicy);
         mStamp.disableDefaultAllowedLanguagesForTesting(true);
@@ -172,15 +70,6 @@ public class RelatedSearchesStampTest {
     //====================================================================================
     // Helper methods
     //====================================================================================
-
-    /** Resets all of the static return values for all our shadow classes. */
-    private void resetShadows() {
-        sRelatedSearchesLanguageAllowlist = "";
-        sRelatedSearchesNeedsUrl = null;
-        sRelatedSearchesNeedsContent = null;
-        sRelatedSearchesSupportAllLanguages = null;
-        sRelatedSearchesExperimentConfigurationStamp = null;
-    }
 
     /** Sets whether the user has allowed sending content (has done the opt-in). */
     private void setCanSendContent(boolean canSend) {
@@ -192,7 +81,9 @@ public class RelatedSearchesStampTest {
      * order to get any Related Searches.
      */
     private void setNeedsContent(boolean needsContent) {
-        sRelatedSearchesNeedsContent = needsContent;
+        mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME,
+                "" + needsContent);
     }
 
     /**
@@ -208,7 +99,8 @@ public class RelatedSearchesStampTest {
      * order to get any Related Searches.
      */
     private void setNeedsUrl(boolean needsUrl) {
-        sRelatedSearchesNeedsUrl = needsUrl;
+        mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME, "" + needsUrl);
     }
 
     /**
@@ -216,7 +108,10 @@ public class RelatedSearchesStampTest {
      * Searches.
      */
     private void setSupportAllLanguage(boolean support) {
-        sRelatedSearchesSupportAllLanguages = support;
+        mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES,
+                ContextualSearchFieldTrial
+                        .RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME,
+                "" + support);
     }
 
     /**
@@ -224,20 +119,16 @@ public class RelatedSearchesStampTest {
      * allowed languages) in order to get any Related Searches.
      */
     private void setLanguageAllowlist(String commaSeparatedLanguages) {
-        sRelatedSearchesLanguageAllowlist = commaSeparatedLanguages;
-    }
-
-    /**
-     * Clears the list of allowed languages so there's no language restriction to get Related
-     * Searches.
-     */
-    private void clearLanguageAllowlist() {
-        sRelatedSearchesLanguageAllowlist = "";
+        mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME,
+                commaSeparatedLanguages);
     }
 
     /** Sets the base stamp that the config specifies for this Related Searches experiment arm. */
     private void setRelatedSearchesExperimentConfigurationStamp(String stampFromConfig) {
-        sRelatedSearchesExperimentConfigurationStamp = stampFromConfig;
+        mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME,
+                stampFromConfig);
     }
 
     /** Sets the standard config setup that we're using for Related Searches experiments. */
@@ -264,7 +155,7 @@ public class RelatedSearchesStampTest {
      */
     private void setStandardLaunchConfiguration(String stampFromConfig) {
         setStandardExperimentConfiguration(stampFromConfig);
-        clearLanguageAllowlist();
+        setLanguageAllowlist("");
     }
 
     /**
