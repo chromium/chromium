@@ -49085,6 +49085,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Not Available, Incognito mode"/>
 </enum>
 
+<enum name="GoogleDrive.BulkPinning.MountFailureReason">
+  <int value="0" label="Successfully mounted"/>
+  <int value="1" label="More than 3 consecutive startup failures"/>
+  <int value="2" label="More than 10 total mount failures"/>
+</enum>
+
 <enum name="GoogleDrive.BulkPinning.Stage">
   <int value="0" label="Stopped"/>
   <int value="1" label="Paused Because Offline"/>

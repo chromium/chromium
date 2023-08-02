@@ -369,6 +369,26 @@ bool ClearCache(base::FilePath cache_path, base::FilePath logs_path) {
   return success;
 }
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "GoogleDrive.BulkPinning.MountFailureReason" in
+// src/tools/metrics/histograms/enums.xml.
+enum class BulkPinningMountFailureReason {
+  kSuccess = 0,
+  kThreeConsecutiveFailures = 1,
+  kMoreThanTenTotalFailures = 2,
+  kMaxValue = kMoreThanTenTotalFailures,
+};
+
+void RecordBulkPinningMountFailureReason(const Profile* profile,
+                                         BulkPinningMountFailureReason reason) {
+  if (!drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "FileBrowser.GoogleDrive.BulkPinning.MultipleMountFailures", reason);
+}
+
 }  // namespace
 
 // Observes drive disable Preference's change.
@@ -1149,6 +1169,8 @@ void DriveIntegrationService::MaybeRemountFileSystem(
       mount_failed_ = true;
       logger_->Log(logging::LOGGING_ERROR,
                    "DriveFs is too crashy. Leaving it alone.");
+      RecordBulkPinningMountFailureReason(
+          profile_, BulkPinningMountFailureReason::kMoreThanTenTotalFailures);
       for (auto& observer : observers_) {
         observer.OnFileSystemMountFailed();
       }
@@ -1158,6 +1180,8 @@ void DriveIntegrationService::MaybeRemountFileSystem(
       mount_failed_ = true;
       logger_->Log(logging::LOGGING_ERROR,
                    "DriveFs keeps failing at start. Giving up.");
+      RecordBulkPinningMountFailureReason(
+          profile_, BulkPinningMountFailureReason::kThreeConsecutiveFailures);
       for (auto& observer : observers_) {
         observer.OnFileSystemMountFailed();
       }
@@ -1233,6 +1257,9 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
       bulk_pinning_pref_sampling_ = true;
       SampleBulkPinningPref();
     }
+
+    RecordBulkPinningMountFailureReason(
+        profile_, BulkPinningMountFailureReason::kSuccess);
   }
 }
 
