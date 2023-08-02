@@ -17,10 +17,12 @@ public abstract class CronetLogger {
         CRONET_SOURCE_UNSPECIFIED,
         // The library is bundled with the application.
         CRONET_SOURCE_STATICALLY_LINKED,
-        // The library is loaded from GooglePlayServices
+        // The library is loaded from GooglePlayServices.
         CRONET_SOURCE_PLAY_SERVICES,
-        // The application is using the fallback implementation
+        // The application is using the fallback implementation.
         CRONET_SOURCE_FALLBACK,
+        // The library is loaded through the bootclasspath.
+        CRONET_SOURCE_PLATFORM,
     }
 
     /**
