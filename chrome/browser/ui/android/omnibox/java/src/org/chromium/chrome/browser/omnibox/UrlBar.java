@@ -793,6 +793,23 @@ public abstract class UrlBar extends AutocompleteEditText {
         scrollTo((int) scrollPos, getScrollY());
     }
 
+    // TODO(crbug.com/1465967): remove after getting enough data to diagnose
+    // failed assert
+    private String getWrongIndexErrorMessage(int incorrectIndex) {
+        Editable url = getText();
+        int measuredWidth = getVisibleMeasuredViewportWidth();
+        int urlTextLength = url.length();
+        int finalVisibleCharIndexSlow = getLayout().getOffsetForHorizontal(0, measuredWidth);
+        String errorMessage = "scrollToTLD incorrect optimized"
+                + " finalVisibleCharIndex. old index: " + String.valueOf(finalVisibleCharIndexSlow)
+                + " optimized index: " + String.valueOf(incorrectIndex)
+                + " viewport: " + String.valueOf(measuredWidth)
+                + " prefix: " + url.subSequence(0, Math.max(mOriginEndIndex - 4, 0))
+                + " suffix: " + url.subSequence(mOriginEndIndex, urlTextLength)
+                + " url length: " + String.valueOf(urlTextLength);
+        return errorMessage;
+    }
+
     /**
      * Scrolls the omnibox text to bring the TLD into view.
      */
@@ -869,18 +886,9 @@ public abstract class UrlBar extends AutocompleteEditText {
                         // the hint.
                         mVisibleTextPrefixHint = null;
                     } else {
-                        int finalVisibleCharIndexSlow =
-                                textLayout.getOffsetForHorizontal(0, measuredWidth);
-
-                        // TODO(crbug.com/1465967): remove after getting enough data to diagnose
-                        // failed assert
-                        String errorMessage = "scrollToTLD incorrect optimized "
-                                + "finalVisibleCharIndex. old index: "
-                                + String.valueOf(finalVisibleCharIndexSlow)
-                                + " optimized index: " + String.valueOf(finalVisibleCharIndex)
-                                + " viewport: " + String.valueOf(measuredWidth)
-                                + " url length: " + String.valueOf(urlTextLength);
-                        assert finalVisibleCharIndex == finalVisibleCharIndexSlow : errorMessage;
+                        assert finalVisibleCharIndex
+                                == textLayout.getOffsetForHorizontal(0, measuredWidth)
+                            : getWrongIndexErrorMessage(finalVisibleCharIndex);
 
                         // To avoid issues where a small portion of the character following
                         // finalVisibleCharIndex is visible on screen, be more conservative and
