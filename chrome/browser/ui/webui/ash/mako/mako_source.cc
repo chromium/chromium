@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "net/base/mime_util.h"
 
@@ -14,10 +15,10 @@ namespace {
 constexpr char kDefaultMime[] = "text/html";
 constexpr base::FilePath::CharType kMakoRoot[] =
     FILE_PATH_LITERAL("/usr/share/chromeos-assets/mako");
-constexpr base::FilePath::CharType kOrcaHTML[] =
-    FILE_PATH_LITERAL("html/mako.html");
+constexpr base::FilePath::CharType kOrcaHTML[] = FILE_PATH_LITERAL("orca.html");
 
-std::string ReadFile(const base::FilePath& relative_path) {
+void ReadFile(const base::FilePath& relative_path,
+              content::URLDataSource::GotDataCallback callback) {
   CHECK(!relative_path.ReferencesParent());
 
   base::FilePath path = base::FilePath(kMakoRoot).Append(relative_path);
@@ -25,7 +26,8 @@ std::string ReadFile(const base::FilePath& relative_path) {
   bool result = base::ReadFileToString(path, &content);
 
   DCHECK(result) << path;
-  return content;
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(content)));
 }
 
 }  // namespace
@@ -35,7 +37,7 @@ namespace ash {
 MakoSource::MakoSource() noexcept = default;
 
 std::string MakoSource::GetSource() {
-  return ash::kChromeUIMakoHost;
+  return ash::kChromeUIMakoURL;
 }
 
 void MakoSource::StartDataRequest(
@@ -47,8 +49,9 @@ void MakoSource::StartDataRequest(
     path = base::FilePath(kOrcaHTML);
   }
 
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(ReadFile(path)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&ReadFile, path, std::move(callback)));
 }
 
 std::string MakoSource::GetMimeType(const GURL& url) {
@@ -65,7 +68,10 @@ std::string MakoSource::GetContentSecurityPolicy(
   switch (directive) {
     case network::mojom::CSPDirectiveName::TrustedTypes:
       // Intentional space at end - things are appended to this.
-      return "trusted-types goog#html polymer_resin lit-html; ";
+      return "trusted-types goog#html polymer_resin lit-html "
+             "polymer-template-event-attribute-policy polymer-html-literal; ";
+    case network::mojom::CSPDirectiveName::StyleSrc:
+      return "style-src 'unsafe-inline'; ";
     default:
       return content::URLDataSource::GetContentSecurityPolicy(directive);
   }

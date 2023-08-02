@@ -30,6 +30,7 @@ class MakoDialogView : public WebUIBubbleDialogView {
       : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
         contents_wrapper_(std::move(contents_wrapper)) {
     set_has_parent(false);
+    set_corner_radius(20);
   }
 
  private:
@@ -119,5 +120,6 @@ void MakoUntrustedUI::Show(Profile* profile) {
   weak_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   weak_ptr->set_adjust_if_offscreen(true);
+  weak_ptr->ShowUI();
 }
 }  // namespace ash
