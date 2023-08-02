@@ -12,7 +12,6 @@
 #include "net/base/backoff_entry.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -62,6 +61,15 @@ constexpr FetcherConfig kClassifyUrlConfig = {
     .traffic_annotation = annotations::ClassifyUrlTag,
 };
 
+constexpr FetcherConfig kListFamilyMembersLegacyConfig{
+    .service_path = "families/mine/members",
+    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+    .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
+    .method = FetcherConfig::Method::kGet,
+    .histogram_basename = "Signin.ListFamilyMembersRequest",
+    .traffic_annotation = annotations::ListFamilyMembersTag,
+};
+
 constexpr FetcherConfig kListFamilyMembersConfig{
     .service_path = "families/mine/members",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
@@ -69,6 +77,33 @@ constexpr FetcherConfig kListFamilyMembersConfig{
     .method = FetcherConfig::Method::kGet,
     .histogram_basename = "Signin.ListFamilyMembersRequest",
     .traffic_annotation = annotations::ListFamilyMembersTag,
+    .backoff_policy =
+        net::BackoffEntry::Policy{
+            // Number of initial errors (in sequence) to ignore before
+            // applying exponential back-off rules.
+            .num_errors_to_ignore = 0,
+
+            // Initial delay for exponential backoff in ms.
+            .initial_delay_ms = 2000,
+
+            // Factor by which the waiting time will be multiplied.
+            .multiply_factor = 2,
+
+            // Fuzzing percentage. ex: 10% will spread requests randomly
+            // between 90%-100% of the calculated time.
+            .jitter_factor = 0.2,  // 20%
+
+            // Maximum amount of time we are willing to delay our request in
+            // ms.
+            .maximum_backoff_ms = 1000 * 60 * 60 * 4,  // 4 hours.
+
+            // Time to keep an entry from being discarded even when it
+            // has no significant state, -1 to never discard.
+            .entry_lifetime_ms = -1,
+
+            // Don't use initial delay unless the last request was an error.
+            .always_use_initial_delay = false,
+        },
 };
 
 constexpr FetcherConfig kCreatePermissionRequestConfig = {

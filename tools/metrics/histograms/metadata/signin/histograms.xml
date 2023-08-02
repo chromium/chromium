@@ -794,6 +794,16 @@ the browser and content area. -->
   <summary>Tracks the latency of calls to the Kids Management API.</summary>
 </histogram>
 
+<histogram name="Signin.ListFamilyMembersRequest.RetryCount" units="retries"
+    expires_after="2023-11-30">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Tracks the number of retries before a decisive status (OK or permanent
+    error).
+  </summary>
+</histogram>
+
 <histogram name="Signin.ListFamilyMembersRequest.Status"
     enum="SupervisedUserProtoFetcherStatus" expires_after="2023-12-31">
   <owner>tju@google.com</owner>

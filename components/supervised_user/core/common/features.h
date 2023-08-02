@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 // Enables invoking the ClassifyUrl service through a proto fetcher.
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
+// Instead of manually implementing the process, use the proto_fetcher.cc's one.
+BASE_DECLARE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web
@@ -47,6 +50,10 @@ bool IsLocalWebApprovalThePreferredButton();
 
 // Returns whether the ClassifyUrl call uses proto apis.
 bool IsProtoApiForClassifyUrlEnabled();
+
+// Decides whether to use built-in configurable mechanism, instead of manually
+// programmed.
+bool IsRetryMechanismForListFamilyMembersEnabled();
 
 // Returns whether the new local extension approval experience is enabled.
 bool IsLocalExtensionApprovalsV2Enabled();

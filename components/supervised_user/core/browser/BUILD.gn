@@ -34,6 +34,7 @@ static_library("list_family_members_service") {
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/common:features",
   ]
 }
 
@@ -184,7 +185,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/resources:components_resources",
