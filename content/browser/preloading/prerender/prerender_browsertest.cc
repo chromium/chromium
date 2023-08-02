@@ -9841,41 +9841,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
   EXPECT_FALSE(prerender_process_host->IsProcessBackgrounded());
 }
 
-// Test that the prerendered page uses own UKM source id during navigation.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GetPageUkmSourceId) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  NavigationHandleObserver handle_observer(web_contents(), kPrerenderingUrl);
-  int host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
-
-  ukm::SourceId nav_request_id = handle_observer.next_page_ukm_source_id();
-  // Ensure that the prerendered page uses own UKM source id in navigation, not
-  // from the primary main frame.
-  EXPECT_NE(current_frame_host()->GetPageUkmSourceId(), nav_request_id);
-  EXPECT_EQ(prerender_rfh->GetPageUkmSourceId(), nav_request_id);
-
-  // Activate the prerendered page and check that the
-  // RenderFrameHost::GetPageUkmSourceId and
-  // NavigationHandle::GetNextPageUkmSourceId() for prerender activation
-  // navigation are different.
-  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
-  NavigationHandleObserver activation_observer(web_contents(),
-                                               kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_TRUE(host_observer.was_activated());
-
-  ukm::SourceId activation_nav_request_id =
-      activation_observer.next_page_ukm_source_id();
-  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-            prerender_rfh->GetPageUkmSourceId());
-  EXPECT_NE(prerender_rfh->GetPageUkmSourceId(), activation_nav_request_id);
-}
-
 class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderPurposePrefetchBrowserTest() = default;
