@@ -25,7 +25,8 @@ chromium-metrics-reviews@google.com.
 <!-- Federated Learning and Analytics histograms -->
 
 <variants name="FederatedPopulationName">
-  <variant name="analytics_test_population" summary="for F.A. test"/>
+  <variant name="launcher_query_analytics_v1"
+      summary="for launcher query analytics task"/>
   <variant name="timezone_code_phh" summary="for timezone PHH task"/>
 </variants>
 
