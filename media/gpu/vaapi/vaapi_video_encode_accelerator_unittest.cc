@@ -558,8 +558,7 @@ class VaapiVideoEncodeAcceleratorTest
     constexpr VASurfaceID kVppDestSurfaceIds[] = {456, 457};
 
     // Create Surfaces.
-    for (size_t i = num_spatial_layers - 1; i != std::variant_npos; --i) {
-      if (i < num_spatial_layers - 1) {
+    for (size_t i = 0; i < num_spatial_layers - 1; ++i) {
         if (va_vpp_dest_surface_ids_[i] == VA_INVALID_ID) {
           EXPECT_CALL(
               *mock_vpp_vaapi_wrapper_,
@@ -581,12 +580,11 @@ class VaapiVideoEncodeAcceleratorTest
                     return va_surfaces;
                   }));
         }
-        absl::optional<gfx::Rect> src_rect = gfx::Rect(svc_resolutions[i + 1]);
+        absl::optional<gfx::Rect> default_rect = gfx::Rect(kDefaultEncodeSize);
         absl::optional<gfx::Rect> layer_rect = gfx::Rect(svc_resolutions[i]);
         EXPECT_CALL(*mock_vpp_vaapi_wrapper_,
-                    DoBlitSurface(_, _, src_rect, layer_rect))
+                    DoBlitSurface(_, _, default_rect, layer_rect))
             .WillOnce(Return(true));
-      }
     }
 
     // Create CodedBuffers in creating EncodeJobs.
