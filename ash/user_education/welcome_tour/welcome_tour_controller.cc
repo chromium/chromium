@@ -324,6 +324,13 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     return;
   }
 
+  // Welcome Tour is not supported for counterfactual experiment arms.
+  if (features::IsWelcomeTourEnabledCounterfactually()) {
+    // TODO(http://b/293200505): Record metric.
+    NOTIMPLEMENTED();
+    return;
+  }
+
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
   UserEducationTutorialController::Get()->StartTutorial(

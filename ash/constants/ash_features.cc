@@ -2582,6 +2582,11 @@ BASE_FEATURE(kWebUITabStripTabDragIntegration,
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether the Welcome Tour that walks new users through ChromeOS System UI is
+// enabled counterfactually as part of an experiment arm.
+const base::FeatureParam<bool> kWelcomeTourEnabledCounterfactually{
+    &kWelcomeTour, "is-counterfactual", false};
+
 // Forces user eligibility for the Welcome Tour that walks new users through
 // ChromeOS System UI. Enabling this flag has no effect unless `kWelcomeTour` is
 // also enabled.
@@ -3919,6 +3924,10 @@ bool IsWebUITabStripTabDragIntegrationEnabled() {
 
 bool IsWelcomeTourEnabled() {
   return base::FeatureList::IsEnabled(kWelcomeTour);
+}
+
+bool IsWelcomeTourEnabledCounterfactually() {
+  return IsWelcomeTourEnabled() && kWelcomeTourEnabledCounterfactually.Get();
 }
 
 bool IsWelcomeTourForceUserEligibilityEnabled() {

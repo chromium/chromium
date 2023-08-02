@@ -467,12 +467,10 @@ TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
   EXPECT_CALL(*user_education_delegate(),
               AbortTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1)));
 
-  auto* const accessibility_controller =
-      Shell::Get()->accessibility_controller();
-  accessibility_controller->SetSpokenFeedbackEnabled(true,
-                                                     A11Y_NOTIFICATION_NONE);
+  auto* const a11y_controller = Shell::Get()->accessibility_controller();
+  a11y_controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
-  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+  EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
 }
 
 // Checks that the Welcome Tour should NOT start if ChromeVox is enabled.
@@ -484,16 +482,65 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.
-  auto* const accessibility_controller =
-      Shell::Get()->accessibility_controller();
-  accessibility_controller->SetSpokenFeedbackEnabled(true,
-                                                     A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+  auto* const a11y_controller = Shell::Get()->accessibility_controller();
+  a11y_controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
 
   // Start the Welcome Tour by activating the user session. Expect that the
   // Welcome Tour is NOT started.
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
   session->SetSessionState(SessionState::ACTIVE);
+  Mock::VerifyAndClearExpectations(user_education_delegate());
+}
+
+// WelcomeTourControllerCounterfactualTest -------------------------------------
+
+// Base class for tests of the `WelcomeTourController` which are concerned with
+// the behavior of counterfactual experiment arms, parameterized by whether the
+// Welcome Tour feature is enabled counterfactually.
+class WelcomeTourControllerCounterfactualTest
+    : public WelcomeTourControllerTest,
+      public ::testing::WithParamInterface<
+          /*is_counterfactual=*/absl::optional<bool>> {
+ public:
+  WelcomeTourControllerCounterfactualTest() {
+    if (const auto& is_counterfactual = IsCounterfactual()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kWelcomeTour,
+          {{"is-counterfactual", *is_counterfactual ? "true" : "false"}});
+    }
+  }
+
+  // Returns whether the Welcome Tour is enabled counterfactually as part of an
+  // experiment arm given test parameterization.
+  const absl::optional<bool>& IsCounterfactual() const { return GetParam(); }
+
+ private:
+  // Used to conditionally enable the Welcome Tour counterfactually as part of
+  // an experiment arm given test parameterization.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WelcomeTourControllerCounterfactualTest,
+                         /*is_counterfactual=*/
+                         ::testing::Values(absl::make_optional(true),
+                                           absl::make_optional(false),
+                                           absl::nullopt));
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that the Welcome Tour is prevented from running if enabled
+// counterfactually as part of an experiment arm.
+TEST_P(WelcomeTourControllerCounterfactualTest,
+       PreventsWelcomeTourForCounterfactualArms) {
+  // Set expectations for whether the Welcome Tour will run.
+  EXPECT_CALL(*user_education_delegate(),
+              StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+      .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
+
+  // Login the primary user and verify expectations.
+  SimulateUserLogin("primary@test");
   Mock::VerifyAndClearExpectations(user_education_delegate());
 }
 

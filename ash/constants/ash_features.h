@@ -1098,6 +1098,7 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripTabDragIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourEnabledCounterfactually();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourForceUserEligibilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWmModeEnabled();
