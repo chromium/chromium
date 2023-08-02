@@ -102,6 +102,9 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
         {});
     AshTestBase::SetUp();
 
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+
     feature_status_provider_ =
         phone_hub_manager_.fake_feature_status_provider();
     feature_status_provider_->SetStatus(
@@ -122,12 +125,18 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
         CreateIncomingCallNotification(kPhoneHubIncomingCallNotificationId));
   }
 
+  void TearDown() override {
+    widget_.reset();
+    AshTestBase::TearDown();
+  }
+
   message_center::Notification* FindNotification(const std::string& cros_id) {
     return message_center_->FindVisibleNotificationById(cros_id);
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<views::Widget> widget_;
   raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   raw_ptr<phonehub::FakeNotificationManager, ExperimentalAsh>
@@ -423,9 +432,14 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
       message_center::NotificationView::kActionButtonsRow);
   views::View* reply_button = action_buttons_row->children()[0];
 
+  auto* view = widget_->SetContentsView(std::move(phonehub_notification_view));
+  auto* focus_manager = widget_->GetFocusManager();
+
   // Initially, reply button should be disabled after replied.
   const std::u16string kInlineReply0 = u"inline reply 0";
   notification_view->OnNotificationInputSubmit(0, kInlineReply0);
+
+  EXPECT_EQ(view, focus_manager->GetFocusedView());
   EXPECT_FALSE(reply_button->GetEnabled());
 
   // After a brief moment, it should be enabled.
