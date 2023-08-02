@@ -23,12 +23,6 @@
     }
   },
   "ci": {
-    "chromeos-amd64-generic-dbg": {
-      "_default": "_default"
-    },
-    "chromeos-amd64-generic-lacros-dbg": {
-      "_default": "_default"
-    },
     "chromeos-amd64-generic-rel": {
       "_default": "_default"
     },
@@ -44,52 +38,8 @@
     "chromeos-octopus-rel": {
       "_default": "_default"
     },
-    "lacros-amd64-generic-rel": {
-      "_default": "_default"
-    },
-    "lacros-arm-generic-rel": {
-      "_default": "_default"
-    },
-    "lacros-arm64-generic-rel": {
-      "_default": "_default"
-    },
-    "linux-chromeos-dbg": {
-      "_default": "_default"
-    },
     "linux-chromeos-rel": {
       "_default": "_default"
-    },
-    "linux-lacros-builder-rel": {
-      "_default": "_default"
-    },
-    "linux-lacros-dbg": {
-      "_default": "_default"
-    },
-    "linux-lacros-tester-rel": {
-      "_default": "_default"
-    },
-    "linux-official": {
-      "build_time": {
-        "p50_mins": 240,
-        "p95_mins": 300,
-        "p99_mins": 360
-      },
-      "fail_rate": {
-        "average": 0.2
-      },
-      "infra_fail_rate": {
-        "average": 0.05
-      },
-      "pending_time": {
-        "p50_mins": 10,
-        "p95_mins": 20,
-        "p99_mins": 30
-      },
-      "test_pending_time": {
-        "p50_mins": 10,
-        "p95_mins": 20,
-        "p99_mins": 30
-      }
     }
   }
 }
