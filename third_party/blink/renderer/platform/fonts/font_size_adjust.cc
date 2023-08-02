@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_size_adjust.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

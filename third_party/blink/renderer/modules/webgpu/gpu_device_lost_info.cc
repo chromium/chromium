@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 GPUDeviceLostInfo::GPUDeviceLostInfo(const WGPUDeviceLostReason reason,

@@ -35,8 +35,11 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace WTF {
 

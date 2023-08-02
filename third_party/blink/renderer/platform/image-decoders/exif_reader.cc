@@ -37,6 +37,8 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 namespace {

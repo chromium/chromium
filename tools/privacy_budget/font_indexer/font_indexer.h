@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
