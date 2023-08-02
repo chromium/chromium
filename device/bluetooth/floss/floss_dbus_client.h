@@ -34,6 +34,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterLoggingObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerObjectFormat[];
+extern DEVICE_BLUETOOTH_EXPORT const char kBluetoothTelephonyFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kMediaObjectFormat[];
@@ -42,6 +43,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterLoggingInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdminInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kBluetoothTelephonyInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kExperimentalInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
@@ -254,6 +256,10 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetBatteryInformation[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnBatteryInfoUpdated[];
 }  // namespace battery_manager
+
+namespace bluetooth_telephony {
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPhoneOpsEnabled[];
+}  // namespace bluetooth_telephony
 
 namespace experimental {
 extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
@@ -480,6 +486,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
 
   // Convert adapter number to battery_manager object path.
   static dbus::ObjectPath GenerateBatteryManagerPath(int adapter_index);
+
+  // Convert adapter number to bluetooth_telephony object path.
+  static dbus::ObjectPath GenerateBluetoothTelephonyPath(int adapter_index);
 
   // Convert adapter number to admin object path.
   static dbus::ObjectPath GenerateAdminPath(int adapter_index);

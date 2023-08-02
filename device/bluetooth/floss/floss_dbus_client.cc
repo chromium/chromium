@@ -29,6 +29,8 @@ const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 const char kAdminObjectFormat[] = "/org/chromium/bluetooth/hci%d/admin";
 const char kBatteryManagerObjectFormat[] =
     "/org/chromium/bluetooth/hci%d/battery_manager";
+const char kBluetoothTelephonyObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/bluetooth_telephony";
 const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
@@ -37,6 +39,8 @@ const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kAdapterLoggingInterface[] = "org.chromium.bluetooth.Logging";
 const char kAdminInterface[] = "org.chromium.bluetooth.BluetoothAdmin";
 const char kBatteryManagerInterface[] = "org.chromium.bluetooth.BatteryManager";
+const char kBluetoothTelephonyInterface[] =
+    "org.chromium.bluetooth.BluetoothTelephony";
 const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
 const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
@@ -261,6 +265,10 @@ const char kGetBatteryInformation[] = "GetBatteryInformation";
 const char kOnBatteryInfoUpdated[] = "OnBatteryInfoUpdated";
 }  // namespace battery_manager
 
+namespace bluetooth_telephony {
+const char kSetPhoneOpsEnabled[] = "SetPhoneOpsEnabled";
+}  // namespace bluetooth_telephony
+
 namespace admin {
 const char kRegisterCallback[] = "RegisterAdminPolicyCallback";
 const char kUnregisterCallback[] = "UnregisterAdminPolicyCallback";
@@ -438,6 +446,13 @@ dbus::ObjectPath FlossDBusClient::GenerateBatteryManagerPath(
     int adapter_index) {
   return dbus::ObjectPath(
       base::StringPrintf(kBatteryManagerObjectFormat, adapter_index));
+}
+
+// static
+dbus::ObjectPath FlossDBusClient::GenerateBluetoothTelephonyPath(
+    int adapter_index) {
+  return dbus::ObjectPath(
+      base::StringPrintf(kBluetoothTelephonyObjectFormat, adapter_index));
 }
 
 dbus::ObjectPath FlossDBusClient::GenerateAdminPath(int adapter_index) {
