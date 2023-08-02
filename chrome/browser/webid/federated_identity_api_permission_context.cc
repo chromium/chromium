@@ -40,12 +40,14 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
   const GURL rp_embedder_url = relying_party_embedder.GetURL();
 
   // TODO(npm): FedCM is currently restricted to contexts where third party
-  // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag is
-  // enabled.  Once the privacy improvements for the API are implemented, remove
-  // this restriction. See https://crbug.com/13043
+  // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag or
+  // FedCmIdpSigninStatusEnabled flag is enabled.  Once the privacy improvements
+  // for the API are implemented, remove this restriction. See
+  // https://crbug.com/13043
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
       !cookie_settings_->IsThirdPartyAccessAllowed(rp_embedder_url) &&
-      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
+      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies) &&
+      !base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled)) {
     return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
   }
 
