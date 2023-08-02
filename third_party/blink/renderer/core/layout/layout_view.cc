@@ -813,6 +813,17 @@ gfx::SizeF LayoutView::DynamicViewportSizeForViewportUnits() const {
                         : gfx::SizeF();
 }
 
+gfx::SizeF LayoutView::DefaultPageAreaSize() const {
+  NOT_DESTROYED();
+  return gfx::SizeF(
+      std::max(.0f, default_page_description_.size.width() -
+                        (default_page_description_.margin_left +
+                         default_page_description_.margin_right)),
+      std::max(.0f, default_page_description_.size.height() -
+                        (default_page_description_.margin_top +
+                         default_page_description_.margin_bottom)));
+}
+
 void LayoutView::WillBeDestroyed() {
   NOT_DESTROYED();
   // TODO(wangxianzhu): This is a workaround of crbug.com/570706.

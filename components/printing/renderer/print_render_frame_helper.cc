@@ -993,8 +993,6 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void CallOnReady();
-  void ResizeForPrinting();
-  void RestoreSize();
   void CopySelection(const WebPreferences& preferences);
   void ComputeScalingAndPrintParams(blink::WebLocalFrame* frame,
                                     mojom::PrintParamsPtr& print_params,
@@ -1010,7 +1008,6 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   bool owns_web_view_ = false;
   mojom::PrintParamsPtr selection_only_print_params_;
   blink::WebPrintParams web_print_params_;
-  gfx::Size prev_view_size_;
   uint32_t expected_pages_count_ = 0;
   base::OnceClosure on_ready_;
   const bool should_print_backgrounds_;
@@ -1055,32 +1052,9 @@ PrepareFrameAndViewForPrint::~PrepareFrameAndViewForPrint() {
   FinishPrinting();
 }
 
-void PrepareFrameAndViewForPrint::ResizeForPrinting() {
-  TRACE_EVENT0("print", "PrepareFrameAndViewForPrint::ResizeForPrinting");
-
-  // TODO(crbug.com/1117050): This is an attempt at handling media queries, but
-  // it's not quite right. We're passing the page area instead of the page box
-  // here, so any page margins will cause inaccuracies.
-  gfx::SizeF print_layout_size(
-      web_print_params_.print_content_area_in_css_pixels.size());
-
-  if (!frame())
-    return;
-
-  // Plugins do not need to be resized. Resizing the PDF plugin causes a
-  // flicker in the top left corner behind the preview. See crbug.com/739973.
-  if (IsPrintingPdfFrame(frame(), node_to_print_))
-    return;
-
-  prev_view_size_ = frame()->LocalRoot()->FrameWidget()->Size();
-  frame()->LocalRoot()->FrameWidget()->Resize(
-      gfx::ToFlooredSize(print_layout_size));
-}
-
 void PrepareFrameAndViewForPrint::StartPrinting() {
   blink::WebView* web_view = frame_.view();
   web_view->GetSettings()->SetShouldPrintBackgrounds(should_print_backgrounds_);
-  ResizeForPrinting();
   expected_pages_count_ =
       frame()->PrintBegin(web_print_params_, node_to_print_);
   is_printing_started_ = true;
@@ -1105,7 +1079,6 @@ void PrepareFrameAndViewForPrint::CopySelection(
                                /*is_pdf=*/false,
                                /*ignore_css_margins=*/false,
                                /*fit_to_page=*/false);
-
   // Save the URL before `frame_` gets reset below.
   GURL original_url = frame()->GetDocument().Url();
 
@@ -1243,17 +1216,6 @@ void PrepareFrameAndViewForPrint::CallOnReady() {
     std::move(on_ready_).Run();  // Can delete |this|.
 }
 
-void PrepareFrameAndViewForPrint::RestoreSize() {
-  if (!frame())
-    return;
-
-  // Do not restore plugins, since they are not resized.
-  if (IsPrintingPdfFrame(frame(), node_to_print_))
-    return;
-
-  frame()->LocalRoot()->FrameWidget()->Resize(prev_view_size_);
-}
-
 void PrepareFrameAndViewForPrint::FinishPrinting() {
   TRACE_EVENT0("print", "PrepareFrameAndViewForPrint::FinishPrinting");
 
@@ -1264,7 +1226,6 @@ void PrepareFrameAndViewForPrint::FinishPrinting() {
       is_printing_started_ = false;
       if (!owns_web_view_) {
         web_view->GetSettings()->SetShouldPrintBackgrounds(false);
-        RestoreSize();
       }
       frame->PrintEnd();
     }
