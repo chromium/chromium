@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Opening multiple popovers without user activation causes them all to be closed with one close request. assert_false: p1 should be closed. expected false got true
-PASS Opening multiple popovers with user activation should close one at a time with close requests.
-Harness: the test ran to completion.
-

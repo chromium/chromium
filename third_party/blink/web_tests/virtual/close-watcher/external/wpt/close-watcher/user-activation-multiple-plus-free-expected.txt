@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Multiple CloseWatchers created from a single user activation close together, but original free CloseWatcher closes separately
-Harness: the test ran to completion.
-

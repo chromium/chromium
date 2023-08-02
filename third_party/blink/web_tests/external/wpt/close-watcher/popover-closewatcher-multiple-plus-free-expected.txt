@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Multiple popovers opened from a single user activation close together, but original popover closes separately. assert_false: first escape: p2 should be closed. expected false got true
-Harness: the test ran to completion.
-

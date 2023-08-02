@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL destroy() inside oncancel promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
-FAIL destroy() inside onclose CloseWatcher is not defined
-FAIL close() inside oncancel promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
-FAIL close() inside onclose CloseWatcher is not defined
-FAIL requestClose() inside oncancel promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
-FAIL requestClose() inside onclose CloseWatcher is not defined
-Harness: the test ran to completion.
-

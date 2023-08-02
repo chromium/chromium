@@ -1888,6 +1888,15 @@
     "args": ["--enable-features=PendingBeaconAPI:requires_origin_trial/true"],
     "expires": "Jul 1, 2023"
   },
+
+  "---------------------------- Close watchers -------------------------------",
+  "These cannot be run in the normal web platform tests environment because of",
+  "https://github.com/web-platform-tests/wpt/issues/23364#issuecomment-1661452441.",
+  "If we figure out how to properly reset user activation and history-action",
+  "activation between tests, then we can remove ",
+  "--reset-browsing-instance-between-tests and remove this virtual test suite.",
+  "(Also, the feature is currently behind the CloseWatcher Blink feature, but ",
+  "hopefully that is temporary.)",
   {
     "prefix": "close-watcher",
     "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
@@ -1895,8 +1904,14 @@
     "bases": [
       "external/wpt/close-watcher"
     ],
-    "args": ["--enable-blink-features=CloseWatcher"],
-    "expires": "Jul 1, 2023"
+    "exclusive_tests": [
+      "external/wpt/close-watcher"
+    ],
+    "args": [
+      "--enable-blink-features=CloseWatcher",
+      "--reset-browsing-instance-between-tests"
+    ],
+    "expires": "never"
   },
   {
     "prefix": "orb-v02",

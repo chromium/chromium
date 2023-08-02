@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS destroy() inside oncancel
-PASS destroy() inside onclose
-PASS close() inside oncancel
-PASS close() inside onclose
-PASS requestClose() inside oncancel
-PASS requestClose() inside onclose
-Harness: the test ran to completion.
-
