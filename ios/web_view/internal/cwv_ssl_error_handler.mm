@@ -10,10 +10,6 @@
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVSSLErrorHandler {
   web::WebState* _webState;
   net::SSLInfo _SSLInfo;

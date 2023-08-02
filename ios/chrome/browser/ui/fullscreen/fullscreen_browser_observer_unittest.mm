@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Tests FullscreenBrowserObserver functionality.
 class FullscreenBrowserObserverTest : public PlatformTest {
  public:

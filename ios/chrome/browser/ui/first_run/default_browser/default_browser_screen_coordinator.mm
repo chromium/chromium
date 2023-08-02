@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface DefaultBrowserScreenCoordinator () <PromoStyleViewControllerDelegate>
 
 // Default browser screen view controller.

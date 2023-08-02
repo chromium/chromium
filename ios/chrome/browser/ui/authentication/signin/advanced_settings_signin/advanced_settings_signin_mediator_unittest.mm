@@ -26,10 +26,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using syncer::MockSyncService;
 using syncer::SyncService;
 using testing::Return;

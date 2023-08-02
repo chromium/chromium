@@ -5,10 +5,6 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios {
 namespace provider {
 

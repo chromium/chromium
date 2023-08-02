@@ -6,10 +6,6 @@
 
 #import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 FindInPageManagerDelegateBridge::FindInPageManagerDelegateBridge(

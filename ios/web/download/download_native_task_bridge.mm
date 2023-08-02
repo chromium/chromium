@@ -13,10 +13,6 @@
 #import "ios/web/web_view/error_translation_util.h"
 #import "net/base/net_errors.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Helper to get the size of file at `file_path`. Returns -1 in case of error.

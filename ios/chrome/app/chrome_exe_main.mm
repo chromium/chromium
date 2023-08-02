@@ -19,10 +19,6 @@
 #import "ios/chrome/app/startup/sandbox_dump.h"  // nogncheck
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.

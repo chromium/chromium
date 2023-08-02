@@ -21,10 +21,6 @@
 #import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The minimum delay between the presentation of two tab pickup banners.

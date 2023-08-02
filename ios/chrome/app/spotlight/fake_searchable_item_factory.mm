@@ -7,10 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/favicon_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeSearchableItemFactory {
   // Domain identifier of the searchableItems managed by the factory.
   spotlight::Domain _spotlightDomain;

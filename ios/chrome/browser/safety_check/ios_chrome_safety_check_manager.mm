@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
     PrefService* pref_service,
     PrefService* local_pref_service,

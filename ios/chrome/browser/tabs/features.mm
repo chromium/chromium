@@ -8,10 +8,6 @@
 #import "base/metrics/field_trial_params.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BASE_FEATURE(kEnablePinnedTabs,
              "EnablePinnedTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool IsRestrictAccountsToPatternsEnabled() {
   return !GetApplicationContext()
               ->GetLocalState()

@@ -20,10 +20,6 @@
 #import "testing/platform_test.h"
 #import "third_party/crashpad/crashpad/client/annotation_list.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Tests that CrashReporterBreadcrumbObserver attaches observed breadcrumb
 // events to crash reports.
 class CrashReporterBreadcrumbObserverTest : public PlatformTest {

@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
   DCHECK(web_state);
   observation_.Observe(web_state);

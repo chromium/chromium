@@ -11,10 +11,6 @@
 #import "base/mac/foundation_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ProgressIndicatorAppInterface
 
 + (id<GREYMatcher>)progressViewWithProgress:(CGFloat)progress {

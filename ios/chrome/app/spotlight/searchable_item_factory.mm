@@ -23,10 +23,6 @@
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Minimum size of the icon to be used in Spotlight.
 const NSInteger kMinIconSize = 32;

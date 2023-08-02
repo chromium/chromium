@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/trusted_vault/ios_trusted_vault_client.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 trusted_vault::TrustedVaultService*
 IOSTrustedVaultServiceFactory::GetForBrowserState(

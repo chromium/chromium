@@ -24,10 +24,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Requests a network::mojom::ProxyResolvingSocketFactory on the UI thread. Note

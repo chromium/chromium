@@ -18,10 +18,6 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Checks whether an HTTP authentication dialog is being shown by
 // `overlay_presenter` for a page whose host does not match `web_state_list`'s

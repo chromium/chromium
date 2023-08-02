@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr base::TimeDelta kTimeout = base::Milliseconds(250);

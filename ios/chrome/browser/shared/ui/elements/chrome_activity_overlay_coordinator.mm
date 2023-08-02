@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ChromeActivityOverlayCoordinator ()
 // View controller that displays a native active indicator.
 @property(nonatomic, strong)

@@ -27,10 +27,6 @@
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(TabUsageRecorderBrowserAgent)
 
 TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)

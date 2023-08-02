@@ -39,10 +39,6 @@
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 int64_t ComputeFilesSize(const base::FilePath& directory,

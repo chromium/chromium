@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_animator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation InfobarBannerAnimator
 
 - (NSTimeInterval)transitionDuration:

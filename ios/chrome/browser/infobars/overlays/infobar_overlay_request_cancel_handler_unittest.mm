@@ -19,10 +19,6 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using infobars::InfoBar;
 using infobars::InfoBarDelegate;
 using infobars::InfoBarManager;

@@ -9,10 +9,6 @@
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome_test_util {
 
 void LoadUrl(const GURL& url) {

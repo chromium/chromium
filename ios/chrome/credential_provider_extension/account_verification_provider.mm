@@ -4,10 +4,6 @@
 
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AccountVerificationProvider
 
 - (void)validationIDForAccountID:(NSString*)accountID

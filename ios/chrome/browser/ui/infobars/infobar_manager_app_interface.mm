@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation InfobarManagerAppInterface
 
 + (BOOL)verifyInfobarCount:(NSInteger)totalInfobars {

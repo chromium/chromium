@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WEB_STATE_USER_DATA_KEY_IMPL(NewTabAnimationTabHelper)
 
 NewTabAnimationTabHelper::NewTabAnimationTabHelper(web::WebState* web_state)

@@ -6,10 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A custom NSError subclass that is marked as an eDO "value type", allowing
 // it to be serialized and reconstructed in the remote process, rather than
 // having all its method proxied via IPC.

@@ -17,10 +17,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Unexpectedly, the first and last destinations in the carousel overlap their
 // neighbors. This makes `RightConstraint()` an insufficient layout constraint

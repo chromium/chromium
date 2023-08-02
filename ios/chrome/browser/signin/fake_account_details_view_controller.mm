@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/signin/system_identity.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeAccountDetailsViewController {
   __weak id<SystemIdentity> _identity;
   UITextView* _detailView;

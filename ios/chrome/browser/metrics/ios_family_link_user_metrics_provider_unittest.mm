@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "ios/chrome/browser/metrics/ios_family_link_user_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"

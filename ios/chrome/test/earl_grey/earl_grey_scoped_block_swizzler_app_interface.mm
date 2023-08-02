@@ -9,10 +9,6 @@
 #import "base/check.h"
 #import "ios/testing/scoped_block_swizzler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface EarlGreyScopedBlockSwizzlerHelper : NSObject {
   // Unique IDs used with an EG2 safe basic type that can be used to later
   // delete the ScopedBlockSwizzler.

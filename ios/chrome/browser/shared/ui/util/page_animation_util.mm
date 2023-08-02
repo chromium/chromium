@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/common/material_timing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // When animating out, a card shrinks slightly.

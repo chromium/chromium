@@ -18,10 +18,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kVerticalSpacing = 20;
 const CGFloat kUploadProgressSpacing = 5;

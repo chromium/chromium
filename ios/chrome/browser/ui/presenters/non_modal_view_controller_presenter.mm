@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 constexpr CGFloat kAnimationInDuration = 0.15;
 constexpr CGFloat kAnimationInScale = 1.3;

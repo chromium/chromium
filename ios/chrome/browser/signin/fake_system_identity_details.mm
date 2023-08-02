@@ -7,10 +7,6 @@
 #import "base/check.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeSystemIdentityDetails {
   AccountCapabilities _nativeCapabilities;
   std::unique_ptr<AccountCapabilitiesTestMutator> _capabilitiesMutator;

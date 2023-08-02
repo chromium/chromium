@@ -8,10 +8,6 @@
 
 #import "ios/chrome/browser/promos_manager/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation Promo
 
 - (instancetype)initWithIdentifier:(promos_manager::Promo)identifier {

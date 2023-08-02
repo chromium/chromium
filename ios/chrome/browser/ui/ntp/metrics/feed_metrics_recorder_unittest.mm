@@ -20,10 +20,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_mock_clock_override.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #define EXPECT_ACTION(action, method_call)                 \
   {                                                        \
     EXPECT_EQ(actions_tester_->GetActionCount(action), 0); \

@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface WebInspectorStateMediator () <BooleanObserver>
 
 // The preference that stores whether Web Inspector is enabled.

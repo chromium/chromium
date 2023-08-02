@@ -28,10 +28,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "net/base/network_change_notifier.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Maximum delay to wait for fetching the account capabilities before showing

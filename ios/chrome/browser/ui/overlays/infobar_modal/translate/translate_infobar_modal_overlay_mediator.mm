@@ -20,10 +20,6 @@
 #import "ios/chrome/browser/translate/translate_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const int kInvalidLanguageIndex = -1;
 }  // namespace

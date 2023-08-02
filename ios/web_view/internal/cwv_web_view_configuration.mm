@@ -30,10 +30,6 @@
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/internal/web_view_global_state_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 CWVWebViewConfiguration* gDefaultConfiguration = nil;
 CWVWebViewConfiguration* gIncognitoConfiguration = nil;

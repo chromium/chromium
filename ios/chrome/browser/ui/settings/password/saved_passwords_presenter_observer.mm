@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 SavedPasswordsPresenterObserverBridge::SavedPasswordsPresenterObserverBridge(
     id<SavedPasswordsPresenterObserver> delegate,
     password_manager::SavedPasswordsPresenter* presenter)

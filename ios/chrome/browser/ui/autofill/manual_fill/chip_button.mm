@@ -10,10 +10,6 @@
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Top and bottom padding for the button.
 static const CGFloat kChipVerticalPadding = 14;

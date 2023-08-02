@@ -15,10 +15,6 @@
 #import "ios/showcase/infobars/sc_infobar_container_view_controller.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class GURL;
 
 @interface SCInfobarModalSaveCardCoordinator () <InfobarBannerDelegate,

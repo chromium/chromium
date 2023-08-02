@@ -24,10 +24,6 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "net/base/network_change_notifier.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Simulates a given network connection type for tests.

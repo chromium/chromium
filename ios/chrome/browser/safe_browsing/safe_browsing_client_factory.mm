@@ -16,10 +16,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 SafeBrowsingClient* SafeBrowsingClientFactory::GetForBrowserState(
     web::BrowserState* browser_state) {

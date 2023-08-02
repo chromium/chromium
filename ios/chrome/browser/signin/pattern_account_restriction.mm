@@ -7,10 +7,6 @@
 #import "base/strings/string_util.h"
 #import "base/values.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 Pattern::Pattern(std::vector<std::string> chunks) : chunks_(chunks) {}
 Pattern::~Pattern() = default;
 

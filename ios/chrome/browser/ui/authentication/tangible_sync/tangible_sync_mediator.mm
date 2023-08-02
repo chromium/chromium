@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TangibleSyncMediator () <ChromeAccountManagerServiceObserver,
                                     IdentityManagerObserverBridgeDelegate>
 

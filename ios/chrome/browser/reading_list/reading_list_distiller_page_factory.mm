@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace reading_list {
 
 ReadingListDistillerPageFactory::ReadingListDistillerPageFactory(

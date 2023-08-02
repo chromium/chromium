@@ -16,10 +16,6 @@
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 int64_t const CWVDownloadSizeUnknown = -1;
 
 NSErrorDomain const CWVDownloadErrorDomain =

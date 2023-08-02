@@ -4,10 +4,6 @@
 
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CRWFakeScriptMessageHandler
 
 - (void)userContentController:(WKUserContentController*)userContentController

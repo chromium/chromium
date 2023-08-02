@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace tab_usage_recorder {
 
 // The histogram recording the state of the tab the user switches to.

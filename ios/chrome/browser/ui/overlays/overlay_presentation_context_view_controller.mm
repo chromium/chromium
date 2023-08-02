@@ -7,10 +7,6 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OverlayPresentationContextViewController ()
 // The view used to lay out the presentation context.  The presentation context
 // view is resized to match `layoutView`'s frame.

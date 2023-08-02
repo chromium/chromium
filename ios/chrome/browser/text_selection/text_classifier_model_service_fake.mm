@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 std::unique_ptr<KeyedService>
 TextClassifierModelServiceFake::CreateTextClassifierModelService(

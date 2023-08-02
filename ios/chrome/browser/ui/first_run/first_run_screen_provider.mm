@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FirstRunScreenProvider
 
 - (instancetype)init {

@@ -5,10 +5,6 @@
 #import "ios/web/web_state/page_viewport_state.h"
 
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Parses a double from `viewport_content`.  `viewport_content` is expected to
 // have no leading whitespace.

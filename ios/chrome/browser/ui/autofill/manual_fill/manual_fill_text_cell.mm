@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ManualFillTextItem
 
 - (instancetype)initWithType:(NSInteger)type {

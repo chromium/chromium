@@ -12,10 +12,6 @@
 #import "components/optimization_guide/proto/models.pb.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TextClassifierModelService::TextClassifierModelService(
     OptimizationGuideService* opt_guide_service)
     : opt_guide_service_(opt_guide_service) {

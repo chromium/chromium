@@ -15,10 +15,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SafeBrowsingCoordinator () <SafeBrowsingTabHelperDelegate,
                                        WebStateListObserving> {
   std::unique_ptr<WebStateListObserver> _webStateListObserver;

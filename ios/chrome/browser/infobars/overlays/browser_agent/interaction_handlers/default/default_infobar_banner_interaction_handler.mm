@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 DefaultInfobarBannerInteractionHandler::DefaultInfobarBannerInteractionHandler(
     InfobarType infobar_type)
     : InfobarBannerInteractionHandler(

@@ -7,10 +7,6 @@
 #import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kFontSize = 11.0f;
 // The margin between the top and bottom of the label and the badge.

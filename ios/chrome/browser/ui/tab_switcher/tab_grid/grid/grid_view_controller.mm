@@ -51,10 +51,6 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class ScopedScrollingTimeLogger {
  public:
   ScopedScrollingTimeLogger() : start_(base::TimeTicks::Now()) {}

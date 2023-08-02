@@ -11,10 +11,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "url/url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Timeout to use when waiting for a condition to be true.

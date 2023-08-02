@@ -17,10 +17,6 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace net {
 
 // Test class that conforms to net::SystemCookieStoreTestDelegate to exercise

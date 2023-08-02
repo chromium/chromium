@@ -13,10 +13,6 @@
 #import "base/task/thread_pool.h"
 #import "ios/web/common/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Synchronously deletes downloads directory.

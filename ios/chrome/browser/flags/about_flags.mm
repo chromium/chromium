@@ -116,10 +116,6 @@
 #import "components/variations/variations_switches.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using flags_ui::FeatureEntry;
 
 namespace {

@@ -23,10 +23,6 @@
 #import "net/http/http_status_code.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 EDO_STUB_CLASS(CWTWebDriverAppInterface, kCwtEdoPortNumber)
 
 using net::test_server::HttpRequest;

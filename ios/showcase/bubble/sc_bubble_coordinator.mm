@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCBubbleCoordinator ()
 @property(nonatomic, strong) UIViewController* containerViewController;
 @property(nonatomic, strong) BubbleViewController* bubbleViewController;

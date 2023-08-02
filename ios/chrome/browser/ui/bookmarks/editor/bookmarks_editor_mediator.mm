@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator_delegate.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BookmarksEditorMediator () <BookmarkModelBridgeObserver,
                                        SyncObserverModelBridge> {
   PrefService* _prefs;

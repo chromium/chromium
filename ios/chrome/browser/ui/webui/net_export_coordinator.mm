@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface NetExportCoordinator () <MFMailComposeViewControllerDelegate> {
   // Coordinator for displaying alerts.
   AlertCoordinator* _alertCoordinator;

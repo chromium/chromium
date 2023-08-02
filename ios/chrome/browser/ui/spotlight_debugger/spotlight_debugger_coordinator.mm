@@ -16,10 +16,6 @@
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_swift.h"
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SpotlightDebuggerCoordinator () <
     SpotlightDebuggerViewControllerDelegate>
 

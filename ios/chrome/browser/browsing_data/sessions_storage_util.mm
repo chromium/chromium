@@ -9,10 +9,6 @@
 #import "base/path_service.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns the path of the list of sessions that are marked for removal.

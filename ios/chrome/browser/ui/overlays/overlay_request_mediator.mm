@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OverlayRequestMediator ()
 // Redefine property as readwrite.
 @property(nonatomic, readwrite) OverlayRequest* request;

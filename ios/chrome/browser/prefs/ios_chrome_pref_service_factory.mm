@@ -29,10 +29,6 @@
 #import "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kPreferencesFilename[] = "Preferences";

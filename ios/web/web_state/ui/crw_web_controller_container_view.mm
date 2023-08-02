@@ -13,10 +13,6 @@
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRWWebControllerContainerView () <CRWViewportAdjustmentContainer>
 
 // Redefine properties as readwrite.

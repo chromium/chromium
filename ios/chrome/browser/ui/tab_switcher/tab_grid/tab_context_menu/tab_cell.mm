@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TabCell
 
 - (BOOL)hasIdentifier:(NSString*)identifier {

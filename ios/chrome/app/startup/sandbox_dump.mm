@@ -13,10 +13,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "third_party/zlib/google/zip.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #if !BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #error "This file should only be compiled with IOS_ENABLE_SANDBOX_DUMP flag."
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)

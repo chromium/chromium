@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TabStripView
 
 @synthesize layoutDelegate = _layoutDelegate;

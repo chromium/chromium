@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator_delegate.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for OverlayRequestUIState.
 class OverlayRequestUIStateTest : public PlatformTest {
  public:

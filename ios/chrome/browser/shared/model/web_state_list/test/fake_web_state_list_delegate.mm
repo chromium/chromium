@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FakeWebStateListDelegate::FakeWebStateListDelegate() = default;
 
 FakeWebStateListDelegate::~FakeWebStateListDelegate() = default;

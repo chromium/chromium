@@ -27,10 +27,6 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller_delegate.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =

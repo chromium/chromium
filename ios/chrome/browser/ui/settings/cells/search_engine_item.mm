@@ -15,10 +15,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #pragma mark - SearchEngineItem
 
 @interface SearchEngineItem ()

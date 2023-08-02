@@ -25,10 +25,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test object conforming to PasswordFetcherDelegate used to verify the results
 // from the password store.
 @interface TestPasswordFetcherDelegate : NSObject<PasswordFetcherDelegate> {

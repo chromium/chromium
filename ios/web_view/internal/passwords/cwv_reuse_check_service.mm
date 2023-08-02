@@ -17,10 +17,6 @@
 #import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/web_view_global_state_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVReuseCheckService {
   password_manager::AffiliationService* _affiliation_service;
   std::unique_ptr<password_manager::PasswordsGrouper> _passwords_grouper;

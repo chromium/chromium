@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation WhatsNewPromoDisplayHandler {
   // Promos Manager to alert if the user uses What's New.
   PromosManager* _promosManager;

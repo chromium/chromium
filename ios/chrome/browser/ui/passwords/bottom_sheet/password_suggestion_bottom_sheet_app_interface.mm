@@ -13,10 +13,6 @@
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/password_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::
     SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet;
 

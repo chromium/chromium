@@ -12,10 +12,6 @@
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 bool ExtractFaviconURL(const base::Value::List& favicons,

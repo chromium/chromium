@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/web/public/permissions/permissions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Histogram names.
 const char kModalPermissionEventsHistogram[] = "IOS.Permission.Modal.Events";
 const char kPageInfoPermissionEventsHistogram[] =

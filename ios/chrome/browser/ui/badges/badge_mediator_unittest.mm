@@ -33,10 +33,6 @@
 #import "ios/web/public/web_state_user_data.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The two infobar types used in tests.  Both support badges.
 InfobarType kFirstInfobarType = InfobarType::kInfobarTypePasswordSave;

@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CameraController ()
 
 // The queue for dispatching calls to `_captureSession`.

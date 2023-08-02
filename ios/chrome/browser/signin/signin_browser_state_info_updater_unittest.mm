@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/signin/signin_browser_state_info_updater.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import <memory>
 #import <string>
 

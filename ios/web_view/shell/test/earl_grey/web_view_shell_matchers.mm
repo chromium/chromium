@@ -11,10 +11,6 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web_view/shell/shell_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 id<GREYMatcher> AddressFieldText(const std::string& text) {

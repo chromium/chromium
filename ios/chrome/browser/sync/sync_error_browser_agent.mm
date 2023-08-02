@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(SyncErrorBrowserAgent)
 
 SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)

@@ -8,10 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface UserDefaultsCredentialStore ()
 
 @property(nonatomic, strong) NSUserDefaults* userDefaults;

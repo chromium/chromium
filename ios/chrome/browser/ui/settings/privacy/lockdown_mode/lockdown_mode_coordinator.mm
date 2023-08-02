@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface LockdownModeCoordinator () <
     LockdownModeViewControllerPresentationDelegate>
 

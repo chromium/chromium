@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/supervised_user/supervised_user_error.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const NSErrorDomain kSupervisedUserInterstitialErrorDomain =
     @"com.google.chrome.supervised_user.show_intestitial";
 

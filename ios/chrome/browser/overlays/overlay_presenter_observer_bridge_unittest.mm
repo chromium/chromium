@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Fake implementation of OverlayPresenterObserving that records whether the
 // callbacks are executed.
 @interface FakeOverlayPresenterObserver : NSObject <OverlayPresenterObserving>

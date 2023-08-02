@@ -40,10 +40,6 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Directory where device management token is stored. This value is from

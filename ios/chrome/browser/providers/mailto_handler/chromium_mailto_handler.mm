@@ -9,10 +9,6 @@
 #import "base/functional/callback_helpers.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios {
 namespace provider {
 namespace {

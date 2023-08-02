@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation OmniboxAssistiveKeyboardDelegateImpl
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;

@@ -7,10 +7,6 @@
 #import "base/check.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 DefaultOverlayRequestCancelHandler::DefaultOverlayRequestCancelHandler(
     OverlayRequest* request,
     OverlayRequestQueue* queue,

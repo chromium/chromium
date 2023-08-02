@@ -4,10 +4,6 @@
 
 #import "ios/chrome/common/button_configuration_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // TODO(crbug.com/1423432): Reenable warning by removing method when it's no
 // longer needed.
 void SetContentEdgeInsets(UIButton* button, UIEdgeInsets insets) {

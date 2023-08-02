@@ -10,10 +10,6 @@
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVLeakCheckCredential {
   std::unique_ptr<password_manager::LeakCheckCredential> _internalCredential;
 }

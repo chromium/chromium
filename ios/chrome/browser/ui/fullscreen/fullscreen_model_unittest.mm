@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_model_observer.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The toolbar height to use for tests.
 const CGFloat kToolbarHeight = 50.0;

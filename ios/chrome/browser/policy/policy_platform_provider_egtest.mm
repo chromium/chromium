@@ -21,10 +21,6 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns the value of a given policy, looked up in the current platform policy

@@ -11,10 +11,6 @@
 #import "components/password_manager/core/browser/well_known_change_password_util.h"
 #import "components/sync/base/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Helper function that computes the websites displayed to the user

@@ -9,10 +9,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Feature disabled by default to keep showing old Zine feed.
 BASE_FEATURE(kDiscoverFeedInNtp,
              "DiscoverFeedInNtp",

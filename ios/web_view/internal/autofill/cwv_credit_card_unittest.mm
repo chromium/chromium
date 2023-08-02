@@ -19,10 +19,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 class CWVCreditCardTest : public PlatformTest {

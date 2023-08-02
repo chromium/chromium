@@ -24,10 +24,6 @@
 #import "services/network/test/test_network_connection_tracker.h"
 #import "services/network/test/test_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TestingApplicationContext::TestingApplicationContext()
     : application_locale_("en"),
       application_country_("us"),

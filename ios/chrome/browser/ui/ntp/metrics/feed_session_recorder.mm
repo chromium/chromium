@@ -10,10 +10,6 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder+testing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Histogram name to measure the duration of a feed session. Note that

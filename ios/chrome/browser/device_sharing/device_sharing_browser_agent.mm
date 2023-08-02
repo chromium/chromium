@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(DeviceSharingBrowserAgent)
 
 DeviceSharingBrowserAgent::DeviceSharingBrowserAgent(Browser* browser)

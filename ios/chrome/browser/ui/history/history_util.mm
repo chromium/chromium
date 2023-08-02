@@ -13,10 +13,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace history {
 
 std::u16string GetRelativeDateLocalized(const base::Time& visit_time) {

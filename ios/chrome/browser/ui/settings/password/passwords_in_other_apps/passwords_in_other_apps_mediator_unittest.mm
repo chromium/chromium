@@ -9,10 +9,6 @@
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FakePasswordsInOtherAppsConsumer
     : NSObject <PasswordsInOtherAppsConsumer>
 

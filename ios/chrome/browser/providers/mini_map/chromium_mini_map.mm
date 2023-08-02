@@ -6,10 +6,6 @@
 
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios {
 namespace provider {
 

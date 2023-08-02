@@ -8,10 +8,6 @@
 #import "components/flags_ui/flags_test_helpers.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using AboutFlagsTest = PlatformTest;
 
 // Makes sure that every flag has an owner and an expiry entry in

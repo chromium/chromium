@@ -8,10 +8,6 @@
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SpotlightInterface ()
 
 // Maximum retry attempts to delete/index a set of items.

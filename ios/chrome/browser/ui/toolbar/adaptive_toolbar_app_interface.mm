@@ -10,10 +10,6 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AdaptiveToolbarAppInterface
 
 + (BOOL)addInfobarWithTitle:(NSString*)title {

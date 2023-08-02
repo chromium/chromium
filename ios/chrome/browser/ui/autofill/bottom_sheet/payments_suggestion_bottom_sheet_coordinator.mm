@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PaymentsSuggestionBottomSheetCoordinator () {
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;

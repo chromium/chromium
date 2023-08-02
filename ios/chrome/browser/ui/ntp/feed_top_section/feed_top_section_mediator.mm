@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FeedTopSectionMediator () <IdentityManagerObserverBridgeDelegate> {
   // Observes changes in identity.
   std::unique_ptr<signin::IdentityManagerObserverBridge>

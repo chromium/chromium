@@ -14,10 +14,6 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace safe_browsing {
 
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(

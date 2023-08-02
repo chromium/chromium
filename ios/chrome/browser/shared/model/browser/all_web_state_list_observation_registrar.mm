@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
     BrowserList* browser_list,
     std::unique_ptr<WebStateListObserver> web_state_list_observer,

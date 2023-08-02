@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface IncognitoInterstitialCoordinator () <
     IncognitoInterstitialViewControllerDelegate,
     NewTabPageURLLoaderDelegate>

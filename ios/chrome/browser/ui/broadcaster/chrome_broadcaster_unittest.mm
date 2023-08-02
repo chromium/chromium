@@ -10,10 +10,6 @@
 #import "testing/perf/perf_test.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TestObserver : NSObject<ChromeBroadcastObserver>
 @property(nonatomic) BOOL lastObservedBool;
 @property(nonatomic) CGFloat lastObservedCGFloat;

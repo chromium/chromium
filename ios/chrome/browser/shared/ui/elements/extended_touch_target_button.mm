@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ExtendedTouchTargetButton
 
 - (instancetype)initWithFrame:(CGRect)frame {

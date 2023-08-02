@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const CGFloat kiPhoneLocationBarPlaceholderColorBrightness = 150 / 255.0;
 
 NSString* const kDotComTLD = @".com";

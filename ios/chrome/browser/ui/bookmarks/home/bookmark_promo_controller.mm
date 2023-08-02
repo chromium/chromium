@@ -25,10 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BookmarkPromoController () <SigninPromoViewConsumer,
                                        IdentityManagerObserverBridgeDelegate>
 

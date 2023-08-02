@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool PreviousSafetyCheckIssueFound() {
   // Verify if the last safety check found issues.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];

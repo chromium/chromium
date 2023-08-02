@@ -11,10 +11,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kTestPageUrl[] = "/components/test/data/autofill/"
                             "credit_card_upload_form_address_and_cc.html";
 

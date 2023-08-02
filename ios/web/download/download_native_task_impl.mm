@@ -11,10 +11,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/download/download_native_task_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 DownloadNativeTaskImpl::DownloadNativeTaskImpl(

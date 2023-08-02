@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace password_manager {
 
 WarningType GetWarningTypeForDetailsContext(DetailsContext details_context) {

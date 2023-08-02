@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbol_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Custom symbol names.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 NSString* const kGoogleIconSymbol = @"google_icon";

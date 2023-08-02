@@ -12,10 +12,6 @@
 #import "ios/web_view/shell/shell_translation_delegate.h"
 #import "ios/web_view/shell/shell_trusted_vault_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Externed accessibility identifier.
 NSString* const kWebViewShellBackButtonAccessibilityLabel = @"Back";
 NSString* const kWebViewShellForwardButtonAccessibilityLabel = @"Forward";

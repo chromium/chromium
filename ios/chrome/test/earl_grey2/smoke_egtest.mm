@@ -25,10 +25,6 @@
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test case to verify that EarlGrey tests can be launched and perform basic
 // UI interactions.
 @interface SmokeTestCase : ChromeTestCase

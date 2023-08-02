@@ -4,9 +4,5 @@
 
 #import "ios/chrome/browser/ui/toolbar/public/omnibox_position_metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kOmniboxSteadyStatePositionAtStartup[] =
     "IOS.Omnibox.SteadyStatePositionAtStartup";

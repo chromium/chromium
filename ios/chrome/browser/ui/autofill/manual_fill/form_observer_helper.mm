@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FormObserverHelper ()<FormActivityObserver, WebStateListObserving>
 // The WebStateList this instance is observing in order to update the
 // active WebState.

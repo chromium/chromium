@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 PasswordCheckObserverBridge::PasswordCheckObserverBridge(
     id<PasswordCheckObserver> delegate,
     IOSChromePasswordCheckManager* manager)

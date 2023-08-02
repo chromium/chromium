@@ -15,10 +15,6 @@
 #import "base/task/thread_pool.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Key for last stored time that size metrics of the documents directory were
 // logged.
 NSString* const kLastApplicationStorageMetricsLogTime =

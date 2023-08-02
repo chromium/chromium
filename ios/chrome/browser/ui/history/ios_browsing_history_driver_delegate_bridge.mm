@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSBrowsingHistoryDriverDelegateBridge::IOSBrowsingHistoryDriverDelegateBridge(
     id<HistoryConsumer> delegate)
     : delegate_(delegate) {}

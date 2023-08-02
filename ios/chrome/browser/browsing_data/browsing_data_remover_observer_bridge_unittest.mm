@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/browsing_data/fake_browsing_data_remover_observer.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class BrowsingDataRemoverObserverBridgeTest : public PlatformTest {
  protected:
   BrowsingDataRemoverObserverBridgeTest()

@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+private.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // How long, in seconds, the bubble is visible on the screen.

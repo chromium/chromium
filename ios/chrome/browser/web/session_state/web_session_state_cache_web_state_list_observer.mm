@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebSessionStateCacheWebStateListObserver::
     WebSessionStateCacheWebStateListObserver(
         WebSessionStateCache* web_session_state_cache)

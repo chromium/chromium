@@ -4,10 +4,6 @@
 
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeDownloadManagerConsumer
 @synthesize fileName = _fileName;
 @synthesize countOfBytesReceived = _countOfBytesReceived;

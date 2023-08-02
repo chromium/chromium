@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface AutofillEditTableViewController () <FormInputAccessoryViewDelegate> {
   TableViewTextEditCell* _currentEditingCell;
 }

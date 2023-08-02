@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BrowserWebStateListDelegate::BrowserWebStateListDelegate() = default;
 
 BrowserWebStateListDelegate::~BrowserWebStateListDelegate() = default;

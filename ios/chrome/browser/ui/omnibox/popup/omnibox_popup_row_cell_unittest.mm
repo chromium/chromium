@@ -9,10 +9,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Implements AutocompleteSuggestion protocol for use in tests. Can be populated
 // directly into properties.
 @interface FakeAutocompleteMatch : NSObject <AutocompleteSuggestion>

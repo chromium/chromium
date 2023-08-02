@@ -8,10 +8,6 @@
 
 #import "base/logging.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Returns a pointer style with a hover effect with a slight tint and no pointer
 // shape (i.e., the pointer stays the same).

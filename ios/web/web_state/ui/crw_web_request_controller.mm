@@ -30,10 +30,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "net/base/url_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using web::wk_navigation_util::ExtractTargetURL;
 using web::wk_navigation_util::IsRestoreSessionUrl;
 using web::wk_navigation_util::IsWKInternalUrl;

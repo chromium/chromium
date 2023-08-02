@@ -5,10 +5,6 @@
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 void FindInPageManager::CreateForWebState(WebState* web_state) {

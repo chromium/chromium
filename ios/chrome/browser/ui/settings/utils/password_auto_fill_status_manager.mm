@@ -9,10 +9,6 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PasswordAutoFillStatusManager ()
 
 // Weak references to the auto-fill status manager's observer objects.

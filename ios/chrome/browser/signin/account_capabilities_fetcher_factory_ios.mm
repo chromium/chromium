@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios {
 
 AccountCapabilitiesFetcherFactoryIOS::AccountCapabilitiesFetcherFactoryIOS(

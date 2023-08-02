@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HistoryMediator ()
 // FaviconLoader is a keyed service that uses LargeIconService to retrieve
 // favicon images.

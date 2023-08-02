@@ -9,10 +9,6 @@
 #import "base/no_destructor.h"
 #import "ios/web/public/web_state_user_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 GlobalWebStateEventTracker* GlobalWebStateEventTracker::GetInstance() {

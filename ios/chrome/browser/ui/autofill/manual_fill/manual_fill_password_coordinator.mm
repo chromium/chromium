@@ -20,10 +20,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ManualFillPasswordCoordinator () <PasswordListNavigator>
 
 // Fetches and filters the passwords for the view controller.

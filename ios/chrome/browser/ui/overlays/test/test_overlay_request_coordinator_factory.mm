@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/ui/overlays/test_modality/test_contained_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/test_modality/test_presented_overlay_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TestOverlayRequestCoordinatorFactory
 
 - (Class)coordinatorClassForRequest:(OverlayRequest*)request {

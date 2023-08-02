@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kDataFromChromeSyncAccessibilityIdentifier =
     @"DataFromChromeSyncAccessibilityIdentifier";
 

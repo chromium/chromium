@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebPerformanceMetricsTabHelper::WebPerformanceMetricsTabHelper(
     web::WebState* web_state) {
   web_state_observation_.Observe(web_state);

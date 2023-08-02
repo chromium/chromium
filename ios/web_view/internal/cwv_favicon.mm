@@ -10,10 +10,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 // Converts web::FaviconURL::IconType to CWVFaviconType.
 CWVFaviconType ConvertIconTypeFromWebToCWV(web::FaviconURL::IconType iconType) {

@@ -5,10 +5,6 @@
 #import "ios/chrome/browser/ui/lens/lens_modal_animator.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The time it takes for the presenting animation to complete.
 static const CGFloat kPresentingTransitionAnimationDuration = .4;
 

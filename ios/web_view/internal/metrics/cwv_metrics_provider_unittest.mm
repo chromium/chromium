@@ -12,10 +12,6 @@
 #include "testing/platform_test.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 class CWVMetricsProviderTest : public PlatformTest {

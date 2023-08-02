@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios {
 
 AccountConsistencyServiceFactory::AccountConsistencyServiceFactory()

@@ -10,10 +10,6 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebViewAffiliationsPrefetcherFactory*
 WebViewAffiliationsPrefetcherFactory::GetInstance() {
   static base::NoDestructor<WebViewAffiliationsPrefetcherFactory> instance;

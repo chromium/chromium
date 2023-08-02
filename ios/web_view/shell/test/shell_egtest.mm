@@ -14,10 +14,6 @@
 #import "ios/web_view/test/web_view_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns current web view for root view controller.

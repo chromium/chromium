@@ -27,10 +27,6 @@
 #import "ui/base/webui/jstemplate_builder.h"
 #import "ui/base/webui/web_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using security_interstitials::SecurityInterstitialCommand;
 using security_interstitials::BaseSafeBrowsingErrorUI;
 using security_interstitials::UnsafeResource;

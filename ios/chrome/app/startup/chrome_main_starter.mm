@@ -6,10 +6,6 @@
 
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ChromeMainStarter
 
 + (std::unique_ptr<IOSChromeMain>)startChromeMain {

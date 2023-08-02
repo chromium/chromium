@@ -19,10 +19,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #pragma mark - TailoredSecurityTabHelper
 
 TailoredSecurityTabHelper::TailoredSecurityTabHelper(

@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 UIKeyModifierFlags None = 0;

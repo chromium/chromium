@@ -12,10 +12,6 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using previous_session_info_constants::
     kDidSeeMemoryWarningShortlyBeforeTerminating;
 

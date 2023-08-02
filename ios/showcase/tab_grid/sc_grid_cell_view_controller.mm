@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/showcase/common/protocol_alerter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 NSString* const kCellIdentifier = @"GridCellIdentifier";
 }  // namespace

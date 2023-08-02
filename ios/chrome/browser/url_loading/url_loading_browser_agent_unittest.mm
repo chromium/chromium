@@ -33,10 +33,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface URLLoadingTestDelegate : NSObject <URLLoadingDelegate>
 @end
 

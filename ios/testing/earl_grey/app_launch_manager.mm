@@ -16,10 +16,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOServiceException.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Returns the list of extra app launch args from test command line args.
 NSArray<NSString*>* ExtraAppArgsFromTestSwitch() {

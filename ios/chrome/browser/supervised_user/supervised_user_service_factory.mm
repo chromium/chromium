@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns true if we need to show the first time banner on the interstitial.

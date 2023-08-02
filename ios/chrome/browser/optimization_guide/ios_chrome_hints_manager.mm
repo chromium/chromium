@@ -7,10 +7,6 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace optimization_guide {
 
 IOSChromeHintsManager::IOSChromeHintsManager(

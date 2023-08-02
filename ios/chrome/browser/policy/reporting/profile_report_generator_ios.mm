@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace enterprise_reporting {
 
 ProfileReportGeneratorIOS::ProfileReportGeneratorIOS() = default;

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FormInputAccessoryViewTextData ()
 
 @property(nonatomic, readwrite, copy) NSString* closeButtonTitle;

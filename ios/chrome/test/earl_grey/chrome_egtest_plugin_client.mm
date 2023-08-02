@@ -7,10 +7,6 @@
 #import "base/logging.h"
 #import "ios/testing/plugin/test_plugin_service.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;

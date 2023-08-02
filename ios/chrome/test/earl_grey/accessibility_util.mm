@@ -8,10 +8,6 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome_test_util {
 
 BOOL VerifyAccessibilityForCurrentScreen(NSError* __strong* error) {

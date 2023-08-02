@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate)

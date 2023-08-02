@@ -21,10 +21,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OmniboxKeyboardAccessoryView () <SearchEngineObserving>
 
 @property(nonatomic, retain) NSArray<NSString*>* buttonTitles;

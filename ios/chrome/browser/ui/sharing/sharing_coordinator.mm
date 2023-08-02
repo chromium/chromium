@@ -28,10 +28,6 @@
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The path in the temp directory containing documents that are to be opened in
 // other applications.

@@ -23,10 +23,6 @@
 #import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content_suggestions_tile_saver {
 
 // Write the `most_visited_sites` to disk.

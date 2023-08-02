@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_presenter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface UserPolicyPromptMediator ()
 
 // Presenter of the User Policy prompt view.

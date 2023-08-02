@@ -14,10 +14,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/voice/speech_input_locale_match.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns the language portion of `locale_code`.

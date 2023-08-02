@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 ToolbarTestNavigationManager::ToolbarTestNavigationManager()
     : can_go_back_(false), can_go_forward_(false) {}
 

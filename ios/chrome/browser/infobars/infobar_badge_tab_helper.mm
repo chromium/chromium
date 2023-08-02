@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Returns `infobar`'s InfobarType.
 InfobarType GetInfobarType(infobars::InfoBar* infobar) {

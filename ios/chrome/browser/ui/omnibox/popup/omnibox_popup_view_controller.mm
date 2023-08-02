@@ -38,10 +38,6 @@
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kTopPadding = 8.0;
 const CGFloat kBottomPadding = 8.0;

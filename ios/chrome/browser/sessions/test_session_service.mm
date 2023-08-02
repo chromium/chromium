@@ -8,10 +8,6 @@
 #import "base/task/single_thread_task_runner.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TestSessionService
 
 - (instancetype)init {

@@ -11,10 +11,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PasswordIssue () {
   // Whether the description for compromised credentials should be displayed.
   BOOL _compromisedDescriptionEnabled;

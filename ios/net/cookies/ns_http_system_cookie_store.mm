@@ -12,10 +12,6 @@
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace net {
 
 // private

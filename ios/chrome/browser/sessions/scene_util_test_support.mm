@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/sessions/scene_util_test_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FakeSceneSession : NSObject
 
 - (instancetype)initWithIdentifier:(NSString*)identifier;

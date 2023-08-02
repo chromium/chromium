@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_controller_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AutocompleteControllerObserverBridge::AutocompleteControllerObserverBridge(
     id<AutocompleteControllerObserver> observer)
     : observer_(observer) {}

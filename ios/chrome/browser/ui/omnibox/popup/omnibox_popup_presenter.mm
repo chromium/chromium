@@ -20,10 +20,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/uikit_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kVerticalOffset = 6;
 const CGFloat kPopupBottomPaddingTablet = 80;

@@ -63,10 +63,6 @@
 #import "ui/base/l10n/time_format.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using l10n_util::GetNSString;
 using password_manager::WarningType;
 using password_manager::features::IsPasswordCheckupEnabled;

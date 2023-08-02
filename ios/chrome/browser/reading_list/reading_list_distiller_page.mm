@@ -26,10 +26,6 @@
 #import "net/cert/cert_status_flags.h"
 #import "url/url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The delay given to the web page to render after the PageLoaded callback.
 constexpr base::TimeDelta kPageLoadDelay = base::Seconds(2);

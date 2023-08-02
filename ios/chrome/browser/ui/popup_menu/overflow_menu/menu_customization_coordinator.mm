@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface MenuCustomizationCoordinator () <
     UISheetPresentationControllerDelegate,
     MenuCustomizationEventHandler>

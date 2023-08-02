@@ -20,10 +20,6 @@
 #import "ui/gfx/color_palette.h"
 #import "ui/gfx/image/image.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Size of the leading image view.
 const CGFloat kLeadingImageSize = 30;

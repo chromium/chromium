@@ -12,10 +12,6 @@
 #import "base/check.h"
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ChromiumLottieAnimation : NSObject <LottieAnimation>
 
 // Instantiates a LottieAnimationImpl with the given configuration.

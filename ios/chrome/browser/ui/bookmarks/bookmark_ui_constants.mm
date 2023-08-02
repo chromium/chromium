@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kBookmarksHomeViewContainerIdentifier =
     @"kBookmarksHomeViewContainerIdentifier";
 NSString* const kBookmarkEditViewContainerIdentifier =

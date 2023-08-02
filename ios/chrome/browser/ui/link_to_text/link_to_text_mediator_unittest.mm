@@ -5,10 +5,6 @@
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 #import "base/time/time.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"

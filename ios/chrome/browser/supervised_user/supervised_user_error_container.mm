@@ -17,10 +17,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserErrorContainer)
 
 namespace {

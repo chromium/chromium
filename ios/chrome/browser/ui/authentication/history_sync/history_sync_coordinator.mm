@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HistorySyncCoordinator () <HistorySyncMediatorDelegate,
                                       PromoStyleViewControllerDelegate>
 @end

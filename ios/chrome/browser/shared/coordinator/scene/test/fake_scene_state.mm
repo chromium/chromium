@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FakeSceneState ()
 // Redeclare interface provider readwrite.
 @property(nonatomic, strong, readwrite) id<BrowserProviderInterface>

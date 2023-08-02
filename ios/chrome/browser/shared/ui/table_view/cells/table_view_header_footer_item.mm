@@ -7,10 +7,6 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TableViewHeaderFooterItem
 
 - (instancetype)initWithType:(NSInteger)type {

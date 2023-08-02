@@ -8,10 +8,6 @@
 #import "components/sync/service/sync_session_durations_metrics_recorder.h"
 #import "components/unified_consent/msbb_session_durations_metrics_recorder.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
     syncer::SyncService* sync_service,
     PrefService* pref_service,

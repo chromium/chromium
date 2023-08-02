@@ -20,10 +20,6 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface MiniMapCoordinator () <MiniMapActionHandler, MiniMapMediatorDelegate>
 
 // The view controller to get user consent.

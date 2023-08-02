@@ -9,10 +9,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::RecordAction;
 using base::UserMetricsAction;
 using base::UmaHistogramEnumeration;

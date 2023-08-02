@@ -9,10 +9,6 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/components/credential_provider_extension/password_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
   if (!identifier) {
     UpdateUMACountForKey(

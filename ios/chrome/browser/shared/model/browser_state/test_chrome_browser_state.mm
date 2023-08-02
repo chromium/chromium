@@ -34,10 +34,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
     TestChromeBrowserState* original_browser_state,

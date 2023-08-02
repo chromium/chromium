@@ -27,10 +27,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 constexpr BOOL kDefaultMetricsReportingCheckboxValue = YES;
 
 namespace {

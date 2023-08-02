@@ -9,10 +9,6 @@
 
 #import "ios/chrome/browser/shared/ui/util/reversed_animation.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 CAAnimation* FrameAnimationMake(CALayer* layer,
                                 CGRect beginFrame,
                                 CGRect endFrame) {

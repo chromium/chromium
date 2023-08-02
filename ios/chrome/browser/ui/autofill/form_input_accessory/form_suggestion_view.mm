@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Vertical margin between suggestions and the edge of the suggestion content

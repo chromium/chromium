@@ -22,10 +22,6 @@
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/policy_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace policy {
 
 namespace {

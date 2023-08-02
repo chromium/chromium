@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kAdvancedSigninSettingsLinkIdentifier =
     @"AdvancedSigninSettingsLinkIdentifier";
 NSString* const kUnifiedConsentScrollViewIdentifier =

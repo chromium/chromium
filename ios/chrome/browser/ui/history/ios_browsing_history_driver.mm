@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/history/history_consumer.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using history::BrowsingHistoryService;
 
 #pragma mark - IOSBrowsingHistoryDriver

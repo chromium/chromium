@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/showcase/common/protocol_alerter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This Showcase-only item returns a sample image as snapshot.
 @interface SCTabSwitcherItem : TabSwitcherItem
 @end

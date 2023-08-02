@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation EditMenuAlertDelegateAction
 - (instancetype)initWithTitle:(NSString*)title
                        action:(ProceduralBlock)action

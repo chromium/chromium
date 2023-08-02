@@ -9,10 +9,6 @@
 #import "ios/web/common/crw_viewport_adjustment.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRCWebViewportContainerView () <CRWViewportAdjustment>
 
 @end

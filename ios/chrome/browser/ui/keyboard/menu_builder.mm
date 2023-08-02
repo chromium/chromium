@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Note: this class can be called very early on in the start process, before
 // resource bundles are loaded. This means that to get localized strings, one
 // shouldn't use `l10n_util::GetNSString()` and instead should use

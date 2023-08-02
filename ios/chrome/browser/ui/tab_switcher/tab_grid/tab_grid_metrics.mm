@@ -6,10 +6,6 @@
 
 #import "base/metrics/histogram_functions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Key of the UMA IOS.TabGrid.CloseTabs histogram.
 const char kTabGridCloseMultipleTabsHistogram[] = "IOS.TabGrid.CloseTabs";

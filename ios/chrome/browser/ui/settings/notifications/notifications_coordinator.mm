@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller.h"
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface NotificationsCoordinator () <
     NotificationsNavigationCommands,
     NotificationsViewControllerPresentationDelegate,

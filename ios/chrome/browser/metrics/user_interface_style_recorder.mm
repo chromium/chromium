@@ -6,10 +6,6 @@
 
 #import "base/metrics/histogram_functions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Interface Style enum to report UMA metrics. Must be in sync with

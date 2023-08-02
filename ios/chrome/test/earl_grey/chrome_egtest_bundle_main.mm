@@ -22,10 +22,6 @@
 #import <grpc/grpc.h>
 #import <grpcpp/grpcpp.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_egtest_plugin::TestPluginClient;
 using grpc::Channel;
 

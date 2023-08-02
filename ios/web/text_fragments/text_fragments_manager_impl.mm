@@ -20,10 +20,6 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Returns a rgb hexadecimal color, suitable for processing in JavaScript
 std::string ToHexStringRGB(int color) {

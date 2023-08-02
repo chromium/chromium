@@ -19,10 +19,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kUmaGetImageDataByJsResult[] =
     "Mobile.ContextMenu.GetImageDataByJsResult";
 

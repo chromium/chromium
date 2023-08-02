@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/web/common/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FullscreenSystemNotificationObserver () {
   // The disabler created when VoiceOver is enabled.
   std::unique_ptr<ScopedFullscreenDisabler> _voiceOverDisabler;

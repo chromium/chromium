@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const NSTimeInterval kAnimationDuration = 0.75;
 const CGFloat kTabMotionDamping = 0.75;

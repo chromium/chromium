@@ -27,10 +27,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Sorter function that orders ReadingListEntries by their update time.
 bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,

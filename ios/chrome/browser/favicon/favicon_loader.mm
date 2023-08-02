@@ -20,10 +20,6 @@
 #import "skia/ext/skia_utils_ios.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kFallbackIconDefaultTextColor = 0xAAAAAA;
 

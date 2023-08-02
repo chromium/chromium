@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FakeBringAndroidTabsToIOSService::FakeBringAndroidTabsToIOSService(
     std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs,
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher,

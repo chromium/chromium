@@ -4,10 +4,6 @@
 
 #import "ios/web/public/test/fakes/crw_fake_find_in_page_manager_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CRWFakeFindInPageManagerDelegate
 
 - (void)findInPageManager:(web::FindInPageManager*)manager

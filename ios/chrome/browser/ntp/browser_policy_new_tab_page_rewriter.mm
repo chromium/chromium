@@ -13,10 +13,6 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool WillHandleWebBrowserNewTabPageURLForPolicy(
     GURL* url,
     web::BrowserState* browser_state) {

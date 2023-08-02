@@ -22,10 +22,6 @@
 #import "net/base/net_errors.h"
 #import "net/base/url_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kIOSDownloadARModelStateHistogram[] =
     "Download.IOSDownloadARModelState";
 

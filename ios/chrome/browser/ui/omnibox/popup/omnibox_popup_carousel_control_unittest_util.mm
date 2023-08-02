@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 UIView* GetViewOfClassWithIdentifier(Class uiClass,
                                      NSString* accessibilityIdentifier,
                                      UIView* view) {

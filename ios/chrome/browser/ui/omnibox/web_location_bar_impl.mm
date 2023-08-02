@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebLocationBarImpl::WebLocationBarImpl(id<OmniboxControllerDelegate> delegate,
                                        id<OmniboxFocusDelegate> focus_delegate)
     : delegate_(delegate), focus_delegate_(focus_delegate) {}

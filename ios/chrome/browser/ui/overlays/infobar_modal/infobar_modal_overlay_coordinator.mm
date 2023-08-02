@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface InfobarModalOverlayCoordinator () <InfobarModalPositioner>
 // The navigation controller used to display the modal view.
 @property(nonatomic) UINavigationController* modalNavController;

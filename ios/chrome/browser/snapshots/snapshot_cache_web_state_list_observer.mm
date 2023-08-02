@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 SnapshotCacheWebStateListObserver::SnapshotCacheWebStateListObserver(
     SnapshotCache* snapshot_cache)
     : snapshot_cache_(snapshot_cache) {

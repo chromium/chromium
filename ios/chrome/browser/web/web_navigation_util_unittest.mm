@@ -15,10 +15,6 @@
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class WebNavigationUtilsTest : public PlatformTest {
  protected:
   WebNavigationUtilsTest() {

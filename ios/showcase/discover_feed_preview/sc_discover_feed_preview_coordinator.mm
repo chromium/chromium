@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The wrapper view controller that centers the preview so that the preview
 // won't be covered by the top bar of the showcase navigation view controller.
 @interface PreviewContainerViewController : UIViewController

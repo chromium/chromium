@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TestMainContentUIObserver
 @synthesize broadcaster = _broadcaster;
 @synthesize yOffset = _yOffset;

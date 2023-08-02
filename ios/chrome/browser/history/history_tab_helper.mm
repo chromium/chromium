@@ -24,10 +24,6 @@
 #import "net/http/http_response_headers.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 absl::optional<std::u16string> GetPageTitle(const web::NavigationItem& item) {

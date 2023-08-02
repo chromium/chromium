@@ -21,10 +21,6 @@
 #import "ios/web/web_state/web_state_impl.h"
 #endif  // USE_BLINK
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 #if BUILDFLAG(USE_BLINK)

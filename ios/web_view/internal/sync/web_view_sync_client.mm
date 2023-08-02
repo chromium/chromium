@@ -33,10 +33,6 @@
 #import "ios/web_view/internal/sync/web_view_trusted_vault_client.h"
 #import "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 namespace {

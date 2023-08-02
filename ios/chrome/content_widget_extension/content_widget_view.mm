@@ -11,10 +11,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/content_widget_extension/most_visited_tile_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Spacing between tiles.
 const CGFloat kTileSpacing = 16;

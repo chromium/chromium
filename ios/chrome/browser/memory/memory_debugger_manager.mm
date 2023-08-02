@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/memory/memory_debugger.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation MemoryDebuggerManager {
   __weak UIView* _debuggerParentView;
   MemoryDebugger* _memoryDebugger;

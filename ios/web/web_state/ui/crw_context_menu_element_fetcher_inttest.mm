@@ -17,10 +17,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // This is the timeout used while waiting for the JavaScript to complete. The
 // general kWaitForJSCompletionTimeout isn't used because one of the test is

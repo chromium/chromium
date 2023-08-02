@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void CustomizeUIAppearance() {
   // Set fallback tint color for all windows in the app.
   UIColor* const blueColor = [UIColor colorNamed:kBlueColor];

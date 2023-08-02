@@ -10,10 +10,6 @@
 #import "components/feature_engagement/test/test_tracker.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The minimum number of times Chrome must be opened in order for the Reading

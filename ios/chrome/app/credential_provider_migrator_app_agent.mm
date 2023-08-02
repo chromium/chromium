@@ -20,10 +20,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CredentialProviderAppAgent ()
 
 // `migrator` is in charge of migrating the password when Chrome comes to

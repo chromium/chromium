@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/web/public/download/download_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 BrowserDownloadService* BrowserDownloadServiceFactory::GetForBrowserState(
     web::BrowserState* browser_state) {

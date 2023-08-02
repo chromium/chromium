@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/autofill/branding/branding_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The left margin of the branding logo, if visible.
 constexpr CGFloat kLeadingInset = 10;

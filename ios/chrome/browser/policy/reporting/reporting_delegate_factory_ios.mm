@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/policy/reporting/profile_report_generator_ios.h"
 #import "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace enterprise_reporting {
 
 std::unique_ptr<BrowserReportGenerator::Delegate>

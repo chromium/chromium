@@ -6,10 +6,6 @@
 
 #import "ios/web_view/public/cwv_translation_language.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CWVTranslationPolicy ()
 // Internal initializer.
 - (instancetype)initWithType:(CWVTranslationPolicyType)type

@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/ui/voice/text_to_speech_notification_handler.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TextToSpeechPlaybackController::TextToSpeechPlaybackController()
     : notification_helper_([[TextToSpeechNotificationHandler alloc] init]) {}
 

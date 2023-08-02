@@ -30,10 +30,6 @@
 #import "ui/gfx/ios/uikit_util.h"
 #import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void SetA11yLabelAndUiAutomationName(
     NSObject<UIAccessibilityIdentification>* element,
     int idsAccessibilityLabel,

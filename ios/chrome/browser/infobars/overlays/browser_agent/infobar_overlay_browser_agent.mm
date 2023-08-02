@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/infobar_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #pragma mark - InfobarOverlayBrowserAgent
 
 BROWSER_USER_DATA_KEY_IMPL(InfobarOverlayBrowserAgent)

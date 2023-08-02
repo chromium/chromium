@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AccountErrorUIInfo
 
 - (instancetype)

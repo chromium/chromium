@@ -18,10 +18,6 @@
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface WhatsNewMediator ()
 
 @property(nonatomic, strong) NSMutableArray<WhatsNewItem*>* chromeTipEntries;

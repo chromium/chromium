@@ -9,10 +9,6 @@
 #import "ios/web/test/wk_web_view_crash_utils.h"
 #import "testing/gtest/include/gtest/gtest-spi.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Fixture to test that the WebTest fixture properly fails tests when the render

@@ -11,10 +11,6 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool IsURLNewTabPage(const GURL& url) {
   return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL;
 }

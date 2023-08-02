@@ -34,10 +34,6 @@
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A view that can be dimmed continusouly between no dimming and being fully
 // dimmed (the view is then fully black).
 @interface DimmableSnapshot : UIView

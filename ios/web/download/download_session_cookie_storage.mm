@@ -10,10 +10,6 @@
 #import "net/cookies/canonical_cookie.h"
 #import "net/cookies/cookie_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation DownloadSessionCookieStorage {
   __strong NSMutableArray<NSHTTPCookie*>* _cookies;
   NSHTTPCookieAcceptPolicy _cookieAcceptPolicy;

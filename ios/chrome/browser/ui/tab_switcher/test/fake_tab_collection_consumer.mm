@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeTabCollectionConsumer
 
 @synthesize items = _items;

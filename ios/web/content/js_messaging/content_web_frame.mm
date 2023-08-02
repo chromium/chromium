@@ -11,10 +11,6 @@
 #import "content/public/browser/render_frame_host.h"
 #import "ios/web/content/web_state/content_web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 namespace {

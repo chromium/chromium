@@ -47,10 +47,6 @@
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Returns a bool indicating whether the necessary directories were able to be
 // created (or already existed).
 bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,

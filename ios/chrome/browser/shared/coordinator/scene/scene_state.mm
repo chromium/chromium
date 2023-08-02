@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Preference key used to store which profile is current.

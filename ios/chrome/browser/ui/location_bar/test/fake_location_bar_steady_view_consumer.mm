@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeLocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)string clipTail:(BOOL)clipTail {

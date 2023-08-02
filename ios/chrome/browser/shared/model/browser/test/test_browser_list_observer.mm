@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TestBrowserListObserver::TestBrowserListObserver() = default;
 
 TestBrowserListObserver::~TestBrowserListObserver() = default;

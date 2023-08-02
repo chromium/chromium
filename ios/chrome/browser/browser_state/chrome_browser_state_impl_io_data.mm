@@ -40,10 +40,6 @@
 #import "net/http/transport_security_state.h"
 #import "net/url_request/url_request_context_builder.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 ChromeBrowserStateImplIOData::Handle::Handle(ChromeBrowserState* browser_state)
     : io_data_(new ChromeBrowserStateImplIOData),
       browser_state_(browser_state),

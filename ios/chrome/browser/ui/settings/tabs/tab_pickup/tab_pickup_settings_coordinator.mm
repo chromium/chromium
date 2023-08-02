@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TabPickupSettingsCoordinator {
   // Mediator for the tab pickup settings.
   TabPickupSettingsMediator* _mediator;

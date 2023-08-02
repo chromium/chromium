@@ -8,10 +8,6 @@
 
 #import "base/check.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebStateListChangeStatusOnly::WebStateListChangeStatusOnly(
     raw_ptr<web::WebState> selected_web_state)
     : selected_web_state_(selected_web_state) {}

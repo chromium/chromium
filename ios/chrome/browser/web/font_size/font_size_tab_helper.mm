@@ -26,10 +26,6 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Content size category to report UMA metrics.

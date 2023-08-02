@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class IncognitoGridMediatorTest : public GridMediatorTestClass {
  public:
   IncognitoGridMediatorTest() {}

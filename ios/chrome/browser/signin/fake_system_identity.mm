@@ -7,10 +7,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 NSString* const kCoderUserEmailKey = @"UserEmail";
 NSString* const kCoderGaiaIDKey = @"GaiaID";

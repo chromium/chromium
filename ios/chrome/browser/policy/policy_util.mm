@@ -8,10 +8,6 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
     return NO;

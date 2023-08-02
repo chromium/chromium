@@ -27,10 +27,6 @@
 #import "ios/web/public/test/http_server/http_server_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This test suite only tests javascript in the omnibox. Nothing to do with BVC
 // really, the name is a bit misleading.
 @interface BrowserViewControllerTestCase : WebHttpServerChromeTestCase

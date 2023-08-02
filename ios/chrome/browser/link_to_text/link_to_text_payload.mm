@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation LinkToTextPayload
 
 - (instancetype)initWithURL:(const GURL&)URL

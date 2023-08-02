@@ -17,10 +17,6 @@
 #import "testing/gtest_mac.h"
 #import "url/url_canon.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kInitialBody[] = "This is the initial body.";
 const char kOriginalBody[] = "Body of the original page.";

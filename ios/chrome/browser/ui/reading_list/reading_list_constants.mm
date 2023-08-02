@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kReadingListViewID = @"ReadingListTableView";
 
 NSString* const kReadingListToolbarEditButtonID =

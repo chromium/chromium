@@ -101,10 +101,6 @@
 #import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This method gets the instance of each ServiceFactory. We do this so that
 // each ServiceFactory initializes itself and registers its dependencies with
 // the global PreferenceDependencyManager. We need to have a complete

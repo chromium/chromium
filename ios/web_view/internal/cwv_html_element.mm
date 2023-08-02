@@ -4,10 +4,6 @@
 
 #import "ios/web_view/public/cwv_html_element.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVHTMLElement
 @synthesize hyperlink = _hyperlink;
 @synthesize mediaSource = _mediaSource;

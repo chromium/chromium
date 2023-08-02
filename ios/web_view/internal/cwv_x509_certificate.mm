@@ -11,10 +11,6 @@
 #include "base/time/time.h"
 #include "net/cert/x509_certificate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVX509Certificate {
   scoped_refptr<net::X509Certificate> _internalCertificate;
 }

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AutocompleteSuggestionGroupImpl
 
 - (instancetype)initWithTitle:(NSString*)title

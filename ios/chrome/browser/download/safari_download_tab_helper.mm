@@ -8,10 +8,6 @@
 #import "ios/web/public/download/download_task.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void SafariDownloadTabHelper::DownloadMobileConfig(
     std::unique_ptr<web::DownloadTask> task) {
   NSURL* url = net::NSURLWithGURL(task->GetOriginalUrl());

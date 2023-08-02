@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+fetcher.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+testing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 using ::variations::SeedApplicationStage;

@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SyncErrorInfobarBannerOverlayMediator ()
 // The sync error banner config from the request.
 @property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;

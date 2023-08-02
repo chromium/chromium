@@ -10,10 +10,6 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class TestBookmarkModelBridgeObserver;
 
 @interface TestBookmarkModelBridgeOwner : NSObject

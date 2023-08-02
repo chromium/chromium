@@ -6,10 +6,6 @@
 
 #include "net/base/network_delegate_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 WebViewIOThread::WebViewIOThread(PrefService* local_state, net::NetLog* net_log)

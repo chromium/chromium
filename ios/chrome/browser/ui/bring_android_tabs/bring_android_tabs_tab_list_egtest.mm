@@ -14,10 +14,6 @@
 #import "ios/third_party/earl_grey2/src/CommonLib/GREYConstants.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns the matcher for the Tab List From Android.

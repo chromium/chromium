@@ -12,10 +12,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 // Annotation keys for annotation.

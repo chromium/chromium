@@ -6,10 +6,6 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BrowserObserverBridge::BrowserObserverBridge(Browser* browser,
                                              id<BrowserObserving> observer)
     : observer_(observer) {

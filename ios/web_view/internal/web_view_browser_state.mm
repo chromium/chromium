@@ -59,10 +59,6 @@
 #import "ios/web_view/internal/webui/web_view_web_ui_ios_controller_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kPreferencesFilename[] =
     FILE_PATH_LITERAL("ChromeWebViewPreferences");

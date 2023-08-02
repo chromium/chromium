@@ -27,10 +27,6 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

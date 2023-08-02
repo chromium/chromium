@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TestFullscreenModelObserver::TestFullscreenModelObserver() = default;
 
 void TestFullscreenModelObserver::FullscreenModelProgressUpdated(

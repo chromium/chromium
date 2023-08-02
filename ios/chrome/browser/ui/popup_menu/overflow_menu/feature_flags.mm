@@ -6,10 +6,6 @@
 
 #import "components/password_manager/core/common/password_manager_features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BASE_FEATURE(kNewOverflowMenu,
              "NewOverflowMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);

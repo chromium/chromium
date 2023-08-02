@@ -28,10 +28,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
 
 BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)

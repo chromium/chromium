@@ -19,10 +19,6 @@
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Serialization keys used in NSCoding functions.
 NSString* const kCertificatePolicyCacheStorageKey =

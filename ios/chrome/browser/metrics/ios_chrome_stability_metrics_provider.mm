@@ -12,10 +12,6 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Name of the UMA enum histogram that counts DidStartNavigation events by type.
 const char IOSChromeStabilityMetricsProvider::kPageLoadCountMetric[] =
     "IOS.PageLoadCount.Counts";

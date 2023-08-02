@@ -15,10 +15,6 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Alpha value for the disabled action button.
 const CGFloat kDisabledButtonAlpha = 0.5;

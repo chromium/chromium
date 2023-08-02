@@ -21,10 +21,6 @@
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface DefaultBrowserPromoManager () <DefaultBrowserPromoCommands>
 
 // Default browser promo command handler.

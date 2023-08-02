@@ -16,10 +16,6 @@
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace documents_statistics {
 
 // Converts time to a human readable string in the device's local time.

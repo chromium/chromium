@@ -6,10 +6,6 @@
 
 #import <objc/runtime.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* CWVPropertiesDescription(id object) {
   NSMutableArray* properties = [NSMutableArray array];
   unsigned int outCount;

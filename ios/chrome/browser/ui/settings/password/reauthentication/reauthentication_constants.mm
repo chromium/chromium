@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace password_manager {
 const char kReauthenticationUIEventHistogram[] =
     "PasswordManager.iOS.ReauthenticationUI.Event";

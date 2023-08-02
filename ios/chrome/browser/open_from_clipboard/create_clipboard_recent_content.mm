@@ -10,10 +10,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 std::unique_ptr<ClipboardRecentContent> CreateClipboardRecentContentIOS() {
   return std::make_unique<ClipboardRecentContentIOS>(
       kChromeUIScheme, app_group::GetGroupUserDefaults(),

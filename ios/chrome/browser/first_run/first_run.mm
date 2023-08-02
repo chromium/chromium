@@ -13,10 +13,6 @@
 #import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The absence of kSentinelFile file will tell us it is a first run.

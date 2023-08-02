@@ -14,10 +14,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Fake queue delegate.  Keeps ownership of all requests removed from a queue,
 // recording whether the requests were removed for cancellation.

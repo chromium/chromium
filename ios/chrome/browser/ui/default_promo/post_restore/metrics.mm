@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/default_promo/post_restore/metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace post_restore_default_browser {
 
 const char kPromptActionHistogramName[] =

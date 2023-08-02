@@ -9,10 +9,6 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ChromeActivityItemThumbnailGenerator {
   // WebState used for generating the snapshot.
   base::WeakPtr<web::WebState> _weakWebState;

@@ -12,10 +12,6 @@
 #import "net/cert/x509_util_apple.h"
 #import "net/ssl/ssl_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 // These keys were determined by inspecting userInfo dict of an SSL error.

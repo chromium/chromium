@@ -12,10 +12,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kContentViewCornerRadius = 12.0f;
 const CGFloat kMagicStackContentViewCornerRadius = 24.0f;

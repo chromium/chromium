@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/mailto_handler/mailto_handler_configuration.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation MailtoHandlerConfiguration
 
 @end

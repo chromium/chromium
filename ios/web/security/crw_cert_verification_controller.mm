@@ -22,10 +22,6 @@
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::TaskShutdownBehavior;
 using base::TaskTraits;
 using web::WebThread;

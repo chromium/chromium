@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs() {
   return ChromeIOSTranslateClient::CreateTranslatePrefs(

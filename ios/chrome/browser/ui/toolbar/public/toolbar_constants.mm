@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const NSUInteger kControlStateSpotlighted = 0x00010000;
 
 const CGFloat kToolbarBackgroundColor = 0xF2F2F2;

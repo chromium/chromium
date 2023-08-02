@@ -20,10 +20,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface InstantSigninCoordinator () <AuthenticationFlowDelegate,
                                         IdentityChooserCoordinatorDelegate,
                                         InstantSigninMediatorDelegate>

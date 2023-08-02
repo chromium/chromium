@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OverlayRequestCoordinator () <OverlayRequestMediatorDelegate> {
   // Subclassing properties.
   BOOL _started;

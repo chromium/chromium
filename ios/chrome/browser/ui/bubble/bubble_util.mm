@@ -11,10 +11,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Bubble's maximum width, preserves readability, ensuring that the bubble does

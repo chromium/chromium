@@ -25,10 +25,6 @@
 #import "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace segmentation_platform {
 
 namespace {

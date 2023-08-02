@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/voice/speech_input_locale_match.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace voice {
 
 // static

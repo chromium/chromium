@@ -7,10 +7,6 @@
 #import <ostream>
 #import "base/notreached.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
   switch (infobar_type) {
     case InfobarType::kInfobarTypePasswordSave:

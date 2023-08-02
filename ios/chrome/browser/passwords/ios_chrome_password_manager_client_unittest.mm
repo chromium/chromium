@@ -34,10 +34,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::PasswordFormManager;
 using password_manager::PasswordFormManagerForUI;

@@ -63,10 +63,6 @@
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 SyncServiceFactory* SyncServiceFactory::GetInstance() {
   static base::NoDestructor<SyncServiceFactory> instance;

@@ -17,10 +17,6 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Tests the core user journeys of a supervised user with FamilyLink parental
 // control restrictions enabled.
 @interface SupervisedUserWithParentalControlsTestCase : ChromeTestCase

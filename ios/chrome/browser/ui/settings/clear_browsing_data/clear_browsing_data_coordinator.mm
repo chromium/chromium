@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ClearBrowsingDataCoordinator () <ClearBrowsingDataUIDelegate>
 
 @property(nonatomic, strong) id<ApplicationCommands> handler;

@@ -26,10 +26,6 @@
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Name of trial and experiment groups.
 const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";
 const char kIOSChromeVariationsTrialDefaultGroup[] = "Default";

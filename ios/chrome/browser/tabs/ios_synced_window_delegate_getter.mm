@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSSyncedWindowDelegatesGetter::IOSSyncedWindowDelegatesGetter() {}
 
 IOSSyncedWindowDelegatesGetter::~IOSSyncedWindowDelegatesGetter() {}

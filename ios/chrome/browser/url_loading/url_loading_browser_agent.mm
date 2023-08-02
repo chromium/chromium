@@ -28,10 +28,6 @@
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "net/base/url_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(UrlLoadingBrowserAgent)
 
 namespace {

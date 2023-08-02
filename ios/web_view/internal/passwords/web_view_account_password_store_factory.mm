@@ -23,10 +23,6 @@
 #import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_affiliations_prefetcher_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 // static

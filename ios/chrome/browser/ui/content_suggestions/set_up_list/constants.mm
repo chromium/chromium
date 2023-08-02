@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace set_up_list {
 
 constexpr NSString* const kSignInItemID = @"set_up_list::kSignInItemID";

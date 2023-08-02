@@ -21,10 +21,6 @@
 #import "net/url_request/url_request_context_getter.h"
 #import "net/url_request/url_request_interceptor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // All ChromeBrowserState will store a dummy base::SupportsUserData::Data
 // object with this key. It can be used to check that a web::BrowserState

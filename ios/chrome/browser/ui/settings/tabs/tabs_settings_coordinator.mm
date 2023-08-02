@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TabsSettingsCoordinator () <TabsSettingsNavigationCommands>
 @end
 

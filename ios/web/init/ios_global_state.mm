@@ -13,10 +13,6 @@
 #import "base/task/thread_pool/initialization_util.h"
 #import "net/base/network_change_notifier.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 base::AtExitManager* g_exit_manager = nullptr;

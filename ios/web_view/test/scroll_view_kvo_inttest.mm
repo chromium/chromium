@@ -11,10 +11,6 @@
 #import "ios/web_view/test/web_view_test_util.h"
 #include "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 // Tests that the KVO compliant properties of UIScrollView correctly report

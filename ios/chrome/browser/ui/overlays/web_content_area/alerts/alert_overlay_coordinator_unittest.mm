@@ -17,10 +17,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using alert_overlays::AlertRequest;
 using alert_overlays::ButtonConfig;
 

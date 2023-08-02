@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface IncognitoViewController () <NewTabPageURLLoaderDelegate>
 
 // The scrollview containing the actual views.

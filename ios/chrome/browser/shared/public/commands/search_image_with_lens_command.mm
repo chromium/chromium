@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SearchImageWithLensCommand
 
 - (instancetype)initWithImage:(UIImage*)image

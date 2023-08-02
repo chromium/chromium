@@ -12,10 +12,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kTestShareURL[] = "https://www.google.com/";
 const char kTestVisibleURL[] = "https://google.com/";

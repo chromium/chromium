@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 JavaScriptConsoleFeature* JavaScriptConsoleFeatureFactory::GetForBrowserState(
     web::BrowserState* browser_state) {

@@ -22,10 +22,6 @@
 #import "ui/base/page_transition_types.h"
 #import "ui/gfx/text_elider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace {
 

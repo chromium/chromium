@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void StartBroadcastingToolbarUI(id<ToolbarUI> toolbar,
                                 ChromeBroadcaster* broadcaster) {
   [broadcaster broadcastValue:@"collapsedTopToolbarHeight"

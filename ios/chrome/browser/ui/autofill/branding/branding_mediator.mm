@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/autofill/branding/branding_consumer.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::features::AutofillBrandingFrequencyType;
 using autofill::features::GetAutofillBrandingFrequencyType;
 

@@ -83,10 +83,6 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Kill-switch for quick fix of crbug.com/1204507
 BASE_FEATURE(kNoRecentTabIfNullWebState,

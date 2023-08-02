@@ -32,10 +32,6 @@
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 using ::bring_android_tabs::kPromptAttemptStatusHistogramName;

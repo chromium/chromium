@@ -28,10 +28,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // TODO(crbug.com/1316705): Re-enable tests on devices once
 // https://openradar.appspot.com/FB9858932 is fixed.
 #if TARGET_OS_SIMULATOR

@@ -10,10 +10,6 @@
 #import "base/ios/crb_protocol_observers.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRWWebViewScrollViewDelegateProxy ()
 
 @property(nonatomic, weak) CRWWebViewScrollViewProxy* scrollViewProxy;

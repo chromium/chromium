@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "base/strings/string_number_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"

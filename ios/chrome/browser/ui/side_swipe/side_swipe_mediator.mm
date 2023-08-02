@@ -31,10 +31,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kSideSwipeWillStartNotification =
     @"kSideSwipeWillStartNotification";
 NSString* const kSideSwipeDidStopNotification =

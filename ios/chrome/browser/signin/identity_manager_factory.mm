@@ -26,10 +26,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory_observer.h"
 #import "ios/chrome/browser/signin/signin_client_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void IdentityManagerFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   signin::IdentityManager::RegisterProfilePrefs(registry);

@@ -14,10 +14,6 @@
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ConsentCoordinator () <PromoStyleViewControllerDelegate>
 
 // Base view controller from where `viewController` is presented.

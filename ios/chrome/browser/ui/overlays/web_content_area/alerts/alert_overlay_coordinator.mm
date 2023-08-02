@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using alert_overlays::AlertRequest;
 
 @interface AlertOverlayCoordinator () <AlertOverlayMediatorDataSource,

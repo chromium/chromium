@@ -16,10 +16,6 @@
 #import "ios/chrome/share_extension/share_extension_view.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Type for completion handler to fetch the components of the share items.
 // `idResponse` type depends on the element beeing fetched.
 using ItemBlock = void (^)(id idResponse, NSError* error);

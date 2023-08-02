@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/mailto_handler/mailto_handler_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 MailtoHandlerService* MailtoHandlerServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

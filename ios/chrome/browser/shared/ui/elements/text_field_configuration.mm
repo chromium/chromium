@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TextFieldConfiguration
 
 - (instancetype)initWithText:(NSString*)text

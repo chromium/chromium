@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSChromeSigninAndSyncStatusMetricsProvider::
     IOSChromeSigninAndSyncStatusMetricsProvider() = default;
 IOSChromeSigninAndSyncStatusMetricsProvider::

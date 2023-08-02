@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 DiscoverFeedObserverBridge::DiscoverFeedObserverBridge(
     id<DiscoverFeedObserverBridgeDelegate> observer,
     DiscoverFeedService* service)

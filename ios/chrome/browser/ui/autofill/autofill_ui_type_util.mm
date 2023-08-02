@@ -6,10 +6,6 @@
 
 #import "base/notreached.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
   switch (type) {
     case autofill::UNKNOWN_TYPE:

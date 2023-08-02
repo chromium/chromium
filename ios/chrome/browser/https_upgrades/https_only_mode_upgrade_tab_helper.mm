@@ -26,10 +26,6 @@
 #import "net/base/url_util.h"
 #import "url/url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using security_interstitials::https_only_mode::Event;
 
 namespace {

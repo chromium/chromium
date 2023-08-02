@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BVCContainerViewController ()
 
 // Background behind toolbar and webview during animation to avoid seeing

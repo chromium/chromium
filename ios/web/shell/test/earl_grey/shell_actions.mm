@@ -7,10 +7,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/shell/test/earl_grey/shell_actions_app_interface.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 id<GREYAction> LongPressElementForContextMenu(ElementSelector* selector) {

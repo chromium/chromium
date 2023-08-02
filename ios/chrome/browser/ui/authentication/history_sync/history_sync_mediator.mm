@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HistorySyncMediator () <IdentityManagerObserverBridgeDelegate>
 @end
 

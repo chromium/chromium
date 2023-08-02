@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using send_tab_to_self::SendTabToSelfSyncService;
 
 std::unique_ptr<KeyedService> BuildSendTabToSelfService(

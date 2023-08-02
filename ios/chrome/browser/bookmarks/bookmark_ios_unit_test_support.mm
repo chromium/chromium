@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using bookmarks::BookmarkNode;
 
 BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport() = default;

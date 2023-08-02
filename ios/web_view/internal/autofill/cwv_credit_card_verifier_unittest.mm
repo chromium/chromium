@@ -35,10 +35,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 

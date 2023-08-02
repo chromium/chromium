@@ -51,10 +51,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kOmniboxIconSize = 16;
 /// Maximum number of suggest tile types we want to record. Anything beyond this

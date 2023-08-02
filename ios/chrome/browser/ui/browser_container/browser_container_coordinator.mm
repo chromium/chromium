@@ -37,10 +37,6 @@
 #import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BrowserContainerCoordinator () <EditMenuAlertDelegate>
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;

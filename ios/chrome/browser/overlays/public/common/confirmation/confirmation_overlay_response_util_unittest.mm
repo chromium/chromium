@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using alert_overlays::AlertResponse;
 using alert_overlays::ResponseConverter;
 

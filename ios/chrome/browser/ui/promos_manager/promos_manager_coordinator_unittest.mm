@@ -27,10 +27,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 PromosManagerCoordinatorTest::PromosManagerCoordinatorTest() {
   browser_state_ = TestChromeBrowserState::Builder().Build();
   browser_ = std::make_unique<TestBrowser>(browser_state_.get());

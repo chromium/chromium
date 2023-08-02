@@ -24,10 +24,6 @@
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 #import "ios/components/credential_provider_extension/password_spec_fetcher.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::GeneratePassword;
 using autofill::PasswordRequirementsSpec;
 using base::SysUTF16ToNSString;

@@ -6,10 +6,6 @@
 
 #import "ios/chrome/test/fakes/fake_password_auto_fill_status_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation PasswordsInOtherAppsAppInterface
 
 + (FakePasswordAutoFillStatusManager*)manager {

@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FeedTopSectionCoordinator () <SigninPresenter>
 
 @property(nonatomic, strong) FeedTopSectionMediator* feedTopSectionMediator;

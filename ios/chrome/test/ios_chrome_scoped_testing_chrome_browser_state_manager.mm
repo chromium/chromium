@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/test/testing_application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSChromeScopedTestingChromeBrowserStateManager::
     IOSChromeScopedTestingChromeBrowserStateManager(
         std::unique_ptr<ios::ChromeBrowserStateManager> browser_state_manager)

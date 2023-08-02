@@ -21,10 +21,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // ConsistencyPromoSigninCoordinator EarlGrey tests.
 // Note: Since those tests are not using real identities, it is not possible
 // to test when the user signs in using the web sign-in consistency dialog.

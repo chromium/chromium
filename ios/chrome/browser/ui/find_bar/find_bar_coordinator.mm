@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FindBarCoordinator () <ContainedPresenterDelegate>
 
 @property(nonatomic, strong) FindBarMediator* mediator;

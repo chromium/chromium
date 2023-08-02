@@ -40,10 +40,6 @@
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kTestUrl[] = "https://www.merchant.com/price_drop_product";

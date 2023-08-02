@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The maximum size of the multi parameter key.
 const int kMaximumMultiParameterValueSize = 256;

@@ -10,10 +10,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern std::string GetLocalizedFileName(const std::string& base_name,
                                         const std::string& locale,
                                         const std::string& ext);

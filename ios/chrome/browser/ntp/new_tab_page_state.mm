@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation NewTabPageState
 
 - (instancetype)init {

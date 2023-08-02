@@ -9,10 +9,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/earl_grey2/src/CommonLib/Assertion/GREYFatalAsserts.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 std::atomic_int g_instance_count;

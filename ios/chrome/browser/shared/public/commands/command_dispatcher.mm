@@ -13,10 +13,6 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #pragma mark - SilentlyFailingObject
 
 // Object that responds to any selector and does nothing when its called.

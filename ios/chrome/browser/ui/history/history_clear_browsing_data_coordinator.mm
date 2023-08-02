@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/web/public/navigation/referrer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HistoryClearBrowsingDataCoordinator ()
 
 // ViewControllers being managed by this Coordinator.

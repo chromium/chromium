@@ -12,10 +12,6 @@
 #import "content/public/browser/web_contents.h"
 #import "net/http/http_request_headers.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 const char kNavigationItemDataKey[] = "navigation_item";

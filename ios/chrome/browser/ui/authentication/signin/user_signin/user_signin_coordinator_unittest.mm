@@ -23,10 +23,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TestUserSigninCoordinator : UserSigninCoordinator
 
 @property(nonatomic, strong)

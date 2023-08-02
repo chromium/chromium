@@ -17,10 +17,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Tests the SetUpListView and subviews.
 class SetUpListViewTest : public PlatformTest {
  public:

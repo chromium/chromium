@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using translate_infobar_overlays::PlaceholderRequestCancelHandler;
 
 namespace {

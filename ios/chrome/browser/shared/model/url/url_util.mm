@@ -19,10 +19,6 @@
 #import "url/gurl.h"
 #import "url/url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool UrlIsExternalFileReference(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme) &&
          base::EqualsCaseInsensitiveASCII(url.host(),

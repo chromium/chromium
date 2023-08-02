@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace password_manager {
 
 NSString* const kPasswordCheckupHeaderImageGreen =

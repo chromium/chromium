@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(UpgradeCenterBrowserAgent)
 
 UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(

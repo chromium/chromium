@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AbstractFindTabHelper* GetConcreteFindTabHelperFromWebState(
     web::WebState* web_state) {
   if (IsNativeFindInPageAvailable()) {

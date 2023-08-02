@@ -38,10 +38,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface RecentTabsCoordinator () <TabContextMenuDelegate,
                                      RecentTabsPresentationDelegate>
 // Completion block called once the recentTabsViewController is dismissed.

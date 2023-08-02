@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface DefaultBrowserPromoSceneAgent ()
 
 // Indicates whether the user has already seen the post restore default browser

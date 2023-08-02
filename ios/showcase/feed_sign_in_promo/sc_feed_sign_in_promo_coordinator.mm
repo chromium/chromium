@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Sets a custom radius for the half sheet presentation.
 constexpr CGFloat kHalfSheetCornerRadius = 20;

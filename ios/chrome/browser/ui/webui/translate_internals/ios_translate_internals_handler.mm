@@ -16,10 +16,6 @@
 #import "ios/chrome/browser/translate/translate_service_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSTranslateInternalsHandler::IOSTranslateInternalsHandler() = default;
 IOSTranslateInternalsHandler::~IOSTranslateInternalsHandler() = default;
 

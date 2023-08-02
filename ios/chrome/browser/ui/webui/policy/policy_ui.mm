@@ -25,10 +25,6 @@
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
 #import "ui/base/webui/web_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns the version information to be displayed on the chrome://policy/logs

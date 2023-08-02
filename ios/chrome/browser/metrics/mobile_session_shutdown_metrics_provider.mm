@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using previous_session_info_constants::DeviceBatteryState;
 using previous_session_info_constants::DeviceThermalState;
 

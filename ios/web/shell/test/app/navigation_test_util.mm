@@ -8,10 +8,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/shell/test/app/web_shell_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace shell_test_util {
 

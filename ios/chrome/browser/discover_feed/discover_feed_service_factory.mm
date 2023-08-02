@@ -16,10 +16,6 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 DiscoverFeedService* DiscoverFeedServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,

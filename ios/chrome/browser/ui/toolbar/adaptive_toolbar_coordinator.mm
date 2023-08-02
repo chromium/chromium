@@ -34,10 +34,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface AdaptiveToolbarCoordinator () <AdaptiveToolbarViewControllerDelegate>
 
 // Whether this coordinator has been started.

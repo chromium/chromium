@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);

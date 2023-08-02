@@ -75,10 +75,6 @@
 #import "net/url_request/url_request_context_getter.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // A helper enum to report the deletion of cookies and/or cache. Do not

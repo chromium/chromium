@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SafeModeAppAgent {
   // Multiwindow UI blocker used when safe mode is active to only show the safe
   // mode UI on one window.

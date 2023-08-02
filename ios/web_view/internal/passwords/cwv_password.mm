@@ -11,10 +11,6 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVPassword {
   password_manager::PasswordForm _passwordForm;
 }

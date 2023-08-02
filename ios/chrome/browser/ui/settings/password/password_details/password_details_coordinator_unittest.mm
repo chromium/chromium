@@ -17,10 +17,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for testing the PasswordDetailsCoordinatorTest class.
 class PasswordDetailsCoordinatorTest : public PlatformTest {
  protected:

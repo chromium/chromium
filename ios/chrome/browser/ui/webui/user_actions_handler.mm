@@ -10,10 +10,6 @@
 #import "base/values.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 UserActionsHandler::UserActionsHandler()
     : action_callback_(base::BindRepeating(&UserActionsHandler::OnUserAction,
                                            base::Unretained(this))) {

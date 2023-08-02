@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ToolbarButtonActionsHandler {
   feature_engagement::Tracker* _engagementTracker;
 }

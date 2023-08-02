@@ -14,10 +14,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // *Address of* this variable is used as a marker to specify that it matches any
 // context.
 static int gAnyContext = 0;

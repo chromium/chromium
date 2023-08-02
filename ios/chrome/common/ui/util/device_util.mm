@@ -7,10 +7,6 @@
 #import <UIKit/UIKit.h>
 #import "ios/chrome/common/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 CGFloat CurrentScreenHeight() {
   return [UIScreen mainScreen].bounds.size.height;
 }

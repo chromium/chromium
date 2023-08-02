@@ -10,10 +10,6 @@
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/signin/public/identity_manager/account_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 MockAutofillSaveCardInfoBarDelegateMobile::
     MockAutofillSaveCardInfoBarDelegateMobile(
         autofill::AutofillClient::SaveCreditCardOptions options,

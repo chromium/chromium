@@ -22,10 +22,6 @@
 #import "ui/base/webui/jstemplate_builder.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* GetErrorPage(const GURL& url,
                        NSError* error,
                        bool is_post,

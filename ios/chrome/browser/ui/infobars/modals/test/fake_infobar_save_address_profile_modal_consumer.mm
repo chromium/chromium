@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_save_address_profile_modal_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeInfobarSaveAddressProfileModalConsumer
 
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {

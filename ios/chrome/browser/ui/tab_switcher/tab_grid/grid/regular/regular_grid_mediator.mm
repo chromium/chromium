@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation RegularGridMediator {
   // The saved session window just before close all tabs is called.
   SessionWindowIOS* _closedSessionWindow;

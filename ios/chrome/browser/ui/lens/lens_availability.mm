@@ -13,10 +13,6 @@
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kIOSLensContextMenuSupportStatusHistogramName[] =
     "Mobile.ContextMenu.LensSupportStatus";
 const char kIOSLensKeyboardSupportStatusHistogramName[] =

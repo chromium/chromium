@@ -23,10 +23,6 @@
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BookmarksFolderEditorCoordinator () <
     BookmarksFolderEditorViewControllerDelegate,
     BookmarksFolderChooserCoordinatorDelegate,

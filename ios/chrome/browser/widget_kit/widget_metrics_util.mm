@@ -9,10 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::UmaHistogramEnumeration;
 
 namespace {

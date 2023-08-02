@@ -13,10 +13,6 @@
 #import "components/version_info/version_info.h"
 #import "components/version_info/version_string.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

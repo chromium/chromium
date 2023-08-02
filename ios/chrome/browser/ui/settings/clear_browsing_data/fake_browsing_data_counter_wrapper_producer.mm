@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeBrowsingDataCounterWrapperProducer
 
 - (std::unique_ptr<BrowsingDataCounterWrapper>)

@@ -25,10 +25,6 @@
 #import "net/ssl/ssl_info.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using captive_portal::CaptivePortalDetector;
 using security_interstitials::IOSBlockingPageTabHelper;
 

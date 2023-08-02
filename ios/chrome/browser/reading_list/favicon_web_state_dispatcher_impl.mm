@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Default delay to download the favicon when the WebState is handed back.
 const int64_t kDefaultDelayFaviconSecond = 10;

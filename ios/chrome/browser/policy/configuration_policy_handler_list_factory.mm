@@ -41,10 +41,6 @@
 #import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using policy::PolicyToPreferenceMapEntry;
 using policy::SimplePolicyHandler;
 

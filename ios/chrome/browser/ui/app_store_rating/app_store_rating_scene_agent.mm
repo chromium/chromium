@@ -25,10 +25,6 @@
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/common/channel_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface AppStoreRatingSceneAgent ()
 
 // Determines whether the user has used Chrome for at least 3

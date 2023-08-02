@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser_list_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BrowserListObserverBridge::BrowserListObserverBridge(
     id<BrowserListObserver> observer)
     : observer_(observer) {}

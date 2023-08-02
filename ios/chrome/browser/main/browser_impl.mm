@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
                          BrowserImpl* active_browser)
     : browser_state_(browser_state),

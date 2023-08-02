@@ -4,10 +4,6 @@
 
 #import "ios/web_view/internal/cwv_navigation_response_internal.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVNavigationResponse
 @synthesize response = _response;
 @synthesize forMainFrame = _forMainFrame;

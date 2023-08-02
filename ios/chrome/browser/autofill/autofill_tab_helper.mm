@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AutofillTabHelper::~AutofillTabHelper() = default;
 
 void AutofillTabHelper::SetBaseViewController(

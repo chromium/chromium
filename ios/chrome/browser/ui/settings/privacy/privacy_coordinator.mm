@@ -21,10 +21,6 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PrivacyCoordinator () <
     ClearBrowsingDataCoordinatorDelegate,
     PrivacyNavigationCommands,

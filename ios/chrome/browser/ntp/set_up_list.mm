@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using set_up_list_prefs::SetUpListItemState;
 
 namespace {

@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_mediator.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface DefaultPageModeCoordinator ()
 
 @property(nonatomic, strong) DefaultPageModeTableViewController* viewController;

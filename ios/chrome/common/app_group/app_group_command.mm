@@ -9,10 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Using GURL in the extension is not wanted as it includes ICU which makes the
 // extension binary much larger; therefore, ios/chrome/common/x_callback_url.h

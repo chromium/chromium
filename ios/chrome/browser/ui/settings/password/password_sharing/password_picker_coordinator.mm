@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PasswordPickerCoordinator ()
 
 // Main view controller for this coordinator.

@@ -49,10 +49,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Information about a single tab that needs to be restored.

@@ -12,10 +12,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::TrimPositions;
 using chrome_test_util::OmniboxContainingText;
 using chrome_test_util::OmniboxText;

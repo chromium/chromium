@@ -24,10 +24,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Identifier for long press on notification and open menu categories.

@@ -9,10 +9,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebViewSafeBrowsingClient::WebViewSafeBrowsingClient() = default;
 
 WebViewSafeBrowsingClient::~WebViewSafeBrowsingClient() = default;

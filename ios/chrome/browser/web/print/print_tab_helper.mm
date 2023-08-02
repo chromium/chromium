@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/web/print/web_state_printer.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 PrintTabHelper::PrintTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}
 

@@ -30,10 +30,6 @@
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Creates test state, inserts it into WebState list and activates.

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/utils/fake_observable_boolean.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeObservableBoolean
 
 @synthesize value = _value;

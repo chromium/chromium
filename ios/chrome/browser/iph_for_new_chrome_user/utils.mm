@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/iph_for_new_chrome_user/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 base::TimeDelta new_user_first_run_recency = base::Days(60);

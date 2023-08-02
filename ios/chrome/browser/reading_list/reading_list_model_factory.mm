@@ -25,10 +25,6 @@
 #import "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

@@ -10,10 +10,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/timer/timer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface WindowConfigurationRecorder ()
 
 // Called by the recording_timer_ to record current config.

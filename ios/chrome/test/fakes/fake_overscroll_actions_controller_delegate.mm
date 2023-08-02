@@ -4,10 +4,6 @@
 
 #import "ios/chrome/test/fakes/fake_overscroll_actions_controller_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeOverscrollActionsControllerDelegate
 
 - (instancetype)init {

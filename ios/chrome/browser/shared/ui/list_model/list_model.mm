@@ -9,10 +9,6 @@
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kListModelCollapsedKey = @"ChromeListModelCollapsedSections";
 
 namespace {

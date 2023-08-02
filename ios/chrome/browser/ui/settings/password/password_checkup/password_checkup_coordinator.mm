@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::PasswordCheckReferrer;
 
 @interface PasswordCheckupCoordinator () <PasswordCheckupCommands,

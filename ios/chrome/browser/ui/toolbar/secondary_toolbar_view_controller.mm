@@ -21,10 +21,6 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // This is how many bits UIViewAnimationCurve needs to be shifted to be in
 // UIViewAnimationOptions format. Must match the one in UIView.h.

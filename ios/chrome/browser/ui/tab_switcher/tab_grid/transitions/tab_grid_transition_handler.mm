@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/tab_grid_transition_animation.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TabGridTransitionHandler {
   TabGridTransitionType _transitionType;
   TabGridTransitionDirection _direction;

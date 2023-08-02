@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/safe_browsing/input_event_observer.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kScriptFilename[] = "password_protection";
 

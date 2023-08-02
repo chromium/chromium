@@ -11,10 +11,6 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/web_client.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Holds a pair of state and creation order index.
 @interface CRWWKNavigationsStateRecord : NSObject {
   // Backs up `context` property.

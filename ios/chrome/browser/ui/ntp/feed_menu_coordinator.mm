@@ -17,10 +17,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FeedMenuCoordinator {
   // The action sheet coordinator that will display the menu.
   ActionSheetCoordinator* _actionSheetCoordinator;

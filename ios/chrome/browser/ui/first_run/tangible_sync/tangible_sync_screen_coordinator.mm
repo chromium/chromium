@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TangibleSyncScreenCoordinator {
   // First run screen delegate.
   __weak id<FirstRunScreenDelegate> _delegate;

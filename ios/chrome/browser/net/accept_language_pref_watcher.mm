@@ -9,10 +9,6 @@
 #import "components/prefs/pref_service.h"
 #import "net/http/http_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AcceptLanguagePrefWatcher::Handle::Handle(const std::string& languages) {
   SetAcceptLanguageHeaderFromPref(languages);
 }

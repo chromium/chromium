@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_mediator.h"
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_table_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface WebInspectorStateCoordinator ()
 
 @property(nonatomic, strong)

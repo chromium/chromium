@@ -6,10 +6,6 @@
 
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CRWFakeWebViewNavigationProxy {
   NSURL* _URL;
   CRWFakeBackForwardList* _backForwardList;

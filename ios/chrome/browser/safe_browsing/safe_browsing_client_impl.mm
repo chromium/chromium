@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 SafeBrowsingClientImpl::SafeBrowsingClientImpl(
     safe_browsing::RealTimeUrlLookupService* lookup_service,
     PrerenderService* prerender_service)

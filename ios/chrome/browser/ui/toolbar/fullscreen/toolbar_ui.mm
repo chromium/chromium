@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ToolbarUIState
 @synthesize collapsedTopToolbarHeight = _collapsedTopToolbarHeight;
 @synthesize expandedTopToolbarHeight = _expandedTopToolbarHeight;

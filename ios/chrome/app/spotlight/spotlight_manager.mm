@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Called from the BrowserBookmarkModelBridge from C++ -> ObjC.
 @interface SpotlightManager () {
   BookmarksSpotlightManager* _bookmarkManager;

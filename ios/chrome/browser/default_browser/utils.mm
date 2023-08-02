@@ -25,10 +25,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import <UIKit/UIKit.h>
 
 // Key in NSUserDefaults containing an NSDictionary used to store all the

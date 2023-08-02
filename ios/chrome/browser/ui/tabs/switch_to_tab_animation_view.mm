@@ -6,10 +6,6 @@
 
 #import "base/i18n/rtl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kMiddleMargin = 80;
 const CGFloat kAnimationTime = 0.35;

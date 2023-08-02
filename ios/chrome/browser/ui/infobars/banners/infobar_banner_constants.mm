@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kInfobarBannerViewIdentifier = @"kInfobarBannerViewIdentifier";
 NSString* const kInfobarBannerLabelsStackViewIdentifier =
     @"kInfobarBannerLabelsStackViewIdentifier";

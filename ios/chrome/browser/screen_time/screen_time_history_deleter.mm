@@ -10,10 +10,6 @@
 #import "components/history/core/browser/history_service.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Converts base::Time to NSDate.
 NSDate* NSDateFromTime(const base::Time& time) {

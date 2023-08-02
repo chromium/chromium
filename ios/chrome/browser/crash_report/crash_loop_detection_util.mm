@@ -6,10 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 static int startup_attempt_count = -1;
 NSString* const kAppStartupFailureCountKey = @"AppStartupFailureCount";

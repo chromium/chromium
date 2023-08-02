@@ -6,10 +6,6 @@
 
 #import "base/check.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Type of the block used for delivering mocked reauth results.
 typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 

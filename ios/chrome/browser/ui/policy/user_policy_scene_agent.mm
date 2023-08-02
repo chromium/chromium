@@ -20,10 +20,6 @@
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface UserPolicySceneAgent () <AppStateObserver> {
   // Scoped UI blocker that blocks the other scenes/windows if the dialog is
   // shown on this scene.

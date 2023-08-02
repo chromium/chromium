@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The time range's expected min and max values for custom histograms.
 constexpr base::TimeDelta kTimeRangeIncomingNotificationHistogramMin =

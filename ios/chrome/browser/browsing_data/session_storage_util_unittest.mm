@@ -6,10 +6,6 @@
 
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for the session storage utility functions.
 using SessionStorageUtilTest = PlatformTest;
 

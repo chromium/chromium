@@ -24,10 +24,6 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/strings/grit/ui_strings.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 /// Number of time URL is reloaded to add it to most visited sites.

@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FullCardRequester::FullCardRequester(UIViewController* base_view_controller,
                                      ChromeBrowserState* browser_state)
     : base_view_controller_(base_view_controller),

@@ -14,10 +14,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/thread_pool.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char* kOrientationDescriptions[] = {
     "LandscapeLeft",

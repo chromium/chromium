@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/screen_time/screen_time_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ScreenTimeCoordinator ()
 @property(nonatomic, strong) ScreenTimeViewController* screenTimeViewController;
 @property(nonatomic, strong) ScreenTimeMediator* mediator;

@@ -5,10 +5,6 @@
 #import "ios/chrome/browser/policy/reporting/profile_report_generator_ios.h"
 #import "components/enterprise/browser/reporting/report_type.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import <Foundation/Foundation.h>
 
 #import "base/files/file_path.h"

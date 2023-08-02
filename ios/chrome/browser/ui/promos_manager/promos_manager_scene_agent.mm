@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PromosManagerSceneAgent () <AppStateObserver>
 
 // Indicates whether or not the UI is available for a promo to be displayed.

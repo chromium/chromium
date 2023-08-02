@@ -18,10 +18,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "net/http/http_request_headers.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kDownloadControllerKey = 0;
 }  // namespace

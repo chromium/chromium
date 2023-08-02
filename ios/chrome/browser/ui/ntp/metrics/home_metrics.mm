@@ -8,10 +8,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void RecordHomeAction(IOSHomeActionType type, bool isStartSurface) {
   if (isStartSurface) {
     UMA_HISTOGRAM_ENUMERATION(kActionOnStartHistogram, type);

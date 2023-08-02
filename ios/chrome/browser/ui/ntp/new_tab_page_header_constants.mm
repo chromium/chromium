@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ntp_header {
 
 const CGFloat kAnimationDistance = 42;

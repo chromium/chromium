@@ -39,10 +39,6 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ActivityServiceMediator ()
 
 @property(nonatomic, weak) id<BrowserCoordinatorCommands, FindInPageCommands>

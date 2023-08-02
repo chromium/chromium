@@ -23,10 +23,6 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CredentialProviderPromoCoordinator () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate>

@@ -4,10 +4,6 @@
 
 #import "ios/web/public/test/fakes/crw_fake_find_session.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CRWFakeFindSession
 
 @synthesize highlightedResultIndex = _highlightedResultIndex;

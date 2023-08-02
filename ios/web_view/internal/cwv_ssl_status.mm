@@ -10,10 +10,6 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 CWVSecurityStyle CWVSecurityStyleFromWebSecurityStyle(
     web::SecurityStyle style) {

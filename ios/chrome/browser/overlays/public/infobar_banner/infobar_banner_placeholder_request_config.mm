@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 OVERLAY_USER_DATA_SETUP_IMPL(InfobarBannerPlaceholderRequestConfig);
 
 InfobarBannerPlaceholderRequestConfig::InfobarBannerPlaceholderRequestConfig(

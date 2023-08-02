@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class RegularGridMediatorTest : public GridMediatorTestClass {
  public:
   RegularGridMediatorTest() {}

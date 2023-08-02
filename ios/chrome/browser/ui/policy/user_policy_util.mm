@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
                                     PrefService* prefService) {
   if (!policy::IsUserPolicyEnabled()) {

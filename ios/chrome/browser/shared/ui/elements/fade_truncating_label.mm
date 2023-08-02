@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label+private.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 /// Creates a gradient opacity mask based on direction of `truncate_mode` for

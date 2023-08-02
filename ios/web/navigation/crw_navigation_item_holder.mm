@@ -8,10 +8,6 @@
 
 #import "ios/web/navigation/navigation_item_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The address of this static variable is used to set and get the associated
 // NavigationItemImpl object from a WKBackForwardListItem.
 const void* kNavigationItemKey = &kNavigationItemKey;

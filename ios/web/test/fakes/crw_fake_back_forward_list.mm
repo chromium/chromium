@@ -9,10 +9,6 @@
 #import "base/check.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRWFakeBackForwardList (PrivateMethods)
 - (NSArray*)mockSublistWithURLArray:(NSArray<NSString*>*)URLs;
 @end

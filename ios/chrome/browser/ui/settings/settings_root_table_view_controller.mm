@@ -21,10 +21,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Height of the space used by header/footer when none is set. Default is
 // `estimatedSection{Header|Footer}Height`.

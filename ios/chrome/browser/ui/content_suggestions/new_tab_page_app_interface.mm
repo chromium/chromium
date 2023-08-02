@@ -22,10 +22,6 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using content_suggestions::SearchFieldWidth;
 using set_up_list_prefs::SetUpListItemState;
 

@@ -8,10 +8,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/dense_set.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVAutofillForm
 
 - (instancetype)initWithFormStructure:

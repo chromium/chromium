@@ -34,10 +34,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // These tests are roughly similarly to the tests in
 // optimization_guide_keyed_service_browsertest.cc
 

@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(TabParentingBrowserAgent)
 
 TabParentingBrowserAgent::TabParentingBrowserAgent(Browser* browser) {

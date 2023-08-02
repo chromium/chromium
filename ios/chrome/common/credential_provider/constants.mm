@@ -11,10 +11,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using app_group::ApplicationGroup;
 
 namespace {

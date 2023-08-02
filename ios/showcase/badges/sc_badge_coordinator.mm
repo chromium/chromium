@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
 #import "ios/showcase/badges/sc_badge_container_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCBadgeCoordinator () <BadgeDelegate>
 @property(nonatomic, strong)
     SCBadgeContainerViewController* containerViewController;
