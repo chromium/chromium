@@ -10,6 +10,7 @@
 #include "chrome/browser/companion/core/companion_url_builder.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/promo_handler.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -330,6 +331,10 @@ void CompanionPageHandler::OpenUrlInBrowser(
     return;
   }
 
+  // Verify the string coming from the server is safe to open.
+  if (!IsSafeURLFromCompanion(url_to_open.value())) {
+    return;
+  }
   signin_delegate_->OpenUrlInBrowser(url_to_open.value(), use_new_tab);
 }
 
