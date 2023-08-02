@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
 }
 
 // TODO(crbug.com/1450456) flaky on ASan bots
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_RunP2PScreenshareWhileSharingTab \
   DISABLED_RunP2PScreenshareWhileSharingTab
 #else
