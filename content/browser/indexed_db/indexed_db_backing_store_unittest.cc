@@ -44,7 +44,6 @@
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
@@ -1547,8 +1546,6 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
         const bool multi_entry = true;
         const IndexedDBKeyPath index_key_path(u"index_key");
 
-        IndexedDBMetadataCoding metadata_coding;
-
         {
           IndexedDBDatabaseMetadata database;
           database.name = database_name;
@@ -1571,9 +1568,9 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
           EXPECT_TRUE(s.ok());
 
           IndexedDBIndexMetadata index;
-          s = metadata_coding.CreateIndex(
-              transaction.transaction(), database.id, object_store.id, index_id,
-              index_name, index_key_path, unique, multi_entry, &index);
+          s = backing_store()->CreateIndex(
+              &transaction, database.id, object_store.id, index_id, index_name,
+              index_key_path, unique, multi_entry, &index);
           EXPECT_TRUE(s.ok());
 
           bool succeeded = false;
@@ -1860,8 +1857,6 @@ TEST_F(IndexedDBBackingStoreTest, SchemaUpgradeWithoutBlobsSurvives) {
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(u"object_store_key");
 
-  IndexedDBMetadataCoding metadata_coding;
-
   {
     IndexedDBDatabaseMetadata database;
     database.name = database_name;
@@ -1964,8 +1959,6 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeWithBlobsCorrupt) {
   const std::u16string object_store_name(u"object_store1");
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(u"object_store_key");
-
-  IndexedDBMetadataCoding metadata_coding;
 
   {
     IndexedDBDatabaseMetadata database;
@@ -2080,8 +2073,6 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   const std::u16string object_store_name(u"object_store1");
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(u"object_store_key");
-
-  IndexedDBMetadataCoding metadata_coding;
 
   {
     IndexedDBDatabaseMetadata database;
@@ -2233,8 +2224,6 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   // The V5 migration checks files on disk, so make sure our fake blob
   // context writes something there to check.
   blob_context_->SetWriteFilesToDisk(true);
-
-  IndexedDBMetadataCoding metadata_coding;
 
   {
     IndexedDBDatabaseMetadata database;

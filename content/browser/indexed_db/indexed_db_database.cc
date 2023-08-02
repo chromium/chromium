@@ -41,7 +41,6 @@
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_index_writer.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_return_value.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -150,7 +149,6 @@ IndexedDBDatabase::IndexedDBDatabase(
     IndexedDBFactory* factory,
     IndexedDBClassFactory* class_factory,
     TasksAvailableCallback tasks_available_callback,
-    std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const Identifier& unique_identifier,
     PartitionedLockManager* transaction_lock_manager)
     : backing_store_(backing_store),
@@ -161,7 +159,6 @@ IndexedDBDatabase::IndexedDBDatabase(
       identifier_(unique_identifier),
       factory_(factory),
       class_factory_(class_factory),
-      metadata_coding_(std::move(metadata_coding)),
       lock_manager_(transaction_lock_manager),
       tasks_available_callback_(tasks_available_callback),
       connection_coordinator_(this, tasks_available_callback) {
@@ -517,9 +514,8 @@ Status IndexedDBDatabase::DeleteObjectStoreOperation(
       RemoveObjectStoreFromMetadata(object_store_id);
 
   // First remove metadata.
-  Status s = metadata_coding_->DeleteObjectStore(
-      transaction->BackingStoreTransaction()->transaction(),
-      transaction->database()->id(), object_store_metadata);
+  Status s = backing_store_->DeleteObjectStore(
+      transaction->BackingStoreTransaction(), id(), object_store_metadata);
 
   if (!s.ok()) {
     AddObjectStoreToMetadata(std::move(object_store_metadata),
@@ -572,9 +568,8 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
 
   std::u16string old_name;
 
-  Status s = metadata_coding_->RenameObjectStore(
-      transaction->BackingStoreTransaction()->transaction(),
-      transaction->database()->id(), new_name, &old_name,
+  Status s = backing_store_->RenameObjectStore(
+      transaction->BackingStoreTransaction(), id(), new_name, &old_name,
       &object_store_metadata);
 
   if (!s.ok())
@@ -606,9 +601,8 @@ Status IndexedDBDatabase::VersionChangeOperation(
   int64_t old_version = metadata_.version;
   DCHECK_GT(version, old_version);
 
-  leveldb::Status s = metadata_coding_->SetDatabaseVersion(
-      transaction->BackingStoreTransaction()->transaction(), id(), version,
-      &metadata_);
+  leveldb::Status s = backing_store_->SetDatabaseVersion(
+      transaction->BackingStoreTransaction(), id(), version, &metadata_);
   if (!s.ok())
     return s;
 
@@ -647,10 +641,9 @@ leveldb::Status IndexedDBDatabase::CreateIndexOperation(
   }
 
   IndexedDBIndexMetadata index_metadata;
-  Status s = metadata_coding_->CreateIndex(
-      transaction->BackingStoreTransaction()->transaction(),
-      transaction->database()->id(), object_store_id, index_id, name, key_path,
-      unique, multi_entry, &index_metadata);
+  Status s = backing_store_->CreateIndex(
+      transaction->BackingStoreTransaction(), id(), object_store_id, index_id,
+      name, key_path, unique, multi_entry, &index_metadata);
 
   if (!s.ok())
     return s;
@@ -685,9 +678,8 @@ Status IndexedDBDatabase::DeleteIndexOperation(
   IndexedDBIndexMetadata index_metadata =
       RemoveIndexFromMetadata(object_store_id, index_id);
 
-  Status s = metadata_coding_->DeleteIndex(
-      transaction->BackingStoreTransaction()->transaction(),
-      transaction->database()->id(), object_store_id, index_metadata);
+  Status s = backing_store_->DeleteIndex(transaction->BackingStoreTransaction(),
+                                         id(), object_store_id, index_metadata);
 
   if (!s.ok())
     return s;
@@ -735,10 +727,9 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
       metadata_.object_stores[object_store_id].indexes[index_id];
 
   std::u16string old_name;
-  Status s = metadata_coding_->RenameIndex(
-      transaction->BackingStoreTransaction()->transaction(),
-      transaction->database()->id(), object_store_id, new_name, &old_name,
-      &index_metadata);
+  Status s = backing_store_->RenameIndex(transaction->BackingStoreTransaction(),
+                                         id(), object_store_id, new_name,
+                                         &old_name, &index_metadata);
   if (!s.ok())
     return s;
 

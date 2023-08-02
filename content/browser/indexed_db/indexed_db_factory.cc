@@ -50,7 +50,6 @@
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
@@ -274,8 +273,7 @@ void IndexedDBFactory::Open(
       base::BindRepeating(&IndexedDBFactory::MaybeRunTasksForBucket,
                           bucket_state_destruction_weak_factory_.GetWeakPtr(),
                           bucket_locator),
-      std::make_unique<IndexedDBMetadataCoding>(), std::move(unique_identifier),
-      factory->lock_manager());
+      std::move(unique_identifier), factory->lock_manager());
   if (!database.get()) {
     error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError,
@@ -363,8 +361,7 @@ void IndexedDBFactory::DeleteDatabase(
       base::BindRepeating(&IndexedDBFactory::MaybeRunTasksForBucket,
                           bucket_state_destruction_weak_factory_.GetWeakPtr(),
                           bucket_locator),
-      std::make_unique<IndexedDBMetadataCoding>(), unique_identifier,
-      factory->lock_manager());
+      unique_identifier, factory->lock_manager());
   if (!database.get()) {
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    u"Internal error creating database backend "

@@ -48,7 +48,6 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -922,6 +921,21 @@ Status ReadObjectStores(
   return s;
 }
 
+Status FindDatabaseId(TransactionalLevelDBDatabase* db,
+                      const std::string& origin_identifier,
+                      const std::u16string& name,
+                      int64_t* id,
+                      bool* found) {
+  const std::string key = DatabaseNameKey::Encode(origin_identifier, name);
+
+  Status s = GetInt(db, key, id, found);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(GET_IDBDATABASE_METADATA);
+  }
+
+  return s;
+}
+
 }  // namespace
 
 IndexedDBBackingStore::IndexedDBBackingStore(
@@ -1494,8 +1508,7 @@ Status IndexedDBBackingStore::DeleteDatabase(
   Status s;
   bool success = false;
   int64_t id = 0;
-  s = IndexedDBMetadataCoding().FindDatabaseId(db_.get(), origin_identifier_,
-                                               name, &id, &success);
+  s = FindDatabaseId(db_.get(), origin_identifier_, name, &id, &success);
   if (!s.ok())
     return s;
   if (!success)
@@ -1552,6 +1565,22 @@ Status IndexedDBBackingStore::DeleteDatabase(
     CleanRecoveryJournalIgnoreReturn();
 
   return s;
+}
+
+leveldb::Status IndexedDBBackingStore::SetDatabaseVersion(
+    Transaction* transaction,
+    int64_t row_id,
+    int64_t version,
+    blink::IndexedDBDatabaseMetadata* metadata) {
+  if (version == IndexedDBDatabaseMetadata::NO_VERSION) {
+    version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
+  }
+  DCHECK_GE(version, 0) << "version was " << version;
+  metadata->version = version;
+  return PutVarInt(
+      transaction->transaction(),
+      DatabaseMetaDataKey::Encode(row_id, DatabaseMetaDataKey::USER_VERSION),
+      version);
 }
 
 leveldb::Status IndexedDBBackingStore::CreateObjectStore(
@@ -1641,6 +1670,215 @@ leveldb::Status IndexedDBBackingStore::CreateObjectStore(
   return s;
 }
 
+Status IndexedDBBackingStore::DeleteObjectStore(
+    Transaction* transaction,
+    int64_t database_id,
+    const blink::IndexedDBObjectStoreMetadata& object_store) {
+  if (!KeyPrefix::ValidIds(database_id, object_store.id)) {
+    return InvalidDBKeyStatus();
+  }
+
+  std::u16string object_store_name;
+  bool found = false;
+  TransactionalLevelDBTransaction* leveldb_transaction =
+      transaction->transaction();
+  Status s =
+      GetString(leveldb_transaction,
+                ObjectStoreMetaDataKey::Encode(database_id, object_store.id,
+                                               ObjectStoreMetaDataKey::NAME),
+                &object_store_name, &found);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
+    return s;
+  }
+  if (!found) {
+    INTERNAL_CONSISTENCY_ERROR(DELETE_OBJECT_STORE);
+    return InternalInconsistencyStatus();
+  }
+
+  s = leveldb_transaction->RemoveRange(
+      ObjectStoreMetaDataKey::Encode(database_id, object_store.id, 0),
+      ObjectStoreMetaDataKey::EncodeMaxKey(database_id, object_store.id),
+      LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
+
+  if (s.ok()) {
+    s = leveldb_transaction->Remove(
+        ObjectStoreNamesKey::Encode(database_id, object_store_name));
+    if (!s.ok()) {
+      INTERNAL_WRITE_ERROR(DELETE_OBJECT_STORE);
+      return s;
+    }
+
+    s = leveldb_transaction->RemoveRange(
+        IndexFreeListKey::Encode(database_id, object_store.id, 0),
+        IndexFreeListKey::EncodeMaxKey(database_id, object_store.id),
+        LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
+  }
+
+  if (s.ok()) {
+    s = leveldb_transaction->RemoveRange(
+        IndexMetaDataKey::Encode(database_id, object_store.id, 0, 0),
+        IndexMetaDataKey::EncodeMaxKey(database_id, object_store.id),
+        LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
+  }
+
+  if (!s.ok()) {
+    INTERNAL_WRITE_ERROR(DELETE_OBJECT_STORE);
+  }
+  return s;
+}
+
+Status IndexedDBBackingStore::RenameObjectStore(
+    Transaction* transaction,
+    int64_t database_id,
+    std::u16string new_name,
+    std::u16string* old_name,
+    blink::IndexedDBObjectStoreMetadata* metadata) {
+  if (!KeyPrefix::ValidIds(database_id, metadata->id)) {
+    return InvalidDBKeyStatus();
+  }
+
+  const std::string name_key = ObjectStoreMetaDataKey::Encode(
+      database_id, metadata->id, ObjectStoreMetaDataKey::NAME);
+  const std::string new_names_key =
+      ObjectStoreNamesKey::Encode(database_id, new_name);
+
+  std::u16string old_name_check;
+  bool found = false;
+  Status s =
+      GetString(transaction->transaction(), name_key, &old_name_check, &found);
+  // TODO(dmurph): Change DELETE_OBJECT_STORE to RENAME_OBJECT_STORE & fix UMA.
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
+    return s;
+  }
+  if (!found || old_name_check != metadata->name) {
+    INTERNAL_CONSISTENCY_ERROR(DELETE_OBJECT_STORE);
+    return InternalInconsistencyStatus();
+  }
+  const std::string old_names_key =
+      ObjectStoreNamesKey::Encode(database_id, metadata->name);
+
+  s = PutString(transaction->transaction(), name_key, new_name);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
+    return s;
+  }
+  s = PutInt(transaction->transaction(), new_names_key, metadata->id);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
+    return s;
+  }
+  s = transaction->transaction()->Remove(old_names_key);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
+    return s;
+  }
+  *old_name = std::move(metadata->name);
+  metadata->name = std::move(new_name);
+  return s;
+}
+
+Status IndexedDBBackingStore::CreateIndex(
+    Transaction* transaction,
+    int64_t database_id,
+    int64_t object_store_id,
+    int64_t index_id,
+    std::u16string name,
+    blink::IndexedDBKeyPath key_path,
+    bool is_unique,
+    bool is_multi_entry,
+    blink::IndexedDBIndexMetadata* metadata) {
+  if (!KeyPrefix::ValidIds(database_id, object_store_id, index_id)) {
+    return InvalidDBKeyStatus();
+  }
+  TransactionalLevelDBTransaction* leveldb_transaction =
+      transaction->transaction();
+  Status s = indexed_db::SetMaxIndexId(leveldb_transaction, database_id,
+                                       object_store_id, index_id);
+
+  if (!s.ok()) {
+    return s;
+  }
+
+  const std::string name_key = IndexMetaDataKey::Encode(
+      database_id, object_store_id, index_id, IndexMetaDataKey::NAME);
+  const std::string unique_key = IndexMetaDataKey::Encode(
+      database_id, object_store_id, index_id, IndexMetaDataKey::UNIQUE);
+  const std::string key_path_key = IndexMetaDataKey::Encode(
+      database_id, object_store_id, index_id, IndexMetaDataKey::KEY_PATH);
+  const std::string multi_entry_key = IndexMetaDataKey::Encode(
+      database_id, object_store_id, index_id, IndexMetaDataKey::MULTI_ENTRY);
+
+  s = PutString(leveldb_transaction, name_key, name);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutBool(leveldb_transaction, unique_key, is_unique);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutIDBKeyPath(leveldb_transaction, key_path_key, key_path);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutBool(leveldb_transaction, multi_entry_key, is_multi_entry);
+  if (!s.ok()) {
+    return s;
+  }
+
+  metadata->name = std::move(name);
+  metadata->id = index_id;
+  metadata->key_path = std::move(key_path);
+  metadata->unique = is_unique;
+  metadata->multi_entry = is_multi_entry;
+
+  return s;
+}
+
+Status IndexedDBBackingStore::DeleteIndex(
+    Transaction* transaction,
+    int64_t database_id,
+    int64_t object_store_id,
+    const blink::IndexedDBIndexMetadata& metadata) {
+  if (!KeyPrefix::ValidIds(database_id, object_store_id, metadata.id)) {
+    return InvalidDBKeyStatus();
+  }
+
+  const std::string index_meta_data_start =
+      IndexMetaDataKey::Encode(database_id, object_store_id, metadata.id, 0);
+  const std::string index_meta_data_end =
+      IndexMetaDataKey::EncodeMaxKey(database_id, object_store_id, metadata.id);
+  Status s = transaction->transaction()->RemoveRange(
+      index_meta_data_start, index_meta_data_end,
+      LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive);
+  return s;
+}
+
+Status IndexedDBBackingStore::RenameIndex(
+    Transaction* transaction,
+    int64_t database_id,
+    int64_t object_store_id,
+    std::u16string new_name,
+    std::u16string* old_name,
+    blink::IndexedDBIndexMetadata* metadata) {
+  if (!KeyPrefix::ValidIds(database_id, object_store_id, metadata->id)) {
+    return InvalidDBKeyStatus();
+  }
+
+  const std::string name_key = IndexMetaDataKey::Encode(
+      database_id, object_store_id, metadata->id, IndexMetaDataKey::NAME);
+
+  // TODO(dmurph): Add consistancy checks & umas for old name.
+  leveldb::Status s = PutString(transaction->transaction(), name_key, new_name);
+  if (!s.ok()) {
+    return s;
+  }
+  *old_name = std::move(metadata->name);
+  metadata->name = std::move(new_name);
+  return Status::OK();
+}
+
 void IndexedDBBackingStore::Compact() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
@@ -1649,12 +1887,11 @@ void IndexedDBBackingStore::Compact() {
   db_->CompactAll();
 }
 
-Status IndexedDBBackingStore::GetRecord(
-    IndexedDBBackingStore::Transaction* transaction,
-    int64_t database_id,
-    int64_t object_store_id,
-    const IndexedDBKey& key,
-    IndexedDBValue* record) {
+Status IndexedDBBackingStore::GetRecord(Transaction* transaction,
+                                        int64_t database_id,
+                                        int64_t object_store_id,
+                                        const IndexedDBKey& key,
+                                        IndexedDBValue* record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
@@ -2610,7 +2847,7 @@ leveldb::Status IndexedDBBackingStore::ReadMetadataForDatabaseName(
     blink::IndexedDBDatabaseMetadata* metadata,
     bool* found) {
   TRACE_EVENT0("IndexedDB",
-               "IndexedDBMetadataCoding::ReadMetadataForDatabaseName");
+               "IndexedDBBackingStore::ReadMetadataForDatabaseName");
   const std::string key = DatabaseNameKey::Encode(origin_identifier_, name);
   *found = false;
 

@@ -23,7 +23,6 @@
 namespace content {
 
 class IndexedDBConnection;
-class IndexedDBMetadataCoding;
 class LevelDBDirectTransaction;
 class LevelDBScope;
 class LevelDBScopes;
@@ -47,7 +46,6 @@ class MockBrowserTestIndexedDBClassFactory
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       TasksAvailableCallback tasks_available_callback,
-      std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
       const IndexedDBDatabase::Identifier& unique_identifier,
       PartitionedLockManager* transaction_lock_manager) override;
   std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(

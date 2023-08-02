@@ -15,7 +15,6 @@
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -95,16 +94,14 @@ IndexedDBClassFactory::CreateIndexedDBDatabase(
     IndexedDBBackingStore* backing_store,
     IndexedDBFactory* factory,
     TasksAvailableCallback tasks_available_callback,
-    std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const IndexedDBDatabase::Identifier& unique_identifier,
     PartitionedLockManager* transaction_lock_manager) {
   DCHECK(backing_store);
   DCHECK(factory);
-  std::unique_ptr<IndexedDBDatabase> database =
-      base::WrapUnique(new IndexedDBDatabase(
-          name, backing_store, factory, this,
-          std::move(tasks_available_callback), std::move(metadata_coding),
-          unique_identifier, transaction_lock_manager));
+  std::unique_ptr<IndexedDBDatabase> database = base::WrapUnique(
+      new IndexedDBDatabase(name, backing_store, factory, this,
+                            std::move(tasks_available_callback),
+                            unique_identifier, transaction_lock_manager));
   leveldb::Status s = database->OpenInternal();
   if (!s.ok())
     database = nullptr;

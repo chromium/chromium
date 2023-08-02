@@ -42,6 +42,11 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
   leveldb::Status DeleteDatabase(
       const std::u16string& name,
       TransactionalLevelDBTransaction* transaction) override;
+  leveldb::Status SetDatabaseVersion(
+      Transaction* transaction,
+      int64_t row_id,
+      int64_t version,
+      blink::IndexedDBDatabaseMetadata* metadata) override;
 
   leveldb::Status CreateObjectStore(
       Transaction* transaction,
@@ -51,6 +56,37 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       blink::IndexedDBKeyPath key_path,
       bool auto_increment,
       blink::IndexedDBObjectStoreMetadata* metadata) override;
+  leveldb::Status DeleteObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      const blink::IndexedDBObjectStoreMetadata& object_store) override;
+  leveldb::Status RenameObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      std::u16string new_name,
+      std::u16string* old_name,
+      blink::IndexedDBObjectStoreMetadata* metadata) override;
+
+  leveldb::Status CreateIndex(Transaction* transaction,
+                              int64_t database_id,
+                              int64_t object_store_id,
+                              int64_t index_id,
+                              std::u16string name,
+                              blink::IndexedDBKeyPath key_path,
+                              bool is_unique,
+                              bool is_multi_entry,
+                              blink::IndexedDBIndexMetadata* metadata) override;
+  leveldb::Status DeleteIndex(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      const blink::IndexedDBIndexMetadata& metadata) override;
+  leveldb::Status RenameIndex(Transaction* transaction,
+                              int64_t database_id,
+                              int64_t object_store_id,
+                              std::u16string new_name,
+                              std::u16string* old_name,
+                              blink::IndexedDBIndexMetadata* metadata) override;
 
   leveldb::Status PutRecord(Transaction* transaction,
                             int64_t database_id,

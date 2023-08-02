@@ -20,7 +20,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -28,7 +27,6 @@
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,9 +85,8 @@ class IndexedDBTransactionTest : public testing::Test {
     leveldb::Status s;
     std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
-        CreateRunTasksCallback(),
-        std::make_unique<FakeIndexedDBMetadataCoding>(),
-        IndexedDBDatabase::Identifier(), &lock_manager_);
+        CreateRunTasksCallback(), IndexedDBDatabase::Identifier(),
+        &lock_manager_);
     ASSERT_TRUE(s.ok());
   }
 

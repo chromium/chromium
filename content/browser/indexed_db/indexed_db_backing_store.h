@@ -427,6 +427,12 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   virtual leveldb::Status DeleteDatabase(
       const std::u16string& name,
       TransactionalLevelDBTransaction* transaction);
+  // Changes the database version to |version|.
+  [[nodiscard]] virtual leveldb::Status SetDatabaseVersion(
+      Transaction* transaction,
+      int64_t row_id,
+      int64_t version,
+      blink::IndexedDBDatabaseMetadata* metadata);
 
   static bool RecordCorruptionInfo(const base::FilePath& path_base,
                                    const storage::BucketLocator& bucket_locator,
@@ -440,6 +446,43 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::IndexedDBKeyPath key_path,
       bool auto_increment,
       blink::IndexedDBObjectStoreMetadata* metadata);
+  [[nodiscard]] virtual leveldb::Status DeleteObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      const blink::IndexedDBObjectStoreMetadata& object_store);
+  [[nodiscard]] virtual leveldb::Status RenameObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      std::u16string new_name,
+      std::u16string* old_name,
+      blink::IndexedDBObjectStoreMetadata* metadata);
+
+  // Creates a new index metadata and writes it to the transaction.
+  [[nodiscard]] virtual leveldb::Status CreateIndex(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      int64_t index_id,
+      std::u16string name,
+      blink::IndexedDBKeyPath key_path,
+      bool is_unique,
+      bool is_multi_entry,
+      blink::IndexedDBIndexMetadata* metadata);
+  // Deletes the index metadata on the transaction (but not any index entries).
+  [[nodiscard]] virtual leveldb::Status DeleteIndex(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      const blink::IndexedDBIndexMetadata& metadata);
+  // Renames the given index and writes it to the transaction.
+  [[nodiscard]] virtual leveldb::Status RenameIndex(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      std::u16string new_name,
+      std::u16string* old_name,
+      blink::IndexedDBIndexMetadata* metadata);
+
   [[nodiscard]] virtual leveldb::Status GetRecord(
       Transaction* transaction,
       int64_t database_id,

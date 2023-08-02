@@ -17,7 +17,6 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -56,21 +55,18 @@ namespace content {
 
 class IndexedDBTestDatabase : public IndexedDBDatabase {
  public:
-  IndexedDBTestDatabase(
-      const std::u16string& name,
-      IndexedDBBackingStore* backing_store,
-      IndexedDBFactory* factory,
-      IndexedDBClassFactory* class_factory,
-      TasksAvailableCallback tasks_available_callback,
-      std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
-      const Identifier& unique_identifier,
-      PartitionedLockManager* transaction_lock_manager)
+  IndexedDBTestDatabase(const std::u16string& name,
+                        IndexedDBBackingStore* backing_store,
+                        IndexedDBFactory* factory,
+                        IndexedDBClassFactory* class_factory,
+                        TasksAvailableCallback tasks_available_callback,
+                        const Identifier& unique_identifier,
+                        PartitionedLockManager* transaction_lock_manager)
       : IndexedDBDatabase(name,
                           backing_store,
                           factory,
                           class_factory,
                           std::move(tasks_available_callback),
-                          std::move(metadata_coding),
                           unique_identifier,
                           transaction_lock_manager) {}
   ~IndexedDBTestDatabase() override {}
@@ -381,14 +377,13 @@ MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
     IndexedDBBackingStore* backing_store,
     IndexedDBFactory* factory,
     TasksAvailableCallback tasks_available_callback,
-    std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const IndexedDBDatabase::Identifier& unique_identifier,
     PartitionedLockManager* transaction_lock_manager) {
   std::unique_ptr<IndexedDBTestDatabase> database =
       std::make_unique<IndexedDBTestDatabase>(
           name, backing_store, factory, this,
-          std::move(tasks_available_callback), std::move(metadata_coding),
-          unique_identifier, transaction_lock_manager);
+          std::move(tasks_available_callback), unique_identifier,
+          transaction_lock_manager);
   leveldb::Status s = database->OpenInternal();
   if (!s.ok())
     database.reset();

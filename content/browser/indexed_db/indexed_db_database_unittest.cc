@@ -24,7 +24,6 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
@@ -70,17 +69,13 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
-    std::unique_ptr<FakeIndexedDBMetadataCoding> metadata_coding =
-        std::make_unique<FakeIndexedDBMetadataCoding>();
-    metadata_coding_ = metadata_coding.get();
     leveldb::Status s;
 
     std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
         base::BindRepeating(&IndexedDBDatabaseTest::RunTasksForDatabase,
                             weak_factory_.GetWeakPtr(), true),
-        std::move(metadata_coding), IndexedDBDatabase::Identifier(),
-        &lock_manager_);
+        IndexedDBDatabase::Identifier(), &lock_manager_);
     ASSERT_TRUE(s.ok());
   }
 
@@ -102,7 +97,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         return;
       case IndexedDBDatabase::RunTasksResult::kCanBeDestroyed:
         db_.reset();
-        metadata_coding_ = nullptr;
         return;
     }
   }
@@ -123,8 +117,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  raw_ptr<FakeIndexedDBMetadataCoding, DanglingUntriaged> metadata_coding_ =
-      nullptr;
   bool error_called_ = false;
 
  private:
@@ -493,17 +485,13 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
     backing_store_ = std::make_unique<IndexedDBFakeBackingStore>();
-    std::unique_ptr<FakeIndexedDBMetadataCoding> metadata_coding =
-        std::make_unique<FakeIndexedDBMetadataCoding>();
-    metadata_coding_ = metadata_coding.get();
     leveldb::Status s;
     std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
         base::BindRepeating(
             &IndexedDBDatabaseOperationTest::RunTasksForDatabase,
             base::Unretained(this), true),
-        std::move(metadata_coding), IndexedDBDatabase::Identifier(),
-        &lock_manager_);
+        IndexedDBDatabase::Identifier(), &lock_manager_);
     ASSERT_TRUE(s.ok());
 
     callbacks_ = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -556,7 +544,6 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         return;
       case IndexedDBDatabase::RunTasksResult::kCanBeDestroyed:
         db_.reset();
-        metadata_coding_ = nullptr;
         return;
     }
   }
@@ -571,7 +558,6 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  raw_ptr<FakeIndexedDBMetadataCoding> metadata_coding_ = nullptr;
   MockIndexedDBFactoryClient request_;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;

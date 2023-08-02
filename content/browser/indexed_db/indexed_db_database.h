@@ -50,7 +50,6 @@ class IndexedDBClassFactory;
 class IndexedDBConnection;
 class IndexedDBDatabaseCallbacks;
 class IndexedDBFactory;
-class IndexedDBMetadataCoding;
 class IndexedDBTransaction;
 struct IndexedDBValue;
 
@@ -317,7 +316,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
                     IndexedDBFactory* factory,
                     IndexedDBClassFactory* class_factory,
                     TasksAvailableCallback tasks_available_callback,
-                    std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
                     const Identifier& unique_identifier,
                     PartitionedLockManager* transaction_lock_manager);
 
@@ -387,7 +385,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
   // TODO(dmurph): Remove the need for this to be here (and then remove it).
   raw_ptr<IndexedDBFactory, DanglingUntriaged> factory_;
   const raw_ptr<IndexedDBClassFactory> class_factory_;
-  std::unique_ptr<IndexedDBMetadataCoding> metadata_coding_;
 
   raw_ptr<PartitionedLockManager> lock_manager_;
   int64_t transaction_count_ = 0;

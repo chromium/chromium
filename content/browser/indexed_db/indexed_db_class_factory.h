@@ -64,7 +64,6 @@ class CONTENT_EXPORT IndexedDBClassFactory {
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       TasksAvailableCallback tasks_available_callback,
-      std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
       const IndexedDBDatabase::Identifier& unique_identifier,
       PartitionedLockManager* transaction_lock_manager);
 
