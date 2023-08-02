@@ -28,9 +28,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 namespace {
 
@@ -85,22 +83,21 @@ base::Value::List BeaconSeedsToListValue(
       continue;
     }
 
-    base::Value::Dict beacon_seed_value;
-
     // Note that the |BeaconSeed|s' data is stored in Base64Url encoding because
     // dictionary values must be valid UTF8 strings.
     std::string seed_data_b64;
     base::Base64UrlEncode(seed.data(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &seed_data_b64);
-    beacon_seed_value.Set(kExternalDeviceKeyBeaconSeedData, seed_data_b64);
-
-    // Set the timestamps as string representations of their numeric value
-    // since there is no notion of a base::LongValue.
-    beacon_seed_value.Set(kExternalDeviceKeyBeaconSeedStartMs,
-                          std::to_string(seed.start_time_millis()));
-    beacon_seed_value.Set(kExternalDeviceKeyBeaconSeedEndMs,
-                          std::to_string(seed.end_time_millis()));
+    auto beacon_seed_value =
+        base::Value::Dict()
+            .Set(kExternalDeviceKeyBeaconSeedData, seed_data_b64)
+            // Set the timestamps as string representations of their numeric
+            // value since there is no notion of a base::LongValue.
+            .Set(kExternalDeviceKeyBeaconSeedStartMs,
+                 std::to_string(seed.start_time_millis()))
+            .Set(kExternalDeviceKeyBeaconSeedEndMs,
+                 std::to_string(seed.end_time_millis()));
 
     list.Append(std::move(beacon_seed_value));
   }
@@ -843,6 +840,4 @@ void CryptAuthDeviceManagerImpl::OnSyncRequested(
       partial_traffic_annotation);
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync
