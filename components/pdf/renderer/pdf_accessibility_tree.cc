@@ -1716,9 +1716,6 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     } else {
       // Notify users of the PDF OCR feature when they encounter an inaccessible
       // PDF before turning on the feature via the status node.
-      // TODO(crbug.com/1393069): Need to send out this notification only a few
-      // times in case that the user may not want to use the PDF OCR feature
-      // and to be notified of this feature anymore.
       SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
     }
   }
