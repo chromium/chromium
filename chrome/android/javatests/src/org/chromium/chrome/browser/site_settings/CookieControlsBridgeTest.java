@@ -157,6 +157,7 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
+    @Features.DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testCookieBridgeWithTPCookiesDisabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Set CookieControlsMode Pref to Off
@@ -188,6 +189,7 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
+    @Features.DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testCookieBridgeWith3PCookiesEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
@@ -219,6 +221,7 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
+    @Features.DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testCookieBridgeWithChangingAllowedCookiesCount() throws Exception {
         int currentCallCount = mCallbackHelper.getCallCount();
 
@@ -252,6 +255,7 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
+    @Features.DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testCookieBridgeWithChangingBlockedCookiesCount() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
@@ -292,6 +296,7 @@ public class CookieControlsBridgeTest {
      */
     @Test
     @SmallTest
+    @Features.DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testCookieBridgeWithIncognitoSetting() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Set CookieControlsMode Pref to IncognitoOnly

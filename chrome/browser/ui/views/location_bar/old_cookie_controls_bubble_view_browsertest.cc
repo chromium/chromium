@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -34,7 +35,10 @@
 
 class OldCookieControlsBubbleViewTest : public DialogBrowserTest {
  public:
-  OldCookieControlsBubbleViewTest() = default;
+  OldCookieControlsBubbleViewTest() {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kUserBypassUI);
+  };
 
   OldCookieControlsBubbleViewTest(const OldCookieControlsBubbleViewTest&) =
       delete;
@@ -150,6 +154,7 @@ class OldCookieControlsBubbleViewTest : public DialogBrowserTest {
   PageActionIconView* cookie_controls_icon() { return cookie_controls_icon_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<PageActionIconView, AcrossTasksDanglingUntriaged>
       cookie_controls_icon_;
 };

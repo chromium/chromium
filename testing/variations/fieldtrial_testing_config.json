@@ -15010,6 +15010,29 @@
             ]
         }
     ],
+    "UserBypassUI": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "expiration": "90d"
+                    },
+                    "enable_features": [
+                        "UserBypassUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserCloudSigninRestrictionPolicyFetcher": [
         {
             "platforms": [

@@ -274,7 +274,11 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   third_party_cookies_row_->SetIcon(
       PageInfoViewFactory::GetThirdPartyCookiesIcon(
           !are_third_party_cookies_blocked));
+  third_party_cookies_row_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
   third_party_cookies_toggle_->SetIsOn(!are_third_party_cookies_blocked);
+  third_party_cookies_toggle_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
 
   const std::u16string toggle_subtitle =
       are_third_party_cookies_blocked
