@@ -112,16 +112,6 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Returns the current cached character bounds.
   const HeapVector<Member<DOMRect>> characterBounds();
 
-  // Sets the text of the EditContext which is used to display suggestions.
-  void setText(const String& text);
-
-  // Sets the selectionStart of the EditContext.
-  void setSelectionStart(uint32_t selection_start,
-                         ExceptionState& exception_state);
-
-  // Sets the selectionEnd of the EditContext.
-  void setSelectionEnd(uint32_t selection_end, ExceptionState& exception_state);
-
   // Internal APIs (called from Blink).
 
   // EventTarget overrides

@@ -61,7 +61,7 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.innerHTML = "ABCD";
-  editContext.text = "abcd";
+  editContext.updateText(0, 4, "abcd");
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div

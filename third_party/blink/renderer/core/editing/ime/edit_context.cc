@@ -291,22 +291,8 @@ String EditContext::text() const {
   return text_;
 }
 
-void EditContext::setText(const String& text) {
-  TRACE_EVENT1("ime", "EditContext::setText", "text", text);
-  text_ = text;
-}
-
 uint32_t EditContext::selectionStart() const {
   return selection_start_;
-}
-
-void EditContext::setSelectionStart(uint32_t selection_start,
-                                    ExceptionState& exception_state) {
-  TRACE_EVENT1("ime", "EditContext::setSelectionStart", "start",
-               std::to_string(selection_start));
-  // Following this spec:
-  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
-  selection_start_ = std::min(selection_end_, selection_start);
 }
 
 uint32_t EditContext::selectionEnd() const {
@@ -315,16 +301,6 @@ uint32_t EditContext::selectionEnd() const {
 
 uint32_t EditContext::characterBoundsRangeStart() const {
   return character_bounds_range_start_;
-}
-
-void EditContext::setSelectionEnd(uint32_t selection_end,
-                                  ExceptionState& exception_state) {
-  TRACE_EVENT1("ime", "EditContext::setSelectionEnd", "end",
-               std::to_string(selection_end));
-
-  // Following this spec:
-  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
-  selection_end_ = std::min(selection_end, text_.length());
 }
 
 const HeapVector<Member<Element>>& EditContext::attachedElements() {

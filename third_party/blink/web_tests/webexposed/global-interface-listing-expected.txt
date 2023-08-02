@@ -2262,9 +2262,6 @@ interface EditContext : EventTarget
     setter oncompositionstart
     setter ontextformatupdate
     setter ontextupdate
-    setter selectionEnd
-    setter selectionStart
-    setter text
 interface Element : Node
     attribute @@toStringTag
     attribute @@unscopables
