@@ -132,8 +132,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 
   params->history_service = ios::HistoryServiceFactory::GetForBrowserState(
       chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+  base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
+  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
+    priority = base::TaskPriority::USER_VISIBLE;
+  }
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      {base::MayBlock(), priority});
   params->storage_dir =
       profile_path.Append(kSegmentationPlatformStorageDirName);
   params->db_provider = protodb_provider;

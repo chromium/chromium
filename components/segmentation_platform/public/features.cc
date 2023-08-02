@@ -16,6 +16,10 @@ BASE_FEATURE(kSegmentationPlatformUkmEngine,
              "SegmentationPlatformUkmEngine",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformUserVisibleTaskRunner,
+             "SegmentationPlatformUserVisibleTaskRunner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationPlatformAdaptiveToolbarV2Feature,
              "SegmentationPlatformAdaptiveToolbarV2Feature",
              base::FEATURE_DISABLED_BY_DEFAULT);
