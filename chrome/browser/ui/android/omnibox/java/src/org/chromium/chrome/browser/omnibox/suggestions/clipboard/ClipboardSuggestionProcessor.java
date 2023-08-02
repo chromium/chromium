@@ -106,10 +106,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean isUrlSuggestion = suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL;
         final @DrawableRes int icon =
                 isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
-        setOmniboxDrawableState(model,
-                OmniboxDrawableState.Builder.forDrawableRes(mContext, icon)
-                        .setAllowTint(true)
-                        .build());
+        setOmniboxDrawableState(model, OmniboxDrawableState.forDefaultIcon(mContext, icon, true));
 
         if (!showContent) {
             return;
@@ -134,11 +131,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                         bitmap = Bitmap.createScaledBitmap(bitmap, (int) Math.round(scale * width),
                                 (int) Math.round(scale * height), true);
                     }
-                    setOmniboxDrawableState(model,
-                            OmniboxDrawableState.Builder.forBitmap(mContext, bitmap)
-                                    .setUseRoundedCorners(true)
-                                    .setLarge(true)
-                                    .build());
+                    setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
                     return;
                 }
             }
@@ -170,10 +163,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);
         setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.Builder.forDrawableRes(mContext, icon)
-                                                 .setLarge(true)
-                                                 .setAllowTint(true)
-                                                 .build(),
+                Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(mContext, icon, true),
                         iconString, announcementString, action)));
     }
 

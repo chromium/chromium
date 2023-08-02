@@ -124,10 +124,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
         setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.Builder.forDrawableRes(mContext, icon)
-                                                 .setLarge(true)
-                                                 .setAllowTint(true)
-                                                 .build(),
+                Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(mContext, icon, true),
                         iconString, action)));
     }
 
@@ -226,10 +223,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
         mImageSupplier.fetchFavicon(url, icon -> {
             if (icon != null) {
-                setOmniboxDrawableState(model,
-                        OmniboxDrawableState.Builder.forBitmap(mContext, icon)
-                                .setUseRoundedCorners(true)
-                                .build());
+                setOmniboxDrawableState(model, OmniboxDrawableState.forFavIcon(mContext, icon));
             }
         });
     }

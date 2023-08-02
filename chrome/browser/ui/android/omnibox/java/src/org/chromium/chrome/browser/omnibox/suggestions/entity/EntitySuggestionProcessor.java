@@ -53,11 +53,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
 
     private void fetchEntityImage(GURL imageUrl, PropertyModel model) {
         mImageSupplier.fetchImage(imageUrl, bitmap -> {
-            setOmniboxDrawableState(model,
-                    OmniboxDrawableState.Builder.forBitmap(mContext, bitmap)
-                            .setUseRoundedCorners(true)
-                            .setLarge(true)
-                            .build());
+            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
         });
     }
 
@@ -75,21 +71,15 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
             return;
         }
 
-        setOmniboxDrawableState(model,
-                OmniboxDrawableState.Builder.forColor(color)
-                        .setLarge(true)
-                        .setUseRoundedCorners(true)
-                        .build());
+        setOmniboxDrawableState(model, OmniboxDrawableState.forColor(color));
     }
 
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         setOmniboxDrawableState(model,
-                OmniboxDrawableState.Builder
-                        .forDrawableRes(mContext, R.drawable.ic_suggestion_magnifier)
-                        .setAllowTint(true)
-                        .build());
+                OmniboxDrawableState.forDefaultIcon(
+                        mContext, R.drawable.ic_suggestion_magnifier, true));
 
         if (mImageSupplier != null) {
             applyImageDominantColor(suggestion.getImageDominantColor(), model);

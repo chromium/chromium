@@ -330,7 +330,8 @@ public class BasicSuggestionProcessorUnitTest {
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
         final OmniboxDrawableState iconState = actions.get(0).icon;
-        Assert.assertEquals(iconState.resourceId, R.drawable.btn_suggestion_refine);
+        Assert.assertEquals(R.drawable.btn_suggestion_refine,
+                shadowOf(iconState.drawable).getCreatedFromResId());
     }
 
     @Test
@@ -346,7 +347,8 @@ public class BasicSuggestionProcessorUnitTest {
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
         final OmniboxDrawableState iconState = actions.get(0).icon;
-        Assert.assertEquals(iconState.resourceId, R.drawable.switch_to_tab);
+        Assert.assertEquals(
+                R.drawable.switch_to_tab, shadowOf(iconState.drawable).getCreatedFromResId());
     }
 
     @Test

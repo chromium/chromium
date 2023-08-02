@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import androidx.test.filters.SmallTest;
 
@@ -106,7 +107,7 @@ public class HistoryClustersProcessorTest {
         assertNull(propertyModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         OmniboxDrawableState sds = propertyModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(sds);
-        assertEquals(R.drawable.action_journeys, sds.resourceId);
+        assertEquals(R.drawable.action_journeys, shadowOf(sds.drawable).getCreatedFromResId());
 
         mProcessor.onUrlFocusChange(false);
         watcher.assertExpected();

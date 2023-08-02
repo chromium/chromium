@@ -85,9 +85,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
                 () -> onJourneysSuggestionClicked(pedal, position));
         OmniboxDrawableState sds =
-                OmniboxDrawableState.Builder.forDrawableRes(mContext, pedal.icon.iconRes)
-                        .setAllowTint(false)
-                        .build();
+                OmniboxDrawableState.forDefaultIcon(mContext, pedal.icon.iconRes, false);
         model.set(BaseSuggestionViewProperties.ICON, sds);
         // We want to behave like a search suggestion w.r.t. secondary text coloring.
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, true);

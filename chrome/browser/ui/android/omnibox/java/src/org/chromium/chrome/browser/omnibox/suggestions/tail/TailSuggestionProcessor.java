@@ -61,10 +61,8 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(TailSuggestionViewProperties.TEXT, text);
 
         setOmniboxDrawableState(model,
-                OmniboxDrawableState.Builder
-                        .forDrawableRes(mContext, R.drawable.ic_suggestion_magnifier)
-                        .setAllowTint(true)
-                        .build());
+                OmniboxDrawableState.forDefaultIcon(
+                        mContext, R.drawable.ic_suggestion_magnifier, true));
         setTabSwitchOrRefineAction(model, suggestion, position);
     }
 

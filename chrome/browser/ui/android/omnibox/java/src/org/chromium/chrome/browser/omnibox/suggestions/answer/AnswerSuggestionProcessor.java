@@ -86,11 +86,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         // Ensure an image fetcher is available prior to requesting images.
         if (mImageSupplier == null) return;
         mImageSupplier.fetchImage(imageUrl, bitmap -> {
-            setOmniboxDrawableState(model,
-                    OmniboxDrawableState.Builder.forBitmap(mContext, bitmap)
-                            .setUseRoundedCorners(true)
-                            .setLarge(true)
-                            .build());
+            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
         });
     }
 
@@ -119,9 +115,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES, details[1].mMaxLines);
 
         setOmniboxDrawableState(model,
-                OmniboxDrawableState.Builder.forDrawableRes(mContext, getSuggestionIcon(suggestion))
-                        .setLarge(true)
-                        .build());
+                OmniboxDrawableState.forDefaultIcon(mContext, getSuggestionIcon(suggestion), true));
 
         setTabSwitchOrRefineAction(model, suggestion, position);
         if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {

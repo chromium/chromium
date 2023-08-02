@@ -129,9 +129,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 getSuggestedQuery(suggestion, !isSearchSuggestion, !urlHighlighted);
 
         setOmniboxDrawableState(model,
-                OmniboxDrawableState.Builder.forDrawableRes(mContext, getSuggestionIcon(suggestion))
-                        .setAllowTint(true)
-                        .build());
+                OmniboxDrawableState.forDefaultIcon(mContext, getSuggestionIcon(suggestion), true));
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, isSearchSuggestion);
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);

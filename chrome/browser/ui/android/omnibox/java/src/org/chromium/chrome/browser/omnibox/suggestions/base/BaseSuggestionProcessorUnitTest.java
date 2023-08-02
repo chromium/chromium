@@ -72,8 +72,7 @@ public class BaseSuggestionProcessorUnitTest {
         @Override
         public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
             super.populateModel(suggestion, model, position);
-            setOmniboxDrawableState(model,
-                    OmniboxDrawableState.Builder.forBitmap(mContext, mDefaultBitmap).build());
+            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, mDefaultBitmap));
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
     }
