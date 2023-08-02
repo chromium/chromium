@@ -92,6 +92,10 @@ void LayoutNGView::UpdateLayout() {
 }
 
 AtomicString LayoutNGView::NamedPageAtIndex(wtf_size_t page_index) const {
+  // If layout is dirty, it's not possible to look up page names reliably.
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kLayoutClean);
+
   if (!PhysicalFragmentCount())
     return AtomicString();
   DCHECK_EQ(PhysicalFragmentCount(), 1u);

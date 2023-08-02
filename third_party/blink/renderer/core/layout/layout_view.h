@@ -219,11 +219,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return page_scale_factor_;
   }
 
-  // Get the page area size (fragmentainer size) when printing.
-  //
-  // TODO(crbug.com/835358): Add parameters for page index and name, to support
-  // mixed page sizes.
-  PhysicalSize PageAreaSize() const;
+  // Get the page area size (fragmentainer size) for a given page number and
+  // name.
+  PhysicalSize PageAreaSize(wtf_size_t page_index,
+                            const AtomicString& page_name) const;
 
   // TODO(1229581): Make non-virtual.
   virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const = 0;

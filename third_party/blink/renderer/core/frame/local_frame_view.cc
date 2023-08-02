@@ -3270,7 +3270,9 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   // TODO(crbug.com/835358): Handle situations where the first page is named.
   //
   // [1] https://www.w3.org/TR/css-page-3/#page-model
-  PhysicalSize initial_containing_block_size = layout_view->PageAreaSize();
+  PhysicalSize initial_containing_block_size =
+      layout_view->PageAreaSize(/* page_index */ 0u,
+                                /* page_name */ AtomicString());
   layout_view->SetInitialContainingBlockSizeForPagination(
       initial_containing_block_size);
 

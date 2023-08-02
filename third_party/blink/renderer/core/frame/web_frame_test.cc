@@ -13799,12 +13799,18 @@ TEST_F(WebFrameSimTest, GetPageSizeType) {
   CSSStyleDeclaration* style_decl =
       To<CSSPageRule>(sheet->cssRules(ASSERT_NO_EXCEPTION)->item(0))->style();
 
+  // GetPageSizeType() requires layout to be up-to-date.
+  WebView().MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+
   // Initially empty @page rule.
   EXPECT_EQ(PageSizeType::kAuto, main_frame->GetPageSizeType(1));
 
   for (const auto& test : test_cases) {
     style_decl->setProperty(doc->GetExecutionContext(), "size", test.size, "",
                             ASSERT_NO_EXCEPTION);
+    WebView().MainFrameWidget()->UpdateAllLifecyclePhases(
+        DocumentUpdateReason::kTest);
     EXPECT_EQ(test.page_size_type, main_frame->GetPageSizeType(1));
   }
 }

@@ -674,12 +674,13 @@ void LayoutView::CalculateScrollbarModes(
 #undef RETURN_SCROLLBAR_MODE
 }
 
-PhysicalSize LayoutView::PageAreaSize() const {
+PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
+                                      const AtomicString& page_name) const {
   NOT_DESTROYED();
+  scoped_refptr<const ComputedStyle> page_style =
+      GetDocument().StyleForPage(page_index, page_name);
   WebPrintPageDescription description = default_page_description_;
-  // TODO(crbug.com/835358): Support mixed page sizes, instead of always using
-  // the first page.
-  GetDocument().GetPageDescription(/* page_index */ 0, &description);
+  GetDocument().GetPageDescription(*page_style, &description);
 
   gfx::SizeF page_size(
       std::max(.0f, description.size.width() -

@@ -297,7 +297,12 @@ String PrintContext::PageSizeAndMarginsInPixels(LocalFrame* frame,
   description.margin_right = margin_right;
   description.margin_bottom = margin_bottom;
   description.margin_left = margin_left;
-  frame->GetDocument()->GetPageDescription(page_number, &description);
+
+  // Named pages aren't supported here, because this function may be called
+  // without laying out first.
+  scoped_refptr<const ComputedStyle> style = frame->GetDocument()->StyleForPage(
+      page_number, /* page_name */ AtomicString());
+  frame->GetDocument()->GetPageDescription(*style, &description);
 
   return "(" + String::Number(floor(description.size.width())) + ", " +
          String::Number(floor(description.size.height())) + ") " +

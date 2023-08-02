@@ -2711,6 +2711,12 @@ scoped_refptr<const ComputedStyle> Document::StyleForPage(uint32_t page_index) {
   AtomicString page_name;
   if (const LayoutView* layout_view = GetLayoutView())
     page_name = layout_view->NamedPageAtIndex(page_index);
+  return StyleForPage(page_index, page_name);
+}
+
+scoped_refptr<const ComputedStyle> Document::StyleForPage(
+    uint32_t page_index,
+    const AtomicString& page_name) {
   GetStyleEngine().UpdateViewportSize();
   GetStyleEngine().UpdateActiveStyle();
   return GetStyleEngine().GetStyleResolver().StyleForPage(page_index,
@@ -2747,17 +2753,16 @@ void Document::EnsurePaintLocationDataValidForNode(const Node* node,
   UpdateStyleAndLayout(reason);
 }
 
-bool Document::IsPageBoxVisible(uint32_t page_index) {
-  return StyleForPage(page_index)->Visibility() !=
-         EVisibility::kHidden;  // display property doesn't apply to @page.
-}
-
 void Document::GetPageDescription(uint32_t page_index,
                                   WebPrintPageDescription* description) {
-  scoped_refptr<const ComputedStyle> style = StyleForPage(page_index);
+  GetPageDescription(*StyleForPage(page_index), description);
+}
+
+void Document::GetPageDescription(const ComputedStyle& style,
+                                  WebPrintPageDescription* description) {
   const WebPrintPageDescription input_description = *description;
 
-  switch (style->GetPageSizeType()) {
+  switch (style.GetPageSizeType()) {
     case PageSizeType::kAuto:
       break;
     case PageSizeType::kLandscape:
@@ -2769,7 +2774,7 @@ void Document::GetPageDescription(uint32_t page_index,
         description->size.Transpose();
       break;
     case PageSizeType::kFixed:
-      description->size = style->PageSize();
+      description->size = style.PageSize();
       break;
     default:
       NOTREACHED();
@@ -2780,19 +2785,18 @@ void Document::GetPageDescription(uint32_t page_index,
     // top and bottom.
     // http://www.w3.org/TR/CSS2/box.html#margin-properties
     float width = description->size.width();
-    if (!style->MarginTop().IsAuto()) {
-      description->margin_top = IntValueForLength(style->MarginTop(), width);
+    if (!style.MarginTop().IsAuto()) {
+      description->margin_top = IntValueForLength(style.MarginTop(), width);
     }
-    if (!style->MarginRight().IsAuto()) {
-      description->margin_right =
-          IntValueForLength(style->MarginRight(), width);
+    if (!style.MarginRight().IsAuto()) {
+      description->margin_right = IntValueForLength(style.MarginRight(), width);
     }
-    if (!style->MarginBottom().IsAuto()) {
+    if (!style.MarginBottom().IsAuto()) {
       description->margin_bottom =
-          IntValueForLength(style->MarginBottom(), width);
+          IntValueForLength(style.MarginBottom(), width);
     }
-    if (!style->MarginLeft().IsAuto()) {
-      description->margin_left = IntValueForLength(style->MarginLeft(), width);
+    if (!style.MarginLeft().IsAuto()) {
+      description->margin_left = IntValueForLength(style.MarginLeft(), width);
     }
   }
 
@@ -2811,7 +2815,7 @@ void Document::GetPageDescription(uint32_t page_index,
     *description = input_description;
   }
 
-  description->orientation = style->GetPageOrientation();
+  description->orientation = style.GetPageOrientation();
 }
 
 void Document::SetIsXrOverlay(bool val, Element* overlay_element) {
