@@ -9,6 +9,7 @@ namespace ash {
 
 extern const char kChromeUIMakoHost[];
 extern const char kChromeUIMakoURL[];
+extern const char kChromeUIOrcaURL[];
 
 }  // namespace ash
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MAKO_URL_CONSTANTS_H_

@@ -7,7 +7,9 @@
 
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
 #include "content/public/browser/webui_config.h"
-#include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/untrusted_bubble_web_ui_controller.h"
+
+class Profile;
 
 namespace ash {
 
@@ -25,8 +27,9 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 };
 
 // The WebUI for chrome://mako
-class MakoUntrustedUI : public ui::MojoWebUIController {
+class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
  public:
+  static void Show(Profile* profile);
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;
 
