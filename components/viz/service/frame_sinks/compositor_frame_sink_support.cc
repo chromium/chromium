@@ -1239,7 +1239,7 @@ bool CompositorFrameSinkSupport::ShouldAdjustBeginFrameArgs() const {
 bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
     base::TimeTicks frame_time,
     base::TimeDelta vsync_interval) {
-  if (!begin_frame_interval_.is_positive()) {
+  if (!begin_frame_interval_.is_positive() || !vsync_interval.is_positive()) {
     return false;
   }
   uint64_t remainder =
