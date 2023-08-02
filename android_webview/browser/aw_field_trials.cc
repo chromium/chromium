@@ -9,6 +9,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/metrics/persistent_histograms.h"
+#include "net/base/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace {
@@ -63,6 +64,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // Disable user-agent client hints on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kUserAgentClientHint);
+
+  // Disable network-change migration on WebView due to crbug.com/1430082.
+  aw_feature_overrides.DisableFeature(
+      net::features::kMigrateSessionsOnNetworkChangeV2);
 
   aw_feature_overrides.RegisterOverrides(feature_list);
 }

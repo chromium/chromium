@@ -5,7 +5,7 @@
 #include "android_webview/browser/network_service/aw_network_change_notifier.h"
 #include "android_webview/common/aw_features.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
+
 namespace android_webview {
 
 AwNetworkChangeNotifier::~AwNetworkChangeNotifier() {
