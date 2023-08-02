@@ -31,10 +31,10 @@ class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
   void MultiCaptureStopped(const std::string& label) override;
 
  private:
+  ash::MultiCaptureServiceClient* GetMultiCaptureClient();
+
   mojo::ReceiverSet<mojom::MultiCaptureService>
       multi_capture_service_receiver_set_;
-  raw_ptr<ash::MultiCaptureServiceClient, DanglingUntriaged>
-      multi_capture_client_ = nullptr;
 };
 
 }  // namespace crosapi
