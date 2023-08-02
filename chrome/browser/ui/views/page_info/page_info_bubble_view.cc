@@ -177,7 +177,10 @@ PageInfoBubbleView::PageInfoBubbleView(
   views::BubbleDialogDelegateView::CreateBubble(this);
 }
 
-PageInfoBubbleView::~PageInfoBubbleView() = default;
+PageInfoBubbleView::~PageInfoBubbleView() {
+  page_container_ = nullptr;
+  RemoveAllChildViews();
+}
 
 // static
 views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
