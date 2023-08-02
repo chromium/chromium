@@ -64,7 +64,7 @@ jobs:
           path: out/site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@ee48c7b82e077d7b8ef30b50a719e6a792a50c9a # v2.0.2
+        uses: actions/deploy-pages@12ab2b16cf43a7a061fe99da74b6f8f11fb77f5b # v2.0.3
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
