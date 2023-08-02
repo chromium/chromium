@@ -663,6 +663,16 @@ void GpuServiceImpl::InitializeWithHost(
   // initialized.
   gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
 #endif
+
+  if (in_host_process() &&
+      gpu_channel_manager_->use_passthrough_cmd_decoder()) {
+    // Check `kCrashOnInProcessANGLEContextLoss` to ensure registration within
+    // the experiment - the check done at the time of MaybeExitOnContextLost()
+    // doesn't cause clients in the enabled arm to become registered in the
+    // experiment due to it being followed by an immediate crash.
+    [[maybe_unused]] bool unused =
+        base::FeatureList::IsEnabled(kCrashOnInProcessANGLEContextLoss);
+  }
 }
 
 void GpuServiceImpl::Bind(
