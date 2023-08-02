@@ -881,7 +881,7 @@
     Learn more
   </message>
   <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_ARIA"  desc="Aria Label for the more link text in enroll triage step in user creation screen will be announced by chromVox.">
-    More info about device management
+    Learn more about Device Management
   </message>
   <message name="IDS_OOBE_USER_CREATION_ENROLL_ADDITIONAL_DESCRIPTION_TITLE"  desc="The title of additional description in enroll triage step in user creation screen.">
     Not sure if you should enroll?
