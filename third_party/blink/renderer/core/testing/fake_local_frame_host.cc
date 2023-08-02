@@ -264,6 +264,11 @@ void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {}
 
+void FakeLocalFrameHost::SendFencedFrameReportingBeaconToCustomURL(
+    const blink::KURL& destination_url,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features) {}
+
 void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     const WTF::String& event_data,
     const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,

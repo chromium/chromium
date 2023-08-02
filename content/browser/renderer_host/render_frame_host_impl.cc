@@ -8502,6 +8502,17 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
   }
 }
 
+// TODO(crbug.com/1400992): Move SendFencedFrameReportingBeaconToCustomURL into
+// a separate refcounted class.
+void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
+    const GURL& destination_url,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features) {
+  // TODO(gtanzer): Implement the body of this method.
+  std::ignore = destination_url;
+  std::ignore = attribution_reporting_runtime_features;
+}
+
 void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     NavigationRequest& navigation_request) {
   // The fenced frame "reserved.top_navigation" automatic beacon only cares

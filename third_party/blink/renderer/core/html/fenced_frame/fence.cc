@@ -167,13 +167,13 @@ void Fence::reportEventToDestinationURL(ScriptState* script_state,
     return;
   }
 
-  GURL destinationURL(KURL(event->destinationURL()));
-  if (!destinationURL.is_valid()) {
+  KURL destinationURL(event->destinationURL());
+  if (!destinationURL.IsValid()) {
     exception_state.ThrowTypeError(
         "The destination URL provided to reportEvent() is not a valid URL.");
     return;
   }
-  if (!destinationURL.SchemeIs(url::kHttpsScheme)) {
+  if (!destinationURL.ProtocolIs(url::kHttpsScheme)) {
     exception_state.ThrowTypeError(
         "The destination URL provided to reportEvent() does not have the "
         "required scheme (https).");
@@ -193,7 +193,15 @@ void Fence::reportEventToDestinationURL(ScriptState* script_state,
     return;
   }
 
-  // TODO(gtanzer): Call into the browser.
+  network::AttributionReportingRuntimeFeatures
+      attribution_reporting_runtime_features;
+  if (AttributionSrcLoader* attribution_src_loader =
+          frame->GetAttributionSrcLoader()) {
+    attribution_reporting_runtime_features =
+        attribution_src_loader->GetRuntimeFeatures();
+  }
+  frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeaconToCustomURL(
+      destinationURL, attribution_reporting_runtime_features);
 }
 
 void Fence::setReportEventDataForAutomaticBeacons(

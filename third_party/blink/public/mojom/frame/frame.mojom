@@ -645,6 +645,25 @@ interface LocalFrameHost {
       network.mojom.AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features);
 
+  // See:
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  //
+  // This implements the API:
+  // window.fence.reportEvent({destinationURL})
+  //
+  // A document in a fenced frame can invoke the reportEvent API to request the
+  // browser to send a beacon to the https URL `destinationURL`, where macros
+  // in `destinationURL` will be substituted using the values specified by
+  // registerAdMacro in the Protected Audience auction's buyer worklet.
+  //
+  // TODO(crbug.com/1443561): Get rid of
+  // `attribution_reporting_runtime_features` when Runtime Feature State fully
+  // supports runtime feature access from the browser process.
+  SendFencedFrameReportingBeaconToCustomURL(
+      url.mojom.Url destination_url,
+      network.mojom.AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features);
+
   // Notify the browser that there is a legacy technology used by the page.
   // The event contains the technology `type` and code location from the
   // ExecutionContext.

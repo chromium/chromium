@@ -2446,6 +2446,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
+  void SendFencedFrameReportingBeaconToCustomURL(
+      const GURL& destination_url,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
