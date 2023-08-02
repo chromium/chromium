@@ -17,10 +17,6 @@
 #include "base/test/task_environment.h"
 #include "media/capture/video/apple/video_capture_device_factory_apple.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace media {
 
 void RunTestCase(base::OnceClosure test_case) {

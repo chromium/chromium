@@ -23,10 +23,6 @@
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 void EnsureRunsOnCFRunLoopEnabledThread() {

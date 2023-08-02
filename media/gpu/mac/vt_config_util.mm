@@ -11,10 +11,6 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "ui/gfx/hdr_metadata_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // https://developer.apple.com/documentation/avfoundation/avassettrack/1386694-formatdescriptions?language=objc

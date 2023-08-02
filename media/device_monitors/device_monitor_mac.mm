@@ -22,10 +22,6 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // This class is used to keep track of system devices names and their types.

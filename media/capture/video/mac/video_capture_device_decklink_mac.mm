@@ -15,10 +15,6 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "third_party/decklink/mac/include/DeckLinkAPI.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // DeckLink SDK uses ComPtr-style APIs. Microsoft::WRL::ComPtr<> is only

@@ -28,10 +28,6 @@
 #include "media/capture/video/mac/uvc_control_mac.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation DeviceNameAndTransportType {
   NSString* __strong _deviceName;
   // The transport type of the device (USB, PCI, etc), values are defined in
