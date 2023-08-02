@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/hiberman",
     "//chromeos/ash/components/dbus/lorgnette_manager:unit_tests",
     "//chromeos/ash/components/dbus/oobe_config:unit_tests",
+    "//chromeos/ash/components/dbus/printscanmgr:unit_tests",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/rmad:test_support",
     "//chromeos/ash/components/dbus/services:unit_tests",

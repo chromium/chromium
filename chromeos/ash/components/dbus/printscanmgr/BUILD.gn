@@ -3,11 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("printscanmgr") {
   defines = [ "IS_PRINTSCANMGR_IMPL" ]
+
+  public_deps = [ ":printscanmgr_proto" ]
 
   deps = [
     "//base",
@@ -21,4 +24,24 @@ component("printscanmgr") {
     "printscanmgr_client.cc",
     "printscanmgr_client.h",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ ":printscanmgr" ]
+  deps = [
+    ":printscanmgr_proto",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "printscanmgr_client_unittest.cc" ]
+}
+
+proto_library("printscanmgr_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/printscanmgr/printscanmgr_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/printscanmgr"
 }
