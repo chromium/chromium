@@ -7,11 +7,10 @@
 import argparse
 import logging
 import sys
-import time
 
 from contextlib import AbstractContextManager
 
-from common import catch_sigterm, register_log_args
+from common import catch_sigterm, register_log_args, wait_for_sigterm
 from ffx_emulator import FfxEmulator
 
 
@@ -70,13 +69,7 @@ def main():
             'Emulator successfully started. You can now run Chrome '
             'Fuchsia tests with --target-id=%s to target this emulator.',
             target_id)
-        try:
-            while True:
-                time.sleep(10000)
-        except KeyboardInterrupt:
-            logging.info('Ctrl-C received; shutting down the emulator.')
-        except SystemExit:
-            logging.info('SIGTERM received; shutting down the emulator.')
+        wait_for_sigterm('shutting down the emulator.')
 
 
 if __name__ == '__main__':

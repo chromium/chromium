@@ -409,6 +409,25 @@ def catch_sigterm() -> None:
     signal.signal(signal.SIGTERM, _sigterm_handler)
 
 
+def wait_for_sigterm(extra_msg: str = '') -> None:
+    """
+    Spin-wait for either ctrl+c or sigterm. Caller can use try-finally
+    statement to perform extra cleanup.
+
+    Args:
+      extra_msg: The extra message to be logged.
+    """
+    try:
+        while True:
+            # We do expect receiving either ctrl+c or sigterm, so this line
+            # literally means sleep forever.
+            time.sleep(10000)
+    except KeyboardInterrupt:
+        logging.info('Ctrl-C received; %s', extra_msg)
+    except SystemExit:
+        logging.info('SIGTERM received; %s', extra_msg)
+
+
 def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
     """Retrieves installed OS version frm device.
 

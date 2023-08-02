@@ -128,7 +128,7 @@ class LogManagerTest(unittest.TestCase):
                 'log_manager.py', '--packages', 'test_package', '--out-dir',
                 'test_out_dir'
         ]):
-            with mock.patch('log_manager.time.sleep',
+            with mock.patch('common.time.sleep',
                             side_effect=KeyboardInterrupt):
                 log_manager.main()
         self.assertEqual(mock_system_log.call_count, 1)
