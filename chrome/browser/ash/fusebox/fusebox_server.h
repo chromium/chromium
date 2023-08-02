@@ -29,7 +29,7 @@ namespace fusebox {
 
 class ReadWriter;
 
-class Server final : public ash::FilesInternalsDebugJSONProvider {
+class Server : public ash::FilesInternalsDebugJSONProvider {
  public:
   struct Delegate {
     // These methods cause D-Bus signals to be sent that a storage unit (as
@@ -49,7 +49,7 @@ class Server final : public ash::FilesInternalsDebugJSONProvider {
   explicit Server(Delegate* delegate);
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
-  ~Server();
+  ~Server() override;
 
   // Manages monikers in the context of the Server's MonikerMap.
   fusebox::Moniker CreateMoniker(const storage::FileSystemURL& target,

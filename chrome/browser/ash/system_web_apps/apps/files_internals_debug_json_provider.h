@@ -15,6 +15,8 @@ namespace ash {
 
 class FilesInternalsDebugJSONProvider {
  public:
+  virtual ~FilesInternalsDebugJSONProvider() = default;
+
   using JSONKeyValuePair = std::pair<std::string_view, base::Value>;
 
   // Gets human-readable debugging information as a JSON value. The key is
