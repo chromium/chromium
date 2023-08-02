@@ -38,6 +38,7 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/common/url_utils.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
@@ -96,6 +97,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     label()->SetPaintToLayer();
     label()->SetSkipSubpixelRenderingOpacityCheck(true);
     label()->layer()->SetFillsBoundsOpaquely(false);
+    label()->SetBackgroundColor(SK_ColorTRANSPARENT);
   }
 }
 
