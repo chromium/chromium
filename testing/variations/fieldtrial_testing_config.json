@@ -7933,21 +7933,6 @@
             ]
         }
     ],
-    "IOSSyncSegmentsData": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncSegmentsData"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [
@@ -14057,6 +14042,21 @@
                     },
                     "enable_features": [
                         "SyncAndroidLimitNTPPromoImpressions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SyncSegmentsData": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncSegmentsData"
                     ]
                 }
             ]
