@@ -100,7 +100,7 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
     // dirty during the lifetime of the document.
     DCHECK(object->GetDocument());
     if (!object->GetDocument()->IsLoadCompleted()) {
-      object->AXObjectCache().MarkAXObjectDirty(object);
+      object->AXObjectCache().QueueIncompleteAXObject(object);
     }
     return;
   }

@@ -145,12 +145,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Dispose() override;
 
   void Freeze() override {
-    is_frozen_ = true;
     ax_tree_source_->Freeze();
+    is_frozen_ = true;
   }
   void Thaw() override {
     is_frozen_ = false;
     ax_tree_source_->Thaw();
+    MarkIncompleteAXObjectsDirty();
   }
   bool IsFrozen() { return is_frozen_; }
 
@@ -383,6 +384,9 @@ class MODULES_EXPORT AXObjectCacheImpl
       ax::mojom::blink::Action event_from_action);
 
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
+
+  void MarkIncompleteAXObjectsDirty();
+  void QueueIncompleteAXObject(AXObject*);
 
   // Set the parent of |child|. If no parent is possible, this means the child
   // can no longer be in the AXTree, so remove the child.
@@ -1060,6 +1064,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Set of ID's of current AXObjects that need to be destroyed and recreated.
   HashSet<AXID> invalidated_ids_main_;
   HashSet<AXID> invalidated_ids_popup_;
+
+  // IDs for objects that have been serialized but don't yet have complete
+  // information. For example, they may not have yet found their targets yet, if
+  // the element with the target ID is not in the DOM (it may be inserted
+  // later).
+  Vector<AXID> incomplete_objects_;
 
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.

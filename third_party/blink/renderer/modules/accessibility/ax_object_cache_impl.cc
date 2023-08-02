@@ -2010,6 +2010,9 @@ void AXObjectCacheImpl::InvalidateBoundingBoxForFixedOrStickyPosition() {
 }
 
 bool AXObjectCacheImpl::CanDeferTreeUpdate(Document* tree_update_document) {
+  DCHECK(!has_been_disposed_);
+  DCHECK(!IsFrozen());
+
   if (!IsActive(GetDocument()) || tree_updates_paused_)
     return false;
 
@@ -2046,6 +2049,8 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     Node* node,
     ax::mojom::blink::Event event) {
   DCHECK(node);
+  DCHECK(!has_been_disposed_);
+  DCHECK(!IsFrozen());
 
   Document& tree_update_document = node->GetDocument();
   if (!CanDeferTreeUpdate(&tree_update_document)) {
@@ -2071,7 +2076,6 @@ void AXObjectCacheImpl::DeferTreeUpdate(
   // ensure there is a document lifecycle update scheduled.
   ScheduleAXUpdate();
 }
-
 void AXObjectCacheImpl::DeferTreeUpdate(
     AXObjectCacheImpl::TreeUpdateReason update_reason,
     AXObject* obj,
@@ -2662,15 +2666,15 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
     DCHECK(!object->HasDirtyDescendants())
         << "No subtrees should be flagged as needing updates at this point:"
         << "\n* Object: " << object->ToString(true) << "\n* Included parent: "
-        << (included_parent ? included_parent->ToString(true, true) : "");
+        << (included_parent ? included_parent->ToString(true) : "");
     DCHECK(!object->NeedsToUpdateChildren())
         << "No children in the tree should require an update at this point: "
         << "\n* Object: " << object->ToString(true) << "\n* Included parent: "
-        << (included_parent ? included_parent->ToString(true, true) : "");
+        << (included_parent ? included_parent->ToString(true) : "");
     DCHECK(!object->NeedsToUpdateCachedValues())
         << "No cached values should require an update at this point: "
         << "\n* Object: " << object->ToString(true) << "\n* Included parent: "
-        << (included_parent ? included_parent->ToString(true, true) : "");
+        << (included_parent ? included_parent->ToString(true) : "");
   }
 #endif
 }
@@ -4290,6 +4294,18 @@ void AXObjectCacheImpl::ClearTextOperationInNodeIdMap() {
 void AXObjectCacheImpl::MarkElementDirtyWithCleanLayout(const Node* element) {
   // Warning, if no AXObject exists for element, nothing is marked dirty.
   MarkAXObjectDirtyWithCleanLayout(Get(element));
+}
+
+void AXObjectCacheImpl::MarkIncompleteAXObjectsDirty() {
+  for (AXID id : incomplete_objects_) {
+    MarkAXObjectDirty(ObjectFromAXID(id));
+  }
+  incomplete_objects_.clear();
+}
+
+void AXObjectCacheImpl::QueueIncompleteAXObject(AXObject* obj) {
+  DCHECK(!obj->IsDetached());
+  incomplete_objects_.push_back(obj->AXObjectID());
 }
 
 AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
