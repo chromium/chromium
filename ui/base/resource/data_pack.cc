@@ -99,11 +99,11 @@ int DataPack::Alias::CompareById(const void* void_key, const void* void_entry) {
 }
 
 void DataPack::Iterator::UpdateResourceData() {
-  const Entry* next_entry = entry_ + 1;
-  base::StringPiece data;
-  GetStringPieceFromOffset(entry_->file_offset, next_entry->file_offset,
-                           data_source_, &data);
-  resource_data_ = new ResourceData(entry_->resource_id, data);
+  const Entry* const next_entry = entry_ + 1;
+  resource_data_ = new ResourceData(
+      entry_->resource_id,
+      GetStringPieceFromOffset(entry_->file_offset, next_entry->file_offset,
+                               data_source_));
 }
 
 DataPack::Iterator DataPack::begin() const {
@@ -358,13 +358,12 @@ bool DataPack::HasResource(uint16_t resource_id) const {
 }
 
 // static
-void DataPack::GetStringPieceFromOffset(uint32_t target_offset,
-                                        uint32_t next_offset,
-                                        const uint8_t* data_source,
-                                        base::StringPiece* data) {
+base::StringPiece DataPack::GetStringPieceFromOffset(
+    uint32_t target_offset,
+    uint32_t next_offset,
+    const uint8_t* data_source) {
   size_t length = next_offset - target_offset;
-  *data = base::StringPiece(
-      reinterpret_cast<const char*>(data_source + target_offset), length);
+  return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
 bool DataPack::GetStringPiece(uint16_t resource_id,
@@ -395,8 +394,8 @@ bool DataPack::GetStringPiece(uint16_t resource_id,
   }
 
   MaybePrintResourceId(resource_id);
-  GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
-                           data_source_->GetData(), data);
+  *data = GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
+                                   data_source_->GetData());
   return true;
 }
 

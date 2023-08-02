@@ -208,12 +208,10 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
                                            const uint8_t* data,
                                            size_t data_length);
 
-  // Get string data from file offset in bytes.
-  // Returns string between `target_offset` and `next_offset` in data pack.
-  static void GetStringPieceFromOffset(uint32_t target_offset,
-                                       uint32_t next_offset,
-                                       const uint8_t* data_source,
-                                       base::StringPiece* data);
+  // Returns the string between `target_offset` and `next_offset` in data pack.
+  static base::StringPiece GetStringPieceFromOffset(uint32_t target_offset,
+                                                    uint32_t next_offset,
+                                                    const uint8_t* data_source);
 
   std::unique_ptr<DataSource> data_source_;
 
