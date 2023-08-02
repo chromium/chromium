@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL Check adCost is stochastically rounded with 8 bit mantissa and exponent. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Check bid is stochastically rounded with 8 bit mantissa and exponent. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Check desirability is stochastically rounded with 8 bit mantissa and exponent. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Check highestScoringOtherBid is stochastically rounded with 8 bit mantissa and exponent. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Value is ignored as a non-valid floating-point number. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Value is rounded to 0 if value is greater than 0 and its exponent is less than -128. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Value is rounded to -0 if value is greater than 0 and its exponent is less than -128. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Value is rounded to Infinity if value is greater than 0 and its exponent is greater than 127. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Value is rounded to -Infinity if value is less than 0 and its exponent is greater than 127. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+Harness: the test ran to completion.
+
