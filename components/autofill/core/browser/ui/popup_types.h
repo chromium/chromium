@@ -30,7 +30,8 @@ enum class PopupHidingReason {
   kAcceptSuggestion = 0,
   // An interstitial page displaces the popup.
   kAttachInterstitialPage = 1,
-  // A field isn't edited anymore but remains focused for now.
+  // The text field is no longer edited - sent directly before a focus change.
+  // TODO(crbug.com/1469610): Deprecate in favor of kFocusChanged.
   kEndEditing = 2,
   // Focus removed from field. Follows kEndEditing.
   kFocusChanged = 3,
