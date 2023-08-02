@@ -168,7 +168,7 @@ public class OmniboxImageSupplier {
         mPendingImageRequests.put(url, callbacks);
 
         ImageFetcher.Params params =
-                ImageFetcher.Params.create(url, ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME);
+                ImageFetcher.Params.create(url, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
 
         mImageFetcher.fetchImage(params, bitmap -> {
             final var pendingCallbacks = mPendingImageRequests.remove(url);

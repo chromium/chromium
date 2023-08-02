@@ -44,7 +44,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ImageFetcherClients">
   <variant name=".AnswerSuggestions"
-      summary="Showing cache patterns only for AnswerSuggestions."/>
+      summary="Showing cache patterns only for AnswerSuggestions (valid until
+               M117)."/>
   <variant name=".AssistantDetails"
       summary="Showing cache patterns only for AssistantDetails."/>
   <variant name=".AutofillCardArt"
@@ -58,7 +59,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".EduAccountLoginProfileImageFetcher"
       summary="Profile image fetcher for EDU account login flow"/>
   <variant name=".EntitySuggestions"
-      summary="Showing cache patterns only for EntitySuggestions."/>
+      summary="Showing cache patterns only for EntitySuggestions (valid until
+               M117)."/>
   <variant name=".FedCMAccountChooser"
       summary="Profile image fetcher for FedCM Account chooser."/>
   <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
@@ -68,6 +70,8 @@ chromium-metrics-reviews@google.com.
       summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
   <variant name=".OfflinePages"
       summary="Showing cache patterns only for OfflinePages."/>
+  <variant name=".Omnibox"
+      summary="Showing cache patterns only for Omnibox (valid since M117)."/>
   <variant name=".PriceDropNotification"
       summary="Images fetched for the icon of price drop notification."/>
   <variant name=".QueryTiles" summary="Showing Query tiles images."/>
