@@ -255,8 +255,6 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
     &features::kAutoNightLight,
     &features::kLacrosOnly,
-    &features::kLacrosPrimary,
-    &features::kLacrosSupport,
     &::features::kPluginVm,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     &media::kPlatformHEVCDecoderSupport,

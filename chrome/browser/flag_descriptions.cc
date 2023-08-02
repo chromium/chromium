@@ -6358,12 +6358,9 @@ const char kLacrosAvailabilityIgnoreDescription[] =
 const char kLacrosOnlyName[] = "Lacros is the only browser";
 const char kLacrosOnlyDescription[] =
     "Use Lacros-chrome as the only web browser on ChromeOS. "
-    "This flag is ignored if Lacros support or primary is disabled.";
-
-const char kLacrosPrimaryName[] = "Lacros as the primary browser";
-const char kLacrosPrimaryDescription[] =
-    "Use Lacros-chrome as the primary web browser on ChromeOS. "
-    "This flag is ignored if Lacros support is disabled.";
+    "Please note that the first restart can take some time to setup "
+    "lacros-chrome. Please DO NOT attempt to turn off the device during "
+    "the restart.";
 
 const char kLacrosStabilityName[] = "Lacros stability";
 const char kLacrosStabilityDescription[] = "Lacros update channel.";
@@ -6380,12 +6377,6 @@ const char kLacrosSelectionPolicyIgnoreName[] =
 const char kLacrosSelectionPolicyIgnoreDescription[] =
     "Makes the lacros-selection policy have no effect. Instead Lacros "
     "selection will be controlled by experiment and/or user flags.";
-
-const char kLacrosSupportName[] = "Lacros support";
-const char kLacrosSupportDescription[] =
-    "Support for the experimental lacros-chrome browser. Please note that the "
-    "first restart can take some time to setup lacros-chrome. Please DO NOT "
-    "attempt to turn off the device during the restart.";
 
 const char kLacrosWaylandLoggingName[] = "Lacros wayland logging";
 const char kLacrosWaylandLoggingDescription[] =

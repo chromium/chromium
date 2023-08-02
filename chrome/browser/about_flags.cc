@@ -1060,8 +1060,6 @@ const char kPreferDcheckInternalName[] = "prefer-dcheck";
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
 const char kLacrosOnlyInternalName[] = "lacros-only";
-const char kLacrosPrimaryInternalName[] = "lacros-primary";
-const char kLacrosSupportInternalName[] = "lacros-support";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
 const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kArcEnableVirtioBlkForDataInternalName[] =
@@ -4274,9 +4272,6 @@ const FeatureEntry kFeatureEntries[] = {
     {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyInternalName,
      "", "", kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosDataBackwardMigrationModePolicyChoices)},
-    {kLacrosSupportInternalName, flag_descriptions::kLacrosSupportName,
-     flag_descriptions::kLacrosSupportDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLacrosSupport)},
     {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
      flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
@@ -4305,9 +4300,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosSelectionPolicyIgnoreName,
      flag_descriptions::kLacrosSelectionPolicyIgnoreDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(ash::switches::kLacrosSelectionPolicyIgnore)},
-    {kLacrosPrimaryInternalName, flag_descriptions::kLacrosPrimaryName,
-     flag_descriptions::kLacrosPrimaryDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLacrosPrimary)},
     {kLacrosOnlyInternalName, flag_descriptions::kLacrosOnlyName,
      flag_descriptions::kLacrosOnlyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLacrosOnly)},

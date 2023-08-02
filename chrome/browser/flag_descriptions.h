@@ -3669,9 +3669,6 @@ extern const char kLacrosAvailabilityIgnoreDescription[];
 extern const char kLacrosOnlyName[];
 extern const char kLacrosOnlyDescription[];
 
-extern const char kLacrosPrimaryName[];
-extern const char kLacrosPrimaryDescription[];
-
 extern const char kLacrosStabilityName[];
 extern const char kLacrosStabilityDescription[];
 
@@ -3682,9 +3679,6 @@ extern const char kLacrosSelectionStatefulDescription[];
 
 extern const char kLacrosSelectionPolicyIgnoreName[];
 extern const char kLacrosSelectionPolicyIgnoreDescription[];
-
-extern const char kLacrosSupportName[];
-extern const char kLacrosSupportDescription[];
 
 extern const char kLacrosWaylandLoggingName[];
 extern const char kLacrosWaylandLoggingDescription[];
