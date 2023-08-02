@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/modules/readaloud/Playback.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackListener.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooks.java",
+    "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java",
   ]
   deps = [
     "//chrome/browser/android/httpclient/public:java",
@@ -17,14 +18,11 @@ android_library("java") {
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
-  jar_excluded_patterns = [ "*/ReadAloudPlaybackHooksImpl*.class" ]
+  jar_excluded_patterns = [ "*/ReadAloudPlaybackHooksProvider*.class" ]
 }
 
-android_library("hooks_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksImpl.java" ]
-  deps = [
-    ":java",
-    "//chrome/browser/android/httpclient/public:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
+# ReadAloudPlaybackHooksProvider for public builds.
+android_library("provider_public_java") {
+  sources = [ "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java" ]
+  deps = [ ":java" ]
 }
