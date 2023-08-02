@@ -1900,6 +1900,33 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
       /*sample=*/(1), /*count=*/1);
 }
 
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+// Tests the local save bubble. Ensures that clicking the [X] button
+// successfully causes a strike to be added.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleIgnored \
+  DISABLED_StrikeDatabase_Local_AddStrikeIfBubbleIgnored
+#else
+#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleIgnored \
+  StrikeDatabase_Local_AddStrikeIfBubbleIgnored
+#endif
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
+                       MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleIgnored) {
+  FillForm();
+  SubmitFormAndWaitForCardLocalSaveBubble();
+
+  // Clicking [X] should cancel and close it.
+  base::HistogramTester histogram_tester;
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  ClickOnCloseButton();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  // Ensure that a strike was added.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
+      /*sample=*/(1), /*expected_bucket_count=*/1);
+}
+
 // Tests the upload save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.
 IN_PROC_BROWSER_TEST_P(
@@ -1921,6 +1948,29 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
       /*sample=*/(1), /*count=*/1);
+}
+
+// Tests the upload save bubble. Ensures that clicking the [X] button
+// successfully causes a strike to be added.
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
+  // Start sync.
+  ASSERT_TRUE(SetupSync());
+
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  // Clicking [X] should cancel and close it.
+  base::HistogramTester histogram_tester;
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  ClickOnCloseButton();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  // Ensure that a strike was added.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests overall StrikeDatabase interaction with the local save bubble. Runs an

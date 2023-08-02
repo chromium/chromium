@@ -127,7 +127,6 @@ class SaveCardBubbleControllerImpl
 
   void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                         user_provided_card_details) override;
-  void OnCancelButton() override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageCardsClicked() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;

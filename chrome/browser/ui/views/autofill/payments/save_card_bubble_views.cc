@@ -43,8 +43,6 @@ SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
   DCHECK(controller);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
-  SetCancelCallback(base::BindOnce(&SaveCardBubbleViews::OnDialogCancelled,
-                                   base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(&SaveCardBubbleViews::OnDialogAccepted,
                                    base::Unretained(this)));
 
@@ -76,12 +74,6 @@ void SaveCardBubbleViews::OnDialogAccepted() {
   // TODO(https://crbug.com/1046793): Maybe delete this.
   if (controller_)
     controller_->OnSaveButton({});
-}
-
-void SaveCardBubbleViews::OnDialogCancelled() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
-    controller_->OnCancelButton();
 }
 
 void SaveCardBubbleViews::AddedToWidget() {

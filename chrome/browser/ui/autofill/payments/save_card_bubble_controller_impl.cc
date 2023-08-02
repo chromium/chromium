@@ -330,17 +330,6 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
   }
 }
 
-void SaveCardBubbleControllerImpl::OnCancelButton() {
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-      current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
-    std::move(local_save_card_prompt_callback_)
-        .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined);
-  } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
-    std::move(upload_save_card_prompt_callback_)
-        .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined, {});
-  }
-}
-
 void SaveCardBubbleControllerImpl::OnLegalMessageLinkClicked(const GURL& url) {
   OpenUrl(url);
   autofill_metrics::LogCreditCardUploadLegalMessageLinkClicked();
@@ -407,6 +396,26 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
       current_bubble_type_ = BubbleType::INACTIVE;
     }
   } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
+    if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
+        current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
+      std::move(local_save_card_prompt_callback_)
+          .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined);
+    } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
+      std::move(upload_save_card_prompt_callback_)
+          .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined,
+               /*user_provided_card_details=*/{});
+    }
+    current_bubble_type_ = BubbleType::INACTIVE;
+  } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
+    if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
+        current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
+      std::move(local_save_card_prompt_callback_)
+          .Run(AutofillClient::SaveCardOfferUserDecision::kIgnored);
+    } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
+      std::move(upload_save_card_prompt_callback_)
+          .Run(AutofillClient::SaveCardOfferUserDecision::kIgnored,
+               /*user_provided_card_details=*/{});
+    }
     current_bubble_type_ = BubbleType::INACTIVE;
   } else if (current_bubble_type_ == BubbleType::FAILURE) {
     // Unlike other bubbles, the save failure bubble should not be reshown. If

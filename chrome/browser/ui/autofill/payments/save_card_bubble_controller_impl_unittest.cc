@@ -422,7 +422,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
 TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
   base::HistogramTester histogram_tester;
   TriggerFlow();
-  controller()->OnCancelButton();
   CloseBubble(PaymentsBubbleClosedReason::kCancelled);
 
   histogram_tester.ExpectUniqueSample(

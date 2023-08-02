@@ -77,7 +77,6 @@ class SaveCardBubbleController {
   // user if they were requested, or struct with empty strings otherwise.
   virtual void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                                 user_provided_card_details) = 0;
-  virtual void OnCancelButton() = 0;
   virtual void OnLegalMessageLinkClicked(const GURL& url) = 0;
   virtual void OnManageCardsClicked() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
