@@ -424,6 +424,11 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
           PasswordGenerationPopupController::kOfferGeneration &&
       password_manager::features::kPasswordGenerationExperimentVariationParam
               .Get() == PasswordGenerationVariation::kEditPassword) {
+    AddChildView(views::Builder<views::Separator>()
+                     .SetOrientation(views::Separator::Orientation::kHorizontal)
+                     .SetColorId(ui::kColorMenuSeparator)
+                     .Build());
+
     auto edit_password_row = std::make_unique<EditPasswordRow>(controller_);
     edit_password_row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
