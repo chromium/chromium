@@ -72,6 +72,7 @@ source_set("unit_tests") {
 
   sources = [
     "battery_update_message_handler_unittest.cc",
+    "fast_pair_bluetooth_config_delegate_unittest.cc",
     "quick_pair_mediator_unittest.cc",
     "quick_pair_metrics_logger_unittest.cc",
   ]

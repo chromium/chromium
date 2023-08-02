@@ -46,6 +46,8 @@ class FakeFastPairDelegate : public FastPairDelegate {
   // FastPairDelegate:
   absl::optional<DeviceImageInfo> GetDeviceImageInfo(
       const std::string& mac_address) override;
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
+  GetFastPairableDeviceProperties() override;
   void ForgetDevice(const std::string& mac_address) override;
   void SetAdapterStateController(
       AdapterStateController* adapter_state_controller) override;

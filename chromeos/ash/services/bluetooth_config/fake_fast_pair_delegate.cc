@@ -15,6 +15,12 @@ void FakeFastPairDelegate::SetDeviceImageInfo(const std::string& device_id,
   mac_address_to_images_[device_id] = images;
 }
 
+// Unimplemented.
+std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
+FakeFastPairDelegate::GetFastPairableDeviceProperties() {
+  return std::vector<mojom::PairedBluetoothDevicePropertiesPtr>();
+}
+
 void FakeFastPairDelegate::SetAdapterStateController(
     AdapterStateController* adapter_state_controller) {
   adapter_state_controller_ = adapter_state_controller;
