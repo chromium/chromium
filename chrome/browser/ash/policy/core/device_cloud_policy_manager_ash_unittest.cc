@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -142,11 +143,12 @@ class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
       : DeviceCloudPolicyManagerAsh(std::move(store),
                                     std::move(external_data_manager),
                                     task_runner,
-                                    state_keys_broker) {
+                                    state_keys_broker,
+                                    crd_delegate_) {
     set_component_policy_disabled_for_testing(true);
   }
 
-  ~TestingDeviceCloudPolicyManagerAsh() override {}
+  ~TestingDeviceCloudPolicyManagerAsh() override = default;
 
   ManagedSessionService* GetManagedSessionService() {
     return managed_session_service_.get();
@@ -159,6 +161,9 @@ class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
   reporting::UserAddedRemovedReporter* GetUserAddedRemovedReporter() {
     return user_added_removed_reporter_.get();
   }
+
+ private:
+  FakeStartCrdSessionJobDelegate crd_delegate_;
 };
 
 class DeviceCloudPolicyManagerAshTest
@@ -240,8 +245,9 @@ class DeviceCloudPolicyManagerAshTest
   }
 
   void TearDown() override {
-    if (initializer_)
+    if (initializer_) {
       initializer_->Shutdown();
+    }
     ShutdownManager();
 
     manager_->OnUserManagerWillBeDestroyed(user_manager_.get());
@@ -716,8 +722,9 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(&device_management_service_);
 
-    if (done_)
+    if (done_) {
       return;
+    }
 
     // Process registration.
     ASSERT_TRUE(register_job.IsActive());
@@ -742,8 +749,9 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     EXPECT_FALSE(register_job.IsActive());
     Mock::VerifyAndClearExpectations(&device_management_service_);
 
-    if (done_)
+    if (done_) {
       return;
+    }
 
     // Process policy fetch.
     ASSERT_TRUE(fetch_job.IsActive());
@@ -755,8 +763,9 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
         DeviceManagementService::kSuccess, policy_fetch_response_);
     EXPECT_FALSE(fetch_job.IsActive());
 
-    if (done_)
+    if (done_) {
       return;
+    }
 
     // Process verification.
     DeviceManagementService::JobForTesting robot_auth_fetch_job;
@@ -770,8 +779,9 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(&device_management_service_);
 
-    if (done_)
+    if (done_) {
       return;
+    }
 
     // Process robot auth token fetch.
     ASSERT_TRUE(robot_auth_fetch_job.IsActive());
@@ -786,8 +796,9 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     EXPECT_FALSE(robot_auth_fetch_job.IsActive());
     Mock::VerifyAndClearExpectations(&device_management_service_);
 
-    if (done_)
+    if (done_) {
       return;
+    }
 
     // Set expectations for the second policy refresh that happens after the
     // enrollment completes.
@@ -837,8 +848,9 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
       EXPECT_EQ(device_policy_->GetBlob(),
                 session_manager_client_.device_policy());
     }
-    if (done_)
+    if (done_) {
       return;
+    }
 
     // Policy load.
 

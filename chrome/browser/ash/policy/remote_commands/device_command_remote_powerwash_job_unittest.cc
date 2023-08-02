@@ -10,16 +10,15 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
+#include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,11 +31,11 @@ constexpr base::TimeDelta kVeryoldCommandAge = base::Days(5 * 365 - 1);
 class TestingRemoteCommandsService : public RemoteCommandsService {
  public:
   explicit TestingRemoteCommandsService(MockCloudPolicyClient* client)
-      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryAsh>(
-                                  /*policy_manager=*/nullptr),
-                              client,
-                              /*store=*/nullptr,
-                              PolicyInvalidationScope::kDevice) {}
+      : RemoteCommandsService(
+            /*factory=*/nullptr,
+            client,
+            /*store=*/nullptr,
+            PolicyInvalidationScope::kDevice) {}
 
   TestingRemoteCommandsService(const TestingRemoteCommandsService&) = delete;
   TestingRemoteCommandsService& operator=(const TestingRemoteCommandsService&) =

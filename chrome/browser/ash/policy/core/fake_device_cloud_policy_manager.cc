@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
@@ -20,7 +19,8 @@ FakeDeviceCloudPolicyManager::FakeDeviceCloudPolicyManager(
           std::move(store),
           std::make_unique<MockCloudExternalDataManager>(),
           task_runner,
-          nullptr) {}
+          nullptr,
+          crd_delegate_) {}
 
 FakeDeviceCloudPolicyManager::~FakeDeviceCloudPolicyManager() {
   Shutdown();

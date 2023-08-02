@@ -9,10 +9,11 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/start_crd_session_job_delegate.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,65 +25,9 @@ namespace policy {
 class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
   using OAuthTokenCallback = base::OnceCallback<void(const std::string&)>;
-  using AccessCodeCallback = base::OnceCallback<void(const std::string&)>;
-  using ErrorCallback =
-      base::OnceCallback<void(ResultCode, const std::string&)>;
-  using SessionEndCallback = base::OnceCallback<void(base::TimeDelta)>;
+  using Delegate = StartCrdSessionJobDelegate;
 
-  // Delegate that will start a session with the CRD native host.
-  class Delegate {
-   public:
-    // Session parameters used to start the CRD host.
-    struct SessionParameters {
-      SessionParameters();
-      ~SessionParameters();
-
-      SessionParameters(const SessionParameters&);
-      SessionParameters& operator=(const SessionParameters&);
-      SessionParameters(SessionParameters&&);
-      SessionParameters& operator=(SessionParameters&&);
-
-      std::string oauth_token = "";
-      std::string user_name = "";
-      absl::optional<std::string> admin_email;
-      bool terminate_upon_input = false;
-      bool show_confirmation_dialog = false;
-      bool curtain_local_user_session = false;
-      bool allow_troubleshooting_tools = false;
-      bool show_troubleshooting_tools = false;
-      bool allow_reconnections = false;
-      bool allow_file_transfer = false;
-    };
-
-    virtual ~Delegate() = default;
-
-    // Checks if an active CRD session exists.
-    virtual bool HasActiveSession() const = 0;
-
-    // Terminates the currently active CRD session, and runs `callback` once it
-    // is terminated.
-    virtual void TerminateSession(base::OnceClosure callback) = 0;
-
-    //  Checks if there is a reconnectable session, and if so this will
-    // reconnect to it.
-    // A session is reconnectable when it was created with
-    // `SessionParameters::allow_reconnections` set.
-    // `done_callback` is invoked either when we conclude there is no
-    // reconnectable session, or when we the reconnectable session has been
-    // reestablished.
-    virtual void TryToReconnect(base::OnceClosure done_callback) = 0;
-
-    // Attempts to start CRD host and get Auth Code.
-    // `session_finished_callback` is invoked when an active crd session is
-    // terminated.
-    virtual void StartCrdHostAndGetCode(
-        const SessionParameters& parameters,
-        AccessCodeCallback success_callback,
-        ErrorCallback error_callback,
-        SessionEndCallback session_finished_callback) = 0;
-  };
-
-  explicit DeviceCommandStartCrdSessionJob(Delegate* crd_host_delegate);
+  explicit DeviceCommandStartCrdSessionJob(Delegate& delegate);
   ~DeviceCommandStartCrdSessionJob() override;
 
   DeviceCommandStartCrdSessionJob(const DeviceCommandStartCrdSessionJob&) =
@@ -137,7 +82,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldShowTroubleshootingTools() const;
   bool ShouldAllowFileTransfer() const;
 
-  ErrorCallback GetErrorCallback();
+  Delegate::ErrorCallback GetErrorCallback();
 
   std::unique_ptr<OAuthTokenFetcher> oauth_token_fetcher_;
 
@@ -167,8 +112,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   absl::optional<std::string> oauth_token_for_test_;
 
   // The Delegate is used to interact with chrome services and CRD host.
-  // Owned by DeviceCommandsFactoryAsh.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ref<Delegate> delegate_;
 
   bool terminate_session_attempted_ = false;
 
