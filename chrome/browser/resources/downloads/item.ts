@@ -120,19 +120,20 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       },
 
       showCancel_: {
-        computed: 'computeShowCancel_(data.state)',
+        computed: 'computeShowCancel_(data.state, updateDeepScanningUx_)',
         type: Boolean,
         value: false,
       },
 
       showProgress_: {
-        computed: 'computeShowProgress_(showCancel_, data.percent)',
+        computed: 'computeShowProgress_(showCancel_, data.percent,' +
+            'updateDeepScanningUx_)',
         type: Boolean,
         value: false,
       },
 
       showOpenNow_: {
-        computed: 'computeShowOpenNow_(data.state)',
+        computed: 'computeShowOpenNow_(data.state, updateDeepScanningUx_)',
         type: Boolean,
         value: false,
       },
@@ -272,14 +273,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return this.computeDescription_() !== '';
   }
 
+  private computeSecondLineVisible_(): boolean {
+    return this.updateDeepScanningUx_ && this.data &&
+        this.data.state === States.ASYNC_SCANNING;
+  }
+
   private computeDescription_(): string {
+    if (!this.data) {
+      return '';
+    }
+
     const data = this.data;
 
     switch (data.state) {
       case States.COMPLETE:
         switch (data.dangerType) {
           case DangerType.DEEP_SCANNED_SAFE:
-            return loadTimeData.getString('deepScannedSafeDesc');
+            return this.updateDeepScanningUx_ ?
+                '' :
+                loadTimeData.getString('deepScannedSafeDesc');
           case DangerType.DEEP_SCANNED_OPENED_DANGEROUS:
             return loadTimeData.getString('deepScannedOpenedDangerousDesc');
         }
@@ -353,7 +365,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
 
       if (this.data.state === States.ASYNC_SCANNING) {
-        return 'cr:info';
+        return this.updateDeepScanningUx_ ? 'cr:warning' : 'cr:info';
       }
 
       if (this.data.state === States.PROMPT_FOR_SCANNING) {
@@ -388,7 +400,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
 
       if (this.data.state === States.ASYNC_SCANNING) {
-        return 'grey';
+        return this.updateDeepScanningUx_ ? 'yellow' : 'grey';
       }
 
       if (this.data.state === States.PROMPT_FOR_SCANNING) {
@@ -469,20 +481,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeShowCancel_(): boolean {
-    return this.data.state === States.IN_PROGRESS ||
-        this.data.state === States.PAUSED ||
-        this.data.state === States.ASYNC_SCANNING;
+    return !!this.data &&
+        (this.data.state === States.IN_PROGRESS ||
+         this.data.state === States.PAUSED ||
+         (this.data.state === States.ASYNC_SCANNING &&
+          !this.updateDeepScanningUx_));
   }
 
   private computeShowProgress_(): boolean {
+    if (this.data && this.data.state === States.ASYNC_SCANNING) {
+      return true;
+    }
     return this.showCancel_ && this.data.percent >= -1 &&
-        this.data.state !== States.ASYNC_SCANNING &&
         this.data.state !== States.PROMPT_FOR_SCANNING;
   }
 
   private computeShowOpenNow_(): boolean {
     const allowOpenNow = loadTimeData.getBoolean('allowOpenNow');
-    return this.data.state === States.ASYNC_SCANNING && allowOpenNow;
+    return !!this.data && this.data.state === States.ASYNC_SCANNING &&
+        allowOpenNow && !this.updateDeepScanningUx_;
   }
 
   private computeShowDeepScan_(): boolean {
@@ -507,7 +524,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private isIndeterminate_(): boolean {
-    return this.data.percent === -1;
+    return this.data.state === States.ASYNC_SCANNING ||
+        this.data.percent === -1;
   }
 
   private observeControlledBy_() {

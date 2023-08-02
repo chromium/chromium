@@ -2194,6 +2194,14 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown on chrome://downloads when a download is being scanned">
         This file is being scanned.
       </message>
+      <message name="IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED"
+          desc="Message shown on chrome://downloads when a download is being scanned">
+        This file might be a virus or malware. You can send it to Google to check if it's unsafe.
+      </message>
+      <message name="IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED"
+          desc="Second line of the message shown on chrome://downloads when a download is being scanned. Follows IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED">
+        Scanning for malware...
+      </message>
       <message name="IDS_BLOCK_REASON_ACCOUNT_COMPROMISE"
         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is associated with account compromise.">
         This file could let attackers steal your personal information.

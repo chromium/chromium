@@ -136,8 +136,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
   source->AddLocalizedString("insecureDownloadDesc",
                              IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
-  source->AddLocalizedString("asyncScanningDownloadDesc",
-                             IDS_BLOCK_REASON_DEEP_SCANNING);
   source->AddLocalizedString("accountCompromiseDownloadDesc",
                              IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
   source->AddBoolean("hasShowInFolder",
@@ -145,6 +143,12 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
 
   bool update_deep_scanning_ux =
       base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
+  source->AddLocalizedString("asyncScanningDownloadDesc",
+                             update_deep_scanning_ux
+                                 ? IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED
+                                 : IDS_BLOCK_REASON_DEEP_SCANNING);
+  source->AddLocalizedString("asyncScanningDownloadDescSecond",
+                             IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED);
   source->AddLocalizedString("promptForScanningDesc",
                              update_deep_scanning_ux
                                  ? IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED
