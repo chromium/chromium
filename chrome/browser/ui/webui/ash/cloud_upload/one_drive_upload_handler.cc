@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
@@ -116,6 +117,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   // Destination url.
   auto odfs_info = GetODFSInfo(profile_);
   if (!odfs_info) {
+    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
     OnEndUpload(base::unexpected(GetGenericErrorMessage()),
                 OfficeFilesUploadResult::kFileSystemNotFound);
     return;
@@ -126,6 +129,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
+    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
     OnEndUpload(base::unexpected(GetGenericErrorMessage()),
                 OfficeFilesUploadResult::kDestinationUrlError);
     return;
