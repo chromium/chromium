@@ -33,9 +33,7 @@ import sys
 from urllib.request import urlopen
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-URL_PREFIX = 'https://commondatastorage.googleapis.com'
-URL_PATH = 'chrome-linux-sysroot/toolchain'
+SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
 
 VALID_ARCHS = ('amd64', 'i386', 'armhf', 'arm64', 'armel', 'mipsel', 'mips64el')
 
@@ -47,6 +45,8 @@ ARCH_TRANSLATIONS = {
     'mips64': 'mips64el',
 }
 
+DEFAULT_SYSROOTS_PATH = os.path.join(os.path.relpath(SCRIPT_DIR, SRC_DIR),
+                                     'sysroots.json')
 DEFAULT_TARGET_PLATFORM = 'bullseye'
 
 
@@ -68,6 +68,8 @@ def GetSha1(filename):
 
 def main(args):
   parser = optparse.OptionParser('usage: %prog [OPTIONS]', description=__doc__)
+  parser.add_option('--sysroots-json-path',
+                    help='The location of sysroots.json file')
   parser.add_option('--arch',
                     help='Sysroot architecture: %s' % ', '.join(VALID_ARCHS))
   parser.add_option('--all', action='store_true',
@@ -77,18 +79,23 @@ def main(args):
                     help='Print the hash of the sysroot for the given arch.')
   options, _ = parser.parse_args(args)
 
+  if options.sysroots_json_path:
+    sysroots_json_path = options.sysroots_json_path
+  else:
+    sysroots_json_path = DEFAULT_SYSROOTS_PATH
+
   if options.print_key:
     arch = options.print_key
     print(
-        GetSysrootDict(DEFAULT_TARGET_PLATFORM,
+        GetSysrootDict(sysroots_json_path, DEFAULT_TARGET_PLATFORM,
                        ARCH_TRANSLATIONS.get(arch, arch))['Key'])
     return 0
   if options.arch:
-    InstallSysroot(DEFAULT_TARGET_PLATFORM,
+    InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORM,
                    ARCH_TRANSLATIONS.get(options.arch, options.arch))
   elif options.all:
     for arch in VALID_ARCHS:
-      InstallSysroot(DEFAULT_TARGET_PLATFORM, arch)
+      InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORM, arch)
   else:
     print('You much specify one of the options.')
     return 1
@@ -96,11 +103,11 @@ def main(args):
   return 0
 
 
-def GetSysrootDict(target_platform, target_arch):
+def GetSysrootDict(sysroots_json_path, target_platform, target_arch):
   if target_arch not in VALID_ARCHS:
     raise Error('Unknown architecture: %s' % target_arch)
 
-  sysroots_file = os.path.join(SCRIPT_DIR, 'sysroots.json')
+  sysroots_file = os.path.join(SRC_DIR, sysroots_json_path)
   sysroots = json.load(open(sysroots_file))
   sysroot_key = '%s_%s' % (target_platform, target_arch)
   if sysroot_key not in sysroots:
@@ -108,17 +115,18 @@ def GetSysrootDict(target_platform, target_arch):
   return sysroots[sysroot_key]
 
 
-def InstallSysroot(target_platform, target_arch):
-  sysroot_dict = GetSysrootDict(target_platform, target_arch)
+def InstallSysroot(sysroots_json_path, target_platform, target_arch):
+  sysroot_dict = GetSysrootDict(sysroots_json_path, target_platform,
+                                target_arch)
   tarball_filename = sysroot_dict['Tarball']
   tarball_sha1sum = sysroot_dict['Sha1Sum']
+  url_prefix = sysroot_dict['URL']
   # TODO(thestig) Consider putting this elsewhere to avoid having to recreate
   # it on every build.
   linux_dir = os.path.dirname(SCRIPT_DIR)
   sysroot = os.path.join(linux_dir, sysroot_dict['SysrootDir'])
 
-  url = '%s/%s/%s/%s' % (URL_PREFIX, URL_PATH, tarball_sha1sum,
-                         tarball_filename)
+  url = '%s/%s/%s' % (url_prefix, tarball_sha1sum, tarball_filename)
 
   stamp = os.path.join(sysroot, '.stamp')
   if os.path.exists(stamp):

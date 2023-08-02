@@ -3,42 +3,49 @@
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "4c00ba2ad61ca7cc39392f192aa39420e086777c",
         "SysrootDir": "debian_bullseye_amd64-sysroot",
-        "Tarball": "debian_bullseye_amd64_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_amd64_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_arm64": {
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "41a6c8dec4c4304d6509e30cbaf9218dffb4438e",
         "SysrootDir": "debian_bullseye_arm64-sysroot",
-        "Tarball": "debian_bullseye_arm64_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_arm64_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_armel": {
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "bcff5c5a4060f3be7bff28aa9ff28c100b70a858",
         "SysrootDir": "debian_bullseye_armel-sysroot",
-        "Tarball": "debian_bullseye_armel_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_armel_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_armhf": {
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "c153bf1027a67eec0f6ea2efa190e29c9c06e603",
         "SysrootDir": "debian_bullseye_armhf-sysroot",
-        "Tarball": "debian_bullseye_armhf_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_armhf_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_i386": {
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "cfba9004de1ace04f9604c13c30abad3be90e58f",
         "SysrootDir": "debian_bullseye_i386-sysroot",
-        "Tarball": "debian_bullseye_i386_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_i386_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_mips64el": {
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "3ce49d1c6b5fef17ad512f2d663a175829ae0b72",
         "SysrootDir": "debian_bullseye_mips64el-sysroot",
-        "Tarball": "debian_bullseye_mips64el_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_mips64el_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_mipsel": {
         "Key": "20230611T210420Z-2",
         "Sha1Sum": "1b857baabd7999ff0d6949a8973f896836ac45ac",
         "SysrootDir": "debian_bullseye_mipsel-sysroot",
-        "Tarball": "debian_bullseye_mipsel_sysroot.tar.xz"
+        "Tarball": "debian_bullseye_mipsel_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     }
 }
