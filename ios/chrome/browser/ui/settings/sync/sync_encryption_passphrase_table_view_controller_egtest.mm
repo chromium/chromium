@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+#import "base/ios/ios_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -117,6 +118,11 @@ NSString* const kPassphrase = @"hello";
 // Tests Sync is on after opening settings from the Infobar and entering the
 // passphrase.
 - (void)testShowAddSyncPassphrphrase {
+  // TODO(crbug.com/1469537): Test fails when run on iOS 16 and iOS 17.
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 16 and iOS 17.");
+  }
+
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
