@@ -20,6 +20,9 @@
 namespace ash::privacy_hub_util {
 
 void SetFrontend(PrivacyHubDelegate* ptr) {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return;
+  }
   PrivacyHubController* const controller = PrivacyHubController::Get();
   if (controller != nullptr) {
     // Controller may not be available when used from a test.
@@ -32,28 +35,35 @@ bool MicrophoneSwitchState() {
 }
 
 void SetUpCameraCountObserver() {
-  DCHECK(Shell::Get());
-  if (PrivacyHubController* privacy_hub_controller =
-          Shell::Get()->privacy_hub_controller()) {
-    CameraPrivacySwitchController& camera_controller =
-        privacy_hub_controller->camera_controller();
-    base::RepeatingCallback<void(int)> update_camera_count_in_privacy_hub =
-        base::BindRepeating(
-            [](CameraPrivacySwitchController* controller, int camera_count) {
-              controller->OnCameraCountChanged(camera_count);
-            },
-            &camera_controller);
-    auto notifier = std::make_unique<CameraPresenceNotifier>(
-        std::move(update_camera_count_in_privacy_hub));
-    notifier->Start();
-
-    static const char kUserDataKey = '\0';
-    camera_controller.SetUserData(&kUserDataKey, std::move(notifier));
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return;
   }
+
+  DCHECK(Shell::Get());
+  PrivacyHubController* privacy_hub_controller =
+      Shell::Get()->privacy_hub_controller();
+  CHECK(privacy_hub_controller);
+  CameraPrivacySwitchController& camera_controller =
+      privacy_hub_controller->camera_controller();
+  base::RepeatingCallback<void(int)> update_camera_count_in_privacy_hub =
+      base::BindRepeating(
+          [](CameraPrivacySwitchController* controller, int camera_count) {
+            controller->OnCameraCountChanged(camera_count);
+          },
+          &camera_controller);
+  auto notifier = std::make_unique<CameraPresenceNotifier>(
+      std::move(update_camera_count_in_privacy_hub));
+  notifier->Start();
+
+  static const char kUserDataKey = '\0';
+  camera_controller.SetUserData(&kUserDataKey, std::move(notifier));
 }
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationAttempted(const std::string& name) {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return;
+  }
   PrivacyHubController* controller = PrivacyHubController::Get();
   // TODO(b/288854399): Remove this if.
   if (controller) {
@@ -63,6 +73,9 @@ void TrackGeolocationAttempted(const std::string& name) {
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name) {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return;
+  }
   PrivacyHubController* controller = PrivacyHubController::Get();
   if (controller) {
     controller->geolocation_controller().TrackGeolocationRelinquished(name);
@@ -76,6 +89,9 @@ absl::optional<bool> camera_led_fallback_for_testing{};
 // TODO(b/289510726): remove when all cameras fully support the software
 // switch.
 bool UsingCameraLEDFallback() {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return false;
+  }
   if (!camera_led_fallback_for_testing.has_value()) {
     PrivacyHubController* const controller = PrivacyHubController::Get();
     CHECK(controller);
@@ -100,6 +116,9 @@ ScopedCameraLedFallbackForTesting::~ScopedCameraLedFallbackForTesting() {
 }
 
 void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return;
+  }
   // Wraps the `AppAccessNotifier` to be used from
   // `PrivacyHubNotificationController`.
   class Wrapper : public SensorDisabledNotificationDelegate {

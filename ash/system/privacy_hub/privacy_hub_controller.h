@@ -12,6 +12,7 @@
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
@@ -32,29 +33,32 @@ class ASH_EXPORT PrivacyHubController {
     kMaxValue = kAllowed,
   };
 
-  PrivacyHubController();
+  PrivacyHubController(base::PassKey<PrivacyHubController>);
 
   PrivacyHubController(const PrivacyHubController&) = delete;
   PrivacyHubController& operator=(const PrivacyHubController&) = delete;
 
   ~PrivacyHubController();
 
+  // Creates the PrivacyHub controller with the appropriate sub-components based
+  // on the feature flags.
+  static std::unique_ptr<PrivacyHubController> CreatePrivacyHubController();
+
   // Returns the PrivacyHubController instance from the Shell if it exists,
   // otherwise returns nullptr.
   static PrivacyHubController* Get();
 
-  CameraPrivacySwitchController& camera_controller() {
-    return camera_controller_;
-  }
-  MicrophonePrivacySwitchController& microphone_controller() {
-    return microphone_controller_;
-  }
-  SpeakOnMuteDetectionPrivacySwitchController& speak_on_mute_controller() {
-    return speak_on_mute_controller_;
-  }
-  GeolocationPrivacySwitchController& geolocation_controller() {
-    return geolocation_switch_controller_;
-  }
+  // Gets the camera controller. CHECK-fails if not available.
+  CameraPrivacySwitchController& camera_controller();
+
+  // Gets the microphone controller. CHECK-fails if not available.
+  MicrophonePrivacySwitchController& microphone_controller();
+
+  // Gets the speak-on-mute controller. CHECK-fails if not available.
+  SpeakOnMuteDetectionPrivacySwitchController& speak_on_mute_controller();
+
+  // Gets the geolocation controller. CHECK-fails if not available.
+  GeolocationPrivacySwitchController& geolocation_controller();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -66,10 +70,13 @@ class ASH_EXPORT PrivacyHubController {
   PrivacyHubDelegate* frontend() { return frontend_; }
 
  private:
-  CameraPrivacySwitchController camera_controller_;
-  MicrophonePrivacySwitchController microphone_controller_;
-  SpeakOnMuteDetectionPrivacySwitchController speak_on_mute_controller_;
-  GeolocationPrivacySwitchController geolocation_switch_controller_;
+  std::unique_ptr<CameraPrivacySwitchController> camera_controller_;
+  std::unique_ptr<CameraPrivacySwitchDisabled> camera_disabled_;
+  std::unique_ptr<MicrophonePrivacySwitchController> microphone_controller_;
+  std::unique_ptr<SpeakOnMuteDetectionPrivacySwitchController>
+      speak_on_mute_controller_;
+  std::unique_ptr<GeolocationPrivacySwitchController>
+      geolocation_switch_controller_;
   raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
 };
 

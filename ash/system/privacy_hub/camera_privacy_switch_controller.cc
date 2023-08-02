@@ -18,6 +18,7 @@
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
@@ -64,30 +65,27 @@ const base::TimeDelta kCameraLedFallbackNotificationExtensionPeriod =
 
 }  // namespace
 
-CameraPrivacySwitchController::CameraPrivacySwitchController()
+CameraPrivacySwitchSynchronizer::CameraPrivacySwitchSynchronizer()
     : switch_api_(std::make_unique<VCDPrivacyAdapter>()) {
   Shell::Get()->session_controller()->AddObserver(this);
-  InitUsingCameraLEDFallback();
 }
 
-CameraPrivacySwitchController::~CameraPrivacySwitchController() {
+CameraPrivacySwitchSynchronizer::~CameraPrivacySwitchSynchronizer() {
   Shell::Get()->session_controller()->RemoveObserver(this);
   media::CameraHalDispatcherImpl::GetInstance()
       ->RemoveCameraPrivacySwitchObserver(this);
 }
 
-void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
+void CameraPrivacySwitchSynchronizer::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // Subscribing again to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
       prefs::kUserCameraAllowed,
-      base::BindRepeating(&CameraPrivacySwitchController::OnPreferenceChanged,
+      base::BindRepeating(&CameraPrivacySwitchSynchronizer::OnPreferenceChanged,
                           base::Unretained(this)));
 
-  // Add camera observers after `pref_change_registrar_` is created because
-  // `OnCameraSWPrivacySwitchStateChanged` accesses a pref value.
   if (!is_camera_observer_added_) {
     // Subscribe to the camera HW/SW privacy switch events.
     auto device_id_to_privacy_switch_state =
@@ -96,29 +94,40 @@ void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
     is_camera_observer_added_ = true;
   }
 
-  // To ensure consistent values between the user pref and camera backend
+  // To ensure consistent values between the user pref and camera backend.
   OnPreferenceChanged(prefs::kUserCameraAllowed);
 }
 
-void CameraPrivacySwitchController::OnPreferenceChanged(
-    const std::string& pref_name) {
-  DCHECK_EQ(pref_name, prefs::kUserCameraAllowed);
+void CameraPrivacySwitchSynchronizer::OnCameraSWPrivacySwitchStateChanged(
+    // This makes sure that the backend state is in sync with the pref.
+    // The backend service sometimes may have a wrong camera switch state after
+    // restart. This is necessary to correct it.
+    cros::mojom::CameraPrivacySwitchState state) {
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
-  switch_api_->SetCameraSWPrivacySwitch(pref_val);
-
-  // Always remove the sensor disabled notification if the sensor was unmuted.
-  if (pref_val == CameraSWPrivacySwitchSetting::kEnabled) {
-    PrivacyHubNotificationController::Get()->RemoveSoftwareSwitchNotification(
-        SensorDisabledNotificationDelegate::Sensor::kCamera);
+  // Note that camera ON means privacy switch OFF.
+  cros::mojom::CameraPrivacySwitchState pref_state =
+      pref_val == CameraSWPrivacySwitchSetting::kEnabled
+          ? cros::mojom::CameraPrivacySwitchState::OFF
+          : cros::mojom::CameraPrivacySwitchState::ON;
+  if (state != pref_state) {
+    SetCameraSWPrivacySwitch(pref_val);
   }
 }
 
-void CameraPrivacySwitchController::OnCameraCountChanged(int new_camera_count) {
-  camera_count_ = new_camera_count;
+void CameraPrivacySwitchSynchronizer::OnPreferenceChanged(
+    const std::string& pref_name) {
+  DCHECK_EQ(pref_name, prefs::kUserCameraAllowed);
+
+  OnPreferenceChangedImpl();
+
+  // This needs to be called after OnPreferenceChangedImpl() as that call can
+  // change the pref value.
+  const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
+  switch_api_->SetCameraSWPrivacySwitch(pref_val);
 }
 
 CameraSWPrivacySwitchSetting
-CameraPrivacySwitchController::GetUserSwitchPreference() {
+CameraPrivacySwitchSynchronizer::GetUserSwitchPreference() {
   DCHECK(pref_change_registrar_);
   DCHECK(pref_change_registrar_->prefs());
   const bool allowed =
@@ -128,22 +137,42 @@ CameraPrivacySwitchController::GetUserSwitchPreference() {
                  : CameraSWPrivacySwitchSetting::kDisabled;
 }
 
-void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
+void CameraPrivacySwitchSynchronizer::SetCameraPrivacySwitchAPIForTest(
     std::unique_ptr<CameraPrivacySwitchAPI> switch_api) {
   DCHECK(switch_api);
   switch_api_ = std::move(switch_api);
 }
 
-void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
-    cros::mojom::CameraPrivacySwitchState state) {
-  const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
-  cros::mojom::CameraPrivacySwitchState pref_state =
-      pref_val == CameraSWPrivacySwitchSetting::kEnabled
-          ? cros::mojom::CameraPrivacySwitchState::OFF
-          : cros::mojom::CameraPrivacySwitchState::ON;
-  if (state != pref_state) {
-    switch_api_->SetCameraSWPrivacySwitch(pref_val);
+void CameraPrivacySwitchSynchronizer::SetCameraSWPrivacySwitch(
+    CameraSWPrivacySwitchSetting value) {
+  switch_api_->SetCameraSWPrivacySwitch(value);
+}
+
+void CameraPrivacySwitchSynchronizer::SetUserSwitchPreference(
+    CameraSWPrivacySwitchSetting value) {
+  CHECK(pref_change_registrar_);
+  CHECK(pref_change_registrar_->prefs());
+  pref_change_registrar_->prefs()->SetBoolean(
+      prefs::kUserCameraAllowed,
+      value == CameraSWPrivacySwitchSetting::kEnabled);
+}
+
+CameraPrivacySwitchController::CameraPrivacySwitchController() {
+  InitUsingCameraLEDFallback();
+}
+
+CameraPrivacySwitchController::~CameraPrivacySwitchController() {}
+
+void CameraPrivacySwitchController::OnPreferenceChangedImpl() {
+  // Always remove the sensor disabled notification if the sensor was unmuted.
+  if (GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled) {
+    PrivacyHubNotificationController::Get()->RemoveSoftwareSwitchNotification(
+        SensorDisabledNotificationDelegate::Sensor::kCamera);
   }
+}
+
+void CameraPrivacySwitchController::OnCameraCountChanged(int new_camera_count) {
+  camera_count_ = new_camera_count;
 }
 
 void CameraPrivacySwitchController::ActiveApplicationsChanged(
@@ -272,6 +301,19 @@ bool CameraPrivacySwitchController::InNotificationExtensionPeriod() {
   }
   return base::Time::Now() < (last_active_notification_update_time_ +
                               kCameraLedFallbackNotificationExtensionPeriod);
+}
+
+void CameraPrivacySwitchDisabled::OnPreferenceChangedImpl() {
+  DCHECK(!features::IsCrosPrivacyHubEnabled() &&
+         !base::FeatureList::IsEnabled(features::kVideoConference));
+  const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
+  // Only Privacy hub and VC manipulates the pref, therefore if the camera is
+  // disabled and the privacy hub and VC is disabled we need to fix the value.
+  // This will automatically update the camera backend.
+  if (pref_val != CameraSWPrivacySwitchSetting::kEnabled) {
+    LOG(WARNING) << "Global camera switch disabled. Re-enabling.";
+    SetUserSwitchPreference(CameraSWPrivacySwitchSetting::kEnabled);
+  }
 }
 
 }  // namespace ash
