@@ -211,11 +211,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
       bool is_back_buffer = false);
 
-  // Returns allowed Dawn texture usages based on format, device features, etc.
-  wgpu::TextureUsage GetAllowedDawnUsages(
-      const wgpu::Device& device,
-      const wgpu::TextureFormat wgpu_format) const;
-
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
 
