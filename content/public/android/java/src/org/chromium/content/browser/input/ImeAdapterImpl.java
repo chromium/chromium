@@ -297,8 +297,7 @@ public class ImeAdapterImpl
 
         // Offset the gesture rectangles to convert from screen coordinates to window coordinates.
         int[] screenLocation = new int[2];
-        mWebContents.getViewAndroidDelegate().getContainerView().getLocationOnScreen(
-                screenLocation);
+        getContainerView().getLocationOnScreen(screenLocation);
         request.getGestureData().startRect.x -= screenLocation[0];
         request.getGestureData().startRect.y -= screenLocation[1];
         if (request.getGestureData().endRect != null) {
@@ -1096,8 +1095,7 @@ public class ImeAdapterImpl
         Point cursorPosition = new Point(caretX, caretY);
         if (!focusedEditBounds.isEmpty()) {
             int[] screenLocation = new int[2];
-            mWebContents.getViewAndroidDelegate().getContainerView().getLocationOnScreen(
-                    screenLocation);
+            getContainerView().getLocationOnScreen(screenLocation);
             int contentOffsetY = mWebContents.getRenderCoordinates().getContentOffsetYPixInt();
             focusedEditBounds.offset(0, contentOffsetY);
             cursorPosition.offset(screenLocation[0], screenLocation[1] + contentOffsetY);
@@ -1178,7 +1176,7 @@ public class ImeAdapterImpl
 
                 @Override
                 public View getContainerView() {
-                    return mWebContents.getViewAndroidDelegate().getContainerView();
+                    return ImeAdapterImpl.this.getContainerView();
                 }
 
                 @Override
