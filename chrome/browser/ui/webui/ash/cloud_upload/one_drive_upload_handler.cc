@@ -114,23 +114,13 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   io_task_controller_->AddObserver(this);
 
   // Destination url.
-  ProviderId provider_id =
-      ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
-  Service* service = Service::Get(profile_);
-  std::vector<ProvidedFileSystemInfo> file_systems =
-      service->GetProvidedFileSystemInfoList(provider_id);
-  // One and only one filesystem should be mounted for the ODFS extension.
-  if (file_systems.size() != 1u) {
-    if (file_systems.empty()) {
-      LOG(ERROR) << "No file systems found for the ODFS Extension";
-    } else {
-      LOG(ERROR) << "Multiple file systems found for the ODFS Extension";
-    }
+  auto odfs_info = GetODFSInfo(profile_);
+  if (!odfs_info) {
     OnEndUpload(base::unexpected(GetGenericErrorMessage()),
                 OfficeFilesUploadResult::kFileSystemNotFound);
     return;
   }
-  destination_folder_path_ = file_systems[0].mount_path();
+  destination_folder_path_ = odfs_info->mount_path();
   FileSystemURL destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path_);
   // TODO (b/243095484) Define error behavior.
