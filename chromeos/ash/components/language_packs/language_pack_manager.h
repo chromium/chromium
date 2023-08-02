@@ -100,8 +100,8 @@ struct PackSpecPair {
   std::string feature_id;
   std::string locale;
 
-  PackSpecPair(const std::string& feature_id, const std::string& locale)
-      : feature_id(feature_id), locale(locale) {}
+  PackSpecPair(std::string feature_id, std::string locale)
+      : feature_id(std::move(feature_id)), locale(std::move(locale)) {}
 
   bool operator==(const PackSpecPair& other) const {
     return (feature_id == other.feature_id && locale == other.locale);
