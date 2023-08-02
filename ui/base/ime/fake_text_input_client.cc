@@ -85,6 +85,10 @@ void FakeTextInputClient::SetFlags(const int flags) {
   flags_ = flags;
 }
 
+void FakeTextInputClient::SetUrl(const GURL& url) {
+  url_ = url;
+}
+
 bool FakeTextInputClient::CanComposeInline() const {
   return false;
 }
@@ -206,6 +210,13 @@ void FakeTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,
     bool is_composition_committed) {}
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+ui::TextInputClient::EditingContext
+FakeTextInputClient::GetTextEditingContext() {
+  return EditingContext{.page_url = url_};
+}
 #endif
 
 }  // namespace ui

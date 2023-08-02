@@ -2698,6 +2698,13 @@ BASE_FEATURE(kInputDeviceSettingsSplit,
              "InputDeviceSettingsSplit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables bug fix for dead keys on the Terminal app.
+// When enabled, dead keys correctly emit the 'Dead' event on key down for the
+// Terminal.
+BASE_FEATURE(kInputMethodDeadKeyFixForTerminal,
+             "InputMethodDeadKeyFixForTerminal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables peripheral customization to be split per device.
 BASE_FEATURE(kPeripheralCustomization,
              "PeripheralCustomization",

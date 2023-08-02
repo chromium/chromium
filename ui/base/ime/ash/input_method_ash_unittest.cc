@@ -11,12 +11,14 @@
 #include <queue>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1228,6 +1230,129 @@ TEST_F(InputMethodAshKeyEventTest, DeadKeyPressTest) {
   EXPECT_EQ(eventA.flags(), key_event.flags());
   EXPECT_EQ(ui::DomKey::PROCESS, key_event.GetDomKey());
   EXPECT_EQ(eventA.time_stamp(), key_event.time_stamp());
+}
+
+TEST_F(InputMethodAshTest, UnhandledDeadKeyForNonTerminalSendsProcessKeyPress) {
+  base::test::ScopedFeatureList feature_list(
+      features::kInputMethodDeadKeyFixForTerminal);
+
+  for (const GURL& url : {
+           GURL("chrome-untrusted://emoji"),
+           GURL("chrome://crosh"),
+           GURL("chrome://terminal"),
+       }) {
+    FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+    fake_text_input_client.SetUrl(url);
+    InputMethodAsh ime(this);
+    ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+    ui::KeyEvent key_press(ui::ET_KEY_PRESSED,
+                           ui::VKEY_OEM_4,  // '['
+                           ui::DomCode::BRACKET_LEFT, 0,
+                           ui::DomKey::DeadKeyFromCombiningCharacter('^'),
+                           ui::EventTimeForNow());
+    ime.DispatchKeyEvent(&key_press);
+    std::move(mock_ime_engine_handler_->last_passed_callback())
+        .Run(ui::ime::KeyEventHandledState::kNotHandled);
+    const ui::KeyEvent dispatched_key_press = dispatched_key_event_;
+
+    ui::KeyEvent key_release(ui::ET_KEY_RELEASED,
+                             ui::VKEY_OEM_4,  // '['
+                             ui::DomCode::BRACKET_LEFT, 0,
+                             ui::DomKey::DeadKeyFromCombiningCharacter('^'),
+                             ui::EventTimeForNow());
+    ime.DispatchKeyEvent(&key_release);
+    std::move(mock_ime_engine_handler_->last_passed_callback())
+        .Run(ui::ime::KeyEventHandledState::kNotHandled);
+    const ui::KeyEvent dispatched_key_release = dispatched_key_event_;
+
+    EXPECT_EQ(dispatched_key_press.type(), ui::ET_KEY_PRESSED);
+    EXPECT_EQ(dispatched_key_press.key_code(), ui::VKEY_PROCESSKEY);
+    EXPECT_EQ(dispatched_key_press.code(), ui::DomCode::BRACKET_LEFT);
+    EXPECT_EQ(dispatched_key_press.GetDomKey(), ui::DomKey::PROCESS);
+    EXPECT_EQ(dispatched_key_release.type(), ui::ET_KEY_RELEASED);
+    EXPECT_EQ(dispatched_key_release.key_code(), ui::VKEY_OEM_4);
+    EXPECT_EQ(dispatched_key_release.code(), ui::DomCode::BRACKET_LEFT);
+    EXPECT_EQ(dispatched_key_release.GetDomKey(),
+              ui::DomKey::DeadKeyFromCombiningCharacter('^'));
+  }
+}
+
+TEST_F(InputMethodAshTest, UnhandledDeadKeyForTerminalSendsDeadKeys) {
+  base::test::ScopedFeatureList feature_list(
+      features::kInputMethodDeadKeyFixForTerminal);
+
+  for (const GURL& url : {
+           GURL("chrome-untrusted://crosh"),
+           GURL("chrome-untrusted://croshy"),
+           GURL("chrome-untrusted://crosh/"),
+           GURL("chrome-untrusted://crosh/a?b=1&c=2#d"),
+           GURL("chrome-untrusted://terminal"),
+           GURL("chrome-untrusted://terminaly"),
+           GURL("chrome-untrusted://terminal/"),
+           GURL("chrome-untrusted://terminal/a?b=1&c=2#d"),
+       }) {
+    FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+    fake_text_input_client.SetUrl(url);
+    InputMethodAsh ime(this);
+    ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+    ui::KeyEvent key_press(ui::ET_KEY_PRESSED,
+                           ui::VKEY_OEM_4,  // '['
+                           ui::DomCode::BRACKET_LEFT, 0,
+                           ui::DomKey::DeadKeyFromCombiningCharacter('^'),
+                           ui::EventTimeForNow());
+    ime.DispatchKeyEvent(&key_press);
+    std::move(mock_ime_engine_handler_->last_passed_callback())
+        .Run(ui::ime::KeyEventHandledState::kNotHandled);
+    const ui::KeyEvent dispatched_key_press = dispatched_key_event_;
+
+    ui::KeyEvent key_release(ui::ET_KEY_RELEASED,
+                             ui::VKEY_OEM_4,  // '['
+                             ui::DomCode::BRACKET_LEFT, 0,
+                             ui::DomKey::DeadKeyFromCombiningCharacter('^'),
+                             ui::EventTimeForNow());
+    ime.DispatchKeyEvent(&key_release);
+    std::move(mock_ime_engine_handler_->last_passed_callback())
+        .Run(ui::ime::KeyEventHandledState::kNotHandled);
+    const ui::KeyEvent dispatched_key_release = dispatched_key_event_;
+
+    EXPECT_EQ(dispatched_key_press.type(), ui::ET_KEY_PRESSED);
+    EXPECT_EQ(dispatched_key_press.key_code(), ui::VKEY_OEM_4);
+    EXPECT_EQ(dispatched_key_press.code(), ui::DomCode::BRACKET_LEFT);
+    EXPECT_EQ(dispatched_key_press.GetDomKey(),
+              ui::DomKey::DeadKeyFromCombiningCharacter('^'));
+    EXPECT_EQ(dispatched_key_release.type(), ui::ET_KEY_RELEASED);
+    EXPECT_EQ(dispatched_key_release.key_code(), ui::VKEY_OEM_4);
+    EXPECT_EQ(dispatched_key_release.code(), ui::DomCode::BRACKET_LEFT);
+    EXPECT_EQ(dispatched_key_release.GetDomKey(),
+              ui::DomKey::DeadKeyFromCombiningCharacter('^'));
+  }
+}
+
+TEST_F(InputMethodAshTest, DeadKeyHandledByAssistiveSendsProcessKey) {
+  base::test::ScopedFeatureList feature_list(
+      features::kInputMethodDeadKeyFixForTerminal);
+
+  FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.SetUrl(GURL("chrome-untrusted://crosh"));
+  InputMethodAsh ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ui::KeyEvent key_press(ui::ET_KEY_PRESSED,
+                         ui::VKEY_OEM_4,  // '['
+                         ui::DomCode::BRACKET_LEFT, 0,
+                         ui::DomKey::DeadKeyFromCombiningCharacter('^'),
+                         ui::EventTimeForNow());
+  ime.DispatchKeyEvent(&key_press);
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
+  const ui::KeyEvent dispatched_key_press = dispatched_key_event_;
+
+  EXPECT_EQ(dispatched_key_press.type(), ui::ET_KEY_PRESSED);
+  EXPECT_EQ(dispatched_key_press.key_code(), ui::VKEY_PROCESSKEY);
+  EXPECT_EQ(dispatched_key_press.code(), ui::DomCode::BRACKET_LEFT);
+  EXPECT_EQ(dispatched_key_press.GetDomKey(), ui::DomKey::PROCESS);
 }
 
 TEST_F(InputMethodAshKeyEventTest, KeyboardImeFlags) {

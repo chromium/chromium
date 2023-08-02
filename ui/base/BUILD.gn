@@ -1169,6 +1169,7 @@ test("ui_base_unittests") {
         "ime/ash/typing_session_manager_unittest.cc",
       ]
       deps += [
+        "//ash/constants",
         "//build:branding_buildflags",
         "//ui/base/ime/ash",
         "//ui/base/ime/ash:typing_session_manager",

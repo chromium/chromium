@@ -185,6 +185,8 @@ extern const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInputDeviceSettingsSplit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kInputMethodDeadKeyFixForTerminal);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPeripheralCustomization);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpress);

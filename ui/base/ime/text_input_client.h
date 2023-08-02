@@ -338,7 +338,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
       const gfx::Range& range,
       const std::u16string& active_composition_text,
       bool is_composition_committed) = 0;
+#endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   struct EditingContext {
     // Contains the active web content's URL.
     GURL page_url;

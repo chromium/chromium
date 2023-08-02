@@ -228,6 +228,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // synchronously.
   absl::optional<ui::EventDispatchDetails> dispatch_details_;
 
+  // The URL that hosts the currently focused input field.
+  // This can be invalid if the URL is not known (e.g. when using an
+  // ARC++ app) or there's no focused input field.
+  GURL focused_url_;
+
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodAsh> weak_ptr_factory_{this};
 };

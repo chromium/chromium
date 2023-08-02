@@ -1725,6 +1725,44 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                                          "ab", gfx::Range(2)));
 }
 
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest, DeadKeyTriggersWebEvents) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          GetParam(),
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion},
+          {kInputMethodTestCapabilityChangeInputMethod});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  InputEventListener event_listener =
+      ListenForInputEvents(GetActiveWebContents(browser()), id);
+
+  // Switch to an US International input method, which has dead keys.
+  // TODO: crbug.com/1344058 - This currently depends on the Linux machine
+  // running the test to have "us(intl)" in the correct XKB layout directory.
+  // Refactor Ozone to use PathService so that this directory can be controlled
+  // to make this test hermetic.
+  input_method_async_waiter.InstallAndSwitchToInputMethod(
+      crosapi::mojom::InputMethod::New(/*xkb_layout=*/"us(intl)"));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::DeadKeyFromCombiningCharacter(U'\u0301'),
+                           ui::DomCode::QUOTE, ui::KeyboardCode::VKEY_OEM_7)
+          .Build());
+
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent("Dead", "Quote", 222));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyUpEvent("Dead", "Quote", 222));
+}
+
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        ChangingInputMethodUpdatesKeyLayout) {
   mojo::Remote<InputMethodTestInterface> input_method =

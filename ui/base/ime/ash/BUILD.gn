@@ -70,6 +70,7 @@ component("ash") {
   deps = [
     ":ime_types",
     ":typing_session_manager",
+    "//ash/constants",
     "//build:branding_buildflags",
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/ime/public/mojom",

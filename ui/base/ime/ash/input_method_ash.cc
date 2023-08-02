@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -67,6 +68,12 @@ AutocapitalizationMode ConvertAutocapitalizationMode(int flags) {
   if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
     return AutocapitalizationMode::kSentences;
   return AutocapitalizationMode::kUnspecified;
+}
+
+// Returns whether `url` refers to Terminal/crosh.
+bool IsTerminalOrCrosh(const GURL& url) {
+  return base::StartsWith(url.spec(), "chrome-untrusted://terminal") ||
+         base::StartsWith(url.spec(), "chrome-untrusted://crosh");
 }
 
 }  // namespace
@@ -565,7 +572,7 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
   }
   if (client &&
       (client->HasCompositionText() ||
-       (base::FeatureList::IsEnabled(features::kAlwaysConfirmComposition) &&
+       (base::FeatureList::IsEnabled(::features::kAlwaysConfirmComposition) &&
         client->SupportsAlwaysConfirmComposition()))) {
     const size_t characters_committed =
         client->ConfirmCompositionText(/*keep_selection*/ true);
@@ -610,6 +617,14 @@ void InputMethodAsh::UpdateContextFocusState() {
     assistive_window->FocusStateChanged();
 
   IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
+
+  if (base::FeatureList::IsEnabled(
+          features::kInputMethodDeadKeyFixForTerminal)) {
+    TextInputClient* client = GetTextInputClient();
+    focused_url_ = client && !IsPasswordOrNoneInputFieldFocused()
+                       ? client->GetTextEditingContext().page_url
+                       : GURL();
+  }
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
@@ -682,8 +697,25 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
 ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
     ui::KeyEvent* event,
     bool only_dispatch_vkey_processkey) {
-  if (!only_dispatch_vkey_processkey && NeedInsertChar())
-    return DispatchKeyEventPostIME(event);
+  if (!only_dispatch_vkey_processkey) {
+    if (NeedInsertChar()) {
+      return DispatchKeyEventPostIME(event);
+    }
+
+    // For dead keys, it is possible to dispatch a fake Process key, but it is
+    // better to dispatch the real dead key, as it is more specific and allows
+    // apps to have dead key specific behavior.
+    // TODO(b/289319217): Investigate if we need to distinguish between a dead
+    // key that is handled by the character composer or is handled by the input
+    // method.
+    // TODO(b/289319217): Expand fix to all URLs once the fix looks stable.
+    if (base::FeatureList::IsEnabled(
+            features::kInputMethodDeadKeyFixForTerminal) &&
+        focused_url_.is_valid() && IsTerminalOrCrosh(focused_url_) &&
+        event->GetDomKey().IsDeadKey()) {
+      return DispatchKeyEventPostIME(event);
+    }
+  }
 
   ui::KeyEvent fabricated_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY,
                                 event->code(), event->flags(),
