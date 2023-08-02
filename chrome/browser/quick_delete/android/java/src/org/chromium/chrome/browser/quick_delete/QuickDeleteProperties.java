@@ -23,10 +23,12 @@ class QuickDeleteProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SYNCING_HISTORY =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_DOMAIN_VISITED_DATA_PENDING =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.ReadableObjectPropertyKey<Context> CONTEXT =
             new PropertyModel.ReadableObjectPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {
-            DOMAIN_VISITED_DATA, CLOSED_TABS_COUNT, IS_SIGNED_IN, IS_SYNCING_HISTORY, CONTEXT};
+    public static final PropertyKey[] ALL_KEYS = {DOMAIN_VISITED_DATA, CLOSED_TABS_COUNT,
+            IS_SIGNED_IN, IS_SYNCING_HISTORY, IS_DOMAIN_VISITED_DATA_PENDING, CONTEXT};
 }

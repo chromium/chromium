@@ -162,6 +162,24 @@ public class QuickDeleteViewBinderTest {
 
     @Test
     @SmallTest
+    public void testBrowsingHistory_Pending() {
+        mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
+
+        ViewGroup quickDeleteBrowsingHistoryRow =
+                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
+        TextView quickDeleteBrowsingHistoryRowTitle =
+                mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
+        TextView quickDeleteBrowsingHistoryRowSubtitle =
+                mQuickDeleteView.findViewById(R.id.quick_delete_history_row_subtitle);
+
+        assertEquals(mActivity.getString(R.string.quick_delete_dialog_data_pending),
+                quickDeleteBrowsingHistoryRowTitle.getText().toString());
+        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
+        assertEquals(View.GONE, quickDeleteBrowsingHistoryRowSubtitle.getVisibility());
+    }
+
+    @Test
+    @SmallTest
     public void testTabsToBeClosed_OneTab_UpdatesTabsClosedText_Singular() {
         final int tabsToBeClosed = 1;
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);

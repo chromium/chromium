@@ -36,9 +36,6 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
         mProfile = profile;
         mQuickDeleteBridge = quickDeleteBridge;
         mQuickDeleteTabsFilter = quickDeleteTabsFilter;
-
-        // Initial trigger.
-        onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
     }
 
     /**
@@ -55,9 +52,8 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT,
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(timePeriod).size());
 
+        mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
         // This is an async call which would update the browsing history row.
-        // TODO(crbug.com/1412087): For big time range and more data the wait can be a janky UX
-        // experience. Add a placeholder "Calculating..." string instead.
         mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(timePeriod, this);
     }
 
@@ -72,6 +68,7 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
     @Override
     public void onLastVisitedDomainAndUniqueDomainCountReady(
             String lastVisitedDomain, int domainCount) {
+        mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, false);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA,
                 new QuickDeleteDelegate.DomainVisitsData(lastVisitedDomain, domainCount));
     }

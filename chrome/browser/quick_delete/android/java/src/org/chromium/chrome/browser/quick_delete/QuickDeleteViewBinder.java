@@ -42,6 +42,10 @@ class QuickDeleteViewBinder {
         } else if (QuickDeleteProperties.IS_SYNCING_HISTORY == propertyKey) {
             updateBrowsingHistorySubtitleVisibility(
                     quickDeleteView, model.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
+        } else if (QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING == propertyKey) {
+            updateBrowsingHistoryRowIfPending(model.get(QuickDeleteProperties.CONTEXT),
+                    quickDeleteView,
+                    model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
         }
     }
 
@@ -61,6 +65,21 @@ class QuickDeleteViewBinder {
         subtitle.setVisibility((isVisible) ? VISIBLE : GONE);
     }
 
+    private static void updateBrowsingHistoryRowIfPending(
+            @NonNull Context context, @NonNull View quickDeleteView, boolean isPending) {
+        if (!isPending) return;
+
+        updateBrowsingHistorySubtitleVisibility(quickDeleteView, false);
+
+        ViewGroup quickDeleteHistoryRow =
+                quickDeleteView.findViewById(R.id.quick_delete_history_row);
+        TemplatePreservingTextView title =
+                quickDeleteHistoryRow.findViewById(R.id.quick_delete_history_row_title);
+        title.setTemplate(null);
+        title.setText(context.getString(R.string.quick_delete_dialog_data_pending));
+        quickDeleteHistoryRow.setVisibility(VISIBLE);
+    }
+
     private static void updateBrowsingHistoryRow(@NonNull Context context,
             @NonNull View quickDeleteView, @NonNull DomainVisitsData domainVisitsData) {
         boolean isVisible = domainVisitsData.mDomainsCount >= 1;
@@ -77,15 +96,16 @@ class QuickDeleteViewBinder {
         // Subtract 1 from the domainsCount to not count the lastVisitedDomain twice.
         domainsCount--;
 
+        String browsingHistoryRowTitleTemplate = null;
         // If there is at least 1 other site counted, add the count template, eg `+ 1 site`.
         if (domainsCount > 0) {
             String domainCountText = context.getResources().getQuantityString(
                     R.plurals.quick_delete_dialog_browsing_history_domain_count_text, domainsCount,
                     domainsCount);
-            String browsingHistoryRowTitleTemplate = "%s " + domainCountText;
-            title.setTemplate(browsingHistoryRowTitleTemplate);
+            browsingHistoryRowTitleTemplate = "%s " + domainCountText;
         }
 
+        title.setTemplate(browsingHistoryRowTitleTemplate);
         title.setText(domainVisitsData.mLastVisitedDomain);
     }
 
