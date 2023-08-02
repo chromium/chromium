@@ -1122,11 +1122,12 @@ void Fullscreen::ContinueExitFullscreen(Document* doc,
 }
 
 // https://fullscreen.spec.whatwg.org/#dom-document-fullscreenenabled
-bool Fullscreen::FullscreenEnabled(Document& document) {
+bool Fullscreen::FullscreenEnabled(Document& document,
+                                   ReportOptions report_on_failure) {
   // The fullscreenEnabled attribute's getter must return true if the context
   // object is allowed to use the feature indicated by attribute name
   // allowfullscreen and fullscreen is supported, and false otherwise.
-  return AllowedToUseFullscreen(document, ReportOptions::kDoNotReport) &&
+  return AllowedToUseFullscreen(document, report_on_failure) &&
          FullscreenIsSupported(document);
 }
 
