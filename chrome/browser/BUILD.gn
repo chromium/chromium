@@ -3002,7 +3002,6 @@ static_library("browser") {
       "fast_checkout/fast_checkout_client_impl.h",
       "fast_checkout/fast_checkout_delegate_impl.cc",
       "fast_checkout/fast_checkout_delegate_impl.h",
-      "fast_checkout/fast_checkout_enums.h",
       "fast_checkout/fast_checkout_personal_data_helper.h",
       "fast_checkout/fast_checkout_personal_data_helper_impl.cc",
       "fast_checkout/fast_checkout_personal_data_helper_impl.h",

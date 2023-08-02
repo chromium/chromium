@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_IMPL_H_
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
+#include "components/autofill/core/browser/ui/fast_checkout_enums.h"
 
 class FastCheckoutTriggerValidatorImpl : public FastCheckoutTriggerValidator {
  public:
@@ -24,13 +24,13 @@ class FastCheckoutTriggerValidatorImpl : public FastCheckoutTriggerValidator {
       const FastCheckoutTriggerValidatorImpl&) = delete;
 
   // FastCheckoutTriggerValidator:
-  FastCheckoutTriggerOutcome ShouldRun(
+  autofill::FastCheckoutTriggerOutcome ShouldRun(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
-      const FastCheckoutUIState ui_state,
+      const autofill::FastCheckoutUIState ui_state,
       const bool is_running,
       const autofill::AutofillManager& autofill_manager) const override;
-  FastCheckoutTriggerOutcome HasValidPersonalData() const override;
+  autofill::FastCheckoutTriggerOutcome HasValidPersonalData() const override;
 
  private:
   bool IsTriggerForm(const autofill::FormData& form,
