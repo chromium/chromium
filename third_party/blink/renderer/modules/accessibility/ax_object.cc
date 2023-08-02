@@ -3738,6 +3738,31 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     }
   }
 
+  if (const Element* owner = node->OwnerShadowHost()) {
+    // The ignored state of media controls can change without a layout update.
+    // Keep them in the tree at all times so that the serializer isn't
+    // accidentally working with unincluded nodes, which is not allowed.
+    if (IsA<HTMLMediaElement>(owner)) {
+      return true;
+    }
+
+    // Do not include ignored descendants of an <input type="search"> or
+    // <input type="number"> because they interfere with AXPosition code that
+    // assumes a plain input field structure. Specifically, due to the ignored
+    // node at the end of textfield, end of editable text position will get
+    // adjusted to past text field or caret moved events will not be emitted for
+    // the final offset because the associated tree position. In some cases
+    // platform accessibility code will instead incorrectly emit a caret moved
+    // event for the AXPosition which follows the input.
+    if (IsA<HTMLInputElement>(owner) &&
+        (DynamicTo<HTMLInputElement>(owner)->type() ==
+             input_type_names::kSearch ||
+         DynamicTo<HTMLInputElement>(owner)->type() ==
+             input_type_names::kNumber)) {
+      return false;
+    }
+  }
+
   if (IsExcludedByFormControlsFilter()) {
     return false;
   }
@@ -3775,30 +3800,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // there is no possibility for the content within to know it's aria-hidden.
     if (IsAriaHidden()) {
       return !IsChildTreeOwner();
-    }
-  }
-
-  if (const Element* owner = node->OwnerShadowHost()) {
-    // The ignored state of media controls can change without a layout update.
-    // Keep them in the tree at all times so that the serializer isn't
-    // accidentally working with unincluded nodes, which is not allowed.
-    if (IsA<HTMLMediaElement>(owner))
-      return true;
-
-    // Do not include ignored descendants of an <input type="search"> or
-    // <input type="number"> because they interfere with AXPosition code that
-    // assumes a plain input field structure. Specifically, due to the ignored
-    // node at the end of textfield, end of editable text position will get
-    // adjusted to past text field or caret moved events will not be emitted for
-    // the final offset because the associated tree position. In some cases
-    // platform accessibility code will instead incorrectly emit a caret moved
-    // event for the AXPosition which follows the input.
-    if (IsA<HTMLInputElement>(owner) &&
-        (DynamicTo<HTMLInputElement>(owner)->type() ==
-             input_type_names::kSearch ||
-         DynamicTo<HTMLInputElement>(owner)->type() ==
-             input_type_names::kNumber)) {
-      return false;
     }
   }
 
