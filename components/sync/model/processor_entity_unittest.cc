@@ -701,20 +701,26 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
 }
 
 TEST_F(ProcessorEntityTest,
-       LocalDeletionRecordsVersionInfoOnlyIfFeatureIsEnabled) {
-  std::unique_ptr<ProcessorEntity> entity_without_version = CreateNew();
-  entity_without_version->RecordLocalDeletion();
-  EXPECT_FALSE(entity_without_version->metadata().has_deleted_by_version());
+       LocalDeletionDoesNotRecordVersionInfoIfFeatureIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {/* enabled_features */},
+      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion});
 
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->RecordLocalDeletion();
+  EXPECT_FALSE(entity->metadata().has_deleted_by_version());
+}
+
+TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion},
       {/* disabled_features */});
-  std::unique_ptr<ProcessorEntity> entity_with_version = CreateNew();
-  entity_with_version->RecordLocalDeletion();
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->RecordLocalDeletion();
   std::string expected_version = std::string(version_info::GetVersionNumber());
-  EXPECT_EQ(expected_version,
-            entity_with_version->metadata().deleted_by_version());
+  EXPECT_EQ(expected_version, entity->metadata().deleted_by_version());
 }
 
 }  // namespace syncer
