@@ -34,6 +34,11 @@ found in the LICENSE file.
     height: 300px;
     width: 334px;
   }
+
+  :host-context(.jelly-enabled) paper-progress {
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
+  }
 </style>
 <oobe-adaptive-dialog id="consumerUpdateCellularDialog"
     for-step="cellular" tabindex="0"

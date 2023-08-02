@@ -25,6 +25,12 @@ found in the LICENSE file.
     line-height: var(--oobe-reset-firmware-update-line-height);
     pointer-events: auto;
   }
+
+  :host-context(.jelly-enabled) .throbber {
+    background: none;
+    background-color: var(--cros-sys-primary);
+    -webkit-mask: url(chrome://resources/images/throbber_small.svg) no-repeat;
+  }
 </style>
 <link rel="stylesheet" href="//resources/css/throbber.css">
 <oobe-adaptive-dialog id="resetDialog" role="dialog"
