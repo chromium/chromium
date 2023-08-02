@@ -263,8 +263,7 @@ void DeviceSettingsService::OwnerKeySet(bool success) {
 
   public_key_.reset();
 
-  if (GetOwnershipStatus() == OwnershipStatus::kOwnershipTaken ||
-      !will_establish_consumer_ownership_) {
+  if (!will_establish_consumer_ownership_) {
     EnsureReload(true);
   }
 }
