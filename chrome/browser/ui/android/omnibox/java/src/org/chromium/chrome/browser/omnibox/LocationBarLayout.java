@@ -418,8 +418,7 @@ public class LocationBarLayout extends FrameLayout {
                 translationX = getFocusedStatusViewSpacingDelta() * (-1.0f + percent);
                 boolean scrollingOnNtp = !mUrlBar.hasFocus()
                         && mStatusCoordinator.isSearchEngineStatusIconVisible()
-                        && UrlUtilities.isCanonicalizedNTPUrl(
-                                mLocationBarDataProvider.getCurrentUrl());
+                        && UrlUtilities.isNTPUrl(mLocationBarDataProvider.getCurrentGurl());
                 if (scrollingOnNtp) {
                     translationX -= (1.0f - percent)
                             * (mStatusCoordinator.getStatusIconWidth()
