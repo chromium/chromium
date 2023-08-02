@@ -83,9 +83,10 @@ class ReturnToAppPanelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

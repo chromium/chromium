@@ -41,9 +41,8 @@ class NotificationCenterTrayTest : public AshTestBase {
 
   void SetUp() override {
     // Enable quick settings revamp feature.
-    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kCameraEffectsSupportedByHardware}, {});
 
     AshTestBase::SetUp();
 

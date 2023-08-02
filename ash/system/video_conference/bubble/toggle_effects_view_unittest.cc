@@ -40,9 +40,10 @@ class ToggleEffectsViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference, chromeos::features::kJelly}, {});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware,
+         chromeos::features::kJelly},
+        {});
 
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in

@@ -200,8 +200,7 @@ class PrivacyHubCameraControllerTest
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
       enabled_features.push_back(features::kVideoConference);
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kCameraEffectsSupportedByHardware);
+      enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     }
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(enabled_features, {});
@@ -718,8 +717,7 @@ class PrivacyIndicatorAndVideoConferenceCameraControllerTest
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
       enabled_features.push_back(features::kVideoConference);
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kCameraEffectsSupportedByHardware);
+      enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }

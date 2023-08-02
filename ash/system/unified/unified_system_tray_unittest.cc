@@ -70,11 +70,10 @@ class UnifiedSystemTrayTest
   ~UnifiedSystemTrayTest() override = default;
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
-
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     if (IsQsRevampEnabled()) {
       enabled_features.push_back(features::kQsRevamp);
     } else {

@@ -103,9 +103,13 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
   ~VideoConferenceMediaListenerBrowserTest() override = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kVideoConference,
+         ash::features::kCameraEffectsSupportedByHardware},
+        {});
+
+    InProcessBrowserTest::SetUp();
   }
 #endif
 
@@ -174,8 +178,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
 
   int tab_count_{0};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVideoConference};
+  base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
 

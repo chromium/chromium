@@ -3880,7 +3880,7 @@ bool IsUserEducationEnabled() {
 bool IsVideoConferenceEnabled() {
   return (base::FeatureList::IsEnabled(kVideoConference) ||
           base::FeatureList::IsEnabled(kFeatureManagementVideoConference)) &&
-         switches::IsCameraEffectsSupportedByHardware();
+         base::FeatureList::IsEnabled(kCameraEffectsSupportedByHardware);
 }
 
 bool IsStopAllScreenShareEnabled() {

@@ -123,7 +123,8 @@ class VideoConferenceIntegrationTest
     // kOnDeviceSpeechRecognition is to support live caption.
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kVideoConference,
-         ash::features::kOnDeviceSpeechRecognition},
+         ash::features::kOnDeviceSpeechRecognition,
+         ash::features::kCameraEffectsSupportedByHardware},
         {});
   }
 
@@ -217,8 +218,6 @@ class VideoConferenceIntegrationTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
     // TODO(crbug.com/1459164): Use a less error-prone flag.

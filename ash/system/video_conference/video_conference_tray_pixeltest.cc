@@ -38,11 +38,9 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kJellyroll,
                               features::kVideoConference,
-                              chromeos::features::kJelly},
+                              chromeos::features::kJelly,
+                              features::kCameraEffectsSupportedByHardware},
         /*disabled_features=*/{});
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

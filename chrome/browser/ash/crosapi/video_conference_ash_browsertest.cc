@@ -133,16 +133,19 @@ class VideoConferenceAshBrowserTest : public InProcessBrowserTest {
   VideoConferenceAshBrowserTest& operator=(
       const VideoConferenceAshBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kVideoConference,
+         ash::features::kCameraEffectsSupportedByHardware},
+        {});
+
+    InProcessBrowserTest::SetUp();
   }
 
   ~VideoConferenceAshBrowserTest() override = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVideoConference};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests |VideoConferenceManagerAsh| api calls don't crash. Tests calls over

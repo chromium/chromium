@@ -367,10 +367,12 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
 // conference feature is enabled.
 TEST_F(PrivacyIndicatorsControllerTest,
        DoNotShowNotificationWithVideoConferenceEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kVideoConference};
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kCameraEffectsSupportedByHardware);
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kVideoConference,
+       ash::features::kCameraEffectsSupportedByHardware},
+      {});
+
   // Try to show a notification.
   std::string app_id = "test_app_id";
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
@@ -740,6 +742,7 @@ class PrivacyIndicatorsControllerVideoConferenceTest
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kPrivacyIndicators, true},
          {features::kVideoConference, true},
+         {features::kCameraEffectsSupportedByHardware, true},
          {features::kQsRevamp, IsQsRevampEnabled()}});
   }
   PrivacyIndicatorsControllerVideoConferenceTest(
@@ -752,9 +755,6 @@ class PrivacyIndicatorsControllerVideoConferenceTest
 
   // AshTestBase:
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
-
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).

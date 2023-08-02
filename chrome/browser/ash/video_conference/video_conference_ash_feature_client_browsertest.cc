@@ -38,9 +38,13 @@ constexpr char kBorealisId[] = "Borealis";
 
 class VideoConferenceAshfeatureClientTest : public InProcessBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kVideoConference,
+         ash::features::kCameraEffectsSupportedByHardware},
+        {});
+
+    InProcessBrowserTest::SetUp();
   }
 
   // Update the permission of current `app_id`.
@@ -89,8 +93,7 @@ class VideoConferenceAshfeatureClientTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVideoConference};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAshfeatureClientTest, GetMediaApps) {

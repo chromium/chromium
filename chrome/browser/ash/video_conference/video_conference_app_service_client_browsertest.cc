@@ -146,9 +146,13 @@ class FakeAppInstance {
 
 class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kVideoConference,
+         ash::features::kCameraEffectsSupportedByHardware},
+        {});
+
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -254,8 +258,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   raw_ptr<VideoConferenceAppServiceClient, ExperimentalAsh> client_ = nullptr;
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVideoConference};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppName) {
