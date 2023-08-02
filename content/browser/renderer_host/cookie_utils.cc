@@ -18,6 +18,22 @@ namespace content {
 
 namespace {
 
+void RecordPartitionedCookieUseUKM(RenderFrameHost* rfh,
+                                   bool partitioned_cookies_exist) {
+  // Our data collection policy disallows collecting UKMs while prerendering.
+  // See //content/browser/preloading/prerender/README.md and ask the team to
+  // explore options to record data for prerendering pages if we need to
+  // support the case.
+  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
+    return;
+  }
+  ukm::SourceId source_id = rfh->GetPageUkmSourceId();
+
+  ukm::builders::PartitionedCookiePresent(source_id)
+      .SetPartitionedCookiePresent(partitioned_cookies_exist)
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void RecordRedirectContextDowngradeUKM(RenderFrameHost* rfh,
                                        CookieAccessDetails::Type access_type,
                                        const net::CanonicalCookie& cookie,
@@ -219,6 +235,8 @@ void EmitCookieWarningsAndMetrics(
          // Ignore nonced partition keys since this metric is meant to track
          // usage of the Partitioned attribute.
          !cookie->cookie_or_line->get_cookie().PartitionKey()->nonce());
+
+    RecordPartitionedCookieUseUKM(rfh, partitioned_cookies_exist);
 
     breaking_context_downgrade =
         breaking_context_downgrade ||
