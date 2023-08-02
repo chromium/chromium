@@ -799,8 +799,13 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
   layer()->SetBounds(layer_bounds);
 
   // Add a shadow.
-  view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
-  view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+  // TODO(b/292286998): The shadow is removed when jelly is enabled for
+  // consistency with bubbles in status area. Add it when status area bubbles
+  // get updated.
+  if (!chromeos::features::IsJellyEnabled()) {
+    view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
+    view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+  }
 }
 
 void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {

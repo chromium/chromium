@@ -48,6 +48,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -413,8 +414,10 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
   auto* apps_grid_view = GetAppsGridView();
   ui::LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
 
-  // Shadow is restored.
-  EXPECT_TRUE(app_list_bubble_view->view_shadow_for_test());
+  // Shadow is restored - when kJelly is enabled, no shadow is expected, for
+  // consistency with bubbles in system tray area.
+  EXPECT_EQ(!chromeos::features::IsJellyEnabled(),
+            !!app_list_bubble_view->view_shadow_for_test());
 }
 
 TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
