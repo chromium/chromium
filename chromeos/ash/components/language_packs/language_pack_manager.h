@@ -65,20 +65,23 @@ struct PackResult {
   ~PackResult();
   PackResult(const PackResult&);
 
-  enum StatusCode {
-    UNKNOWN = 0,
-    WRONG_ID,
-    NOT_INSTALLED,
-    IN_PROGRESS,
-    INSTALLED
-  };
+  enum StatusCode { UNKNOWN = 0, NOT_INSTALLED, IN_PROGRESS, INSTALLED };
 
-  // This string contains the error returned by the DLC Service.
-  std::string operation_error;
+  enum ErrorCode {
+    kErrorNone = 0,
+    kErrorOther,
+    kErrorWrongId,
+    kErrorNeedReboot,
+    kErrorAllocation
+  };
 
   // The code that indicates the current state of the Pack.
   // INSTALLED means that the Pack is ready to be used.
   StatusCode pack_state;
+
+  // If there is any error in the operation that is requested, it is indicated
+  // here.
+  ErrorCode operation_error;
 
   // The resolved language code that this Pack is associated with.
   // Often this field matches the locale requested by the client, but due to

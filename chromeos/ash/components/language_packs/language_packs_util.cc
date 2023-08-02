@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -98,8 +99,8 @@ DlcErrorTypeEnum GetDlcErrorTypeForUma(const std::string& error_str) {
 
 PackResult CreateInvalidDlcPackResult() {
   PackResult result;
-  result.operation_error = dlcservice::kErrorInvalidDlc;
-  result.pack_state = PackResult::WRONG_ID;
+  result.operation_error = PackResult::kErrorWrongId;
+  result.pack_state = PackResult::UNKNOWN;
   return result;
 }
 
@@ -122,7 +123,43 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
       break;
   }
 
+  result.operation_error =
+      ConvertDlcErrorToErrorCode(dlc_state.last_error_code());
+
   return result;
+}
+
+PackResult ConvertDlcInstallResultToPackResult(
+    const DlcserviceClient::InstallResult& install_result) {
+  PackResult result;
+
+  result.operation_error = ConvertDlcErrorToErrorCode(install_result.error);
+
+  if (result.operation_error == PackResult::kErrorNone) {
+    result.pack_state = PackResult::INSTALLED;
+    result.path = install_result.root_path;
+  } else {
+    result.pack_state = PackResult::UNKNOWN;
+  }
+
+  return result;
+}
+
+PackResult::ErrorCode ConvertDlcErrorToErrorCode(std::string_view err) {
+  if (err.empty() || err == dlcservice::kErrorNone) {
+    return PackResult::kErrorNone;
+  } else if (err == dlcservice::kErrorInvalidDlc) {
+    return PackResult::kErrorWrongId;
+  } else if (err == dlcservice::kErrorNeedReboot) {
+    return PackResult::kErrorNeedReboot;
+  } else if (err == dlcservice::kErrorAllocation) {
+    return PackResult::kErrorAllocation;
+  } else {
+    // We use INTERNAL for all remaining errors thrown by DLC Service because
+    // there's nothing we or the client can do about it.
+    // Error code BUSY is never returned.
+    return PackResult::kErrorOther;
+  }
 }
 
 const std::string ResolveLocale(const std::string& feature_id,

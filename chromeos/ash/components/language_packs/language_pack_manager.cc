@@ -190,16 +190,11 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
                           const std::string& feature_id,
                           const std::string& locale,
                           const DlcserviceClient::InstallResult& dlc_result) {
-  PackResult result;
-  result.operation_error = dlc_result.error;
+  PackResult result = ConvertDlcInstallResultToPackResult(dlc_result);
   result.language_code = locale;
 
-  const bool success = dlc_result.error == dlcservice::kErrorNone;
-  if (success) {
-    result.pack_state = PackResult::INSTALLED;
-    result.path = dlc_result.root_path;
-  } else {
-    result.pack_state = PackResult::UNKNOWN;
+  const bool success = result.operation_error == PackResult::kErrorNone;
+  if (!success) {
     if (feature_id == kHandwritingFeatureId) {
       base::UmaHistogramEnumeration(
           "ChromeOS.LanguagePacks.InstallError.Handwriting",
@@ -220,8 +215,8 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
                             const std::string& locale,
                             const std::string& err) {
   PackResult result;
-  result.operation_error = err;
   result.language_code = locale;
+  result.operation_error = ConvertDlcErrorToErrorCode(err);
 
   const bool success = err == dlcservice::kErrorNone;
   if (success) {
@@ -241,15 +236,17 @@ void OnGetDlcState(GetPackStateCallback callback,
                    const std::string& err,
                    const dlcservice::DlcState& dlc_state) {
   PackResult result;
-
-  if (err == dlcservice::kErrorNone) {
+  // GetDlcState() returns 2 errors:
+  // one for the DBus call and one for the actual DLC.
+  // If the first error is set we can ignore the DLC state.
+  if (err.empty() || err == dlcservice::kErrorNone) {
     result = ConvertDlcStateToPackResult(dlc_state);
   } else {
+    result.operation_error = ConvertDlcErrorToErrorCode(err);
     result.pack_state = PackResult::UNKNOWN;
   }
 
   result.language_code = locale;
-  result.operation_error = err;
 
   std::move(callback).Run(result);
 }
@@ -265,8 +262,8 @@ PackResult::PackResult() {
 PackResult::~PackResult() = default;
 
 PackResult::PackResult(const PackResult& pr)
-    : operation_error(pr.operation_error),
-      pack_state(pr.pack_state),
+    : pack_state(pr.pack_state),
+      operation_error(pr.operation_error),
       language_code(pr.language_code),
       path(pr.path) {}
 ///////////////////////////////////////////////////////////
