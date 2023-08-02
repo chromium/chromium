@@ -1868,15 +1868,15 @@ class ComputedStyle : public ComputedStyleBase,
   }
   EResize UnresolvedResize() const { return Resize(); }
 
-  EResize Resize(const ComputedStyle& cb_style) const {
+  EResize UsedResize() const {
     EResize value = Resize();
     switch (value) {
       case EResize::kBlock:
-        return cb_style.IsHorizontalWritingMode() ? EResize::kVertical
-                                                  : EResize::kHorizontal;
+        return IsHorizontalWritingMode() ? EResize::kVertical
+                                         : EResize::kHorizontal;
       case EResize::kInline:
-        return cb_style.IsHorizontalWritingMode() ? EResize::kHorizontal
-                                                  : EResize::kVertical;
+        return IsHorizontalWritingMode() ? EResize::kHorizontal
+                                         : EResize::kVertical;
       default:
         return value;
     }

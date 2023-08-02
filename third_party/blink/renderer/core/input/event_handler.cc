@@ -510,7 +510,7 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
   const LayoutObject& layout_object = *node->GetLayoutObject();
   if (ShouldShowResizeForNode(layout_object, location)) {
     const LayoutBox* box = layout_object.EnclosingLayer()->GetLayoutBox();
-    EResize resize = box->StyleRef().Resize(box->ContainingBlock()->StyleRef());
+    EResize resize = box->StyleRef().UsedResize();
     switch (resize) {
       case EResize::kVertical:
         return NorthSouthResizeCursor();
