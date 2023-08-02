@@ -15,14 +15,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUmaUnitTest.ShadowReturnToChromeUtil;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -32,24 +29,15 @@ import org.chromium.ui.base.PageTransition;
  * are recorded successfully in histogram.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowReturnToChromeUtil.class})
+@Config(manifest = Config.NONE)
 public class ReturnToChromeUtilUmaUnitTest {
     private static final String TEST_URL = "https://www.example.com/";
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
     private static final int PAGE_TRANSITION_GENERATED_BEFORE_MASK = 33554437;
     private static final int PAGE_TRANSITION_TYPED_BEFORE_MASK = 33554433;
 
-    /** Shadow for {@link ReturnToChromeUtil} */
-    @Implements(ReturnToChromeUtil.class)
-    static class ShadowReturnToChromeUtil {
-        @Implementation
-        public static ChromeActivity getActivityPresentingOverviewWithOmnibox(String url) {
-            return sChromeActivity;
-        }
-    }
-
     @Mock
-    private static ChromeActivity sChromeActivity;
+    private ChromeActivity mMockChromeActivity;
 
     @Mock
     private TabCreator mTabCreator;
@@ -57,7 +45,8 @@ public class ReturnToChromeUtilUmaUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(sChromeActivity.getTabCreator(false)).thenReturn(mTabCreator);
+        when(mMockChromeActivity.getTabCreator(false)).thenReturn(mTabCreator);
+        ReturnToChromeUtil.setActivityPresentingOverivewWithOmniboxForTesting(mMockChromeActivity);
     }
 
     @Test

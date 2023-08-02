@@ -91,6 +91,8 @@ import java.lang.annotation.RetentionPolicy;
  * Chrome for a while.
  */
 public final class ReturnToChromeUtil {
+    private static ChromeActivity sActivityPresentingOverivewWithOmniboxForTesting;
+
     /**
      * The reasons of failing to show the home surface UI on a NTP.
      *
@@ -134,6 +136,11 @@ public final class ReturnToChromeUtil {
     private static boolean sIsHomepagePolicyManagerInitializedRecorded;
     // Whether to skip the check of the initialization of HomepagePolicyManager.
     private static boolean sSkipInitializationCheckForTesting;
+
+    public static void setActivityPresentingOverivewWithOmniboxForTesting(ChromeActivity value) {
+        sActivityPresentingOverivewWithOmniboxForTesting = value;
+        ResettersForTesting.register(() -> sActivityPresentingOverivewWithOmniboxForTesting = null);
+    }
 
     private ReturnToChromeUtil() {}
 
@@ -447,6 +454,9 @@ public final class ReturnToChromeUtil {
      * @return The ChromeActivity if it is presenting the omnibox on the tab switcher, else null.
      */
     private static ChromeActivity getActivityPresentingOverviewWithOmnibox(String url) {
+        if (sActivityPresentingOverivewWithOmniboxForTesting != null) {
+            return sActivityPresentingOverivewWithOmniboxForTesting;
+        }
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity == null || !isStartSurfaceEnabled(activity)
                 || !(activity instanceof ChromeActivity)) {
