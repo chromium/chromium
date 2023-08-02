@@ -261,13 +261,11 @@ BOOL ShouldSwitchOmniboxToBottom(
 
 #pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  if (newWebState) {
-    [self updateForWebState:newWebState];
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change() && status.new_active_web_state) {
+    [self updateForWebState:status.new_active_web_state];
   }
 }
 
