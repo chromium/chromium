@@ -100,7 +100,8 @@ TEST_F(LoginShelfViewPixelTest, DISABLED_FocusTraversalFromLockContents) {
 }
 
 // Used to verify the login shelf features with a policy wallpaper.
-TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
+// Test disabled due to flakiness: http://b/293680827
+TEST_F(LoginShelfViewPixelTest, DISABLED_FocusTraversalWithinShelf) {
   // Focus on the calendar view.
   FocusOnShutdownButton();
   PressAndReleaseKey(ui::VKEY_TAB);
