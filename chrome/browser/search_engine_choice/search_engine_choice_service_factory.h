@@ -40,7 +40,7 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   // based on device policies and profile attributes.
   bool IsProfileEligibleForChoiceScreen(
       const policy::PolicyService& policy_service,
-      const Profile& profile) const;
+      Profile& profile) const;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H

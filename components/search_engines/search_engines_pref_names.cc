@@ -24,6 +24,11 @@ const char kDefaultSearchProviderGUID[] = "default_search_provider.guid";
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// The timestamp that is recorded once the user chooses a search engine using
+// the search engine choice screen.
+const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
+    "default_search_provider.choice_screen_completion_timestamp";
+
 // Whether a search context menu item is allowed.
 const char kDefaultSearchProviderContextMenuAccessAllowed[] =
     "default_search_provider.context_menu_access_allowed";

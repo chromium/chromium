@@ -9,6 +9,7 @@ namespace prefs {
 
 extern const char kDefaultSearchProviderGUID[];
 extern const char kSyncedDefaultSearchProviderGUID[];
+extern const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[];
 extern const char kDefaultSearchProviderContextMenuAccessAllowed[];
 extern const char kDefaultSearchProviderEnabled[];
 extern const char kSearchProviderOverrides[];

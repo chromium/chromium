@@ -36,7 +36,7 @@ SearchEngineChoiceService* SearchEngineChoiceServiceFactory::GetForProfile(
 
 bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
     const policy::PolicyService& policy_service,
-    const Profile& profile) const {
+    Profile& profile) const {
   if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
     return false;
   }
@@ -53,7 +53,8 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
 
   return search_engines::ShouldShowChoiceScreen(
       policy_service,
-      /*profile_properties=*/{.is_regular_profile = is_regular_profile});
+      /*profile_properties=*/{.is_regular_profile = is_regular_profile,
+                              .pref_service = profile.GetPrefs()});
 }
 
 KeyedService* SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(

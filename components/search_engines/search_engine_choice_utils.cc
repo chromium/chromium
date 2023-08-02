@@ -7,6 +7,8 @@
 #include "base/values.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_pref_names.h"
 
 namespace search_engines {
 namespace {
@@ -41,6 +43,15 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
 
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties) {
+  // The timestamp indicates that the user has already made a search engine
+  // choice in the choice screen.
+  PrefService* prefs = profile_properties.pref_service;
+  CHECK(prefs);
+  if (prefs->GetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    return false;
+  }
+
   return profile_properties.is_regular_profile &&
          IsSearchEngineChoiceScreenAllowedByPolicy(policy_service);
 }

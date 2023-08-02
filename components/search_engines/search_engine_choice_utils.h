@@ -5,17 +5,22 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace policy {
 class PolicyService;
 }
 
+class PrefService;
+
 namespace search_engines {
 
 // Profile properties that need to be passed to
-// `ShouldShowSearchEngineChoiceScreen`. This is due to the fact that
+// `ShouldShowChoiceScreen`. This is due to the fact that
 // the 'Profile' class is different between platforms.
 struct ProfileProperties {
   bool is_regular_profile = false;
+  base::raw_ptr<PrefService> pref_service;
 };
 
 // Returns whether the search engine choice screen can be displayed or not based
