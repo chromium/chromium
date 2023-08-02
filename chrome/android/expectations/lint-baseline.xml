@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha13" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha13">
+<issues format="6" by="lint 8.2.0-alpha15" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha15">
 
     <issue
         id="ResourceType"
@@ -487,6 +487,50 @@
 
     <issue
         id="NewApi"
+        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="179"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="183"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="187"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="191"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `getDownloadUriForFileName`"
         errorLine1="        return getDownloadUriForFileName(fileName) != null;"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -954,7 +998,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="539"
+            line="548"
             column="55"/>
     </issue>
 
@@ -965,7 +1009,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="543"
+            line="552"
             column="55"/>
     </issue>
 
@@ -976,7 +1020,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="550"
+            line="559"
             column="55"/>
     </issue>
 
@@ -987,7 +1031,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1669"
+            line="1675"
             column="47"/>
     </issue>
 
@@ -998,7 +1042,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1831"
+            line="1837"
             column="47"/>
     </issue>
 
@@ -4501,7 +4545,7 @@
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="2651"
+            line="2649"
             column="19"/>
     </issue>
 
@@ -4657,6 +4701,83 @@
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
             line="85"
             column="21"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="        Intent intent = new Intent(context, BookmarkAddEditFolderActivity.class);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkAddEditFolderActivity.java"
+            line="102"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="        Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java"
+            line="530"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="        Intent intent = new Intent(mActivityContext, creatorActivityClass);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
+            line="135"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="            Intent intent = new Intent(context, FollowManagementActivity.class);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/feedmanagement/FeedManagementActivity.java"
+            line="64"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="            Intent intent = new Intent(mContext, FeedManagementActivity.class);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
+            line="1091"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="        Intent intent = new Intent(context, PictureInPictureActivity.class);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java"
+            line="679"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="IntentWithNullActionLaunch"
+        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
+        errorLine1="            Intent intent = new Intent(mContext, mCreatorActivityClass);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItem.java"
+            line="308"
+            column="29"/>
     </issue>
 
     <issue
