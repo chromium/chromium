@@ -1537,6 +1537,7 @@
   },
   {
     "prefix": "css-highlight-inheritance",
+    "owners": ["schenney@chromium.org", "andruud@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/css/css-pseudo",
@@ -1545,7 +1546,7 @@
       "http/tests/inspector-protocol/css/highlight-pseudo-inheritance.js"
     ],
     "args": ["--enable-blink-features=HighlightInheritance"],
-    "expires": "Jul 1, 2023"
+    "expires": "Mar 1, 2024"
   },
   {
     "prefix": "browsing-topics",
