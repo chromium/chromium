@@ -130,6 +130,7 @@ ARCHIVED_RESULTS_LIMIT = 25
 
 ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
 DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
+DISABLE_THREADED_ANIMATION_FLAG = '--disable-threaded-animation'
 
 
 class Port(object):
@@ -1624,6 +1625,9 @@ class Port(object):
                 # There are no virtual suites with
                 # --disable-threaded-compositing arg
                 args.append(ENABLE_THREADED_COMPOSITING_FLAG)
+        if (DISABLE_THREADED_COMPOSITING_FLAG in args
+                and DISABLE_THREADED_ANIMATION_FLAG not in args):
+            args.append(DISABLE_THREADED_ANIMATION_FLAG)
 
         pac_url = self.extract_wpt_pac(test_name)
         if pac_url is not None:
