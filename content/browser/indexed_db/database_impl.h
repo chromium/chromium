@@ -21,10 +21,6 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace blink {
 class IndexedDBKeyRange;
 }
@@ -38,8 +34,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
  public:
   explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
                         const storage::BucketInfo& bucket,
-                        IndexedDBDispatcherHost* dispatcher_host,
-                        scoped_refptr<base::SequencedTaskRunner> idb_runner);
+                        IndexedDBDispatcherHost* dispatcher_host);
 
   DatabaseImpl(const DatabaseImpl&) = delete;
   DatabaseImpl& operator=(const DatabaseImpl&) = delete;
@@ -133,7 +128,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
   const storage::BucketInfo bucket_info_;
-  scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -233,13 +233,6 @@ void IndexedDBDispatcherHost::RemoveCursorBinding(
   cursor_receivers_.Remove(receiver_id);
 }
 
-void IndexedDBDispatcherHost::AddTransactionBinding(
-    std::unique_ptr<blink::mojom::IDBTransaction> transaction,
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transaction_receivers_.Add(std::move(transaction), std::move(receiver));
-}
-
 storage::mojom::BlobStorageContext*
 IndexedDBDispatcherHost::mojo_blob_storage_context() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -306,9 +299,10 @@ void IndexedDBDispatcherHost::Open(
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
 
-  auto create_transaction_callback = base::BindOnce(
-      &IndexedDBDispatcherHost::CreateAndBindTransactionImpl, AsWeakPtr(),
-      std::move(transaction_receiver), bucket_locator);
+  auto create_transaction_callback =
+      base::BindOnce(&TransactionImpl::CreateAndBind, bucket_locator,
+                     base::WrapRefCounted(indexed_db_context_),
+                     std::move(transaction_receiver));
   std::unique_ptr<IndexedDBPendingConnection> connection =
       std::make_unique<IndexedDBPendingConnection>(
           std::move(callbacks), std::move(database_callbacks), transaction_id,
@@ -350,18 +344,6 @@ void IndexedDBDispatcherHost::DeleteDatabase(
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
       name, std::move(factory_client), bucket_locator, indexed_db_path,
       force_close);
-}
-
-void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
-        transaction_receiver,
-    const storage::BucketLocator& bucket_locator,
-    base::WeakPtr<IndexedDBTransaction> transaction) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto transaction_impl = std::make_unique<TransactionImpl>(
-      transaction, bucket_locator, this->AsWeakPtr(), IDBTaskRunner());
-  AddTransactionBinding(std::move(transaction_impl),
-                        std::move(transaction_receiver));
 }
 
 void IndexedDBDispatcherHost::BindFileReader(

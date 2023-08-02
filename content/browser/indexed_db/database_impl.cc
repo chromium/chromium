@@ -14,7 +14,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -46,15 +45,11 @@ const char kTransactionAlreadyExists[] = "Transaction already exists";
 
 DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
                            const storage::BucketInfo& bucket,
-                           IndexedDBDispatcherHost* dispatcher_host,
-                           scoped_refptr<base::SequencedTaskRunner> idb_runner)
+                           IndexedDBDispatcherHost* dispatcher_host)
     : dispatcher_host_(dispatcher_host),
       indexed_db_context_(dispatcher_host->context()),
       connection_(std::move(connection)),
-      bucket_info_(bucket),
-      idb_runner_(std::move(idb_runner)) {
-  DCHECK(idb_runner_->RunsTasksInCurrentSequence());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      bucket_info_(bucket) {
   DCHECK(connection_);
   indexed_db_context_->ConnectionOpened(bucket_locator());
 }
@@ -148,10 +143,9 @@ void DatabaseImpl::CreateTransaction(
           ->CreateTransaction(durability, mode)
           .release());
   connection_->database()->RegisterAndScheduleTransaction(transaction);
-
-  dispatcher_host_->CreateAndBindTransactionImpl(
-      std::move(transaction_receiver), bucket_locator(),
-      transaction->AsWeakPtr());
+  TransactionImpl::CreateAndBind(bucket_locator(), indexed_db_context_,
+                                 std::move(transaction_receiver),
+                                 transaction->AsWeakPtr());
 }
 
 void DatabaseImpl::Close() {

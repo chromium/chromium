@@ -167,8 +167,7 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
   }
 
   auto database = std::make_unique<DatabaseImpl>(
-      std::move(wrapper.connection_), *bucket_info_, dispatcher_host_.get(),
-      idb_runner_);
+      std::move(wrapper.connection_), *bucket_info_, dispatcher_host_.get());
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   dispatcher_host_->AddDatabaseBinding(
@@ -205,8 +204,7 @@ void IndexedDBFactoryClient::OnOpenSuccess(
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (wrapper.connection_) {
     auto database = std::make_unique<DatabaseImpl>(
-        std::move(wrapper.connection_), *bucket_info_, dispatcher_host_.get(),
-        idb_runner_);
+        std::move(wrapper.connection_), *bucket_info_, dispatcher_host_.get());
     dispatcher_host_->AddDatabaseBinding(
         std::move(database),
         pending_remote.InitWithNewEndpointAndPassReceiver());

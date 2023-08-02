@@ -37,7 +37,6 @@ namespace content {
 class IndexedDBContextImpl;
 class IndexedDBCursor;
 class IndexedDBDataItemReader;
-class IndexedDBTransaction;
 
 // All calls but the constructor (including destruction) must
 // happen on the IDB sequenced task runner.
@@ -90,10 +89,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
       std::unique_ptr<IndexedDBCursor> cursor);
   void RemoveCursorBinding(mojo::ReceiverId receiver_id);
 
-  void AddTransactionBinding(
-      std::unique_ptr<blink::mojom::IDBTransaction> transaction,
-      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> receiver);
-
   // A shortcut for accessing our context.
   IndexedDBContextImpl* context() const { return indexed_db_context_; }
 
@@ -101,12 +96,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   base::WeakPtr<IndexedDBDispatcherHost> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
-
-  void CreateAndBindTransactionImpl(
-      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
-          transaction_receiver,
-      const storage::BucketLocator& bucket_locator,
-      base::WeakPtr<IndexedDBTransaction> transaction);
 
   // Bind this receiver to read from this given file.
   void BindFileReader(
@@ -164,8 +153,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBDatabase>
       database_receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBCursor> cursor_receivers_;
-  mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBTransaction>
-      transaction_receivers_;
 
   std::map<base::FilePath, std::unique_ptr<IndexedDBDataItemReader>>
       file_reader_map_;
