@@ -188,10 +188,13 @@ gen_config_files linux/arm-neon-cpu-detect \
   "${toolchain}/armv7-linux-gcc.cmake -DCONFIG_RUNTIME_CPU_DETECT=1 \
    ${all_platforms}"
 
+# The linux/arm64 config is used by Fuchsia only because we don't have CPU
+# detection code for Fuchsia. This config hardcodes the CPU features of the
+# fuchsia-arm64-rel CI builder.
 reset_dirs linux/arm64
 gen_config_files linux/arm64 \
   "${toolchain}/arm64-linux-gcc.cmake -DCONFIG_RUNTIME_CPU_DETECT=0 \
-   ${all_platforms}"
+   -DENABLE_NEON_DOTPROD=0 -DENABLE_NEON_I8MM=0 ${all_platforms}"
 
 reset_dirs linux/arm64-cpu-detect
 gen_config_files linux/arm64-cpu-detect \

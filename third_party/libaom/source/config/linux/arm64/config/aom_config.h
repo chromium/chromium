@@ -78,8 +78,8 @@
 #define HAVE_FEXCEPT 1
 #define HAVE_MMX 0
 #define HAVE_NEON 1
-#define HAVE_NEON_DOTPROD 1
-#define HAVE_NEON_I8MM 1
+#define HAVE_NEON_DOTPROD 0
+#define HAVE_NEON_I8MM 0
 #define HAVE_PTHREAD_H 1
 #define HAVE_SSE 0
 #define HAVE_SSE2 0
@@ -87,6 +87,7 @@
 #define HAVE_SSE4_1 0
 #define HAVE_SSE4_2 0
 #define HAVE_SSSE3 0
+#define HAVE_SVE 0
 #define HAVE_UNISTD_H 1
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0
