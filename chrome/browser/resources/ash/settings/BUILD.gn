@@ -82,6 +82,7 @@ build_webui("build") {
     "date_time_page/timezone_selector.ts",
     "date_time_page/timezone_subpage.ts",
     "device_page/audio.ts",
+    "device_page/customize_button_row.ts",
     "device_page/customize_mouse_buttons_subpage.ts",
     "device_page/customize_pen_buttons_subpage.ts",
     "device_page/customize_tablet_buttons_subpage.ts",

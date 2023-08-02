@@ -194,25 +194,26 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
- [
-   'CustomizeMouseButtonsSubpage',
-   'device_page/customize_mouse_buttons_subpage_test.js',
-   {enabled: ['ash::features::kPeripheralCustomization']}
- ],
- [
-   'CustomizePenButtonsSubpage',
-   'device_page/customize_pen_buttons_subpage_test.js',
-   {enabled: ['ash::features::kPeripheralCustomization']}
- ],
- [
-   'CustomizeTabletButtonsSubpage',
-   'device_page/customize_tablet_buttons_subpage_test.js',
-   {enabled: ['ash::features::kPeripheralCustomization']}
- ],
  ['DateTimePage', 'date_time_page/date_time_page_test.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
  ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
+ ['DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js'],
+ [
+   'DevicePageCustomizeMouseButtonsSubpage',
+   'device_page/customize_mouse_buttons_subpage_test.js',
+   {enabled: ['ash::features::kPeripheralCustomization']}
+ ],
+ [
+   'DevicePageCustomizePenButtonsSubpage',
+   'device_page/customize_pen_buttons_subpage_test.js',
+   {enabled: ['ash::features::kPeripheralCustomization']}
+ ],
+ [
+   'DevicePageCustomizeTabletButtonsSubpage',
+   'device_page/customize_tablet_buttons_subpage_test.js',
+   {enabled: ['ash::features::kPeripheralCustomization']}
+ ],
  [
    'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'
  ],

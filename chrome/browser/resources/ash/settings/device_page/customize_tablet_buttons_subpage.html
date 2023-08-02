@@ -15,7 +15,10 @@
 </div>
 <div class="subsection">
   <template is="dom-repeat" items="[[selectedTablet.tabletButtonRemappings]]"
-      as="remapping">
-    <div>[[remapping.name]]</div>
+      index-as="index">
+    <customize-button-row
+        button-remapping-list="[[selectedTablet.tabletButtonRemappings]]"
+        remapping-index="[[index]]">
+    </customize-button-row>
   </template>
 </div>
