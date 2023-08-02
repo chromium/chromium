@@ -46,6 +46,11 @@ struct TestSignedWebBundle {
   web_package::SignedWebBundleId id;
 };
 
+struct TestSignedWebBundleBuilderOptions {
+  base::Version version = base::Version("1.0.0");
+  web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {};
+};
+
 class TestSignedWebBundleBuilder {
  public:
   explicit TestSignedWebBundleBuilder(
@@ -59,18 +64,14 @@ class TestSignedWebBundleBuilder {
   void AddPngImage(base::StringPiece url, base::StringPiece image_string);
 
   TestSignedWebBundle Build(
-      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
+      TestSignedWebBundleBuilderOptions build_options = {});
+  static TestSignedWebBundle BuildDefault(
+      TestSignedWebBundleBuilderOptions build_options = {});
 
  private:
   web_package::WebBundleSigner::KeyPair key_pair_;
   web_package::WebBundleBuilder builder_;
 };
-
-TestSignedWebBundle BuildDefaultTestSignedWebBundle(
-    const base::Version& version = base::Version("1.0.0"));
-
-TestSignedWebBundle BuildErroneousTestSignedWebBundle(
-    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
 
 }  // namespace web_app
 

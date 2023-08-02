@@ -117,7 +117,7 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
             .AppendASCII("foo")
             .Append(base::FilePath::kParentDirectory)
             .Append(base::FilePath::FromASCII("test-bundle.swbn"));
-    TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
+    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
     bundle_id_ = std::make_unique<web_package::SignedWebBundleId>(bundle.id);
     CHECK(base::WriteFile(signed_web_bundle_path_, bundle.data));
 

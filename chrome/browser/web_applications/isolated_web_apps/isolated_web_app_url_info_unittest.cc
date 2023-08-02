@@ -169,7 +169,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path =
       temp_dir.GetPath().Append(base::FilePath::FromASCII("test-0.swbn"));
-  TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
+  TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
   ASSERT_TRUE(base::WriteFile(path, bundle.data));
 
   IsolatedWebAppLocation location = DevModeBundle{.path = path};

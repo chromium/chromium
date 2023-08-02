@@ -195,7 +195,8 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   policy::UserPolicyBuilder device_local_account_policy_;
   const web_app::TestSignedWebBundle iwa_bundle_ =
-      web_app::BuildDefaultTestSignedWebBundle(base::Version("7.0.6"));
+      web_app::TestSignedWebBundleBuilder::BuildDefault(
+          {.version = base::Version("7.0.6")});
 
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};

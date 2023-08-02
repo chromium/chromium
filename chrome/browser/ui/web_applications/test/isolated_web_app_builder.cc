@@ -78,32 +78,23 @@ void TestSignedWebBundleBuilder::AddPngImage(base::StringPiece url,
 }
 
 TestSignedWebBundle TestSignedWebBundleBuilder::Build(
-    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing) {
+    TestSignedWebBundleBuilderOptions build_options) {
   return TestSignedWebBundle(
-      web_package::WebBundleSigner::SignBundle(builder_.CreateBundle(),
-                                               {key_pair_}, errors_for_testing),
+      web_package::WebBundleSigner::SignBundle(
+          builder_.CreateBundle(), {key_pair_},
+          build_options.errors_for_testing),
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
           key_pair_.public_key));
 }
 
-TestSignedWebBundle BuildDefaultTestSignedWebBundle(
-    const base::Version& version) {
+TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(
+    TestSignedWebBundleBuilderOptions build_options) {
   TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
       web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey));
   builder.AddManifest(base::ReplaceStringPlaceholders(
-      kTestManifest, {version.GetString()}, nullptr));
+      kTestManifest, {build_options.version.GetString()}, nullptr));
   builder.AddPngImage(kTestIconUrl, GetTestIconInString());
-  return builder.Build();
-}
-
-TestSignedWebBundle BuildErroneousTestSignedWebBundle(
-    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing) {
-  TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
-      web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey));
-  builder.AddManifest(base::ReplaceStringPlaceholders(
-      kTestManifest, {base::Version("1.0.0").GetString()}, nullptr));
-  builder.AddPngImage(kTestIconUrl, GetTestIconInString());
-  return builder.Build(errors_for_testing);
+  return builder.Build(build_options);
 }
 
 }  // namespace web_app

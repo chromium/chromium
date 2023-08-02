@@ -788,7 +788,7 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
 TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {
   base::FilePath path =
       temp_dir_.GetPath().Append(base::FilePath::FromASCII("test-0.swbn"));
-  TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
+  TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
 
   ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());
 
@@ -821,7 +821,8 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
     SCOPED_TRACE(Message() << "Running testcase: "
                            << " " << swbn_file_name);
 
-    TestSignedWebBundle bundle = BuildErroneousTestSignedWebBundle({error});
+    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
+        {.errors_for_testing = {error}});
     base::FilePath path =
         temp_dir_.GetPath().Append(base::FilePath::FromASCII(swbn_file_name));
     ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());

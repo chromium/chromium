@@ -98,7 +98,8 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
 
   void WriteUpdateBundleToDisk() {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto bundle = BuildDefaultTestSignedWebBundle(update_version_);
+    auto bundle =
+        TestSignedWebBundleBuilder::BuildDefault({.version = update_version_});
     ASSERT_THAT(base::WriteFile(update_bundle_path_, bundle.data), IsTrue());
   }
 
