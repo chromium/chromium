@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.view.View;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
@@ -43,7 +46,19 @@ public class KeyboardAccessoryTestHelper {
      */
     public static boolean accessoryViewFullyShown(Activity activity) {
         KeyboardAccessoryView accessory = activity.findViewById(R.id.keyboard_accessory);
-        return accessory != null && accessory.isShown() && !accessory.hasRunningAnimation();
+        return accessory != null && accessory.isShown() && !accessory.hasRunningAnimation()
+                && isViewOnScreen(accessory);
+    }
+
+    private static boolean isViewOnScreen(View target) {
+        if (!target.isShown()) {
+            return false;
+        }
+        final Rect actualPosition = new Rect();
+        final boolean isGlobalVisible = target.getGlobalVisibleRect(actualPosition);
+        final Rect screen = new Rect(0, 0, Resources.getSystem().getDisplayMetrics().widthPixels,
+                Resources.getSystem().getDisplayMetrics().heightPixels);
+        return isGlobalVisible && Rect.intersects(actualPosition, screen);
     }
 
     /**
