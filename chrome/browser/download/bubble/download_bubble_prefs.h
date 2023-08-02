@@ -26,12 +26,22 @@ bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url);
 // who have interacted with the download bubble prior to the IPH being added.
 bool ShouldSuppressDownloadBubbleIph(Profile* profile);
 
+// Whether the partial view is controlled by prefs. If not controlled by prefs,
+// the partial view defaults to disabled.
+bool IsDownloadBubblePartialViewControlledByPref();
+
 // Whether the partial view should be shown automatically when downloads are
 // finished.
 bool IsDownloadBubblePartialViewEnabled(Profile* profile);
+
+// Set the pref governing whether the partial view should be shown automatically
+// when downloads are finished. Note that on Lacros, the pref may be ignored
+// if the SysUI integration is enabled.
 void SetDownloadBubblePartialViewEnabled(Profile* profile, bool enabled);
-// Whether the setting is default (not set by the user).
-bool IsDownloadBubblePartialViewEnabledDefaultValue(Profile* profile);
+
+// Whether the setting is controlled by pref and is the default value (not set
+// by the user).
+bool IsDownloadBubblePartialViewEnabledDefaultPrefValue(Profile* profile);
 
 // The number of partial view impressions.
 int DownloadBubblePartialViewImpressions(Profile* profile);

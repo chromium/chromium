@@ -13,6 +13,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
 namespace download {
 
 bool IsDownloadBubbleEnabled(Profile* profile) {
@@ -74,7 +78,22 @@ bool ShouldSuppressDownloadBubbleIph(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kDownloadBubbleIphSuppression);
 }
 
+bool IsDownloadBubblePartialViewControlledByPref() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Disable "show downloads when they're done" by default when SysUI downloads
+  // integration V2 is enabled in Ash to prevent competition for the user's
+  // attention on download completion.
+  return !chromeos::BrowserParamsProxy::Get()
+              ->IsSysUiDownloadsIntegrationV2Enabled();
+#else
+  return true;
+#endif
+}
+
 bool IsDownloadBubblePartialViewEnabled(Profile* profile) {
+  if (!IsDownloadBubblePartialViewControlledByPref()) {
+    return false;
+  }
   return profile->GetPrefs()->GetBoolean(
       prefs::kDownloadBubblePartialViewEnabled);
 }
@@ -84,7 +103,10 @@ void SetDownloadBubblePartialViewEnabled(Profile* profile, bool enabled) {
                                   enabled);
 }
 
-bool IsDownloadBubblePartialViewEnabledDefaultValue(Profile* profile) {
+bool IsDownloadBubblePartialViewEnabledDefaultPrefValue(Profile* profile) {
+  if (!IsDownloadBubblePartialViewControlledByPref()) {
+    return false;
+  }
   return profile->GetPrefs()
       ->FindPreference(prefs::kDownloadBubblePartialViewEnabled)
       ->IsDefaultValue();

@@ -56,6 +56,9 @@ inline constexpr char kDownloadBubbleEnabled[] = "download_bubble_enabled";
 // A boolean specifying whether the partial download bubble (which shows up
 // automatically when downloads are complete) should be enabled. True (partial
 // bubble will show automatically) by default.
+// The following two prefs are ignored on ChromeOS Lacros if SysUI integration
+// is enabled.
+// TODO(chlily): Clean them up once SysUI integration is enabled by default.
 inline constexpr char kDownloadBubblePartialViewEnabled[] =
     "download_bubble.partial_view_enabled";
 

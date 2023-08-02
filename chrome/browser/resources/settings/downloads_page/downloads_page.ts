@@ -59,10 +59,15 @@ export class SettingsDownloadsPageElement extends
       downloadLocation_: String,
       // </if>
 
-      downloadBubbleEnabled_: {
+      /**
+       * Whether the user can toggle the option to display downloads when
+       * they're done.
+       */
+      downloadBubblePartialViewControlledByPref_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('downloadBubbleEnabled');
+          return loadTimeData.getBoolean(
+              'downloadBubblePartialViewControlledByPref');
         },
       },
     };
@@ -83,7 +88,7 @@ export class SettingsDownloadsPageElement extends
   private downloadLocation_: string;
   // </if>
 
-  private downloadBubbleEnabled_: boolean;
+  private downloadBubblePartialViewControlledByPref_: boolean;
 
   private browserProxy_: DownloadsBrowserProxy =
       DownloadsBrowserProxyImpl.getInstance();

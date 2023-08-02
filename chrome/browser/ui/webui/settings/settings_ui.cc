@@ -342,8 +342,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection));
 
-  html_source->AddBoolean("downloadBubbleEnabled",
-                          download::IsDownloadBubbleEnabled(profile));
+  html_source->AddBoolean(
+      "downloadBubblePartialViewControlledByPref",
+      download::IsDownloadBubbleEnabled(profile) &&
+          download::IsDownloadBubblePartialViewControlledByPref());
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   html_source->AddBoolean(

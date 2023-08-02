@@ -24,6 +24,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 namespace {
 
 constexpr char kDownloadConnectorEnabledNonBlockingPref[] = R"([
@@ -167,20 +171,43 @@ TEST_F(DownloadBubblePrefsTest, ShouldSuppressIph) {
 }
 
 TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr params_ptr =
+      crosapi::mojom::BrowserInitParams::New();
+  params_ptr->is_sys_ui_downloads_integration_v2_enabled = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params_ptr));
+#endif
+
   // Test default value.
   EXPECT_TRUE(IsDownloadBubblePartialViewEnabled(profile_));
-  EXPECT_TRUE(IsDownloadBubblePartialViewEnabledDefaultValue(profile_));
+  EXPECT_TRUE(IsDownloadBubblePartialViewEnabledDefaultPrefValue(profile_));
 
   // Set value.
   SetDownloadBubblePartialViewEnabled(profile_, false);
   EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
-  EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultValue(profile_));
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultPrefValue(profile_));
 
   SetDownloadBubblePartialViewEnabled(profile_, true);
   EXPECT_TRUE(IsDownloadBubblePartialViewEnabled(profile_));
   // This should still be false because it has been set to an explicit value.
-  EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultValue(profile_));
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultPrefValue(profile_));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled_LacrosSysUiIntegration) {
+  crosapi::mojom::BrowserInitParamsPtr params_ptr =
+      crosapi::mojom::BrowserInitParams::New();
+  params_ptr->is_sys_ui_downloads_integration_v2_enabled = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params_ptr));
+
+  // Returns false regardless of the pref.
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
+  SetDownloadBubblePartialViewEnabled(profile_, true);
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
+  SetDownloadBubblePartialViewEnabled(profile_, false);
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
+}
+#endif
 
 TEST_F(DownloadBubblePrefsTest, PartialViewImpressions) {
   // Test default value.

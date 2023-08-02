@@ -140,14 +140,14 @@ suite('DownloadsHandler', function() {
   });
 });
 
-suite('DownloadsHandlerWithBubble', function() {
+suite('DownloadsHandlerWithBubblePartialView', function() {
   let downloadsBrowserProxy: TestDownloadsBrowserProxy;
   let downloadsPage: SettingsDownloadsPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      downloadBubbleEnabled: true,
+      downloadBubblePartialViewControlledByPref: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
