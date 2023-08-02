@@ -98,6 +98,7 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
 #include "chrome/browser/ash/external_metrics.h"
+#include "chrome/browser/ash/file_manager/fusebox_daemon.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/language_preferences.h"
@@ -534,6 +535,7 @@ class DBusServices {
     NetworkCertLoader::Initialize();
 
     disks::DiskMountManager::Initialize();
+    file_manager::FuseBoxDaemon::Initialize();
 
     NetworkHandler::Initialize();
 
@@ -566,6 +568,7 @@ class DBusServices {
     rollback_network_config::Shutdown();
     chromeos::sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
+    file_manager::FuseBoxDaemon::Shutdown();
     disks::DiskMountManager::Shutdown();
     LoginState::Shutdown();
     NetworkCertLoader::Shutdown();

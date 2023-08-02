@@ -317,6 +317,7 @@ class VolumeManagerTest : public testing::Test {
 
     chromeos::PowerManagerClient::InitializeFake();
     disk_mount_manager_ = std::make_unique<FakeDiskMountManager>();
+    FuseBoxDaemon::Initialize();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     primary_profile_ = std::make_unique<ProfileEnvironment>(
@@ -328,6 +329,7 @@ class VolumeManagerTest : public testing::Test {
     task_environment_.RunUntilIdle();
     primary_profile_.reset();
 
+    FuseBoxDaemon::Shutdown();
     disk_mount_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
 

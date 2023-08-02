@@ -10,17 +10,21 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 namespace file_manager {
 
-class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FuseBoxDaemon
-    : public base::RefCounted<FuseBoxDaemon> {
+class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FuseBoxDaemon {
  public:
-  // Returns the fusebox daemon. Creates the fusebox daemon if needed.
-  static scoped_refptr<FuseBoxDaemon> GetInstance();
+  // Instantiates the global instance.
+  static void Initialize();
+
+  // Destroys the global instance.
+  static void Shutdown();
+
+  // Returns the fusebox daemon global instance.
+  static FuseBoxDaemon* GetInstance();
 
   // Attach fusebox storage: adds fusebox daemon <mount-point>/subdir used to
   // serve the content of the Chrome storage::FileSystemURL |url| via FUSE to
@@ -34,8 +38,6 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FuseBoxDaemon
   void DetachStorage(const std::string& subdir);
 
  private:
-  friend class base::RefCounted<FuseBoxDaemon>;
-
   FuseBoxDaemon();
   ~FuseBoxDaemon();
 
