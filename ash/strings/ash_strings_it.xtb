@@ -141,6 +141,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1557622599341396706">Mostra nome scrivania</translation>
 <translation id="1569384531973824928">Consente l'accesso per tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
+<translation id="1571697193564730395">Attiva/disattiva Non disturbare. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
@@ -579,6 +580,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3563775809269155755">Attiva hotspot</translation>
 <translation id="3566240529365775567">Aperto poco fa</translation>
 <translation id="3571734092741541777">Configura</translation>
+<translation id="3572988532398145777">Non puoi espandere la notifica mentre è aperto un riquadro. Devi prima chiudere il riquadro qui sotto.</translation>
 <translation id="3573179567135747900">Torna a "<ph name="FROM_LOCALE" />" (è necessario riavviare)</translation>
 <translation id="3576141592585647168">Cambia fuso orario</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
@@ -684,6 +686,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3990002060657467458">I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire degli screenshot.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
+<translation id="4011112806063830608">Modalità Non disturbare attiva.</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
 <translation id="401993194061514265">Indicatore non disponibile. Riapri Registra schermo.</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
@@ -717,6 +720,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
+<translation id="4177415338862979658">Fai clic per verificare i dettagli</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4185671786623711291">Sposta la finestra attiva sulla scrivania a destra</translation>
@@ -1435,6 +1439,7 @@ Nuova installazione</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="7313193732017069507">Espandi fotocamera</translation>
+<translation id="7316261577130609484">Aggiungi nuova attività</translation>
 <translation id="7340731148882810149">Menu Clic automatici</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Tastiera sullo schermo</translation>
@@ -1587,6 +1592,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7944023924886109030">Visualizza tutti gli eventi di oggi</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vuole usare <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Attenua la luminosità della tastiera</translation>
+<translation id="7963689218131240420">Modalità Non disturbare non attiva.</translation>
 <translation id="7963992254934562106">Da <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
 <translation id="797512352675305461">Attiva o disattiva l'ingrandimento a schermo intero</translation>
@@ -1838,6 +1844,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9080073830732419341">Fotocamera allineata all'angolo in alto a sinistra</translation>
 <translation id="9080132581049224423">Scorri verso l'alto per andare alla Home page</translation>
 <translation id="9080206825613744995">Il microfono è in uso.</translation>
+<translation id="908451241440060346">Le notifiche sono disattivate quando è attiva la modalità Non disturbare</translation>
 <translation id="9084606467167974638">Attiva/disattiva posizione menu</translation>
 <translation id="9085962983642906571">La batteria viene mantenuta all'80%, anche se il dispositivo è collegato alla corrente, per prolungarne la durata.</translation>
 <translation id="9089416786594320554">Metodi immissione</translation>

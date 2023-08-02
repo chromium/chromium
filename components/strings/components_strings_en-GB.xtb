@@ -408,6 +408,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your info, privacy and security in your Google Account</translation>
+<translation id="1793631236004319016">Last used <ph name="NUM_HOURS_MINUTES_SECONDS" /> ago</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, multiple actions are available; press 'Tab' to cycle through them</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtual card details</translation>
@@ -567,6 +568,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2149968176347646218">Connection is not secure</translation>
 <translation id="2152495481414285304">Applications</translation>
 <translation id="2153609454945889823">Install Google Play Services for AR?</translation>
+<translation id="2154144347038514978">Auto-start on your device</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2154739667870063220">Reboot</translation>
 <translation id="2155260325161282517">5 in x 7 in</translation>
@@ -938,6 +940,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="299990983510665749">Hatchbacks</translation>
 <translation id="3002501248619246229">Check input tray media</translation>
 <translation id="3005723025932146533">Show saved copy</translation>
+<translation id="300580149047131921">Recently used</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab to browse available actions, then Enter to execute selected action.</translation>
 <translation id="3013291976881901233">MIDI devices</translation>
 <translation id="3014553260345122294">Business News</translation>
@@ -2662,6 +2665,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6671169470640320959">Auto Financing</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
 <translation id="6677351035258626477">Fast Food</translation>
+<translation id="6681790815630918386">CVC saved</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6683717648675961851">Job listings</translation>
 <translation id="6687230248707087982">Envelope (plain)</translation>
@@ -2909,6 +2913,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7186833457841277072">Envelope (inkjet)</translation>
 <translation id="7186840261985974511">Envelope no.12</translation>
 <translation id="718872491229180389">Cheerleading</translation>
+<translation id="7188840756966467339">Restart and apply policies</translation>
 <translation id="7192188280913829296">The attribute 'vendor_id' must also be specified.</translation>
 <translation id="7192203810768312527">Frees up <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="7192537357091279678">Computer Drives and Storage</translation>
@@ -3007,6 +3012,7 @@ Additional details:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Share this tab by sharing the link, creating a QR code, casting and more</translation>
 <translation id="7403591733719184120">Your <ph name="DEVICE_NAME" /> is managed</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> has installed applications for additional functions. Applications have access to some of your data.</translation>
 <translation id="7407424307057130981">&lt;p&gt;You'll see this error if you have Superfish software on your Windows computer.&lt;/p&gt;
       &lt;p&gt;Follow these steps to temporarily disable the software so that you can get on the web. You'll need administrator privileges.&lt;/p&gt;
       &lt;ol&gt;
@@ -3469,6 +3475,7 @@ Additional details:
 <translation id="830498451218851433">Fold half</translation>
 <translation id="8308653357438598313">Live Video Streaming</translation>
 <translation id="8311895354659782580">Real Property Listings</translation>
+<translation id="8316555157357957253">Using now</translation>
 <translation id="8317570861267063617">For faster checkout, save the CVC for this card to your device</translation>
 <translation id="8319269383395457801">Residential Sales</translation>
 <translation id="831997045666694187">Evening</translation>
@@ -3485,6 +3492,7 @@ Additional details:
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8351131234907093545">Create note</translation>
 <translation id="835203957414790336">The content of pages that you print and information about your printer is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
+<translation id="8352849934814541340">The administrator of this device has installed applications for additional functions. Applications have access to some of your data.</translation>
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
 <translation id="8364627913115013041">Not set.</translation>
@@ -3733,6 +3741,7 @@ Additional details:
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="890493561996401738">Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8918062451146297192">CVC for virtual card</translation>
 <translation id="8919740778133505789">Sports Cars</translation>
 <translation id="8919895429178014996">Hide all items</translation>
 <translation id="8922013791253848639">Always allow ads on this site</translation>

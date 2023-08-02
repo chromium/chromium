@@ -157,6 +157,7 @@
 <translation id="1122960773616686544">სანიშნის სახელი</translation>
 <translation id="1124772482545689468">მომხმარებელი</translation>
 <translation id="1125550662859510761">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /> (საკუთარი)</translation>
+<translation id="1125921926864945797">ფონი და სტილი</translation>
 <translation id="1126809382673880764">არ დაგიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა თუ გაფართოებებისგან. Safe Browsing-ის დაცვით (ხელმისაწვდომობის მიხედვით) მაინც ისარგებლებთ სხვა Google სერვისებში, როგორიცაა Gmail თუ Search.</translation>
 <translation id="1128090040635299943">ამჟამად მიმდინარეობს Linux-ის კონფიგურაცია. კონფიგურაციას რამდენიმე წუთი დასჭირდება.</translation>
 <translation id="1128591060186966949">საძიებო სისტემის რედაქტირება</translation>
@@ -184,6 +185,7 @@
 <translation id="1147322039136785890">ახლა <ph name="SUPERVISED_USER_NAME" />-ის ჯერია</translation>
 <translation id="1147991416141538220">წვდომის მოთხოვნით მიმართეთ ამ მოწყობილობის ადმინისტრატორს.</translation>
 <translation id="1148624853678088576">ყველაფერი მზადაა!</translation>
+<translation id="1148669835763563782">თქვენ იღებთ პროგრამული უზრუნველყოფის ბოლო განახლებას, გაუმჯობესებული უსაფრთხოებითა და Chromebook-ის უახლესი ფუნქციებით რომ ისარგებლოთ. აღნიშნული განახლება მოიცავს დაყენების გაუმჯობესებულ პროცესსაც, რომელიც დაგეხმარებათ, დაუბრკოლებლად დაიწყოთ თქვენი Chromebook-ის გამოყენება.</translation>
 <translation id="1149401351239820326">ვადის გასვლის თვე</translation>
 <translation id="1149483087970735785">დამხმარე ტექნოლოგია</translation>
 <translation id="1149725087019908252">მიმდინარეობს <ph name="FILE_NAME" />-ის სკანირება</translation>
@@ -265,6 +267,7 @@
 <translation id="1202116106683864634">ნამდვილად გსურთ წვდომის ამ გასაღების წაშლა?</translation>
 <translation id="1202596434010270079">Kiosk აპი განახლდა. ამოიღეთ USB დისკი.</translation>
 <translation id="1202892408424955784">პროდუქტები, რომლებსაც თვალს ადევნებთ</translation>
+<translation id="1203559206734265703">დაცული აუდიტორიების შეცდომების გამართვა ჩართულია.</translation>
 <translation id="120368089816228251">მუსიკალური ნოტი</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">მალსახმობებს თქვენ მართავთ</translation>
@@ -712,6 +715,7 @@
 <translation id="1580772913177567930">დაუკავშირდით თქვენს ადმინისტრატორს</translation>
 <translation id="1581962803218266616">მაძიებელში ჩვენება</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />]-ის წაშლა</translation>
+<translation id="1583082742220286248">მიმდინარეობს სესიის განახლება</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> მუშავდება ადგილობრივად და მუშაობს ხაზგარეშე რეჟიმში</translation>
 <translation id="1584990664401018068">თქვენ მიერ გამოყენებულმა Wi-Fi ქსელმა (<ph name="NETWORK_ID" />), შეიძლება, ავტორიზაცია მოგთხოვოთ.</translation>
 <translation id="1585717515139318619">თქვენს კომპიუტერში არსებულმა სხვა პროგრამამ დაამატა თემა, რომელსაც Chrome-ის მუშაობის შეცვლა შეუძლია.
@@ -813,6 +817,7 @@
 <translation id="1644852018355792105">შეიყვანეთ Bluetooth წვდომის გასაღები მოწყობილობისთვის <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">უცნობი წყარო</translation>
 <translation id="1645516838734033527"><ph name="DEVICE_TYPE" />-ის უსაფრთხოების უზრუნველსაყოფად, Smart Lock საჭიროებს თქვენს ტელეფონზე ეკრანის დაბლოკვის მეთოდის გამოყენებას.</translation>
+<translation id="1646045728251578877">ხელმისაწვდომია პროგრამული უზრუნველყოფის განახლება</translation>
 <translation id="1646982517418478057">ამ სერტიფიკატის დასაშიფრად, გთხოვთ, შეიყვანოთ პაროლი</translation>
 <translation id="1647408325348388858">გსურთ გახსნათ და რედაქტირება გაუწიოთ ფაილს (<ph name="FILE_NAME" />) ამ ვებ-აპში?</translation>
 <translation id="1648528859488547844">მდებარეობის დასადგენად Wi-Fi ან მობილური ქსელების გამოყენება</translation>
@@ -2758,6 +2763,7 @@
 <translation id="3254084468305910013">{COUNT,plural, =0{უსაფრთხოებასთან დაკავშირებული პრობლემები არ მოიძებნა}=1{მოიძებნა უსაფრთხოებასთან დაკავშირებული {COUNT} პრობლემა}other{მოიძებნა უსაფრთხოებასთან დაკავშირებული {COUNT} პრობლემა}}</translation>
 <translation id="3254451942070605467">მიმდინარეობს <ph name="FILE_NAME" />-ის ჩამოტვირთვა, დარჩენილია <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">სასაათო სარტყლის ავტომატური ამოცნობა გათიშულია</translation>
+<translation id="3255747772218936245">განახლების ინსტალაცია</translation>
 <translation id="3257733480216378006">გსურთ, დაუშვათ <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="3259723213051400722">გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="3261090393424563833">სიხშირის გაზრდა</translation>
@@ -3577,10 +3583,12 @@
 <translation id="3920909973552939961">გადახდის დამმუშავებლების ინსტალაცია დაუშვებელია</translation>
 <translation id="3922823422695198027">იმ ბმულების გასახსნელად, რომლებსაც <ph name="APP_NAME" /> ხსნის, დაყენებულია სხვა აპები. ამ ქმედების შედეგად, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> და <ph name="APP_NAME_4" /> აღარ გახსნის მხარდაჭერილ ბმულებს.</translation>
 <translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
+<translation id="3923221004758245114">გსურთ, ამოშალოთ <ph name="VM_NAME" /> თქვენი <ph name="DEVICE_TYPE" />-დან? ეს მოქმედება წაშლის ვირტუალურ მოწყობილობაზე არსებულ ყველა აპსა და მონაცემს.</translation>
 <translation id="3923676227229836009">ამ გვერდისთვის დაშვებულია ფაილების ნახვა</translation>
 <translation id="3924145049010392604">მეტა</translation>
 <translation id="3924487862883651986">URL-ებს შესამოწმებლად Safe Browsing-ს უგზავნის. ახალი საფრთხეების აღმოჩენის ხელშესაწყობად ასევე გზავნის გვერდების მცირე ნიმუშებს, ჩამოტვირთვებს, გაფართოებათა აქტივობას და სისტემის ინფორმაციას. Google-ის აპებში თქვენს დასაცავად დროებით მიაბამს ამ მონაცემებს თქვენს Google ანგარიშს, როცა სისტემაში შესული ხართ.</translation>
 <translation id="3925573269917483990">კამერა:</translation>
+<translation id="3925926055063465902">ამ ქსელის გამოყენებას ამ მოწყობილობის სხვა მომხმარებლებიც შეძლებენ</translation>
 <translation id="3926002189479431949">Smart Lock-ის ტელეფონი შეიცვალა</translation>
 <translation id="3927932062596804919">უარყოფა</translation>
 <translation id="3928570707778085600">გსურთ ცვლილებების შენახვა „<ph name="FILE_OR_FOLDER_NAME" />“-ში?</translation>
@@ -4152,6 +4160,7 @@
 <translation id="4413087696295876280">ChromeOS Flex მოწყობილობის ინფორმაციისა და მონაცემების წაკითხვა</translation>
 <translation id="44141919652824029">გსურთ, „<ph name="APP_NAME" />“-მა შეძლოს დაკავშირებული USB მოწყობილობების სიაზე წვდომა?</translation>
 <translation id="4414232939543644979">ახალი &amp;ინკოგნიტო ფანჯარა</translation>
+<translation id="4414242853388122273"><ph name="VM_NAME" /> ვერ წაიშალა შეცდომის გამო. ცადეთ ხელახლა.</translation>
 <translation id="4415213869328311284">ყველაფერი მზადაა იმისთვის, რომ <ph name="DEVICE_TYPE" /> გამოიყენოთ.</translation>
 <translation id="4415245286584082850">მოწყობილობები ვერ მოიძებნა. გახსენით დახმარების ცენტრის სტატია ახალ ჩანართში.</translation>
 <translation id="4415276339145661267">თქვენი Google ანგარიშის მართვა</translation>
@@ -4354,6 +4363,7 @@
 <translation id="4580587929153007251">ხელახლა შედით Google პაროლების მმართველში</translation>
 <translation id="4580596421317071374">პაროლები ინახება სექციაში „<ph name="GOOGLE_PASSWORD_MANAGER" />“ ამ მოწყობილობაზე.</translation>
 <translation id="4581774856936278355">შეცდომა Linux-ის აღდგენისას</translation>
+<translation id="4582217877717474109">სისტემის პარამეტრები</translation>
 <translation id="4582297591746054421">როგორც წესი, საიტებს თქვენი გაცვლის ბუფერის წაკითხვა სჭირდება ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა, მაგალითად, დაკოპირებული ტექსტის ფორმატირების შენარჩუნება</translation>
 <translation id="4582563038311694664">ყველა პარამეტრის აღდგენა</translation>
 <translation id="4585793705637313973">გვერდის რედაქტირება</translation>
@@ -4616,6 +4626,7 @@
 <translation id="4811503964269049987">არჩეული ჩანართის დაჯგუფება</translation>
 <translation id="4813512666221746211">ქსელის შეცდომა</translation>
 <translation id="4814114628197290459">IBAN-ის წაშლა</translation>
+<translation id="4814327014588285482">გამოტოვება და მოგვიანებით შეხსენება</translation>
 <translation id="4814378367953456825">შეიყვანეთ თითის ამ ანაბეჭდის სახელი</translation>
 <translation id="481574578487123132">მიბმული მოწყობილობები</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, დეტალები</translation>
@@ -4821,6 +4832,7 @@
 <translation id="4985206706500620449">თქვენ დაუშვით მესამე მხარის ქუქი-ჩანაწერები ამ საიტისთვის</translation>
 <translation id="4986706507552097681">პარამეტრებიდან ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
 <translation id="4986728572522335985">ეს ქმედება წაშლის უსაფრთხოების გასაღებში შენახულ ყველა მონაცემს, მათ შორის, მის PIN-კოდს</translation>
+<translation id="4987944280765486504">თქვენი Chromebook გადაიტვირთება, როცა ჩამოტვირთვა დასრულდება და დაყენების გაგრძელების საშუალება გექნებათ.</translation>
 <translation id="4988526792673242964">გვერდები</translation>
 <translation id="49896407730300355">საათის ისრის სა&amp;წინააღმდეგოდ შემოტრიალება</translation>
 <translation id="4989966318180235467">&amp;ფონური გვერდის შემოწმება</translation>
@@ -5596,6 +5608,7 @@
 <translation id="5656845498778518563">გამოხმაურების გაგზავნა Google-ში</translation>
 <translation id="5657156137487675418">ყველა ქუქი-ჩანაწერის დაშვება</translation>
 <translation id="5657667036353380798">გარე გაფართოებისთვის საჭიროა Chrome-ის <ph name="MINIMUM_CHROME_VERSION" /> ან უფრო ახალი ვერსიის დაინსტალირება.</translation>
+<translation id="565899488479822148">მიმდინარეობს უახლესი განახლების ინსტალაცია</translation>
 <translation id="5659593005791499971">ელფოსტა</translation>
 <translation id="566040795510471729">თქვენი Chrome-ის მ&amp;ორგება</translation>
 <translation id="5662513737565158057">შეცვალეთ Linux აპების მუშაობის პრინციპი.</translation>
@@ -5655,6 +5668,7 @@
 <translation id="5711983031544731014">განბლოკვა შეუძლებელია. შეიყვანეთ პაროლი.</translation>
 <translation id="5712153969432126546">საიტები ზოგჯერ აქვეყნებს ისეთ PDF-ებს, როგორიცაა, მაგალითად, დოკუმენტები, კონტრაქტები, ფორმები და ა.შ.</translation>
 <translation id="571222594670061844">საიტებს შეუძლია სისტემაში შესვლის მოთხოვნების ჩვენება პირადობის მონაცემების სერვისებიდან</translation>
+<translation id="5713033452812927234">მიმდინარეობს ფანჯრების გახსნა თქვენი წინა მოწყობილობიდან</translation>
 <translation id="5713158217420111469">დაკავშირებულია <ph name="DEVICE" />-თან</translation>
 <translation id="5713960379473463904">შორისის შეყვანის სტილი</translation>
 <translation id="5715711091495208045">დანამატის ბროკერი: <ph name="PLUGIN_NAME" /></translation>
@@ -6211,6 +6225,7 @@
 <translation id="6177412385419165772">მიმდინარეობს ამოშლა…</translation>
 <translation id="6178664161104547336">აირჩიეთ სერტიფიკატი</translation>
 <translation id="6178682841350631965">თქვენი სისტემაში შესვლის მონაცემები განახლდა</translation>
+<translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{გსურთ გაფართოების წაშლა?}other{გსურთ # გაფართოების წაშლა?}}</translation>
 <translation id="6180510783007738939">ხაზის ხელსაწყო</translation>
 <translation id="6180550893222597997">წვდომის რომელი გასაღების გამოყენება გსურთ <ph name="APP_NAME" />-ისთვის?</translation>
 <translation id="6181431612547969857">ჩამოტვირთვა დაბლოკილია</translation>
@@ -6285,6 +6300,7 @@
 <translation id="6241844896329831164">წვდომის საჭიროების გარეშე</translation>
 <translation id="6242574558232861452">მიმდინარეობს თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება.</translation>
 <translation id="6242589501614145408">გადააყენეთ თქვენი უსაფრთხოების გასაღები</translation>
+<translation id="6242605626259978229">თქვენი ბრაუზერი და პროფილი მართულია</translation>
 <translation id="6242852299490624841">ამ ჩანართის ფოკუსში მოქცევა</translation>
 <translation id="6243774244933267674">სერვერი მიუწვდომელია</translation>
 <translation id="6244245036423700521">ONC ფაილის იმპორტირება</translation>
@@ -6304,6 +6320,7 @@
 <translation id="6254503684448816922">გასაღების კომპრომეტაცია</translation>
 <translation id="6254892857036829079">იდეალური</translation>
 <translation id="6257602895346497974">სინქრონიზაციის ჩართვა...</translation>
+<translation id="625827534921607067">როცა ერთზე მეტი ადრე დაკავშირებული ან კონფიგურირებული ქსელი იქნება ხელმისაწვდომი, ამ ქსელს უპირატესობა მიენიჭება</translation>
 <translation id="62586649943626337">დაახარისხეთ თქვენი ჩანართები ჩანართების ჯგუფი</translation>
 <translation id="6262371516389954471">სარეზერვო ასლები აიტვირთება Google-ში და დაიშიფრება თქვენი Google ანგარიშის პაროლით.</translation>
 <translation id="6263082573641595914">Microsoft CA ვერსია</translation>
@@ -6607,6 +6624,7 @@
 <translation id="652937045869844725">ცადეთ მესამე მხარის ქუქი-ჩანაწერების დაშვება, რაც ნიშნავს, რომ ნაკლებად იქნებით დაცული, თუმცა საიტის ფუნქციები უფრო დიდი ალბათობით იმუშავებს</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6530186581263215931">ეს პარამეტრები იძულებით არის გააქტიურებული თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="6530267432324197764">პროფილს მართავს <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">სახიფათო ფაილის შენარჩუნება</translation>
 <translation id="6532101170117367231">შენახვა Google Drive-ზე</translation>
 <translation id="6532106788206463496">ცვლილებების შენახვა</translation>
@@ -7789,6 +7807,7 @@
 <translation id="7527758104894292229">განაახლეთ ის თქვენს Google ანგარიშში (<ph name="ACCOUNT" />)</translation>
 <translation id="7528224636098571080">არ გაიხსნას</translation>
 <translation id="7529411698175791732">შეამოწმეთ კავშირი ინტერნეტთან. თუ პრობლემა გამეორდება, ცადეთ გამოსვლა და ხელახლა შესვლა.</translation>
+<translation id="7529865045818406536">როცა ერთზე მეტი ძველი ქსელი იქნება ხელმისაწვდომი, გამოყენებული იქნება სასურველი ქსელები</translation>
 <translation id="7529876053219658589">{0,plural, =1{სტუმრის ფანჯრების დახურვა}other{სტუმრის ფანჯრების დახურვა}}</translation>
 <translation id="7530016656428373557">განტვირთვის მაჩვენებელი (ვატი)</translation>
 <translation id="7531310913436731628">მდებარეობა გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
@@ -9520,6 +9539,7 @@
 <translation id="8965037249707889821">შეიყვანეთ ძველი პაროლი</translation>
 <translation id="8966809848145604011">სხვა პროფილები</translation>
 <translation id="8967427617812342790">საკითხავ სიაში დამატება</translation>
+<translation id="8967548289042494261">წაშალეთ <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS-ის სისტემური იმიჯ-ფაილის ჩამწერი</translation>
 <translation id="8968766641738584599">ბარათის შენახვა</translation>
 <translation id="89720367119469899">Escape</translation>

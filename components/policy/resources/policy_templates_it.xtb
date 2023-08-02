@@ -568,6 +568,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="1488724823347505879">Attiva la condivisione dalle app Android alle app web</translation>
+<translation id="1490962807364514840">Il tempo di esecuzione della CPU conta la velocità di raccolta dei dati di telemetria in millisecondi.</translation>
 <translation id="1492223733885011596">Questo criterio consente di attivare il supporto delle GIF per il selettore di emoji su <ph name="PRODUCT_OS_NAME" />.
 Se questo criterio viene attivato, il selettore di emoji supporterà le emoji in formato GIF.
 Se viene disattivato o se non viene configurato, il selettore di emoji non supporterà le emoji in formato GIF.
@@ -1377,6 +1378,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="2178899310296064282">Applica almeno la modalità Restrizione moderata su YouTube</translation>
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
+<translation id="2183338188392346527">Non segnalare i contatori del tempo di esecuzione del dispositivo</translation>
 <translation id="219297066914002620">Indica a <ph name="PRODUCT_OS_NAME" /> di attivare o disattivare gli strumenti della console di gestione delle macchine virtuali.
 
       Se il criterio viene impostato su true o non viene impostato, l'utente potrà usare l'interfaccia a riga di comando di gestione delle macchine virtuali.
@@ -3035,6 +3037,9 @@ Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le
 
 Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è facoltativo se viene configurato questo criterio.</translation>
 <translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
+<translation id="3637063789824963261">Se il criterio viene attivato, i dispositivi registrati segnalano i contatori del tempo di esecuzione del dispositivo (solo Intel vPro Gen 14 e versioni successive).
+
+Se il criterio viene disattivato o se non viene configurato, i dispositivi registrati non rilevano o non segnalano i contatori del tempo di esecuzione dei dispositivi.</translation>
 <translation id="3642557248926713561">Disattiva la protezione delle estensioni di Navigazione sicura</translation>
 <translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
@@ -3593,6 +3598,9 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 
 Se questo criterio non viene configurato, tutte le origini richiederanno un gesto dell'utente precedente per chiamare questa API.</translation>
 <translation id="4115501011761259824">Attiva First-Party Sets per tutti gli utenti interessati</translation>
+<translation id="4120401094617902941">La velocità di campionamento e raccolta dei contatori del tempo di esecuzione. Il minimo consentito è 1 giorno.
+
+Se il criterio non viene impostato, viene applicata la velocità predefinita di 1 giorno.</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
 <translation id="4122565688998751716">Questo criterio è deprecato. Utilizza il criterio "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />".
@@ -5562,6 +5570,7 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="5979376378555121803">Applicazione in hosting</translation>
 <translation id="5984099692320899605">Non utilizzare l'autenticazione NTLM</translation>
 <translation id="5984237109586500246">Accetta i contenuti web pubblicati con la tecnologia Signed HTTP Exchange</translation>
+<translation id="5987654816293745077">Segnala i contatori del tempo di esecuzione del dispositivo</translation>
 <translation id="5991707691018985057">Mostra la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Non mostrare la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
 <translation id="5994438001592408007">I Glanceables sono attivati per gli utenti.</translation>
 <translation id="5997543603646547632">Utilizza orologio di 24 ore per impostazione predefinita</translation>

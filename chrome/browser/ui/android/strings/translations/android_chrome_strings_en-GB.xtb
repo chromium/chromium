@@ -1056,6 +1056,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Block all the time</translation>
+<translation id="664050863900079109">Read Aloud</translation>
 <translation id="6641780377503683465">Remove <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645629752388991326">Control which devices can sign in by using this device as a security key.</translation>
@@ -1155,6 +1156,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7138678301420049075">Other</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
+<translation id="7152808996372201178">Read aloud supported pages. To edit this shortcut, touch and hold.</translation>
 <translation id="7155317020660659215">To scan a QR code, change your settings so that Chrome can use your camera</translation>
 <translation id="7168323970702333693">Signed in as <ph name="USER_NAME" />. Opens settings.</translation>
 <translation id="7173114856073700355">Open settings</translation>

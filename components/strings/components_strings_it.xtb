@@ -567,6 +567,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2152495481414285304">Applicazioni</translation>
 <translation id="2153609454945889823">Installare Google Play Services per AR?</translation>
+<translation id="2154144347038514978">Avvio automatico sul dispositivo</translation>
 <translation id="2154484045852737596">Modifica la carta</translation>
 <translation id="2154739667870063220">Riavvia</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
@@ -2905,6 +2906,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7186833457841277072">Busta (getto di inchiostro)</translation>
 <translation id="7186840261985974511">Busta #12</translation>
 <translation id="718872491229180389">Cheerleading</translation>
+<translation id="7188840756966467339">Riavvia e applica criteri</translation>
 <translation id="7192188280913829296">È necessario specificare anche l'attributo "vendor_id".</translation>
 <translation id="7192203810768312527">Consente di liberare <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="7192537357091279678">Unità e dispositivi di archiviazione per computer</translation>
@@ -3003,6 +3005,7 @@ Ulteriori dettagli:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Condividi questa scheda condividendo il link, creando un codice QR, mediante trasmissione e altro ancora</translation>
 <translation id="7403591733719184120">Il tuo dispositivo <ph name="DEVICE_NAME" /> è gestito</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ha installato applicazioni per funzioni aggiuntive. Le applicazioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Vedrai questo errore se sul tuo computer Windows è installato il software Superfish.&lt;/p&gt;
     &lt;p&gt;Segui questi passaggi per disattivare temporaneamente il software in modo da riuscire a connetterti a Internet. Devi disporre dei privilegi di amministratore.&lt;/p&gt;
     &lt;ol&gt;
@@ -3481,6 +3484,7 @@ Ulteriori dettagli:
 <translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8351131234907093545">Crea nota</translation>
 <translation id="835203957414790336">I contenuti delle pagine che stampi e le informazioni sulla stampante vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere scansionati alla ricerca di dati sensibili.</translation>
+<translation id="8352849934814541340">L'amministratore di questo dispositivo ha installato applicazioni per funzioni aggiuntive. Le applicazioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="8355270400102541638">Contesto arresto anomalo locale:</translation>
 <translation id="8363502534493474904">Disattivare la modalità aereo</translation>
 <translation id="8364627913115013041">Non impostato.</translation>
@@ -3730,6 +3734,7 @@ Ulteriori dettagli:
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
 <translation id="890493561996401738">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8918062451146297192">CVC della carta virtuale</translation>
 <translation id="8919740778133505789">Auto sportive</translation>
 <translation id="8919895429178014996">Nascondi tutti gli elementi</translation>
 <translation id="8922013791253848639">Consenti sempre gli annunci su questo sito</translation>
