@@ -77,6 +77,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
 
  private:
   friend class extensions::BrowserContextKeyedAPIFactory<EventManager>;
+  friend class TelemetryExtensionEventManagerTest;
 
   // extensions::BrowserContextKeyedAPI:
   static const char* service_name() { return "TelemetryEventManager"; }
