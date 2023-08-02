@@ -17,6 +17,7 @@
 #include "cc/paint/scoped_raster_flags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
