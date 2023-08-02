@@ -3265,11 +3265,15 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   layout_view->SetPageScaleFactor(1.0);
 
   // Set up the initial containing block size for pagination. This is defined as
-  // the page area size of the *first* page [1].
-  //
-  // TODO(crbug.com/835358): Handle situations where the first page is named.
+  // the page area size of the *first* page. [1] The size of the first page may
+  // not be fully known yet, e.g. if the first page is named [2] and given a
+  // specific size. Page names are resolved during layout. For now, set an
+  // initial containing block size based on the information that's currently
+  // available. If this turns out to be wrong, we need to set a new size and lay
+  // out again. See below.
   //
   // [1] https://www.w3.org/TR/css-page-3/#page-model
+  // [2] https://www.w3.org/TR/css-page-3/#using-named-pages
   PhysicalSize initial_containing_block_size =
       layout_view->PageAreaSize(/* page_index */ 0u,
                                 /* page_name */ AtomicString());
@@ -3279,6 +3283,32 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kPrintingChanged);
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
+
+  const auto& first_page = To<NGPhysicalBoxFragment>(
+      *layout_view->GetPhysicalFragment(0)->Children()[0]);
+  if (const AtomicString& page_name = first_page.PageName()) {
+    PhysicalSize new_size =
+        layout_view->PageAreaSize(/* page_index */ 0u, page_name);
+    if (new_size != initial_containing_block_size) {
+      // If the first page was named (this isn't something we can detect without
+      // laying out first), and the size of the first page is different from
+      // what we got above, the initial containing block used was wrong (which
+      // affects e.g. elements with viewport units). Set a new size and lay out
+      // again.
+      layout_view->SetInitialContainingBlockSizeForPagination(new_size);
+
+      // Make sure that everything that should respond to an initial containing
+      // block change actually responds (elements using viewport units, for
+      // instance).
+      frame_->GetDocument()->LayoutViewportWasResized();
+
+      layout_view
+          ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+              layout_invalidation_reason::kPrintingChanged);
+      frame_->GetDocument()->UpdateStyleAndLayout(
+          DocumentUpdateReason::kPrinting);
+    }
+  }
 
   // If we don't fit in the given page width, we'll lay out again. If we don't
   // fit in the page width when shrunk, we will lay out at maximum shrink and
