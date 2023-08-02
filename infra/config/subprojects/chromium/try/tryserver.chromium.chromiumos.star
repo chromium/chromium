@@ -94,7 +94,8 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        # TODO(b/294160948): Siso doesn't support cxx actions for lacros.
+        experiment_percentage = 0.01,
     ),
 )
 
