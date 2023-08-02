@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_MONITOR_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_MONITOR_H_
 
+#include <map>
+#include <memory>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -119,6 +122,10 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   bool ShouldCollectSlice() const;
 
   void SetShouldCollectSliceCallbackForTesting(base::RepeatingCallback<bool()>);
+
+  // CHECK's that `page_node` and `info` are in the right state to be
+  // mapped to each other in `page_node_info_map_`.
+  void CheckPageState(const PageNode* page_node, const PageNodeInfo& info);
 
   // Monotonically increasing counters for tabs and slices.
   int slice_id_counter_;
