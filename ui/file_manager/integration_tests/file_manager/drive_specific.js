@@ -1966,3 +1966,17 @@ testcase.completedSyncStatusDismissesAfter300Ms = async () => {
   // Verify that at least 300ms have passed since the syncing completed.
   chrome.test.assertTrue(Date.now() - timeBeforeCompletion >= 300);
 };
+
+/**
+ * Tests that when the organization limit has exceeded (not the user storage)
+ * the out of organization space banner appears.
+ */
+testcase.driveOutOfOrganizationSpaceBanner = async () => {
+  await remoteCall.setPooledStorageQuotaUsage(
+      1 * 1024 * 1024, 2 * 1024 * 1024, true);
+
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [ENTRIES.hello]);
+
+  await remoteCall.waitForElement(
+      appId, 'drive-out-of-organization-space-banner');
+};

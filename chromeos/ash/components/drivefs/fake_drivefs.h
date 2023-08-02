@@ -132,6 +132,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   bool SetCanPin(const std::string& path, bool can_pin);
 
+  void SetPooledStorageQuotaUsage(int64_t used_user_bytes,
+                                  int64_t total_user_bytes,
+                                  bool organization_limit_exceeded);
+
   struct FileMetadata {
     FileMetadata();
     FileMetadata(const FileMetadata&);
@@ -159,6 +163,13 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
  private:
   class SearchQuery;
+
+  struct PooledQuotaUsage {
+    mojom::UserType user_type = mojom::UserType::kUnmanaged;
+    int64_t used_user_bytes = int64_t(1) << 30;
+    int64_t total_user_bytes = int64_t(2) << 30;
+    bool organization_limit_exceeded = false;
+  } pooled_quota_usage_;
 
   // drivefs::mojom::DriveFsBootstrap:
   void Init(

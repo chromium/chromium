@@ -1678,7 +1678,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableBulkPinning()
             .EnableInlineSyncStatusProgressEvents(),
         TestCase("completedSyncStatusDismissesAfter300Ms")
-            .EnableInlineSyncStatusProgressEvents()
+            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("driveOutOfOrganizationSpaceBanner")
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable

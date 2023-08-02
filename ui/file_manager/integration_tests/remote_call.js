@@ -1207,4 +1207,20 @@ export class RemoteCallFilesApp extends RemoteCall {
     return await this.waitAndClickElement(
         appId, isJellybean ? query_jelly : query_old, opt_keyModifiers);
   }
+
+  /**
+   * Sets the pooled storage quota on Drive volume.
+   * @param {number} usedUserBytes
+   * @param {number} totalUserBytes
+   * @param {boolean} organizationLimitExceeded
+   */
+  async setPooledStorageQuotaUsage(
+      usedUserBytes, totalUserBytes, organizationLimitExceeded) {
+    return sendTestMessage({
+      name: 'setPooledStorageQuotaUsage',
+      usedUserBytes,
+      totalUserBytes,
+      organizationLimitExceeded,
+    });
+  }
 }
