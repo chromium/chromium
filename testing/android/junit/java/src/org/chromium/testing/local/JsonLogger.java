@@ -66,20 +66,9 @@ public class JsonLogger {
     /**
      *  Writes the json output to a file.
      */
-    public void writeJsonToFile() {
-        try {
-            PrintStream stream = new PrintStream(new FileOutputStream(mOutputFile));
-            try {
-                stream.print(mBaseJsonObject);
-            } finally {
-                try {
-                    stream.close();
-                } catch (RuntimeException e) {
-                    System.err.println("Unable to close output file: " + mOutputFile.getPath());
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + mOutputFile.getPath());
+    public void writeJsonToFile() throws FileNotFoundException {
+        try (PrintStream stream = new PrintStream(new FileOutputStream(mOutputFile))) {
+            stream.print(mBaseJsonObject);
         }
     }
 

@@ -70,6 +70,8 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
         }
     }
 
+    private static ClassLoader sSandboxClassLoader;
+
     public BaseRobolectricTestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
     }
@@ -99,6 +101,15 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
             throws Throwable {
         ResettersForTesting.setMethodMode();
         super.beforeTest(sandbox, method, bootstrappedMethod);
+
+        // Our test runner is designed to require only one Sandbox per-process.
+        var actualClassLoader = sandbox.getRobolectricClassLoader();
+        var expectedClassLoader = sSandboxClassLoader;
+        if (expectedClassLoader == null) {
+            sSandboxClassLoader = actualClassLoader;
+        } else if (actualClassLoader != expectedClassLoader) {
+            throw new RuntimeException("Invalid test batch detected. https://crbug.com/1465376");
+        }
     }
 
     @Override

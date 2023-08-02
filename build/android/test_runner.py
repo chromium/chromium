@@ -747,6 +747,8 @@ def AddJUnitTestOptions(parser):
   parser.add_argument(
       '--runner-filter',
       help='Filters tests by runner class. Must be fully qualified.')
+  parser.add_argument('--json-config',
+                      help='Runs only tests listed in this config.')
   parser.add_argument(
       '--shards',
       type=int,

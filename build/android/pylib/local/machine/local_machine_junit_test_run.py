@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import dataclasses
-import itertools
 import json
 import logging
 import multiprocessing
@@ -16,7 +15,6 @@ import tempfile
 import threading
 import time
 import zipfile
-from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
 from devil.utils import cmd_helper
@@ -46,9 +44,11 @@ _LOGCAT_RE = re.compile(r' ?\d+\| (:?\d+\| )?[A-Z]/[\w\d_-]+:')
 _TEST_START_RE = re.compile(r'.*\[\s+RUN\s+\]\s(.*)')
 _TEST_FAILED_RE = re.compile(r'.*\[\s+(?:FAILED|CRASHED|TIMEOUT)\s+\]')
 
-# Regex that matches a test name, and optionally matches the sdk version e.g.:
-# org.chromium.default_browser_promo.PromoUtilsTest#testNoPromo[28]'
-_TEST_SDK_VERSION = re.compile(r'(.*\.\w+)#\w+(?:\[(\d+)\])?')
+
+@dataclasses.dataclass
+class _TestGroup:
+  config: str
+  methods_by_class: dict
 
 
 @dataclasses.dataclass
@@ -56,8 +56,8 @@ class _Job:
   shard_id: int
   cmd: str
   timeout: int
-  gtest_filter: str
-  results_json_path: str
+  json_config: dict
+  json_results_path: str
 
 
 class LocalMachineJunitTestRun(test_run.TestRun):
@@ -72,12 +72,12 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   def _GetFilterArgs(self):
     ret = []
     for test_filter in self._test_instance.test_filters:
-      ret += ['-gtest-filter', test_filter]
+      ret += ['--gtest-filter', test_filter]
 
     if self._test_instance.package_filter:
-      ret += ['-package-filter', self._test_instance.package_filter]
+      ret += ['--package-filter', self._test_instance.package_filter]
     if self._test_instance.runner_filter:
-      ret += ['-runner-filter', self._test_instance.runner_filter]
+      ret += ['--runner-filter', self._test_instance.runner_filter]
 
     return ret
 
@@ -98,7 +98,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       z.writestr('robolectric.properties', '\n'.join(props))
     return properties_jar_path
 
-  def _CreateJvmArgsList(self, for_listing=False):
+  def _CreateJvmArgsList(self, for_listing=False, allow_debugging=True):
     # Creates a list of jvm_args (robolectric, code coverage, etc...)
     jvm_args = [
         '-Drobolectric.dependency.dir=%s' %
@@ -110,7 +110,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         '-Drobolectric.logging=stdout',
         '-Djava.library.path=%s' % self._test_instance.native_libs_dir,
     ]
-    if self._test_instance.debug_socket and not for_listing:
+    if self._test_instance.debug_socket and allow_debugging:
       jvm_args += [
           '-Dchromium.jdwp_active=true',
           ('-agentlib:jdwp=transport=dt_socket'
@@ -155,64 +155,85 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     return os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
                         self._test_instance.suite)
 
-  #override
-  def GetTestsForListing(self):
-    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-      cmd = [self._wrapper_path, '--list-tests'] + self._GetFilterArgs()
-      jvm_args = self._CreateJvmArgsList(for_listing=True)
-      if jvm_args:
-        cmd += ['--jvm-args', '"%s"' % ' '.join(jvm_args)]
-      cmd += ['--classpath', self._CreatePropertiesJar(temp_dir)]
+  def _QueryTestJsonConfig(self, temp_dir, allow_debugging=True):
+    json_config_path = os.path.join(temp_dir, 'main_test_config.json')
+    cmd = [self._wrapper_path]
+    # Allow debugging of test listing when run as:
+    # "--wait-for-java-debugger --list-tests"
+    jvm_args = self._CreateJvmArgsList(for_listing=True,
+                                       allow_debugging=allow_debugging)
+    if jvm_args:
+      cmd += ['--jvm-args', '"%s"' % ' '.join(jvm_args)]
+    cmd += ['--classpath', self._CreatePropertiesJar(temp_dir)]
+    cmd += ['--list-tests', '--json-config', json_config_path]
+    cmd += self._GetFilterArgs()
+    subprocess.run(cmd, check=True)
+    with open(json_config_path) as f:
+      return json.load(f)
 
-      try:
-        lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
-      except subprocess.CalledProcessError:
-        # Will get an error later on from testrunner from having no tests.
-        return []
-
-    PREFIX = '#TEST# '
-    prefix_len = len(PREFIX)
-    # Filter log messages other than test names (Robolectric logs to stdout).
-    return sorted(l[prefix_len:] for l in lines if l.startswith(PREFIX))
-
-  def _MakeJob(self, shard_id, temp_dir, tests, properties_jar_path):
-    results_json_path = os.path.join(temp_dir, f'results{shard_id}.json')
-    gtest_filter = ':'.join(tests)
+  def _MakeJob(self, shard_id, temp_dir, test_group, properties_jar_path,
+               json_config):
+    json_results_path = os.path.join(temp_dir, f'results{shard_id}.json')
+    job_json_config_path = os.path.join(temp_dir, f'config{shard_id}.json')
+    job_json_config = json_config.copy()
+    job_json_config['configs'] = {
+        test_group.config: test_group.methods_by_class
+    }
+    with open(job_json_config_path, 'w') as f:
+      json.dump(job_json_config, f)
 
     cmd = [self._wrapper_path]
     cmd += ['--jvm-args', '"%s"' % ' '.join(self._CreateJvmArgsList())]
     cmd += ['--classpath', properties_jar_path]
-    cmd += ['-json-results-file', results_json_path]
-    cmd += ['-gtest-filter', gtest_filter]
+    cmd += ['--json-results', json_results_path]
+    cmd += ['--json-config', job_json_config_path]
 
-    # 20 seconds for process init + 2 seconds per test.
-    timeout = 20 + len(tests) * 2
+    if self._test_instance.debug_socket:
+      timeout = 999999
+    else:
+      # 20 seconds for process init,
+      # 5 seconds per class,
+      # 3 seconds per method.
+      num_classes = len(test_group.methods_by_class)
+      num_tests = sum(len(x) for x in test_group.methods_by_class.values())
+      timeout = 20 + 5 * num_classes + num_tests * 3
     return _Job(shard_id=shard_id,
                 cmd=cmd,
                 timeout=timeout,
-                gtest_filter=gtest_filter,
-                results_json_path=results_json_path)
+                json_config=job_json_config,
+                json_results_path=json_results_path)
+
+  #override
+  def GetTestsForListing(self):
+    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+      json_config = self._QueryTestJsonConfig(temp_dir)
+      return sorted(x['name'] for x in json_config['tests'])
 
   # override
   def RunTests(self, results, raw_logs_fh=None):
-    # TODO(1384204): This step can take up to 3.5 seconds to execute when there
-    # are a lot of tests.
-    test_list = self.GetTestsForListing()
-    grouped_tests = GroupTestsForShard(test_list)
+    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+      self._RunTestsInternal(temp_dir, results, raw_logs_fh)
 
-    shard_list = list(range(len(grouped_tests)))
+  def _RunTestsInternal(self, temp_dir, results, raw_logs_fh):
+    if self._test_instance.json_config:
+      with open(self._test_instance.json_config) as f:
+        json_config = json.load(f)
+    else:
+      # TODO(1384204): This step can take 3-4 seconds for chrome_junit_tests.
+      try:
+        json_config = self._QueryTestJsonConfig(temp_dir, allow_debugging=False)
+      except subprocess.CalledProcessError:
+        results.append(_MakeUnknownFailureResult('Filter matched no tests'))
+        return
+    test_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
+
+    shard_list = list(range(len(test_groups)))
     shard_filter = self._test_instance.shard_filter
     if shard_filter:
       shard_list = [x for x in shard_list if x in shard_filter]
 
     if not shard_list:
-      results_list = [
-          base_test_result.BaseTestResult('Invalid shard filter',
-                                          base_test_result.ResultType.UNKNOWN)
-      ]
-      test_run_results = base_test_result.TestRunResults()
-      test_run_results.AddResults(results_list)
-      results.append(test_run_results)
+      results.append(_MakeUnknownFailureResult('Invalid shard filter'))
       return
 
     num_workers = self._ChooseNumWorkers(len(shard_list))
@@ -224,135 +245,128 @@ class LocalMachineJunitTestRun(test_run.TestRun):
           'Running tests with %d shard(s) using %s concurrent process(es).',
           len(shard_list), num_workers)
 
-    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-      properties_jar_path = self._CreatePropertiesJar(temp_dir)
-      jobs = [
-          self._MakeJob(i, temp_dir, grouped_tests[i], properties_jar_path)
-          for i in shard_list
+    properties_jar_path = self._CreatePropertiesJar(temp_dir)
+    jobs = [
+        self._MakeJob(i, temp_dir, test_groups[i], properties_jar_path,
+                      json_config) for i in shard_list
+    ]
+
+    show_logcat = logging.getLogger().isEnabledFor(logging.INFO)
+    num_omitted_lines = 0
+    failed_test_logs = {}
+    log_lines = []
+    current_test = None
+    for line in _RunCommandsAndSerializeOutput(jobs, num_workers):
+      if raw_logs_fh:
+        raw_logs_fh.write(line)
+      if show_logcat or not _LOGCAT_RE.match(line):
+        sys.stdout.write(line)
+      else:
+        num_omitted_lines += 1
+
+      # Collect log data between a test starting and the test failing.
+      # There can be info after a test fails and before the next test starts
+      # that we discard.
+      test_start_match = _TEST_START_RE.match(line)
+      if test_start_match:
+        current_test = test_start_match.group(1)
+        log_lines = [line]
+      elif _TEST_FAILED_RE.match(line) and current_test:
+        log_lines.append(line)
+        failed_test_logs[current_test] = ''.join(log_lines)
+        current_test = None
+      else:
+        log_lines.append(line)
+
+    if num_omitted_lines > 0:
+      logging.critical('%d log lines omitted.', num_omitted_lines)
+    sys.stdout.flush()
+
+    results_list = []
+    failed_jobs = []
+    try:
+      for job in jobs:
+        with open(job.json_results_path, 'r') as f:
+          parsed_results = json_results.ParseResultsFromJson(
+              json.loads(f.read()))
+        has_failed = False
+        for r in parsed_results:
+          if r.GetType() in _FAILURE_TYPES:
+            has_failed = True
+            r.SetLog(failed_test_logs.get(r.GetName().replace('#', '.'), ''))
+
+        results_list += parsed_results
+        if has_failed:
+          failed_jobs.append(job)
+    except IOError:
+      # In the case of a failure in the JUnit or Robolectric test runner
+      # the output json file may never be written.
+      results_list = [
+          base_test_result.BaseTestResult('Test Runner Failure',
+                                          base_test_result.ResultType.UNKNOWN)
       ]
 
-      show_logcat = logging.getLogger().isEnabledFor(logging.INFO)
-      num_omitted_lines = 0
-      failed_test_logs = {}
-      log_lines = []
-      current_test = None
-      for line in _RunCommandsAndSerializeOutput(jobs, num_workers):
-        if raw_logs_fh:
-          raw_logs_fh.write(line)
-        if show_logcat or not _LOGCAT_RE.match(line):
-          sys.stdout.write(line)
-        else:
-          num_omitted_lines += 1
+    if failed_jobs:
+      for job in failed_jobs:
+        print(f'To re-run failed shard {job.shard_id}, use --json-config '
+              'config.json, where config.json contains:')
+        print(json.dumps(job.json_config, indent=2))
+        print()
 
-        # Collect log data between a test starting and the test failing.
-        # There can be info after a test fails and before the next test starts
-        # that we discard.
-        test_start_match = _TEST_START_RE.match(line)
-        if test_start_match:
-          current_test = test_start_match.group(1)
-          log_lines = [line]
-        elif _TEST_FAILED_RE.match(line) and current_test:
-          log_lines.append(line)
-          failed_test_logs[current_test] = ''.join(log_lines)
-          current_test = None
-        else:
-          log_lines.append(line)
+      print(
+          f'To re-run the {len(failed_jobs)} failed shard(s), use: '
+          f'--shard-filter', ','.join(str(j.shard_id) for j in failed_jobs))
 
-      if num_omitted_lines > 0:
-        logging.critical('%d log lines omitted.', num_omitted_lines)
-      sys.stdout.flush()
-      if raw_logs_fh:
-        raw_logs_fh.flush()
-
-      results_list = []
-      failed_jobs = []
-      try:
-        for job in jobs:
-          with open(job.results_json_path, 'r') as f:
-            parsed_results = json_results.ParseResultsFromJson(
-                json.loads(f.read()))
-          has_failed = False
-          for r in parsed_results:
-            if r.GetType() in _FAILURE_TYPES:
-              has_failed = True
-              r.SetLog(failed_test_logs.get(r.GetName().replace('#', '.'), ''))
-
-          results_list += parsed_results
-          if has_failed:
-            failed_jobs.append(job)
-      except IOError:
-        # In the case of a failure in the JUnit or Robolectric test runner
-        # the output json file may never be written.
-        results_list = [
-            base_test_result.BaseTestResult('Test Runner Failure',
-                                            base_test_result.ResultType.UNKNOWN)
-        ]
-
-      if num_workers > 1 and failed_jobs:
-        for job in failed_jobs:
-          print(f'Test filter for failed shard {job.shard_id}: '
-                f'--test-filter "{job.gtest_filter}"')
-
-        print(
-            f'{len(failed_jobs)} shards had failing tests. To re-run only '
-            f'these shards, use the above filter flags, or use: '
-            f'--shard-filter', ','.join(str(j.shard_id) for j in failed_jobs))
-
-      test_run_results = base_test_result.TestRunResults()
-      test_run_results.AddResults(results_list)
-      results.append(test_run_results)
+    test_run_results = base_test_result.TestRunResults()
+    test_run_results.AddResults(results_list)
+    results.append(test_run_results)
 
   # override
   def TearDown(self):
     pass
 
 
-def GroupTestsForShard(test_list):
+def GroupTests(json_config, max_per_job):
   """Groups tests that will be run on each shard.
 
-  Groups tests from the same SDK version. For a specific
-  SDK version, groups tests from the same class together.
-
   Args:
-    test_list: A list of the test names.
+    json_config: The result from _QueryTestJsonConfig().
+    max_per_job: Stop adding tests to a group once this limit has been passed.
 
   Return:
-    Returns a list of lists. Each list contains tests that should be run
-    as a job together.
+    Returns a list of _TestGroup.
   """
-  tests_by_sdk = defaultdict(set)
-  for test in test_list:
-    class_name, sdk_ver = _TEST_SDK_VERSION.match(test).groups()
-    tests_by_sdk[sdk_ver].add((class_name, test))
-
   ret = []
-  for tests_for_sdk in tests_by_sdk.values():
-    tests_for_sdk = sorted(tests_for_sdk)
-    test_count = 0
-    # TODO(1458958): Group by classes instead of test names and
-    # add --sdk-version as filter option. This will reduce filter verbiage.
-    curr_tests = []
+  for config, methods_by_class in json_config['configs'].items():
+    size = 0
+    group = {}
+    for class_name, methods in methods_by_class.items():
+      # There is some per-class overhead, so do not splits tests from one class
+      # across multiple shards (unless configs differ).
+      group[class_name] = methods
+      size += len(methods)
+      if size >= max_per_job:
+        ret.append(_TestGroup(config, group))
+        group = {}
+        size = 0
 
-    for _, tests_from_class_tuple in itertools.groupby(tests_for_sdk,
-                                                       lambda x: x[0]):
-      temp_tests = [
-          test.replace('#', '.') for _, test in tests_from_class_tuple
-      ]
-      test_count += len(temp_tests)
-      curr_tests += temp_tests
-      if test_count >= _MAX_TESTS_PER_JOB:
-        ret.append(curr_tests)
-        test_count = 0
-        curr_tests = []
+    if group:
+      ret.append(_TestGroup(config, group))
 
-    ret.append(curr_tests)
-
-  # Add an empty shard so that the test runner can throw a error from not
-  # having any tests.
-  if not ret:
-    ret.append([])
-
+  # Put largest shards first to prevent long shards from being scheduled right
+  # at the end.
+  ret.sort(key=lambda x: -len(x.methods_by_class))
   return ret
+
+
+def _MakeUnknownFailureResult(message):
+  results_list = [
+      base_test_result.BaseTestResult(message,
+                                      base_test_result.ResultType.UNKNOWN)
+  ]
+  test_run_results = base_test_result.TestRunResults()
+  test_run_results.AddResults(results_list)
+  return test_run_results
 
 
 def _DumpJavaStacks(pid):

@@ -7,25 +7,20 @@ package org.chromium.base.test;
 import com.google.auto.service.AutoService;
 
 import org.robolectric.annotation.Config;
-import org.robolectric.config.AndroidConfigurer;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
-import org.robolectric.internal.bytecode.ShadowProviders;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.util.TimeoutTimer;
+import org.chromium.testing.local.ChromiumAndroidConfigurer;
 
 /**
  * Tells Robolectric which classes to exclude from its sandbox.
  */
-@AutoService(AndroidConfigurer.class)
-public class BaseRobolectricAndroidConfigurer extends AndroidConfigurer {
-    public BaseRobolectricAndroidConfigurer(ShadowProviders shadowProviders) {
-        super(shadowProviders);
-    }
-
+@AutoService(ChromiumAndroidConfigurer.ExtraConfiguration.class)
+public class BaseRobolectricAndroidConfigurer
+        implements ChromiumAndroidConfigurer.ExtraConfiguration {
     @Override
     public void withConfig(InstrumentationConfiguration.Builder builder, Config config) {
-        super.withConfig(builder, config);
         builder.doNotAcquireClass(BaseRobolectricTestRunner.HelperTestRunner.class)
                 // Requires access to non-fake SystemClock.
                 .doNotAcquireClass(TimeoutTimer.class)

@@ -4,12 +4,19 @@
 
 package org.chromium.testing.local;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
+import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -77,36 +84,51 @@ public final class JunitTestMain {
         return null;
     }
 
-    public static void main(String[] args) {
-        JunitTestArgParser parser = JunitTestArgParser.parse(args);
+    private static Result listTestMain(JunitTestArgParser parser)
+            throws FileNotFoundException, JSONException {
+        JUnitCore core = new JUnitCore();
+        TestListComputer computer = new TestListComputer();
+        Class[] classes = findClassesFromClasspath();
+        Request testRequest = Request.classes(computer, classes);
+        for (String packageFilter : parser.mPackageFilters) {
+            testRequest = testRequest.filterWith(new PackageFilter(packageFilter));
+        }
+        for (Class<?> runnerFilter : parser.mRunnerFilters) {
+            testRequest = testRequest.filterWith(new RunnerFilter(runnerFilter));
+        }
+        for (String gtestFilter : parser.mGtestFilters) {
+            testRequest = testRequest.filterWith(new GtestFilter(gtestFilter));
+        }
+        Result ret = core.run(testRequest);
+        computer.writeJson(new File(parser.mJsonConfig));
+        return ret;
+    }
+
+    private static Result runTestsMain(JunitTestArgParser parser) throws Exception {
+        String data = new String(Files.readAllBytes(Paths.get(parser.mJsonConfig)));
+        JSONObject jsonConfig = new JSONObject(data);
+        ChromiumAndroidConfigurer.setJsonConfig(jsonConfig);
+        Class[] classes = ConfigFilter.classesFromConfig(jsonConfig);
 
         JUnitCore core = new JUnitCore();
-        Class[] classes = findClassesFromClasspath();
+        GtestLogger gtestLogger = new GtestLogger(System.out);
+        core.addListener(new GtestListener(gtestLogger));
+        JsonLogger jsonLogger = new JsonLogger(new File(parser.mJsonOutput));
+        core.addListener(new JsonListener(jsonLogger));
+        Computer computer = new GtestComputer(gtestLogger);
 
-        Computer computer;
+        Request testRequest =
+                Request.classes(computer, classes).filterWith(new ConfigFilter(jsonConfig));
+        return core.run(testRequest);
+    }
+
+    public static void main(String[] args) throws Exception {
         // Causes test names to have the sdk version as a [suffix].
         // This enables sharding by SDK version.
         System.setProperty("robolectric.alwaysIncludeVariantMarkersInTestName", "true");
-        if (parser.isListTests()) {
-            computer = new TestListComputer(System.out);
-        } else {
-            GtestLogger gtestLogger = new GtestLogger(System.out);
-            core.addListener(new GtestListener(gtestLogger));
-            JsonLogger jsonLogger = new JsonLogger(parser.getJsonOutputFile());
-            core.addListener(new JsonListener(jsonLogger));
-            computer = new GtestComputer(gtestLogger);
-        }
 
-        Request testRequest = Request.classes(computer, classes);
-        for (String packageFilter : parser.getPackageFilters()) {
-            testRequest = testRequest.filterWith(new PackageFilter(packageFilter));
-        }
-        for (Class<?> runnerFilter : parser.getRunnerFilters()) {
-            testRequest = testRequest.filterWith(new RunnerFilter(runnerFilter));
-        }
-        for (String gtestFilter : parser.getGtestFilters()) {
-            testRequest = testRequest.filterWith(new GtestFilter(gtestFilter));
-        }
-        System.exit(core.run(testRequest).wasSuccessful() ? 0 : 1);
+        JunitTestArgParser parser = JunitTestArgParser.parse(args);
+        Result r = parser.mListTests ? listTestMain(parser) : runTestsMain(parser);
+        System.exit(r.wasSuccessful() ? 0 : 1);
     }
 }
