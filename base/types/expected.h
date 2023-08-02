@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/types/expected_internal.h"  // IWYU pragma: export
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
@@ -627,6 +629,16 @@ class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ false> final {
     return internal::TransformError(std::move(*this), std::forward<F>(f));
   }
 
+  // Deviation from the Standard: stringification support.
+  //
+  // If we move to `std::expected` someday, we would need to either forego nice
+  // formatted output or move to `std::format` or similar, which can have
+  // customized output for STL types.
+  std::string ToString() const {
+    return has_value() ? StrCat({"Expected(", base::ToString(value()), ")"})
+                       : StrCat({"Unexpected(", base::ToString(error()), ")"});
+  }
+
  private:
   using Impl = internal::ExpectedImpl<T, E>;
   static constexpr auto kValTag = Impl::kValTag;
@@ -921,6 +933,16 @@ class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ true> final {
   template <typename F>
   constexpr auto transform_error(F&& f) const&& noexcept {
     return internal::TransformError(std::move(*this), std::forward<F>(f));
+  }
+
+  // Deviation from the Standard: stringification support.
+  //
+  // If we move to `std::expected` someday, we would need to either forego nice
+  // formatted output or move to `std::format` or similar, which can have
+  // customized output for STL types.
+  std::string ToString() const {
+    return has_value() ? "Expected()"
+                       : StrCat({"Unexpected(", base::ToString(error()), ")"});
   }
 
  private:
