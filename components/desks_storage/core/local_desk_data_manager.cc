@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/uuid.h"
@@ -54,16 +55,17 @@ constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
     {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall});
 
 // Reads a file at `fully_qualified_path` into a
-// std::unique_ptr<ash::DeskTemplate> This function returns a `nullptr` if the
-// file does not exist or deserialization fails.
-std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
+// `ash::DeskTemplate` or as `SavedDeskParseError` code. This function returns a
+// `nullptr` if the file does not exist or deserialization fails.
+desk_template_conversion::ParseSavedDeskResult ReadFileToTemplate(
     const base::FilePath& fully_qualified_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::string value_string;
   if (!base::ReadFileToString(fully_qualified_path, &value_string)) {
-    return nullptr;
+    return base::unexpected(
+        desk_template_conversion::SavedDeskParseError::kFileNotExist);
   }
 
   std::string error_message;
@@ -75,7 +77,8 @@ std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
   if (!desk_template_value) {
     DVLOG(1) << "Fail to deserialize json value from string with error code: "
              << error_code << " and error message: " << error_message;
-    return nullptr;
+    return base::unexpected(
+        desk_template_conversion::SavedDeskParseError::kInvalidJson);
   }
 
   return desk_template_conversion::ParseDeskTemplateFromBaseValue(
@@ -338,18 +341,26 @@ void LocalDeskDataManager::AddOrUpdateEntry(
   // Deserialize the `template_base_value` to a desk template to make sure that
   // we can properly get the correct information now instead of during a future
   // user operation.
-  std::unique_ptr<ash::DeskTemplate> deserialize_entry =
+  auto deserialize_entry =
       desk_template_conversion::ParseDeskTemplateFromBaseValue(
           template_base_value, new_entry->source());
+
+  if (!deserialize_entry.has_value()) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure,
+                            std::move(new_entry));
+    return;
+  }
+
   auto& saved_desks = saved_desks_list_[desk_type];
   auto existing_it = saved_desks.find(uuid);
   std::unique_ptr<ash::DeskTemplate> old_entry = nullptr;
   bool is_update = existing_it != saved_desks.end();
+
   if (is_update) {
     old_entry = std::move(existing_it->second);
-    existing_it->second = std::move(deserialize_entry);
+    existing_it->second = std::move(deserialize_entry.value());
   } else {
-    saved_desks[uuid] = std::move(deserialize_entry);
+    saved_desks[uuid] = std::move(deserialize_entry.value());
   }
 
   task_runner_->PostTaskAndReplyWithResult(
@@ -550,26 +561,28 @@ LocalDeskDataManager::LoadCacheOnBackgroundSequence(
 
     base::FilePath fully_qualified_path =
         base::FilePath(local_saved_desk_path.Append(dir_reader.name()));
-    std::unique_ptr<ash::DeskTemplate> entry =
-        ReadFileToTemplate(fully_qualified_path);
+    auto entry = ReadFileToTemplate(fully_qualified_path);
 
-    // TODO(b/248645596): Record metrics about files that failed to parse.
-    if (entry == nullptr)
+    if (!entry.has_value()) {
+      base::UmaHistogramEnumeration(
+          kSaveAndRecallLocalDeskSavedDeskParseErrorHistogramName,
+          entry.error());
       continue;
+    }
 
     // Rename file for saved desk if uuid in file and file name are different.
-    std::string entry_uuid_string = entry->uuid().AsLowercaseString();
+    std::string entry_uuid_string = entry.value()->uuid().AsLowercaseString();
     entry_uuid_string.append(kFileExtension);
 
     if (dir_reader.name() != entry_uuid_string) {
       const base::FilePath renamed_fully_qualified_path =
-          GetFullyQualifiedPath(local_saved_desk_path, entry->uuid());
+          GetFullyQualifiedPath(local_saved_desk_path, entry.value()->uuid());
       if (!base::Move(fully_qualified_path, renamed_fully_qualified_path)) {
         DVLOG(1) << "Fail to rename saved desk template to proper UUID";
       }
     }
 
-    entries.push_back(std::move(entry));
+    entries.push_back(std::move(entry.value()));
   }
   return {CacheStatus::kOk, std::move(entries)};
 }

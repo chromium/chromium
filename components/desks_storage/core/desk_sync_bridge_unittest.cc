@@ -824,16 +824,18 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateJsonConversionShouldBeLossless) {
       desk_template_conversion::SerializeDeskTemplateAsBaseValue(
           desk_template.get(), app_cache());
 
-  std::unique_ptr<ash::DeskTemplate> converted_desk_template =
+  auto converted_desk_template =
       desk_template_conversion::ParseDeskTemplateFromBaseValue(
           template_value, ash::DeskTemplateSource::kPolicy);
 
-  EXPECT_EQ(desk_template->desk_restore_data()->ConvertToValue(),
-            converted_desk_template->desk_restore_data()->ConvertToValue());
+  EXPECT_TRUE(converted_desk_template.has_value());
+  EXPECT_EQ(
+      desk_template->desk_restore_data()->ConvertToValue(),
+      converted_desk_template.value()->desk_restore_data()->ConvertToValue());
 
   WorkspaceDeskSpecifics converted_desk_proto =
-      desk_template_conversion::ToSyncProto(converted_desk_template.get(),
-                                            app_cache());
+      desk_template_conversion::ToSyncProto(
+          converted_desk_template.value().get(), app_cache());
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
 }

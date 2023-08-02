@@ -2116,11 +2116,11 @@ ParseAdminTemplatesFromPolicyValue(const base::Value& value) {
   return desk_templates;
 }
 
-std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromBaseValue(
+ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
     const base::Value& value,
     ash::DeskTemplateSource source) {
   if (!value.is_dict()) {
-    return nullptr;
+    return base::unexpected(SavedDeskParseError::kBaseValueIsNotDict);
   }
 
   const base::Value::Dict& value_dict = value.GetDict();
@@ -2142,19 +2142,20 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromBaseValue(
       !base::StringToInt64(updated_time_usec_str, &updated_time_usec) ||
       name.empty() || created_time_usec_str.empty() ||
       updated_time_usec_str.empty()) {
-    return nullptr;
+    return base::unexpected(SavedDeskParseError::kMissingRequiredFields);
   }
 
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(uuid_str);
-  if (!uuid.is_valid())
-    return nullptr;
+  if (!uuid.is_valid()) {
+    return base::unexpected(SavedDeskParseError::kInvalidUuid);
+  }
 
   // Set default value for the desk type to template.
   std::string desk_type_string;
   if (!GetString(value_dict, kDeskType, &desk_type_string)) {
     desk_type_string = kDeskTypeTemplate;
   } else if (!IsValidDeskTemplateType(desk_type_string)) {
-    return nullptr;
+    return base::unexpected(SavedDeskParseError::kInvalidDeskType);
   }
 
   // If policy template set auto launch bool.
@@ -2182,7 +2183,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromBaseValue(
   desk_template->set_updated_time(updated_time);
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
 
-  return desk_template;
+  return base::ok(std::move(desk_template));
 }
 
 base::Value SerializeDeskTemplateAsBaseValue(

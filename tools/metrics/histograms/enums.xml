@@ -94003,6 +94003,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="First frame of stack isn't mapped."/>
 </enum>
 
+<enum name="SavedDeskParseError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Base value is not a dictionary"/>
+  <int value="2" label="Missing one or more required fields"/>
+  <int value="3" label="Invalid UUID format"/>
+  <int value="4" label="Invalid desk type"/>
+  <int value="5" label="File does not exist"/>
+  <int value="6" label="Invalid JSON format"/>
+</enum>
+
 <enum name="SavePasswordPromptResponseType">
   <int value="0" label="NO_RESPONSE"/>
   <int value="1" label="REMEMBER_PASSWORD"/>

@@ -2948,6 +2948,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.SaveAndRecallLocalDeskSavedDeskParseError"
+    enum="SavedDeskParseError" expires_after="2024-08-01">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <owner>yzd@google.com</owner>
+  <summary>Recorded when a Save and Recall desk cannot be parsed.</summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.SaveAndRecallTabCount" units="count"
     expires_after="2023-12-04">
   <owner>dandersson@chromium.org</owner>
