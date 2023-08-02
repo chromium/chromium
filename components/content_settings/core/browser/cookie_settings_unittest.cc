@@ -915,6 +915,53 @@ TEST_P(CookieSettingsTestUserBypass, ResetThirdPartyCookiesExceptions) {
   EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
 }
 
+TEST_P(CookieSettingsTestUserBypass,
+       UserBypassThirdPartyCookiesIncognitoExceptions) {
+  // User bypass exceptions created in incognito should always be permanent.
+  GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
+  SettingInfo info;
+
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(cookie_settings_incognito_->IsThirdPartyAccessAllowed(
+      kFirstPartySite, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
+
+  cookie_settings_incognito_->SetCookieSettingForUserBypass(first_party_url);
+  EXPECT_TRUE(cookie_settings_incognito_->IsThirdPartyAccessAllowed(
+      first_party_url, &info));
+
+  base::TimeDelta expiration =
+      content_settings::features::kUserBypassUIExceptionExpiration.Get();
+  ASSERT_FALSE(expiration.is_zero());
+  EXPECT_TRUE(info.metadata.expiration().is_null());
+
+  SettingInfo exception_info;
+  // Verify that the correct exception is created.
+  EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
+                                             ContentSettingsType::COOKIES,
+                                             &exception_info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(exception_info.secondary_pattern,
+            content_settings::URLToSchemefulSitePattern(first_party_url));
+
+  cookie_settings_incognito_->ResetThirdPartyCookieSetting(first_party_url);
+  EXPECT_FALSE(cookie_settings_incognito_->IsThirdPartyAccessAllowed(
+      first_party_url, nullptr));
+  // Verify that the exception was removed.
+  EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
+                                             ContentSettingsType::COOKIES,
+                                             &exception_info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_TRUE(exception_info.secondary_pattern.MatchesAllHosts());
+}
+
 TEST_P(CookieSettingsTest, KeepBlocked) {
   // Keep blocked cookies.
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
