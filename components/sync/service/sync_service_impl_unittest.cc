@@ -842,6 +842,8 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
 
 // Verify that sync transport data is cleared when the service is initializing
 // and account is signed out.
+// This code path doesn't exist on ChromeOS-Ash, since signout is not possible.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
   // Clearing prefs can be triggered only after `IdentityManager` finishes
   // loading the list of accounts, so wait for it to complete.
@@ -854,6 +856,7 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
 
   EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(SyncServiceImplTest, StopSyncAndClearTwiceDoesNotCrash) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
