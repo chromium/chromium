@@ -269,4 +269,8 @@ MachVMRegionResult GetBasicInfo(mach_port_t task,
   return ParseOutputFromMachVMRegion(kr);
 }
 
+int ProcessMetrics::GetOpenFdSoftLimit() const {
+  return checked_cast<int>(GetMaxFds());
+}
+
 }  // namespace base

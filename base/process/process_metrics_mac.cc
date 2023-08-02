@@ -19,8 +19,6 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/numerics/safe_math.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -138,10 +136,6 @@ int ProcessMetrics::GetOpenFdCount() const {
     return -1;
   }
   return static_cast<int>(static_cast<unsigned long>(rv) / PROC_PIDLISTFD_SIZE);
-}
-
-int ProcessMetrics::GetOpenFdSoftLimit() const {
-  return checked_cast<int>(GetMaxFds());
 }
 
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
