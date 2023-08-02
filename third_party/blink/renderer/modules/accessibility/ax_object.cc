@@ -2765,8 +2765,39 @@ bool AXObject::IsCheckable() const {
 // have an ARIA role of menuitemcheckbox/menuitemradio
 // yet does not inherit from AXNodeObject
 ax::mojom::blink::CheckedState AXObject::CheckedState() const {
-  if (!IsCheckable())
+  const Node* node = GetNode();
+  if (!IsCheckable() || !node) {
     return ax::mojom::blink::CheckedState::kNone;
+  }
+
+  // First test for native checked state
+  if (IsA<HTMLInputElement>(*node)) {
+    const auto* input = DynamicTo<HTMLInputElement>(node);
+    if (!input) {
+      return ax::mojom::blink::CheckedState::kNone;
+    }
+
+    const auto inputType = input->type();
+    // The native checked state is processed exlusively. Aria is ignored because
+    // the native checked value takes precedence for input elements with type
+    // `checkbox` or `radio` according to the HTML-AAM specification.
+    if (inputType == input_type_names::kCheckbox ||
+        inputType == input_type_names::kRadio) {
+      // Expose native checkbox mixed state as accessibility mixed state (unless
+      // the role is switch). However, do not expose native radio mixed state as
+      // accessibility mixed state. This would confuse the JAWS screen reader,
+      // which reports a mixed radio as both checked and partially checked, but
+      // a native mixed native radio button simply means no radio buttons have
+      // been checked in the group yet.
+      if (IsNativeCheckboxInMixedState(node)) {
+        return ax::mojom::blink::CheckedState::kMixed;
+      }
+
+      return input->ShouldAppearChecked()
+                 ? ax::mojom::blink::CheckedState::kTrue
+                 : ax::mojom::blink::CheckedState::kFalse;
+    }
+  }
 
   // Try ARIA checked/pressed state
   const ax::mojom::blink::Role role = RoleValue();
@@ -2786,30 +2817,6 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
     return EqualIgnoringASCIICase(checked_attribute, "false")
                ? ax::mojom::blink::CheckedState::kFalse
                : ax::mojom::blink::CheckedState::kTrue;
-  }
-
-  // Native checked state
-  if (role != ax::mojom::blink::Role::kToggleButton) {
-    const Node* node = GetNode();
-    if (!node)
-      return ax::mojom::blink::CheckedState::kNone;
-
-    // Expose native checkbox mixed state as accessibility mixed state (unless
-    // the role is switch). However, do not expose native radio mixed state as
-    // accessibility mixed state. This would confuse the JAWS screen reader,
-    // which reports a mixed radio as both checked and partially checked, but a
-    // native mixed native radio button simply means no radio buttons have been
-    // checked in the group yet.
-    if (IsNativeCheckboxInMixedState(node)) {
-      return role == ax::mojom::blink::Role::kSwitch
-                 ? ax::mojom::blink::CheckedState::kFalse
-                 : ax::mojom::blink::CheckedState::kMixed;
-    }
-
-    auto* html_input_element = DynamicTo<HTMLInputElement>(node);
-    if (html_input_element && html_input_element->ShouldAppearChecked()) {
-      return ax::mojom::blink::CheckedState::kTrue;
-    }
   }
 
   return ax::mojom::blink::CheckedState::kFalse;
