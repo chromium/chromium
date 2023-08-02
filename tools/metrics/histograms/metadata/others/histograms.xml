@@ -11390,6 +11390,15 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.BrowserExit.Time" units="ms"
+    expires_after="2024-01-14">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time for shutdown initiated by the browser exit menu command.
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.BrowserExit.Time2" units="ms"
     expires_after="2024-01-14">
   <owner>etienneb@chromium.org</owner>
@@ -11398,6 +11407,16 @@ should be kept until we remove incident reporting. -->
     Time duration for shutdown initiated by the browser exit menu command. The
     duration covers from the shutdown trigger to the deletion of the
     BrowserImpl. Note: Android does not have shutdown metrics.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.EndSession.Time" units="ms"
+    expires_after="2024-01-14">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time for shutdown initiated by an end session (user logs off, shuts down or
+    reboots without explicitly exiting).
   </summary>
 </histogram>
 
@@ -11413,6 +11432,16 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.NotValid.Time" units="ms" expires_after="2023-09-03">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time duration for shutdown for a not valid exit. This situation happen when
+    a chrome process is already running and the process is terminated after the
+    process singleton rendez-vous.
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.NotValid.Time2" units="ms" expires_after="2023-09-03">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
@@ -11424,6 +11453,16 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.OtherExit.Time" units="ms" expires_after="2023-09-03">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time duration for clean shutdown that are not initiated by the users. The
+    duration covers from the shutdown trigger to the deletion of the
+    BrowserImpl. Note: Android does not have shutdown metrics.
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.OtherExit.Time2" units="ms"
     expires_after="2024-01-07">
   <owner>etienneb@chromium.org</owner>
@@ -11432,6 +11471,25 @@ should be kept until we remove incident reporting. -->
     Time duration for clean shutdown that are not catched by other not initiated
     by the users. The duration covers from the shutdown trigger to the deletion
     of the BrowserImpl. Note: Android does not have shutdown metrics.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.Renderers.Slow" units="renderers"
+    expires_after="2023-09-03">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The number of renderer processes that couldn't be shutdown quickly due to
+    onbeforeunload or onunload listeners.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.Renderers.Total" units="renderers"
+    expires_after="2023-11-19">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The number of renderer processes running when shutdown was called.
   </summary>
 </histogram>
 
@@ -11461,6 +11519,13 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.SilentExit.Time" units="ms"
+    expires_after="2023-12-04">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>Time for shutdown for a silent exit.</summary>
+</histogram>
+
 <histogram name="Shutdown.SilentExit.Time2" units="ms"
     expires_after="2024-01-07">
   <owner>etienneb@chromium.org</owner>
@@ -11469,6 +11534,15 @@ should be kept until we remove incident reporting. -->
     Time for shutdown for a silent exit. The duration covers from the shutdown
     trigger to the deletion of the BrowserImpl. Note: Android does not have
     shutdown metrics.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.WindowClose.Time" units="ms"
+    expires_after="2024-01-14">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time for shutdown initiated by the last browser window being closed.
   </summary>
 </histogram>
 

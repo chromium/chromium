@@ -12,8 +12,12 @@
 
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
@@ -80,6 +84,14 @@ ShutdownType g_shutdown_type = ShutdownType::kNotValid;
 int g_shutdown_num_processes;
 int g_shutdown_num_processes_slow;
 
+constexpr char kShutdownMsFile[] = "chrome_shutdown_ms.txt";
+
+base::FilePath GetShutdownMsPath() {
+  base::FilePath shutdown_ms_file;
+  base::PathService::Get(chrome::DIR_USER_DATA, &shutdown_ms_file);
+  return shutdown_ms_file.AppendASCII(kShutdownMsFile);
+}
+
 const char* ToShutdownTypeString(ShutdownType type) {
   switch (type) {
     case ShutdownType::kNotValid:
@@ -113,6 +125,8 @@ void CheckAccessedOnCorrectThread() {
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kShutdownType,
                                 static_cast<int>(ShutdownType::kNotValid));
+  registry->RegisterIntegerPref(prefs::kShutdownNumProcesses, 0);
+  registry->RegisterIntegerPref(prefs::kShutdownNumProcessesSlow, 0);
   registry->RegisterBooleanPref(prefs::kRestartLastSessionOnShutdown, false);
 }
 
@@ -253,6 +267,9 @@ bool RecordShutdownInfoPrefs() {
     // Record the shutdown info so that we can put it into a histogram at next
     // startup.
     prefs->SetInteger(prefs::kShutdownType, static_cast<int>(g_shutdown_type));
+    prefs->SetInteger(prefs::kShutdownNumProcesses, g_shutdown_num_processes);
+    prefs->SetInteger(prefs::kShutdownNumProcessesSlow,
+                      g_shutdown_num_processes_slow);
   }
 
   // Check local state for the restart flag so we can restart the session later.
@@ -330,21 +347,100 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
+  if (g_shutdown_type != ShutdownType::kNotValid &&
+      g_shutdown_num_processes > 0) {
+    // Measure total shutdown time as late in the process as possible
+    // and then write it to a file to be read at startup.
+    // We can't use prefs since all services are shutdown at this point.
+    base::TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;
+    std::string shutdown_ms =
+        base::NumberToString(shutdown_delta.InMilliseconds());
+    base::FilePath shutdown_ms_file = GetShutdownMsPath();
+    // Note: ReadLastShutdownFile() is done as a BLOCK_SHUTDOWN task so there's
+    // an implicit sequencing between it and this write which happens after
+    // threads have been stopped (and thus ThreadPoolInstance::Shutdown() is
+    // complete).
+    base::WriteFile(shutdown_ms_file, shutdown_ms);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::StopSession();
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void ReadLastShutdownFile(ShutdownType type,
+                          int num_procs,
+                          int num_procs_slow) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  base::FilePath shutdown_ms_file = GetShutdownMsPath();
+  std::string shutdown_ms_str;
+  int64_t shutdown_ms = 0;
+  if (base::ReadFileToString(shutdown_ms_file, &shutdown_ms_str))
+    base::StringToInt64(shutdown_ms_str, &shutdown_ms);
+  base::DeleteFile(shutdown_ms_file);
+
+  if (shutdown_ms == 0 || num_procs == 0)
+    return;
+
+  // TODO(1456205): Remove these metrics as follow-up to
+  // https://crrev.com/c/4624774. They are replaced by Shutdown.*.time2.
+
+  const char* time_metric_name = nullptr;
+  switch (type) {
+    case ShutdownType::kNotValid:
+      time_metric_name = "Shutdown.NotValid.Time";
+      break;
+
+    case ShutdownType::kSilentExit:
+      time_metric_name = "Shutdown.SilentExit.Time";
+      break;
+
+    case ShutdownType::kWindowClose:
+      time_metric_name = "Shutdown.WindowClose.Time";
+      break;
+
+    case ShutdownType::kBrowserExit:
+      time_metric_name = "Shutdown.BrowserExit.Time";
+      break;
+
+    case ShutdownType::kEndSession:
+      time_metric_name = "Shutdown.EndSession.Time";
+      break;
+
+    case ShutdownType::kOtherExit:
+      time_metric_name = "Shutdown.OtherExit.Time";
+      break;
+  }
+  DCHECK(time_metric_name);
+
+  base::UmaHistogramMediumTimes(time_metric_name,
+                                base::Milliseconds(shutdown_ms));
+  base::UmaHistogramCounts100("Shutdown.Renderers.Total", num_procs);
+  base::UmaHistogramCounts100("Shutdown.Renderers.Slow", num_procs_slow);
+}
+
 void ReadLastShutdownInfo() {
   PrefService* prefs = g_browser_process->local_state();
   ShutdownType type =
       static_cast<ShutdownType>(prefs->GetInteger(prefs::kShutdownType));
+  int num_procs = prefs->GetInteger(prefs::kShutdownNumProcesses);
+  int num_procs_slow = prefs->GetInteger(prefs::kShutdownNumProcessesSlow);
   // clear the prefs immediately so we don't pick them up on a future run
   prefs->SetInteger(prefs::kShutdownType,
                     static_cast<int>(ShutdownType::kNotValid));
+  prefs->SetInteger(prefs::kShutdownNumProcesses, 0);
+  prefs->SetInteger(prefs::kShutdownNumProcessesSlow, 0);
 
   base::UmaHistogramEnumeration("Shutdown.ShutdownType", type);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&ReadLastShutdownFile, type, num_procs, num_procs_slow));
 }
 
 void SetTryingToQuit(bool quitting) {

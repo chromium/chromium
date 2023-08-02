@@ -952,10 +952,6 @@ const char kHatsPrivacyHubBaselineCycleEndTs[] =
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 #endif
 
-// Deprecated 07/2023.
-const char kShutdownNumProcesses[] = "shutdown.num_processes";
-const char kShutdownNumProcessesSlow[] = "shutdown.num_processes_slow";
-
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1086,10 +1082,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kLegacyHoverCardImagesEnabled, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Deprecated 07/2023.
-  registry->RegisterIntegerPref(kShutdownNumProcesses, 0);
-  registry->RegisterIntegerPref(kShutdownNumProcessesSlow, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2199,10 +2191,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   local_state->ClearPref(kLegacyHoverCardImagesEnabled);
 #endif
-
-  // Added 07/2023.
-  local_state->ClearPref(kShutdownNumProcesses);
-  local_state->ClearPref(kShutdownNumProcessesSlow);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
