@@ -6,7 +6,7 @@ import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.moj
 
 import {keyToIconNameMap} from './input_key.js';
 import {stringToMojoString16} from './mojo_utils.js';
-import {AcceleratorCategory, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult, TextAcceleratorPartType} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult, TextAcceleratorPartType} from './shortcut_types.js';
 
 const fakeTimestamp: TimeTicks = {
   internalValue: BigInt(0),
@@ -453,6 +453,17 @@ export const CycleTabsTextSearchResult: MojoSearchResult = {
   acceleratorInfos: [cycleTabsAcceleratorInfo],
   relevanceScore: 0.95,
 };
+
+export const fakeDefaultAccelerators: Accelerator[] = [
+  {
+    modifiers: Modifier.COMMAND | Modifier.SHIFT,
+    keyCode: 187,
+  },
+  {
+    modifiers: Modifier.CONTROL,
+    keyCode: 84,
+  },
+];
 
 export const createFakeMojoAccelInfo =
     (keyDisplay: string = 'a'): MojoAcceleratorInfo => {

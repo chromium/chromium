@@ -2363,6 +2363,91 @@ TEST_F(AcceleratorConfigurationProviderTest, GetConflictAccelerator) {
             reserved_result->shortcut_name);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, GetDefaultAcceleratorsForId) {
+  // Add a fake layout2 keyboard.
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+
+  // Enable TopRowKeysAreFKeys.
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kSendFunctionKeys, true);
+    EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+  } else {
+    auto settings = Shell::Get()
+                        ->input_device_settings_controller()
+                        ->GetKeyboardSettings(fake_keyboard.id)
+                        ->Clone();
+    settings->top_row_are_fkeys = true;
+    Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+        fake_keyboard.id, std::move(settings));
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // Initialize accelerators.
+  const AcceleratorData test_data[] = {
+      // [kToggleMirrorMode] is normal accelerator.
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+      // [kOpenHelp] has one accelerator that will be hidden.
+      {/*trigger_on_press=*/true, ui::VKEY_OEM_2,
+       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kOpenGetHelp},
+      {/*trigger_on_press=*/true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kOpenGetHelp},
+      // [kBrightnessUp] has alias accelerator.
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE,
+       AcceleratorAction::kBrightnessUp},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators are populated.
+  EXPECT_EQ(sizeof(test_data) / sizeof(AcceleratorData),
+            config->GetAllAccelerators().size());
+
+  // Verify normal accelerator is received.
+  provider_->GetDefaultAcceleratorsForId(
+      AcceleratorAction::kToggleMirrorMode,
+      base::BindLambdaForTesting(
+          [&](const std::vector<ui::Accelerator>& default_accelerators) {
+            const ui::Accelerator expected_accelerator(ui::VKEY_SPACE,
+                                                       ui::EF_CONTROL_DOWN);
+            EXPECT_EQ(1u, default_accelerators.size());
+            EXPECT_TRUE(expected_accelerator == default_accelerators[0]);
+          }));
+
+  // Verify hidden accelerator is filtered.
+  provider_->GetDefaultAcceleratorsForId(
+      AcceleratorAction::kOpenGetHelp,
+      base::BindLambdaForTesting(
+          [&](const std::vector<ui::Accelerator>& default_accelerators) {
+            // [shift + control + /] is filtered out.
+            const ui::Accelerator expected_accelerator(ui::VKEY_OEM_2,
+                                                       ui::EF_CONTROL_DOWN);
+            EXPECT_EQ(1u, default_accelerators.size());
+            EXPECT_TRUE(expected_accelerator == default_accelerators[0]);
+          }));
+
+  // Veirfy alias accelerator(top-row-remapped) is received.
+  provider_->GetDefaultAcceleratorsForId(
+      AcceleratorAction::kBrightnessUp,
+      base::BindLambdaForTesting(
+          // [brightness_up] -> [search + brightness_up].
+          [&](const std::vector<ui::Accelerator>& default_accelerators) {
+            const ui::Accelerator expected_accelerator(ui::VKEY_BRIGHTNESS_UP,
+                                                       ui::EF_COMMAND_DOWN);
+            EXPECT_EQ(1u, default_accelerators.size());
+            EXPECT_TRUE(expected_accelerator == default_accelerators[0]);
+          }));
+}
+
 TEST_F(AcceleratorConfigurationProviderTest,
        VerifyAllAcceleratorsHaveKeyString) {
   // The following is a set of VKEYs that are ignored in this test. If there is

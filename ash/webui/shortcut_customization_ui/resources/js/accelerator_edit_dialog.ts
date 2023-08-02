@@ -68,6 +68,8 @@ export class AcceleratorEditDialogElement extends
       acceleratorInfos: {
         type: Array,
         value: () => [],
+        observer:
+            AcceleratorEditDialogElement.prototype.onAcceleratorInfosChanged,
       },
 
       pendingNewAcceleratorState: {
@@ -97,6 +99,11 @@ export class AcceleratorEditDialogElement extends
         type: Array,
         value: () => [],
       },
+
+      shouldHideRestoreButton: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -105,6 +112,7 @@ export class AcceleratorEditDialogElement extends
   action: number;
   source: AcceleratorSource;
   protected isAcceleratorCapturing: boolean;
+  protected shouldHideRestoreButton: boolean;
   protected observableDefaultAcceleratorsWithConflict: string[];
   private pendingNewAcceleratorState: number;
   private shouldSnapshotConflictDefaults: boolean;
@@ -207,15 +215,17 @@ export class AcceleratorEditDialogElement extends
   }
 
   protected showNewAccelerator(): boolean {
-    // Show new pending accelerators when ViewState is not VIEW.
-    return this.pendingNewAcceleratorState != ViewState.VIEW &&
+    // Show new pending accelerators when ViewState is ADD.
+    return this.pendingNewAcceleratorState === ViewState.ADD &&
         this.acceleratorLimitNotReached();
   }
 
   protected showAddButton(): boolean {
-    // If the state is VIEW, no new pending accelerators are being added.
-    return this.pendingNewAcceleratorState === ViewState.VIEW &&
-        this.acceleratorLimitNotReached() && !this.shouldHideRestoreDefaults();
+    // Show addbutton if the state is not ADD and there is no conflict during
+    // restore default process.
+    return this.pendingNewAcceleratorState !== ViewState.ADD &&
+        this.acceleratorLimitNotReached() &&
+        this.defaultAcceleratorsWithConflict.size === 0;
   }
 
   protected acceleratorLimitNotReached(): boolean {
@@ -270,9 +280,30 @@ export class AcceleratorEditDialogElement extends
         Array.from(this.defaultAcceleratorsWithConflict));
   }
 
-  protected shouldHideRestoreDefaults(): boolean {
-    return this.isAcceleratorCapturing ||
-        this.defaultAcceleratorsWithConflict.size !== 0;
+  protected async onAcceleratorInfosChanged(): Promise<void> {
+    // Hide restoreButton when current accelerators in the dialog are the same
+    // as default accelerators.
+    this.shouldHideRestoreButton = await this.areAcceleratorsDefault();
+  }
+
+  // Check if current accelerators match the default accelerators for given
+  // action id.
+  protected async areAcceleratorsDefault(): Promise<boolean> {
+    const currentAccelerators =
+        this.getSortedFilteredAccelerators(this.acceleratorInfos);
+    const defaultAccelerators =
+        await getShortcutProvider().getDefaultAcceleratorsForId(this.action);
+
+    if (currentAccelerators.length != defaultAccelerators.accelerators.length) {
+      return false;
+    }
+    // Check if the current accelerators are strictly matched with the default
+    // accelerators.
+    return currentAccelerators.every(
+        acceleratorInfo => isStandardAcceleratorInfo(acceleratorInfo) &&
+            defaultAccelerators.accelerators.some(
+                defaultAccelerator => JSON.stringify(defaultAccelerator) ===
+                    JSON.stringify(getAccelerator(acceleratorInfo))));
   }
 }
 

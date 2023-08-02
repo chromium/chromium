@@ -12,11 +12,11 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
-import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
-import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -30,6 +30,7 @@ suite('acceleratorEditDialogTest', function() {
 
   setup(() => {
     provider = new FakeShortcutProvider();
+    provider.setFakeGetDefaultAcceleratorsForId(fakeDefaultAccelerators);
     setShortcutProviderForTesting(provider);
     // Set up manager.
     manager = AcceleratorLookupManager.getInstance();
@@ -167,9 +168,6 @@ suite('acceleratorEditDialogTest', function() {
     // accelerator.
     const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
     assertTrue(doneButton!.disabled);
-    const restoreButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
-    assertTrue(restoreButton!.hidden);
 
     // Input hint should be shown when adding a new accelerator.
     const acceleratorElements =
@@ -196,7 +194,6 @@ suite('acceleratorEditDialogTest', function() {
 
     // "done" button should now be enabled.
     assertFalse(doneButton!.disabled);
-    assertFalse(restoreButton!.hidden);
 
     assertFalse(buttonContainer!.hidden);
     // Re-query the stamped element.
@@ -232,6 +229,8 @@ suite('acceleratorEditDialogTest', function() {
     };
 
     provider.setRestoreDefault(fakeResult);
+
+    await flushTasks();
     const restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();
@@ -268,6 +267,8 @@ suite('acceleratorEditDialogTest', function() {
     };
 
     provider.setRestoreDefault(fakeResult);
+
+    await flushTasks();
     const restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();
@@ -304,6 +305,13 @@ suite('acceleratorEditDialogTest', function() {
   });
 
   test('RestoreDefaultButtonIgnoreConflict', async () => {
+    // Set the default accelerators the same as the initialized accelerators.
+    const defaultAccelerators: Accelerator[] = [{
+      modifiers: Modifier.CONTROL | Modifier.SHIFT,
+      keyCode: 71,
+    }];
+    provider.setFakeGetDefaultAcceleratorsForId(defaultAccelerators);
+
     const acceleratorInfo: AcceleratorInfo =
         createCustomStandardAcceleratorInfo(
             Modifier.CONTROL | Modifier.SHIFT,
@@ -325,6 +333,8 @@ suite('acceleratorEditDialogTest', function() {
     };
 
     provider.setRestoreDefault(fakeResult);
+
+    await flushTasks();
     let restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();
@@ -349,6 +359,7 @@ suite('acceleratorEditDialogTest', function() {
     // Verify that the add button and restore button are hidden.
     let addButtonContainer =
         dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
+
     restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     assertTrue(restoreDefaultButton.hidden);
@@ -372,6 +383,7 @@ suite('acceleratorEditDialogTest', function() {
     // Verify that the add button and restore button are shown.
     addButtonContainer =
         dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
+
     restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     assertFalse(restoreDefaultButton.hidden);
@@ -400,6 +412,8 @@ suite('acceleratorEditDialogTest', function() {
     };
 
     provider.setRestoreDefault(fakeResult);
+
+    await flushTasks();
     const restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();
@@ -656,5 +670,102 @@ suite('acceleratorEditDialogTest', function() {
         HTMLDivElement;
     assertFalse(maxAccelReachedHint.hidden);
     assertTrue(addButtonContainer.hidden);
+  });
+
+  test('buttonsVisibility', async () => {
+    // Set the default accelerators the same as the initialized accelerators.
+    const defaultAccelerators: Accelerator[] = [{
+      modifiers: Modifier.CONTROL | Modifier.SHIFT,
+      keyCode: 71,
+    }];
+    provider.setFakeGetDefaultAcceleratorsForId(defaultAccelerators);
+
+    const acceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71, /*keyDisplay=*/ 'g', AcceleratorState.kEnabled);
+
+    const accelerators = [acceleratorInfo];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+
+    const addButtonContainer =
+        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
+        HTMLDivElement;
+    const restoreButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
+
+    // When first open the dialog, addButton is visible, restoreButton is
+    // hidden, doneButton is not disabled.
+    assertFalse(addButtonContainer.hidden);
+    assertTrue(restoreButton.hidden);
+    assertFalse(doneButton.disabled);
+
+    // Click edit button, addButton is visible, restoreButton is hidden,
+    // doneButton is disabled.
+    const editViewElements = dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, editViewElements.length);
+    const editButton = editViewElements[0]!.shadowRoot!.querySelector(
+                           '#editButton') as HTMLButtonElement;
+    editButton!.click();
+    await flushTasks();
+    assertFalse(addButtonContainer.hidden);
+    assertTrue(restoreButton.hidden);
+    assertTrue(doneButton.disabled);
+
+    // Click cancel button, addButton is visible, restoreButton is
+    // hidden, doneButton is not disabled.
+    const cancelButton = editViewElements[0]!.shadowRoot!.querySelector(
+                             '#cancelButton') as HTMLButtonElement;
+    cancelButton!.click();
+    await flushTasks();
+    assertFalse(addButtonContainer.hidden);
+    assertTrue(restoreButton.hidden);
+    assertFalse(doneButton.disabled);
+
+    // Click add button, addButton is hidden, restoreButton is hidden,
+    // doneButton is disabled.
+    const addButton =
+        dialog!.querySelector('#addAcceleratorButton') as CrButtonElement;
+    addButton!.click();
+    await flushTasks();
+    assertTrue(addButtonContainer.hidden);
+    assertTrue(restoreButton.hidden);
+    assertTrue(doneButton.disabled);
+
+    // Click cancel button again.
+    const pendingAccelerator = dialog!.querySelector('#pendingAccelerator');
+    const cancelButton2 = pendingAccelerator!.shadowRoot!.querySelector(
+                              '#cancelButton') as CrButtonElement;
+    cancelButton2.click();
+    await flushTasks();
+    assertFalse(addButtonContainer.hidden);
+    assertTrue(restoreButton.hidden);
+    assertFalse(doneButton.disabled);
+
+    // Update the accelerator, now the current accelerators are different from
+    // the default accelerators.
+    const newAcceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.ALT,
+            /*key=*/ 69, /*keyDisplay=*/ 'e', AcceleratorState.kEnabled);
+    const newAccelerators = [newAcceleratorInfo];
+
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(newAccelerators);
+    await flushTasks();
+
+    // After updating the accelerator, addButton is visible, restoreButton is
+    // visible, doneButton is not disabled.
+    assertFalse(addButtonContainer.hidden);
+    assertFalse(restoreButton.hidden);
+    assertFalse(doneButton.disabled);
   });
 });

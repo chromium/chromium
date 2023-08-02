@@ -18,7 +18,7 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
-import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
+import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
@@ -72,6 +72,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider = new FakeShortcutProvider();
     provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
     provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
+    provider.setFakeGetDefaultAcceleratorsForId(fakeDefaultAccelerators);
     provider.setFakeHasLauncherButton(true);
 
     setShortcutProviderForTesting(provider);

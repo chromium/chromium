@@ -658,6 +658,35 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
   return;
 }
 
+// Get the default accelerators for the given accelerator id. The
+// accelerators are filtered and aliased accelerators are included.
+void AcceleratorConfigurationProvider::GetDefaultAcceleratorsForId(
+    uint32_t actionId,
+    GetDefaultAcceleratorsForIdCallback callback) {
+  const std::vector<ui::Accelerator>& raw_default_accelerators =
+      ash_accelerator_configuration_->GetDefaultAcceleratorsForId(actionId);
+
+  std::vector<ui::Accelerator> default_accelerators;
+  for (const auto& accelerator : raw_default_accelerators) {
+    // Filter the hidden accelerators.
+    if (IsAcceleratorHidden(actionId, accelerator)) {
+      continue;
+    }
+    // Get the alias accelerators.
+    std::vector<ui::Accelerator> accelerator_aliases =
+        accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+    // Return early if there are no alias accelerators. This will filter the
+    // disabled accelerators due to unavailable keys.
+    if (accelerator_aliases.empty()) {
+      continue;
+    }
+    for (const auto& accelerator_alias : accelerator_aliases) {
+      default_accelerators.push_back(accelerator_alias);
+    }
+  }
+  std::move(callback).Run(default_accelerators);
+}
+
 void AcceleratorConfigurationProvider::GetAccelerators(
     GetAcceleratorsCallback callback) {
   std::move(callback).Run(CreateConfigurationMap());

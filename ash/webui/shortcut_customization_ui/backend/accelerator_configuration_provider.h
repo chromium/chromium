@@ -79,6 +79,9 @@ class AcceleratorConfigurationProvider
                               uint32_t action_id,
                               const ui::Accelerator& accelerator,
                               GetConflictAcceleratorCallback callback) override;
+  void GetDefaultAcceleratorsForId(
+      uint32_t action_id,
+      GetDefaultAcceleratorsForIdCallback callback) override;
   void GetAccelerators(GetAcceleratorsCallback callback) override;
   void AddObserver(mojo::PendingRemote<
                    shortcut_customization::mojom::AcceleratorsUpdatedObserver>

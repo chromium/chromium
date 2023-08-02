@@ -65,6 +65,11 @@ interface AcceleratorConfigurationProvider {
                          uint32 action_id, SimpleAccelerator accelerator)
       => (AcceleratorResultData result);
 
+  // Get the default accelerators for the given accelerator id. The
+  // accelerators are filtered and aliased accelerators are included.
+  GetDefaultAcceleratorsForId(uint32 action_id)
+    => (array<SimpleAccelerator> accelerators);
+
   // Get the accelerator mappings for all sources. This is formatted as
   // AcceleratorSource -> map<AcceleratorActionId, Array<AcceleratorInfo>>.
   // Note that an accelerator action can have multiple accelerators associated

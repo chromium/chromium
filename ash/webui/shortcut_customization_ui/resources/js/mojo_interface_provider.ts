@@ -129,6 +129,11 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
     return this.remote.getConflictAccelerator(source, action, accelerator);
   }
+
+  getDefaultAcceleratorsForId(action: number):
+      Promise<{accelerators: Accelerator[]}> {
+    return this.remote.getDefaultAcceleratorsForId(action);
+  }
 }
 
 export function getShortcutProvider(): ShortcutProviderInterface {
