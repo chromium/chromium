@@ -125,8 +125,6 @@ class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
   void RemoveObserver(KeyboardCapability::Observer* observer) override {}
   bool TopRowKeysAreFKeys() const override { return false; }
   void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) override {}
-  bool IsPrivacyScreenSupported() const override { return false; }
-  void SetPrivacyScreenSupportedForTesting(bool is_supported) override {}
 };
 
 absl::optional<KeyboardDevice> FindKeyboardWithId(int device_id) {
@@ -571,12 +569,6 @@ void KeyboardCapability::SetTopRowKeysAsFKeysEnabledForTesting(
   delegate_->SetTopRowKeysAsFKeysEnabledForTesting(enabled);  // IN-TEST
 }
 
-void KeyboardCapability::SetPrivacyScreenSupportedForTesting(
-    bool is_supported) const {
-  CHECK_IS_TEST();
-  delegate_->SetPrivacyScreenSupportedForTesting(is_supported);  // IN-TEST
-}
-
 // static
 bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
   return base::Contains(kSixPackKeyToSearchSystemKeyMap, key_code);
@@ -909,22 +901,6 @@ bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
   // TODO(dpad): Many external keyboards do not have these keys, but currently
   // we do not have a good way to detect these situations.
   return HasExternalKeyboardConnected();
-}
-
-bool KeyboardCapability::HasPrivacyScreenKey(
-    const KeyboardDevice& keyboard) const {
-  return GetDeviceType(keyboard) == DeviceType::kDeviceInternalKeyboard &&
-         delegate_->IsPrivacyScreenSupported();
-}
-
-bool KeyboardCapability::HasPrivacyScreenKeyOnAnyKeyboard() const {
-  for (const ui::KeyboardDevice& keyboard :
-       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (HasPrivacyScreenKey(keyboard)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(

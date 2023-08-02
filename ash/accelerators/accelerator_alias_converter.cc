@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/display/privacy_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/containers/fixed_flat_map.h"
@@ -548,8 +549,15 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     }
 
     if (accelerator.key_code() == ui::VKEY_PRIVACY_SCREEN_TOGGLE) {
-      if (keyboard_capability->HasPrivacyScreenKeyOnAnyKeyboard()) {
-        filtered_accelerators.push_back(accelerator);
+      if (Shell::Get()->privacy_screen_controller()->IsSupported()) {
+        for (const ui::KeyboardDevice& keyboard :
+             ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+          if (keyboard_capability->GetDeviceType(keyboard) ==
+              ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
+            filtered_accelerators.push_back(accelerator);
+            break;
+          }
+        }
       }
       continue;
     }
