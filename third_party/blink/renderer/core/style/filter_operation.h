@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#include <iosfwd>
+
 namespace blink {
 
 class Filter;
@@ -50,6 +52,9 @@ class SVGResourceClient;
 
 class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
  public:
+  FilterOperation(const FilterOperation&) = delete;
+  FilterOperation& operator=(const FilterOperation&) = delete;
+
   enum class OperationType {
     kReference,  // url(#somefilter)
     kGrayscale,
@@ -123,17 +128,21 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
   // See also FilterEffect::MapRect.
   virtual gfx::RectF MapRect(const gfx::RectF& rect) const { return rect; }
 
+  // For debugging/logging only.
+  virtual String DebugString() const { return "<unknown>"; }
+
  protected:
-  FilterOperation(OperationType type) : type_(type) {}
+  explicit FilterOperation(OperationType type) : type_(type) {}
 
   virtual bool IsEqualAssumingSameType(const FilterOperation&) const = 0;
 
   OperationType type_;
-
- private:
-  FilterOperation(const FilterOperation&) = delete;
-  FilterOperation& operator=(const FilterOperation&) = delete;
 };
+
+inline std::ostream& operator<<(std::ostream& stream,
+                                const FilterOperation& operation) {
+  return stream << operation.DebugString();
+}
 
 class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
  public:
@@ -154,6 +163,8 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
   void RemoveClient(SVGResourceClient&);
 
   void Trace(Visitor*) const override;
+
+  String DebugString() const override { return "<ref: " + url_ + ">"; }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation&) const override;
@@ -181,6 +192,13 @@ class CORE_EXPORT BasicColorMatrixFilterOperation : public FilterOperation {
 
   double Amount() const { return amount_; }
 
+  String DebugString() const override {
+    char buf[256];
+    snprintf(buf, sizeof(buf), "<basic color matrix op %d, amount=%f>",
+             static_cast<int>(type_), amount_);
+    return buf;
+  }
+
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const BasicColorMatrixFilterOperation* other =
@@ -199,6 +217,12 @@ class CORE_EXPORT ColorMatrixFilterOperation : public FilterOperation {
       : FilterOperation(type), values_(std::move(values)) {}
 
   const Vector<float>& Values() const { return values_; }
+
+  String DebugString() const override {
+    char buf[256];
+    snprintf(buf, sizeof(buf), "<color matrix op %d>", static_cast<int>(type_));
+    return buf;
+  }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
@@ -287,6 +311,8 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
+  String DebugString() const override { return "<blur>"; }
+
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const BlurFilterOperation* other =
@@ -315,6 +341,17 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
+
+  String DebugString() const override {
+    std::stringstream ss;
+    ss << shadow_.GetColor();
+    char buf[256];
+    snprintf(buf, sizeof(buf),
+             "<drop shadow: x=%f y=%f blur=%f spread=%f opacity=%f color=%s>",
+             shadow_.X(), shadow_.Y(), shadow_.Blur(), shadow_.Spread(),
+             shadow_.Opacity(), ss.str().c_str());
+    return buf;
+  }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
@@ -347,6 +384,8 @@ class CORE_EXPORT BoxReflectFilterOperation : public FilterOperation {
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation&) const override;
+
+  String DebugString() const override { return "<box reflect>"; }
 
  private:
   BoxReflection reflection_;
@@ -384,6 +423,8 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
   FEConvolveMatrix::EdgeModeType EdgeMode() const { return edge_mode_; }
   bool PreserveAlpha() const { return preserve_alpha_; }
   const Vector<float>& KernelMatrix() const { return kernel_matrix_; }
+
+  String DebugString() const override { return "<convolve>"; }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
@@ -430,6 +471,7 @@ class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
   ComponentTransferFunction GreenFunc() const { return green_func_; }
   ComponentTransferFunction BlueFunc() const { return blue_func_; }
   ComponentTransferFunction AlphaFunc() const { return alpha_func_; }
+  String DebugString() const override { return "<component transfer>"; }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
@@ -476,6 +518,7 @@ class CORE_EXPORT TurbulenceFilterOperation : public FilterOperation {
   int NumOctaves() const { return num_octaves_; }
   float Seed() const { return seed_; }
   bool StitchTiles() const { return stitch_tiles_; }
+  String DebugString() const override { return "<turbulence>"; }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {

@@ -26,12 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CONTENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CONTENT_DATA_H_
 
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
+#include <iosfwd>
 
 namespace blink {
 
@@ -67,11 +70,29 @@ class ContentData : public GarbageCollected<ContentData> {
 
   virtual void Trace(Visitor*) const;
 
+  // For debugging/logging only.
+  virtual String DebugString() const { return "<unknown>"; }
+
  private:
   virtual ContentData* CloneInternal() const = 0;
 
   Member<ContentData> next_;
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const ContentData& content_data);
 };
+
+inline std::ostream& operator<<(std::ostream& stream,
+                                const ContentData& content_data) {
+  const ContentData* ptr = &content_data;
+  stream << "ContentData{";
+  while (ptr) {
+    stream << content_data.DebugString();
+    stream << ",";
+    ptr = ptr->next_.Get();
+  }
+  return stream << "}";
+}
 
 class ImageContentData final : public ContentData {
   friend class ContentData;
@@ -101,6 +122,10 @@ class ImageContentData final : public ContentData {
   }
 
   void Trace(Visitor*) const override;
+
+  String DebugString() const override {
+    return "<image: " + image_->CssValue()->CssText() + ">";
+  }
 
  private:
   ContentData* CloneInternal() const override {
@@ -138,6 +163,8 @@ class TextContentData final : public ContentData {
     return static_cast<const TextContentData&>(data).GetText() == GetText();
   }
 
+  String DebugString() const override { return text_; }
+
  private:
   ContentData* CloneInternal() const override {
     return MakeGarbageCollected<TextContentData>(GetText());
@@ -170,6 +197,8 @@ class AltTextContentData final : public ContentData {
     }
     return static_cast<const AltTextContentData&>(data).GetText() == GetText();
   }
+
+  String DebugString() const override { return "<alt: " + text_ + ">"; }
 
  private:
   ContentData* CloneInternal() const override {
@@ -208,6 +237,8 @@ class CounterContentData final : public ContentData {
   const TreeScope* GetTreeScope() const { return tree_scope_; }
 
   void Trace(Visitor*) const override;
+
+  String DebugString() const override { return "<counter>"; }
 
  private:
   ContentData* CloneInternal() const override {
@@ -260,6 +291,8 @@ class QuoteContentData final : public ContentData {
     return static_cast<const QuoteContentData&>(data).Quote() == Quote();
   }
 
+  String DebugString() const override { return "<quote>"; }
+
  private:
   ContentData* CloneInternal() const override {
     return MakeGarbageCollected<QuoteContentData>(Quote());
@@ -286,6 +319,8 @@ class NoneContentData final : public ContentData {
                                    const ComputedStyle&) const override;
 
   bool Equals(const ContentData& data) const override { return data.IsNone(); }
+
+  String DebugString() const override { return "<none>"; }
 
  private:
   ContentData* CloneInternal() const override {

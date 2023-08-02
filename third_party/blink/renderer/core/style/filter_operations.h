@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#include <iosfwd>
+
 namespace gfx {
 class RectF;
 }
@@ -81,7 +83,20 @@ class CORE_EXPORT FilterOperations {
 
  private:
   FilterOperationVector operations_;
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const FilterOperations& operations);
 };
+
+inline std::ostream& operator<<(std::ostream& stream,
+                                const FilterOperations& operations) {
+  stream << "FilterOperations{";
+  for (const Member<FilterOperation>& operation : operations.operations_) {
+    stream << *operation;
+    stream << ",";
+  }
+  return stream << "}";
+}
 
 // Wrapper object for the FilterOperations part object.
 class FilterOperationsWrapper

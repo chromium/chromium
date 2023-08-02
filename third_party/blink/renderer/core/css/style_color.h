@@ -193,7 +193,8 @@ class CORE_EXPORT StyleColor {
 };
 
 // For debugging only.
-std::ostream& operator<<(std::ostream& stream, const StyleColor& color);
+CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                     const StyleColor& color);
 
 }  // namespace blink
 

@@ -351,7 +351,8 @@ CSSValueID StyleColor::EffectiveColorKeyword() const {
                                                           : color_keyword_;
 }
 
-std::ostream& operator<<(std::ostream& stream, const StyleColor& color) {
+CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                     const StyleColor& color) {
   if (color.IsCurrentColor()) {
     return stream << "currentcolor";
   } else if (color.IsUnresolvedColorMixFunction()) {

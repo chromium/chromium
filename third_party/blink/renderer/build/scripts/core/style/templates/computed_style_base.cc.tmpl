@@ -8,7 +8,10 @@
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base.h"
+#include "third_party/blink/renderer/core/style/content_data.h"  // For the logging operator to be visible.
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+
+#include <utility>
 
 namespace blink {
 
@@ -72,20 +75,30 @@ constexpr bool HasLogging {};
 template<typename T>
 constexpr bool HasLogging<
   T,
-  std::void_t<decltype(std::stringstream() << T())>
+  std::void_t<decltype(std::stringstream() << std::declval<T>())>
 > = true;
+
+template<typename> constexpr bool IsPersistent = false;
+template<typename T> constexpr bool IsPersistent<Persistent<T>> = true;
 
 template<class T>
 static std::string DebugStringForField(const T& t) {
   if constexpr (std::is_same_v<T, bool>) {
     return t ? "true" : "false";
-  } else if constexpr (HasLogging<T>) {
+  }
+  if constexpr (IsPersistent<T>) {
+    if constexpr (HasLogging<typename T::PointeeType>) {
+      std::stringstream ss;
+      ss << *t;
+      return ss.str();
+    }
+  }
+  if constexpr (HasLogging<T>) {
     std::stringstream ss;
     ss << t;
     return ss.str();
-  } else {
-    return "<unable to print>";
   }
+  return "<unable to print>";
 }
 
 Vector<ComputedStyleBase::DebugDiff>
