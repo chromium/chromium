@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -42,6 +43,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
@@ -73,6 +77,12 @@ public class StripLayoutHelperManagerTest {
     private MultiInstanceManager mMultiInstanceManager;
     @Mock
     private View mToolbarContainerView;
+    @Mock
+    private TabModelSelector mTabModelSelector;
+    @Mock
+    private TabCreatorManager mTabCreatorManager;
+    @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -99,10 +109,13 @@ public class StripLayoutHelperManagerTest {
     }
 
     private void initializeTest() {
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+
         mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
         mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
                 mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mTabModelStartupInfoSupplier,
                 mLifecycleDispatcher, mMultiInstanceManager, mToolbarContainerView);
+        mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 
     private void initializeTestWithTsrArm(BooleanCachedFieldTrialParameter param) {

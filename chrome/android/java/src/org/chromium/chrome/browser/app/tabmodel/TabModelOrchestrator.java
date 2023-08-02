@@ -9,6 +9,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -201,17 +202,21 @@ public abstract class TabModelOrchestrator {
                     @Override
                     public void onDetailsRead(int index, int id, String url,
                             boolean isStandardActiveIndex, boolean isIncognitoActiveIndex,
-                            Boolean isIncognito) {
+                            Boolean isIncognito, boolean fromMerge) {
                         if (isIncognito == null || !isIncognito.booleanValue()) {
                             mStandardCount++;
                         } else {
                             mIncognitoCount++;
                         }
 
-                        if (isStandardActiveIndex) {
-                            mStandardActiveIndex = index;
-                        } else if (isIncognitoActiveIndex) {
-                            mIncognitoActiveIndex = index;
+                        // We prioritize focusing the active tab from the "primary" (non-merging)
+                        // instance.
+                        if (!fromMerge) {
+                            if (isStandardActiveIndex) {
+                                mStandardActiveIndex = index;
+                            } else if (isIncognitoActiveIndex) {
+                                mIncognitoActiveIndex = index;
+                            }
                         }
 
                         if (mOnStandardActiveIndexRead != null && isStandardActiveIndex) {
@@ -225,8 +230,12 @@ public abstract class TabModelOrchestrator {
                         mOnStandardActiveIndexRead = null;
 
                         if (mTabModelStartupInfoSupplier != null) {
+                            int standardActiveIndex =
+                                    mStandardActiveIndex != TabModel.INVALID_TAB_INDEX
+                                    ? mStandardActiveIndex - mIncognitoCount
+                                    : TabModel.INVALID_TAB_INDEX;
                             mTabModelStartupInfoSupplier.set(new TabModelStartupInfo(mStandardCount,
-                                    mIncognitoCount, mStandardActiveIndex, mIncognitoActiveIndex));
+                                    mIncognitoCount, standardActiveIndex, mIncognitoActiveIndex));
                         }
                     }
                 };

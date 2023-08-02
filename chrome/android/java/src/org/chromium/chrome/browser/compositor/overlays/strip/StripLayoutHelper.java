@@ -249,6 +249,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     // tab metadata.
     private boolean mTabStateInitialized;
     private boolean mPlaceholderStripReady;
+    private boolean mSelectedOnStartup;
     private int mTabCountOnStartup;
     private int mActiveTabIndexOnStartup;
     private int mCurrentPlaceholderIndex;
@@ -663,6 +664,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (!mTabStateInitialized && ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
             // If the placeholder strip is ready, replace the matching placeholders for the tabs
             // that have already been restored.
+            mSelectedOnStartup = mModel.isActiveModel();
             if (mPlaceholderStripReady) replacePlaceholdersForRestoredTabs();
         } else {
             computeAndUpdateTabOrders(false, false);
@@ -934,7 +936,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // will need to be placeholders before the active tab. If this is the case, replace the
         // active tab later to ensure it's at the correct index.
         int numTabsToCopy = mModel.getCount();
-        boolean needPlaceholdersBeforeActiveTab = numTabsToCopy <= mActiveTabIndexOnStartup;
+        boolean needPlaceholdersBeforeActiveTab =
+                numTabsToCopy <= mActiveTabIndexOnStartup && mSelectedOnStartup;
         if (needPlaceholdersBeforeActiveTab) numTabsToCopy--;
         mCurrentPlaceholderIndex = numTabsToCopy;
 
@@ -975,7 +978,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (!mPlaceholderStripReady) return;
 
         // The active tab is handled separately.
-        if (mCurrentPlaceholderIndex == mActiveTabIndexOnStartup) mCurrentPlaceholderIndex++;
+        if (mCurrentPlaceholderIndex == mActiveTabIndexOnStartup && mSelectedOnStartup) {
+            mCurrentPlaceholderIndex++;
+        }
 
         // TODO(https://crbug.com/1444818): Investigate if non-restored tabs can be created
         //  before the tab state is initialized.

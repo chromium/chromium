@@ -2012,6 +2012,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(false, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Verify that the real and placeholder strip tabs were generated in the correct indices.
@@ -2034,6 +2035,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(false, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper = createStripLayoutHelper(false, false);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
@@ -2070,6 +2072,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(false, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Mark that a tab was restored.
@@ -2104,6 +2107,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(false, null);
+        tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Verify there are placeholders.
@@ -2147,6 +2151,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(false, null);
+        tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper.setTabModel(tabModel, null, false);
         assertEquals("Offset should be 0.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
 
@@ -2158,7 +2163,6 @@ public class StripLayoutHelperTest {
 
     private void setupForAnimations() {
         CompositorAnimationHandler mHandler = new CompositorAnimationHandler(() -> {});
-        // CompositorAnimationHandler.setTestingMode(true);
         when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
 
         // Update layout when updateHost.requestUpdate is called.

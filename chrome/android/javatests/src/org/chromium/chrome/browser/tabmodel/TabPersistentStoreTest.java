@@ -215,7 +215,7 @@ public class TabPersistentStoreTest {
 
         @Override
         public void onDetailsRead(int index, int id, String url, boolean isStandardActiveIndex,
-                boolean isIncognitoActiveIndex, Boolean isIncognito) {
+                boolean isIncognitoActiveIndex, Boolean isIncognito, boolean fromMerge) {
             details.add(new TabRestoredDetails(
                     index, id, url, isStandardActiveIndex, isIncognitoActiveIndex, isIncognito));
             detailsReadCallback.notifyCalled();

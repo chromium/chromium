@@ -397,8 +397,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     private void setTabModelStartupInfo(TabModelStartupInfo startupInfo) {
-        mNormalHelper.setTabModelStartupInfo(startupInfo.standardCount,
-                startupInfo.standardActiveIndex - startupInfo.incognitoCount);
+        mNormalHelper.setTabModelStartupInfo(
+                startupInfo.standardCount, startupInfo.standardActiveIndex);
         mIncognitoHelper.setTabModelStartupInfo(
                 startupInfo.incognitoCount, startupInfo.incognitoActiveIndex);
     }
