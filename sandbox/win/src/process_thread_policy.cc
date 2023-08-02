@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/free_deleter.h"
-#include "base/win/nt_status.h"
+#include "base/win/scoped_handle.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
@@ -71,24 +71,23 @@ NTSTATUS ProcessPolicy::OpenProcessTokenExAction(const ClientInfo& client_info,
   return status;
 }
 
-NTSTATUS ProcessPolicy::CreateThreadAction(
+DWORD ProcessPolicy::CreateThreadAction(
     const ClientInfo& client_info,
     const SIZE_T stack_size,
     const LPTHREAD_START_ROUTINE start_address,
     const LPVOID parameter,
     const DWORD creation_flags,
-    LPDWORD thread_id,
     HANDLE* handle) {
   *handle = nullptr;
-  HANDLE local_handle =
+  base::win::ScopedHandle local_handle(
       ::CreateRemoteThread(client_info.process, nullptr, stack_size,
-                           start_address, parameter, creation_flags, thread_id);
-  if (!local_handle) {
-    return base::win::GetLastNtStatus();
+                           start_address, parameter, creation_flags, nullptr));
+  if (!local_handle.is_valid()) {
+    return ::GetLastError();
   }
-  if (!::DuplicateHandle(::GetCurrentProcess(), local_handle,
-                         client_info.process, handle, 0, false,
-                         DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
+  if (!::DuplicateHandle(::GetCurrentProcess(), local_handle.get(),
+                         client_info.process, handle, 0, FALSE,
+                         DUPLICATE_SAME_ACCESS)) {
     return ERROR_ACCESS_DENIED;
   }
   return ERROR_SUCCESS;
