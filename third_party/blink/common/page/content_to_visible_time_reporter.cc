@@ -114,7 +114,7 @@ void RecordUnfoldHistogramAndTraceEvent(
   }
 
   // Record the latency histogram.
-  base::UmaHistogramTimes("Android.Unfold.Latency",
+  base::UmaHistogramTimes("Android.UnfoldToTablet.Latency",
                           (presentation_timestamp - begin_timestamp));
 }
 

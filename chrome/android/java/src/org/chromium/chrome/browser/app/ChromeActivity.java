@@ -2822,7 +2822,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (!isFinishing()) {
                 mIsRecreatingForTabletModeChange = true;
                 // Store the OnPause timestamp before recreation to capture unfold latency metric.
-                super.setOnPauseBeforeFoldRecreateTimestampMs();
+                if (isTablet) super.setOnPauseBeforeFoldRecreateTimestampMs();
                 recreate();
                 mHandler.removeCallbacks(mShowContentRunnable);
                 return true;
