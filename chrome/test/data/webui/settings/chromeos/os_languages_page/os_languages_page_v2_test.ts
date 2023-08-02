@@ -2,54 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, LifetimeBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, LanguageState, LifetimeBrowserProxyImpl, OsSettingsChangeDeviceLanguageDialogElement, OsSettingsLanguagesPageV2Element, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
+import {CrActionMenuElement, CrCheckboxElement, CrPolicyIndicatorElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertLT, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
-import {FakeSettingsPrivate} from './fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
-import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
-import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.js';
+import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
+import {FakeSettingsPrivate} from '../fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from '../test_os_languages_browser_proxy.js';
+import {TestLanguagesMetricsProxy} from '../test_os_languages_metrics_proxy.js';
+import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
 
-suite('languages page', () => {
-  /** @type {!LanguageHelper} */
-  let languageHelper;
-  /** @type {!SettingsLanguagesPageElement} */
-  let languagesPage;
-  /** @type {!HTMLElement} */
-  let languagesList;
-  /** @type {!CrActionMenuElement} */
-  let actionMenu;
-  /** @type {!LanguagesBrowserProxy} */
-  let browserProxy;
-  /** @type {!TestLifetimeBrowserProxy} */
-  let lifetimeProxy;
-  /** @type {!LanguagesMetricsProxy} */
-  let metricsProxy;
+suite('<os-settings-languages-page-v2>', () => {
+  let languageHelper: LanguageHelper;
+  let languagesPage: OsSettingsLanguagesPageV2Element;
+  let languagesList: HTMLElement;
+  let actionMenu: CrActionMenuElement;
+  let browserProxy: TestLanguagesBrowserProxy;
+  let lifetimeProxy: TestLifetimeBrowserProxy;
+  let metricsProxy: TestLanguagesMetricsProxy;
+  let languageSettingsPrivate: FakeLanguageSettingsPrivate;
+  let settingsLanguages: SettingsLanguagesElement;
+  let settingsPrefs: SettingsPrefsElement;
 
   // Initial value of enabled languages pref used in tests.
-  const initialLanguages = 'en-US,sw';
+  const INITIAL_LANGUAGES = 'en-US,sw';
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
-  });
 
-  setup(async () => {
-    assert(window.trustedTypes);
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-
-    const settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate =
-        new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
     // Sets up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
@@ -60,13 +46,27 @@ suite('languages page', () => {
     // Sets up test metrics proxy.
     metricsProxy = new TestLanguagesMetricsProxy();
     LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
+  });
+
+  setup(async () => {
+    assert(window.trustedTypes);
+    document.body.innerHTML =
+        window.trustedTypes.emptyHTML as unknown as string;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs()) as
+        unknown as typeof chrome.settingsPrivate;
+    settingsPrefs.initialize(settingsPrivate);
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
 
     // Sets up fake languageSettingsPrivate API.
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+    languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
+        unknown as FakeLanguageSettingsPrivate;
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     // Instantiates the data model with data bindings for prefs.
-    const settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages = document.createElement('settings-languages');
     settingsLanguages.prefs = settingsPrefs.prefs;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
@@ -81,29 +81,46 @@ suite('languages page', () => {
     fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
     document.body.appendChild(languagesPage);
 
-    languagesList = languagesPage.$.languagesList;
+    const element =
+        languagesPage.shadowRoot!.querySelector<HTMLElement>('#languagesList');
+    assertTrue(!!element);
+    languagesList = element;
     actionMenu = languagesPage.$.menu.get();
 
     languageHelper = languagesPage.languageHelper;
     await languageHelper.whenReady();
   });
 
-  teardown(function() {
+  teardown(() => {
+    languagesPage.remove();
+    settingsLanguages.remove();
+    settingsPrefs.remove();
+
+    browserProxy.reset();
+    lifetimeProxy.reset();
+    metricsProxy.reset();
+    languageSettingsPrivate.reset();
+
     Router.getInstance().resetRouteForTesting();
   });
 
   suite('language menu', () => {
     /*
      * Finds, asserts and returns the menu item for the given i18n key.
-     * @param {string} i18nKey Name of the i18n string for the item's text.
-     * @return {!HTMLElement} Menu item.
+     * @param i18nKey Name of the i18n string for the item's text.
+     * @return Menu item.
      */
-    function getMenuItem(i18nKey) {
-      const i18nString = assert(loadTimeData.getString(i18nKey));
-      const menuItems = actionMenu.querySelectorAll('.dropdown-item');
+    function getMenuItem(i18nKey: string): HTMLButtonElement|CrCheckboxElement {
+      const i18nString = loadTimeData.getString(i18nKey);
+      assertTrue(!!i18nString);
+      const menuItems =
+          actionMenu.querySelectorAll<HTMLButtonElement|CrCheckboxElement>(
+              '.dropdown-item');
       const menuItem = Array.from(menuItems).find(
-          item => item.textContent.trim() === i18nString);
-      return assert(menuItem, `Menu item "${i18nKey}" not found`);
+          (item: HTMLButtonElement|CrCheckboxElement) =>
+              item.textContent?.trim() === i18nString);
+      assertTrue(!!menuItem, `Menu item "${i18nKey}" not found`);
+      return menuItem;
     }
 
     /*
@@ -111,7 +128,8 @@ suite('languages page', () => {
      * param {!Object<boolean>} Dictionary from i18n keys to expected
      *     visibility of those menu items.
      */
-    function assertMenuItemButtonsVisible(buttonVisibility) {
+    function assertMenuItemButtonsVisible(
+        buttonVisibility: {[key: string]: boolean}): void {
       assertTrue(actionMenu.open);
       for (const buttonKey of Object.keys(buttonVisibility)) {
         const buttonItem = getMenuItem(buttonKey);
@@ -129,15 +147,18 @@ suite('languages page', () => {
       flush();
 
       // Finds the new language item.
-      const items = languagesList.querySelectorAll('.list-item');
-      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'no';
-      });
+      const items = languagesList.querySelectorAll<HTMLElement>('.list-item');
+      const domRepeat = languagesList.querySelector('dom-repeat');
+      assertTrue(!!domRepeat);
+      const item = Array.from(items).find(
+          (el) => domRepeat.itemForElement(el) &&
+              (domRepeat.itemForElement(el).language.code === 'no'));
+      assertTrue(!!item);
 
       // Opens the menu and selects Remove.
-      item.querySelector('cr-icon-button').click();
+      const button = item.querySelector('cr-icon-button');
+      assertTrue(!!button);
+      button.click();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem('removeLanguage');
@@ -147,20 +168,23 @@ suite('languages page', () => {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          initialLanguages,
-          languageHelper.getPref('intl.accept_languages').value);
+          INITIAL_LANGUAGES,
+          languagesPage.getPref('intl.accept_languages').value);
     });
 
     test('removes language when starting with 2 languages', () => {
-      const items = languagesList.querySelectorAll('.list-item');
-      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'sw';
-      });
+      const items = languagesList.querySelectorAll<HTMLElement>('.list-item');
+      const domRepeat = languagesList.querySelector('dom-repeat');
+      assertTrue(!!domRepeat);
+      const item = Array.from(items).find(
+          (el) => domRepeat.itemForElement(el) &&
+              domRepeat.itemForElement(el).language.code === 'sw');
+      assertTrue(!!item);
 
       // Opens the menu and selects Remove.
-      item.querySelector('cr-icon-button').click();
+      const button = item.querySelector('cr-icon-button');
+      assertTrue(!!button);
+      button.click();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem('removeLanguage');
@@ -170,22 +194,25 @@ suite('languages page', () => {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          'en-US', languageHelper.getPref('intl.accept_languages').value);
+          'en-US', languagesPage.getPref('intl.accept_languages').value);
     });
 
     test('the only translate blocked language is not removable', () => {
       //'en-US' is preconfigured to be the only translate blocked language.
       assertDeepEquals(
-          ['en-US'], languageHelper.prefs.translate_blocked_languages.value);
-      const items = languagesList.querySelectorAll('.list-item');
-      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'en-US';
-      });
+          ['en-US'], languagesPage.prefs.translate_blocked_languages.value);
+      const items = languagesList.querySelectorAll<HTMLElement>('.list-item');
+      const domRepeat = languagesList.querySelector('dom-repeat');
+      assertTrue(!!domRepeat);
+      const item = Array.from(items).find(
+          (el) => domRepeat.itemForElement(el) &&
+              domRepeat.itemForElement(el).language.code === 'en-US');
+      assertTrue(!!item);
 
       // Opens the menu and selects Remove.
-      item.querySelector('cr-icon-button').click();
+      const button = item.querySelector('cr-icon-button');
+      assertTrue(!!button);
+      button.click();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem('removeLanguage');
@@ -195,21 +222,25 @@ suite('languages page', () => {
 
     test('device language is removable', () => {
       // 'en-US' is the preconfigured UI language.
-      assertEquals('en-US', languageHelper.languages.prospectiveUILanguage);
+      assertEquals(
+          'en-US', languagesPage.get('languages.prospectiveUILanguage'));
       // Add 'sw' to translate_blocked_languages.
-      languageHelper.setPrefValue(
+      languagesPage.setPrefValue(
           'translate_blocked_languages', ['en-US', 'sw']);
       flush();
 
-      const items = languagesList.querySelectorAll('.list-item');
-      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'en-US';
-      });
+      const items = languagesList.querySelectorAll<HTMLElement>('.list-item');
+      const domRepeat = languagesList.querySelector('dom-repeat');
+      assertTrue(!!domRepeat);
+      const item = Array.from(items).find(
+          (el) => domRepeat.itemForElement(el) &&
+              domRepeat.itemForElement(el).language.code === 'en-US');
+      assertTrue(!!item);
 
       // Opens the menu and selects Remove.
-      item.querySelector('cr-icon-button').click();
+      const button = item.querySelector('cr-icon-button');
+      assertTrue(!!button);
+      button.click();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem('removeLanguage');
@@ -218,23 +249,25 @@ suite('languages page', () => {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals('sw', languageHelper.getPref('intl.accept_languages').value);
+      assertEquals('sw', languagesPage.getPref('intl.accept_languages').value);
     });
 
     test('single preferred language is not removable', () => {
-      languageHelper.setPrefValue('intl.accept_languages', 'sw');
-      languageHelper.setPrefValue(
-          'settings.language.preferred_languages', 'sw');
+      languagesPage.setPrefValue('intl.accept_languages', 'sw');
+      languagesPage.setPrefValue('settings.language.preferred_languages', 'sw');
       flush();
-      const items = languagesList.querySelectorAll('.list-item');
-      const domRepeat = assert(languagesList.querySelector('dom-repeat'));
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'sw';
-      });
+      const items = languagesList.querySelectorAll<HTMLElement>('.list-item');
+      const domRepeat = languagesList.querySelector('dom-repeat');
+      assertTrue(!!domRepeat);
+      const item = Array.from(items).find(
+          (el) => domRepeat.itemForElement(el) &&
+              domRepeat.itemForElement(el).language.code === 'sw');
+      assertTrue(!!item);
 
       // Opens the menu and selects Remove.
-      item.querySelector('cr-icon-button').click();
+      const button = item.querySelector('cr-icon-button');
+      assertTrue(!!button);
+      button.click();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem('removeLanguage');
@@ -247,11 +280,13 @@ suite('languages page', () => {
       const swUS = 'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw';
       languageHelper.addInputMethod(sw);
       languageHelper.addInputMethod(swUS);
-      assertEquals(4, languageHelper.languages.inputMethods.enabled.length);
+      assertEquals(
+          4, languagesPage.get('languages.inputMethods.enabled').length);
 
       // Disable Swahili. The Swahili-only keyboard should not be removed.
       languageHelper.disableLanguage('sw');
-      assertEquals(4, languageHelper.languages.inputMethods.enabled.length);
+      assertEquals(
+          4, languagesPage.get('languages.inputMethods.enabled').length);
     });
 
     test('has move up/down buttons', () => {
@@ -262,11 +297,11 @@ suite('languages page', () => {
 
       flush();
 
-      const menuButtons = languagesList.querySelectorAll(
+      const menuButtons = languagesList.querySelectorAll<HTMLButtonElement>(
           '.list-item cr-icon-button.icon-more-vert');
 
       // First language should not have "Move up" or "Move to top".
-      menuButtons[0].click();
+      menuButtons[0]!.click();
       assertMenuItemButtonsVisible({
         moveToTop: false,
         moveUp: false,
@@ -275,7 +310,7 @@ suite('languages page', () => {
       actionMenu.close();
 
       // Second language should not have "Move up".
-      menuButtons[1].click();
+      menuButtons[1]!.click();
       assertMenuItemButtonsVisible({
         moveToTop: true,
         moveUp: false,
@@ -284,7 +319,7 @@ suite('languages page', () => {
       actionMenu.close();
 
       // Middle languages should have all buttons.
-      menuButtons[2].click();
+      menuButtons[2]!.click();
       assertMenuItemButtonsVisible({
         moveToTop: true,
         moveUp: true,
@@ -293,7 +328,7 @@ suite('languages page', () => {
       actionMenu.close();
 
       // Last language should not have "Move down".
-      menuButtons[menuButtons.length - 1].click();
+      menuButtons[menuButtons.length - 1]!.click();
       assertMenuItemButtonsVisible({
         moveToTop: true,
         moveUp: true,
@@ -303,35 +338,37 @@ suite('languages page', () => {
     });
 
     test('test translate target language is labelled', () => {
-      const targetLanguageCode = languageHelper.languages.translateTarget;
+      const targetLanguageCode = languagesPage.get('languages.translateTarget');
       assertTrue(!!targetLanguageCode);
 
       // Add 'en' to have more than one translate-target language.
       languageHelper.enableLanguage('en');
-      const isTranslateTarget = languageState =>
+      const isTranslateTarget = (languageState: LanguageState) =>
           languageHelper.convertLanguageCodeForTranslate(
               languageState.language.code) === targetLanguageCode;
       const translateTargets =
-          languageHelper.languages.enabled.filter(isTranslateTarget);
-      assertTrue(translateTargets.length > 1);
+          languagesPage.get('languages.enabled').filter(isTranslateTarget);
+      assertGT(translateTargets.length, 1);
       // Ensure there is at least one non-translate-target language.
-      assertTrue(
-          translateTargets.length < languageHelper.languages.enabled.length);
+      assertLT(
+          translateTargets.length,
+          languagesPage.get('languages.enabled').length);
 
-      const listItems = languagesList.querySelectorAll('.list-item');
+      const listItems =
+          languagesList.querySelectorAll<HTMLElement>('.list-item');
       const domRepeat = languagesList.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
 
       let translateTargetLabel;
       let item;
-      let num_visibles = 0;
+      let numVisibles = 0;
       Array.from(listItems).forEach(el => {
         item = domRepeat.itemForElement(el);
         if (item) {
           translateTargetLabel = el.querySelector('.target-info');
           assertTrue(!!translateTargetLabel);
           if (getComputedStyle(translateTargetLabel).display !== 'none') {
-            num_visibles++;
+            numVisibles++;
             assertEquals(
                 targetLanguageCode,
                 languageHelper.convertLanguageCodeForTranslate(
@@ -339,8 +376,8 @@ suite('languages page', () => {
           }
         }
         assertEquals(
-            1, num_visibles,
-            'Not exactly one target info label (' + num_visibles + ').');
+            1, numVisibles,
+            'Not exactly one target info label (' + numVisibles + ').');
       });
     });
 
@@ -353,7 +390,8 @@ suite('languages page', () => {
       assertTrue(actionMenu.open);
 
       // 'sw' supports translate to the target language ('en').
-      const translateOption = getMenuItem('offerToTranslateThisLanguage');
+      const translateOption =
+          getMenuItem('offerToTranslateThisLanguage') as CrCheckboxElement;
       assertFalse(translateOption.disabled);
       assertTrue(translateOption.checked);
 
@@ -363,7 +401,7 @@ suite('languages page', () => {
           await metricsProxy.whenCalled('recordTranslateCheckboxChanged'));
       assertDeepEquals(
           ['en-US', 'sw'],
-          languageHelper.prefs.translate_blocked_languages.value);
+          languagesPage.prefs.translate_blocked_languages.value);
 
       // Menu should stay open briefly.
       assertTrue(actionMenu.open);
@@ -389,7 +427,7 @@ suite('languages page', () => {
 
     test('disable translate hides language-specific option', () => {
       // Disables translate.
-      languageHelper.setPrefValue('translate.enabled', false);
+      languagesPage.setPrefValue('translate.enabled', false);
 
       // Open options for 'sw'.
       const languageOptionsDropdownTrigger =
@@ -399,21 +437,22 @@ suite('languages page', () => {
       assertTrue(actionMenu.open);
 
       // The language-specific translation option should be hidden.
-      const translateOption = actionMenu.querySelector('#offerTranslations');
+      const translateOption =
+          actionMenu.querySelector<HTMLElement>('#offerTranslations');
       assertTrue(!!translateOption);
       assertTrue(translateOption.hidden);
     });
 
     test('Deep link to add language', async () => {
       const params = new URLSearchParams();
-      params.append('settingId', '1200');
-      Router.getInstance().navigateTo(
-          routes.OS_LANGUAGES_LANGUAGES, params);
+      params.append('settingId', settingMojom.Setting.kAddLanguage.toString());
+      Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES, params);
 
       flush();
 
       const deepLinkElement =
-          languagesPage.shadowRoot.querySelector('#addLanguages');
+          languagesPage.shadowRoot!.querySelector<HTMLElement>('#addLanguages');
+      assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -422,16 +461,15 @@ suite('languages page', () => {
   });
 
   suite('change device language dialog', () => {
-    let dialog;
-    let dialogItems;
-    let cancelButton;
-    let actionButton;
+    let dialog: OsSettingsChangeDeviceLanguageDialogElement;
+    let dialogItems: NodeListOf<HTMLElement>;
+    let cancelButton: HTMLButtonElement;
+    let actionButton: HTMLButtonElement;
 
     /**
      * Returns the list items in the dialog.
-     * @return {!Array<!Element>}
      */
-    function getListItems() {
+    function getListItems(): Element[] {
       // If an element (the <iron-list> in this case) is hidden in Polymer,
       // Polymer will intelligently not update the DOM of the hidden element
       // to prevent DOM updates that the user can't see. However, this means
@@ -441,26 +479,36 @@ suite('languages page', () => {
       // select, so if the <iron-list> is hidden we should return an empty
       // list instead.
       const dialogEl = dialog.$.dialog;
-      if (dialogEl.querySelector('iron-list').hidden) {
+      const list = dialogEl.querySelector('iron-list');
+      if (list && list.hidden) {
         return [];
       }
       return [...dialogEl.querySelectorAll('.list-item:not([hidden])')];
     }
 
     setup(() => {
-      assertFalse(!!languagesPage.shadowRoot.querySelector(
+      assertNull(languagesPage.shadowRoot!.querySelector(
           'os-settings-change-device-language-dialog'));
-      languagesPage.shadowRoot.querySelector('#changeDeviceLanguage').click();
+      const crButton =
+          languagesPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#changeDeviceLanguage');
+      assertTrue(!!crButton);
+      crButton.click();
       flush();
 
-      dialog = languagesPage.shadowRoot.querySelector(
+      const element = languagesPage.shadowRoot!.querySelector(
           'os-settings-change-device-language-dialog');
-      assertTrue(!!dialog);
+      assertTrue(!!element);
+      dialog = element;
 
-      actionButton = dialog.shadowRoot.querySelector('.action-button');
-      assertTrue(!!actionButton);
-      cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
-      assertTrue(!!cancelButton);
+      const actionBtn =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
+      assertTrue(!!actionBtn);
+      actionButton = actionBtn;
+      const cancelBtn =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
+      assertTrue(!!cancelBtn);
+      cancelButton = cancelBtn;
 
       // The fixed-height dialog's iron-list should stamp far fewer than
       // 50 items.
@@ -474,19 +522,24 @@ suite('languages page', () => {
       assertFalse(cancelButton.disabled);
     });
 
+    teardown(() => {
+      languagesPage.remove();
+      dialog.remove();
+    });
+
     test('has action button working correctly', () => {
       // selecting a language enables action button
-      dialogItems[0].click();
+      dialogItems[0]!.click();
       assertFalse(actionButton.disabled);
 
       // selecting the same language again disables action button
-      dialogItems[0].click();
+      dialogItems[0]!.click();
       assertTrue(actionButton.disabled);
     });
 
     test('setting device language restarts device', async () => {
       // selects a language
-      dialogItems[0].click();  // en-CA
+      dialogItems[0]!.click();  // en-CA
       assertFalse(actionButton.disabled);
 
       actionButton.click();
@@ -501,46 +554,46 @@ suite('languages page', () => {
     test(
         'setting device language adds it to front of enabled language if not present',
         async () => {
-          languageHelper.setPrefValue('intl.accept_languages', 'en-US,sw');
-          languageHelper.setPrefValue(
+          languagesPage.setPrefValue('intl.accept_languages', 'en-US,sw');
+          languagesPage.setPrefValue(
               'settings.language.preferred_languages', 'en-US,sw');
           // selects a language
-          dialogItems[0].click();  // en-CA
+          dialogItems[0]!.click();  // en-CA
           assertFalse(actionButton.disabled);
 
           actionButton.click();
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUiLanguage'));
-          assertTrue(languageHelper.getPref('intl.accept_languages')
+          assertTrue(languagesPage.getPref('intl.accept_languages')
                          .value.startsWith('en-CA'));
         });
 
     test(
         'setting device language moves already enabled language to front',
         async () => {
-          languageHelper.setPrefValue(
-              'intl.accept_languages', 'en-US,sw,en-CA');
-          languageHelper.setPrefValue(
+          languagesPage.setPrefValue('intl.accept_languages', 'en-US,sw,en-CA');
+          languagesPage.setPrefValue(
               'settings.language.preferred_languages', 'en-US,sw,en-CA');
           flush();
 
           // selects a language
-          dialogItems[0].click();  // en-CA
+          dialogItems[0]!.click();  // en-CA
           assertFalse(actionButton.disabled);
 
           actionButton.click();
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUiLanguage'));
-          assertTrue(languageHelper.getPref('intl.accept_languages')
+          assertTrue(languagesPage.getPref('intl.accept_languages')
                          .value.startsWith('en-CA'));
         });
 
     // Test that searching languages works whether the displayed or native
     // language name is queried.
-    test('searches languages', function() {
-      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
+    test('searches languages', () => {
+      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      assertTrue(!!searchInput);
 
       // Expecting a few languages to be displayed when no query exists.
       assertGE(getListItems().length, 1);
@@ -549,7 +602,7 @@ suite('languages page', () => {
       searchInput.setValue('greek');
       flush();
       assertEquals(1, getListItems().length);
-      assertTrue(getListItems()[0].textContent.includes('Greek'));
+      assertStringContains(getListItems()[0]!.textContent!, 'Greek');
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('Ελληνικά');
@@ -562,8 +615,9 @@ suite('languages page', () => {
       assertEquals(0, getListItems().length);
     });
 
-    test('has escape key behavior working correctly', function() {
-      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
+    test('has escape key behavior working correctly', () => {
+      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      assertTrue(!!searchInput);
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input
@@ -578,23 +632,19 @@ suite('languages page', () => {
       assertFalse(dialog.$.dialog.open);
     });
 
-    test('languages are sorted on native display name', function() {
+    test('languages are sorted on native display name', () => {
       // See https://crbug.com/1184064 for more details.
       // We can't test whether the order is *deterministic* w.r.t. device
       // language, as changing device language is not possible in a test, so we
       // do the next best thing and check if it's sorted on native display name.
 
-      /**
-       * @param {string} text
-       * @return {string}
-       */
-      function getNativeDisplayName(text) {
-        return text.includes(' - ') ? text.split(' - ')[0] : text;
+      function getNativeDisplayName(text: string): string {
+        return text.includes(' - ') ? text.split(' - ')[0]! : text;
       }
 
       const items = getListItems();
       const nativeDisplayNames =
-          items.map(item => getNativeDisplayName(item.textContent.trim()));
+          items.map(item => getNativeDisplayName(item.textContent!.trim()));
 
       const sortedNativeDisplayNames =
           [...nativeDisplayNames].sort((a, b) => a.localeCompare(b, 'en'));
@@ -604,14 +654,20 @@ suite('languages page', () => {
 
   suite('records metrics', () => {
     test('when adding languages', async () => {
-      languagesPage.shadowRoot.querySelector('#addLanguages').click();
+      const button = languagesPage.shadowRoot!.querySelector<HTMLButtonElement>(
+          '#addLanguages');
+      assertTrue(!!button);
+      button.click();
       flush();
       await metricsProxy.whenCalled('recordAddLanguages');
     });
 
     test('when disabling translate.enable toggle', async () => {
       languagesPage.setPrefValue('translate.enabled', true);
-      languagesPage.shadowRoot.querySelector('#offerTranslation').click();
+      const toggle = languagesPage.shadowRoot!.querySelector<HTMLButtonElement>(
+          '#offerTranslation');
+      assertTrue(!!toggle);
+      toggle.click();
       flush();
 
       assertFalse(await metricsProxy.whenCalled('recordToggleTranslate'));
@@ -619,7 +675,10 @@ suite('languages page', () => {
 
     test('when enabling translate.enable toggle', async () => {
       languagesPage.setPrefValue('translate.enabled', false);
-      languagesPage.shadowRoot.querySelector('#offerTranslation').click();
+      const toggle = languagesPage.shadowRoot!.querySelector<HTMLButtonElement>(
+          '#offerTranslation');
+      assertTrue(!!toggle);
+      toggle.click();
       flush();
 
       assertTrue(await metricsProxy.whenCalled('recordToggleTranslate'));
@@ -629,65 +688,86 @@ suite('languages page', () => {
       // The below would normally create a new window using `window.open`, which
       // would change the focus from this test to the new window.
       // Prevent this from happening by overriding `window.open`.
-      window.open = () => {};
-      languagesPage.shadowRoot.querySelector('#manageGoogleAccountLanguage')
-          .click();
+
+      window.open = () => {
+        return null;
+      };
+
+      const button = languagesPage.shadowRoot!.querySelector<HTMLButtonElement>(
+          '#manageGoogleAccountLanguage');
+      assertTrue(!!button);
+      button.click();
       flush();
       assertEquals(
-          await metricsProxy.whenCalled('recordInteraction'),
-          LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
+          LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE,
+          await metricsProxy.whenCalled('recordInteraction'));
     });
 
     test('when clicking on "learn more" about web languages U2', async () => {
-      const anchor =
-          languagesPage.shadowRoot.querySelector('#webLanguagesDescription')
-              .shadowRoot.querySelector('a');
+      const link =
+          languagesPage.shadowRoot!.querySelector('#webLanguagesDescription');
+      assertTrue(!!link);
+      const anchor = link.shadowRoot!.querySelector('a');
+      assertTrue(!!anchor);
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor
       // element which stops the default behaviour (of opening a new window).
-      anchor.addEventListener('click', (e) => e.preventDefault());
+      anchor.addEventListener('click', (e: Event) => e.preventDefault());
       anchor.click();
       assertEquals(
-          await metricsProxy.whenCalled('recordInteraction'),
-          LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE);
+          LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE,
+          await metricsProxy.whenCalled('recordInteraction'));
     });
   });
 });
 
 suite('change device language button', () => {
+  let page: OsSettingsLanguagesPageV2Element;
+
+  function createPage(): void {
+    page = document.createElement('os-settings-languages-page-v2');
+    document.body.appendChild(page);
+    flush();
+  }
+
   setup(() => {
     assert(window.trustedTypes);
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML =
+        window.trustedTypes.emptyHTML as unknown as string;
+  });
+
+  teardown(() => {
+    page.remove();
   });
 
   test('is hidden for guest users', () => {
     loadTimeData.overrideValues({
       isGuest: true,
     });
-    const page = document.createElement('os-settings-languages-page-v2');
-    document.body.appendChild(page);
-    flush();
+    createPage();
 
-    assertFalse(!!page.shadowRoot.querySelector('#changeDeviceLanguage'));
-    assertFalse(!!page.shadowRoot.querySelector(
-        '#changeDeviceLanguagePolicyIndicator'));
+    assertNull(page.shadowRoot!.querySelector('#changeDeviceLanguage'));
+    assertNull(
+        page.shadowRoot!.querySelector('#changeDeviceLanguagePolicyIndicator'));
   });
 
   test('is disabled for secondary users', () => {
     loadTimeData.overrideValues(
         {isGuest: false, isSecondaryUser: true, primaryUserEmail: 'test.com'});
-    const page = document.createElement('os-settings-languages-page-v2');
-    document.body.appendChild(page);
-    flush();
+    createPage();
 
     const changeDeviceLanguageButton =
-        page.shadowRoot.querySelector('#changeDeviceLanguage');
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#changeDeviceLanguage');
+    assertTrue(!!changeDeviceLanguageButton);
     assertTrue(changeDeviceLanguageButton.disabled);
     assertFalse(changeDeviceLanguageButton.hidden);
 
     const changeDeviceLanguagePolicyIndicator =
-        page.shadowRoot.querySelector('#changeDeviceLanguagePolicyIndicator');
+        page.shadowRoot!.querySelector<CrPolicyIndicatorElement>(
+            '#changeDeviceLanguagePolicyIndicator');
+    assertTrue(!!changeDeviceLanguagePolicyIndicator);
     assertFalse(changeDeviceLanguagePolicyIndicator.hidden);
     assertEquals(
         'test.com', changeDeviceLanguagePolicyIndicator.indicatorSourceName);
@@ -698,16 +778,16 @@ suite('change device language button', () => {
       isGuest: false,
       isSecondaryUser: false,
     });
-    const page = document.createElement('os-settings-languages-page-v2');
-    document.body.appendChild(page);
-    flush();
+    createPage();
 
     const changeDeviceLanguageButton =
-        page.shadowRoot.querySelector('#changeDeviceLanguage');
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#changeDeviceLanguage');
+    assertTrue(!!changeDeviceLanguageButton);
     assertFalse(changeDeviceLanguageButton.disabled);
     assertFalse(changeDeviceLanguageButton.hidden);
 
-    assertFalse(!!page.shadowRoot.querySelector(
-        '#changeDeviceLanguagePolicyIndicator'));
+    assertNull(
+        page.shadowRoot!.querySelector('#changeDeviceLanguagePolicyIndicator'));
   });
 });

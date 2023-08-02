@@ -53,14 +53,14 @@ const MENU_CLOSE_DELAY = 100;
 const OsSettingsLanguagesPageV2ElementBase =
     RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-interface OsSettingsLanguagesPageV2Element {
+export interface OsSettingsLanguagesPageV2Element {
   $: {
     addLanguages: CrButtonElement,
     menu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
 
-class OsSettingsLanguagesPageV2Element extends
+export class OsSettingsLanguagesPageV2Element extends
     OsSettingsLanguagesPageV2ElementBase {
   static get is() {
     return 'os-settings-languages-page-v2' as const;

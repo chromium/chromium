@@ -613,6 +613,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsLanguagesPageOsClearPersonalizationDataPage',
    'os_languages_page/os_clear_personalization_data_page_test.js'
  ],
+ ['OsLanguagesPageV2', 'os_languages_page/os_languages_page_v2_test.js'],
  [
    'OsLanguagesPageOsEditDictionaryPage',
    'os_languages_page/os_edit_dictionary_page_test.js'
@@ -621,7 +622,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsLanguagesPageSmartInputsPage',
    'os_languages_page/smart_inputs_page_test.js'
  ],
- ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPageAvailability', 'os_page_availability_test.js'],

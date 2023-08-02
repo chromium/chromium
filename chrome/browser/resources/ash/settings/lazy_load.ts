@@ -194,6 +194,7 @@ export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_file
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {OsSettingsAddItemsDialogElement} from './os_languages_page/add_items_dialog.js';
+export {OsSettingsChangeDeviceLanguageDialogElement} from './os_languages_page/change_device_language_dialog.js';
 export {CrCheckboxWithPolicyElement} from './os_languages_page/cr_checkbox_with_policy.js';
 export {SettingsInputMethodOptionsPageElement} from './os_languages_page/input_method_options_page.js';
 export {OsSettingsInputPageElement} from './os_languages_page/input_page.js';
@@ -203,6 +204,7 @@ export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInt
 export {LanguageHelper, LanguageState} from './os_languages_page/languages_types.js';
 export {OsSettingsEditDictionaryPageElement} from './os_languages_page/os_edit_dictionary_page.js';
 export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/os_japanese_clear_ime_data_dialog.js';
+export {OsSettingsLanguagesPageV2Element} from './os_languages_page/os_languages_page_v2.js';
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';
 export {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
