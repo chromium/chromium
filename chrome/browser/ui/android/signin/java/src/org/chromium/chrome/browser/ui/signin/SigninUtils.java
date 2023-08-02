@@ -72,4 +72,16 @@ public final class SigninUtils {
         }
         return context.getString(R.string.sync_promo_continue_as, profileData.getAccountEmail());
     }
+
+    /**
+     * Returns the accessibility label for the the account picker.
+     */
+    public static String getChooseAccountLabel(
+            final Context context, DisplayableProfileData profileData) {
+        if (profileData.hasDisplayableEmailAddress()) {
+            return context.getString(R.string.signin_account_picker_description_with_email,
+                    profileData.getAccountEmail());
+        }
+        return context.getString(R.string.signin_account_picker_description);
+    }
 }

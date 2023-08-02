@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -84,5 +85,7 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
         accountImage.setImageDrawable(profileData.getImage());
         setAccountTextPrimary(profileData, view);
         setAccountTextSecondary(profileData, view);
+        view.setContentDescription(
+                SigninUtils.getChooseAccountLabel(view.getContext(), profileData));
     }
 }
