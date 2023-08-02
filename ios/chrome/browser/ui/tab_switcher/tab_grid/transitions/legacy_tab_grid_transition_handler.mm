@@ -109,7 +109,15 @@ const CGFloat kReducedMotionDuration = 0.25;
   browser.view.alpha = 0;
 
   // Run the main animation.
-  [self.animation.animator startAnimation];
+  if (@available(iOS 17, *)) {
+    // On iOS 17, there is an issue if the animation is run directly.
+    // See crbug.com/1458980.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.animation.animator startAnimation];
+    });
+  } else {
+    [self.animation.animator startAnimation];
+  }
 }
 
 - (void)transitionFromTabGrid:(UIViewController*)tabGrid
