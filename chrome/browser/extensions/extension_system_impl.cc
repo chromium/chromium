@@ -232,12 +232,12 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
       content_verifier_->Start();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // This class is used to check the permissions of the force-installed
-    // extensions inside the managed-guest session. It updates the local state
+    // extensions inside the managed guest session. It updates the local state
     // perf with the result, a boolean value deciding whether the full warning
     // or the normal one should be displayed. The next time on the login screen
-    // of the managed-guest sessions the warning will be decided according to
+    // of the managed guest sessions the warning will be decided according to
     // the value saved from the last session.
-    if (profiles::IsPublicSession()) {
+    if (profiles::IsManagedGuestSession()) {
       extensions_permissions_tracker_ =
           std::make_unique<ExtensionsPermissionsTracker>(
               ExtensionRegistry::Get(profile_), profile_);

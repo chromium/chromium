@@ -187,7 +187,7 @@ std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
 
 // static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (profiles::IsPublicSession() &&
+  if (profiles::IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
                 "Guest Sessions.";
@@ -299,7 +299,7 @@ RealtimeReportingClient::InitBrowserReportingClient(
   }
   DCHECK(profile);
 
-  if (profiles::IsPublicSession()) {
+  if (profiles::IsManagedGuestSession()) {
     client_id = reporting::GetMGSUserClientId().value_or("");
   } else {
     client_id = reporting::GetUserClientId(profile).value_or("");

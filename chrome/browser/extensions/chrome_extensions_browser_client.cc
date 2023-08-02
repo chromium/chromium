@@ -449,7 +449,7 @@ bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
-  return profiles::IsPublicSession();
+  return profiles::IsManagedGuestSession();
 }
 
 ExtensionSystemProvider*

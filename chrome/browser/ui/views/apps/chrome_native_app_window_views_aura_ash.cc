@@ -278,9 +278,9 @@ void ChromeNativeAppWindowViewsAuraAsh::SetFullscreen(int fullscreen_types) {
   ChromeNativeAppWindowViewsAura::SetFullscreen(fullscreen_types);
   UpdateImmersiveMode();
 
-  // In a public session, display a toast with instructions on exiting
+  // In a managed guest session, display a toast with instructions on exiting
   // fullscreen.
-  if (profiles::IsPublicSession()) {
+  if (profiles::IsManagedGuestSession()) {
     UpdateExclusiveAccessExitBubbleContent(
         GURL(),
         fullscreen_types & (AppWindow::FULLSCREEN_TYPE_HTML_API |

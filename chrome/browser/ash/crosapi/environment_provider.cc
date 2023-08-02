@@ -39,7 +39,7 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   if (profile->IsGuestSession()) {
     return mojom::SessionType::kGuestSession;
   }
-  if (profiles::IsPublicSession()) {
+  if (profiles::IsManagedGuestSession()) {
     return mojom::SessionType::kPublicSession;
   }
   if (user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {

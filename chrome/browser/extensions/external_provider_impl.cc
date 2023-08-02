@@ -684,7 +684,7 @@ void ExternalProviderImpl::CreateExternalProviders(
     }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::IsKioskSession() || profiles::IsPublicSession()) {
+  if (chromeos::IsKioskSession() || profiles::IsManagedGuestSession()) {
     if (DeviceLocalAccountExtensionInstallerLacros::Get()) {
       external_loader =
           DeviceLocalAccountExtensionInstallerLacros::Get()->extension_loader();

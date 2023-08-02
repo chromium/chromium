@@ -276,7 +276,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   profile->Wipe();
 }
 
-bool IsPublicSession() {
+bool IsManagedGuestSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::LoginState::IsInitialized() &&
          ash::LoginState::Get()->IsPublicSessionUser();

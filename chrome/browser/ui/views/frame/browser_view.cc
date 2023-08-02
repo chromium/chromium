@@ -1819,9 +1819,10 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
       platform_util::IsBrowserLockedFullscreen(browser_.get());
 
   // Immersive mode allows the toolbar to be shown, so do not show the bubble.
-  // However, do show the bubble in a public session (see crbug.com/741069).
-  bool immersive_not_public =
-      ShouldUseImmersiveFullscreenForUrl(url) && !profiles::IsPublicSession();
+  // However, do show the bubble in a managed guest session (see
+  // crbug.com/741069).
+  bool immersive_not_public = ShouldUseImmersiveFullscreenForUrl(url) &&
+                              !profiles::IsManagedGuestSession();
 
   // Whether we should remove the bubble if it exists, or not show the bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.

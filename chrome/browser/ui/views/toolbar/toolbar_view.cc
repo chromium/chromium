@@ -453,7 +453,7 @@ void ToolbarView::Init() {
       (browser_->profile()->IsOffTheRecord() &&
        browser_->profile()->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  show_avatar_toolbar_button = !profiles::IsPublicSession();
+  show_avatar_toolbar_button = !profiles::IsManagedGuestSession();
 #endif
   avatar_->SetVisible(show_avatar_toolbar_button);
 

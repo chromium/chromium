@@ -238,7 +238,7 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
 #if BUILDFLAG(IS_CHROMEOS)
   if (g_browser_process->browser_policy_connector()
           ->IsDeviceEnterpriseManaged()) {
-    if (profiles::IsPublicSession()) {
+    if (profiles::IsManagedGuestSession()) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
@@ -457,8 +457,9 @@ void IdentityGetAuthTokenFunction::StartMintToken(
     switch (cache_status) {
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
 #if BUILDFLAG(IS_CHROMEOS)
-        // Always force minting token for ChromeOS kiosk app and public session.
-        if (profiles::IsPublicSession()) {
+        // Always force minting token for ChromeOS kiosk app and managed guest
+        // session.
+        if (profiles::IsManagedGuestSession()) {
           CompleteFunctionWithError(
               IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::
                                             kNotAllowlistedInPublicSession));

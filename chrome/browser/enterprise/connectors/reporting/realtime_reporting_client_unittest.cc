@@ -153,7 +153,7 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
   }
 
   bool should_init() {
-    return is_feature_flag_enabled_ || !profiles::IsPublicSession();
+    return is_feature_flag_enabled_ || !profiles::IsManagedGuestSession();
   }
 
  protected:

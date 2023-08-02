@@ -150,7 +150,7 @@ std::unique_ptr<ClientMetadata> GetBasicClientMetadata() {
     auto metadata = std::make_unique<ClientMetadata>();
 
     metadata->mutable_profile()->set_is_chrome_os_managed_guest_session(
-        profiles::IsPublicSession());
+        profiles::IsManagedGuestSession());
     return metadata;
   } else {
     return nullptr;
@@ -536,7 +536,7 @@ policy::PolicyScope ConnectorsService::GetPolicyScope(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  if (profiles::IsPublicSession() &&
+  if (profiles::IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     return false;
   }
@@ -585,7 +585,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
 
   if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     metadata->mutable_profile()->set_is_chrome_os_managed_guest_session(
-        profiles::IsPublicSession());
+        profiles::IsManagedGuestSession());
   }
 
   bool include_device_info =
@@ -626,7 +626,7 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   bool observe_prefs =
-      profiles::IsPublicSession()
+      profiles::IsManagedGuestSession()
           ? base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)
           : true;
 

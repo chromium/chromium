@@ -216,7 +216,7 @@ bool AnyWebAppsInstalledByPolicy(WebAppRegistrar& registrar) {
 
 // Managed Guest Sessions and ephemeral profiles are not eligible.
 bool ProfileIsEligible(Profile* profile) {
-  if (profiles::IsPublicSession()) {
+  if (profiles::IsManagedGuestSession()) {
     return false;
   }
 
