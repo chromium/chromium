@@ -551,18 +551,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertificateTransparency.SCT.VerificationTime"
-    units="microseconds" expires_after="2023-08-08">
-  <owner>estark@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    Time to verify the SCTs (Signed Certificate Timestamps) when setting up a
-    TLS connection. Recorded on each connection setup where at least one SCT is
-    verified. Histogram was expired between M70 and M97. Histogram is only
-    reported for clients with high resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertificateTransparency.SCTOrigin" enum="SCTOrigin"
     expires_after="2023-12-10">
   <owner>estark@chromium.org</owner>
