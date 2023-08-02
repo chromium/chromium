@@ -12,6 +12,7 @@
 #include "ash/system/status_area_widget.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -151,6 +152,8 @@ class BluetoothIntegrationTest : public InteractiveAshTest {
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
                        ToggleBluetoothFromQuickSettings) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-ba8a2ed6-be82-4174-bf38-489eba7181c6");
   SetupContextWidget();
   RunTestSequence(ObserveState(kBluetoothPowerState,
                                std::make_unique<BluetoothPowerStateObserver>(
@@ -187,6 +190,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
                        ToggleBluetoothFromOsSettings) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-d3c7f622-a376-4ca1-9be2-47a004234655");
   SetupContextWidget();
 
   // Ensure the OS Settings system web app (SWA) is installed.

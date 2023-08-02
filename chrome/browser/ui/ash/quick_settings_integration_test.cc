@@ -4,6 +4,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
@@ -31,6 +32,9 @@ class QuickSettingsIntegrationTest : public InteractiveAshTest {
 };
 
 IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, OpenOsSettings) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-0a165660-211a-4bb6-9843-a1b1d55c8694");
+
   SetupContextWidget();
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);

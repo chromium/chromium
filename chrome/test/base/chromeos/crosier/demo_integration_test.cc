@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/test_switches.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -106,6 +107,9 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-351d628b-e4a4-41c6-91e4-a4036ad12360");
+
   GURL version_url{"chrome://version"};
 
   ASSERT_TRUE(AddTabAtIndex(0, version_url, ui::PAGE_TRANSITION_TYPED));
