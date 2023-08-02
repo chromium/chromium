@@ -192,7 +192,7 @@
     "@types/sinon": "10.0.15",
     "@types/websocket": "1.0.5",
     "@types/ws": "8.5.5",
-    "@typescript-eslint/eslint-plugin": "6.0.0",
+    "@typescript-eslint/eslint-plugin": "6.2.1",
     "@typescript-eslint/parser": "6.0.0",
     "argparse": "2.0.1",
     "chai": "4.3.7",
