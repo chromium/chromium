@@ -169,6 +169,32 @@ export class CCATest {
     }
   }
 
+  static visitedFocusedElementSet = new Set();
+
+  /**
+   * Checks if the focused element is in `visitedFocusedElementSet`.
+   */
+  static checkFocusedElementVisited(): boolean {
+    const focused = document.activeElement;
+    if (this.visitedFocusedElementSet.has(focused)) {
+      return true;
+    }
+
+    this.visitedFocusedElementSet.add(focused);
+    return false;
+  }
+
+  /**
+   * Returns aria-label of the focused element. Throws an error if a focused
+   * element is null.
+   */
+  static getFocusedElementAriaLabel(): string|null {
+    if (document.activeElement === null) {
+      throw new Error(`There is no active element`);
+    }
+    return document.activeElement.ariaLabel;
+  }
+
   /**
    * Clicks on the UI component if it's visible.
    */
