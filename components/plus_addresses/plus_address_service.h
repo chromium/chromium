@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace plus_addresses {
 
@@ -30,10 +31,13 @@ class PlusAddressService : public KeyedService {
   // that the `kPlusAddressesEnabled` base::Feature is enabled.
   // TODO(crbug.com/1467623): also take signin state into account.
   bool SupportsPlusAddresses();
-  // Get a plus address, if one exists, for the passed-in facet.
-  absl::optional<std::string> GetPlusAddress(std::string facet);
-  // Save a plus address for the given facet.
-  void SavePlusAddress(std::string facet, std::string plus_address);
+  // Get a plus address, if one exists, for the passed-in origin. Note that all
+  // plus address activity is scoped to eTLD+1. This class owns the conversion
+  // of `origin` to its eTLD+1 form.
+  absl::optional<std::string> GetPlusAddress(url::Origin origin);
+  // Save a plus address for the given origin, which is converted to its eTLD+1
+  // form prior to persistence.
+  void SavePlusAddress(url::Origin origin, std::string plus_address);
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
 

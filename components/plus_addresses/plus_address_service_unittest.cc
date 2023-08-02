@@ -8,20 +8,46 @@
 #include "components/plus_addresses/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace plus_addresses {
 
 class PlusAddressServiceTest : public ::testing::Test {};
 
 TEST_F(PlusAddressServiceTest, BasicTest) {
-  const std::string test_facet = "asdf";
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://test.asdf.example"));
   const std::string test_address = "mattwashere";
   PlusAddressService service;
   EXPECT_FALSE(service.IsPlusAddress(test_address));
-  service.SavePlusAddress(test_facet, test_address);
+  service.SavePlusAddress(test_origin, test_address);
   EXPECT_TRUE(service.IsPlusAddress(test_address));
-  EXPECT_EQ(service.GetPlusAddress(test_facet), test_address);
-  EXPECT_EQ(service.GetPlusAddress("notanactualfacet"), absl::nullopt);
+  EXPECT_EQ(service.GetPlusAddress(test_origin), test_address);
+  EXPECT_EQ(service.GetPlusAddress(url::Origin()), absl::nullopt);
+}
+
+TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScope) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://asdf.example"));
+  const url::Origin test_origin_subdomain =
+      url::Origin::Create(GURL("https://test.asdf.example"));
+  const std::string test_address = "mattwashere";
+  PlusAddressService service;
+  service.SavePlusAddress(test_origin, test_address);
+  EXPECT_EQ(service.GetPlusAddress(test_origin), test_address);
+  EXPECT_EQ(service.GetPlusAddress(test_origin_subdomain), test_address);
+}
+
+TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScopeSubdomainAddedFirst) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://asdf.example"));
+  const url::Origin test_origin_subdomain =
+      url::Origin::Create(GURL("https://test.asdf.example"));
+  const std::string test_address = "mattwashere";
+  PlusAddressService service;
+  service.SavePlusAddress(test_origin_subdomain, test_address);
+  EXPECT_EQ(service.GetPlusAddress(test_origin), test_address);
+  EXPECT_EQ(service.GetPlusAddress(test_origin_subdomain), test_address);
 }
 
 TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {

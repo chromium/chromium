@@ -12,8 +12,10 @@ source_set("plus_addresses") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//net",
     "//third_party/abseil-cpp:absl",
   ]
+  public_deps = [ "//url" ]
 }
 
 source_set("unit_tests") {
