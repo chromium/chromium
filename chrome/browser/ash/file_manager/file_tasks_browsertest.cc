@@ -27,7 +27,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
-#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -68,7 +67,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/drive/file_errors.h"
@@ -972,69 +970,6 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
-// TODO(cassycc): move this class to a more appropriate spot.
-// Fake DriveFs specific to the `DriveTest`. Allows a test file to
-// be "added" to the DriveFs via `SetMetadata()`. The `alternate_url` of the
-// file can be retrieved via `GetMetadata()`. This a simplified version of
-// `FakeDriveFs` because the only condition for the file to be in the DriveFs is
-// to have a `alternate_url_` entry.
-class FakeSimpleDriveFs : public drivefs::FakeDriveFs {
- public:
-  explicit FakeSimpleDriveFs(const base::FilePath& mount_path)
-      : drivefs::FakeDriveFs(mount_path) {}
-
-  // Sets `alternate_url_` which is retrieved later in `GetMetadata()`.
-  void SetMetadata(const base::FilePath& path,
-                   const std::string& alternate_url) {
-    alternate_url_[path] = alternate_url;
-  }
-
- private:
-  // drivefs::mojom::DriveFs:
-  // This is a simplified version of `FakeDriveFs::SetMetadata()` that just
-  // returns a default `metadata` with the alternate_url set in `SetMetadata`.
-  void GetMetadata(const base::FilePath& path,
-                   GetMetadataCallback callback) override {
-    auto metadata = drivefs::mojom::FileMetadata::New();
-    metadata->alternate_url = alternate_url_[path];
-    // Fill the rest of `metadata` with default values.
-    metadata->content_mime_type = "";
-    const drivefs::mojom::Capabilities& capabilities = {};
-    metadata->capabilities = capabilities.Clone();
-    metadata->folder_feature = {};
-    metadata->available_offline = false;
-    metadata->shared = false;
-    std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));
-  }
-
-  // Each file in this DriveFs has an entry.
-  std::unordered_map<base::FilePath, std::string> alternate_url_;
-};
-
-// TODO(cassycc): move this class to a more appropriate spot
-// Fake DriveFs helper specific to the `DriveTest`. Implements the
-// functions to create a `FakeSimpleDriveFs`.
-class FakeSimpleDriveFsHelper : public drive::FakeDriveFsHelper {
- public:
-  FakeSimpleDriveFsHelper(Profile* profile, const base::FilePath& mount_path)
-      : drive::FakeDriveFsHelper(profile, mount_path),
-        mount_path_(mount_path),
-        fake_drivefs_(mount_path_) {}
-
-  base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
-  CreateFakeDriveFsListenerFactory() {
-    return base::BindRepeating(&drivefs::FakeDriveFs::CreateMojoListener,
-                               base::Unretained(&fake_drivefs_));
-  }
-
-  const base::FilePath& mount_path() { return mount_path_; }
-  FakeSimpleDriveFs& fake_drivefs() { return fake_drivefs_; }
-
- private:
-  const base::FilePath mount_path_;
-  FakeSimpleDriveFs fake_drivefs_;
-};
-
 // TODO(cassycc or petermarshall) share this class with other test files for
 // testing with a fake DriveFs.
 // Tests the office fallback flow that occurs when
@@ -1075,7 +1010,8 @@ class DriveTest : public TestAccountBrowserTest {
       Profile* profile) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     fake_drivefs_helpers_[profile] =
-        std::make_unique<FakeSimpleDriveFsHelper>(profile, drive_mount_point_);
+        std::make_unique<test::FakeSimpleDriveFsHelper>(profile,
+                                                        drive_mount_point_);
     auto* integration_service = new drive::DriveIntegrationService(
         profile, "", drive_mount_point_,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
@@ -1113,9 +1049,12 @@ class DriveTest : public TestAccountBrowserTest {
       EXPECT_TRUE(base::CreateDirectory(drive_mount_point_));
     }
 
+    drivefs::FakeMetadata metadata;
+    metadata.path = relative_test_file_path;
+    metadata.alternate_url = alternate_url_;
     // Add test file to the DriveFs.
     fake_drivefs_helpers_[profile()]->fake_drivefs().SetMetadata(
-        relative_test_file_path, alternate_url_);
+        std::move(metadata));
 
     // Get URL for test file in the DriveFs.
     drive_test_file_url_ = ash::cloud_upload::FilePathToFileSystemURL(
@@ -1144,7 +1083,7 @@ class DriveTest : public TestAccountBrowserTest {
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
-  std::map<Profile*, std::unique_ptr<FakeSimpleDriveFsHelper>>
+  std::map<Profile*, std::unique_ptr<test::FakeSimpleDriveFsHelper>>
       fake_drivefs_helpers_;
 };
 

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
@@ -251,6 +251,46 @@ void AddFakeWebApp(const std::string& app_id,
                                                      activity_label));
   AddFakeAppWithIntentFilters(app_id, std::move(filters), apps::AppType::kWeb,
                               handles_intents, app_service_proxy);
+}
+
+FakeSimpleDriveFs::FakeSimpleDriveFs(const base::FilePath& mount_path)
+    : drivefs::FakeDriveFs(mount_path) {}
+
+FakeSimpleDriveFs::~FakeSimpleDriveFs() = default;
+
+void FakeSimpleDriveFs::SetMetadata(const drivefs::FakeMetadata& metadata) {
+  alternate_urls_[metadata.path] = metadata.alternate_url;
+}
+
+void FakeSimpleDriveFs::GetMetadata(const base::FilePath& path,
+                                    GetMetadataCallback callback) {
+  if (!alternate_urls_.count(path)) {
+    std::move(callback).Run(drive::FILE_ERROR_NOT_FOUND, nullptr);
+    return;
+  }
+  auto metadata = drivefs::mojom::FileMetadata::New();
+  metadata->alternate_url = alternate_urls_[path];
+  // Fill the rest of `metadata` with default values.
+  metadata->content_mime_type = "";
+  const drivefs::mojom::Capabilities& capabilities = {};
+  metadata->capabilities = capabilities.Clone();
+  metadata->folder_feature = {};
+  metadata->available_offline = false;
+  metadata->shared = false;
+  std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));
+}
+
+FakeSimpleDriveFsHelper::FakeSimpleDriveFsHelper(
+    Profile* profile,
+    const base::FilePath& mount_path)
+    : drive::FakeDriveFsHelper(profile, mount_path),
+      mount_path_(mount_path),
+      fake_drivefs_(mount_path_) {}
+
+base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
+FakeSimpleDriveFsHelper::CreateFakeDriveFsListenerFactory() {
+  return base::BindRepeating(&drivefs::FakeDriveFs::CreateMojoListener,
+                             base::Unretained(&fake_drivefs_));
 }
 
 FakeProvidedFileSystemOneDrive::FakeProvidedFileSystemOneDrive(

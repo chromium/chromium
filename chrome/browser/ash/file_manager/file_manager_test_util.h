@@ -10,11 +10,13 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/platform_util.h"
+#include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
 class Profile;
 
@@ -98,6 +100,47 @@ void AddFakeWebApp(const std::string& app_id,
                    const std::string& activity_label,
                    absl::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy);
+
+// Fake DriveFs specific to the `DriveTest`. The alternate URL is the only piece
+// of metadata stored for a file which is identified by its relative path.
+class FakeSimpleDriveFs : public drivefs::FakeDriveFs {
+ public:
+  explicit FakeSimpleDriveFs(const base::FilePath& mount_path);
+
+  ~FakeSimpleDriveFs() override;
+
+  // Sets the `alternate_urls_` entry for the given path.
+  void SetMetadata(const drivefs::FakeMetadata& metadata);
+
+ private:
+  // This is a simplified version of `FakeDriveFs::GetMetadata()` that returns a
+  // `metadata` with `alternate_url ` field set as the `alternate_urls_` entry
+  // for `path`. The other metadata fields are constructed with default values.
+  // If there is no `alternate_urls_` entry for `path`, return with
+  // `FILE_ERROR_NOT_FOUND`.
+  void GetMetadata(const base::FilePath& path,
+                   GetMetadataCallback callback) override;
+
+  // Each file in this DriveFs has an entry.
+  std::unordered_map<base::FilePath, std::string> alternate_urls_;
+};
+
+// Fake DriveFs helper specific to the `DriveTest`. Implements the
+// functions to create a `FakeSimpleDriveFs`.
+class FakeSimpleDriveFsHelper : public drive::FakeDriveFsHelper {
+ public:
+  FakeSimpleDriveFsHelper(Profile* profile, const base::FilePath& mount_path);
+
+  base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
+  CreateFakeDriveFsListenerFactory();
+
+  const base::FilePath& mount_path() { return mount_path_; }
+  FakeSimpleDriveFs& fake_drivefs() { return fake_drivefs_; }
+
+ private:
+  const base::FilePath mount_path_;
+  FakeSimpleDriveFs fake_drivefs_;
+};
 
 // Fake provided file system implementation specific to mimic ODFS. Override
 // `CreateFile` method to fail with a specific error, if set. Override
