@@ -521,49 +521,6 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
           std::move(callback)));
 }
 
-// Wrapper around base::mac::LaunchApplication. This works around a OS bug
-// where sometimes LaunchApplication returns an error even though the launch did
-// actually succeed, by double checking if any running applications match the
-// application we were trying to launch. If one is found, that one is returned
-// rather than an error.
-void LaunchApplicationWithWorkaround(
-    const base::FilePath& app_bundle_path,
-    const base::CommandLine& command_line,
-    const std::vector<std::string>& url_specs,
-    base::mac::LaunchApplicationOptions options,
-    const std::string& bundle_id,
-    base::mac::LaunchApplicationCallback callback) {
-  LaunchApplicationWithRetry(
-      app_bundle_path, command_line, url_specs, options,
-      base::BindOnce(
-          [](const base::FilePath& app_bundle_path,
-             base::mac::LaunchApplicationOptions options,
-             const std::string& bundle_id,
-             base::mac::LaunchApplicationCallback callback,
-             NSRunningApplication* app, NSError* error) {
-            if (app) {
-              std::move(callback).Run(app, nil);
-              return;
-            }
-
-            LOG(ERROR) << "Failed to open application with path: "
-                       << app_bundle_path;
-            if (!options.create_new_instance) {
-              NSRunningApplication* actual_app =
-                  FindRunningApplicationForBundleIdAndPath(bundle_id,
-                                                           app_bundle_path);
-              if (actual_app) {
-                LOG(ERROR) << "But found a running application anyway.";
-                std::move(callback).Run(actual_app, nil);
-                return;
-              }
-            }
-
-            std::move(callback).Run(app, error);
-          },
-          app_bundle_path, options, bundle_id, std::move(callback)));
-}
-
 void LaunchTheFirstShimThatWorksOnFileThread(
     std::vector<base::FilePath> shim_paths,
     bool launched_after_rebuild,
@@ -594,8 +551,8 @@ void LaunchTheFirstShimThatWorksOnFileThread(
     command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
   }
 
-  LaunchApplicationWithWorkaround(
-      shim_path, command_line, /*url_specs=*/{}, {.activate = false}, bundle_id,
+  LaunchApplicationWithRetry(
+      shim_path, command_line, /*url_specs=*/{}, {.activate = false},
       base::BindOnce(
           [](base::FilePath shim_path,
              std::vector<base::FilePath> remaining_shim_paths,
