@@ -12,7 +12,8 @@
 // no-include-guard-because-multiply-included
 // NOLINT(build/header_guard)
 
-static void GL_BINDING_CALL Mock_eglAcquireExternalContextANGLE(EGLDisplay dpy);
+static void GL_BINDING_CALL
+Mock_eglAcquireExternalContextANGLE(EGLDisplay dpy, EGLSurface readAndDraw);
 static EGLBoolean GL_BINDING_CALL Mock_eglBindAPI(EGLenum api);
 static EGLBoolean GL_BINDING_CALL Mock_eglBindTexImage(EGLDisplay dpy,
                                                        EGLSurface surface,

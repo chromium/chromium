@@ -417,8 +417,9 @@ void DriverEGL::ClearBindings() {
   memset(this, 0, sizeof(*this));
 }
 
-void EGLApiBase::eglAcquireExternalContextANGLEFn(EGLDisplay dpy) {
-  driver_->fn.eglAcquireExternalContextANGLEFn(dpy);
+void EGLApiBase::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                  EGLSurface readAndDraw) {
+  driver_->fn.eglAcquireExternalContextANGLEFn(dpy, readAndDraw);
 }
 
 EGLBoolean EGLApiBase::eglBindAPIFn(EGLenum api) {
@@ -1012,10 +1013,11 @@ void EGLApiBase::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
   driver_->fn.eglWaitUntilWorkScheduledANGLEFn(dpy);
 }
 
-void TraceEGLApi::eglAcquireExternalContextANGLEFn(EGLDisplay dpy) {
+void TraceEGLApi::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                   EGLSurface readAndDraw) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceEGLAPI::eglAcquireExternalContextANGLE");
-  egl_api_->eglAcquireExternalContextANGLEFn(dpy);
+  egl_api_->eglAcquireExternalContextANGLEFn(dpy, readAndDraw);
 }
 
 EGLBoolean TraceEGLApi::eglBindAPIFn(EGLenum api) {
@@ -1735,10 +1737,11 @@ void TraceEGLApi::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
   egl_api_->eglWaitUntilWorkScheduledANGLEFn(dpy);
 }
 
-void LogEGLApi::eglAcquireExternalContextANGLEFn(EGLDisplay dpy) {
+void LogEGLApi::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                 EGLSurface readAndDraw) {
   GL_SERVICE_LOG("eglAcquireExternalContextANGLE"
-                 << "(" << dpy << ")");
-  egl_api_->eglAcquireExternalContextANGLEFn(dpy);
+                 << "(" << dpy << ", " << readAndDraw << ")");
+  egl_api_->eglAcquireExternalContextANGLEFn(dpy, readAndDraw);
 }
 
 EGLBoolean LogEGLApi::eglBindAPIFn(EGLenum api) {

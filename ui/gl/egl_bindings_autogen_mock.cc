@@ -25,9 +25,10 @@ void MakeEglMockFunctionUnique(const char* func_name) {
 namespace gl {
 
 void GL_BINDING_CALL
-MockEGLInterface::Mock_eglAcquireExternalContextANGLE(EGLDisplay dpy) {
+MockEGLInterface::Mock_eglAcquireExternalContextANGLE(EGLDisplay dpy,
+                                                      EGLSurface readAndDraw) {
   MakeEglMockFunctionUnique("eglAcquireExternalContextANGLE");
-  interface_->AcquireExternalContextANGLE(dpy);
+  interface_->AcquireExternalContextANGLE(dpy, readAndDraw);
 }
 
 EGLBoolean GL_BINDING_CALL MockEGLInterface::Mock_eglBindAPI(EGLenum api) {

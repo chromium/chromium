@@ -73,7 +73,8 @@ class ScopedAcquireExternalContext {
       // with the external context.
       base::TimeTicks start_time = base::TimeTicks::Now();
 
-      eglAcquireExternalContextANGLE(state_->display()->GetDisplay());
+      eglAcquireExternalContextANGLE(state_->display()->GetDisplay(),
+                                     surface_->GetHandle());
 
       auto delta = base::TimeTicks::Now() - start_time;
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(

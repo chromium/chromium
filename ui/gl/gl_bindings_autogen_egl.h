@@ -18,7 +18,8 @@ namespace gl {
 class GLContext;
 
 typedef void(GL_BINDING_CALL* eglAcquireExternalContextANGLEProc)(
-    EGLDisplay dpy);
+    EGLDisplay dpy,
+    EGLSurface readAndDraw);
 typedef EGLBoolean(GL_BINDING_CALL* eglBindAPIProc)(EGLenum api);
 typedef EGLBoolean(GL_BINDING_CALL* eglBindTexImageProc)(EGLDisplay dpy,
                                                          EGLSurface surface,
@@ -558,7 +559,8 @@ class GL_EXPORT EGLApi {
 
   virtual void SetDisabledExtensions(const std::string& disabled_extensions) {}
 
-  virtual void eglAcquireExternalContextANGLEFn(EGLDisplay dpy) = 0;
+  virtual void eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                EGLSurface readAndDraw) = 0;
   virtual EGLBoolean eglBindAPIFn(EGLenum api) = 0;
   virtual EGLBoolean eglBindTexImageFn(EGLDisplay dpy,
                                        EGLSurface surface,

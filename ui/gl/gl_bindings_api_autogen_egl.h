@@ -12,7 +12,8 @@
 // no-include-guard-because-multiply-included
 // NOLINT(build/header_guard)
 
-void eglAcquireExternalContextANGLEFn(EGLDisplay dpy) override;
+void eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                      EGLSurface readAndDraw) override;
 EGLBoolean eglBindAPIFn(EGLenum api) override;
 EGLBoolean eglBindTexImageFn(EGLDisplay dpy,
                              EGLSurface surface,

@@ -2454,7 +2454,7 @@ EGL_FUNCTIONS = [
 { 'return_type': 'void',
   'versions': [{ 'name': 'eglAcquireExternalContextANGLE',
                  'extensions': ['EGL_ANGLE_external_context_and_surface'] }],
-  'arguments': 'EGLDisplay dpy' },
+  'arguments': 'EGLDisplay dpy, EGLSurface readAndDraw' },
 { 'return_type': 'EGLBoolean',
   'names': ['eglBindAPI'],
   'arguments': 'EGLenum api', },
