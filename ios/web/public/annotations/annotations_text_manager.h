@@ -50,6 +50,11 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager> {
   // before the page is navigated away from (i.e. at user's request).
   virtual void RemoveDecorations() = 0;
 
+  // Removes all decorations of one type added to the page. Call only if it
+  // needs to be done before the page is navigated away from (i.e. at user's
+  // request).
+  virtual void RemoveDecorationsWithType(const std::string& type) = 0;
+
   // Removes any highlight added by a tap.
   virtual void RemoveHighlight() = 0;
 

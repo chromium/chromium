@@ -11,13 +11,19 @@
 
 class PrefService;
 
+namespace web {
+class WebState;
+}
+
 // Mediator for the Minimap feature
 @interface MiniMapMediator : NSObject
 
 // A delegate to trigger the UI actions of the feature
 @property(nonatomic, weak) id<MiniMapMediatorDelegate> delegate;
 
-- (instancetype)initWithPrefs:(PrefService*)prefs NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrefs:(PrefService*)prefs
+                     webState:(web::WebState*)webState
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator. No methods should be called after that.

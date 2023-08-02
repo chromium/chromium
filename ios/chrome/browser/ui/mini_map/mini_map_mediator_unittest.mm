@@ -32,7 +32,8 @@ class MiniMapMediatorTest : public PlatformTest {
     delegate_ = OCMStrictProtocolMock(@protocol(MiniMapMediatorDelegate));
 
     mediator_ =
-        [[MiniMapMediator alloc] initWithPrefs:browser_state_->GetPrefs()];
+        [[MiniMapMediator alloc] initWithPrefs:browser_state_->GetPrefs()
+                                      webState:nullptr];
     mediator_.delegate = delegate_;
   }
 

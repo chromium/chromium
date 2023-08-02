@@ -82,6 +82,22 @@ void AnnotationsJavaScriptFeature::RemoveDecorations(WebState* web_state) {
   CallJavaScriptFunction(frame, "annotations.removeDecorations", {});
 }
 
+void AnnotationsJavaScriptFeature::RemoveDecorationsWithType(
+    WebState* web_state,
+    const std::string& type) {
+  DCHECK(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  if (!frame) {
+    return;
+  }
+
+  base::Value::List parameters;
+  parameters.Append(std::move(type));
+
+  CallJavaScriptFunction(frame, "annotations.removeDecorationsWithType",
+                         parameters);
+}
+
 void AnnotationsJavaScriptFeature::RemoveHighlight(WebState* web_state) {
   DCHECK(web_state);
   WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();

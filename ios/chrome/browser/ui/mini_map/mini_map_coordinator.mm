@@ -78,7 +78,8 @@
   [super start];
 
   PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-  self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService];
+  self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
+                                                webState:self.webState.get()];
   self.mediator.delegate = self;
   [self.mediator userInitiatedMiniMapConsentRequired:self.consentRequired];
 }

@@ -29,6 +29,7 @@ source_set("mini_map") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/mini_map:mini_map_api",
+    "//ios/web/public/annotations",
     "//ui/base",
   ]
 }

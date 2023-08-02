@@ -172,16 +172,20 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
   }
 
   // Creates and applies annotations based on `source` text and all matching
-  // `items`.
-  void CreateAndApplyAnnotations(NSString* source,
-                                 NSArray<NSString*>* items,
-                                 int seq_id) {
+  // `items`. `items` is a dictionary when the key is the annotation type to
+  // apply to the its values.
+  void CreateAndApplyAnnotationsWithTypes(
+      NSString* source,
+      NSDictionary<NSString*, NSArray<NSString*>*>* items,
+      int seq_id) {
     // Create annotation.
     base::Value::List annotations;
-    for (NSString* item in items) {
-      NSRange range = [source rangeOfString:item];
-      annotations.Append(
-          web::ConvertMatchToAnnotation(source, range, @"data", @"type"));
+    for (NSString* type in items) {
+      for (NSString* item in items[type]) {
+        NSRange range = [source rangeOfString:item];
+        annotations.Append(
+            web::ConvertMatchToAnnotation(source, range, @"data", type));
+      }
     }
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
     base::Value value = base::Value(std::move(annotations));
@@ -190,6 +194,14 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
       return observer()->annotations() > 0;
     }));
+  }
+
+  // Creates and applies annotations based on `source` text and all matching
+  // `items` with type "type".
+  void CreateAndApplyAnnotations(NSString* source,
+                                 NSArray<NSString*>* items,
+                                 int seq_id) {
+    CreateAndApplyAnnotationsWithTypes(source, @{@"type" : items}, seq_id);
   }
 
   // Verifies the now state of html text and tags of the document. Tags have no
@@ -399,6 +411,83 @@ TEST_F(AnnotationTextManagerTest, ClickAnnotation) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return observer()->clicks() == 1;
   }));
+}
+
+// Tests removing annotation of one type
+TEST_F(AnnotationTextManagerTest, RemoveDecorationTypeTest) {
+  std::string html = "<html><body>"
+                     "<p>abc def</p>"
+                     "<p>zzzzz ghi zzzzz</p>"
+                     "<p>zzzzz klm zzzzz</p>"
+                     "</body></html>";
+  LoadHtmlAndExtractText(html);
+  CheckHtml(html);
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+
+  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
+
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"type1" : @[ @"abc", @"ghi" ],
+        @"type2" : @[ @"def", @"klm" ]},
+      observer()->seq_id());
+
+  // Check the resulting html is annotating at the right place.
+  CheckHtml("<html><body>"
+            "<p><chrome_annotation>abc</chrome_annotation> "
+            "<chrome_annotation>def</chrome_annotation></p>"
+            "<p>zzzzz <chrome_annotation>ghi</chrome_annotation> zzzzz</p>"
+            "<p>zzzzz <chrome_annotation>klm</chrome_annotation> zzzzz</p>"
+            "</body></html>");
+
+  ClickAnnotation(0);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 1;
+  }));
+
+  ClickAnnotation(1);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 2;
+  }));
+
+  ClickAnnotation(2);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 3;
+  }));
+
+  ClickAnnotation(3);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 4;
+  }));
+
+  manager->RemoveDecorationsWithType("type1");
+  // Check the resulting html is annotating at the right place.
+  CheckHtml("<html><body>"
+            "<p><chrome_annotation>abc</chrome_annotation> "
+            "<chrome_annotation>def</chrome_annotation></p>"
+            "<p>zzzzz ghi zzzzz</p>"
+            "<p>zzzzz <chrome_annotation>klm</chrome_annotation> zzzzz</p>"
+            "</body></html>");
+
+  // First annotation should be inactive
+  ClickAnnotation(0);
+  ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 5;
+  }));
+
+  ClickAnnotation(1);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 5;
+  }));
+
+  ClickAnnotation(2);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 6;
+  }));
+
+  // Make sure it's back to the original.
+  manager->RemoveDecorations();
+  CheckHtml(html);
 }
 
 }  // namespace web

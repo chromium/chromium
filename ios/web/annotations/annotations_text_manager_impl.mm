@@ -57,6 +57,13 @@ void AnnotationsTextManagerImpl::RemoveDecorations() {
   AnnotationsJavaScriptFeature::GetInstance()->RemoveDecorations(web_state_);
 }
 
+void AnnotationsTextManagerImpl::RemoveDecorationsWithType(
+    const std::string& type) {
+  seq_id_++;
+  AnnotationsJavaScriptFeature::GetInstance()->RemoveDecorationsWithType(
+      web_state_, type);
+}
+
 void AnnotationsTextManagerImpl::RemoveHighlight() {
   AnnotationsJavaScriptFeature::GetInstance()->RemoveHighlight(web_state_);
 }
