@@ -2088,6 +2088,10 @@
       base_feature: "none",
     },
     {
+      name: "LayoutOverflowNoClone",
+      status: "stable",
+    },
+    {
       name: "LazyFrameLoading",
       public: true,
       status: "stable",
