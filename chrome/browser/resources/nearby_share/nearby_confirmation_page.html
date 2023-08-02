@@ -14,14 +14,23 @@
   }
 
   #confirmationToken {
-    color: var(--cros-text-color-disabled);
     flex-grow: 1;
-    font-size: 9px;
-    letter-spacing: 0.3px;
-    line-height: 12px;
     margin-top: 46px;
     padding-top: 6px;
     text-align: center;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #confirmationToken {
+    color: var(--cros-text-color-disabled);
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    line-height: 12px;
+  }
+
+  :host-context(body.jelly-enabled) #confirmationToken {
+    font: var(--cros-label-2-font);
+    color: var(--cros-sys-secondary);
   }
 
   cr-lottie {
