@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/companion/visual_search/visual_search_eligibility.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,6 +21,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 TEST(EligibilityModuleTest, E2eExample) {
+  base::HistogramTester histogram_tester;
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
@@ -106,6 +108,8 @@ TEST(EligibilityModuleTest, E2eExample) {
   EXPECT_EQ(simple_pruning_image_ids.at(3), "image4");
   EXPECT_EQ(simple_pruning_image_ids.at(4), "image5");
   EXPECT_EQ(simple_pruning_image_ids.at(5), "image6");
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumImages", 6, 1);
 
   const base::flat_map<std::string, double> shopping_scores = {
       {"image1", 0.75}, {"image1a", 0.75}, {"image3", 0.5},
@@ -116,6 +120,43 @@ TEST(EligibilityModuleTest, E2eExample) {
   const std::vector<std::string> second_pass_eligible_image_ids =
       module.RunSecondPassPostClassificationEligibility(shopping_scores,
                                                         sens_scores);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumShoppy", 4, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumSensitive", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumShoppyNotSensitive", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MostShoppyNotSensitive."
+      "ShoppingClassificationScore",
+      75, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MostShoppyNotSensitive."
+      "SensitivityClassificationScore",
+      40, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MostShoppy.ShoppingClassificationScore", 75, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MostShoppy.SensitivityClassificationScore", 40, 1);
+
+  // All scores
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 75, 2);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 70, 2);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 50, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 40,
+      4);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 80,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 0,
+      1);
 
   // First we have the image that's closer to the center.
   ASSERT_EQ(second_pass_eligible_image_ids.size(), 2U);
@@ -129,6 +170,135 @@ TEST(EligibilityModuleTest, E2eExample) {
                   Pair("normalize_by_IMAGE_ONPAGE_AREA", 50),
                   Pair("normalized_IMAGE_ONPAGE_AREA", DoubleNear(1, 0.01)),
                   Pair("IMAGE_ONPAGE_ASPECT_RATIO", 2)));
+}
+
+TEST(EligibilityModuleTest, E2eExampleWithoutEligibleImages) {
+  base::HistogramTester histogram_tester;
+  EligibilitySpec spec;
+  auto* rules = spec.add_cheap_pruning_rules()->add_rules();
+  // Visible area rule + invisible viewport means that no images will pass.
+  rules->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
+  rules->set_thresholding_op(FeatureLibrary::GT);
+  rules->set_threshold(44);
+  rules = spec.add_cheap_pruning_rules()->add_rules();
+  rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_ASPECT_RATIO);
+  rules->set_thresholding_op(FeatureLibrary::LT);
+  rules->set_threshold(3);
+  rules = spec.add_classifier_score_rules()->add_rules();
+  rules->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
+  rules->set_thresholding_op(FeatureLibrary::GT);
+  rules->set_threshold(0.6);
+  rules = spec.add_classifier_score_rules()->add_rules();
+  rules->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
+  rules->set_thresholding_op(FeatureLibrary::LT);
+  rules->set_threshold(0.4);
+  rules = spec.add_post_renormalization_rules()->add_rules();
+  rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
+  rules->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+  rules->set_thresholding_op(FeatureLibrary::GT);
+  rules->set_threshold(0.999);
+
+  EligibilityModule module(spec);
+  SizeF viewport_size(0.0, 0.0);
+  std::vector<SingleImageGeometryFeatures> images;
+  images.reserve(3);
+  SingleImageGeometryFeatures image1;
+  image1.image_identifier = "image1";
+  image1.onpage_rect = Rect(10, 0, 5, 10);
+  images.push_back(std::move(image1));
+  SingleImageGeometryFeatures image1a;
+  image1a.image_identifier = "image1a";
+  image1a.onpage_rect = Rect(45, 25, 5, 10);
+  images.push_back(std::move(image1a));
+  SingleImageGeometryFeatures image2;
+  image2.image_identifier = "image2";
+  image2.onpage_rect = Rect(0, 0, 15, 3);
+  images.push_back(std::move(image2));
+  SingleImageGeometryFeatures image3;
+  image3.image_identifier = "image3";
+  image3.onpage_rect = Rect(0, 0, 5, 10);
+  images.push_back(std::move(image3));
+  SingleImageGeometryFeatures image4;
+  image4.image_identifier = "image4";
+  image4.onpage_rect = Rect(0, 0, 5, 10);
+  images.push_back(std::move(image4));
+  SingleImageGeometryFeatures image5;
+  image5.image_identifier = "image5";
+  image5.onpage_rect = Rect(500, 500, 1000, 1000);
+  images.push_back(std::move(image5));
+
+  SingleImageGeometryFeatures image6;
+  image6.image_identifier = "image6";
+  image6.onpage_rect = Rect(0, 0, 5, 9);
+  images.push_back(std::move(image6));
+
+  const std::vector<std::string> simple_pruning_image_ids =
+      module.RunFirstPassEligibilityAndCacheFeatureValues(viewport_size,
+                                                          images);
+  ASSERT_EQ(simple_pruning_image_ids.size(), 0U);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumImages", 0, 1);
+
+  const base::flat_map<std::string, double> shopping_scores = {
+      {"image1", 0.75}, {"image1a", 0.75}, {"image3", 0.5},
+      {"image4", 0.7},  {"image5", 0.0},   {"image6", 0.7}};
+  const base::flat_map<std::string, double> sens_scores = {
+      {"image1", 0.5}, {"image1a", 0.6}, {"image3", 0.2},
+      {"image4", 0.8}, {"image5", 0.4},  {"image6", 0.4}};
+  const std::vector<std::string> second_pass_eligible_image_ids =
+      module.RunSecondPassPostClassificationEligibility(shopping_scores,
+                                                        sens_scores);
+  // Shoppy and sensitive image counts and top scores are not recorded because
+  // no images are left after the first pass.
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumShoppy", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumSensitive", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.EligibilityStatus.NumShoppyNotSensitive", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Companion.VisualQuery.MostShoppyNotSensitive."
+      "ShoppingClassificationScore",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Companion.VisualQuery.MostShoppyNotSensitive."
+      "SensitivityClassificationScore",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Companion.VisualQuery.MostShoppy.ShoppingClassificationScore", 0);
+  histogram_tester.ExpectTotalCount(
+      "Companion.VisualQuery.MostShoppy.SensitivityClassificationScore", 0);
+
+  // All scores should be recorded, though.
+  histogram_tester.ExpectTotalCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 6);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 75, 2);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 70, 2);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 50, 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 6);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 50,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 60,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 20,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 80,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore", 40,
+      2);
+
+  ASSERT_EQ(second_pass_eligible_image_ids.size(), 0U);
 }
 
 TEST(EligibilityModuleTest, TestWithMaxValueFeatureNormalization) {

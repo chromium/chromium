@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
@@ -215,8 +216,8 @@ void VisualSearchClassifierAgent::StartVisualClassification(
       std::string(reinterpret_cast<const char*>(visual_model_.data()),
                   visual_model_.length());
   DOMImageList dom_images = FindImagesOnPage(render_frame_);
-  LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.Agent.DomImageCount",
-                             dom_images.size());
+  UMA_HISTOGRAM_COUNTS_100("Companion.VisualQuery.Agent.DomImageCount",
+                           dom_images.size());
 
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
   gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
