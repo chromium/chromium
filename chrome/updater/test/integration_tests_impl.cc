@@ -320,6 +320,11 @@ void SetGroupPolicies(const base::Value::Dict& values) {
   ASSERT_TRUE(ExternalConstantsBuilder().SetGroupPolicies(values).Modify());
 }
 
+void SetMachineManaged(bool is_managed_device) {
+  ASSERT_TRUE(
+      ExternalConstantsBuilder().SetMachineManaged(is_managed_device).Modify());
+}
+
 void ExpectVersionActive(UpdaterScope scope, const std::string& version) {
   scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";

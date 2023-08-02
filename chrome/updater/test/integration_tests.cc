@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -109,6 +110,7 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(EnterTestMode(
         GURL("http://localhost:1234"), GURL("http://localhost:1235"),
         GURL("http://localhost:1236"), base::Minutes(5)));
+    ASSERT_NO_FATAL_FAILURE(SetMachineManaged(false));
 #if BUILDFLAG(IS_LINUX)
     // On LUCI the XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS environment
     // variables may not be set. These are required for systemctl to connect to
@@ -191,6 +193,10 @@ class IntegrationTest : public ::testing::Test {
 
   void SetGroupPolicies(const base::Value::Dict& values) {
     test_commands_->SetGroupPolicies(values);
+  }
+
+  void SetMachineManaged(bool is_managed_device) {
+    test_commands_->SetMachineManaged(is_managed_device);
   }
 
   void ExpectVersionActive(const std::string& version) {

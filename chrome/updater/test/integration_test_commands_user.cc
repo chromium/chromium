@@ -85,6 +85,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetGroupPolicies(values);
   }
 
+  void SetMachineManaged(bool is_managed_device) const override {
+    updater::test::SetMachineManaged(is_managed_device);
+  }
+
   void ExpectUninstallPing(ScopedServer* test_server) const override {
     updater::test::ExpectUninstallPing(updater_scope_, test_server);
   }

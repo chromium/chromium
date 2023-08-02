@@ -1343,6 +1343,12 @@ overridden by the execution environment:
     the ecPublicKey algorithm and containing a named elliptic curve.
 *   `group_policies`: Allows setting group policies, such as install and update
     policies.
+*   `crx_verifier_format`: An integer value to guide how to verify the CRX file.
+       - 0: CRX3.
+       - 1: CRX3 with test publisher proof.
+       - 2: CRX3 with production publisher proof.
+*   `idle_check_period`: The idleness check period.
+*   `managed_device`: Whether the device is enterprise managed.
 
 Overrides are specified in an overrides.json file placed in the updater data
 directory.

@@ -105,6 +105,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
 
+  void SetMachineManaged(bool is_managed_device) const override {
+    RunCommand("set_machine_managed",
+               {Param("managed", is_managed_device ? "true" : "false")});
+  }
+
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }

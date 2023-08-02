@@ -81,6 +81,9 @@ void ExitTestMode(UpdaterScope scope);
 // Sets the external constants for group policies.
 void SetGroupPolicies(const base::Value::Dict& values);
 
+// Sets whether the machine is in managed state.
+void SetMachineManaged(bool is_managed_device);
+
 // Expects to find no crashes. If there are any crashes, causes the test to
 // fail. Copies any crashes found to the isolate directory.
 void ExpectNoCrashes(UpdaterScope scope);
