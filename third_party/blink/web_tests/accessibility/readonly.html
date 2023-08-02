@@ -27,12 +27,15 @@
   <div id="aria-link1" tabindex="0" role="link">ARIA link</div>
   <div id="aria-slider1" tabindex="0" role="slider" aria-readonly="true">ARIA slider</div>
   <div id="aria-progress1" tabindex="0" role="progressbar" aria-readonly="true">ARIA progress meter</div>
+  <div id="aria-textbox1" tabindex="0" role="textbox" aria-readonly="true">ARIA textbox</div>
   <div id="contenteditable_root1" contentEditable>
     <button id="contenteditable_button1">Button</button>
   </div>
   <div id="contenteditable_root-readonly1" contentEditable aria-readonly="true">
   </div>
   <div id="contenteditable_root-readonly2" role="textbox" contentEditable aria-readonly="true">
+  </div>
+  <div id="contenteditable_root-readonly3" tabindex="0" role="textbox" contentEditable="false" aria-readonly="true">
   </div>
 
 </div>
@@ -78,12 +81,16 @@ if (window.testRunner && window.accessibilityController) {
     check("aria-link1", false);
     check("aria-slider1", true);
     check("aria-progress1", false);
+    check("aria-textbox1", true);
     check("contenteditable_root1", false);
     check("contenteditable_button1", false);
     // This is correct according to ARIA spec, as aria-readonly is supported
     // on specific roles only -- it is not a universal ARIA property.
     check("contenteditable_root-readonly1", false);
-    check("contenteditable_root-readonly2", true);
+    // This is correct according to HTML-AAM, the readonly state is ignored if
+    // the element is set to contenteditable and readonly="true",
+    check("contenteditable_root-readonly2", false);
+    check("contenteditable_root-readonly3", true);
 }
 
 </script>

@@ -13,6 +13,7 @@ ARIA toggle button
 ARIA link
 ARIA slider
 ARIA progress meter
+ARIA textbox
 Button
 
 This tests which elements expose themselves as readonly. Readonly here refers to whether the item is not editable, not whether a control value can be changed vs if it's unavailable.
@@ -134,6 +135,11 @@ PASS document.activeElement == element is true
 PASS axElement.isReadOnly is false
 
 
+aria-textbox1
+PASS document.activeElement == element is true
+PASS axElement.isReadOnly is true
+
+
 contenteditable_root1
 PASS document.activeElement == element is true
 PASS axElement.isReadOnly is false
@@ -150,6 +156,11 @@ PASS axElement.isReadOnly is false
 
 
 contenteditable_root-readonly2
+PASS document.activeElement == element is true
+PASS axElement.isReadOnly is false
+
+
+contenteditable_root-readonly3
 PASS document.activeElement == element is true
 PASS axElement.isReadOnly is true
 

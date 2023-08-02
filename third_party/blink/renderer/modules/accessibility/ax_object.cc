@@ -7331,6 +7331,12 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
 }
 
 bool AXObject::SupportsARIAReadOnly() const {
+  // Ignore the readonly state if the element is set to contenteditable and
+  // aria-readonly="true" according to the HTML-AAM specification.
+  if (HasContentEditableAttributeSet()) {
+    return false;
+  }
+
   if (ui::IsReadOnlySupported(RoleValue()))
     return true;
 

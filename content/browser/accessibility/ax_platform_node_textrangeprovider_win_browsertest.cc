@@ -756,6 +756,11 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
               class="non-atomic-text-field">
               <p>value2</p>
           </div>
+          <div contenteditable="false" data-placeholder="@mention or comment"
+              role="textbox" aria-readonly="true" aria-label="text_field_3"
+              class="non-atomic-text-field">
+              <p>value3</p>
+          </div>
         </body>
       </html>
   )HTML");
@@ -766,6 +771,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* text_field_node_2 =
       FindNode(ax::mojom::Role::kTextField, "text_field_2");
   ASSERT_NE(nullptr, text_field_node_2);
+  BrowserAccessibility* text_field_node_3 =
+      FindNode(ax::mojom::Role::kTextField, "text_field_3");
+  ASSERT_NE(nullptr, text_field_node_3);
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*text_field_node_1, &text_range_provider);
@@ -783,6 +791,17 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   GetTextRangeProviderFromTextNode(*text_field_node_2, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"@mention or comment\nvalue2");
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_IsReadOnlyAttributeId, value.Receive()));
+  EXPECT_EQ(value.type(), VT_BOOL);
+  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_FALSE);
+  text_range_provider.Reset();
+  value.Reset();
+
+  GetTextRangeProviderFromTextNode(*text_field_node_3, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"@mention or comment\nvalue3");
 
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
       UIA_IsReadOnlyAttributeId, value.Receive()));
