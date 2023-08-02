@@ -65,18 +65,18 @@ promise_test(async t => {
   let watcher = createRecordingCloseWatcher(t, events);
 
   watcher.destroy();
-  await sendCloseSignal();
+  await sendCloseRequest();
 
   assert_array_equals(events, []);
-}, "destroy() then close signal fires no events");
+}, "destroy() then close request fires no events");
 
 promise_test(async t => {
   let events = [];
   let watcher = createRecordingCloseWatcher(t, events);
 
-  await sendCloseSignal();
+  await sendCloseRequest();
   watcher.destroy();
 
   assert_array_equals(events, ["close"]);
-}, "Close signal then destroy() fires only one close event");
+}, "Close request then destroy() fires only one close event");
 </script>

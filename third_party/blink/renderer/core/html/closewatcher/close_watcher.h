@@ -32,7 +32,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   // We have a few use counters which we trigger only for the <dialog> case,
   // where we're trying to determine whether it's web-compatible or not to use
   // CloseWatcher rules for <dialog>s. (Namely, sometimes closing multiple
-  // <dialog>s with a single close signal, and sometimes skipping cancel
+  // <dialog>s with a single close request, and sometimes skipping cancel
   // events.) This argument should be removed after web-compatibility is
   // determined; ultimately the CloseWatcher code should not be aware of the
   // existence of <dialog>, for good layering.
@@ -62,7 +62,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   }
 
   // If multiple CloseWatchers are active in a given window, they form a
-  // stack, and a close signal will pop the top watcher. If the stack is empty,
+  // stack, and a close request will pop the top watcher. If the stack is empty,
   // the first CloseWatcher is "free", but creating a new
   // CloseWatcher when the stack is non-empty requires a user activation.
   class WatcherStack final : public GarbageCollected<WatcherStack>,

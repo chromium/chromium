@@ -22,9 +22,9 @@ window.sendEscKey = () => {
   return test_driver.send_keys(document.getElementById("d"), ESC);
 };
 
-// For now, we always use the Esc keypress as our close signal. In
+// For now, we always use the Esc keypress as our close request. In
 // theory, in the future, we could add a WebDriver command or similar
-// for the close signal, which would allow different tests on platforms
-// with different close signals. In that case, we'd update this
+// for the close request, which would allow different tests on platforms
+// with different close requests. In that case, we'd update this
 // function, but not update the sendEscKey function above.
-window.sendCloseSignal = window.sendEscKey;
+window.sendCloseRequest = window.sendEscKey;

@@ -4,7 +4,7 @@ PASS destroy() then requestClose() fires no events
 PASS close() then requestClose() fires only one close event
 PASS requestClose() then destroy() fires only one close event
 PASS close() then destroy() fires only one close event
-PASS destroy() then close signal fires no events
-PASS Close signal then destroy() fires only one close event
+PASS destroy() then close request fires no events
+PASS Close request then destroy() fires only one close event
 Harness: the test ran to completion.
 
