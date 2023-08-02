@@ -6068,6 +6068,12 @@ crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentati
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Crash Failure Pass Timeout ]
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Crash Failure Pass Timeout ]
 
+# Temporary expectations for duration of NewBaseUrlInheritanceBehavior trial.
+# Once the new behavior lands in stable, tests will be updated to have the
+# correct expectations for the new behavior.
+crbug.com/1356658 html/document_metadata/base.html [ Failure Pass ]
+crbug.com/1356658 http/tests/security/aboutBlank/security-context-window-open.https.html [ Failure Pass ]
+
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
 
