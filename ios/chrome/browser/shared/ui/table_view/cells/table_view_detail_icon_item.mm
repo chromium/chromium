@@ -126,6 +126,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.backgroundColor = UIColor.clearColor;
+    _textLabel.numberOfLines = 2;
 
     _textStackView =
         [[UIStackView alloc] initWithArrangedSubviews:@[ _textLabel ]];
@@ -418,7 +419,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
       _detailTextLabel.textAlignment = NSTextAlignmentNatural;
     }
     _detailTextLabel.numberOfLines = 1;
-    _textLabel.numberOfLines = 1;
+    _textLabel.numberOfLines = 2;
   }
   UIFontTextStyle preferredFont =
       _textStackView.axis == UILayoutConstraintAxisVertical
