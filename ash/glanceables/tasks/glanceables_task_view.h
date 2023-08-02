@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -50,11 +51,13 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   bool GetCompletedForTest() const { return completed_; }
 
  private:
+  void SetupTasksLabel(bool completed);
   // Owned by views hierarchy.
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> contents_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_title_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_details_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> tasks_label_ = nullptr;
 
   // Whether the task shown by this view is being marked as completed.
   bool completed_ = false;

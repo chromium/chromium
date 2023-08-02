@@ -199,6 +199,7 @@ void TextExample::CreateExampleView(View* container) {
   break_checkbox_ = AddCheckbox(table_container, "Character Break");
   italic_checkbox_ = AddCheckbox(table_container, "Italic");
   underline_checkbox_ = AddCheckbox(table_container, "Underline");
+  strike_checkbox_ = AddCheckbox(table_container, "Strike");
 
   auto* fill_container = container->AddChildView(std::make_unique<View>());
   box_layout->SetFlexForView(fill_container, 1);
@@ -219,6 +220,7 @@ void TextExample::UpdateStyle() {
                       gfx::Canvas::CHARACTER_BREAKABLE);
   SetFlagFromCheckbox(italic_checkbox_, &style, gfx::Font::ITALIC);
   SetFlagFromCheckbox(underline_checkbox_, &style, gfx::Font::UNDERLINE);
+  SetFlagFromCheckbox(strike_checkbox_, &style, gfx::Font::STRIKE_THROUGH);
   text_view_->SetFlags(flags);
   text_view_->SetStyle(style);
 }
