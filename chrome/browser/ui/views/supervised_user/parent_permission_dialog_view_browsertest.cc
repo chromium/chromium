@@ -62,7 +62,6 @@ class ParentPermissionDialogViewTest
   enum class NextDialogAction {
     kCancel,
     kAccept,
-    kClose,
   };
 
   ParentPermissionDialogViewTest()
@@ -134,9 +133,6 @@ class ParentPermissionDialogViewTest
           break;
         case NextDialogAction::kAccept:
           view_->AcceptDialog();
-          break;
-        case NextDialogAction::kClose:
-          view_->CloseDialog();
           break;
       }
     }
@@ -334,13 +330,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionDialogCanceled) {
   set_next_dialog_action(
       ParentPermissionDialogViewTest::NextDialogAction::kCancel);
-  ShowPrompt();
-  CheckResult(ParentPermissionDialog::Result::kParentPermissionCanceled);
-}
-
-IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest, PermissionDialogClosed) {
-  set_next_dialog_action(
-      ParentPermissionDialogViewTest::NextDialogAction::kClose);
   ShowPrompt();
   CheckResult(ParentPermissionDialog::Result::kParentPermissionCanceled);
 }
