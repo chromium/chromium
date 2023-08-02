@@ -19,6 +19,7 @@ namespace content {
 
 class BrowserContext;
 class PrefetchContainer;
+class PrefetchMatchResolver;
 
 // Intercepts navigations that can use prefetched resources.
 class CONTENT_EXPORT PrefetchURLLoaderInterceptor
@@ -54,8 +55,14 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
   // Declared virtual only for testing.
+
+  // TODO(crbug.com/1462206): It might be better to store
+  // PrefetchMatchResolver as part of PrefetchUrlLoaderInterceptor
+  // as this is related to serving a navigation. It would simplify GetPrefetch
+  // call.
   virtual void GetPrefetch(
       const network::ResourceRequest& tentative_resource_request,
+      PrefetchMatchResolver& potential_prefetch_matches_container,
       base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
       const;
 

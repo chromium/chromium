@@ -33,6 +33,7 @@ class URLLoaderFactory;
 namespace content {
 
 class BrowserContext;
+class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
 class PrefetchServiceDelegate;
@@ -108,7 +109,7 @@ class CONTENT_EXPORT PrefetchService {
   using OnPrefetchToServeReady =
       base::OnceCallback<void(PrefetchContainer::Reader prefetch_to_serve)>;
   void GetPrefetchToServe(const PrefetchContainer::Key& key,
-                          OnPrefetchToServeReady on_prefetch_to_serve_ready);
+                          PrefetchMatchResolver& prefetch_match_resolver);
 
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.
@@ -286,13 +287,22 @@ class CONTENT_EXPORT PrefetchService {
   // served are served from |prefetches_ready_to_serve_|.
   void WaitOnPrefetchToServeHead(
       const PrefetchContainer::Key& key,
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnPrefetchToServeReady on_prefetch_to_serve_ready);
+      base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Helper function for |GetPrefetchToServe| which identifies the
-  // |prefetch_container| that could potentially be served.
-  PrefetchContainer* FindPrefetchContainerToServe(
-      const PrefetchContainer::Key& key);
+  // |prefetch_container|'s that could potentially be served and uses them to
+  // populate `prefetch_match_resolver`.
+  void FindPrefetchContainerToServe(
+      const PrefetchContainer::Key& key,
+      PrefetchMatchResolver& prefetch_match_resolver);
+
+  // Helper function for |GetPrefetchToServe| which handles a
+  // |prefetch_container| that could potentially be served to the navigation.
+  void HandlePrefetchContainerToServe(
+      const PrefetchContainer::Key& key,
+      PrefetchContainer* prefetch_container,
+      PrefetchMatchResolver& prefetch_match_resolver);
 
   // Checks if there is a prefetch in |all_prefetches_| with the same URL as
   // |prefetch_container| but from a different referring RenderFrameHost.

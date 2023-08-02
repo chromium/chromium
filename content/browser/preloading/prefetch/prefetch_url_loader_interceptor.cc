@@ -11,6 +11,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
@@ -74,6 +75,15 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   DCHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
 
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  NavigationRequest* navigation_request = frame_tree_node->navigation_request();
+
+  PrefetchMatchResolver::CreateForNavigationHandle(*navigation_request);
+  PrefetchMatchResolver* prefetch_match_resolver =
+      PrefetchMatchResolver::GetForNavigationHandle(*navigation_request);
+  CHECK(prefetch_match_resolver);
+
   if (redirect_reader_ && redirect_reader_.DoesCurrentURLToServeMatch(
                               tentative_resource_request.url)) {
     OnGotPrefetchToServe(
@@ -90,13 +100,14 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   }
 
   GetPrefetch(
-      tentative_resource_request,
+      tentative_resource_request, *prefetch_match_resolver,
       base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
 void PrefetchURLLoaderInterceptor::GetPrefetch(
     const network::ResourceRequest& tentative_resource_request,
+    PrefetchMatchResolver& prefetch_match_resolver,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
     const {
   PrefetchService* prefetch_service =
@@ -106,12 +117,14 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     return;
   }
 
+  prefetch_match_resolver.SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      &OnGotPrefetchToServe, frame_tree_node_id_, tentative_resource_request,
+      std::move(get_prefetch_callback)));
+
   prefetch_service->GetPrefetchToServe(
       PrefetchContainer::Key(referring_render_frame_host_id_,
                              tentative_resource_request.url),
-      base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
-                     tentative_resource_request,
-                     std::move(get_prefetch_callback)));
+      prefetch_match_resolver);
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(

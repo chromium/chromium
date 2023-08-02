@@ -17,6 +17,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/preloading.h"
@@ -593,6 +594,16 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         *mock_navigation_handle_);
   }
 
+  PrefetchMatchResolver* GetPrefetchMatchResolverForMostRecentNavigation() {
+    if (!mock_navigation_handle_) {
+      return nullptr;
+    }
+
+    PrefetchMatchResolver::CreateForNavigationHandle(*mock_navigation_handle_);
+    return PrefetchMatchResolver::GetForNavigationHandle(
+        *mock_navigation_handle_);
+  }
+
   PrefetchContainer::Reader GetPrefetchToServe(
       const GURL& url,
       GlobalRenderFrameHostId previous_render_frame_host_id =
@@ -606,9 +617,14 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
       previous_render_frame_host_id = main_rfh()->GetGlobalId();
     }
     base::test::TestFuture<PrefetchContainer::Reader> future;
+    PrefetchMatchResolver* prefetch_match_resolver =
+        GetPrefetchMatchResolverForMostRecentNavigation();
+    prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
+        future.GetCallback());
+
     prefetch_service_->GetPrefetchToServe(
         PrefetchContainer::Key(previous_render_frame_host_id, url),
-        future.GetCallback());
+        *prefetch_match_resolver);
     return future.Take();
   }
 
@@ -4399,17 +4415,21 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
+
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   net::RedirectInfo redirect_info;
@@ -4704,17 +4724,21 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
+
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   task_environment()->FastForwardBy(base::Milliseconds(500));
@@ -4831,17 +4855,20 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com/index.html")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   task_environment()->FastForwardBy(base::Milliseconds(600));
@@ -4961,16 +4988,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   bool is_nav_unblocked = false;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](bool* is_nav_unblocked, base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *is_nav_unblocked = !prefetch_to_serve;
+        get_prefetch_run_loop->Quit();
+      },
+      &is_nav_unblocked, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com/index.html")),
-      base::BindOnce(
-          [](bool* is_nav_unblocked, base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *is_nav_unblocked = !prefetch_to_serve;
-            get_prefetch_run_loop->Quit();
-          },
-          &is_nav_unblocked, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(is_nav_unblocked);
 
   task_environment()->FastForwardBy(base::Milliseconds(700));
@@ -5082,16 +5112,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   bool is_nav_unblocked = false;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](bool* is_nav_unblocked, base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *is_nav_unblocked = !prefetch_to_serve;
+        get_prefetch_run_loop->Quit();
+      },
+      &is_nav_unblocked, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com/index.html")),
-      base::BindOnce(
-          [](bool* is_nav_unblocked, base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *is_nav_unblocked = !prefetch_to_serve;
-            get_prefetch_run_loop->Quit();
-          },
-          &is_nav_unblocked, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(is_nav_unblocked);
 
   task_environment()->FastForwardBy(base::Milliseconds(400));
@@ -5192,17 +5225,20 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   task_environment()->FastForwardBy(base::Milliseconds(800));
@@ -5300,17 +5336,20 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   // If the prefetch times out while PrefetchService is blocking until head,
@@ -5400,17 +5439,20 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   task_environment()->FastForwardBy(base::Milliseconds(300));
@@ -5528,17 +5570,20 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
   // triggered once the timeout is exceeded.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
@@ -5630,17 +5675,20 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
   // triggered once the timeout is exceeded.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
+  PrefetchMatchResolver* prefetch_match_resolver =
+      GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+      [](PrefetchContainer::Reader* serveable_reader,
+         base::RunLoop* get_prefetch_run_loop,
+         PrefetchContainer::Reader prefetch_to_serve) {
+        *serveable_reader = std::move(prefetch_to_serve);
+        get_prefetch_run_loop->Quit();
+      },
+      &serveable_reader, &get_prefetch_run_loop));
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(main_rfh()->GetGlobalId(),
                              GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
+      *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
@@ -5725,42 +5773,46 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
       GURL("https://example.com"),
       {.use_prefetch_proxy = true,
        .expected_priority = ExpectedPriorityForEagerness(GetParam())});
-
-  // Navigate to the URL before the head of the prefetch response is received
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
-  // Request the prefetch from the PrefetchService. The same prefetch will be
-  // requested again, so this callback will not be called.
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(),
-                             GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader prefetch_to_serve) { NOTREACHED(); }));
-
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
-  // Request the prefetch from the PrefetchService a second time. This callback
-  // should be triggered once the timeout is exceeded.
-  base::RunLoop get_prefetch_run_loop;
-  PrefetchContainer::Reader serveable_reader;
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(),
-                             GURL("https://example.com")),
-      base::BindOnce(
-          [](PrefetchContainer::Reader* serveable_reader,
-             base::RunLoop* get_prefetch_run_loop,
-             PrefetchContainer::Reader prefetch_to_serve) {
-            VLOG(0) << "Y";
-            *serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop->Quit();
-          },
-          &serveable_reader, &get_prefetch_run_loop));
-  EXPECT_FALSE(serveable_reader);
-
-  task_environment()->FastForwardBy(base::Milliseconds(1000));
-  get_prefetch_run_loop.Run();
-  EXPECT_FALSE(serveable_reader);
-
+  {
+    // Navigate to the URL before the head of the prefetch response is received
+    Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+    PrefetchMatchResolver* prefetch_match_resolver =
+        GetPrefetchMatchResolverForMostRecentNavigation();
+    // Request the prefetch from the PrefetchService. The same prefetch will be
+    // requested again, so this callback will not be called.
+    prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+        [](PrefetchContainer::Reader prefetch_to_serve) { NOTREACHED(); }));
+    prefetch_service_->GetPrefetchToServe(
+        PrefetchContainer::Key(main_rfh()->GetGlobalId(),
+                               GURL("https://example.com")),
+        *prefetch_match_resolver);
+  }
+  {
+    Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+    PrefetchMatchResolver* prefetch_match_resolver =
+        GetPrefetchMatchResolverForMostRecentNavigation();
+    // Request the prefetch from the PrefetchService a second time. This
+    // callback should be triggered once the timeout is exceeded.
+    base::RunLoop get_prefetch_run_loop;
+    PrefetchContainer::Reader serveable_reader;
+    prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+        [](PrefetchContainer::Reader* serveable_reader,
+           base::RunLoop* get_prefetch_run_loop,
+           PrefetchContainer::Reader prefetch_to_serve) {
+          VLOG(0) << "Y";
+          *serveable_reader = std::move(prefetch_to_serve);
+          get_prefetch_run_loop->Quit();
+        },
+        &serveable_reader, &get_prefetch_run_loop));
+    prefetch_service_->GetPrefetchToServe(
+        PrefetchContainer::Key(main_rfh()->GetGlobalId(),
+                               GURL("https://example.com")),
+        *prefetch_match_resolver);
+    EXPECT_FALSE(serveable_reader);
+    task_environment()->FastForwardBy(base::Milliseconds(1000));
+    get_prefetch_run_loop.Run();
+    EXPECT_FALSE(serveable_reader);
+  }
   // If the prefetch is received after the block until head has timed out, it
   // will not be used.
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
@@ -5798,8 +5850,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
   EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
-
-  EXPECT_FALSE(serveable_reader);
 
   ExpectCorrectUkmLogs({.eagerness = GetParam()});
 
@@ -6132,6 +6182,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
   VerifyCommonRequestState(url_2);
+  Navigate(url_1, main_rfh()->GetFrameToken());
   PrefetchContainer::Reader serveable_reader = GetPrefetchToServe(url_1);
   EXPECT_FALSE(serveable_reader);
 }

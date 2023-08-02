@@ -16,6 +16,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -211,6 +212,7 @@ class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
 
  private:
   void GetPrefetch(const network::ResourceRequest& tentative_resource_request,
+                   PrefetchMatchResolver& prefetch_match_resolver,
                    base::OnceCallback<void(PrefetchContainer::Reader)>
                        get_prefetch_callback) const override {
     const auto& iter = prefetches_.find(tentative_resource_request.url);
