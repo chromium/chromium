@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/elements/supervised_user_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller_model_delegate.h"
@@ -30,8 +32,7 @@
   BOOL _settingsAreDismissed;
 }
 
-@property(nonatomic, strong)
-    EnterpriseInfoPopoverViewController* bubbleViewController;
+@property(nonatomic, strong) InfoPopoverViewController* bubbleViewController;
 
 @end
 
@@ -71,14 +72,20 @@
                               targetRect:targetRect];
 }
 
-// Shows an enterprise info popover anchored on  `buttonView` giving `message`.
-// A default message is used when `message` is nil.
-- (void)showEntepriseInfoPopoverOnButton:(UIButton*)buttonView
-                             withMessage:(NSString*)message {
-  if (message) {
-    self.bubbleViewController =
-        [[EnterpriseInfoPopoverViewController alloc] initWithMessage:message
-                                                      enterpriseName:nil];
+// Shows an info popover anchored on `buttonView` depending on the signed-in
+// policy.
+- (void)showManagedInfoPopoverOnButton:(UIButton*)buttonView
+                 isForcedSigninEnabled:(BOOL)isForcedSigninEnabled {
+  if (self.modelDelegate.isViewControllerSubjectToParentalControls) {
+    self.bubbleViewController = [[SupervisedUserInfoPopoverViewController alloc]
+        initWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED_BY_PARENT)];
+  } else if (isForcedSigninEnabled) {
+    self.bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
+        initWithMessage:l10n_util::GetNSString(
+                            IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)
+         enterpriseName:nil];
   } else {
     self.bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
         initWithEnterpriseName:nil];
@@ -234,19 +241,16 @@
 #pragma mark - Actions
 
 // Called when the user clicks on the information button of the managed
-// setting's UI. Shows a textual bubble with the information of the enterprise.
+// setting's UI. Shows a textual bubble with management information.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  [self showEntepriseInfoPopoverOnButton:buttonView withMessage:nil];
+  [self showManagedInfoPopoverOnButton:buttonView isForcedSigninEnabled:NO];
 }
 
 // Called when the user taps on the information button of the allow sign-in
 // item while forced sign-in is enabled. Shows a textual bubble with
 // information about the forced sign-in policy.
 - (void)didTapForcedSigninUIInfoButton:(UIButton*)buttonView {
-  [self showEntepriseInfoPopoverOnButton:buttonView
-                             withMessage:
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)];
+  [self showManagedInfoPopoverOnButton:buttonView isForcedSigninEnabled:YES];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate

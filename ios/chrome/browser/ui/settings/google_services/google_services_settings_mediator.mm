@@ -447,6 +447,10 @@ bool GetStatusForSigninPolicy() {
   return type == AllowChromeSigninItemType;
 }
 
+- (BOOL)isViewControllerSubjectToParentalControls {
+  return supervised_user::IsSubjectToParentalControls(self.userPrefService);
+}
+
 #pragma mark - GoogleServicesSettingsServiceDelegate
 
 - (void)toggleSwitchItem:(TableViewItem*)item
