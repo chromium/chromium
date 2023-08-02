@@ -27,10 +27,6 @@
 #include "remoting/protocol/client_authentication_config.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 static const CGFloat kIconRadius = 30.f;
 static const CGFloat kActivityIndicatorStrokeWidth = 3.f;
 static const CGFloat kActivityIndicatorRadius = 33.f;

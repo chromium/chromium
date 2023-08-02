@@ -11,10 +11,6 @@
 #import "remoting/ios/app/remoting_theme.h"
 #import "remoting/ios/app/view_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Applied on the left and right of the label.
 static const float kTitleMargin = 12.f;
 

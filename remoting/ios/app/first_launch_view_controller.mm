@@ -10,10 +10,6 @@
 #import "remoting/ios/app/remoting_theme.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 static const float kLogoSizeMultiplier = 0.381966f;
 static const float kLogoYOffset = -10.f;
 static const float kButtonHeight = 80.f;

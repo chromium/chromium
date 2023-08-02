@@ -18,10 +18,6 @@
 #include "remoting/ios/app/view_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 static const CGFloat kLabelInset = 20.f;
 static const CGFloat kSwitchInset = 10.f;
 static const CGFloat kButtonHeight = 48.f;

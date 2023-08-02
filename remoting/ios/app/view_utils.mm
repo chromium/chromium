@@ -4,10 +4,6 @@
 
 #include "remoting/ios/app/view_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 UIWindow* GetAnyKeyWindow() {
 #if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0

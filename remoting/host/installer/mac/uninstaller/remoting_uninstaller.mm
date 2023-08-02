@@ -11,10 +11,6 @@
 #include "base/mac/scoped_authorizationref.h"
 #include "remoting/host/mac/constants_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void logOutput(FILE* pipe) {
   char readBuffer[128];
   for (;;) {

@@ -4,10 +4,6 @@
 
 #include "remoting/host/setup/daemon_controller_delegate_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include <launch.h>
 #include <sys/types.h>
 #include <utility>
