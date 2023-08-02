@@ -189,7 +189,7 @@ ts_library("build_ts") {
 
   extra_deps = [
     ":copy_definitions_to_gen",
-    ":copy_definitions_to_proprocess",
+    ":copy_definitions_to_preprocess",
     ":copy_fmp",
     ":generate_definitions",
     ":preprocess_generated",
@@ -301,7 +301,7 @@ ts_library("test_build_ts") {
   ]
   extra_deps = [
     ":copy_definitions_to_gen",
-    ":copy_definitions_to_proprocess",
+    ":copy_definitions_to_preprocess",
     ":copy_fmp_test",
     ":generate_definitions",
   ]
@@ -329,7 +329,7 @@ copy("copy_definitions_to_gen") {
 }
 
 # Copy definition files to $preprocess_folder so TSC can find them.
-copy("copy_definitions_to_proprocess") {
+copy("copy_definitions_to_preprocess") {
   sources = checked_in_dts_files
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
@@ -381,10 +381,11 @@ copy("copy_fmp_test") {
 
 copy("for_image_loader") {
   sources = [
-    "file_manager/externs/ts/state.js",
-    "file_manager/foreground/js/metadata/metadata_item.js",
+    "$target_gen_dir/tsc/file_manager/common/js/file_types_base.js",
+    "file_manager/common/js/test_error_reporting.js",
   ]
-  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+  outputs = [ "$target_gen_dir/file_manager/common/js/{{source_file_part}}" ]
+  deps = [ ":build_ts" ]
 }
 
 js_library("js_from_ts") {
@@ -428,9 +429,9 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/shared.rollup.js",
 
       # For Image Loader unittests:
+      "file_manager/common/js/file_types_base.js",
       "file_manager/common/js/file_types_data.js",
-      "file_manager/externs/ts/state.js",
-      "file_manager/foreground/js/metadata/metadata_item.js",
+      "file_manager/common/js/test_error_reporting.js",
     ]
 
     resource_path_rewrites += [

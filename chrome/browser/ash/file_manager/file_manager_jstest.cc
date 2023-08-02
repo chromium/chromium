@@ -174,6 +174,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, AsyncUtil) {
   RunTestURL("common/js/async_util_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypesBase) {
+  RunTestURL("common/js/file_types_base_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
   RunTestURL("common/js/file_type_unittest.js");
 }

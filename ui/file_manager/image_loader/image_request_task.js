@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileType} from 'chrome://file-manager/common/js/file_type.js';
+import {getFileTypeForName} from 'chrome://file-manager/common/js/file_types_base.js';
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {ImageCache} from './cache.js';
@@ -398,7 +398,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
     return;
   }
 
-  const fileType = FileType.getTypeForName(this.request_.url);
+  const fileType = getFileTypeForName(this.request_.url);
 
   // Load RAW image source thumbnail.
   if (fileType.type === 'raw') {

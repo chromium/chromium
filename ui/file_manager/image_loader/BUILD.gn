@@ -119,7 +119,6 @@ js_library("image_request_task") {
     ":load_image_request",
     ":piex_loader",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:file_type",
   ]
   externs_list = [
     "$externs_path/file_manager_private.js",
@@ -183,20 +182,17 @@ group("js_modules") {
   ]
 }
 
-preprocess_folder =
-    rebase_path("$target_gen_dir/../preprocessed/image_loader", root_build_dir)
-
-files_app_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
-                root_build_dir)
+tsc_folder = rebase_path("$target_gen_dir/../tsc/image_loader", root_build_dir)
+files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
+                             root_build_dir)
 image_loader_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+    rebase_path("$root_gen_dir/ui/file_manager/tsc/image_loader",
                 root_build_dir)
 
 optimize_webui("build") {
   host = "image_loader"
 
-  input = preprocess_folder
+  input = tsc_folder
   js_module_in_files = [ "background.js" ]
 
   external_paths = [
@@ -206,6 +202,7 @@ optimize_webui("build") {
 
   deps = [
     ":background",
+    "//ui/file_manager:build_ts",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/file_manager:preprocess_static_image_loader",

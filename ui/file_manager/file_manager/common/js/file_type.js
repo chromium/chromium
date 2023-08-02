@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileData} from '../../externs/ts/state.js';
 
+import {getFileTypeForName, getFinalExtension} from './file_types_base.js';
 import {EXTENSION_TO_TYPE, FileExtensionType, MIME_TO_TYPE} from './file_types_data.js';
 import {VolumeEntry} from './files_app_entry_types.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
@@ -34,50 +35,6 @@ FileType.DIRECTORY = {
 };
 
 /**
- * A special placeholder for unknown types with no extension.
- * @type{!FileExtensionType}
- * @const
- */
-FileType.PLACEHOLDER = {
-  translationKey: 'NO_EXTENSION_FILE_TYPE',
-  type: 'UNKNOWN',
-  icon: '',
-  subtype: '',
-};
-
-/**
- * Returns the final extension of a file name, check for the last two dots
- * to distinguish extensions like ".tar.gz" and ".gz".
- *
- * @param {string} fileName The file name.
- * @returns {string} The extension string.
- */
-function getFinalExtension(fileName) {
-  if (!fileName) {
-    return '';
-  }
-  const lowerCaseFileName = fileName.toLowerCase();
-  const parts = lowerCaseFileName.split('.');
-  // No dot, so no extension.
-  if (parts.length === 1) {
-    return '';
-  }
-  // Only one dot, so only 1 extension.
-  if (parts.length === 2) {
-    return `.${parts.pop()}`;
-  }
-  // More than 1 dot/extension: e.g. ".tar.gz".
-  const last = `.${parts.pop()}`;
-  const secondLast = `.${parts.pop()}`;
-  const doubleExtension = `${secondLast}${last}`;
-  if (EXTENSION_TO_TYPE.has(doubleExtension)) {
-    return doubleExtension;
-  }
-  // Double extension doesn't exist in the map, return the single one.
-  return last;
-}
-
-/**
  * Returns the file path extension for a given file.
  *
  * @param {Entry|FilesAppEntry} entry Reference to the file.
@@ -91,33 +48,6 @@ FileType.getExtension = entry => {
   }
 
   return getFinalExtension(entry.name);
-};
-
-/**
- * Gets the file type object for a given file name (base name). Use getType()
- * if possible, since this method can't recognize directories.
- *
- * @param {string} name Name of the file.
- * @return {!FileExtensionType} The matching descriptor or a placeholder.
- */
-FileType.getTypeForName = name => {
-  const extension = getFinalExtension(name);
-  if (EXTENSION_TO_TYPE.has(extension)) {
-    return EXTENSION_TO_TYPE.get(extension);
-  }
-
-  // Unknown file type.
-  if (extension === '') {
-    return FileType.PLACEHOLDER;
-  }
-
-  // subtype is the extension excluding the first dot.
-  return {
-    translationKey: 'GENERIC_FILE_TYPE',
-    type: 'UNKNOWN',
-    subtype: extension.substr(1).toUpperCase(),
-    icon: '',
-  };
 };
 
 /**
@@ -160,7 +90,7 @@ FileType.getType = (entry, opt_mimeType) => {
     return MIME_TO_TYPE.get(opt_mimeType);
   }
 
-  return FileType.getTypeForName(entry.name);
+  return getFileTypeForName(entry.name);
 };
 
 /**

@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
+import {getFileTypeForName} from '../../../common/js/file_types_base.js';
 import {str, util} from '../../../common/js/util.js';
 import {FileListModel} from '../file_list_model.js';
 
@@ -333,7 +333,7 @@ export class DialogFooter {
         // See if all the extensions in the group have the same description.
         for (let j = 0; j !== fileType.extensions.length; j++) {
           const currentDescription = FileListModel.getFileTypeString(
-              FileType.getTypeForName('.' + fileType.extensions[j]));
+              getFileTypeForName('.' + fileType.extensions[j]));
           if (!description) {
             // Set the first time.
             description = currentDescription;

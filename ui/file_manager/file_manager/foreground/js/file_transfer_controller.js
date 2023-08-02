@@ -8,6 +8,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
+import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -1333,7 +1334,7 @@ export class FileTransferController {
       // person who tries to open it. It also blocks copying hosted files to
       // other profiles, as the files would need to be shared in Drive first.
       if (sourceUrls.some(
-              source => FileType.getTypeForName(source).type === 'hosted')) {
+              source => getFileTypeForName(source).type === 'hosted')) {
         return false;
       }
     }

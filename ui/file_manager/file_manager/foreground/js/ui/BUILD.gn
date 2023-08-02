@@ -223,7 +223,6 @@ js_library("default_task_dialog") {
 js_library("dialog_footer") {
   deps = [
     "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
   ]
