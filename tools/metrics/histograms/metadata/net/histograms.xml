@@ -1828,7 +1828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Fetch.CheckPoint.FetchManagerLoader"
-    enum="FetchManagerLoaderCheckPoint" expires_after="2023-09-01">
+    enum="FetchManagerLoaderCheckPoint" expires_after="2024-02-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
