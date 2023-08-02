@@ -87,12 +87,22 @@ RecordingTypeMenuView::~RecordingTypeMenuView() = default;
 // static
 gfx::Rect RecordingTypeMenuView::GetIdealScreenBounds(
     const gfx::Rect& capture_label_widget_screen_bounds,
+    const gfx::Rect& target_display_screen_bounds,
     views::View* contents_view) {
   const auto size = GetIdealSize(contents_view);
   const auto bottom_center = capture_label_widget_screen_bounds.bottom_center();
-  const int y = bottom_center.y() + kYOffsetFromLabelWidget;
   const int x = bottom_center.x() - (size.width() / 2);
-  return gfx::Rect(gfx::Point(x, y), size);
+
+  // Try positioning the menu below the bar first, if this makes it outside the
+  // bounds of the display, then try positioning it above.
+  gfx::Rect result{gfx::Point(x, bottom_center.y() + kYOffsetFromLabelWidget),
+                   size};
+  if (result.bottom() > target_display_screen_bounds.bottom()) {
+    result.set_y(capture_label_widget_screen_bounds.y() -
+                 kYOffsetFromLabelWidget - size.height());
+  }
+  CHECK(target_display_screen_bounds.Contains(result));
+  return result;
 }
 
 void RecordingTypeMenuView::OnOptionSelected(int option_id) const {

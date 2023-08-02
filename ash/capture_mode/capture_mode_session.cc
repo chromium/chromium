@@ -2851,11 +2851,12 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown,
     MaybeDismissUserNudgeForever();
     capture_toast_controller_.DismissCurrentToastIfAny();
 
-    recording_type_menu_widget_->Init(CreateWidgetParams(
-        parent,
-        RecordingTypeMenuView::GetIdealScreenBounds(
-            capture_label_widget_->GetWindowBoundsInScreen()),
-        "RecordingTypeMenuWidget"));
+    recording_type_menu_widget_->Init(
+        CreateWidgetParams(parent,
+                           RecordingTypeMenuView::GetIdealScreenBounds(
+                               capture_label_widget_->GetWindowBoundsInScreen(),
+                               current_root_->GetBoundsInScreen()),
+                           "RecordingTypeMenuWidget"));
     recording_type_menu_view_ = recording_type_menu_widget_->SetContentsView(
         std::make_unique<RecordingTypeMenuView>(
             base::BindRepeating(&CaptureModeSession::SetRecordingTypeMenuShown,
@@ -2901,6 +2902,7 @@ void CaptureModeSession::MaybeUpdateRecordingTypeMenu() {
   recording_type_menu_widget_->SetBounds(
       RecordingTypeMenuView::GetIdealScreenBounds(
           capture_label_widget_->GetWindowBoundsInScreen(),
+          current_root_->GetBoundsInScreen(),
           recording_type_menu_widget_->GetContentsView()));
 }
 
