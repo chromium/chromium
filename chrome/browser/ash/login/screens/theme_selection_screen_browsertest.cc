@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
   histogram_tester_.ExpectTotalCount(kStepCompletionTimeHistogram, 1);
   histogram_tester_.ExpectTotalCount(kProceedExitReasonHistogram, 1);
 }
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
   histogram_tester_.ExpectTotalCount(kStepCompletionTimeHistogram, 1);
   histogram_tester_.ExpectTotalCount(kProceedExitReasonHistogram, 1);
 }

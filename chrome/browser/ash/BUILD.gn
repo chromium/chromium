@@ -1675,6 +1675,8 @@ source_set("ash") {
     "login/onboarding_user_activity_counter.h",
     "login/oobe_configuration.cc",
     "login/oobe_configuration.h",
+    "login/oobe_metrics_helper.cc",
+    "login/oobe_metrics_helper.h",
     "login/oobe_screen.cc",
     "login/oobe_screen.h",
     "login/osauth/auth_policy_enforcer.cc",

@@ -15,12 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
@@ -98,18 +98,6 @@ class WizardController : public OobeUI::Observer {
    public:
     virtual void OnCurrentScreenChanged(BaseScreen* new_screen) = 0;
     virtual void OnShutdown() = 0;
-  };
-
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
-  enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
-
-  enum class CompletedOobeFlowType {
-    kAutoEnrollment = 0,
-    kDemo = 1,
-    kRegular = 2
   };
 
   explicit WizardController(WizardContext* wizard_context);
@@ -454,7 +442,8 @@ class WizardController : public OobeUI::Observer {
   // Actions that should be done after OOBE flow is finished.
   // If this is called, future boots before the device is owned will start in
   // the first sign-in screen.
-  void PerformOOBECompletedActions(CompletedOobeFlowType flow_type);
+  void PerformOOBECompletedActions(
+      OobeMetricsHelper::CompletedPreLoginOobeFlowType flow_type);
 
   ErrorScreen* GetErrorScreen();
 
@@ -584,9 +573,6 @@ class WizardController : public OobeUI::Observer {
   // mode setup flow.
   std::unique_ptr<DemoSetupController> demo_setup_controller_;
 
-  // Maps screen names to last time of their shows.
-  std::map<OobeScreenId, base::TimeTicks> screen_show_times_;
-
   // Tests check result of timezone resolve.
   bool timezone_resolved_ = false;
   base::OnceClosure on_timezone_resolved_for_testing_;
@@ -599,6 +585,8 @@ class WizardController : public OobeUI::Observer {
 
   // Shared factory for outgoing network requests.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+
+  OobeMetricsHelper oobe_metrics_helper_;
 
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 };

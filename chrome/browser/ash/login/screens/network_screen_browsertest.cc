@@ -328,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, EthernetConnection_Skipped) {
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Network-selection"),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kSkipped),
+          1)));
   // Showing screen again to test skip doesn't work now.
   ShowNetworkScreen();
   WaitForScreenShown();
