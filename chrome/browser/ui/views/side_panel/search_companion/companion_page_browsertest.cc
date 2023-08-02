@@ -97,6 +97,13 @@ const char kExpsRegistrationSuccessUrl[] = "https://foobar.com/experiments";
 
 const char kRelativeVisualSearchUrl[] = "/test_visual.html";
 
+const char kExpectedNewTabLinkMetadata[] =
+    "{\"openAction\":1,\"isSearchCompanionPinnedByDefault\":false}";
+const char kExpectedClobberLinkMetadata[] =
+    "{\"openAction\":2,\"isSearchCompanionPinnedByDefault\":false}";
+const char kExpectedSearchUrlLinkMetadata[] =
+    "{\"openAction\":3,\"isSearchCompanionPinnedByDefault\":false}";
+
 base::FilePath model_file_path() {
   base::FilePath source_root_dir;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
@@ -444,6 +451,15 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
       return absl::nullopt;
     }
     return GURL(eval_js_result.ExtractString());
+  }
+
+  absl::optional<std::string> GetLastLinkOpenedMetadataFromPostMessage() {
+    content::EvalJsResult eval_js_result =
+        EvalJs("getLastReceivedLinkOpenedMetadata()");
+    if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
+      return absl::nullopt;
+    }
+    return eval_js_result.ExtractString();
   }
 
   void EnableMsbb(bool enable_msbb) {
@@ -834,6 +850,33 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
 
   // Ensure browser sent post message
   EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
+  EXPECT_EQ(kExpectedClobberLinkMetadata,
+            GetLastLinkOpenedMetadataFromPostMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
+                       LinkClickOnSearchURLNotifiesViaPostMessage) {
+  const GURL clicked_url = GURL("https://www.google.com/search?q=query");
+
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  ClickUrlInCompanion(clicked_url, /*wait_for_navigation=*/false);
+
+  // Ensure browser sent post message
+  EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
+  EXPECT_EQ(kExpectedSearchUrlLinkMetadata,
+            GetLastLinkOpenedMetadataFromPostMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
@@ -891,6 +934,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Ensure browser sent post message
   EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
+  EXPECT_EQ(kExpectedNewTabLinkMetadata,
+            GetLastLinkOpenedMetadataFromPostMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
