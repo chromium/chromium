@@ -338,11 +338,13 @@ bool TimeZoneInfo::ExtendTransitions() {
     return EquivTransitions(transitions_.back().type_index, dst_ti);
   }
 
-  // Extend the transitions for an additional 400 years using the
-  // future specification. Years beyond those can be handled by
-  // mapping back to a cycle-equivalent year within that range.
-  // We may need two additional transitions for the current year.
-  transitions_.reserve(transitions_.size() + 400 * 2 + 2);
+  // Extend the transitions for an additional 401 years using the future
+  // specification. Years beyond those can be handled by mapping back to
+  // a cycle-equivalent year within that range. Note that we need 401
+  // (well, at least the first transition in the 401st year) so that the
+  // end of the 400th year is mapped back to an extended year. And first
+  // we may also need two additional transitions for the current year.
+  transitions_.reserve(transitions_.size() + 2 + 401 * 2);
   extended_ = true;
 
   const Transition& last(transitions_.back());
@@ -356,7 +358,7 @@ bool TimeZoneInfo::ExtendTransitions() {
 
   Transition dst = {0, dst_ti, civil_second(), civil_second()};
   Transition std = {0, std_ti, civil_second(), civil_second()};
-  for (const year_t limit = last_year_ + 400;; ++last_year_) {
+  for (const year_t limit = last_year_ + 401;; ++last_year_) {
     auto dst_trans_off = TransOffset(leap_year, jan1_weekday, posix.dst_start);
     auto std_trans_off = TransOffset(leap_year, jan1_weekday, posix.dst_end);
     dst.unix_time = jan1_time + dst_trans_off - posix.std_offset;

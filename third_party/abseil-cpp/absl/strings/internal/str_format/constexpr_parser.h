@@ -323,6 +323,7 @@ constexpr const char* ConsumeConversion(const char* pos, const char* const end,
     if (ABSL_PREDICT_FALSE(c == 'v')) return nullptr;
     if (ABSL_PREDICT_FALSE(!tag.is_conv())) return nullptr;
   }
+#undef ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR
 
   assert(CheckFastPathSetting(*conv));
   (void)(&CheckFastPathSetting);

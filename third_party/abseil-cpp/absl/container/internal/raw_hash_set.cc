@@ -247,9 +247,7 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
     ResetCtrl(c, policy.slot_size);
     c.infoz().RecordStorageChanged(0, c.capacity());
   } else {
-    void* set = &c;
-    (*policy.dealloc)(set, policy, c.backing_array_start(), c.slot_array(),
-                      c.capacity());
+    (*policy.dealloc)(c, policy);
     c.set_control(EmptyGroup());
     c.set_generation_ptr(EmptyGeneration());
     c.set_slots(nullptr);

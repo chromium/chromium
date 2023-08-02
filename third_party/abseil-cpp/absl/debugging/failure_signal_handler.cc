@@ -31,6 +31,9 @@
 
 #ifdef ABSL_HAVE_MMAP
 #include <sys/mman.h>
+#if defined(MAP_ANON) && !defined(MAP_ANONYMOUS)
+#define MAP_ANONYMOUS MAP_ANON
+#endif
 #endif
 
 #ifdef __linux__
@@ -81,10 +84,10 @@ struct FailureSignalData {
   struct sigaction previous_action;
   // StructSigaction is used to silence -Wmissing-field-initializers.
   using StructSigaction = struct sigaction;
-  #define FSD_PREVIOUS_INIT FailureSignalData::StructSigaction()
+#define FSD_PREVIOUS_INIT FailureSignalData::StructSigaction()
 #else
   void (*previous_handler)(int);
-  #define FSD_PREVIOUS_INIT SIG_DFL
+#define FSD_PREVIOUS_INIT SIG_DFL
 #endif
 };
 
@@ -136,7 +139,7 @@ const char* FailureSignalToString(int signo) {
 #ifdef ABSL_HAVE_SIGALTSTACK
 
 static bool SetupAlternateStackOnce() {
-#if defined(__wasm__) || defined (__asjms__)
+#if defined(__wasm__) || defined(__asjms__)
   const size_t page_mask = getpagesize() - 1;
 #else
   const size_t page_mask = static_cast<size_t>(sysconf(_SC_PAGESIZE)) - 1;
@@ -157,9 +160,6 @@ static bool SetupAlternateStackOnce() {
 #ifdef ABSL_HAVE_MMAP
 #ifndef MAP_STACK
 #define MAP_STACK 0
-#endif
-#if defined(MAP_ANON) && !defined(MAP_ANONYMOUS)
-#define MAP_ANONYMOUS MAP_ANON
 #endif
   sigstk.ss_sp = mmap(nullptr, sigstk.ss_size, PROT_READ | PROT_WRITE,
                       MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
@@ -248,7 +248,7 @@ static void WriteSignalMessage(int signo, int cpu,
   if (signal_string != nullptr && signal_string[0] != '\0') {
     snprintf(buf, sizeof(buf), "*** %s received at time=%ld%s ***\n",
              signal_string,
-             static_cast<long>(time(nullptr)),   // NOLINT(runtime/int)
+             static_cast<long>(time(nullptr)),  // NOLINT(runtime/int)
              on_cpu);
   } else {
     snprintf(buf, sizeof(buf), "*** Signal %d received at time=%ld%s ***\n",
@@ -311,7 +311,8 @@ static void PortableSleepForSeconds(int seconds) {
   struct timespec sleep_time;
   sleep_time.tv_sec = seconds;
   sleep_time.tv_nsec = 0;
-  while (nanosleep(&sleep_time, &sleep_time) != 0 && errno == EINTR) {}
+  while (nanosleep(&sleep_time, &sleep_time) != 0 && errno == EINTR) {
+  }
 #endif
 }
 
@@ -321,9 +322,7 @@ static void PortableSleepForSeconds(int seconds) {
 // set amount of time. If AbslFailureSignalHandler() hangs for more than
 // the alarm timeout, ImmediateAbortSignalHandler() will abort the
 // program.
-static void ImmediateAbortSignalHandler(int) {
-  RaiseToDefaultHandler(SIGABRT);
-}
+static void ImmediateAbortSignalHandler(int) { RaiseToDefaultHandler(SIGABRT); }
 #endif
 
 // absl::base_internal::GetTID() returns pid_t on most platforms, but

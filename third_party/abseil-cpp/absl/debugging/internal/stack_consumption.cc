@@ -18,13 +18,16 @@
 #ifdef ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION
 
 #include <signal.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include <string.h>
-
 #include "absl/base/attributes.h"
 #include "absl/base/internal/raw_logging.h"
+
+#if defined(MAP_ANON) && !defined(MAP_ANONYMOUS)
+#define MAP_ANONYMOUS MAP_ANON
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

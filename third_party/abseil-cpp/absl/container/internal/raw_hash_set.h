@@ -786,8 +786,11 @@ class CommonFieldsGenerationInfoEnabled {
  public:
   CommonFieldsGenerationInfoEnabled() = default;
   CommonFieldsGenerationInfoEnabled(CommonFieldsGenerationInfoEnabled&& that)
-      : reserved_growth_(that.reserved_growth_), generation_(that.generation_) {
+      : reserved_growth_(that.reserved_growth_),
+        reservation_size_(that.reservation_size_),
+        generation_(that.generation_) {
     that.reserved_growth_ = 0;
+    that.reservation_size_ = 0;
     that.generation_ = EmptyGeneration();
   }
   CommonFieldsGenerationInfoEnabled& operator=(
@@ -813,6 +816,8 @@ class CommonFieldsGenerationInfoEnabled {
   }
   size_t reserved_growth() const { return reserved_growth_; }
   void set_reserved_growth(size_t r) { reserved_growth_ = r; }
+  size_t reservation_size() const { return reservation_size_; }
+  void set_reservation_size(size_t r) { reservation_size_ = r; }
   GenerationType generation() const { return *generation_; }
   void set_generation(GenerationType g) { *generation_ = g; }
   GenerationType* generation_ptr() const { return generation_; }
@@ -820,10 +825,14 @@ class CommonFieldsGenerationInfoEnabled {
 
  private:
   // The number of insertions remaining that are guaranteed to not rehash due to
-  // a prior call to reserve. Note: we store reserved growth rather than
+  // a prior call to reserve. Note: we store reserved growth in addition to
   // reservation size because calls to erase() decrease size_ but don't decrease
   // reserved growth.
   size_t reserved_growth_ = 0;
+  // The maximum argument to reserve() since the container was cleared. We need
+  // to keep track of this, in addition to reserved growth, because we reset
+  // reserved growth to this when erase(begin(), end()) is called.
+  size_t reservation_size_ = 0;
   // Pointer to the generation counter, which is used to validate iterators and
   // is stored in the backing array between the control bytes and the slots.
   // Note that we can't store the generation inside the container itself and
@@ -851,6 +860,8 @@ class CommonFieldsGenerationInfoDisabled {
   void reset_reserved_growth(size_t, size_t) {}
   size_t reserved_growth() const { return 0; }
   void set_reserved_growth(size_t) {}
+  size_t reservation_size() const { return 0; }
+  void set_reservation_size(size_t) {}
   GenerationType generation() const { return 0; }
   void set_generation(GenerationType) {}
   GenerationType* generation_ptr() const { return nullptr; }
@@ -897,6 +908,39 @@ using HashSetIteratorGenerationInfo = HashSetIteratorGenerationInfoDisabled;
 //
 // A valid capacity is a non-zero integer `2^m - 1`.
 inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
+
+// Computes the offset from the start of the backing allocation of the control
+// bytes. growth_left is stored at the beginning of the backing array.
+inline size_t ControlOffset() { return sizeof(size_t); }
+
+// Returns the number of "cloned control bytes".
+//
+// This is the number of control bytes that are present both at the beginning
+// of the control byte array and at the end, such that we can create a
+// `Group::kWidth`-width probe window starting from any control byte.
+constexpr size_t NumClonedBytes() { return Group::kWidth - 1; }
+
+// Given the capacity of a table, computes the offset (from the start of the
+// backing allocation) of the generation counter (if it exists).
+inline size_t GenerationOffset(size_t capacity) {
+  assert(IsValidCapacity(capacity));
+  const size_t num_control_bytes = capacity + 1 + NumClonedBytes();
+  return ControlOffset() + num_control_bytes;
+}
+
+// Given the capacity of a table, computes the offset (from the start of the
+// backing allocation) at which the slots begin.
+inline size_t SlotOffset(size_t capacity, size_t slot_align) {
+  assert(IsValidCapacity(capacity));
+  return (GenerationOffset(capacity) + NumGenerationBytes() + slot_align - 1) &
+         (~slot_align + 1);
+}
+
+// Given the capacity of a table, computes the total size of the backing
+// array.
+inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align) {
+  return SlotOffset(capacity, slot_align) + capacity * slot_size;
+}
 
 // CommonFields hold the fields in raw_hash_set that do not depend
 // on template parameters. This allows us to conveniently pass all
@@ -971,6 +1015,17 @@ class CommonFields : public CommonFieldsGenerationInfo {
     CommonFieldsGenerationInfo::reset_reserved_growth(reservation, size());
   }
 
+  // The size of the backing array allocation.
+  size_t alloc_size(size_t slot_size, size_t slot_align) const {
+    return AllocSize(capacity(), slot_size, slot_align);
+  }
+
+  // Returns the number of control bytes set to kDeleted. For testing only.
+  size_t TombstonesCount() const {
+    return static_cast<size_t>(
+        std::count(control(), control() + capacity(), ctrl_t::kDeleted));
+  }
+
  private:
   // TODO(b/259599413): Investigate removing some of these fields:
   // - control/slots can be derived from each other
@@ -996,13 +1051,6 @@ class CommonFields : public CommonFieldsGenerationInfo {
   absl::container_internal::CompressedTuple<size_t, HashtablezInfoHandle>
       compressed_tuple_{0u, HashtablezInfoHandle{}};
 };
-
-// Returns the number of "cloned control bytes".
-//
-// This is the number of control bytes that are present both at the beginning
-// of the control byte array and at the end, such that we can create a
-// `Group::kWidth`-width probe window starting from any control byte.
-constexpr size_t NumClonedBytes() { return Group::kWidth - 1; }
 
 template <class Policy, class Hash, class Eq, class Alloc>
 class raw_hash_set;
@@ -1338,32 +1386,6 @@ constexpr size_t BackingArrayAlignment(size_t align_of_slot) {
   return (std::max)(align_of_slot, alignof(size_t));
 }
 
-// Computes the offset from the start of the backing allocation of the control
-// bytes. growth_left is stored at the beginning of the backing array.
-inline size_t ControlOffset() { return sizeof(size_t); }
-
-// Given the capacity of a table, computes the offset (from the start of the
-// backing allocation) of the generation counter (if it exists).
-inline size_t GenerationOffset(size_t capacity) {
-  assert(IsValidCapacity(capacity));
-  const size_t num_control_bytes = capacity + 1 + NumClonedBytes();
-  return ControlOffset() + num_control_bytes;
-}
-
-// Given the capacity of a table, computes the offset (from the start of the
-// backing allocation) at which the slots begin.
-inline size_t SlotOffset(size_t capacity, size_t slot_align) {
-  assert(IsValidCapacity(capacity));
-  return (GenerationOffset(capacity) + NumGenerationBytes() + slot_align - 1) &
-         (~slot_align + 1);
-}
-
-// Given the capacity of a table, computes the total size of the backing
-// array.
-inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align) {
-  return SlotOffset(capacity, slot_align) + capacity * slot_size;
-}
-
 template <typename Alloc, size_t SizeOfSlot, size_t AlignOfSlot>
 ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c, Alloc alloc) {
   assert(c.capacity());
@@ -1409,9 +1431,8 @@ struct PolicyFunctions {
   // Transfer the contents of src_slot to dst_slot.
   void (*transfer)(void* set, void* dst_slot, void* src_slot);
 
-  // Deallocate the specified backing store which is sized for n slots.
-  void (*dealloc)(void* set, const PolicyFunctions& policy,
-                  void* backing_array_start, void* slot_array, size_t n);
+  // Deallocate the backing store from common.
+  void (*dealloc)(CommonFields& common, const PolicyFunctions& policy);
 };
 
 // ClearBackingArray clears the backing array, either modifying it in place,
@@ -1428,16 +1449,16 @@ void EraseMetaOnly(CommonFields& c, ctrl_t* it, size_t slot_size);
 // function body for raw_hash_set instantiations that have the
 // same slot alignment.
 template <size_t AlignOfSlot>
-ABSL_ATTRIBUTE_NOINLINE void DeallocateStandard(void*,
-                                                const PolicyFunctions& policy,
-                                                void* backing_array_start,
-                                                void* slot_array, size_t n) {
+ABSL_ATTRIBUTE_NOINLINE void DeallocateStandard(CommonFields& common,
+                                                const PolicyFunctions& policy) {
   // Unpoison before returning the memory to the allocator.
-  SanitizerUnpoisonMemoryRegion(slot_array, policy.slot_size * n);
+  SanitizerUnpoisonMemoryRegion(common.slot_array(),
+                                policy.slot_size * common.capacity());
 
   std::allocator<char> alloc;
   Deallocate<BackingArrayAlignment(AlignOfSlot)>(
-      &alloc, backing_array_start, AllocSize(n, policy.slot_size, AlignOfSlot));
+      &alloc, common.backing_array_start(),
+      common.alloc_size(policy.slot_size, AlignOfSlot));
 }
 
 // For trivially relocatable types we use memcpy directly. This allows us to
@@ -1913,6 +1934,7 @@ class raw_hash_set {
       ClearBackingArray(common(), GetPolicyFunctions(), /*reuse=*/cap < 128);
     }
     common().set_reserved_growth(0);
+    common().set_reservation_size(0);
   }
 
   inline void destroy_slots() {
@@ -2168,8 +2190,12 @@ class raw_hash_set {
     // capacity() > 0 as a precondition.
     if (empty()) return end();
     if (first == begin() && last == end()) {
+      // TODO(ezb): we access control bytes in destroy_slots so it could make
+      // sense to combine destroy_slots and ClearBackingArray to avoid cache
+      // misses when the table is large. Note that we also do this in clear().
       destroy_slots();
       ClearBackingArray(common(), GetPolicyFunctions(), /*reuse=*/true);
+      common().set_reserved_growth(common().reservation_size());
       return end();
     }
     while (first != last) {
@@ -2258,6 +2284,7 @@ class raw_hash_set {
       infoz().RecordReservation(n);
     }
     common().reset_reserved_growth(n);
+    common().set_reservation_size(n);
   }
 
   // Extension API: support for heterogeneous keys.
@@ -2740,16 +2767,16 @@ class raw_hash_set {
                            static_cast<slot_type*>(src));
   }
   // Note: dealloc_fn will only be used if we have a non-standard allocator.
-  static void dealloc_fn(void* set, const PolicyFunctions&,
-                         void* backing_array_start, void* slot_mem, size_t n) {
-    auto* h = static_cast<raw_hash_set*>(set);
+  static void dealloc_fn(CommonFields& common, const PolicyFunctions&) {
+    auto* set = reinterpret_cast<raw_hash_set*>(&common);
 
     // Unpoison before returning the memory to the allocator.
-    SanitizerUnpoisonMemoryRegion(slot_mem, sizeof(slot_type) * n);
+    SanitizerUnpoisonMemoryRegion(common.slot_array(),
+                                  sizeof(slot_type) * common.capacity());
 
     Deallocate<BackingArrayAlignment(alignof(slot_type))>(
-        &h->alloc_ref(), backing_array_start,
-        AllocSize(n, sizeof(slot_type), alignof(slot_type)));
+        &set->alloc_ref(), common.backing_array_start(),
+        common.alloc_size(sizeof(slot_type), alignof(slot_type)));
   }
 
   static const PolicyFunctions& GetPolicyFunctions() {

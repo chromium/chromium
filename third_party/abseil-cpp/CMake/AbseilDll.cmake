@@ -786,7 +786,7 @@ Name: ${_dll}\n\
 Description: Abseil DLL library\n\
 URL: https://abseil.io/\n\
 Version: ${absl_VERSION}\n\
-Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-l${_dll}>\n\
+Libs: -L\${libdir} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-l${_dll}> ${PC_LINKOPTS}\n\
 Cflags: -I\${includedir}${PC_CFLAGS}\n")
   INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/${_dll}.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

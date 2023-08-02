@@ -18,11 +18,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <sstream>
 #include <string>
 
 #include "gtest/gtest.h"
 #include "absl/crc/internal/crc32c.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 
 namespace {
@@ -191,4 +193,35 @@ TEST(CRC32C, RemoveSuffix) {
 
   EXPECT_EQ(absl::RemoveCrc32cSuffix(crc_ab, crc_b, world.size()), crc_a);
 }
+
+TEST(CRC32C, InsertionOperator) {
+  {
+    std::ostringstream buf;
+    buf << absl::crc32c_t{0xc99465aa};
+    EXPECT_EQ(buf.str(), "c99465aa");
+  }
+  {
+    std::ostringstream buf;
+    buf << absl::crc32c_t{0};
+    EXPECT_EQ(buf.str(), "00000000");
+  }
+  {
+    std::ostringstream buf;
+    buf << absl::crc32c_t{17};
+    EXPECT_EQ(buf.str(), "00000011");
+  }
+}
+
+TEST(CRC32C, AbslStringify) {
+  // StrFormat
+  EXPECT_EQ(absl::StrFormat("%v", absl::crc32c_t{0xc99465aa}), "c99465aa");
+  EXPECT_EQ(absl::StrFormat("%v", absl::crc32c_t{0}), "00000000");
+  EXPECT_EQ(absl::StrFormat("%v", absl::crc32c_t{17}), "00000011");
+
+  // StrCat
+  EXPECT_EQ(absl::StrCat(absl::crc32c_t{0xc99465aa}), "c99465aa");
+  EXPECT_EQ(absl::StrCat(absl::crc32c_t{0}), "00000000");
+  EXPECT_EQ(absl::StrCat(absl::crc32c_t{17}), "00000011");
+}
+
 }  // namespace

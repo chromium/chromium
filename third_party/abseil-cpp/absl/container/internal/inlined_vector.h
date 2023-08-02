@@ -400,7 +400,7 @@ class Storage {
     return reinterpret_cast<Pointer<A>>(data_.inlined.inlined_data);
   }
 
-  ConstPointer<A> GetInlinedData() const {
+  ABSL_ATTRIBUTE_NO_SANITIZE_CFI ConstPointer<A> GetInlinedData() const {
     return reinterpret_cast<ConstPointer<A>>(data_.inlined.inlined_data);
   }
 
