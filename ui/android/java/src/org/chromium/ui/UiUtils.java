@@ -434,7 +434,11 @@ public class UiUtils {
      * @see android.view.Window#setStatusBarColor(int color).
      */
     public static void setStatusBarColor(Window window, int statusBarColor) {
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        if (0
+                == (window.getAttributes().flags
+                        & WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
         // The status bar should always be black in automotive devices to match the black back
         // button toolbar.
         if (BuildInfo.getInstance().isAutomotive) {
