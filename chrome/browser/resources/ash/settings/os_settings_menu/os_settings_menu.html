@@ -205,6 +205,9 @@
   </template>
 
   <a id="aboutItem" href="[[aboutMenuItemHref_]]" class="item">
+    <iron-icon icon="os-settings:chrome"
+        hidden="[[!isRevampWayfindingEnabled_]]">
+    </iron-icon>
     $i18n{aboutOsPageTitle}
   </a>
 </iron-selector>

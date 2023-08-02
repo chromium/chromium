@@ -169,13 +169,13 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         {
           section: Section.kMultiDevice,
           href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
-          icon: 'os-settings:multidevice-better-together-suite',
+          icon: 'os-settings:connected-devices',
           label: this.i18n('multidevicePageTitle'),
         },
         {
           section: Section.kPeople,
           href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
-          icon: 'cr:person',
+          icon: 'os-settings:account',
           label: this.i18n('osPeoplePageTitle'),
         },
         {
@@ -193,7 +193,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         {
           section: Section.kPersonalization,
           href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
-          icon: 'os-settings:paint-brush',
+          icon: 'os-settings:personalization',
           label: this.i18n('personalizationPageTitle'),
         },
         {
@@ -211,7 +211,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         {
           section: Section.kAccessibility,
           href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
-          icon: 'os-settings:accessibility',
+          icon: 'os-settings:accessibility-revamp',
           label: this.i18n('a11yPageTitle'),
         },
         {
