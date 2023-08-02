@@ -62,11 +62,20 @@ export class DriveOutOfOrganizationSpaceBanner extends WarningBanner {
     const message =
         strf('DRIVE_ORGANIZATION_QUOTA_OVER', context.organizationName);
     const warning = str('DRIVE_WARNING_QUOTA_OVER');
-    this.shadowRoot!.querySelector<HTMLSpanElement>(
-                        'span[slot="text"]')!.outerHTML = `
-<span slot="text" aria-label="${warning}: ${message}">
-  <span aria-hidden="true">${message}</span>
-</span>`;
+
+    const originalSpan =
+        this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
+
+    const replacementSpan = document.createElement('span');
+    replacementSpan.setAttribute('slot', 'text');
+    replacementSpan.setAttribute('aria-label', `${warning}: ${message}`);
+
+    const replacementSpanInner = document.createElement('span');
+    replacementSpanInner.setAttribute('aria-hidden', 'true');
+    replacementSpanInner.textContent = message;
+
+    replacementSpan.appendChild(replacementSpanInner);
+    originalSpan.replaceWith(replacementSpan);
   }
 }
 
