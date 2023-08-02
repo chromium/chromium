@@ -124,6 +124,7 @@ a {
 
 .toggle,
 .source,
+.scope.row .name,
 .messages.row .name,
 .value.row .name,
 .errors.row .name,
@@ -132,6 +133,7 @@ a {
   flex: 0 0 25%;
 }
 
+.scope.row .value,
 .messages.row .value,
 .value.row .value,
 .errors.row .value,
@@ -168,6 +170,12 @@ a {
     </a>
   </div>
 </div>
+<if expr="is_android or is_ios">
+  <div class="scope row" role="row" hidden>
+    <div class="name" role="rowheader">$i18n{headerScope}</div>
+    <div class="value" role="cell"></div>
+  </div>
+</if>
 <div class="errors row" role="row" hidden>
   <div class="name" role="rowheader">$i18n{error}</div>
   <div class="value" role="cell"></div>
