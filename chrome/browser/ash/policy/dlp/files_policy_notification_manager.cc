@@ -1212,7 +1212,7 @@ void FilesPolicyNotificationManager::PauseIOTask(
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      warning_reason, io_tasks_.at(task_id).GetWarningInfo()->files.size(),
+      Policy::kDlp, io_tasks_.at(task_id).GetWarningInfo()->files.size(),
       io_tasks_.at(task_id)
           .GetWarningInfo()
           ->files.begin()
