@@ -190,7 +190,11 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_audio.svg);
     }
 
-    :host([type="bruschetta"]) span, :host([type="crostini"]) span {
+    :host([type="bruschetta"]) span {
+      -webkit-mask-image: url(../foreground/images/volumes/bruschetta.svg);
+    }
+
+    :host([type="crostini"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/linux_files.svg);
     }
 

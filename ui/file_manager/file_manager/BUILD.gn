@@ -117,6 +117,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/filetype/filetype_word.svg",
     "foreground/images/volumes/android.svg",
     "foreground/images/volumes/archive.svg",
+    "foreground/images/volumes/bruschetta.svg",
     "foreground/images/volumes/camera.svg",
     "foreground/images/volumes/cd.svg",
     "foreground/images/volumes/computer.svg",
