@@ -452,7 +452,7 @@ def _package_dmg(paths, dist, config):
         '--tempdir', paths.work,
         '--source', empty_dir,
         '--target', dmg_path,
-        '--format', 'UDBZ',
+        '--format', 'ULMO',
         '--volname', config.app_product,
         '--copy', '{}:/'.format(app_path),
         '--symlink', '/Applications:/ ',
