@@ -577,10 +577,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   MapCoordinatesFlags flags =
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
 
-  LayoutUnit max_container_width =
-      IsA<LayoutView>(sticky_container)
-          ? sticky_container->LogicalWidth()
-          : sticky_container->ContainingBlockLogicalWidthForContent();
   // Sticky positioned element ignore any override logical width on the
   // containing block, as they don't call containingBlockLogicalWidthForContent.
   // It's unclear whether this is totally fine.
@@ -610,15 +606,8 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   // ensure that space between the sticky element and its containing flow box.
   // It is an open issue whether the margin should collapse.
   // See https://www.w3.org/TR/css-position-3/#sticky-pos
-  scroll_container_relative_containing_block_rect.ContractEdges(
-      MinimumValueForLength(sticky_container->StyleRef().PaddingTop(),
-                            max_container_width),
-      MinimumValueForLength(sticky_container->StyleRef().PaddingRight(),
-                            max_container_width),
-      MinimumValueForLength(sticky_container->StyleRef().PaddingBottom(),
-                            max_container_width),
-      MinimumValueForLength(sticky_container->StyleRef().PaddingLeft(),
-                            max_container_width));
+  scroll_container_relative_containing_block_rect.Contract(
+      sticky_container->PaddingOutsets());
   if (!RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
     scroll_container_relative_containing_block_rect.ContractEdges(
         MinimumValueForLength(StyleRef().MarginTop(), max_width),
