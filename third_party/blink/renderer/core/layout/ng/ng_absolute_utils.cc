@@ -180,36 +180,35 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
   if (inset_start && inset_end) {
     // "If left, right, and width are not auto:"
     // Compute margins.
-    LayoutUnit margin_space = computed_available_size - size;
+    LayoutUnit free_space = computed_available_size - size -
+                            margin_start.value_or(LayoutUnit()) -
+                            margin_end.value_or(LayoutUnit());
 
     if (!margin_start && !margin_end) {
       // When both margins are auto.
-      if (margin_space > 0 || is_block_direction) {
-        margin_start = margin_space / 2;
-        margin_end = margin_space - *margin_start;
+      if (free_space > LayoutUnit() || is_block_direction) {
+        margin_start = free_space / 2;
+        margin_end = free_space - *margin_start;
       } else {
         // Margins are negative.
         if (is_start_dominant) {
           margin_start = LayoutUnit();
-          margin_end = margin_space;
+          margin_end = free_space;
         } else {
-          margin_start = margin_space;
+          margin_start = free_space;
           margin_end = LayoutUnit();
         }
       }
     } else if (!margin_start) {
-      margin_start = margin_space - *margin_end;
+      margin_start = free_space;
     } else if (!margin_end) {
-      margin_end = margin_space - *margin_start;
+      margin_end = free_space;
     } else {
-      // Are the values over-constrained?
-      LayoutUnit margin_extra = margin_space - *margin_start - *margin_end;
-      if (margin_extra) {
-        // Relax the end.
-        if (is_start_dominant)
-          inset_end = *inset_end + margin_extra;
-        else
-          inset_start = *inset_start + margin_extra;
+      // Are the values over-constrained? Relax the end.
+      if (is_start_dominant) {
+        inset_end = *inset_end + free_space;
+      } else {
+        inset_start = *inset_start + free_space;
       }
     }
   }
