@@ -1,10 +1,16 @@
 <style>
+  :host {
+    --cr-theme-color-picker-column-width: 1fr;
+    --cr-theme-color-picker-grid-gap: 8px;
+    --cr-theme-color-picker-grid-padding: 0 16px;
+  }
+
   cr-grid {
-    --cr-column-width: 1fr;
-    --cr-grid-gap: 8px;
+    --cr-column-width: var(--cr-theme-color-picker-column-width);
+    --cr-grid-gap: var(--cr-theme-color-picker-grid-gap);
     box-sizing: border-box;
     display: block;
-    padding: 0 16px;
+    padding: var(--cr-theme-color-picker-grid-padding);
     width: 100%;
   }
 
@@ -58,7 +64,7 @@
   }
 </style>
 <!-- TODO(crbug.com/1395210): Make grid adaptive. -->
-<cr-grid columns="4" role="radiogroup"
+<cr-grid columns="[[columns]]" role="radiogroup"
     aria-label="[[i18n('colorsContainerLabel')]]">
   <template is="dom-if" if="[[!showMainColor_]]" restamp>
     <cr-theme-color

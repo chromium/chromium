@@ -100,6 +100,10 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         value: () =>
             document.documentElement.hasAttribute('chrome-refresh-2023'),
       },
+      columns: {
+        type: Number,
+        value: 4,
+      },
     };
   }
 
