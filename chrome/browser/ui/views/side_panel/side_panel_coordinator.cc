@@ -420,6 +420,7 @@ void SidePanelCoordinator::Show(
   }
 
   if (GetContentContainerView() == nullptr) {
+    CHECK(browser_view_->unified_side_panel());
     InitializeSidePanel();
     opened_timestamp_ = base::TimeTicks::Now();
     SidePanelUtil::RecordSidePanelOpen(open_trigger);
@@ -472,8 +473,12 @@ void SidePanelCoordinator::Show(
 }
 
 views::View* SidePanelCoordinator::GetContentContainerView() const {
-  return browser_view_->unified_side_panel()->GetViewByID(
-      kSidePanelContentContainerViewId);
+  if (const SidePanel* side_panel = browser_view_->unified_side_panel()) {
+    return browser_view_->unified_side_panel()->GetViewByID(
+        kSidePanelContentContainerViewId);
+  }
+
+  return nullptr;
 }
 
 SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
