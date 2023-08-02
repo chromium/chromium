@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   dlp::CheckFilesTransferRequest GetLastCheckFilesTransferRequest()
       const override;
   void SetRequestFileAccessMock(RequestFileAccessCall mock) override;
+  void SetCheckFilesTransferMock(CheckFilesTransferCall mock) override;
 
  private:
   int set_dlp_files_policy_count_ = 0;
@@ -68,6 +69,7 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   absl::optional<GetFilesSourceCall> get_files_source_mock_;
   dlp::CheckFilesTransferRequest last_check_files_transfer_request_;
   absl::optional<RequestFileAccessCall> request_file_access_mock_;
+  absl::optional<CheckFilesTransferCall> check_files_transfer_mock_;
   base::ObserverList<Observer> observers_;
 };
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -21,12 +22,16 @@
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -698,6 +703,50 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
     }
     if (name == "enableNewFilesPolicyUX") {
       policy::DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(true);
+      return true;
+    }
+    if (name == "setCheckFilesTransferMockToPause") {
+      base::FilePath download_path =
+          file_manager::util::GetDownloadsFolderForProfile(profile());
+      absl::optional<int> task_id = value.FindInt("taskId");
+      EXPECT_TRUE(task_id.has_value() && task_id.value() > 0);
+      const base::Value::List* file_names = value.FindList("fileNames");
+      EXPECT_TRUE(file_names);
+      std::vector<base::FilePath> warning_files;
+      for (const auto& file_name : *file_names) {
+        warning_files.emplace_back(download_path.value() + "/" +
+                                   file_name.GetString());
+      }
+      const std::string* action_str = value.FindString("action");
+      EXPECT_TRUE(action_str);
+      EXPECT_TRUE(*action_str == "copy" || *action_str == "move");
+      policy::dlp::FileAction action = *action_str == "copy"
+                                           ? policy::dlp::FileAction::kCopy
+                                           : policy::dlp::FileAction::kMove;
+      // FPNM is created lazily, so call it here to make sure it's created and
+      // starts tracking the tasks.
+      policy::FilesPolicyNotificationManager* fpnm =
+          policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+              profile());
+      EXPECT_TRUE(fpnm);
+
+      auto cb = base::BindLambdaForTesting(
+          [this, task_id, warning_files, action](
+              const dlp::CheckFilesTransferRequest,
+              chromeos::DlpClient::CheckFilesTransferCallback) {
+            policy::FilesPolicyNotificationManager* fpnm =
+                policy::FilesPolicyNotificationManagerFactory::
+                    GetForBrowserContext(profile());
+            ASSERT_TRUE(fpnm);
+            ASSERT_TRUE(fpnm->HasIOTask(task_id.value()));
+            // Call FPNM to show the warning, which pauses the task.
+            fpnm->ShowDlpWarning(base::DoNothing(), task_id,
+                                 std::move(warning_files),
+                                 policy::DlpFileDestination(), action);
+          });
+      chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
+      chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferMock(
+          cb);
       return true;
     }
     return false;
@@ -1807,7 +1856,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 #endif
         TestCase("fileTasksDlpRestricted").EnableDlp(),
         TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp(),
-        TestCase("blockShowsPanelItem").EnableDlp()));
+        TestCase("blockShowsPanelItem").EnableDlp(),
+        TestCase("warnShowsPanelItem").EnableDlp()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */

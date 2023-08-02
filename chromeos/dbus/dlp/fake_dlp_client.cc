@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -78,6 +77,10 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
 void FakeDlpClient::CheckFilesTransfer(
     const dlp::CheckFilesTransferRequest request,
     CheckFilesTransferCallback callback) {
+  if (check_files_transfer_mock_.has_value()) {
+    check_files_transfer_mock_->Run(request, std::move(callback));
+    return;
+  }
   last_check_files_transfer_request_ = request;
   dlp::CheckFilesTransferResponse response;
   if (check_files_transfer_response_.has_value()) {
@@ -154,6 +157,10 @@ dlp::CheckFilesTransferRequest FakeDlpClient::GetLastCheckFilesTransferRequest()
 
 void FakeDlpClient::SetRequestFileAccessMock(RequestFileAccessCall mock) {
   request_file_access_mock_ = std::move(mock);
+}
+
+void FakeDlpClient::SetCheckFilesTransferMock(CheckFilesTransferCall mock) {
+  check_files_transfer_mock_ = std::move(mock);
 }
 
 }  // namespace chromeos

@@ -36,6 +36,53 @@ async function copyOrMove(appId, file, destination, isCopy) {
 }
 
 /**
+ * Checks that the panel item with provided parameters exists.
+ * @param {string} appId ID of the Files app window.
+ * @param {string} primaryText Expected primary text.
+ * @param {string} secondaryText Expected secondary text.
+ * @param {string} status Expected status indicator (failure or warning).
+ * @return {Promise} Promise fulfilled on success.
+ */
+async function verifyPanelItem(appId, primaryText, secondaryText, status) {
+  const panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  chrome.test.assertEq(primaryText, panel.attributes['primary-text']);
+  chrome.test.assertEq(secondaryText, panel.attributes['secondary-text']);
+
+  chrome.test.assertEq('status', panel.attributes['indicator']);
+  chrome.test.assertEq(status, panel.attributes['status']);
+}
+
+/**
+ * Checks that the panel item's primary and secondary buttons have expected type
+ * and text, and then clicks the button defined by selectedButton.
+ * @param {string} appId ID of the Files app window.
+ * @param {string} secondaryButtonCategory Expected secondary button category
+ *     (dismiss or cancel).
+ * @param {string} selectedButton The button to click (primary or secondary).
+ */
+async function verifyPanelButtonsAndClick(
+    appId, secondaryButtonCategory, selectedButton) {
+  const primaryButton = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item', 'xf-button#primary-action']);
+  chrome.test.assertEq(
+      'extra-button', primaryButton.attributes['data-category']);
+
+  const secondaryButton = await remoteCall.waitForElement(
+      appId,
+      ['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']);
+  chrome.test.assertEq(
+      secondaryButtonCategory, secondaryButton.attributes['data-category']);
+
+  await remoteCall.waitAndClickElement(appId, [
+    '#progress-panel',
+    'xf-panel-item',
+    `xf-button#${selectedButton}-action`,
+  ]);
+}
+
+/**
  * Tests that DLP block toast is shown when a restricted file is cut.
  */
 testcase.transferShowDlpToast = async () => {
@@ -796,20 +843,12 @@ testcase.blockShowsPanelItem = async () => {
   // Copy and paste the file to USB.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
 
-  // Check the error panel is open and the primary and secondary text is
-  // correct.
-  let panel = await remoteCall.waitForElement(
-      appId, ['#progress-panel', 'xf-panel-item']);
-  chrome.test.assertEq(
-      'File blocked from copying', panel.attributes['primary-text']);
-  chrome.test.assertEq(
-      `${entry.nameText} was blocked because of policy`,
-      panel.attributes['secondary-text']);
-
-  // Dismiss.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId,
-      [['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']]));
+  // Check that the error panel is open with correct primary and secondary text,
+  // and has the expected button types.
+  await verifyPanelItem(
+      appId, 'File blocked from copying',
+      `${entry.nameText} was blocked because of policy`, 'failure');
+  await verifyPanelButtonsAndClick(appId, 'dismiss', 'secondary');
 
   // Navigate back to Downloads.
   await navigateWithDirectoryTree(appId, '/My files/Downloads');
@@ -817,13 +856,72 @@ testcase.blockShowsPanelItem = async () => {
   // Cut and paste the file to USB.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
 
-  // Check the error panel is open and the primary and secondary text is
-  // correct.
-  panel = await remoteCall.waitForElement(
-      appId, ['#progress-panel', 'xf-panel-item']);
-  chrome.test.assertEq(
-      'File blocked from moving', panel.attributes['primary-text']);
-  chrome.test.assertEq(
-      `${entry.nameText} was blocked because of policy`,
-      panel.attributes['secondary-text']);
+  // Check that the error panel is open with correct primary and secondary text,
+  // and has the expected button types.
+  await verifyPanelItem(
+      appId, 'File blocked from moving',
+      `${entry.nameText} was blocked because of policy`, 'failure');
+  await verifyPanelButtonsAndClick(appId, 'dismiss', 'primary');
+};
+
+/**
+ * Tests that a copy or move IO task that is paused due to warn restriction
+ * properly updates the task state and shows a correct panel item.
+ */
+testcase.warnShowsPanelItem = async () => {
+  // Enable the new UX flow.
+  await sendTestMessage({name: 'enableNewFilesPolicyUX'});
+
+  // Add entry to Downloads.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Set the mock to pause the first task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 1,
+    fileNames: [entry.nameText],
+    action: 'copy',
+  });
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Copy and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that the warning panel is open with correct primary and secondary
+  // text, and has the expected button types.
+  await verifyPanelItem(
+      appId, 'Review is required before copying',
+      `${entry.nameText} may contain sensitive content`, 'warning');
+  await verifyPanelButtonsAndClick(appId, 'cancel', 'secondary');
+
+  // Navigate back to Downloads.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // Set the first mock to pause the task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 2,
+    fileNames: [entry.nameText],
+    action: 'move',
+  });
+
+  // Cut and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
+
+  // Check that the warning panel is open with correct primary and secondary
+  // text, and has the expected button types.
+  await verifyPanelItem(
+      appId, 'Review is required before moving',
+      `${entry.nameText} may contain sensitive content`, 'warning');
+  await verifyPanelButtonsAndClick(appId, 'cancel', 'primary');
 };
