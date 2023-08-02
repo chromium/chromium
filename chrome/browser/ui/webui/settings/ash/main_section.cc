@@ -239,9 +239,9 @@ mojom::SearchResultIcon MainSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kMinValue;
 }
 
-std::string MainSection::GetSectionPath() const {
+const char* MainSection::GetSectionPath() const {
   NOTIMPLEMENTED();
-  return std::string();
+  return "";
 }
 
 bool MainSection::LogMetric(mojom::Setting setting, base::Value& value) const {

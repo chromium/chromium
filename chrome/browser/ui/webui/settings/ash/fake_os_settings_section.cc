@@ -72,8 +72,8 @@ mojom::SearchResultIcon FakeOsSettingsSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kWifi;
 }
 
-std::string FakeOsSettingsSection::GetSectionPath() const {
-  return std::string();
+const char* FakeOsSettingsSection::GetSectionPath() const {
+  return "";
 }
 
 bool FakeOsSettingsSection::LogMetric(mojom::Setting setting,

@@ -339,7 +339,7 @@ mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kMagnifyingGlass;
 }
 
-std::string SearchSection::GetSectionPath() const {
+const char* SearchSection::GetSectionPath() const {
   return mojom::kSearchAndAssistantSectionPath;
 }
 

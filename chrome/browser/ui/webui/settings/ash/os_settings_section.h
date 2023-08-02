@@ -120,8 +120,9 @@ class OsSettingsSection {
   // Provides the icon for this section.
   virtual mojom::SearchResultIcon GetSectionIcon() const = 0;
 
-  // Provides the path for this section.
-  virtual std::string GetSectionPath() const = 0;
+  // Provides the path for this section. Must return a string constant defined
+  // in `routes.mojom`.
+  virtual const char* GetSectionPath() const = 0;
 
   // Logs metrics for the updated |setting| with optional |value|. Returns
   // whether the setting change was logged.

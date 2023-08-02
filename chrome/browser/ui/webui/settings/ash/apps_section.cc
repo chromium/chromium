@@ -491,7 +491,7 @@ mojom::SearchResultIcon AppsSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kAppsGrid;
 }
 
-std::string AppsSection::GetSectionPath() const {
+const char* AppsSection::GetSectionPath() const {
   return mojom::kAppsSectionPath;
 }
 

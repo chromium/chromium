@@ -120,7 +120,7 @@ mojom::SearchResultIcon ResetSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kReset;
 }
 
-std::string ResetSection::GetSectionPath() const {
+const char* ResetSection::GetSectionPath() const {
   return mojom::kResetSectionPath;
 }
 

@@ -119,7 +119,7 @@ mojom::SearchResultIcon KerberosSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kAuthKey;
 }
 
-std::string KerberosSection::GetSectionPath() const {
+const char* KerberosSection::GetSectionPath() const {
   return mojom::kKerberosSectionPath;
 }
 

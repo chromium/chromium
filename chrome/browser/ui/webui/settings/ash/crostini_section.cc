@@ -546,7 +546,7 @@ mojom::SearchResultIcon CrostiniSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kDeveloperTags;
 }
 
-std::string CrostiniSection::GetSectionPath() const {
+const char* CrostiniSection::GetSectionPath() const {
   return mojom::kCrostiniSectionPath;
 }
 

@@ -1155,9 +1155,10 @@ mojom::SearchResultIcon AccessibilitySection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kA11y;
 }
 
-std::string AccessibilitySection::GetSectionPath() const {
+const char* AccessibilitySection::GetSectionPath() const {
   return mojom::kAccessibilitySectionPath;
 }
+
 bool AccessibilitySection::LogMetric(mojom::Setting setting,
                                      base::Value& value) const {
   // TODO(accessibility): Ensure to capture metrics for Switch Access's action

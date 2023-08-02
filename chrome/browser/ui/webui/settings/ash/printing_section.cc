@@ -338,7 +338,7 @@ mojom::SearchResultIcon PrintingSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kPrinter;
 }
 
-std::string PrintingSection::GetSectionPath() const {
+const char* PrintingSection::GetSectionPath() const {
   return mojom::kPrintingSectionPath;
 }
 

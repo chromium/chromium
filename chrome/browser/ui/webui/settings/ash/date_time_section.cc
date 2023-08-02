@@ -169,7 +169,7 @@ mojom::SearchResultIcon DateTimeSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kClock;
 }
 
-std::string DateTimeSection::GetSectionPath() const {
+const char* DateTimeSection::GetSectionPath() const {
   return mojom::kDateAndTimeSectionPath;
 }
 

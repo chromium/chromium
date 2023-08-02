@@ -47,7 +47,7 @@ class FakeOsSettingsSection : public OsSettingsSection {
 
   // These functions return arbitrary dummy values.
   mojom::SearchResultIcon GetSectionIcon() const override;
-  std::string GetSectionPath() const override;
+  const char* GetSectionPath() const override;
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
 

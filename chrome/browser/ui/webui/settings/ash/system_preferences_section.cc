@@ -49,7 +49,7 @@ mojom::SearchResultIcon SystemPreferencesSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kSystemPreferences;
 }
 
-std::string SystemPreferencesSection::GetSectionPath() const {
+const char* SystemPreferencesSection::GetSectionPath() const {
   return mojom::kSystemPreferencesSectionPath;
 }
 

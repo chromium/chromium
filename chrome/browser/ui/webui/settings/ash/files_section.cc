@@ -258,7 +258,7 @@ mojom::SearchResultIcon FilesSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kFolder;
 }
 
-std::string FilesSection::GetSectionPath() const {
+const char* FilesSection::GetSectionPath() const {
   return mojom::kFilesSectionPath;
 }
 

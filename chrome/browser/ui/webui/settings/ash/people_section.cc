@@ -654,7 +654,7 @@ mojom::SearchResultIcon PeopleSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kAvatar;
 }
 
-std::string PeopleSection::GetSectionPath() const {
+const char* PeopleSection::GetSectionPath() const {
   return mojom::kPeopleSectionPath;
 }
 

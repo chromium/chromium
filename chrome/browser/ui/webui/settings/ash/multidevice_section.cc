@@ -673,7 +673,7 @@ mojom::SearchResultIcon MultiDeviceSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kPhone;
 }
 
-std::string MultiDeviceSection::GetSectionPath() const {
+const char* MultiDeviceSection::GetSectionPath() const {
   return mojom::kMultiDeviceSectionPath;
 }
 

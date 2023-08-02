@@ -1252,7 +1252,7 @@ mojom::SearchResultIcon DeviceSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kLaptop;
 }
 
-std::string DeviceSection::GetSectionPath() const {
+const char* DeviceSection::GetSectionPath() const {
   return mojom::kDeviceSectionPath;
 }
 

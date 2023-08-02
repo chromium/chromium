@@ -491,7 +491,7 @@ mojom::SearchResultIcon PrivacySection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kShield;
 }
 
-std::string PrivacySection::GetSectionPath() const {
+const char* PrivacySection::GetSectionPath() const {
   return mojom::kPrivacyAndSecuritySectionPath;
 }
 

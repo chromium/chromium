@@ -610,7 +610,7 @@ mojom::SearchResultIcon LanguagesSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kGlobe;
 }
 
-std::string LanguagesSection::GetSectionPath() const {
+const char* LanguagesSection::GetSectionPath() const {
   return mojom::kLanguagesAndInputSectionPath;
 }
 

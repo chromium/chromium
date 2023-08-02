@@ -358,7 +358,7 @@ mojom::SearchResultIcon BluetoothSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kBluetooth;
 }
 
-std::string BluetoothSection::GetSectionPath() const {
+const char* BluetoothSection::GetSectionPath() const {
   return mojom::kBluetoothSectionPath;
 }
 

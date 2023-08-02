@@ -62,7 +62,7 @@ mojom::SearchResultIcon PersonalizationSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kPaintbrush;
 }
 
-std::string PersonalizationSection::GetSectionPath() const {
+const char* PersonalizationSection::GetSectionPath() const {
   return mojom::kPersonalizationSectionPath;
 }
 

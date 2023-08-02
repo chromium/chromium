@@ -501,7 +501,7 @@ mojom::SearchResultIcon AboutSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kChrome;
 }
 
-std::string AboutSection::GetSectionPath() const {
+const char* AboutSection::GetSectionPath() const {
   return mojom::kAboutChromeOsSectionPath;
 }
 

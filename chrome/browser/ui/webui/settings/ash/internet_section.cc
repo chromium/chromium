@@ -1165,7 +1165,7 @@ mojom::SearchResultIcon InternetSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kWifi;
 }
 
-std::string InternetSection::GetSectionPath() const {
+const char* InternetSection::GetSectionPath() const {
   return mojom::kNetworkSectionPath;
 }
 
