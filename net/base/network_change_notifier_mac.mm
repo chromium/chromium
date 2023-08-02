@@ -20,10 +20,6 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The maximum number of seconds to wait for the connection type to be
 // determined.
