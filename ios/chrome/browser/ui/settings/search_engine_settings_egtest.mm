@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -114,6 +115,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
 - (void)testChangeSearchEngine {
+  // TODO(crbug.com/1469573): Test flaky on iOS 17.
+  if (!base::ios::IsRunningOnIOS17OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 17.");
+  }
+
   self.testServer->RegisterRequestHandler(base::BindRepeating(&SearchResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
