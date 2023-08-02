@@ -155,22 +155,26 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
   return !testing::Test::HasFatalFailure();
 }
 
-bool SendMouseMoveSync(const gfx::Point& location) {
+bool SendMouseMoveSync(const gfx::Point& location,
+                       gfx::NativeWindow window_hint) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   if (!ui_controls::SendMouseMoveNotifyWhenDone(
-          location.x(), location.y(), runner->QuitClosure())) {
+          location.x(), location.y(), runner->QuitClosure(), window_hint)) {
     return false;
   }
   runner->Run();
   return !testing::Test::HasFatalFailure();
 }
 
-bool SendMouseEventsSync(ui_controls::MouseButton type, int button_state) {
+bool SendMouseEventsSync(ui_controls::MouseButton type,
+                         int button_state,
+                         gfx::NativeWindow window_hint) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
-  if (!ui_controls::SendMouseEventsNotifyWhenDone(type, button_state,
-                                                  runner->QuitClosure())) {
+  if (!ui_controls::SendMouseEventsNotifyWhenDone(
+          type, button_state, runner->QuitClosure(),
+          ui_controls::kNoAccelerator, window_hint)) {
     return false;
   }
   runner->Run();

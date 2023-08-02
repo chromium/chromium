@@ -124,9 +124,13 @@ void HideNativeWindow(gfx::NativeWindow window);
 // Sends a move event blocking until received. Returns true if the event was
 // successfully received. This uses ui_controls::SendMouse***NotifyWhenDone,
 // see it for details.
-[[nodiscard]] bool SendMouseMoveSync(const gfx::Point& location);
-[[nodiscard]] bool SendMouseEventsSync(ui_controls::MouseButton type,
-                                       int button_state);
+[[nodiscard]] bool SendMouseMoveSync(
+    const gfx::Point& location,
+    gfx::NativeWindow window_hint = ui_controls::kNoWindowHint);
+[[nodiscard]] bool SendMouseEventsSync(
+    ui_controls::MouseButton type,
+    int button_state,
+    gfx::NativeWindow window_hint = ui_controls::kNoWindowHint);
 
 // A combination of SendMouseMove to the middle of the view followed by
 // SendMouseEvents. Only exposed for toolkit-views.
