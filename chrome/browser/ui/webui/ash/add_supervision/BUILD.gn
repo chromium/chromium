@@ -8,5 +8,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash)
 
 mojom("mojo_bindings") {
+  webui_module_path = "/"
   sources = [ "add_supervision.mojom" ]
 }

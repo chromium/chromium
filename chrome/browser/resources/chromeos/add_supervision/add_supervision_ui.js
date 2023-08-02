@@ -8,8 +8,9 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AddSupervisionHandler, OAuthTokenFetchStatus} from './add_supervision.mojom-webui.js';
 import {AddSupervisionAPIServer} from './add_supervision_api_server.js';
 
 /**
@@ -66,40 +67,37 @@ function isAllowedRequest(requestDetails) {
   return isLocalHostForTesting(requestUrl) || isAllowedHost(requestUrl);
 }
 
-const addSupervisionHandler =
-    addSupervision.mojom.AddSupervisionHandler.getRemote();
+class AddSupervisionUi extends PolymerElement {
+  static get is() {
+    return 'add-supervision-ui';
+  }
 
-Polymer({
-  is: 'add-supervision-ui',
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  _template: html`{__html_template__}`,
+  static get properties() {
+    return {
+      /** Indicates whether the webview is loading. */
+      webviewLoading: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
 
-  properties: {
-    /** Indicates whether the webview is loading. */
-    webviewLoading: {
-      type: Boolean,
-      value: true,
-    },
-  },
-
-  /** Attempts to close the dialog. */
-  closeDialog_() {
-    this.server.requestClose();
-  },
-
-  /** Triggers the error page. */
-  showErrorPage() {
-    this.dispatchEvent(new CustomEvent('show-error', {
-      bubbles: true,
-      composed: true,
-    }));
-  },
+  constructor() {
+    super();
+    this.server_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+    const addSupervisionHandler = AddSupervisionHandler.getRemote();
     addSupervisionHandler.getOAuthToken().then((result) => {
       // Setup should terminate early if OAuth Token fetching fails.
-      if (result.status === addSupervision.mojom.OAuthTokenFetchStatus.ERROR) {
+      if (result.status === OAuthTokenFetchStatus.ERROR) {
         this.showErrorPage();
         return;
       }
@@ -156,8 +154,21 @@ Polymer({
       webview.src = url.toString();
 
       // Set up the server.
-      this.server =
+      this.server_ =
           new AddSupervisionAPIServer(this, webview, url, eventOriginFilter);
     });
-  },
-});
+  }
+
+  showErrorPage() {
+    this.dispatchEvent(new CustomEvent('show-error', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  getAPIServerForTest() {
+    return this.server_;
+  }
+}
+
+customElements.define(AddSupervisionUi.is, AddSupervisionUi);

@@ -4,6 +4,7 @@
 
 import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
+import {AddSupervisionHandler} from './add_supervision.mojom-webui.js';
 import {isLocalHostForTesting} from './add_supervision_ui.js';
 
 /**
@@ -28,8 +29,7 @@ export class AddSupervisionAPIServer extends PostMessageAPIServer {
 
     this.ui_ = ui;
 
-    this.addSupervisionHandler_ =
-        addSupervision.mojom.AddSupervisionHandler.getRemote();
+    this.addSupervisionHandler_ = AddSupervisionHandler.getRemote();
 
     this.registerMethod('logOut', this.logOut.bind(this));
     this.registerMethod(
