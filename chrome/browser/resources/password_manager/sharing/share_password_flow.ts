@@ -46,6 +46,11 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
 
       fetchResults_: Object,
 
+      recipients_: {
+        type: Array,
+        value: [],
+      },
+
       flowStateEnum_: {
         type: Object,
         value: ShareFlowState,
@@ -56,6 +61,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
 
   passwordName: string;
   flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
+  private recipients_: chrome.passwordsPrivate.RecipientInfo[];
   private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|null = null;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
@@ -98,6 +104,10 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
     this.dispatchEvent(
         new CustomEvent('share-flow-done', {bubbles: true, composed: true}));
     this.flowState = ShareFlowState.NO_DIALOG;
+  }
+
+  private onStartShare_() {
+    // TODO(crbug/1445526): Show loading state.
   }
 }
 

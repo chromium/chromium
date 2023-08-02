@@ -19,7 +19,7 @@ export interface SharePasswordFamilyPickerDialogElement {
   $: {
     header: HTMLElement,
     description: HTMLElement,
-    action: HTMLElement,
+    action: HTMLButtonElement,
     cancel: HTMLElement,
     avatar: HTMLImageElement,
     manageLink: HTMLAnchorElement,
@@ -42,6 +42,13 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
       dialogTitle: String,
       members: Array,
 
+      selectedRecipients: {
+        type: Array,
+        value: [],
+        reflectToAttribute: true,
+        notify: true,
+      },
+
       eligibleRecipients_: {
         type: Array,
         computed: 'computeEligible_(members)',
@@ -56,6 +63,7 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
 
   dialogTitle: string;
   members: chrome.passwordsPrivate.RecipientInfo[];
+  selectedRecipients: chrome.passwordsPrivate.RecipientInfo[];
   private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
   private ineligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
 
@@ -74,6 +82,19 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
     const inEligibleMembers = this.members.filter(member => !member.isEligible);
     inEligibleMembers.sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
     return inEligibleMembers;
+  }
+
+  private recipientSelected_(): void {
+    this.selectedRecipients =
+        Array
+            .from(this.shadowRoot!.querySelectorAll('share-password-recipient'))
+            .filter(item => item.selected)
+            .map(item => item.recipient);
+  }
+
+  private onClickShare_() {
+    this.dispatchEvent(
+        new CustomEvent('start-share', {bubbles: true, composed: true}));
   }
 }
 
