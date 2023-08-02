@@ -64,17 +64,21 @@ OsSettingsManager::OsSettingsManager(
 OsSettingsManager::~OsSettingsManager() = default;
 
 void OsSettingsManager::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  for (const auto& section : sections_->sections())
+  for (const auto& section : sections_->sections()) {
     section->AddLoadTimeData(html_source);
+  }
   html_source->AddBoolean("isJellyEnabled",
                           chromeos::features::IsJellyEnabled());
+  html_source->AddBoolean("isCrosComponentsEnabled",
+                          chromeos::features::IsCrosComponentsEnabled());
   html_source->AddBoolean("isSelfShareEnabled", features::IsSelfShareEnabled());
   html_source->UseStringsJs();
 }
 
 void OsSettingsManager::AddHandlers(content::WebUI* web_ui) {
-  for (const auto& section : sections_->sections())
+  for (const auto& section : sections_->sections()) {
     section->AddHandlers(web_ui);
+  }
 }
 
 void OsSettingsManager::Shutdown() {

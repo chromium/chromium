@@ -95,10 +95,21 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
 
   bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   source->AddBoolean("isJellyEnabled", is_jelly_enabled);
+  source->AddBoolean("isCrosComponentsEnabled",
+                     chromeos::features::IsCrosComponentsEnabled());
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_SMB_SHARES_DIALOG_CONTAINER_HTML);
   source->AddResourcePath("smb_share_dialog.js", IDR_SMB_SHARES_DIALOG_JS);
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types parse-html-subset sanitize-inner-html static-types "
+      "ash-deprecated-parse-html-subset "
+      // Required by lit-html.
+      "lit-html "
+      // Required by polymer.
+      "polymer-html-literal polymer-template-event-attribute-policy;");
 
   web_ui->AddMessageHandler(std::make_unique<SmbHandler>(
       Profile::FromWebUI(web_ui), base::DoNothing()));
