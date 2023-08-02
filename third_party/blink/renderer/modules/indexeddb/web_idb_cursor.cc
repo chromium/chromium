@@ -194,8 +194,19 @@ void WebIDBCursor::CachedContinue(IDBRequest* request) {
 
   // May be null in tests.
   if (request) {
-    request->HandleResponse(std::move(key), std::move(primary_key),
-                            std::move(value));
+    // Since the cached request is not round tripping through the browser
+    // process, the request has to be explicitly queued. See step 11 of
+    // https://www.w3.org/TR/IndexedDB/#dom-idbcursor-continue
+    // This is prevented from becoming out-of-order with other requests that
+    // do travel through the browser process by the fact that any previous
+    // request currently making its way through the browser would have already
+    // cleared this cache via `ResetCursorPrefetchCaches()`.
+    request->GetExecutionContext()
+        ->GetTaskRunner(TaskType::kDatabaseAccess)
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&IDBRequest::HandleResponseAdvanceCursor,
+                                 WrapWeakPersistent(request), std::move(key),
+                                 std::move(primary_key), std::move(value)));
   }
 }
 

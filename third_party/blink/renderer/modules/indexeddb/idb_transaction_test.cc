@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
@@ -178,9 +177,6 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
                          transaction_.Get(), IDBRequest::AsyncTraceState());
   scope.PerformMicrotaskCheckpoint();
 
-  // This response should result in an event being enqueued immediately.
-  request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), false));
-
   request.Clear();  // The transaction is holding onto the request.
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(1U, live_transactions->size());
@@ -195,8 +191,6 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
   store_.Clear();
   database_backend.Flush();
 
-  // The request completed, so it has enqueued a success event. Discard the
-  // event, so that the transaction can go away.
   EXPECT_EQ(1U, live_transactions->size());
 
   ThreadState::Current()->CollectAllGarbageForTesting();

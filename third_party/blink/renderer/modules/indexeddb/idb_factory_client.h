@@ -39,7 +39,7 @@
 
 namespace blink {
 
-class IDBRequest;
+class IDBOpenDBRequest;
 struct IDBDatabaseMetadata;
 
 class MODULES_EXPORT IDBFactoryClient final
@@ -47,12 +47,7 @@ class MODULES_EXPORT IDBFactoryClient final
   USING_FAST_MALLOC(IDBFactoryClient);
 
  public:
-  // |kNoTransaction| is used as the default transaction ID when instantiating
-  // an IDBFactoryClient instance.  See web_idb_factory_impl.cc for those
-  // cases.
-  enum : int64_t { kNoTransaction = -1 };
-
-  explicit IDBFactoryClient(IDBRequest*);
+  explicit IDBFactoryClient(IDBOpenDBRequest* request);
   ~IDBFactoryClient() override;
 
   void DetachRequest();
@@ -74,7 +69,7 @@ class MODULES_EXPORT IDBFactoryClient final
   void Detach();
   void DetachFromRequest();
 
-  Persistent<IDBRequest> request_;
+  Persistent<IDBOpenDBRequest> request_;
   probe::AsyncTaskContext async_task_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

@@ -55,7 +55,9 @@ function doubleContinueCallback()
         shouldBe("cursor.value.x", "" + self.continueValue);
 
         // Data should not change during iteration, even if continue() is called and extra time.
+        shouldBe("event.target.readyState", "'done'");
         evalAndLog("cursor.continue()");
+        shouldBe("event.target.readyState", "'pending'");
         shouldBe("cursor.key", "" + self.continueValue);
         shouldBe("cursor.value.x", "" + self.continueValue);
 

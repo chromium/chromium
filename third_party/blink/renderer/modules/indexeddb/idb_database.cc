@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -103,8 +102,6 @@ IDBDatabase::IDBDatabase(
       ExecutionContextLifecycleObserver(context),
       backend_(std::move(backend)),
       connection_lifetime_(std::move(connection_lifetime)),
-      event_queue_(
-          MakeGarbageCollected<EventQueue>(context, TaskType::kDatabaseAccess)),
       callbacks_receiver_(this, context) {
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
@@ -118,7 +115,6 @@ IDBDatabase::~IDBDatabase() {
 void IDBDatabase::Trace(Visitor* visitor) const {
   visitor->Trace(version_change_transaction_);
   visitor->Trace(transactions_);
-  visitor->Trace(event_queue_);
   visitor->Trace(callbacks_receiver_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
@@ -151,16 +147,20 @@ void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
   }
 }
 
+void IDBDatabase::TransactionWillFinish(const IDBTransaction* transaction) {
+  if (version_change_transaction_ && transaction->IsVersionChange()) {
+    DCHECK_EQ(version_change_transaction_, transaction);
+    version_change_transaction_ = nullptr;
+  }
+}
+
 void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
   DCHECK(transaction);
   DCHECK(transactions_.Contains(transaction->Id()));
   DCHECK_EQ(transactions_.at(transaction->Id()), transaction);
   transactions_.erase(transaction->Id());
 
-  if (transaction->IsVersionChange()) {
-    DCHECK_EQ(version_change_transaction_, transaction);
-    version_change_transaction_ = nullptr;
-  }
+  TransactionWillFinish(transaction);
 
   if (close_pending_ && transactions_.empty())
     CloseConnection();
@@ -168,9 +168,9 @@ void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
 
 void IDBDatabase::ForcedClose() {
   for (const auto& it : transactions_)
-    it.value->abort(IGNORE_EXCEPTION_FOR_TESTING);
+    it.value->StartAborting(nullptr);
   this->close();
-  EnqueueEvent(Event::Create(event_type_names::kClose));
+  DispatchEvent(*Event::Create(event_type_names::kClose));
 }
 
 void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
@@ -190,7 +190,7 @@ void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
   if (new_version != IDBDatabaseMetadata::kNoVersion) {
     new_version_nullable = new_version;
   }
-  EnqueueEvent(MakeGarbageCollected<IDBVersionChangeEvent>(
+  DispatchEvent(*MakeGarbageCollected<IDBVersionChangeEvent>(
       event_type_names::kVersionchange, old_version, new_version_nullable));
 }
 
@@ -432,21 +432,6 @@ void IDBDatabase::CloseConnection() {
 
   if (callbacks_receiver_.is_bound())
     callbacks_receiver_.reset();
-
-  if (!GetExecutionContext())
-    return;
-
-  // Remove any pending versionchange events scheduled to fire on this
-  // connection. They would have been scheduled by the backend when another
-  // connection attempted an upgrade, but the frontend connection is being
-  // closed before they could fire.
-  event_queue_->CancelAllEvents();
-}
-
-void IDBDatabase::EnqueueEvent(Event* event) {
-  DCHECK(GetExecutionContext());
-  event->SetTarget(this);
-  event_queue_->EnqueueEvent(FROM_HERE, *event);
 }
 
 DispatchEventResult IDBDatabase::DispatchEventInternal(Event& event) {

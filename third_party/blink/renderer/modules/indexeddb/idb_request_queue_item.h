@@ -52,41 +52,35 @@ class IDBRequestQueueItem {
  public:
   IDBRequestQueueItem(IDBRequest*,
                       DOMException*,
-                      base::OnceClosure on_result_load_complete);
-  IDBRequestQueueItem(IDBRequest*,
-                      int64_t,
-                      base::OnceClosure on_result_load_complete);
-  IDBRequestQueueItem(IDBRequest*, base::OnceClosure on_result_load_complete);
+                      base::OnceClosure on_result_ready);
+  IDBRequestQueueItem(IDBRequest*, int64_t, base::OnceClosure on_result_ready);
+  IDBRequestQueueItem(IDBRequest*, base::OnceClosure on_result_ready);
   IDBRequestQueueItem(IDBRequest*,
                       std::unique_ptr<IDBKey>,
-                      base::OnceClosure on_result_load_complete);
+                      base::OnceClosure on_result_ready);
   IDBRequestQueueItem(IDBRequest*,
                       std::unique_ptr<IDBValue>,
-                      bool attach_loader,
                       base::OnceClosure on_load_complete);
   IDBRequestQueueItem(IDBRequest*,
                       Vector<std::unique_ptr<IDBValue>>,
-                      bool attach_loader,
-                      base::OnceClosure on_result_load_complete);
+                      base::OnceClosure on_result_ready);
   IDBRequestQueueItem(IDBRequest*,
                       std::unique_ptr<IDBKey>,
                       std::unique_ptr<IDBKey> primary_key,
                       std::unique_ptr<IDBValue>,
-                      bool attach_loader,
-                      base::OnceClosure on_result_load_complete);
+                      base::OnceClosure on_result_ready);
   IDBRequestQueueItem(IDBRequest*,
                       std::unique_ptr<WebIDBCursor>,
                       std::unique_ptr<IDBKey>,
                       std::unique_ptr<IDBKey> primary_key,
                       std::unique_ptr<IDBValue>,
-                      bool attach_loader,
-                      base::OnceClosure on_result_load_complete);
+                      base::OnceClosure on_result_ready);
   // Asynchronous fetching of multiple results.
   IDBRequestQueueItem(
       IDBRequest*,
       bool key_only,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver,
-      base::OnceClosure on_result_load_complete);
+      base::OnceClosure on_result_ready);
 
   ~IDBRequestQueueItem();
 
@@ -110,10 +104,10 @@ class IDBRequestQueueItem {
   // This method may be called without an associated StartLoading().
   void CancelLoading();
 
-  // Calls the correct EnqueueResponse overload on the associated request.
+  // Calls the correct SendResult overload on the associated request.
   //
   // This should only be called by the request's IDBTransaction.
-  void EnqueueResponse();
+  void SendResult();
 
   // Called by the associated IDBRequestLoader when result processing is done.
   void OnResultLoadComplete();
@@ -171,27 +165,29 @@ class IDBRequestQueueItem {
   Persistent<IDBRequestLoader> loader_;
 
   // Called when result post-processing has completed.
-  base::OnceClosure on_result_load_complete_;
+  base::OnceClosure on_result_ready_;
 
   // The integer value argument to the IDBRequest callback.
   int64_t int64_value_;
 
-  // Identifies the IDBRequest::EnqueueResponse() overload that will be called.
+  // Identifies the IDBRequest::SendResult() overload that will be called.
   ResponseType response_type_;
 
-  // False if this result still requires post-processing.
-  bool ready_;
+  // This always starts as false. Call `StartLoading()` to begin loading and
+  // post-processing. If none is required, `ready_` will be set to true and
+  // `on_result_ready_` will be fired immediately.
+  bool ready_ = false;
 
   // True iff this result has started loading.
   bool started_loading_ = false;
 
 #if DCHECK_IS_ON()
-  // True if the appropriate EnqueueResponse() method was called in IDBRequest.
+  // True if the appropriate `SendResult()` method was called in `IDBRequest`.
   //
-  // If CancelLoading() is called, the ResponseType might be kCanceled. In this
-  // case, callback_fired_ can be set to true even though no EnqueueResponse()
-  // call occurs.
-  bool callback_fired_ = false;
+  // If `CancelLoading()` is called, `response_type_` might be `kCanceled`. In
+  // this case, `result_sent_` can be set to true even though no
+  // `IDBRequest::SendResult()` call occurs.
+  bool result_sent_ = false;
 #endif  // DCHECK_IS_ON()
 };
 

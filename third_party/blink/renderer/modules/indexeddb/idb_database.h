@@ -82,6 +82,13 @@ class MODULES_EXPORT IDBDatabase final
   // versionchage transaction is aborted.
   void SetDatabaseMetadata(const IDBDatabaseMetadata&);
   void TransactionCreated(IDBTransaction*);
+
+  // If `transaction` is an upgrade transaction, verifies that it is the same as
+  // `version_change_transaction_` and clears that member. Called in both abort
+  // and commit paths.
+  void TransactionWillFinish(const IDBTransaction* transaction);
+
+  // This will be called after the transaction's final event dispatch.
   void TransactionFinished(const IDBTransaction*);
 
   // Implement the IDL
@@ -129,7 +136,6 @@ class MODULES_EXPORT IDBDatabase final
 
   bool IsClosePending() const { return close_pending_; }
   const IDBDatabaseMetadata& Metadata() const { return metadata_; }
-  void EnqueueEvent(Event*);
 
   int64_t FindObjectStoreId(const String& name) const;
   bool ContainsObjectStore(const String& name) const {
@@ -183,8 +189,6 @@ class MODULES_EXPORT IDBDatabase final
   mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime_;
 
   bool close_pending_ = false;
-
-  Member<EventQueue> event_queue_;
 
   HeapMojoAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks, IDBDatabase>
       callbacks_receiver_;

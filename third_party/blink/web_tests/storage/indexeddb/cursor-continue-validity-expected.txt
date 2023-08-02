@@ -46,7 +46,9 @@ cursor = event.target.result
 Checking value at 0
 PASS cursor.key is 0
 PASS cursor.value.x is 0
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 0
 PASS cursor.value.x is 0
 Expecting exception from cursor.continue()
@@ -61,7 +63,9 @@ cursor = event.target.result
 Checking value at 1
 PASS cursor.key is 1
 PASS cursor.value.x is 1
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 1
 PASS cursor.value.x is 1
 Expecting exception from cursor.continue()
@@ -76,7 +80,9 @@ cursor = event.target.result
 Checking value at 2
 PASS cursor.key is 2
 PASS cursor.value.x is 2
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 2
 PASS cursor.value.x is 2
 Expecting exception from cursor.continue()
@@ -91,7 +97,9 @@ cursor = event.target.result
 Checking value at 3
 PASS cursor.key is 3
 PASS cursor.value.x is 3
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 3
 PASS cursor.value.x is 3
 Expecting exception from cursor.continue()
@@ -106,7 +114,9 @@ cursor = event.target.result
 Checking value at 4
 PASS cursor.key is 4
 PASS cursor.value.x is 4
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 4
 PASS cursor.value.x is 4
 Expecting exception from cursor.continue()
@@ -121,7 +131,9 @@ cursor = event.target.result
 Checking value at 5
 PASS cursor.key is 5
 PASS cursor.value.x is 5
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 5
 PASS cursor.value.x is 5
 Expecting exception from cursor.continue()
@@ -136,7 +148,9 @@ cursor = event.target.result
 Checking value at 6
 PASS cursor.key is 6
 PASS cursor.value.x is 6
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 6
 PASS cursor.value.x is 6
 Expecting exception from cursor.continue()
@@ -151,7 +165,9 @@ cursor = event.target.result
 Checking value at 7
 PASS cursor.key is 7
 PASS cursor.value.x is 7
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 7
 PASS cursor.value.x is 7
 Expecting exception from cursor.continue()
@@ -166,7 +182,9 @@ cursor = event.target.result
 Checking value at 8
 PASS cursor.key is 8
 PASS cursor.value.x is 8
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 8
 PASS cursor.value.x is 8
 Expecting exception from cursor.continue()
@@ -181,7 +199,9 @@ cursor = event.target.result
 Checking value at 9
 PASS cursor.key is 9
 PASS cursor.value.x is 9
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 9
 PASS cursor.value.x is 9
 Expecting exception from cursor.continue()
@@ -196,7 +216,9 @@ cursor = event.target.result
 Checking value at 10
 PASS cursor.key is 10
 PASS cursor.value.x is 10
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 10
 PASS cursor.value.x is 10
 Expecting exception from cursor.continue()
@@ -211,7 +233,9 @@ cursor = event.target.result
 Checking value at 11
 PASS cursor.key is 11
 PASS cursor.value.x is 11
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 11
 PASS cursor.value.x is 11
 Expecting exception from cursor.continue()
@@ -226,7 +250,9 @@ cursor = event.target.result
 Checking value at 12
 PASS cursor.key is 12
 PASS cursor.value.x is 12
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 12
 PASS cursor.value.x is 12
 Expecting exception from cursor.continue()
@@ -241,7 +267,9 @@ cursor = event.target.result
 Checking value at 13
 PASS cursor.key is 13
 PASS cursor.value.x is 13
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 13
 PASS cursor.value.x is 13
 Expecting exception from cursor.continue()
@@ -256,7 +284,9 @@ cursor = event.target.result
 Checking value at 14
 PASS cursor.key is 14
 PASS cursor.value.x is 14
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 14
 PASS cursor.value.x is 14
 Expecting exception from cursor.continue()
@@ -271,7 +301,9 @@ cursor = event.target.result
 Checking value at 15
 PASS cursor.key is 15
 PASS cursor.value.x is 15
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 15
 PASS cursor.value.x is 15
 Expecting exception from cursor.continue()
@@ -286,7 +318,9 @@ cursor = event.target.result
 Checking value at 16
 PASS cursor.key is 16
 PASS cursor.value.x is 16
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 16
 PASS cursor.value.x is 16
 Expecting exception from cursor.continue()
@@ -301,7 +335,9 @@ cursor = event.target.result
 Checking value at 17
 PASS cursor.key is 17
 PASS cursor.value.x is 17
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 17
 PASS cursor.value.x is 17
 Expecting exception from cursor.continue()
@@ -316,7 +352,9 @@ cursor = event.target.result
 Checking value at 18
 PASS cursor.key is 18
 PASS cursor.value.x is 18
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 18
 PASS cursor.value.x is 18
 Expecting exception from cursor.continue()
@@ -331,7 +369,9 @@ cursor = event.target.result
 Checking value at 19
 PASS cursor.key is 19
 PASS cursor.value.x is 19
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 19
 PASS cursor.value.x is 19
 Expecting exception from cursor.continue()
@@ -346,7 +386,9 @@ cursor = event.target.result
 Checking value at 20
 PASS cursor.key is 20
 PASS cursor.value.x is 20
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 20
 PASS cursor.value.x is 20
 Expecting exception from cursor.continue()
@@ -361,7 +403,9 @@ cursor = event.target.result
 Checking value at 21
 PASS cursor.key is 21
 PASS cursor.value.x is 21
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 21
 PASS cursor.value.x is 21
 Expecting exception from cursor.continue()
@@ -376,7 +420,9 @@ cursor = event.target.result
 Checking value at 22
 PASS cursor.key is 22
 PASS cursor.value.x is 22
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 22
 PASS cursor.value.x is 22
 Expecting exception from cursor.continue()
@@ -391,7 +437,9 @@ cursor = event.target.result
 Checking value at 23
 PASS cursor.key is 23
 PASS cursor.value.x is 23
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 23
 PASS cursor.value.x is 23
 Expecting exception from cursor.continue()
@@ -406,7 +454,9 @@ cursor = event.target.result
 Checking value at 24
 PASS cursor.key is 24
 PASS cursor.value.x is 24
+PASS event.target.readyState is 'done'
 cursor.continue()
+PASS event.target.readyState is 'pending'
 PASS cursor.key is 24
 PASS cursor.value.x is 24
 Expecting exception from cursor.continue()

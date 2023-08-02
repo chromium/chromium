@@ -56,14 +56,25 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   void Trace(Visitor*) const override;
 
-  void EnqueueBlocked(int64_t existing_version) override;
-  void EnqueueUpgradeNeeded(int64_t old_version,
-                            std::unique_ptr<WebIDBDatabase>,
-                            const IDBDatabaseMetadata&,
-                            mojom::IDBDataLoss,
-                            String data_loss_message) override;
-  void EnqueueResponse(std::unique_ptr<WebIDBDatabase>,
-                       const IDBDatabaseMetadata&) override;
+  // Returns a new IDBFactoryClient for this request.
+  //
+  // Each call must be paired with a FactoryClientDestroyed() call.
+  std::unique_ptr<IDBFactoryClient> CreateFactoryClient();
+  void FactoryClientDestroyed(IDBFactoryClient*);
+
+  // These methods dispatch results directly, skipping the transaction's result
+  // queue (see IDBRequest::HandleResponse()). This is safe because the open
+  // request cannot be issued after a request that needs processing.
+  void OnBlocked(int64_t existing_version);
+  void OnUpgradeNeeded(int64_t old_version,
+                       std::unique_ptr<WebIDBDatabase>,
+                       const IDBDatabaseMetadata&,
+                       mojom::blink::IDBDataLoss,
+                       String data_loss_message);
+  void OnOpenDBSuccess(std::unique_ptr<WebIDBDatabase>,
+                       const IDBDatabaseMetadata&);
+  void OnDeleteDBSuccess(int64_t old_version);
+  void OnDBFactoryError(DOMException*);
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() final;
@@ -75,9 +86,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(upgradeneeded, kUpgradeneeded)
 
  protected:
-  void EnqueueResponse(int64_t old_version) override;
-
-  bool ShouldEnqueueEvent() const override;
+  bool CanStillSendResult() const override;
 
   // EventTarget
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -94,6 +103,10 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   base::Time start_time_;
   bool open_time_recorded_ = false;
+
+  // Pointer back to the IDBFactoryClient that holds a persistent reference
+  // to this object.
+  IDBFactoryClient* factory_client_ = nullptr;
 };
 
 }  // namespace blink

@@ -302,12 +302,21 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
       std::move(transaction_remote), transaction_id, version,
       std::move(metrics), GetObservedFeature());
 
-  AllowIndexedDB(
-      context,
+  auto do_open =
       WTF::BindOnce(&IDBFactory::OpenInternalImpl, WrapWeakPersistent(this),
                     WrapPersistent(request), std::move(callbacks_remote),
                     std::move(transaction_receiver), std::ref(factory), name,
-                    version, transaction_id));
+                    version, transaction_id);
+  if (allowed_.has_value() && !*allowed_) {
+    // When the permission state is cached, `AllowIndexedDB` will invoke its
+    // callback synchronously, and thus we'd dispatch the error event
+    // synchronously. As per IDB spec, firing the event at the request has to be
+    // asynchronous.
+    context->GetTaskRunner(TaskType::kDatabaseAccess)
+        ->PostTask(FROM_HERE, std::move(do_open));
+  } else {
+    AllowIndexedDB(context, std::move(do_open));
+  }
   return request;
 }
 
@@ -321,8 +330,12 @@ void IDBFactory::OpenInternalImpl(
     const String& name,
     int64_t version,
     int64_t transaction_id) {
-  if (!request->GetExecutionContext() || !allowed_.value()) {
-    request->HandleResponse(MakeGarbageCollected<DOMException>(
+  if (!request->GetExecutionContext()) {
+    return;
+  }
+
+  if (!allowed_.value()) {
+    request->OnDBFactoryError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
     return;
   }
@@ -386,10 +399,19 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
       GetObservedFeature());
 
-  AllowIndexedDB(
-      context, WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
-                             WrapWeakPersistent(this), WrapPersistent(request),
-                             std::ref(factory), name, force_close));
+  auto do_delete = WTF::BindOnce(
+      &IDBFactory::DeleteDatabaseInternalImpl, WrapWeakPersistent(this),
+      WrapPersistent(request), std::ref(factory), name, force_close);
+  if (allowed_.has_value() && !*allowed_) {
+    // When the permission state is cached, `AllowIndexedDB` will invoke its
+    // callback synchronously, and thus we'd dispatch the error event
+    // synchronously. As per IDB spec, firing the event at the request has to be
+    // asynchronous.
+    context->GetTaskRunner(TaskType::kDatabaseAccess)
+        ->PostTask(FROM_HERE, std::move(do_delete));
+  } else {
+    AllowIndexedDB(context, std::move(do_delete));
+  }
   return request;
 }
 
@@ -403,7 +425,7 @@ void IDBFactory::DeleteDatabaseInternalImpl(
   }
 
   if (!allowed_.value()) {
-    request->HandleResponse(MakeGarbageCollected<DOMException>(
+    request->OnDBFactoryError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
     return;
   }

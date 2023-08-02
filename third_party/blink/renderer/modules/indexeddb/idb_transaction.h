@@ -52,7 +52,6 @@
 namespace blink {
 
 class DOMException;
-class EventQueue;
 class ExecutionContext;
 class ExceptionState;
 class IDBDatabase;
@@ -178,8 +177,14 @@ class MODULES_EXPORT IDBTransaction final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(complete, kComplete)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
 
+  // The backend aborted/completed.
   void OnAbort(DOMException*);
   void OnComplete();
+
+  // Start aborting if not already aborting. This is called when either the
+  // site initiates the abort via `abort()`, or frontend logic necessitates an
+  // abort.
+  void StartAborting(DOMException* error, bool from_frontend = true);
 
   // Methods that operate on the backend.
   void CreateObjectStore(int64_t object_store_id,
@@ -234,10 +239,8 @@ class MODULES_EXPORT IDBTransaction final
   // of memory.
   absl::optional<size_t> max_put_value_size_override_;
 
-  void EnqueueEvent(Event*);
-
   // Called when a transaction is aborted.
-  void AbortOutstandingRequests();
+  void AbortOutstandingRequests(bool queue_tasks);
   void RevertDatabaseMetadata();
 
   // Called when a transaction is completed (committed or aborted).
@@ -272,7 +275,8 @@ class MODULES_EXPORT IDBTransaction final
   // transactions.
   const HashSet<String> scope_;
 
-  State state_ = kActive;
+  // The initial state depends on the type of transaction --- see constructors.
+  State state_;
   bool has_pending_activity_ = true;
   int64_t num_errors_handled_ = 0;
   Member<DOMException> error_;
@@ -290,6 +294,7 @@ class MODULES_EXPORT IDBTransaction final
 
 #if DCHECK_IS_ON()
   bool finish_called_ = false;
+  bool handling_ready_ = false;
 #endif  // DCHECK_IS_ON()
 
   // Caches the IDBObjectStore instances returned by the objectStore() method.
@@ -334,8 +339,6 @@ class MODULES_EXPORT IDBTransaction final
   //
   // Only valid for versionchange transactions.
   IDBDatabaseMetadata old_database_metadata_;
-
-  Member<EventQueue> event_queue_;
 };
 
 }  // namespace blink

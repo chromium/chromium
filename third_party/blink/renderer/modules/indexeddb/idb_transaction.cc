@@ -28,13 +28,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
+#include "base/auto_reset.h"
 #include "base/format_macros.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -98,9 +96,7 @@ IDBTransaction::IDBTransaction(
       mode_(mode),
       durability_(durability),
       scope_(scope),
-      event_queue_(
-          MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
-                                           TaskType::kDatabaseAccess)) {
+      state_(kActive) {
   DCHECK(database_);
   DCHECK(!scope_.empty()) << "Non-versionchange transactions must operate "
                              "on a well-defined set of stores";
@@ -108,7 +104,6 @@ IDBTransaction::IDBTransaction(
          mode_ == mojom::blink::IDBTransactionMode::ReadWrite)
       << "Invalid transaction mode";
 
-  DCHECK_EQ(state_, kActive);
   ExecutionContext::From(script_state)
       ->GetAgent()
       ->event_loop()
@@ -133,10 +128,7 @@ IDBTransaction::IDBTransaction(ExecutionContext* execution_context,
       mode_(mojom::blink::IDBTransactionMode::VersionChange),
       durability_(mojom::blink::IDBTransactionDurability::Default),
       state_(kInactive),
-      old_database_metadata_(old_metadata),
-      event_queue_(
-          MakeGarbageCollected<EventQueue>(execution_context,
-                                           TaskType::kDatabaseAccess)) {
+      old_database_metadata_(old_metadata) {
   DCHECK(database_);
   DCHECK(open_db_request_);
   DCHECK(scope_.empty());
@@ -161,7 +153,6 @@ void IDBTransaction::Trace(Visitor* visitor) const {
   visitor->Trace(object_store_map_);
   visitor->Trace(old_store_metadata_);
   visitor->Trace(deleted_indexes_);
-  visitor->Trace(event_queue_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -359,17 +350,7 @@ void IDBTransaction::abort(ExceptionState& exception_state) {
         IDBDatabase::kTransactionFinishedErrorMessage);
     return;
   }
-
-  state_ = kAborting;
-
-  if (!GetExecutionContext())
-    return;
-
-  AbortOutstandingRequests();
-  RevertDatabaseMetadata();
-
-  if (BackendDB())
-    BackendDB()->Abort(id_);
+  StartAborting(nullptr);
 }
 
 void IDBTransaction::commit(ExceptionState& exception_state) {
@@ -406,7 +387,7 @@ void IDBTransaction::UnregisterRequest(IDBRequest* request) {
 #if DCHECK_IS_ON()
   // Make sure that no pending IDBRequest gets left behind in the result queue.
   DCHECK(!request->QueueItem() || request->QueueItem()->IsReady());
-#endif  // DCHECK_IS_ON()
+#endif
 
   // If we aborted the request, it will already have been removed.
   request_list_.erase(request);
@@ -414,9 +395,6 @@ void IDBTransaction::UnregisterRequest(IDBRequest* request) {
 
 void IDBTransaction::EnqueueResult(
     std::unique_ptr<IDBRequestQueueItem> result) {
-  DCHECK(result);
-  DCHECK(HasQueuedResults() || !result->IsReady());
-
   result_queue_.push_back(std::move(result));
   // StartLoading() may complete post-processing synchronously, so the result
   // needs to be in the queue before StartLoading() is called.
@@ -424,12 +402,18 @@ void IDBTransaction::EnqueueResult(
 }
 
 void IDBTransaction::OnResultReady() {
+#if DCHECK_IS_ON()
+  // Re-entrancy would be bad.
+  DCHECK(!handling_ready_);
+  base::AutoReset reset(&handling_ready_, true);
+#endif
+
   while (!result_queue_.empty()) {
     IDBRequestQueueItem* result = result_queue_.front().get();
     if (!result->IsReady())
       break;
 
-    result->EnqueueResponse();
+    result->SendResult();
     result_queue_.pop_front();
   }
 }
@@ -444,21 +428,29 @@ void IDBTransaction::OnAbort(DOMException* error) {
   DCHECK_NE(state_, kFinished);
   if (state_ != kAborting) {
     // Abort was not triggered by front-end.
-    DCHECK(error);
-    SetError(error);
-
-    AbortOutstandingRequests();
-    RevertDatabaseMetadata();
-
-    state_ = kAborting;
+    StartAborting(error, /*from_frontend=*/false);
   }
 
   if (IsVersionChange())
     database_->close();
 
-  // Enqueue events before notifying database, as database may close which
-  // enqueues more events and order matters.
-  EnqueueEvent(Event::CreateBubble(event_type_names::kAbort));
+  // Step 6 of https://w3c.github.io/IndexedDB/#abort-a-transaction
+  // requires that these steps are asynchronous:
+  //
+  //   Queue a task to run these steps:
+  //     1. If transaction is an upgrade transaction, then set transaction’s
+  //     connection's associated database's upgrade transaction to null.
+  //     2. [...]
+  //
+  // However, `OnAbort` is a result of a round trip through the browser, so it
+  // was already queued and we don't have to re-enqueue.
+
+  // First set the database/connection's upgrade transaction to null.
+  database_->TransactionWillFinish(this);
+  // Then fire the abort event. (This will also set the request's transaction to
+  // null after dispatching.)
+  DispatchEvent(*Event::CreateBubble(event_type_names::kAbort));
+  // Now do final cleanup.
   Finished();
 }
 
@@ -472,10 +464,42 @@ void IDBTransaction::OnComplete() {
   DCHECK_NE(state_, kFinished);
   state_ = kCommitting;
 
-  // Enqueue events before notifying database, as database may close which
-  // enqueues more events and order matters.
-  EnqueueEvent(Event::Create(event_type_names::kComplete));
+  // See comments in `OnAbort()` on importance of ordering.
+  database_->TransactionWillFinish(this);
+  DispatchEvent(*Event::Create(event_type_names::kComplete));
   Finished();
+}
+
+void IDBTransaction::StartAborting(DOMException* error, bool from_frontend) {
+  // Backend aborts must always come with an error.
+  DCHECK(error || from_frontend);
+
+  if (error) {
+    SetError(error);
+  }
+  if (IsFinished() || IsFinishing()) {
+    return;
+  }
+
+  state_ = kAborting;
+
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  // As per the spec, the first step in aborting a transaction is to mark object
+  // stores and indexes as deleted. The (two-step) process of aborting
+  // outstanding requests is later (the 5th step).
+  // https://w3c.github.io/IndexedDB/#abort-a-transaction
+  RevertDatabaseMetadata();
+  // Step 5 of the algorithm requires this step to be queued rather than
+  // executed synchronously, but if the abort was initiated by the backend (e.g.
+  // due to a constraint error), we're already asynchronous.
+  AbortOutstandingRequests(/*queue_tasks=*/from_frontend);
+
+  if (from_frontend && BackendDB()) {
+    BackendDB()->Abort(id_);
+  }
 }
 
 void IDBTransaction::CreateObjectStore(int64_t object_store_id,
@@ -662,21 +686,12 @@ DispatchEventResult IDBTransaction::DispatchEventInternal(Event& event) {
   return dispatch_result;
 }
 
-void IDBTransaction::EnqueueEvent(Event* event) {
-  DCHECK_NE(state_, kFinished)
-      << "A finished transaction tried to enqueue an event of type "
-      << event->type() << ".";
-  if (!GetExecutionContext())
-    return;
-
-  event->SetTarget(this);
-  event_queue_->EnqueueEvent(FROM_HERE, *event);
-}
-
-void IDBTransaction::AbortOutstandingRequests() {
-  for (IDBRequest* request : request_list_)
-    request->Abort();
-  request_list_.clear();
+void IDBTransaction::AbortOutstandingRequests(bool queue_tasks) {
+  decltype(request_list_) request_list;
+  request_list.Swap(request_list_);
+  for (IDBRequest* request : request_list) {
+    request->Abort(queue_tasks);
+  }
 }
 
 void IDBTransaction::RevertDatabaseMetadata() {

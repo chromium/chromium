@@ -212,17 +212,13 @@ class IDBRequestTest : public testing::Test {
     ASSERT_TRUE(request->transaction());
     V8TestingScope scope;
 
-    request->HandleResponse(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Description goes here."));
-    request->HandleResponse(nullptr, IDBKey::CreateInvalid(),
-                            IDBKey::CreateInvalid(),
-                            CreateNullIDBValueForTesting(scope.GetIsolate()));
     request->HandleResponse(IDBKey::CreateInvalid());
     request->HandleResponse(CreateNullIDBValueForTesting(scope.GetIsolate()));
     request->HandleResponse(static_cast<int64_t>(0));
     request->HandleResponse();
-    request->HandleResponse(IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
-                            CreateNullIDBValueForTesting(scope.GetIsolate()));
+    request->HandleResponseAdvanceCursor(
+        IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
+        CreateNullIDBValueForTesting(scope.GetIsolate()));
 
     EXPECT_TRUE(!exception_state.HadException());
   }
@@ -278,6 +274,9 @@ TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   IDBRequest* request =
       IDBRequest::Create(scope.GetScriptState(), store_.Get(),
                          transaction_.Get(), IDBRequest::AsyncTraceState());
+  // The transaction won't be ready until it sets itself to inactive.
+  scope.PerformMicrotaskCheckpoint();
+
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(request->transaction());
   request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), false));
@@ -358,38 +357,6 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
   transaction_->FlushForTesting();
   database_backend.Flush();
-}
-
-// This test is flaky on Marshmallow 64 bit Tester because the test is
-// crashing. See <http://crbug.com/1068057>.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AbortErrorAfterAbort \
-  DISABLED_AbortErrorAfterAbort
-#else
-#define MAYBE_AbortErrorAfterAbort \
-  AbortErrorAfterAbort
-#endif
-
-TEST_F(IDBRequestTest, MAYBE_AbortErrorAfterAbort) {
-  V8TestingScope scope;
-  IDBTransaction* transaction = nullptr;
-  IDBRequest* request =
-      IDBRequest::Create(scope.GetScriptState(), store_.Get(), transaction,
-                         IDBRequest::AsyncTraceState());
-  EXPECT_EQ(request->readyState(), "pending");
-
-  // Simulate the IDBTransaction having received OnAbort from back end and
-  // aborting the request:
-  request->Abort();
-
-  // Now simulate the back end having fired an abort error at the request to
-  // clear up any intermediaries. Ensure an assertion is not raised.
-  request->HandleResponse(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError, "Description goes here."));
-
-  // Stop the request lest it be GCed and its destructor
-  // finds the object in a pending state (and asserts.)
-  scope.GetExecutionContext()->NotifyContextDestroyed();
 }
 
 TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
