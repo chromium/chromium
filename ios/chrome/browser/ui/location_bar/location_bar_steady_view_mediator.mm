@@ -167,16 +167,15 @@
   [self notifyConsumerOfChangedSecurityIcon];
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  [self notifyConsumerOfChangedLocation];
-
-  [self notifyConsumerOfChangedSecurityIcon];
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change()) {
+    [self notifyConsumerOfChangedLocation];
+    [self notifyConsumerOfChangedSecurityIcon];
+  }
 }
 
 #pragma mark - OverlayPresenterObserving
