@@ -415,16 +415,14 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     return;
   }
 
-  content::RenderWidgetHost* render_widget_host =
-      static_cast<password_manager::ContentPasswordManagerDriver*>(driver)
-          ->render_frame_host()
-          ->GetRenderWidgetHost();
+  password_manager::ContentPasswordManagerDriver* content_driver =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(driver);
 
   if (GetOrCreateCredManController()->Show(
           GetWebAuthnCredManDelegateForDriver(driver),
           std::make_unique<password_manager::PasswordCredentialFillerImpl>(
               driver->AsWeakPtr(), submission_readiness_params),
-          render_widget_host, is_webauthn_form)) {
+          base::AsWeakPtr(content_driver), is_webauthn_form)) {
     return;
   }
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
@@ -449,7 +447,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
       passkeys, std::move(ttf_controller_autofill_delegate),
-      render_widget_host);
+      base::AsWeakPtr(content_driver));
 }
 #endif
 

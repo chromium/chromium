@@ -89,7 +89,7 @@ TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
   EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
-                                 /*render_widget_host=*/nullptr,
+                                 /*frame_driver=*/nullptr,
                                  /*is_webauthn_form=*/false));
 }
 
@@ -99,7 +99,7 @@ TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
   EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
-                                 /*render_widget_host=*/nullptr,
+                                 /*frame_driver=*/nullptr,
                                  /*is_webauthn_form=*/true));
 }
 
@@ -116,7 +116,7 @@ TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
-                                 /*render_widget_host=*/nullptr,
+                                 /*frame_driver=*/nullptr,
                                  /*is_webauthn_form=*/true));
 }
 
@@ -132,7 +132,7 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(1);
   EXPECT_TRUE(controller().Show(web_authn_cred_man_delegate(),
                                 std::move(filler),
-                                /*render_widget_host=*/nullptr,
+                                /*frame_driver=*/nullptr,
                                 /*is_webauthn_form=*/true));
 }
 
@@ -151,7 +151,7 @@ TEST_F(CredManControllerTest, Fill) {
 
   EXPECT_TRUE(controller().Show(web_authn_cred_man_delegate(),
                                 std::move(filler),
-                                /*render_widget_host=*/nullptr,
+                                /*frame_driver=*/nullptr,
                                 /*is_webauthn_form=*/true));
 
   ON_CALL(last_filler(), ShouldTriggerSubmission()).WillByDefault(Return(true));

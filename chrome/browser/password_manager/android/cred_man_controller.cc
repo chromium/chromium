@@ -30,7 +30,7 @@ CredManController::~CredManController() {
 bool CredManController::Show(
     raw_ptr<webauthn::WebAuthnCredManDelegate> cred_man_delegate,
     std::unique_ptr<PasswordCredentialFiller> filler,
-    raw_ptr<content::RenderWidgetHost> render_widget_host,
+    base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver,
     bool is_webauthn_form) {
   // webauthn forms without passkeys should show TouchToFill bottom sheet.
   if (!cred_man_delegate || !is_webauthn_form ||
@@ -39,7 +39,7 @@ bool CredManController::Show(
     filler->Dismiss(ToShowVirtualKeyboard(false));
     return false;
   }
-  visibility_controller_->SetVisible(render_widget_host);
+  visibility_controller_->SetVisible(std::move(frame_driver));
   filler_ = std::move(filler);
   cred_man_delegate->SetRequestCompletionCallback(
       base::BindRepeating(&CredManController::Dismiss, AsWeakPtr()));

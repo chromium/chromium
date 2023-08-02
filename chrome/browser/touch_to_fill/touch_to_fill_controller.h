@@ -15,14 +15,11 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace content {
-class RenderWidgetHost;
-}  // namespace content
-
 namespace password_manager {
 class PasskeyCredential;
 class UiCredential;
 class KeyboardReplacingSurfaceVisibilityController;
+class ContentPasswordManagerDriver;
 }  // namespace password_manager
 
 class TouchToFillControllerDelegate;
@@ -42,7 +39,8 @@ class TouchToFillController {
   void Show(base::span<const password_manager::UiCredential> credentials,
             base::span<password_manager::PasskeyCredential> passkey_credentials,
             std::unique_ptr<TouchToFillControllerDelegate> delegate,
-            raw_ptr<content::RenderWidgetHost> render_widget_host);
+            base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+                frame_driver);
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
@@ -24,18 +25,21 @@ bool KeyboardReplacingSurfaceVisibilityControllerImpl::IsVisible() const {
 }
 
 void KeyboardReplacingSurfaceVisibilityControllerImpl::SetVisible(
-    raw_ptr<content::RenderWidgetHost> widget_host) {
+    base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+        frame_driver) {
   if (IsVisible()) {
     return;
   }
   if (base::FeatureList::IsEnabled(
           features::kPasswordSuggestionBottomSheetV2)) {
-    widget_host_ = widget_host;
+    frame_driver_ = std::move(frame_driver);
     suppress_callback_ = base::BindRepeating(
         [](base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
                controller) { return controller->IsVisible(); },
         AsWeakPtr());
-    widget_host_->AddSuppressShowingImeCallback(suppress_callback_);
+    frame_driver_->render_frame_host()
+        ->GetRenderWidgetHost()
+        ->AddSuppressShowingImeCallback(suppress_callback_);
   }
   state_ = State::kVisible;
 }
@@ -46,10 +50,12 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::SetShown() {
 
 void KeyboardReplacingSurfaceVisibilityControllerImpl::Reset() {
   state_ = State::kNotShownYet;
-  if (!suppress_callback_.is_null()) {
-    widget_host_->RemoveSuppressShowingImeCallback(suppress_callback_);
-    suppress_callback_.Reset();
+  if (!suppress_callback_.is_null() && frame_driver_) {
+    frame_driver_->render_frame_host()
+        ->GetRenderWidgetHost()
+        ->RemoveSuppressShowingImeCallback(suppress_callback_);
   }
+  suppress_callback_.Reset();
 }
 
 }  // namespace password_manager

@@ -20,7 +20,8 @@ class MockKeyboardReplacingSurfaceVisibilityController
   MOCK_METHOD(bool, IsVisible, (), (const override));
   MOCK_METHOD(void,
               SetVisible,
-              (raw_ptr<content::RenderWidgetHost> widget_host),
+              (base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+                   frame_driver),
               (override));
   MOCK_METHOD(void, SetShown, (), (override));
   MOCK_METHOD(void, Reset, (), (override));

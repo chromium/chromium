@@ -10,10 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
-namespace content {
-class RenderWidgetHost;
-}  // namespace content
-
 namespace webauthn {
 class WebAuthnCredManDelegate;
 }  // namespace webauthn
@@ -22,6 +18,7 @@ namespace password_manager {
 
 class PasswordCredentialFiller;
 class KeyboardReplacingSurfaceVisibilityController;
+class ContentPasswordManagerDriver;
 
 // This class is responsible for the logic to show Credential Manager UI. The
 // interaction with Credential Manager UI is delegated to WebAuthnCredMan class.
@@ -43,7 +40,8 @@ class CredManController : public base::SupportsWeakPtr<CredManController> {
   // false otherwise.
   bool Show(raw_ptr<webauthn::WebAuthnCredManDelegate> cred_man_delegate,
             std::unique_ptr<PasswordCredentialFiller> filler,
-            raw_ptr<content::RenderWidgetHost> render_widget_host,
+            base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+                frame_driver,
             bool is_webauthn_form);
 
  private:

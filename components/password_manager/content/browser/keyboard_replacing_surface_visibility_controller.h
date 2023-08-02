@@ -6,9 +6,9 @@
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_KEYBOARD_REPLACING_SURFACE_VISIBILITY_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/render_widget_host.h"
 
 namespace password_manager {
+class ContentPasswordManagerDriver;
 
 // This class is responsible for handling the visibility state of a keyboard
 // replacing surface. A surface can be shown only once, when the state is
@@ -37,7 +37,9 @@ class KeyboardReplacingSurfaceVisibilityController
 
   // Sets the state to `kVisible` if it's not visible. Adds IME suppression
   // callbacks to the passed `widget_host`.
-  virtual void SetVisible(raw_ptr<content::RenderWidgetHost> widget_host) = 0;
+  virtual void SetVisible(
+      base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+          frame_driver) = 0;
 
   // Sets the state to `kShownBefore`.
   virtual void SetShown() = 0;

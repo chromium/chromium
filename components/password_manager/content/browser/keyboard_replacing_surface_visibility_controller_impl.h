@@ -9,6 +9,7 @@
 #include "content/public/browser/render_widget_host.h"
 
 namespace password_manager {
+class ContentPasswordManagerDriver;
 
 // This class is responsible for handling the visibility state of a keyboard
 // replacing surface. A surface can be shown only once, when the state is
@@ -41,7 +42,8 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl
 
   // Sets the state to `kVisible` if it's not visible. Adds IME suppression
   // callbacks to the passed `widget_host`.
-  void SetVisible(raw_ptr<content::RenderWidgetHost> widget_host) override;
+  void SetVisible(base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+                      frame_driver) override;
 
   // Sets the state to `kShownBefore`.
   void SetShown() override;
@@ -52,7 +54,9 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl
 
  private:
   State state_ = State::kNotShownYet;
-  raw_ptr<content::RenderWidgetHost> widget_host_;
+  // Password manager driver for the frame on which the Touch-To-Fill was
+  // triggered.
+  base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
   content::RenderWidgetHost::SuppressShowingImeCallback suppress_callback_;
 };
 
