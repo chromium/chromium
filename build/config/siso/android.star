@@ -26,10 +26,6 @@ def __step_config(ctx, step_config):
             "name": "android/write_build_config",
             "command_prefix": "python3 ../../build/android/gyp/write_build_config.py",
             "handler": "android_write_build_config",
-            # TODO(crbug.com/1452038): include only required build_config.json files in GN config.
-            "indirect_inputs": {
-                "includes": ["*.build_config.json"],
-            },
             "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -303,11 +299,56 @@ def __android_turbine_handler(ctx, cmd):
         outputs = cmd.outputs + outputs,
     )
 
+def __deps_configs(ctx, f, seen, inputs):
+    if f in seen:
+        return
+    seen[f] = True
+    inputs.append(f)
+    v = json.decode(str(ctx.fs.read(f)))
+    for f in v["deps_info"]["deps_configs"]:
+        f = ctx.fs.canonpath(f)
+        __deps_configs(ctx, f, seen, inputs)
+    if "public_deps_configs" in v["deps_info"]:
+        for f in v["deps_info"]["public_deps_configs"]:
+            f = ctx.fs.canonpath(f)
+            __deps_configs(ctx, f, seen, inputs)
+
 def __android_write_build_config_handler(ctx, cmd):
+    # Script:
+    #   https://crsrc.org/c/build/android/gyp/write_build_config.py
+    # GN Config:
+    #   https://crsrc.org/c/build/config/android/internal_rules.gni;l=122;drc=99e4f79301e108ea3d27ec84320f430490382587
+    # Sample args:
+    #   --type=java_library
+    #   --depfile gen/third_party/android_deps/org_jetbrains_kotlinx_kotlinx_metadata_jvm_java__build_config_crbug_908819.d
+    #   --deps-configs=\[\"gen/third_party/kotlin_stdlib/kotlin_stdlib_java.build_config.json\"\]
+    #   --public-deps-configs=\[\]
+    #   --build-config gen/third_party/android_deps/org_jetbrains_kotlinx_kotlinx_metadata_jvm_java.build_config.json
+    #   --gn-target //third_party/android_deps:org_jetbrains_kotlinx_kotlinx_metadata_jvm_java
+    #   --non-chromium-code
+    #   --host-jar-path lib.java/third_party/android_deps/org_jetbrains_kotlinx_kotlinx_metadata_jvm.jar
+    #   --unprocessed-jar-path ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm/kotlinx-metadata-jvm-0.1.0.jar
+    #   --interface-jar-path obj/third_party/android_deps/org_jetbrains_kotlinx_kotlinx_metadata_jvm.ijar.jar
+    #   --is-prebuilt
+    #   --bundled-srcjars=\[\]
     inputs = []
+    seen = {}
     for i, arg in enumerate(cmd.args):
         if arg in ["--shared-libraries-runtime-deps", "--secondary-abi-shared-libraries-runtime-deps"]:
             inputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
+            continue
+        if arg == "--tested-apk-config":
+            f = ctx.fs.canonpath(cmd.args[i + 1])
+            __deps_configs(ctx, f, seen, inputs)
+            continue
+        for k in ["--deps-configs=", "--public-deps-configs=", "--annotation-processor-configs="]:
+            if arg.startswith(k):
+                arg = arg.removeprefix(k)
+                v = json.decode(arg)
+                for f in v:
+                    f = ctx.fs.canonpath(f)
+                    __deps_configs(ctx, f, seen, inputs)
+
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {
