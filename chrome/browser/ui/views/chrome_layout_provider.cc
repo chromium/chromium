@@ -97,7 +97,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
     case INSETS_INFOBAR_VIEW:
-      return features::IsChromeRefresh2023() ? gfx::Insets::VH(8, 0)
+      return features::IsChromeRefresh2023() ? gfx::Insets::VH(4, 0)
                                              : gfx::Insets::VH(0, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
