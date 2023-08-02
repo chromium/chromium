@@ -7994,6 +7994,21 @@
             ]
         }
     ],
+    "IOSWebChannels": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWebChannels",
+                    "enable_features": [
+                        "EnableWebChannels"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSWhatsNew": [
         {
             "platforms": [
