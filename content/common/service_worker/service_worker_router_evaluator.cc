@@ -4,13 +4,17 @@
 
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 
+#include <tuple>
+
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
+#include "third_party/liburlpattern/utils.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/re2/src/re2/set.h"
 
@@ -41,56 +45,95 @@ void RecordMatchedSourceType(
       "ServiceWorker.RouterEvaluator.MatchedFirstSourceType", sources[0].type);
 }
 
-absl::optional<std::string> PathnameConvertToRegex(
-    const blink::SafeUrlPattern& url_pattern) {
-  if (url_pattern.pathname.empty()) {
-    return absl::nullopt;
+// TODO(crbug.com/1371756): consolidate code with blink::url_pattern.
+//
+// The type and method come form
+// third_party/blink/renderer/core/url_pattern/url_pattern_component.{h,cc}.
+// GetOptions is not exported yet, and there is little benefit to depend
+// on the blink::URLPattern now.
+enum class URLPatternFieldType {
+  kProtocol,
+  kUsername,
+  kPassword,
+  kHostname,
+  kPort,
+  kPathname,
+  kSearch,
+  kHash,
+};
+
+// Utility method to get the correct liburlpattern parse options for a given
+// type.
+const std::tuple<liburlpattern::Options, std::string>
+GetOptionsAndSegmentWildcardRegex(const blink::SafeUrlPattern& url_pattern,
+                                  URLPatternFieldType type) {
+  using liburlpattern::Options;
+
+  Options options = {.delimiter_list = "",
+                     .prefix_list = "",
+                     .sensitive = !url_pattern.options.ignore_case,
+                     .strict = true};
+
+  if (type == URLPatternFieldType::kHostname) {
+    options.delimiter_list = ".";
+  } else if (type == URLPatternFieldType::kPathname) {
+    // TODO(crbug.com/1371756): follows the original GetOptions behavior.
+    // It sets the following delimiters for some limited protocols.
+    options.delimiter_list = "/";
+    options.prefix_list = "/";
   }
-  liburlpattern::Options options = {.delimiter_list = "/",
-                                    .prefix_list = "/",
-                                    .sensitive = true,
-                                    .strict = false};
-  liburlpattern::Pattern pattern(url_pattern.pathname, options, "[^/]+?");
-  VLOG(3) << "path regex string:" << pattern.GenerateRegexString();
-  return pattern.GenerateRegexString();
+  std::string segment_wildcard_regex = base::StringPrintf(
+      "[^%s]+?",
+      liburlpattern::EscapeRegexpString(options.delimiter_list).c_str());
+
+  return std::tie(options, segment_wildcard_regex);
 }
 
-absl::optional<std::string> HostnameConvertToRegex(
-    const blink::SafeUrlPattern& url_pattern) {
-  if (url_pattern.hostname.empty()) {
-    return absl::nullopt;
+liburlpattern::Pattern ConvertToPattern(
+    const blink::SafeUrlPattern& url_pattern,
+    URLPatternFieldType type) {
+  std::vector<liburlpattern::Part> parts;
+  switch (type) {
+    case URLPatternFieldType::kProtocol:
+      parts = url_pattern.protocol;
+      break;
+    case URLPatternFieldType::kUsername:
+      parts = url_pattern.username;
+      break;
+    case URLPatternFieldType::kPassword:
+      parts = url_pattern.password;
+      break;
+    case URLPatternFieldType::kHostname:
+      parts = url_pattern.hostname;
+      break;
+    case URLPatternFieldType::kPort:
+      parts = url_pattern.port;
+      break;
+    case URLPatternFieldType::kPathname:
+      parts = url_pattern.pathname;
+      break;
+    case URLPatternFieldType::kSearch:
+      parts = url_pattern.search;
+      break;
+    case URLPatternFieldType::kHash:
+      parts = url_pattern.hash;
+      break;
   }
-  liburlpattern::Options options = {.delimiter_list = ".",
-                                    .prefix_list = "",
-                                    .sensitive = false,
-                                    .strict = false};
-  liburlpattern::Pattern pattern(url_pattern.hostname, options, "[^\\.]+?");
+  auto [options, swr] = GetOptionsAndSegmentWildcardRegex(url_pattern, type);
+  return liburlpattern::Pattern(parts, options, swr);
+}
+
+std::string ConvertToRegex(const blink::SafeUrlPattern& url_pattern,
+                           URLPatternFieldType type) {
+  auto pattern = ConvertToPattern(url_pattern, type);
   std::string regex_string = pattern.GenerateRegexString();
-  VLOG(3) << "host regex string: " << regex_string;
+  VLOG(3) << "regex string: " << regex_string;
   return regex_string;
 }
 
-std::string PathnameConvertToPattern(const blink::SafeUrlPattern& url_pattern) {
-  if (url_pattern.pathname.empty()) {
-    return std::string();
-  }
-  liburlpattern::Options options = {.delimiter_list = "/",
-                                    .prefix_list = "/",
-                                    .sensitive = true,
-                                    .strict = false};
-  liburlpattern::Pattern pattern(url_pattern.pathname, options, "[^/]+?");
-  return pattern.GeneratePatternString();
-}
-
-std::string HostnameConvertToPattern(const blink::SafeUrlPattern& url_pattern) {
-  if (url_pattern.hostname.empty()) {
-    return std::string();
-  }
-  liburlpattern::Options options = {.delimiter_list = ".",
-                                    .prefix_list = "",
-                                    .sensitive = false,
-                                    .strict = false};
-  liburlpattern::Pattern pattern(url_pattern.hostname, options, "[^\\.]+?");
+std::string ConvertToPatternString(const blink::SafeUrlPattern& url_pattern,
+                                   URLPatternFieldType type) {
+  auto pattern = ConvertToPattern(url_pattern, type);
   return pattern.GeneratePatternString();
 }
 
@@ -125,9 +168,7 @@ std::string RunningStatusToString(
 bool IsValidCondition(const blink::ServiceWorkerRouterCondition& condition) {
   switch (condition.type) {
     case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
-      return condition.url_pattern.has_value() &&
-             !(condition.url_pattern->hostname.empty() &&
-               condition.url_pattern->pathname.empty());
+      return condition.url_pattern.has_value();
     case blink::ServiceWorkerRouterCondition::ConditionType::kRequest:
       return condition.request.has_value() &&
              (condition.request->method.has_value() ||
@@ -208,8 +249,14 @@ namespace content {
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
   RouterRule()
-      : pathname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
-        hostname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
+      : protocol_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        username_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        password_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        hostname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        port_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        pathname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        search_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        hash_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
   ~RouterRule() = default;
   bool SetRule(const blink::ServiceWorkerRouterRule& rule);
   bool IsConditionMatched(
@@ -240,10 +287,15 @@ class ServiceWorkerRouterEvaluator::RouterRule {
       absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
   // To process SafeUrlPattern faster, all patterns are combined into the
   // `RE::Set` and compiled when `ServiceWorkerRouterEvaluator` is initialized.
-  RE2::Set pathname_patterns_;
-  size_t pathname_pattern_length_ = 0;
+  RE2::Set protocol_patterns_;
+  RE2::Set username_patterns_;
+  RE2::Set password_patterns_;
   RE2::Set hostname_patterns_;
-  size_t hostname_pattern_length_ = 0;
+  RE2::Set port_patterns_;
+  RE2::Set pathname_patterns_;
+  RE2::Set search_patterns_;
+  RE2::Set hash_patterns_;
+  size_t url_pattern_length_ = 0;
   // Non-SafeUrlPattern conditions are processed one by one.
   std::vector<blink::ServiceWorkerRouterCondition> non_url_pattern_conditions_;
   std::vector<blink::ServiceWorkerRouterSource> sources_;
@@ -278,34 +330,37 @@ bool ServiceWorkerRouterEvaluator::RouterRule::SetConditions(
       continue;
     }
 
-    // Code for SafeUrlPattern conditions.
-    auto pathregex = PathnameConvertToRegex(*condition.url_pattern);
-    if (pathregex) {
-      if (pathname_patterns_.Add(*pathregex, nullptr) == -1) {
-        // Failed to parse the regex.
-        RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError);
-        return false;
-      }
-      // Counts the conditions to ensure all conditions are matched.
-      ++pathname_pattern_length_;
-    }
-    auto hostregex = HostnameConvertToRegex(*condition.url_pattern);
-    if (hostregex) {
-      if (hostname_patterns_.Add(*hostregex, nullptr) == -1) {
-        // Failed to parse the regex.
-        RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError);
-        return false;
-      }
-      // Counts the conditions to ensure all conditions are matched.
-      ++hostname_pattern_length_;
-    }
+    const blink::SafeUrlPattern& url_pattern = *condition.url_pattern;
+#define SET_PATTERN(type_name, type)                                         \
+  do {                                                                       \
+    auto regex = ConvertToRegex(url_pattern, type);                          \
+    if (type_name##_patterns_.Add(regex, nullptr) == -1) {                   \
+      RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError); \
+      return false;                                                          \
+    }                                                                        \
+  } while (0)
+    SET_PATTERN(protocol, URLPatternFieldType::kProtocol);
+    SET_PATTERN(username, URLPatternFieldType::kUsername);
+    SET_PATTERN(password, URLPatternFieldType::kPassword);
+    SET_PATTERN(hostname, URLPatternFieldType::kHostname);
+    SET_PATTERN(port, URLPatternFieldType::kPort);
+    SET_PATTERN(pathname, URLPatternFieldType::kPathname);
+    SET_PATTERN(search, URLPatternFieldType::kSearch);
+    SET_PATTERN(hash, URLPatternFieldType::kHash);
+#undef SET_PATTERN
+    // Counts the conditions to ensure all conditions are matched.
+    ++url_pattern_length_;
+    // TODO(crbug.com/1371756): consider fast path on empty parts and "*".
+    // Currently, regular expressions are executed even for empty parts cases,
+    // which try to match inputs with "^$".  It is also executed for "*".
+    // If performance to evaluate regular expressions matter, fast path can
+    // be needed.
   }
-  if (pathname_pattern_length_ > 0 && !pathname_patterns_.Compile()) {
-    // Failed to compile the regex.
-    RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kCompileError);
-    return false;
-  }
-  if (hostname_pattern_length_ > 0 && !hostname_patterns_.Compile()) {
+  if (url_pattern_length_ > 0 &&
+      (!protocol_patterns_.Compile() || !username_patterns_.Compile() ||
+       !password_patterns_.Compile() || !hostname_patterns_.Compile() ||
+       !port_patterns_.Compile() || !pathname_patterns_.Compile() ||
+       !search_patterns_.Compile() || !hash_patterns_.Compile())) {
     // Failed to compile the regex.
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kCompileError);
     return false;
@@ -322,26 +377,32 @@ bool ServiceWorkerRouterEvaluator::RouterRule::IsConditionMatched(
 
 bool ServiceWorkerRouterEvaluator::RouterRule::IsUrlPatternConditionMatched(
     const network::ResourceRequest& request) const {
-  if (hostname_pattern_length_ > 0) {
-    std::vector<int> vec;
-    if (!hostname_patterns_.Match(request.url.host(), &vec)) {
-      return false;
-    }
-    // ensure it matches all included patterns.
-    if (vec.size() != hostname_pattern_length_) {
-      return false;
-    }
+  if (url_pattern_length_ == 0) {  // nothing need to be matched.
+    return true;
   }
-  if (pathname_pattern_length_ > 0) {
-    std::vector<int> vec;
-    if (!pathname_patterns_.Match(request.url.path(), &vec)) {
-      return false;
-    }
-    // ensure it matches all included patterns.
-    if (vec.size() != pathname_pattern_length_) {
-      return false;
-    }
-  }
+#define PATTERN_MATCH(type_name, field)                                    \
+  do {                                                                     \
+    std::vector<int> vec;                                                  \
+    if (!type_name##_patterns_.Match(request.url.field(), &vec)) {         \
+      VLOG(3) << "not matched. url=" << request.url << " field=" << #field \
+              << " value=" << request.url.field();                         \
+      return false;                                                        \
+    }                                                                      \
+    if (vec.size() != url_pattern_length_) {                               \
+      VLOG(3) << "pattern length is different. url=" << request.url        \
+              << " field=" << #field << " value=" << request.url.field();  \
+      return false;                                                        \
+    }                                                                      \
+  } while (0)
+  PATTERN_MATCH(protocol, scheme);
+  PATTERN_MATCH(username, username);
+  PATTERN_MATCH(password, password);
+  PATTERN_MATCH(hostname, host);
+  PATTERN_MATCH(port, port);
+  PATTERN_MATCH(pathname, path);
+  PATTERN_MATCH(search, query);
+  PATTERN_MATCH(hash, ref);
+#undef PATTERN_MATCH
   return true;
 }
 
@@ -430,17 +491,23 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
         case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern: {
           base::Value::Dict out_c;
           base::Value out_value;
-          std::string host = HostnameConvertToPattern(*c.url_pattern);
-          std::string path = PathnameConvertToPattern(*c.url_pattern);
-          if (!host.empty()) {
-            base::Value::Dict host_path;
-            host_path.Set("host", host);
-            host_path.Set("path", path);
-            out_value = base::Value(std::move(host_path));
-          } else {
-            out_value = base::Value(path);
-          }
-          out_c.Set("urlPattern", std::move(out_value));
+          const blink::SafeUrlPattern& url_pattern = *c.url_pattern;
+          base::Value::Dict url_pattern_value;
+#define TO_VALUE(type, type_name)                           \
+  do {                                                      \
+    auto value = ConvertToPatternString(url_pattern, type); \
+    url_pattern_value.Set(type_name, value);                \
+  } while (0)
+          TO_VALUE(URLPatternFieldType::kProtocol, "protocol");
+          TO_VALUE(URLPatternFieldType::kUsername, "username");
+          TO_VALUE(URLPatternFieldType::kPassword, "password");
+          TO_VALUE(URLPatternFieldType::kHostname, "hostname");
+          TO_VALUE(URLPatternFieldType::kPort, "port");
+          TO_VALUE(URLPatternFieldType::kPathname, "pathname");
+          TO_VALUE(URLPatternFieldType::kSearch, "search");
+          TO_VALUE(URLPatternFieldType::kHash, "hash");
+#undef TO_VALUE
+          out_c.Set("urlPattern", std::move(url_pattern_value));
           condition.Append(std::move(out_c));
           break;
         }
