@@ -30,7 +30,7 @@ struct FeatureFlags {
   // chrome://flags#rounded-windows
   [MinVersion=3] int32 rounded_window_radius;
   // chrome://flags#arc-xdg-mode
-  [MinVersion=4] bool xdg_mode = true;
+  [MinVersion=4] bool xdg_mode;
 };
 
 // This interface provides methods to propagate the feature flag status to
