@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // color should be picked.
     content::ThemeChangeWaiter waiter(web_contents_);
     std::string width =
-        content::EvalJs(web_contents_.get(), "outerWidth.toString()")
+        content::EvalJs(web_contents_.get(), "innerWidth.toString()")
             .ExtractString();
     EXPECT_TRUE(content::ExecJs(web_contents_.get(),
                                 "document.getElementById('first')."
