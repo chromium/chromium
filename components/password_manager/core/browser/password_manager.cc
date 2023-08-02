@@ -72,7 +72,6 @@ using autofill::mojom::SubmissionIndicatorEvent;
 using base::NumberToString;
 using BlocklistedStatus =
     password_manager::OriginCredentialStore::BlocklistedStatus;
-using password_manager::metrics_util::GaiaPasswordHashChange;
 
 namespace password_manager {
 
@@ -1187,16 +1186,18 @@ void PasswordManager::MaybeSavePasswordHash(
   DCHECK(should_save_gaia_pw);
   bool is_sync_account_email =
       client_->GetStoreResultFilter()->IsSyncAccountEmail(username);
-  GaiaPasswordHashChange event =
+  metrics_util::GaiaPasswordHashChange event =
       is_sync_account_email
           ? (is_password_change
-                 ? GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA
-                 : GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA)
+                 ? metrics_util::GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA
+                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA)
           : (is_password_change
-                 ? GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE
-                 : GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
-  reuse_manager->SaveGaiaPasswordHash(username, password, is_sync_account_email,
-                                      event);
+                 ? metrics_util::GaiaPasswordHashChange::
+                       NOT_SYNC_PASSWORD_CHANGE
+                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
+  reuse_manager->SaveGaiaPasswordHash(
+      username, password,
+      /*is_sync_password_for_metrics=*/is_sync_account_email, event);
 }
 
 void PasswordManager::ProcessAutofillPredictions(

@@ -358,22 +358,26 @@ void LogIsPasswordProtected(bool is_password_protected) {
 }
 
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    bool does_primary_account_exists,
-                                    bool is_signed_in) {
+                                    SignInState sign_in_state) {
   base::UmaHistogramCounts100("PasswordManager.SavedGaiaPasswordHashCount2",
                               static_cast<int>(gaia_hash_count));
 
   // Log parallel metrics for sync and signed-in non-sync accounts in addition
   // to above to be able to tell what fraction of signed-in non-sync users we
   // are protecting compared to syncing users.
-  if (does_primary_account_exists) {
-    base::UmaHistogramCounts100(
-        "PasswordManager.SavedGaiaPasswordHashCount2.Sync",
-        static_cast<int>(gaia_hash_count));
-  } else if (is_signed_in) {
-    base::UmaHistogramCounts100(
-        "PasswordManager.SavedGaiaPasswordHashCount2.SignedInNonSync",
-        static_cast<int>(gaia_hash_count));
+  switch (sign_in_state) {
+    case SignInState::kSignedOut:
+      break;
+    case SignInState::kSignedInSyncDisabled:
+      base::UmaHistogramCounts100(
+          "PasswordManager.SavedGaiaPasswordHashCount2.SignedInNonSync",
+          static_cast<int>(gaia_hash_count));
+      break;
+    case SignInState::kSyncing:
+      base::UmaHistogramCounts100(
+          "PasswordManager.SavedGaiaPasswordHashCount2.Sync",
+          static_cast<int>(gaia_hash_count));
+      break;
   }
 }
 

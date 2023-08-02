@@ -17,6 +17,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -185,23 +186,21 @@ void PasswordReuseManagerImpl::CheckReuse(
 }
 
 void PasswordReuseManagerImpl::PreparePasswordHashData(
-    const std::string& sync_username,
-    const bool is_signed_in) {
+    metrics_util::SignInState sign_in_state_for_metrics) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  SchedulePasswordHashUpdate(/*should_log_metrics=*/true,
-                             !sync_username.empty(), is_signed_in);
+  SchedulePasswordHashUpdate(sign_in_state_for_metrics);
   ScheduleEnterprisePasswordURLUpdate();
 }
 
 void PasswordReuseManagerImpl::SaveGaiaPasswordHash(
     const std::string& username,
     const std::u16string& password,
-    bool is_primary_account,
-    GaiaPasswordHashChange event) {
+    bool is_sync_password_for_metrics,
+    metrics_util::GaiaPasswordHashChange event) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   RecordAction(
       UserMetricsAction("PasswordProtection.Gaia.HashedPasswordSaved"));
-  SaveProtectedPasswordHash(username, password, is_primary_account,
+  SaveProtectedPasswordHash(username, password, is_sync_password_for_metrics,
                             /*is_gaia_password=*/true, event);
 }
 
@@ -211,42 +210,39 @@ void PasswordReuseManagerImpl::SaveEnterprisePasswordHash(
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   RecordAction(UserMetricsAction(
       "PasswordProtection.NonGaiaEnterprise.HashedPasswordSaved"));
-  SaveProtectedPasswordHash(
-      username, password, /*is_primary_account=*/false,
-      /*is_gaia_password=*/false,
-      GaiaPasswordHashChange::NON_GAIA_ENTERPRISE_PASSWORD_CHANGE);
+  SaveProtectedPasswordHash(username, password,
+                            /*is_sync_password_for_metrics=*/false,
+                            /*is_gaia_password=*/false,
+                            metrics_util::GaiaPasswordHashChange::
+                                NON_GAIA_ENTERPRISE_PASSWORD_CHANGE);
 }
 
 void PasswordReuseManagerImpl::SaveProtectedPasswordHash(
     const std::string& username,
     const std::u16string& password,
-    bool is_primary_account,
+    bool is_sync_password_for_metrics,
     bool is_gaia_password,
-    GaiaPasswordHashChange event) {
+    metrics_util::GaiaPasswordHashChange event) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (hash_password_manager_.SavePasswordHash(username, password,
                                               is_gaia_password)) {
     if (is_gaia_password) {
-      metrics_util::LogGaiaPasswordHashChange(event, is_primary_account);
+      metrics_util::LogGaiaPasswordHashChange(event,
+                                              is_sync_password_for_metrics);
     }
     // This method is not being called on startup so it shouldn't log metrics.
-    // |is_signed_in| is only used when |should_log_metrics| is true so
-    // it doesn't matter what the value is here.
-    SchedulePasswordHashUpdate(/*should_log_metrics=*/false, is_primary_account,
-                               /*is_signed_in=*/false);
+    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/absl::nullopt);
   }
 }
 
 void PasswordReuseManagerImpl::SaveSyncPasswordHash(
     const PasswordHashData& sync_password_data,
-    GaiaPasswordHashChange event) {
+    metrics_util::GaiaPasswordHashChange event) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (hash_password_manager_.SavePasswordHash(sync_password_data)) {
     metrics_util::LogGaiaPasswordHashChange(event,
                                             /*is_sync_password=*/true);
-    SchedulePasswordHashUpdate(/*should_log_metrics=*/false,
-                               /*does_primary_account_exists=*/false,
-                               /*is_signed_in=*/false);
+    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/absl::nullopt);
   }
 }
 
@@ -309,29 +305,28 @@ void PasswordReuseManagerImpl::SetPasswordStoreSigninNotifier(
 }
 
 void PasswordReuseManagerImpl::SchedulePasswordHashUpdate(
-    bool should_log_metrics,
-    bool does_primary_account_exists,
-    bool is_signed_in) {
+    absl::optional<metrics_util::SignInState> sign_in_state_for_metrics) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PasswordHashDataList protected_password_data_list =
-      hash_password_manager_.RetrieveAllPasswordHashes();
 
-  if (!reuse_detector_ || !protected_password_data_list.has_value())
+  if (!reuse_detector_) {
     return;
+  }
+
+  std::vector<PasswordHashData> protected_password_data_list =
+      hash_password_manager_.RetrieveAllPasswordHashes();
 
   std::vector<PasswordHashData> gaia_password_hash_list;
   std::vector<PasswordHashData> enterprise_password_hash_list;
-  for (PasswordHashData& password_hash : *protected_password_data_list) {
+  for (PasswordHashData& password_hash : protected_password_data_list) {
     if (password_hash.is_gaia_password)
       gaia_password_hash_list.push_back(std::move(password_hash));
     else
       enterprise_password_hash_list.push_back(std::move(password_hash));
   }
 
-  if (should_log_metrics) {
+  if (sign_in_state_for_metrics) {
     metrics_util::LogProtectedPasswordHashCounts(gaia_password_hash_list.size(),
-                                                 does_primary_account_exists,
-                                                 is_signed_in);
+                                                 *sign_in_state_for_metrics);
   }
 
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::UseGaiaPasswordHash,

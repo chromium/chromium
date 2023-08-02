@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,22 +23,29 @@
 
 namespace {
 
-std::string GetSyncUsername(Profile* profile) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  return identity_manager
-             ? identity_manager
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                   .email
-             : std::string();
-}
+using password_manager::metrics_util::SignInState;
 
-bool IsSignedIn(Profile* profile) {
+SignInState GetSignInStateForMetrics(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
-  return identity_manager
-             ? !identity_manager->GetAccountsWithRefreshTokens().empty()
-             : false;
+  if (!identity_manager) {
+    return SignInState::kSignedOut;
+  }
+
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
+  const std::string sync_username =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
+  if (!sync_username.empty()) {
+    return SignInState::kSyncing;
+  }
+
+  const bool is_signed_in =
+      !identity_manager->GetAccountsWithRefreshTokens().empty();
+  return is_signed_in ? SignInState::kSignedInSyncDisabled
+                      : SignInState::kSignedOut;
 }
 
 }  // namespace
@@ -73,7 +82,8 @@ PasswordReuseManagerFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(base::FeatureList::IsEnabled(
       password_manager::features::kPasswordReuseDetectionEnabled));
@@ -89,8 +99,8 @@ KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
   if (!store)
     return nullptr;
 
-  password_manager::PasswordReuseManager* reuse_manager =
-      new password_manager::PasswordReuseManagerImpl();
+  auto reuse_manager =
+      std::make_unique<password_manager::PasswordReuseManagerImpl>();
   reuse_manager->Init(profile->GetPrefs(),
                       PasswordStoreFactory::GetForProfile(
                           profile, ServiceAccessType::EXPLICIT_ACCESS)
@@ -100,8 +110,7 @@ KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
                           .get());
 
   // Prepare password hash data for reuse detection.
-  reuse_manager->PreparePasswordHashData(GetSyncUsername(profile),
-                                         IsSignedIn(profile));
+  reuse_manager->PreparePasswordHashData(GetSignInStateForMetrics(profile));
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

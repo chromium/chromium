@@ -405,6 +405,15 @@ enum class GenerationDialogChoice {
   kMaxValue = kRejected
 };
 
+enum class SignInState {
+  // The user is signed out.
+  kSignedOut = 0,
+  // The user is signed in but has not enabled Sync.
+  kSignedInSyncDisabled = 1,
+  // The user has enabled Sync.
+  kSyncing = 2,
+};
+
 // Represents the state of the user wrt. sign-in and account-scoped storage.
 // Used for metrics. Always keep this enum in sync with the corresponding
 // histogram_suffixes in histograms.xml!
@@ -852,11 +861,8 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 // privacy of individual data points, we will log with 10% noise.
 void LogIsPasswordProtected(bool is_password_protected);
 
-// Log the number of Gaia password hashes saved. Currently only called on
-// profile start up.
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    bool does_primary_account_exists,
-                                    bool is_signed_in);
+                                    SignInState sign_in_state);
 
 // Log the user interaction events when creating a new credential from settings.
 void LogUserInteractionsWhenAddingCredentialFromSettings(
