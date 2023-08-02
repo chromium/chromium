@@ -2835,7 +2835,7 @@ if (current_toolchain == default_toolchain) {
 
   if (enable_arcore) {
     # In order to run this test, first run:
-    #   DOWNLOAD_VR_TEST_APKS=1 third_party/arcore-android-sdk/test-apks/update.py
+    #   DOWNLOAD_XR_TEST_APKS=1 third_party/arcore-android-sdk/test-apks/update.py
     # See also: //chrome/android/javatests/src/org/chromium/chrome/browser/vr/README.md
     chrome_public_test_apk_tmpl("monochrome_public_test_ar_apk") {
       apk_name = "MonochromePublicTestAr"
