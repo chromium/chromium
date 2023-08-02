@@ -14,6 +14,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.page_info.PageInfoCookiesPreference;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Tests the functionality of PageInfoCookiesPreference.java.
  */
@@ -21,16 +24,18 @@ import org.chromium.components.page_info.PageInfoCookiesPreference;
 public class PageInfoCookiesPreferenceUnitTest {
     @Test
     public void testDaysToExpirationCalculations() {
+        long currentTime = new Date(70, Calendar.JANUARY, 1).getTime();
         // Same day before midnight.
         assertEquals(0,
                 PageInfoCookiesPreference.calculateDaysUntilExpiration(
-                        0, DateUtils.DAY_IN_MILLIS - 1));
+                        currentTime, currentTime + DateUtils.DAY_IN_MILLIS - 1));
         // Midnight of the next day.
         assertEquals(1,
-                PageInfoCookiesPreference.calculateDaysUntilExpiration(0, DateUtils.DAY_IN_MILLIS));
+                PageInfoCookiesPreference.calculateDaysUntilExpiration(
+                        currentTime, currentTime + DateUtils.DAY_IN_MILLIS));
         // A little after midnight on the 3rd day.
         assertEquals(3,
                 PageInfoCookiesPreference.calculateDaysUntilExpiration(
-                        0, 3 * DateUtils.DAY_IN_MILLIS + 1));
+                        currentTime, currentTime + 3 * DateUtils.DAY_IN_MILLIS + 1));
     }
 }
