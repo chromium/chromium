@@ -8,11 +8,25 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
+namespace {
+
+absl::optional<ukm::SourceId> GetUkmSourceId(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    // We don't collect UKM while prerendering due to data collection policy.
+    return absl::nullopt;
+  }
+  return render_frame_host->GetPageUkmSourceId();
+}
+
+}  // namespace
+
 NavigationPredictorMetricsDocumentData::NavigationPredictorMetricsDocumentData(
     content::RenderFrameHost* render_frame_host)
     : DocumentUserData<NavigationPredictorMetricsDocumentData>(
           render_frame_host),
-      ukm_source_id_(render_frame_host->GetMainFrame()->GetPageUkmSourceId()) {}
+      ukm_source_id_(GetUkmSourceId(render_frame_host)) {}
 
 NavigationPredictorMetricsDocumentData::
     ~NavigationPredictorMetricsDocumentData() {
