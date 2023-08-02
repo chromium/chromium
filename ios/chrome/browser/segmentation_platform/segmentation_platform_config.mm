@@ -13,6 +13,7 @@
 #import "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#import "components/segmentation_platform/embedder/default_model/ios_module_ranker.h"
 #import "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #import "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
@@ -42,7 +43,6 @@ constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
 constexpr int kSearchUserSegmentSelectionTTLDays = 7;
 constexpr int kSearchUserSegmentUnknownSelectionTTLDays = 7;
 
-// TODO(b/293368255) : Replace these config code with GetConfig().
 std::unique_ptr<Config> GetConfigForFeedSegments() {
   if (!base::FeatureList::IsEnabled(
           features::kSegmentationPlatformFeedSegmentFeature)) {
@@ -112,20 +112,6 @@ std::unique_ptr<Config> GetConfigForSearchUserModel() {
   return config;
 }
 
-std::unique_ptr<Config> GetConfigForIosModuleRanker() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformIosModuleRanker)) {
-    return nullptr;
-  }
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kIosModuleRankerKey;
-  config->segmentation_uma_name = kIosModuleRankerUmaName;
-  config->AddSegmentId(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER);
-  config->auto_execute_and_cache = false;
-  return config;
-}
-
 }  // namespace
 
 using proto::SegmentId;
@@ -149,7 +135,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());
-  configs.emplace_back(GetConfigForIosModuleRanker());
+  configs.emplace_back(IosModuleRanker::GetConfig());
 
   // Add new configs here.
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });

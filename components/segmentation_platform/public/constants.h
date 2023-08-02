@@ -170,6 +170,16 @@ const char kTabletProductivityUserModelLabelNone[] = "None";
 const char kTabletProductivityUserModelLabelMedium[] = "Medium";
 const char kTabletProductivityUserModelLabelHigh[] = "High";
 
+// Labels for IOS modules for ranking.
+const char kMostVisitedTiles[] = "MostVisitedTiles";
+const char kShortcuts[] = "Shortcuts";
+const char kSafetyCheck[] = "SafetyCheck";
+
+// Input Context keys for freshness for IOS modules.
+const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";
+const char kShortcutsFreshness[] = "shortcuts_freshness";
+const char kSafetyCheckFreshness[] = "safety_check_freshness";
+
 // Custom inputs for contextual page actions model.
 const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
 const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";

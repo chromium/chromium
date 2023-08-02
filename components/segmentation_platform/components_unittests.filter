@@ -22,6 +22,7 @@ HistogramSignalHandlerTest.*
 HistoryDelegateImplTest.*
 InputContextAndroidTest.*
 IntentionalUserModelTest.*
+IosModuleRankerTest.*
 LowUserEngagementModelTest.*
 MetadataUtilsTest.*
 ModelExecutionSchedulerTest.*

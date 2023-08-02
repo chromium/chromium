@@ -181,6 +181,10 @@ class MetadataWriter {
   // Append a delay trigger for training data collection.
   void AddDelayTrigger(uint64_t delay_sec);
 
+  // Adds a custom input from Input Context.
+  void AddFromInputContext(const char* custom_input_name,
+                           const char* additional_args_name);
+
  private:
   const raw_ptr<proto::SegmentationModelMetadata> metadata_;
 };
