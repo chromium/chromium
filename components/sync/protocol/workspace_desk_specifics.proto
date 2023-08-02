@@ -94,6 +94,10 @@ message WorkspaceDeskSpecifics {
     // mode. Empty/unset for non-snapped windows. This should be a value between
     // 0 and 100.
     optional int32 snap_percentage = 12;
+
+    // The override URL can be specified by apps to override the default URL at
+    // launch.
+    optional string override_url = 13;
   }
 
   message AppOneOf {

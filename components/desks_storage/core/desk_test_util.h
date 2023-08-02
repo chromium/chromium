@@ -67,11 +67,11 @@ inline constexpr char kValidPolicyTemplateChromeAndProgressive[] =
     "\"PRIMARY_SNAPPED\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":"
     "\"test_chrome_app_1\",\"window_id\":0,\"display_id\":\"100\",\"event_"
     "flag\":0, "
-    "\"snap_percent\":75},{\"window_"
+    "\"snap_percent\":75,\"override_url\":\"https://example.com/\"},{\"window_"
     "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"CHROME_APP\",\"app_id\":"
     "\"test_pwa_app_1\",\"window_id\":1,\"display_id\":\"100\",\"event_flag\":"
-    "0}]}}";
+    "0,\"override_url\":\"https://example.com/\"}]}}";
 
 inline constexpr char kValidPolicyTemplateChromeForFloatingWorkspace[] =
     "{\"auto_launch_on_startup\": "

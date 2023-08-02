@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -263,18 +264,8 @@ void DeleteDeskTemplate(const base::Uuid& uuid) {
 }
 
 web_app::AppId CreateSystemWebApp(Profile* profile,
-                                  ash::SystemWebAppType app_type) {
-  DCHECK(app_type == ash::SystemWebAppType::FILE_MANAGER ||
-         app_type == ash::SystemWebAppType::SETTINGS ||
-         app_type == ash::SystemWebAppType::HELP);
-  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-  params.restore_id = app_type == ash::SystemWebAppType::SETTINGS
-                          ? kSettingsWindowId
-                          : kHelpWindowId;
-
+                                  apps::AppLaunchParams params) {
+  const web_app::AppId app_id = params.app_id;
   base::RunLoop launch_wait;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       std::move(params),
@@ -284,16 +275,42 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
   return app_id;
 }
 
+// Creates the app launch params for `app_type` for testing.
+apps::AppLaunchParams GetAppLaunchParams(Profile* profile,
+                                         ash::SystemWebAppType app_type) {
+  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
+  return apps::AppLaunchParams(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+}
+
 web_app::AppId CreateFilesSystemWebApp(Profile* profile) {
-  return CreateSystemWebApp(profile, ash::SystemWebAppType::FILE_MANAGER);
+  apps::AppLaunchParams params =
+      GetAppLaunchParams(profile, ash::SystemWebAppType::FILE_MANAGER);
+  return CreateSystemWebApp(profile, std::move(params));
 }
 
 web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
-  return CreateSystemWebApp(profile, ash::SystemWebAppType::SETTINGS);
+  apps::AppLaunchParams params =
+      GetAppLaunchParams(profile, ash::SystemWebAppType::SETTINGS);
+  params.restore_id = kSettingsWindowId;
+  return CreateSystemWebApp(profile, std::move(params));
 }
 
 web_app::AppId CreateHelpSystemWebApp(Profile* profile) {
-  return CreateSystemWebApp(profile, ash::SystemWebAppType::HELP);
+  apps::AppLaunchParams params =
+      GetAppLaunchParams(profile, ash::SystemWebAppType::HELP);
+  params.restore_id = kHelpWindowId;
+  return CreateSystemWebApp(profile, std::move(params));
+}
+
+web_app::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
+                                              const GURL& override_url) {
+  apps::AppLaunchParams params =
+      GetAppLaunchParams(profile, ash::SystemWebAppType::OS_URL_HANDLER);
+  params.restore_id = kTestWindowId;
+  params.override_url = override_url;
+  return CreateSystemWebApp(profile, std::move(params));
 }
 
 void ClickButton(const views::Button* button) {
@@ -508,10 +525,14 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
     // Suppress the multitask menu nudge as we'll be checking the stacking order
     // and the count of the active desk children.
     chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
+
+    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(true);
   }
   DesksClientTest(const DesksClientTest&) = delete;
   DesksClientTest& operator=(const DesksClientTest&) = delete;
-  ~DesksClientTest() override = default;
+  ~DesksClientTest() {
+    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
+  }
 
   // TODO(crbug.com/1286515): These functions will be removed with the
   // extension. Avoid further uses of this method and create or launch templates
@@ -1951,6 +1972,71 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   // Tests that there is no clipping on either window.
   EXPECT_EQ(gfx::Rect(), settings_window->layer()->clip_rect());
   EXPECT_EQ(gfx::Rect(), help_window->layer()->clip_rect());
+}
+
+// Tests that when restoring the OsUrlHandler SWA, the override URL is restored
+// as expected. Regression test for crbug.com/1466634.
+IN_PROC_BROWSER_TEST_P(DesksClientTest, OsUrlHandlerSWARestoreTest) {
+  // Do not exit from test or delete the Profile* when last browser is closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  Profile* profile = browser()->profile();
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Create the OsUrlHandler SWA.
+  constexpr char kOverrideUrl[] = "chrome://version";
+  CreateOsUrlHandlerSystemWebApp(browser()->profile(), GURL(kOverrideUrl));
+
+  aura::Window* url_handler_window = FindBrowserWindow(kTestWindowId);
+  ASSERT_TRUE(url_handler_window);
+  const std::u16string url_handler_title = url_handler_window->GetTitle();
+
+  // Enter overview and save the current desk as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  // Exit overview and close the settings window. We'll need to verify if it
+  // reopens later.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  // Close both apps.
+  views::Widget::GetWidgetForNativeWindow(url_handler_window)->CloseNow();
+  ASSERT_FALSE(FindBrowserWindow(kTestWindowId));
+
+  // Enter overview, head over to the desks templates grid and launch the
+  // template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickZeroStateTemplatesButton();
+
+  BrowsersAddedObserver browsers_added(/*num_browser_expected=*/2);
+  ClickFirstTemplateItem();
+  browsers_added.Wait();
+
+  url_handler_window = nullptr;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    const std::u16string title = window->GetTitle();
+    if (title == url_handler_title) {
+      url_handler_window = window;
+
+      // Ensure the kOverrideUrl is honored by the SWA after it is restored.
+      content::WebContents* active_contents =
+          browser->tab_strip_model()->GetActiveWebContents();
+      content::TestNavigationObserver navigation_observer(active_contents);
+      navigation_observer.Wait();
+      EXPECT_EQ(GURL(kOverrideUrl), active_contents->GetLastCommittedURL());
+    }
+  }
+  ASSERT_TRUE(url_handler_window);
+  EXPECT_EQ(ash::Shell::GetContainer(url_handler_window->GetRootWindow(),
+                                     ash::kShellWindowId_DeskContainerB),
+            url_handler_window->parent());
 }
 
 // Tests that browser windows created from a template have the correct bounds

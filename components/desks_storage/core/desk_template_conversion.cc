@@ -100,6 +100,7 @@ constexpr char kLaunchContainerNone[] = "LAUNCH_CONTAINER_NONE";
 constexpr char kMaximumSize[] = "maximum_size";
 constexpr char kMinimumSize[] = "minimum_size";
 constexpr char kName[] = "name";
+constexpr char kOverrideUrl[] = "override_url";
 constexpr char kPolicy[] = "policy";
 constexpr char kPreMinimizedWindowState[] = "pre_minimized_window_state";
 constexpr char kTabRangeFirstIndex[] = "first_index";
@@ -459,6 +460,11 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
   std::string app_name;
   if (GetString(app, kAppName, &app_name))
     app_launch_info->app_name = app_name;
+
+  std::string override_url;
+  if (GetString(app, kOverrideUrl, &override_url)) {
+    app_launch_info->override_url = GURL(override_url);
+  }
 
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
   app_launch_info->event_flag = 0;
@@ -972,6 +978,10 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.Set(kLaunchContainer, LaunchContainerToString(container));
   }
 
+  if (app->override_url.has_value()) {
+    app_data.Set(kOverrideUrl, app->override_url->spec());
+  }
+
   return base::Value(std::move(app_data));
 }
 
@@ -1234,6 +1244,10 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 
   if (app.has_app_name())
     app_launch_info->app_name = app.app_name();
+
+  if (app.has_override_url()) {
+    app_launch_info->override_url = GURL(app.override_url());
+  }
 
   // This is a short-term fix as `event_flag` is required to launch ArcApp.
   // Currently we don't support persisting user action in template
@@ -1594,6 +1608,14 @@ void FillAppWithAppNameAndTitle(
   }
 }
 
+void FillAppWithAppOverrideUrl(
+    const app_restore::AppRestoreData* app_restore_data,
+    WorkspaceDeskSpecifics_App* out_app) {
+  if (app_restore_data->override_url.has_value()) {
+    out_app->set_override_url(app_restore_data->override_url->spec());
+  }
+}
+
 void FillArcAppSize(const gfx::Size& size, ArcAppWindowSize* out_window_size) {
   out_window_size->set_width(size.width());
   out_window_size->set_height(size.height());
@@ -1736,6 +1758,10 @@ bool FillApp(const std::string& app_id,
   // information stored in the `app_restore_data`'s `app_name` and `title`
   // fields.
   FillAppWithAppNameAndTitle(app_restore_data, out_app);
+
+  // If present, fills the proto's `override_url` field with the information
+  // from `app_restore_data`.
+  FillAppWithAppOverrideUrl(app_restore_data, out_app);
 
   return true;
 }

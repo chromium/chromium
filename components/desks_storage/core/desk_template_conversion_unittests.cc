@@ -38,6 +38,7 @@ constexpr int kBrowserWindowId = 1555;
 constexpr char kBrowserUrl1[] = "https://example.com/";
 constexpr char kBrowserUrl2[] = "https://example.com/2";
 constexpr char kBrowserTemplateName[] = "BrowserTest";
+constexpr char kOverrideUrl[] = "https://example.com/";
 
 tab_groups::TabGroupInfo MakeSampleTabGroup() {
   return tab_groups::TabGroupInfo(
@@ -412,6 +413,8 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_EQ(ali_chrome->display_id.value(), 100L);
   EXPECT_FALSE(ali_chrome->active_tab_index.has_value());
   EXPECT_TRUE(ali_chrome->urls.empty());
+  EXPECT_TRUE(ali_chrome->override_url.has_value());
+  EXPECT_EQ(ali_chrome->override_url.value(), kOverrideUrl);
 
   EXPECT_TRUE(ali_pwa != nullptr);
 
@@ -422,6 +425,8 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_EQ(ali_pwa->display_id.value(), 100L);
   EXPECT_FALSE(ali_pwa->active_tab_index.has_value());
   EXPECT_TRUE(ali_pwa->urls.empty());
+  EXPECT_TRUE(ali_pwa->override_url.has_value());
+  EXPECT_EQ(ali_pwa->override_url.value(), kOverrideUrl);
 
   EXPECT_TRUE(wi_chrome != nullptr);
   EXPECT_TRUE(wi_chrome->window_state_type.has_value());

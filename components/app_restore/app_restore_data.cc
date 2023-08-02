@@ -574,6 +574,7 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
   app_launch_info->app_type_browser = app_type_browser;
   app_launch_info->app_name = app_name;
   app_launch_info->tab_group_infos = tab_group_infos;
+  app_launch_info->override_url = override_url;
   return app_launch_info;
 }
 

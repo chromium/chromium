@@ -263,6 +263,7 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     app_launch_info->container = app_restore_data->container;
     app_launch_info->disposition = app_restore_data->disposition;
     app_launch_info->file_paths = app_restore_data->file_paths;
+    app_launch_info->override_url = app_restore_data->override_url;
     if (app_restore_data->intent) {
       app_launch_info->intent = app_restore_data->intent->Clone();
     }
