@@ -9,6 +9,10 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+import os
+from pathlib import Path
+import sys
+
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
@@ -114,3 +118,19 @@ def CheckHistogramFormatting(input_api, output_api):
     GetValidateHistogramsError(input_api, output_api, cwd, results)
 
   return results
+
+
+def CheckWebViewHistogramsAllowlistOnUpload(input_api, output_api):
+  """Checks that histograms_allowlist.txt contains valid histograms."""
+  xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
+  xml_files = input_api.AffectedFiles(file_filter=xml_filter)
+  if not xml_files:
+    return []
+
+  # src_path should point to chromium/src
+  src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
+  histograms_allowlist_check_path = os.path.join(src_path, 'android_webview',
+                                                 'java', 'res', 'raw')
+  sys.path.append(histograms_allowlist_check_path)
+  from histograms_allowlist_check import CheckWebViewHistogramsAllowlist
+  return CheckWebViewHistogramsAllowlist(src_path, output_api)
