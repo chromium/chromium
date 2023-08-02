@@ -96,15 +96,19 @@ WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
 
 WaylandWindow* WaylandWindowManager::GetCurrentPointerOrTouchFocusedWindow()
     const {
-  // In case there is an ongoing window dragging session, favor the window
-  // according to the active drag source.
-  //
-  // TODO(https://crbug.com/1317063): Apply the same logic to data drag sessions
-  // too?
-  if (auto drag_source = connection_->window_drag_controller()->drag_source()) {
-    return *drag_source == mojom::DragEventSource::kMouse
-               ? GetCurrentPointerFocusedWindow()
-               : GetCurrentTouchFocusedWindow();
+  // Might be nullptr if no input devices are available.
+  if (connection_->window_drag_controller()) {
+    // In case there is an ongoing window dragging session, favor the window
+    // according to the active drag source.
+    //
+    // TODO(https://crbug.com/1317063): Apply the same logic to data drag
+    // sessions too?
+    if (auto drag_source =
+            connection_->window_drag_controller()->drag_source()) {
+      return *drag_source == mojom::DragEventSource::kMouse
+                 ? GetCurrentPointerFocusedWindow()
+                 : GetCurrentTouchFocusedWindow();
+    }
   }
 
   for (const auto& entry : window_map_) {
