@@ -187,7 +187,7 @@ INSTANTIATE_TEST_SUITE_P(
     ReportingServerConnectorTests,
     ReportingServerConnectorTest,
     ::testing::ValuesIn<ReportingServerConnectorTestCase>(
-        {{.test_name = "EncryptedReportingClientDsiabled",
+        {{.test_name = "EncryptedReportingClientDisabled",
           .disabled_features = {kEnableEncryptedReportingClientForUpload}},
          {.test_name = "EncryptedReportingClientEnabled",
           .enabled_features = {kEnableEncryptedReportingClientForUpload}}}),

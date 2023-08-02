@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/reporting/util/statusor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -41,7 +42,7 @@ class EncryptedReportingClient {
   };
 
   using ResponseCallback =
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
+      base::OnceCallback<void(StatusOr<base::Value::Dict>)>;
 
   explicit EncryptedReportingClient(
       std::unique_ptr<Delegate> delegate = std::make_unique<Delegate>());

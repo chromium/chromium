@@ -214,7 +214,7 @@ bool DeviceInfoRequiredForUpload() {
 void ReportingServerConnector::UploadEncryptedReportInternal(
     base::Value::Dict merging_payload,
     absl::optional<base::Value::Dict> context,
-    ResponseCallbackInternal callback) {
+    ResponseCallback callback) {
   if (base::FeatureList::IsEnabled(kEnableEncryptedReportingClientForUpload)) {
     // TODO(b/283187811): remove cloud policy client as a parameter to
     // `UploadReport` and read device info from `merging_payload` instead.
@@ -223,8 +223,19 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
                                               std::move(callback));
     return;
   }
+  // Deprecated: uses cloud policy client.
+  auto cb = base::BindOnce(
+      [](ResponseCallback callback,
+         absl::optional<base::Value::Dict> client_result) {
+        if (!client_result.has_value()) {
+          std::move(callback).Run(Status(error::DATA_LOSS, "Failed to upload"));
+          return;
+        }
+        std::move(callback).Run(std::move(client_result.value()));
+      },
+      std::move(callback));
   client_->UploadEncryptedReport(std::move(merging_payload), std::move(context),
-                                 std::move(callback));
+                                 std::move(cb));
 }
 
 // static
@@ -277,11 +288,10 @@ void ReportingServerConnector::UploadEncryptedReport(
              absl::optional<int> request_payload_size,
              base::WeakPtr<PayloadSizePerHourUmaReporter>
                  payload_size_per_hour_uma_reporter,
-             absl::optional<base::Value::Dict> result) {
+             StatusOr<base::Value::Dict> result) {
             DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-            if (!result.has_value()) {
-              std::move(callback).Run(
-                  Status(error::DATA_LOSS, "Failed to upload"));
+            if (!result.ok()) {
+              std::move(callback).Run(std::move(result));
               return;
             }
 
@@ -292,7 +302,8 @@ void ReportingServerConnector::UploadEncryptedReport(
             if (request_payload_size.has_value()) {
               // Request payload has already been computed at the time of
               // request.
-              const int response_payload_size = GetPayloadSize(result.value());
+              const int response_payload_size =
+                  GetPayloadSize(result.ValueOrDie());
 
               // Let UMA report the request and response payload sizes.
               if (PayloadSizeUmaReporter::ShouldReport()) {
@@ -310,7 +321,7 @@ void ReportingServerConnector::UploadEncryptedReport(
               }
             }
 
-            std::move(callback).Run(std::move(result.value()));
+            std::move(callback).Run(std::move(result.ValueOrDie()));
           },
           std::move(callback), std::move(request_payload_size),
           connector->payload_size_per_hour_uma_reporter_.GetWeakPtr())));

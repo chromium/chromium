@@ -321,7 +321,6 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
 
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-
   handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
                           encryption_key_attached_event.repeating_cb());
@@ -331,7 +330,8 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   base::Value::Dict request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
-  test_env_.SimulateCustomResponseForRequest(0, absl::nullopt);
+  test_env_.SimulateCustomResponseForRequest(
+      0, Status(error::INTERNAL, "Test injected error"));
 
   const auto result = response_event.result();
   EXPECT_THAT(result.status(),

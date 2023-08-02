@@ -114,11 +114,8 @@ class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
   // to upload to DmServer.
   void HandleRecords();
 
-  // Processes |completion_response| and call |Response|.
+  // Processes |completion_response| and calls |Response|.
   void Finalize(CompletionResponse completion_response);
-
-  // Complete schedules |Finalize| with the provided |completion_response|.
-  void Complete(CompletionResponse completion_response);
 
   // Helper function for determining if an EncryptedRecord is valid.
   Status IsRecordValid(const EncryptedRecord& encrypted_record,

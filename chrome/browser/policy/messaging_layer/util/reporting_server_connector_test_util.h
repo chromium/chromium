@@ -14,8 +14,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/reporting/util/statusor.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash::system {
@@ -45,9 +45,8 @@ class ReportingServerConnector::TestEnvironment {
 
   void SimulateResponseForRequest(size_t index);
 
-  void SimulateCustomResponseForRequest(
-      size_t index,
-      absl::optional<base::Value::Dict> response);
+  void SimulateCustomResponseForRequest(size_t index,
+                                        StatusOr<base::Value::Dict> response);
 
   void SetDMToken(const std::string& dm_token) const;
 

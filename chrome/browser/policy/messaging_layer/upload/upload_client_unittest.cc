@@ -218,10 +218,11 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                                   DoesRequestContainRecord(base::StringPrintf(
                                       matched_record_template, 9))));
 
-  test_env.SimulateCustomResponseForRequest(
-      0, ResponseBuilder(std::move(request_body))
-             .SetForceConfirm(force_confirm())
-             .Build());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm())
+                      .Build();
+  ASSERT_TRUE(response);
+  test_env.SimulateCustomResponseForRequest(0, std::move(*response));
 
   auto upload_success_result = upload_success_event.result();
   EXPECT_THAT(std::get<0>(upload_success_result),

@@ -31,6 +31,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/reporting/util/statusor.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -139,14 +140,13 @@ void ReportingServerConnector::TestEnvironment::SimulateResponseForRequest(
 }
 
 void ReportingServerConnector::TestEnvironment::
-    SimulateCustomResponseForRequest(
-        size_t index,
-        absl::optional<base::Value::Dict> response) {
+    SimulateCustomResponseForRequest(size_t index,
+                                     StatusOr<base::Value::Dict> response) {
   const std::string& pending_request_url =
       (*url_loader_factory()->pending_requests())[0].request.url.spec();
   std::string response_string = "";
-  if (response.has_value()) {
-    base::JSONWriter::Write(response.value(), &response_string);
+  if (response.ok()) {
+    base::JSONWriter::Write(response.ValueOrDie(), &response_string);
   }
   url_loader_factory()->SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);
