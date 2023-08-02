@@ -1905,12 +1905,14 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   ExpectOnlyMockUpdater(google_update_exe.value());
 }
 
-void InstallApp(UpdaterScope scope, const std::string& app_id) {
+void InstallApp(UpdaterScope scope,
+                const std::string& app_id,
+                const base::Version& version) {
   base::win::RegKey key;
   ASSERT_EQ(key.Create(UpdaterScopeToHKeyRoot(scope),
                        GetAppClientsKey(app_id).c_str(), Wow6432(KEY_WRITE)),
             ERROR_SUCCESS);
-  RegisterApp(scope, app_id);
+  RegisterApp(scope, app_id, version);
 }
 
 void UninstallApp(UpdaterScope scope, const std::string& app_id) {

@@ -297,8 +297,9 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectAppVersion(app_id, version);
   }
 
-  void InstallApp(const std::string& app_id) {
-    test_commands_->InstallApp(app_id);
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version = base::Version("0.1")) {
+    test_commands_->InstallApp(app_id, version);
   }
 
   void UninstallApp(const std::string& app_id) {

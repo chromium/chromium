@@ -272,8 +272,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("delete_file", {Param("path", path.MaybeAsASCII())});
   }
 
-  void InstallApp(const std::string& app_id) const override {
-    RunCommand("install_app", {Param("app_id", app_id)});
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version) const override {
+    RunCommand("install_app", {Param("app_id", app_id),
+                               Param("version", version.GetString())});
   }
 
   bool WaitForUpdaterExit() const override {

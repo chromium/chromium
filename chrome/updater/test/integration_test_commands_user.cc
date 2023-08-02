@@ -242,8 +242,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::DeleteFile(updater_scope_, path);
   }
 
-  void InstallApp(const std::string& app_id) const override {
-    updater::test::InstallApp(updater_scope_, app_id);
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version) const override {
+    updater::test::InstallApp(updater_scope_, app_id, version);
   }
 
   bool WaitForUpdaterExit() const override {

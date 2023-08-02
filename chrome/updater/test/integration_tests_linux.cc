@@ -205,11 +205,13 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   // No legacy migration for Linux.
 }
 
-void InstallApp(UpdaterScope scope, const std::string& app_id) {
+void InstallApp(UpdaterScope scope,
+                const std::string& app_id,
+                const base::Version& version) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   RegistrationRequest registration;
   registration.app_id = app_id;
-  registration.version = base::Version("0.1");
+  registration.version = version;
   base::RunLoop loop;
   update_service->RegisterApp(registration,
                               base::BindLambdaForTesting([&loop](int result) {

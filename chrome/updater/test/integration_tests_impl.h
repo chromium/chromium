@@ -200,7 +200,9 @@ void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
                       const base::Version& version);
 
-void RegisterApp(UpdaterScope scope, const std::string& app_id);
+void RegisterApp(UpdaterScope scope,
+                 const std::string& app_id,
+                 const base::Version& version);
 
 [[nodiscard]] bool WaitForUpdaterExit(UpdaterScope scope);
 
@@ -291,7 +293,9 @@ void ExpectLastChecked(UpdaterScope scope);
 
 void ExpectLastStarted(UpdaterScope scope);
 
-void InstallApp(UpdaterScope scope, const std::string& app_id);
+void InstallApp(UpdaterScope scope,
+                const std::string& app_id,
+                const base::Version& version);
 
 void UninstallApp(UpdaterScope scope, const std::string& app_id);
 
