@@ -99,9 +99,21 @@ FloatingWorkspaceService::FloatingWorkspaceService(
 FloatingWorkspaceService::~FloatingWorkspaceService() {
   if (is_testing_)
     return;
-  if (floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+
+  if (timer_.IsRunning()) {
     StopCaptureAndUploadActiveDesk();
   }
+
+  if (sync_service_ && sync_service_->HasObserver(this)) {
+    sync_service_->RemoveObserver(this);
+  }
+}
+
+void FloatingWorkspaceService::OnSyncShutdown(syncer::SyncService* sync) {
+  if (sync_service_ && sync_service_->HasObserver(this)) {
+    sync_service_->RemoveObserver(this);
+  }
+  sync_service_ = nullptr;
 }
 
 void FloatingWorkspaceService::Init(
@@ -296,7 +308,9 @@ void FloatingWorkspaceService::InitForV2(
     desks_storage::DeskSyncService* desk_sync_service) {
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
-  sync_service_->AddObserver(this);
+  if (sync_service_ && !sync_service_->HasObserver(this)) {
+    sync_service_->AddObserver(this);
+  }
   StartCaptureAndUploadActiveDesk();
   if (!floating_workspace_util::IsInternetConnected()) {
     SendNotification(kNotificationForNoNetworkConnection);

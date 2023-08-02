@@ -88,6 +88,7 @@ class FloatingWorkspaceService : public KeyedService,
 
   // syncer::SyncServiceObserver overrides:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // message_center::NotificationObserver overrides:
   void Click(const absl::optional<int>& button_index,
