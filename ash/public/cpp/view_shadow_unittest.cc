@@ -108,4 +108,29 @@ TEST_F(ViewShadowTest, ShadowKeepsLayerType) {
   EXPECT_EQ(ui::LAYER_SOLID_COLOR, view.layer()->type());
 }
 
+// Tests the shadow layer will not shift when the view's layer is reparented to
+// another layer.
+TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
+  views::View root1;
+  root1.SetPaintToLayer();
+
+  views::View* view = root1.AddChildView(std::make_unique<views::View>());
+  view->SetPaintToLayer();
+  view->SetBoundsRect(gfx::Rect(10, 20, 30, 40));
+
+  ViewShadow shadow(view, 1);
+
+  // Cache current shadow position.
+  const gfx::Point pos = shadow.shadow()->layer()->bounds().origin();
+
+  // Reparent the view's layer to another layer.
+  views::View root2;
+  root2.SetPaintToLayer();
+  root2.AddChildView(view);
+  // Check if the shadow layer shifted.
+  EXPECT_EQ(pos, shadow.shadow()->layer()->bounds().origin());
+
+  //
+}
+
 }  // namespace ash

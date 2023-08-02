@@ -40,7 +40,7 @@ void ViewShadow::OnLayerRecreated(ui::Layer* old_layer) {
   view_->AddLayerToRegion(shadow_->layer(), views::LayerRegion::kBelow);
 }
 
-void ViewShadow::OnLayerTargetBoundsChanged(views::View* view) {
+void ViewShadow::OnViewLayerBoundsSet(views::View* view) {
   shadow_->SetContentBounds(view->layer()->bounds());
 }
 

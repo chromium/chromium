@@ -49,7 +49,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
   void OnViewAddedToWidget(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
-  void OnLayerTargetBoundsChanged(views::View* observed_view) override;
+  void OnViewLayerBoundsSet(views::View* observed_view) override;
   void OnViewThemeChanged(views::View* observed_view) override;
 
  private:

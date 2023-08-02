@@ -127,6 +127,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Bounds of the content that the shadow encloses.
   gfx::Rect content_bounds_;
+
+  // The layer bounds since content bounds were last set.
+  gfx::Rect last_layer_bounds_;
 };
 
 }  // namespace ui

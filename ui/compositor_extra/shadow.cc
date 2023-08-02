@@ -32,10 +32,14 @@ void Shadow::Init(int elevation) {
 }
 
 void Shadow::SetContentBounds(const gfx::Rect& content_bounds) {
-  // When the window moves but doesn't change size, this is a no-op. (The
-  // origin stays the same in this case.)
-  if (content_bounds == content_bounds_)
+  // The layer's bounds should change with the content bounds accordingly. Need
+  // to recalculate the layer bounds if the layer bounds were modified after the
+  // content bounds were last set. When the window moves but doesn't change
+  // size, this is a no-op. (The origin stays the same in this case.)
+  if (content_bounds == content_bounds_ &&
+      layer()->bounds() == last_layer_bounds_) {
     return;
+  }
 
   content_bounds_ = content_bounds;
   UpdateShadowAppearance();
@@ -203,6 +207,8 @@ void Shadow::UpdateShadowAppearance() {
   } else {
     layer()->SetBounds(new_layer_bounds);
   }
+
+  last_layer_bounds_ = layer()->bounds();
 
   shadow_layer()->SetBounds(shadow_layer_bounds);
 

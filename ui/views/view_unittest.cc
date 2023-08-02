@@ -4525,7 +4525,7 @@ class TestingLayerViewObserver : public ViewObserver {
 
  private:
   // ViewObserver:
-  void OnLayerTargetBoundsChanged(View* view) override {
+  void OnViewLayerBoundsSet(View* view) override {
     last_layer_bounds_ = view->layer()->bounds();
   }
 

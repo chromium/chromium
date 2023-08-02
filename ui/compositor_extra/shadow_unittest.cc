@@ -95,6 +95,27 @@ TEST_F(ShadowTest, SetContentBounds) {
   }
 }
 
+// Test if the shadow's layer bounds are modified, setting the same content
+// bounds can reset the layer bounds.
+TEST_F(ShadowTest, ResetLayerBoundsBySettingSameContentBounds) {
+  Shadow shadow;
+  shadow.Init(kElevationLarge);
+  gfx::Rect content_bounds(100, 100, 300, 300);
+  shadow.SetContentBounds(content_bounds);
+  EXPECT_EQ(content_bounds, shadow.content_bounds());
+
+  const gfx::Rect layer_bounds = shadow.layer()->bounds();
+
+  // Change shadow's layer bounds.
+  const gfx::Rect modified_bounds(200, 200, 150, 400);
+  shadow.layer()->SetBounds(modified_bounds);
+  EXPECT_EQ(shadow.layer()->bounds(), modified_bounds);
+
+  // Reset layer bounds by setting the same content bounds.
+  shadow.SetContentBounds(content_bounds);
+  EXPECT_EQ(layer_bounds, shadow.layer()->bounds());
+}
+
 // Test that the elevation is reduced when the contents are too small to handle
 // the full elevation.
 TEST_F(ShadowTest, AdjustElevationForSmallContents) {

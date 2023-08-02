@@ -83,8 +83,7 @@ void BlurredBackgroundShield::OnViewVisibilityChanged(
   background_layer_.SetVisible(host_->GetVisible());
 }
 
-void BlurredBackgroundShield::OnLayerTargetBoundsChanged(
-    views::View* observed_view) {
+void BlurredBackgroundShield::OnViewLayerBoundsSet(views::View* observed_view) {
   if (auto* host_layer = host_->layer()) {
     background_layer_.SetBounds(host_layer->bounds());
   }
