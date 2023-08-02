@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
@@ -202,14 +201,10 @@ class TestDeviceCloudPolicyManagerAsh
       : DeviceCloudPolicyManagerAsh(std::move(store),
                                     nullptr,
                                     nullptr,
-                                    state_keys_broker,
-                                    crd_delegate_) {
+                                    state_keys_broker) {
     set_component_policy_disabled_for_testing(true);
   }
   ~TestDeviceCloudPolicyManagerAsh() override = default;
-
- private:
-  policy::FakeStartCrdSessionJobDelegate crd_delegate_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

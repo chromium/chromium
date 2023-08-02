@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -49,17 +48,16 @@ class PrefService;
 
 namespace policy {
 
-class StartCrdSessionJobDelegate;
 class DeviceCloudPolicyStoreAsh;
 class EuiccStatusUploader;
 class ForwardingSchemaRegistry;
 class HeartbeatScheduler;
-class LookupKeyUploader;
 class ManagedSessionService;
 class ReportingUserTracker;
 class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
+class LookupKeyUploader;
 
 enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED, HANDS_OFF };
 
@@ -81,8 +79,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
       std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      ServerBackedStateKeysBroker* state_keys_broker,
-      StartCrdSessionJobDelegate& crd_delegate);
+      ServerBackedStateKeysBroker* state_keys_broker);
 
   DeviceCloudPolicyManagerAsh(const DeviceCloudPolicyManagerAsh&) = delete;
   DeviceCloudPolicyManagerAsh& operator=(const DeviceCloudPolicyManagerAsh&) =
@@ -219,8 +216,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
   raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
-
-  raw_ptr<StartCrdSessionJobDelegate> crd_delegate_;
 
   // Helper object that handles updating the server with our current device
   // state.

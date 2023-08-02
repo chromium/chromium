@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,10 +28,11 @@
 
 namespace policy {
 
-using AccessCodeCallback = StartCrdSessionJobDelegate::AccessCodeCallback;
-using ErrorCallback = StartCrdSessionJobDelegate::ErrorCallback;
-using SessionEndCallback = StartCrdSessionJobDelegate::SessionEndCallback;
-using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
+using AccessCodeCallback = DeviceCommandStartCrdSessionJob::AccessCodeCallback;
+using ErrorCallback = DeviceCommandStartCrdSessionJob::ErrorCallback;
+using SessionEndCallback = DeviceCommandStartCrdSessionJob::SessionEndCallback;
+using SessionParameters =
+    DeviceCommandStartCrdSessionJob::Delegate::SessionParameters;
 
 namespace {
 
@@ -293,10 +295,6 @@ CrdAdminSessionController::CrdAdminSessionController(
     : remoting_service_(std::move(remoting_service)) {}
 
 CrdAdminSessionController::~CrdAdminSessionController() = default;
-
-StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {
-  return *this;
-}
 
 bool CrdAdminSessionController::HasActiveSession() const {
   return active_session_ != nullptr;
