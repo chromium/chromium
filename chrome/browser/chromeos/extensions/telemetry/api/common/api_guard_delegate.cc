@@ -16,20 +16,11 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "chrome/common/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "components/security_state/content/content_utils.h"
-#include "components/security_state/core/security_state.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/externally_connectable.h"
-#include "extensions/common/url_pattern_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -156,46 +147,6 @@ bool IsExtensionForceInstalled(content::BrowserContext* context,
       extensions::ExtensionManagementFactory::GetForBrowserContext(context)
           ->GetForceInstallList();
   return force_install_list.Find(extension_id) != nullptr;
-}
-
-bool IsAppUIOpenAndSecure(content::BrowserContext* context,
-                          const extensions::Extension* extension) {
-  Profile* profile = Profile::FromBrowserContext(context);
-
-  const auto* externally_connectable_info =
-      extensions::ExternallyConnectableInfo::Get(extension);
-
-  for (auto* target_browser : *BrowserList::GetInstance()) {
-    // Ignore incognito.
-    if (target_browser->profile() != profile) {
-      continue;
-    }
-
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-    for (int i = 0; i < target_tab_strip->count(); ++i) {
-      content::WebContents* target_contents =
-          target_tab_strip->GetWebContentsAt(i);
-      if (externally_connectable_info->matches.MatchesURL(
-              target_contents->GetLastCommittedURL())) {
-        // Ensure the PWA URL connection is secure (e.g. valid certificate).
-        const auto visible_security_state =
-            security_state::GetVisibleSecurityState(target_contents);
-        // TODO(b/290909386): Remove this line once we reach a conclusion on
-        // how we should perform security check on IWA.
-        if (chromeos::features::IsIWAForTelemetryExtensionAPIEnabled() &&
-            target_contents->GetLastCommittedURL().SchemeIs(
-                chrome::kIsolatedAppScheme)) {
-          return true;
-        }
-        return security_state::GetSecurityLevel(
-                   *visible_security_state,
-                   /*used_policy_installed_certificate=*/false) ==
-               security_state::SecurityLevel::SECURE;
-      }
-    }
-  }
-
-  return false;
 }
 
 void OnGetManufacturer(
@@ -325,8 +276,8 @@ void ApiGuardDelegateImpl::CanAccessApi(content::BrowserContext* context,
   }
 
   condition_checker_->AppendChecker(
-      base::BindOnce(&IsAppUIOpenAndSecure, base::Unretained(context),
-                     base::Unretained(extension)),
+      base::BindOnce(&IsTelemetryExtensionAppUiOpenAndSecure,
+                     base::Unretained(context), base::Unretained(extension)),
       "Companion app UI is not open or not secure");
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

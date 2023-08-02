@@ -17,15 +17,12 @@ source_set("common") {
 
   deps = [
     ":hardware_info_delegate",
+    ":util",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/common/chromeos/extensions",
-    "//chromeos/constants:constants",
-    "//components/security_state/content",
-    "//components/security_state/core",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
@@ -48,6 +45,23 @@ source_set("common") {
       "//components/policy/core/common",
     ]
   }
+}
+
+source_set("util") {
+  sources = [
+    "util.cc",
+    "util.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chromeos/constants",
+    "//components/security_state/content",
+    "//components/security_state/core",
+    "//extensions/common",
+  ]
 }
 
 source_set("remote_probe_strategy") {
