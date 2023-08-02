@@ -8,10 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Key in NSUserDefaults to store the count of "UKM.LogSize.OnSuccess" records.
 NSString* LogSizeOnSuccessCounterKey = @"IOSUKMLogSizeOnSuccessCounter";

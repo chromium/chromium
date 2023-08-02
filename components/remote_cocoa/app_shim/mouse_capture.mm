@@ -13,10 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace remote_cocoa {
 
 // The ActiveEventTap is a RAII handle on the resources being used to capture

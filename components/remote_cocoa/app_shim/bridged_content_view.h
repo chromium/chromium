@@ -14,10 +14,6 @@
 #import "ui/base/cocoa/tool_tip_base_view.h"
 #import "ui/base/cocoa/tracking_area.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
 }  // namespace remote_cocoa

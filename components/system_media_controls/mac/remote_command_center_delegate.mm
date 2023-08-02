@@ -8,10 +8,6 @@
 #include "components/system_media_controls/mac/remote_command_center_delegate_cocoa.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace system_media_controls::internal {
 
 RemoteCommandCenterDelegate::RemoteCommandCenterDelegate() {

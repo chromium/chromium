@@ -11,10 +11,6 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 constexpr char kScriptName[] = "form_handlers";
 constexpr char kScriptMessageName[] = "FormHandlersMessage";

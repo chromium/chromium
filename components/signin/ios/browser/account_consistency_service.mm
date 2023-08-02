@@ -33,10 +33,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The validity of the Gaia cookie on the Google domain is one hour to

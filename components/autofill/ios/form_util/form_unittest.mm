@@ -15,10 +15,6 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
 using base::test::ios::WaitUntilConditionOrTimeout;

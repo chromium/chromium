@@ -25,10 +25,6 @@
 #include "components/wifi/network_properties.h"
 #include "crypto/apple_keychain.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace wifi {
 
 // Implementation of WiFiService for macOS.

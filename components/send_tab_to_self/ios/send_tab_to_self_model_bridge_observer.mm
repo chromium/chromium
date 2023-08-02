@@ -7,10 +7,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace send_tab_to_self {
 
 SendTabToSelfModelBridge::SendTabToSelfModelBridge(

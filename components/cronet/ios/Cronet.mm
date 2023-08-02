@@ -25,10 +25,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/url_request/url_request_context_getter.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Cronet NSError constants.
 NSString* const CRNCronetErrorDomain = @"CRNCronetErrorDomain";
 NSString* const CRNInvalidArgumentKey = @"CRNInvalidArgumentKey";

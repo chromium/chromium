@@ -19,10 +19,6 @@
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class PlatformSpellChecker;
 
 using base::TimeTicks;

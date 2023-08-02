@@ -56,10 +56,6 @@
 #include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Request context getter for Cronet.

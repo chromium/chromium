@@ -6,10 +6,6 @@
 
 #include <tuple>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/remote_cocoa/app_shim/alert.h"

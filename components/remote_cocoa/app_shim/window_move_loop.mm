@@ -14,10 +14,6 @@
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // When event monitors process the events the full list of monitors is cached,
 // and if we unregister the event monitor that's at the end of the list while
 // processing the first monitor's handler -- the callback for the unregistered

@@ -19,10 +19,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace bookmarks {
 
 NSString* const kUTTypeChromiumBookmarkDictionaryList =

@@ -20,10 +20,6 @@
 #include "third_party/crashpad/crashpad/minidump/minidump_simple_string_dictionary_writer.h"
 #include "third_party/crashpad/crashpad/util/misc/metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace crash_reporter {
 
 namespace {

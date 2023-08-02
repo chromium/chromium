@@ -14,10 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "crypto/apple_keychain.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using crypto::AppleKeychain;
 
 #if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)

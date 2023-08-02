@@ -10,10 +10,6 @@
 #import "components/storage_monitor/image_capture_device.h"
 #include "components/storage_monitor/storage_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =

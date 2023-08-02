@@ -30,10 +30,6 @@
 #include "third_party/crashpad/crashpad/minidump/minidump_file_writer.h"
 #include "third_party/crashpad/crashpad/snapshot/mac/process_snapshot_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace crash_reporter {
 
 namespace {

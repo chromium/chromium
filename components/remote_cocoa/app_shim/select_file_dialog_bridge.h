@@ -14,10 +14,6 @@
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/select_file_dialog.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class ExtensionDropdownHandler;
 @class SelectFileDialogDelegate;
 

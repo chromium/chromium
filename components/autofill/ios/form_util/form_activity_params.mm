@@ -7,10 +7,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "ios/web/public/js_messaging/script_message.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace autofill {
 
 BaseFormActivityParams::BaseFormActivityParams() = default;

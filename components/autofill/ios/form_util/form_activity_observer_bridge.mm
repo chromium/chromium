@@ -7,10 +7,6 @@
 #include "base/check_op.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace autofill {
 FormActivityObserverBridge::FormActivityObserverBridge(
     web::WebState* web_state,

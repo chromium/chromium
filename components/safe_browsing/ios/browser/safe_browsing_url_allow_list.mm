@@ -7,10 +7,6 @@
 #include "base/no_destructor.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using safe_browsing::SBThreatType;
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingUrlAllowList)

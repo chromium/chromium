@@ -7,10 +7,6 @@
 #import "base/no_destructor.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 JSTranslateWebFrameManagerFactory*
 JSTranslateWebFrameManagerFactory::GetInstance() {

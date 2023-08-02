@@ -13,10 +13,6 @@
 #include "base/numerics/checked_math.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr float kMinimumRefreshRate =

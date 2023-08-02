@@ -4,10 +4,6 @@
 
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 UniqueIDDataTabHelper::~UniqueIDDataTabHelper() = default;
 
 uint32_t UniqueIDDataTabHelper::GetNextAvailableRendererID() const {

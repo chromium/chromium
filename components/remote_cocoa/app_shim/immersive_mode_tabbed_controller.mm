@@ -9,10 +9,6 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace remote_cocoa {
 
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(

@@ -23,10 +23,6 @@
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // This is duplicated here from ios/web/js_messaging/web_view_js_utils.mm in

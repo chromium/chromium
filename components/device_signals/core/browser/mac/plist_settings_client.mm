@@ -20,10 +20,6 @@
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device_signals {
 
 namespace {

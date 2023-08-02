@@ -12,10 +12,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/origin.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace password_manager {
 
 bool WebStateContentIsSecureHtml(const web::WebState* web_state) {

@@ -15,10 +15,6 @@
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using previous_session_info_constants::
     kPreviousSessionInfoConnectedSceneSessionIDs;
 using previous_session_info_constants::kPreviousSessionInfoMemoryFootprint;

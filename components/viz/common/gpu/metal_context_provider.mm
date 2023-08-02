@@ -21,10 +21,6 @@
 #include "third_party/skia/include/gpu/graphite/mtl/MtlBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteUtils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace viz {
 
 struct MetalContextProvider::ObjCStorage {

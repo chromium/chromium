@@ -19,10 +19,6 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HandoffManager ()
 
 // The active user activity.

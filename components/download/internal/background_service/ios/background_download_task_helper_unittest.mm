@@ -20,10 +20,6 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using net::test_server::HttpMethod;

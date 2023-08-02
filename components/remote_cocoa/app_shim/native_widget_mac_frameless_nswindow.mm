@@ -4,10 +4,6 @@
 
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface NSWindow (PrivateAPI)
 + (Class)frameViewClassForStyleMask:(NSUInteger)windowStyle;
 @end

@@ -9,10 +9,6 @@
 #include "components/dom_distiller/ios/distiller_page_ios.h"
 #include "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace dom_distiller {
 
 DistillerPageFactoryIOS::DistillerPageFactoryIOS(

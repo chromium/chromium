@@ -9,10 +9,6 @@
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace autofill {
 TestFormActivityTabHelper::TestFormActivityTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}

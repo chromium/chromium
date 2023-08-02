@@ -11,10 +11,6 @@
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace history {
 
 WebStateTopSitesObserver::WebStateTopSitesObserver(web::WebState* web_state,

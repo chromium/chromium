@@ -16,10 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/m1_sensors_internal_types_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern "C" {
 
 extern IOHIDEventSystemClientRef IOHIDEventSystemClientCreate(CFAllocatorRef);

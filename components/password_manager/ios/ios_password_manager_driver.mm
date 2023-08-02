@@ -14,10 +14,6 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::PasswordAutofillManager;
 using password_manager::PasswordManager;
 

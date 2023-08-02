@@ -14,10 +14,6 @@
 #include "components/policy/core/common/preferences_mac.h"
 #include "components/policy/policy_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // `CFPrefsManagedSource` and `_CFXPreferences` are used to determine the scope
 // of a policy. A policy can be read with `copyValueForKey()` below with
 // `kCFPreferencesAnyUser` will be treated as machine scope policy. Otherwise,

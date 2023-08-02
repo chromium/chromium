@@ -14,10 +14,6 @@
 #include "base/system/sys_info.h"
 #include "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 ContentType const ContentTypeURL = @"ContentTypeURL";
 ContentType const ContentTypeText = @"ContentTypeString";
 ContentType const ContentTypeImage = @"ContentTypeImage";

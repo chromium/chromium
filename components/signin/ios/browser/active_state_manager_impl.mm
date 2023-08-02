@@ -9,10 +9,6 @@
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kActiveStateManagerKeyName[] = "active_state_manager";
 }  // namespace

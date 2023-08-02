@@ -19,10 +19,6 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/hdr_metadata_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Source of the shader to perform tonemapping. Note that the functions

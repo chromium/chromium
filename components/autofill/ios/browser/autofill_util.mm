@@ -28,10 +28,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::NumberToString;
 using base::StringToUint;
 
