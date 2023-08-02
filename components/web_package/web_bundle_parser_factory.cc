@@ -66,20 +66,6 @@ WebBundleParserFactory::CreateFileDataSourceForTesting(
   return std::make_unique<FileDataSource>(std::move(receiver), std::move(file));
 }
 
-void WebBundleParserFactory::GetParserForFile(
-    mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-    const absl::optional<GURL>& base_url,
-    base::File file) {
-  mojo::PendingRemote<mojom::BundleDataSource> remote_data_source;
-  auto data_source = std::make_unique<FileDataSource>(
-      remote_data_source.InitWithNewPipeAndPassReceiver(), std::move(file));
-  GetParserForDataSource(std::move(receiver), base_url,
-                         std::move(remote_data_source));
-
-  // |data_source| will be destructed on |remote_data_source| destruction.
-  data_source.release();
-}
-
 void WebBundleParserFactory::GetParserForDataSource(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
     const absl::optional<GURL>& base_url,
@@ -91,6 +77,16 @@ void WebBundleParserFactory::GetParserForDataSource(
 
   // |parser| will be destructed on remote mojo ends' disconnection.
   parser.release();
+}
+
+void WebBundleParserFactory::BindFileDataSource(
+    mojo::PendingReceiver<mojom::BundleDataSource> data_source_pending_receiver,
+    base::File file) {
+  auto data_source = std::make_unique<FileDataSource>(
+      std::move(data_source_pending_receiver), std::move(file));
+
+  // |parser| will be destructed on remote mojo ends' disconnection.
+  data_source.release();
 }
 
 }  // namespace web_package

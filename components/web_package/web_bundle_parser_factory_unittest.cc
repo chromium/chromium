@@ -49,8 +49,15 @@ class WebBundleParserFactoryTest : public testing::Test {
                         base::File file,
                         const absl::optional<GURL>& base_url) {
     mojom::WebBundleParserFactory* factory = factory_.get();
-    return factory->GetParserForFile(std::move(receiver), base_url,
-                                     std::move(file));
+    mojo::PendingRemote<mojom::BundleDataSource>
+        file_data_source_pending_remote;
+    auto file_data_source_pending_receiver =
+        file_data_source_pending_remote.InitWithNewPipeAndPassReceiver();
+    factory->BindFileDataSource(std::move(file_data_source_pending_receiver),
+                                std::move(file));
+    return factory->GetParserForDataSource(
+        std::move(receiver), base_url,
+        std::move(file_data_source_pending_remote));
   }
 
  private:
