@@ -436,3 +436,34 @@ export async function testExistingPropertiesAreRemovedOnSubsequentSyncds() {
   assertEquals(panel!.getAttribute('items'), '10');
   assertFalse(panel!.hasAttribute('percentage'));
 }
+
+/**
+ * Tests that if the user has any files to pin but no bytes (i.e. has ONLY
+ * 0-byte files) the percentage is also attached (a pre-requisite to show the
+ * File sync is on page).
+ */
+export async function testNoBytesToPinButHasFilesAddsPercentage() {
+  // Initialize the store with bulk pinning enabled.
+  const store = getStore();
+  store.init({...getEmptyState(), preferences: PREFERENCES});
+
+  // Setup a syncing state that should be 10% done with 10 items.
+  const bulkPinning: BulkPinProgress = {
+    stage: BulkPinStage.SYNCING,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 0,
+    pinnedBytes: 0,
+    filesToPin: 1,
+    remainingSeconds: 0,
+    emptiedQueue: false,
+  };
+
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  assertEquals(
+      container!.updates, 1,
+      'Bulk pin state change should increment updates to 1');
+  assertEquals(panel!.getAttribute('items'), '1');
+  assertEquals(panel!.getAttribute('seconds'), '0');
+  assertEquals(panel!.getAttribute('percentage'), '100');
+}
