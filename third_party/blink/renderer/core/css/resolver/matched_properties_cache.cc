@@ -320,4 +320,16 @@ void MatchedPropertiesCache::RemoveCachedMatchedPropertiesWithDeadEntries(
   cache_.RemoveAll(to_remove);
 }
 
+std::ostream& operator<<(std::ostream& stream,
+                         MatchedPropertiesCache::Key& key) {
+  stream << "Key{";
+  for (const MatchedProperties& matched_properties :
+       key.result_.GetMatchedProperties()) {
+    stream << matched_properties.properties->AsText();
+    stream << ",";
+  }
+  stream << "}";
+  return stream;
+}
+
 }  // namespace blink

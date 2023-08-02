@@ -89,6 +89,8 @@ class CORE_EXPORT MatchedPropertiesCache {
    private:
     friend class MatchedPropertiesCache;
     friend class MatchedPropertiesCacheTestKey;
+    friend std::ostream& operator<<(std::ostream&,
+                                    MatchedPropertiesCache::Key&);
 
     Key(const MatchResult&, unsigned hash);
 
@@ -120,6 +122,9 @@ class CORE_EXPORT MatchedPropertiesCache {
 
   Cache cache_;
 };
+
+// For debugging only.
+std::ostream& operator<<(std::ostream&, MatchedPropertiesCache::Key&);
 
 }  // namespace blink
 
