@@ -634,6 +634,7 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisabledTest(message = "https://crbug.com/1469553")
     public void testFullscreenExitWithSelectionPopPresent() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
         // Click to trigger java scripts callback
