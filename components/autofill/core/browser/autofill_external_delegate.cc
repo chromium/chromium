@@ -183,6 +183,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     AutofillClient::PopupOpenArgs open_args(element_bounds_,
                                             query_field_.text_direction,
                                             suggestions, trigger_source);
+    trigger_source_ = trigger_source;
     manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }
@@ -220,7 +221,7 @@ void AutofillExternalDelegate::OnPopupShown() {
       has_autofill_suggestions_ ? mojom::AutofillState::kAutofillAvailable
                                 : mojom::AutofillState::kAutocompleteAvailable);
   manager_->DidShowSuggestions(has_autofill_suggestions_, query_form_,
-                               query_field_);
+                               query_field_, trigger_source_);
 
   if (should_show_scan_credit_card_) {
     AutofillMetrics::LogScanCreditCardPromptMetric(

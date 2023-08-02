@@ -324,7 +324,9 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               (override));
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
-              (const FormData&, const FormFieldData&),
+              (const FormData&,
+               const FormFieldData&,
+               AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
@@ -753,6 +755,13 @@ class BrowserAutofillManagerTest : public testing::Test {
           AutofillSuggestionTriggerSource::kTextFieldDidChange) {
     browser_autofill_manager_->OnAskForValuesToFill(form, field, gfx::RectF(),
                                                     trigger_source);
+  }
+
+  void DidShowAutofillSuggestions(const FormData& form,
+                                  size_t field_index = 0) {
+    browser_autofill_manager_->DidShowSuggestions(
+        /*has_autofill_suggestions=*/true, form, form.fields[field_index],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -6257,7 +6266,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   const FormFieldData& field = form.fields[0];
 
   // Touch the field of "Name on Card" and autofill suggestion is shown.
-  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill)
       .WillOnce(Return(false));
   TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
@@ -9156,7 +9165,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/false, form, field);
+      /*has_autofill_suggestions=*/false, form, field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   histogram_tester.ExpectBucketCount(
       "Autocomplete.Events", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       1);
@@ -9176,8 +9186,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
                                      AutofillMetrics::SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness.Address",
@@ -9223,8 +9232,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressOnly",
@@ -9270,8 +9278,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressOnly",
@@ -9316,8 +9323,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.ContactOnly",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9364,8 +9370,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.ContactOnly",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9412,8 +9417,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.PhoneOnly",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9457,8 +9461,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.Other",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9505,8 +9508,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmail",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9556,8 +9558,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmail",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9609,8 +9610,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusPhone",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9660,8 +9660,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusPhone",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9715,8 +9714,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmailPlusPhone",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9765,8 +9763,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmailPlusPhone",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -9798,8 +9795,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  DidShowAutofillSuggestions(form);
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
                                      AutofillMetrics::SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",
@@ -10446,18 +10442,18 @@ TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
   const FormFieldData& field = form.fields[1];
 
   // Not a form element click, Autofill suggestions shown.
-  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill).Times(0);
   TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/false);
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // TTF not available, Autofill suggestions shown.
-  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill)
       .WillOnce(Return(false));
   TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // A form element click and TTF available, Autofill suggestions not shown.
-  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill)
       .WillOnce(Return(true));
   TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
@@ -10474,7 +10470,7 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
 
   EXPECT_CALL(touch_to_fill_delegate(), IsShowingTouchToFill)
       .WillOnce(Return(true));
-  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill).Times(0);
   TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }

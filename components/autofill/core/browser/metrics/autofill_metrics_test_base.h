@@ -172,6 +172,13 @@ class AutofillMetricsBaseTest {
     return form;
   }
 
+  void DidShowAutofillSuggestions(const FormData& form,
+                                  size_t field_index = 0) {
+    autofill_manager().DidShowSuggestions(
+        /*has_autofill_suggestions=*/true, form, form.fields[field_index],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  }
+
   void FillTestProfile(const FormData& form) {
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, form, form.fields.front(),

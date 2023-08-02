@@ -172,6 +172,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   FormData query_form_;
   FormFieldData query_field_;
 
+  // The suggestion trigger source of the last suggestions that were attempted
+  // to be shown.
+  AutofillSuggestionTriggerSource trigger_source_ =
+      AutofillSuggestionTriggerSource::kUnspecified;
+
   // The bounds of the form field that user is interacting with.
   gfx::RectF element_bounds_;
 

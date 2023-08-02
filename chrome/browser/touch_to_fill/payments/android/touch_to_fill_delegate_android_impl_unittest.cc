@@ -134,7 +134,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               DidShowSuggestions,
               (bool has_autofill_suggestions,
                const FormData& form,
-               const FormFieldData& field),
+               const FormFieldData& field,
+               AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
 };
@@ -218,8 +219,10 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     if (!browser_autofill_manager_->FindCachedFormById(form_.global_id())) {
       browser_autofill_manager_->OnFormsSeen({form_}, {});
     }
-    EXPECT_EQ(expected_success, touch_to_fill_delegate_->TryToShowTouchToFill(
-                                    form_, form_.fields[0]));
+    EXPECT_EQ(expected_success,
+              touch_to_fill_delegate_->TryToShowTouchToFill(
+                  form_, form_.fields[0],
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked));
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
   }
@@ -368,8 +371,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
       autofill_client_,
       HideAutofillPopup(PopupHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
-  EXPECT_FALSE(
-      touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));
+  EXPECT_FALSE(touch_to_fill_delegate_->TryToShowTouchToFill(
+      form_, form_.fields[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked));
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,

@@ -167,9 +167,11 @@ class BrowserAutofillManager : public AutofillManager,
                             FormData form,
                             const FormFieldData& trigger_field);
   // Virtual for testing
-  virtual void DidShowSuggestions(bool has_autofill_suggestions,
-                                  const FormData& form,
-                                  const FormFieldData& field);
+  virtual void DidShowSuggestions(
+      bool has_autofill_suggestions,
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.

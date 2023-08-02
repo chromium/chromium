@@ -70,7 +70,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
   // Simulate seeing a suggestion.
   if (user_saw_suggestion) {
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/true, form, form.fields[0]);
+        /*has_autofill_suggestions=*/true, form, form.fields[0],
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 
   // Simulate filling the form.
@@ -331,7 +332,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
+      /*has_autofill_suggestions=*/true, form_, form_.fields[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   SimulateUserChangedTextField(form_, form_.fields[0]);
   SimulateUserChangedTextField(form_, form_.fields[1]);
@@ -370,7 +372,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
+      /*has_autofill_suggestions=*/true, form_, form_.fields[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   FillTestProfile(form_);
 
   // Simulate user fixing the address.
@@ -413,7 +416,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
+      /*has_autofill_suggestions=*/true, form_, form_.fields[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   FillTestProfile(form_);
 
   // Simulate user fixing the address.
