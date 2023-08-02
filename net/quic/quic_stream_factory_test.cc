@@ -7869,9 +7869,9 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
 // This test verifies that the connection will not attempt connection migration
 // (send connectivity probes on alternate path) when path degrading is detected
 // and handshake is not confirmed.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
 TEST_P(QuicStreamFactoryTest,
-       DISABLED_NoMigrationOnPathDegradingBeforeHandshakeConfirmed) {
+       NoMigrationOnPathDegradingBeforeHandshakeConfirmed) {
+  FLAGS_quic_enable_chaos_protection = false;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
 
@@ -7924,21 +7924,19 @@ TEST_P(QuicStreamFactoryTest,
 // This test verifies that if a connection is closed with
 // QUIC_NETWORK_IDLE_TIMEOUT before handshake is completed and there is no
 // alternate network, no new connection will be created.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_NoAlternateNetworkBeforeHandshakeOnIdleTimeout) {
+TEST_P(QuicStreamFactoryTest, NoAlternateNetworkBeforeHandshakeOnIdleTimeout) {
   TestNoAlternateNetworkBeforeHandshake(quic::QUIC_NETWORK_IDLE_TIMEOUT);
 }
 
 // This test verifies that if a connection is closed with QUIC_HANDSHAKE_TIMEOUT
 // and there is no alternate network, no new connection will be created.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest, DISABLED_NoAlternateNetworkOnHandshakeTimeout) {
+TEST_P(QuicStreamFactoryTest, NoAlternateNetworkOnHandshakeTimeout) {
   TestNoAlternateNetworkBeforeHandshake(quic::QUIC_HANDSHAKE_TIMEOUT);
 }
 
 void QuicStreamFactoryTestBase::TestNoAlternateNetworkBeforeHandshake(
     quic::QuicErrorCode quic_error) {
+  FLAGS_quic_enable_chaos_protection = false;
   DCHECK(quic_error == quic::QUIC_NETWORK_IDLE_TIMEOUT ||
          quic_error == quic::QUIC_HANDSHAKE_TIMEOUT);
   InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
@@ -8265,9 +8263,9 @@ TEST_P(QuicStreamFactoryTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
 // Test that if the original connection is closed with QUIC_PACKET_WRITE_ERROR
 // before handshake is confirmed and new connection before handshake is turned
 // on, a new connection will be retried on the alternate network.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
 TEST_P(QuicStreamFactoryTest,
-       DISABLED_RetryConnectionOnWriteErrorBeforeHandshakeConfirmed) {
+       RetryConnectionOnWriteErrorBeforeHandshakeConfirmed) {
+  FLAGS_quic_enable_chaos_protection = false;
   quic_params_->retry_on_alternate_network_before_handshake = true;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
