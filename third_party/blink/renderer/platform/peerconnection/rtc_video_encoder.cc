@@ -1690,6 +1690,11 @@ int32_t RTCVideoEncoder::InitEncode(
   // problem but some HW encoders already fallback for resolutions not divisible
   // by 4.) At 360p, manual testing suggests HW and SW are roughly on par in
   // terms of quality.
+  //
+  // Android is excluded from this logic because there are situations where a
+  // codec like H264 is available in HW but not SW in which case SW fallback
+  // would result in a change of codec, see https://crbug.com/1469318.
+#if !BUILDFLAG(IS_ANDROID)
   uint16_t force_sw_height = 359;
   if (base::FeatureList::IsEnabled(features::kForcingSoftwareIncludes360)) {
     force_sw_height = 360;
@@ -1700,6 +1705,7 @@ int32_t RTCVideoEncoder::InitEncode(
         << codec_settings->width << "x" << codec_settings->height << ")";
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
+#endif
 
   if (profile_ >= media::H264PROFILE_MIN &&
       profile_ <= media::H264PROFILE_MAX &&
