@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
   ]
   deps = [
