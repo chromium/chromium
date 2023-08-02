@@ -1040,6 +1040,10 @@ NearbySharingServiceImpl::GetCertificateManager() {
   return certificate_manager_.get();
 }
 
+NearbyNotificationManager* NearbySharingServiceImpl::GetNotificationManager() {
+  return nearby_notification_manager_.get();
+}
+
 void NearbySharingServiceImpl::OnNearbyProcessStopped(
     NearbyProcessShutdownReason shutdown_reason) {
   DCHECK(process_reference_);

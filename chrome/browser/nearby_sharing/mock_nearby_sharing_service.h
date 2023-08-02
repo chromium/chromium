@@ -78,6 +78,10 @@ class MockNearbySharingService : public NearbySharingService {
               GetNotificationDelegate,
               (const std::string&),
               (override));
+  MOCK_METHOD(NearbyNotificationManager*,
+              GetNotificationManager,
+              (),
+              (override));
   MOCK_METHOD(void, RecordFastInitiationNotificationUsage, (bool), (override));
   MOCK_METHOD(NearbyShareSettings*, GetSettings, (), (override));
   MOCK_METHOD(NearbyShareHttpNotifier*, GetHttpNotifier, (), (override));

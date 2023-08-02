@@ -121,6 +121,13 @@ export class NearbyUiTriggerBrowserProxy {
   }
 
   /**
+   * Tells C++ side to trigger a Nearby Share received notification.
+   */
+  showNearbyShareReceivedNotification() {
+    chrome.send('showNearbyShareReceivedNotification');
+  }
+
+  /**
    * Tells C++ side to trigger a Fast Pair error notification.
    */
   notifyFastPairError() {

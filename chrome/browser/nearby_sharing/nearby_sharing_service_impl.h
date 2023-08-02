@@ -140,6 +140,7 @@ class NearbySharingServiceImpl
   NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() override;
   NearbyShareContactManager* GetContactManager() override;
   NearbyShareCertificateManager* GetCertificateManager() override;
+  NearbyNotificationManager* GetNotificationManager() override;
 
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnectionInitiated(

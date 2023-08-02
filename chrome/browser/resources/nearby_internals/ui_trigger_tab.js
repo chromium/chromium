@@ -253,6 +253,15 @@ Polymer({
   },
 
   /**
+   * Triggers ShowNearbyShareReceivedNotification which displays a Nearby Share
+   * "Received" notification.
+   * @private
+   */
+  onNearbyShareReceivedNotificationClicked_() {
+    this.browserProxy_.showNearbyShareReceivedNotification();
+  },
+
+  /**
    * Updates |selectedShareTargetId_| with the new selected option.
    * @private
    */
