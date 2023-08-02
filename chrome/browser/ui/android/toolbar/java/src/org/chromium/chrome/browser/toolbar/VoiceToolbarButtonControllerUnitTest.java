@@ -18,7 +18,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,8 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -46,34 +43,13 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /** Unit tests for {@link VoiceToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {VoiceToolbarButtonControllerUnitTest.ShadowChromeFeatureList.class})
+@Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public final class VoiceToolbarButtonControllerUnitTest {
-    // TODO(crbug.com/1199025): Remove this shadow.
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        private static final Map<String, String> sParamValues = new HashMap<>();
-
-        @Implementation
-        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
-            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
-            return sParamValues.getOrDefault(paramKey, "");
-        }
-
-        public static void reset() {
-            sParamValues.clear();
-        }
-    }
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-
     @Mock
     private Context mContext;
     @Mock
@@ -99,7 +75,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ShadowChromeFeatureList.reset();
 
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
         doReturn(mConfiguration).when(mResources).getConfiguration();
