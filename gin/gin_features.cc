@@ -139,6 +139,11 @@ BASE_FEATURE(kV8MemoryReducerSingleGC,
              "V8MemoryReducerSingleGC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Avoids background threads for GC if isolate is in background.
+BASE_FEATURE(kV8SingleThreadedGCInBackground,
+             "V8SingleThreadedGCInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
 BASE_FEATURE(kV8SlowHistograms,

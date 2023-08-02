@@ -313,6 +313,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8MemoryReducerSingleGC,
                          "--memory-reducer-single-gc",
                          "--no-memory-reducer-single-gc");
+  SetV8FlagsIfOverridden(features::kV8SingleThreadedGCInBackground,
+                         "--single-threaded-gc-in-background",
+                         "--no-single-threaded-gc-in-background");
   SetV8FlagsIfOverridden(features::kV8MidtierRegallocFallback,
                          "--turbo-use-mid-tier-regalloc-for-huge-functions",
                          "--no-turbo-use-mid-tier-regalloc-for-huge-functions");
