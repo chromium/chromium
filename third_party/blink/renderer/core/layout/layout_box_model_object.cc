@@ -182,9 +182,13 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
 
   if (Layer() && old_style->HasStickyConstrainedPosition() &&
       !StyleRef().HasStickyConstrainedPosition()) {
-    if (const auto* scroll_container =
-            Layer()->ContainingScrollContainerLayer()) {
-      scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
+    if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
+      SetStickyConstraints(nullptr);
+    } else {
+      if (const auto* scroll_container =
+              Layer()->ContainingScrollContainerLayer()) {
+        scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
+      }
     }
   }
 

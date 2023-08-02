@@ -168,6 +168,8 @@ class CORE_EXPORT NGFragmentBuilder {
     items_builder_ = builder;
   }
 
+  void PropagateStickyDescendants(const NGPhysicalFragment& child);
+
   // Propagate |child|'s anchor for the CSS Anchor Positioning to |this|
   // builder. This includes the anchor of the |child| itself and anchors
   // propagated to the |child| from its descendants.
@@ -466,6 +468,7 @@ class CORE_EXPORT NGFragmentBuilder {
     layout_object_ = node.GetLayoutBox();
   }
 
+  HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
   NGLogicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
@@ -510,6 +513,7 @@ class CORE_EXPORT NGFragmentBuilder {
   // The break token to store in the resulting fragment.
   const NGBreakToken* break_token_ = nullptr;
 
+  HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
   NGLogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;

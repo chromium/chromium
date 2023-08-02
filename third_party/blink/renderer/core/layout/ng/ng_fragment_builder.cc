@@ -97,6 +97,28 @@ void NGFragmentBuilder::ReplaceChild(wtf_size_t index,
   children_[index] = NGLogicalLink{std::move(&new_child), offset};
 }
 
+HeapVector<Member<LayoutBoxModelObject>>&
+NGFragmentBuilder::EnsureStickyDescendants() {
+  if (!sticky_descendants_) {
+    sticky_descendants_ =
+        MakeGarbageCollected<HeapVector<Member<LayoutBoxModelObject>>>();
+  }
+  return *sticky_descendants_;
+}
+
+void NGFragmentBuilder::PropagateStickyDescendants(
+    const NGPhysicalFragment& child) {
+  if (child.HasStickyConstrainedPosition()) {
+    EnsureStickyDescendants().push_front(
+        To<LayoutBoxModelObject>(child.GetMutableLayoutObject()));
+  }
+
+  if (const auto* child_sticky_descendants =
+          child.PropagatedStickyDescendants()) {
+    EnsureStickyDescendants().AppendVector(*child_sticky_descendants);
+  }
+}
+
 NGLogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
   if (!anchor_query_)
     anchor_query_ = MakeGarbageCollected<NGLogicalAnchorQuery>();
@@ -165,6 +187,7 @@ void NGFragmentBuilder::PropagateFromFragment(
   // Propagate anchors from the |child|. Anchors are in |OutOfFlowData| but the
   // |child| itself may have an anchor.
   PropagateChildAnchors(child, child_offset + relative_offset);
+  PropagateStickyDescendants(child);
 
   if (child.NeedsOOFPositionedInfoPropagation() &&
       !disable_oof_descendants_propagation_) {

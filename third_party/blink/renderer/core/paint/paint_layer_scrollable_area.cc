@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -2186,6 +2187,18 @@ void PaintLayerScrollableArea::AddStickyLayer(PaintLayer* layer) {
   EnsureRareData().sticky_layers_.insert(layer);
 }
 
+void PaintLayerScrollableArea::UpdateAllStickyConstraints() {
+  // TODO(ikilpatrick): Change `UpdateStickyPositionConstraints` return the
+  // sticky constraints object instead of performing a mutation.
+  for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
+    if (auto* sticky_descendants = fragment.StickyDescendants()) {
+      for (auto& sticky_descendant : *sticky_descendants) {
+        sticky_descendant->UpdateStickyPositionConstraints();
+      }
+    }
+  }
+}
+
 void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
   // Don't clear StickyConstraints for each LayoutObject of each layer in
   // sticky_layers_ because sticky_layers_ may contain stale pointers.
@@ -2194,6 +2207,19 @@ void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
   // StickyConstraints() to see if its sticky constraints need update.
   if (rare_data_)
     rare_data_->sticky_layers_.clear();
+
+  if (!RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
+    return;
+  }
+
+  // Enqueue ourselves for a sticky update if we have any sticky descendants.
+  auto* box = GetLayoutBox();
+  for (const auto& fragment : box->PhysicalFragments()) {
+    if (fragment.StickyDescendants()) {
+      box->GetFrameView()->AddPendingStickyUpdate(this);
+      break;
+    }
+  }
 }
 
 void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {

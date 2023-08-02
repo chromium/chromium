@@ -1473,9 +1473,9 @@ TEST_P(LayoutBoxModelObjectTest, RemoveStickyUnderContain) {
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky_layer));
 
   GetDocument().getElementById(AtomicString("parent"))->remove();
-  EXPECT_FALSE(scrollable_area->HasStickyLayer(sticky_layer));
-
   UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scrollable_area->HasStickyLayer(sticky_layer));
 
   // This should not crash.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),

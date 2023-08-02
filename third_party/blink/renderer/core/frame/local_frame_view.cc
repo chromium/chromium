@@ -344,6 +344,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
   visitor->Trace(pending_opacity_updates_);
+  visitor->Trace(pending_sticky_updates_);
   visitor->Trace(disconnected_elements_with_remembered_size_);
 }
 
@@ -1747,7 +1748,11 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
 
   UpdateDocumentAnnotatedRegions();
 
-  GetLayoutView()->Layer()->UpdateLayerPositionsAfterLayout();
+  if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
+    ExecutePendingStickyUpdates();
+  } else {
+    GetLayoutView()->Layer()->UpdateLayerPositionsAfterLayout();
+  }
   frame_->Selection().DidLayout();
 
   FontFaceSetDocument::DidLayout(*document);
@@ -5104,6 +5109,25 @@ void LocalFrameView::RemoveAllPendingUpdates() {
       object->SetNeedsPaintPropertyUpdate();
     }
     pending_transform_updates_->clear();
+  }
+}
+
+void LocalFrameView::AddPendingStickyUpdate(PaintLayerScrollableArea* object) {
+  if (!pending_sticky_updates_) {
+    pending_sticky_updates_ =
+        MakeGarbageCollected<HeapHashSet<Member<PaintLayerScrollableArea>>>();
+  }
+  pending_sticky_updates_->insert(object);
+}
+
+void LocalFrameView::ExecutePendingStickyUpdates() {
+  if (pending_sticky_updates_) {
+    // Iteration order of the scrollable-areas doesn't matter as
+    // sticky-positioned objects are contained within each scrollable-area.
+    for (PaintLayerScrollableArea* scrollable_area : *pending_sticky_updates_) {
+      scrollable_area->UpdateAllStickyConstraints();
+    }
+    pending_sticky_updates_->clear();
   }
 }
 

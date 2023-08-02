@@ -949,8 +949,10 @@ void LayoutBox::LayoutSubtreeRoot() {
     result->CopyMutableOutOfFlowData(*previous_result);
   }
 
-  // Even if we are a layout root, our baseline may have shifted. In this
-  // (rare) case, mark our containing-block for layout.
+  // Even if we are a subtree layout root we need to mark our containing-block
+  // for layout if:
+  //  - Our baselines have shifted.
+  //  - We've propagated any sticky-descendants.
   //
   // NOTE: We could weaken the constraints in ObjectIsRelayoutBoundary, and use
   // this technique to detect size-changes, etc if we wanted to expand this
@@ -959,7 +961,8 @@ void LayoutBox::LayoutSubtreeRoot() {
       To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment());
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   if (previous_fragment.FirstBaseline() != fragment.FirstBaseline() ||
-      previous_fragment.LastBaseline() != fragment.LastBaseline()) {
+      previous_fragment.LastBaseline() != fragment.LastBaseline() ||
+      fragment.PropagatedStickyDescendants()) {
     if (auto* containing_block = ContainingBlock()) {
       containing_block->SetNeedsLayout(
           layout_invalidation_reason::kChildChanged, kMarkContainerChain);

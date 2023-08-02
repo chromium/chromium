@@ -770,6 +770,9 @@ class CORE_EXPORT LocalFrameView final
   void RemoveAllPendingUpdates();
   bool ExecuteAllPendingUpdates();
 
+  void AddPendingStickyUpdate(PaintLayerScrollableArea*);
+  void ExecutePendingStickyUpdates();
+
   void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
   void NotifyElementWithRememberedSizeDisconnected(Element*);
@@ -1186,6 +1189,10 @@ class CORE_EXPORT LocalFrameView final
   // TODO(yotha): unify these into one HeapHashMap.
   Member<HeapHashSet<Member<LayoutObject>>> pending_transform_updates_;
   Member<HeapHashSet<Member<LayoutObject>>> pending_opacity_updates_;
+
+  // A set of objects needing sticky constraint updates. These updates are
+  // registered during layout deferred until the end of layout.
+  Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_sticky_updates_;
 
   // These are elements that were disconnected while having a remembered
   // size. We need to clear the remembered at resize observer timing,

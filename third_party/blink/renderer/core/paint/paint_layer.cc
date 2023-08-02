@@ -641,20 +641,23 @@ void PaintLayer::SetNeedsCompositingInputsUpdate() {
 void PaintLayer::ScrollContainerStatusChanged() {
   SetNeedsCompositingInputsUpdate();
 
-  // Invalidate sticky layers and anchor positioned layers in ancestor
-  // scrollable areas. We could invalidate only the affected scrollable areas,
-  // but it's complicated considering the change of containing block
-  // relationship for out-of-flow descendants. This function is called rarely.
-  for (auto* layer = this; layer; layer = layer->Parent()) {
-    if (auto* scrollable_area = layer->GetScrollableArea()) {
-      scrollable_area->InvalidateAllStickyConstraints();
+  if (!RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
+    // Invalidate sticky layers and anchor positioned layers in ancestor
+    // scrollable areas. We could invalidate only the affected scrollable
+    // areas, but it's complicated considering the change of containing block
+    // relationship for out-of-flow descendants. This function is called rarely.
+    for (auto* layer = this; layer; layer = layer->Parent()) {
+      if (auto* scrollable_area = layer->GetScrollableArea()) {
+        scrollable_area->InvalidateAllStickyConstraints();
+      }
+    }
+
+    // Make sure UpdateLayerPositionsAfterLayout() will be called to update
+    // sticky and anchor positioned layers.
+    if (auto* frame_view = GetLayoutObject().GetFrameView()) {
+      frame_view->SetNeedsLayout();
     }
   }
-
-  // Make sure UpdateLayerPositionsAfterLayout() will be called to update
-  // sticky and anchor positioned layers.
-  if (auto* frame_view = GetLayoutObject().GetFrameView())
-    frame_view->SetNeedsLayout();
 }
 
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
@@ -757,7 +760,8 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     old_child->DirtyStackingContextZOrderLists();
     MarkAncestorChainForFlagsUpdate();
 
-    if (old_child->GetLayoutObject()
+    if (!RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled() &&
+        old_child->GetLayoutObject()
             .StyleRef()
             .HasStickyConstrainedPosition()) {
       if (const auto* scroll_container =

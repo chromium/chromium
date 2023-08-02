@@ -1289,8 +1289,18 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
 
     const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
 
+    // Make sure our fragment is safe to use.
+    if (fragment.IsLayoutObjectDestroyedOrMoved()) {
+      return false;
+    }
+
     // Fragmented nodes cannot be relayout roots.
     if (fragment.BreakToken()) {
+      return false;
+    }
+
+    // Any propagated sticky descendants need their constraints regenerated.
+    if (fragment.PropagatedStickyDescendants()) {
       return false;
     }
 
