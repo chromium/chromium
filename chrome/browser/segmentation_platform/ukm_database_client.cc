@@ -69,6 +69,7 @@ void UkmDatabaseClient::PostMessageLoopRun() {
     // Some of the content browser implementations do not invoke
     // PreProfileInit().
     ukm_observer_->StopObserving();
+    ukm_observer_ = nullptr;
   }
 }
 
