@@ -143,7 +143,9 @@
 #include "components/user_manager/user.h"
 #include "ui/base/ui_base_features.h"
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
@@ -568,6 +570,17 @@ void SettingsUI::BindInterface(
   }
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
 }
+
+void SettingsUI::BindInterface(
+    mojo::PendingReceiver<
+        theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
+        pending_receiver) {
+  if (theme_color_picker_handler_factory_receiver_.is_bound()) {
+    theme_color_picker_handler_factory_receiver_.reset();
+  }
+  theme_color_picker_handler_factory_receiver_.Bind(
+      std::move(pending_receiver));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SettingsUI::BindInterface(
@@ -604,6 +617,18 @@ void SettingsUI::CreateCustomizeThemesHandler(
   customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
       std::move(pending_client), std::move(pending_handler),
       web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
+}
+
+void SettingsUI::CreateThemeColorPickerHandler(
+    mojo::PendingReceiver<theme_color_picker::mojom::ThemeColorPickerHandler>
+        handler,
+    mojo::PendingRemote<theme_color_picker::mojom::ThemeColorPickerClient>
+        client) {
+  theme_color_picker_handler_ = std::make_unique<ThemeColorPickerHandler>(
+      std::move(handler), std::move(client),
+      NtpCustomBackgroundServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())),
+      web_ui()->GetWebContents());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

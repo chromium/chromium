@@ -79,8 +79,13 @@
 <div class="cr-row manage-profile-section">
   <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
   <div class="content grid-container">
-    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
-    </cr-customize-themes>
+    <template is="dom-if" if="[[isChromeRefresh2023_]]">
+      <cr-theme-color-picker></cr-theme-color-picker>
+    </template>
+    <template is="dom-if" if="[[!isChromeRefresh2023_]]">
+      <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+      </cr-customize-themes>
+    </template>
  </div>
 </div>
 <div class="cr-row manage-profile-section">

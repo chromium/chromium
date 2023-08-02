@@ -1130,7 +1130,12 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
-      CustomizeChromeUI>(map);
+      CustomizeChromeUI
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+      ,
+      settings::SettingsUI
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+      >(map);
 
   RegisterWebUIControllerInterfaceBinder<
       customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
