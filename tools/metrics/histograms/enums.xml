@@ -104203,6 +104203,12 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Third-party cookie blocking disabled for site"/>
 </enum>
 
+<enum name="ThirdPartySiteDataAccessType">
+  <int value="0" label="Any blocked third-party site data accesses"/>
+  <int value="1" label="Any allowed third-party site data accesses"/>
+  <int value="2" label="No third-party site data accesses"/>
+</enum>
+
 <enum name="ThirdPartyStatus">
   <int value="0" label="Success"/>
   <int value="1" label="FilePathNotFoundInRegistry"/>

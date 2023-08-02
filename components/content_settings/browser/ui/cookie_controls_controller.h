@@ -153,6 +153,11 @@ class CookieControlsController
   // Returns the number of blocked sites.
   int GetBlockedSitesCount() const;
 
+  double GetSiteEngagementScore();
+
+  // Record metrics when third-party cookies are allowed.
+  void RecordActivationMetrics();
+
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/content_settings/core/common/third_party_site_data_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
@@ -66,6 +68,17 @@ void ApplyMetadataChanges(HostContentSettingsMap* settings_map,
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA,
       base::Value(std::move(dict)));
+}
+
+ThirdPartySiteDataAccessType GetSiteDataAccessType(int allowed_sites,
+                                                   int blocked_sites) {
+  if (blocked_sites > 0) {
+    return ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses;
+  }
+  if (allowed_sites > 0) {
+    return ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses;
+  }
+  return ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses;
 }
 
 }  // namespace
@@ -217,10 +230,8 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
 
-  auto score = SiteEngagementService::Get(GetWebContents()->GetBrowserContext())
-                   ->GetScore(GetWebContents()->GetVisibleURL());
   if (SiteEngagementService::IsEngagementAtLeast(
-          score, blink::mojom::EngagementLevel::HIGH)) {
+          GetSiteEngagementScore(), blink::mojom::EngagementLevel::HIGH)) {
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
 
@@ -241,6 +252,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
             content_settings::features::kUserBypassUI)) {
       cookie_settings_->SetCookieSettingForUserBypass(
           GetWebContents()->GetLastCommittedURL());
+      RecordActivationMetrics();
     } else {
       cookie_settings_->SetThirdPartyCookieSetting(
           GetWebContents()->GetLastCommittedURL(),
@@ -422,6 +434,34 @@ void CookieControlsController::AddObserver(CookieControlsObserver* obs) {
 
 void CookieControlsController::RemoveObserver(CookieControlsObserver* obs) {
   observers_.RemoveObserver(obs);
+}
+
+double CookieControlsController::GetSiteEngagementScore() {
+  auto* web_contents = GetWebContents();
+  return SiteEngagementService::Get(web_contents->GetBrowserContext())
+      ->GetScore(web_contents->GetVisibleURL());
+}
+
+void CookieControlsController::RecordActivationMetrics() {
+  const GURL& url = GetWebContents()->GetLastCommittedURL();
+
+  // Metrics, related to confidence signals:
+  // TODO(crbug.com/1446230): Add CookieControlsActivated.FedCmInitiated
+  base::UmaHistogramBoolean(
+      "CookieControlsActivated.SaaRequested",
+      cookie_settings_->HasAnyFrameRequestedStorageAccess(url));
+  base::UmaHistogramCounts100("CookieControlsActivated.PageRefreshCount",
+                              recent_reloads_count_);
+  base::UmaHistogramExactLinear("CookieControlsActivated.SiteEngagementScore",
+                                GetSiteEngagementScore(), 100);
+
+  int allowed_sites = GetAllowedSitesCount();
+  int blocked_sites = GetBlockedSitesCount();
+  base::UmaHistogramEnumeration(
+      "CookieControlsActivated.SiteDataAccessType",
+      GetSiteDataAccessType(allowed_sites, blocked_sites));
+
+  // TODO(crbug.com/1446230): Add metrics, related to repeated activations.
 }
 
 CookieControlsController::TabObserver::TabObserver(

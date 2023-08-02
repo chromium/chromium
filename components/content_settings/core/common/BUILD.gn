@@ -30,6 +30,7 @@ static_library("common") {
     "cookie_settings_base.h",
     "pref_names.cc",
     "pref_names.h",
+    "third_party_site_data_access_type.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
