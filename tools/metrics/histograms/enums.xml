@@ -54825,6 +54825,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
              tracking a relevant committed load"/>
 </enum>
 
+<enum name="InternalSoundcardStatus">
+  <int value="0" label="Not detected"/>
+  <int value="1" label="Detected"/>
+</enum>
+
 <enum name="InterruptReason">
   <int value="0" label="NONE"/>
   <int value="1" label="FILE_FAILED"/>
