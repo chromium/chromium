@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -184,6 +185,36 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
                             self.testServer->base_url().host())];
+}
+
+// Verifies that tapping on the wheel icon correctly opens the tab pickup
+// settings screen.
+- (void)testOpenSettingsFromBanner {
+  // Create a distant session with 4 tabs.
+  [DistantTabsAppInterface
+      addSessionToFakeSyncServer:@"Desktop"
+               modifiedTimeDelta:base::Minutes(5)
+                            tabs:[FakeDistantTab
+                                     createFakeTabsForServerURL:self.testServer
+                                                                    ->base_url()
+                                                   numberOfTabs:4]];
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
+
+  // Check that the tabPickup banner is correctly displayed.
+  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the wheel icon.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kInfobarBannerOpenModalButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Check that the tab pickup settings screen is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabPickupSettingsTableViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Verifies that the TabPickup banner is displayed only once.

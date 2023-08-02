@@ -138,6 +138,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         [[TableViewSwitchItem alloc] initWithType:ItemType::kSwitch];
     _tabPickupSwitchItem.text =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP);
+    _tabPickupSwitchItem.accessibilityIdentifier =
+        kTabPickupSettingsSwitchItemId;
   }
   return _tabPickupSwitchItem;
 }
@@ -204,6 +206,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   TableViewLinkHeaderFooterItem* privacyInformationItem =
       self.privacyInformationItem;
+  privacyInformationItem.accessibilityIdentifier =
+      kTabPickupSettingsPrivacyFooterId;
   privacyInformationItem.text = privacyFooterText;
   privacyInformationItem.urls = URLs;
 }

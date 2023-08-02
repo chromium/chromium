@@ -316,8 +316,13 @@ id<GREYMatcher> GoogleServicesSettingsButton();
 // screen.
 id<GREYMatcher> ManageSyncSettingsButton();
 
-// Returns a matcher for the Tabs Settings button on the Tabs Settings screen.
+// Returns a matcher for the Inactive Tabs Settings button on the Tabs Settings
+// screen.
 id<GREYMatcher> InactiveTabsSettingsButton();
+
+// Returns a matcher for the Tab Pickup Settings button on the Tabs Settings
+// screen.
+id<GREYMatcher> TabPickupSettingsButton();
 
 // Returns a matcher for the Tabs Settings button on the main Settings screen.
 id<GREYMatcher> TabsSettingsButton();

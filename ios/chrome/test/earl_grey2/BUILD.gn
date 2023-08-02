@@ -146,6 +146,7 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings/sync:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:eg2_tests",
+    "//ios/chrome/browser/ui/settings/tabs/tab_pickup:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }

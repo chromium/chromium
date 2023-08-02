@@ -304,6 +304,10 @@
 // screen.
 + (id<GREYMatcher>)inactiveTabsSettingsButton;
 
+// Returns matcher for the Tab Pickup Settings button on the Tabs Settings
+// screen.
++ (id<GREYMatcher>)tabPickupSettingsButton;
+
 // Returns matcher for the Tabs Settings button on the main Settings screen.
 + (id<GREYMatcher>)tabsSettingsButton;
 

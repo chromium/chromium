@@ -64,6 +64,7 @@ source_set("eg2_tests") {
   deps = [
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
