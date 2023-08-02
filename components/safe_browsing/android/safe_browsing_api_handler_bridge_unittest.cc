@@ -39,6 +39,13 @@ std::vector<SafetyNetJavaThreatType> GetAllSafetyNetThreatsOfInterest() {
           SafetyNetJavaThreatType::BILLING};
 }
 
+std::vector<SafeBrowsingJavaThreatType> GetAllSafeBrowsingThreatTypes() {
+  return {SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
+          SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION,
+          SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+          SafeBrowsingJavaThreatType::BILLING};
+}
+
 SBThreatTypeSet GetAllThreatTypes() {
   return CreateSBThreatTypeSet(
       {SB_THREAT_TYPE_URL_UNWANTED, SB_THREAT_TYPE_URL_MALWARE,
@@ -79,6 +86,73 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         env_, j_url, ConvertUTF8ToJavaString(env_, metadata));
   }
 
+  void AddSafeBrowsingResponse(
+      const GURL& url,
+      const SafeBrowsingJavaThreatType& returned_threat_type,
+      const std::vector<SafeBrowsingJavaThreatType>& expected_threat_types,
+      const SafeBrowsingJavaProtocol& expected_protocol) {
+    ScopedJavaLocalRef<jstring> j_url =
+        ConvertUTF8ToJavaString(env_, url.spec());
+    int int_threat_types[expected_threat_types.size()];
+    int* itr = &int_threat_types[0];
+    for (auto expected_threat_type : expected_threat_types) {
+      *itr++ = static_cast<int>(expected_threat_type);
+    }
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafeBrowsingApiHandlerThreatTypes(
+        env_, j_url,
+        ToJavaIntArray(env_, int_threat_types, expected_threat_types.size()));
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafeBrowsingApiHandlerProtocol(
+        env_, j_url, static_cast<int>(expected_protocol));
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafeBrowsingApiHandlerThreatType(
+        env_, j_url, static_cast<int>(returned_threat_type));
+  }
+
+  void RunHashDatabaseUrlCheck(
+      const GURL& url,
+      const SBThreatTypeSet& threat_types,
+      SBThreatType expected_threat_type,
+      SubresourceFilterMatch expected_subresource_filter_match) {
+    bool callback_executed = false;
+    auto callback =
+        std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
+            base::BindOnce(
+                [](bool* callback_executed, SBThreatType expected_threat_type,
+                   SubresourceFilterMatch expected_subresource_filter_match,
+                   SBThreatType returned_threat_type,
+                   const ThreatMetadata& returned_metadata) {
+                  *callback_executed = true;
+                  EXPECT_EQ(returned_threat_type, expected_threat_type);
+                  EXPECT_EQ(returned_metadata.subresource_filter_match,
+                            expected_subresource_filter_match);
+                },
+                &callback_executed, expected_threat_type,
+                expected_subresource_filter_match));
+    SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
+        std::move(callback), url, threat_types);
+    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(callback_executed);
+  }
+
+  void RunHashRealTimeUrlCheck(const GURL& url,
+                               const SBThreatTypeSet& threat_types,
+                               SBThreatType expected_threat_type) {
+    bool callback_executed = false;
+    auto callback =
+        std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
+            base::BindOnce(
+                [](bool* callback_executed, SBThreatType expected_threat_type,
+                   SBThreatType returned_threat_type,
+                   const ThreatMetadata& returned_metadata) {
+                  *callback_executed = true;
+                  EXPECT_EQ(returned_threat_type, expected_threat_type);
+                },
+                &callback_executed, expected_threat_type));
+    SafeBrowsingApiHandlerBridge::GetInstance().StartHashRealTimeUrlCheck(
+        std::move(callback), url, threat_types);
+    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(callback_executed);
+  }
+
   void CheckHistogramValues(UmaRemoteCallResult expected_result) {
     histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CheckDelta",
                                          /*sample=*/kExpectedCheckDeltaMs,
@@ -98,14 +172,9 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Safe) {
   AddSafetyNetBlocklistResponse(url, /*metadata=*/"{}",
                                 GetAllSafetyNetThreatsOfInterest());
 
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_SAFE);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url, GetAllThreatTypes());
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
   task_environment_.RunUntilIdle();
 
   CheckHistogramValues(
@@ -121,15 +190,9 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   AddSafetyNetBlocklistResponse(url, metadata,
                                 GetAllSafetyNetThreatsOfInterest());
 
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_URL_UNWANTED);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url, GetAllThreatTypes());
-  task_environment_.RunUntilIdle();
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
+                          /*expected_subresource_filter_match=*/{});
 
   CheckHistogramValues(
       /*expected_result=*/UmaRemoteCallResult::MATCH);
@@ -143,18 +206,12 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   AddSafetyNetBlocklistResponse(url, metadata,
                                 GetAllSafetyNetThreatsOfInterest());
 
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            // Although the URL matches both malware and phishing, the returned
-            // threat type should be malware because the severity of malware
-            // threat is higher.
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_URL_MALWARE);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url, GetAllThreatTypes());
-  task_environment_.RunUntilIdle();
+  // Although the URL matches both malware and phishing, the returned
+  // threat type should be malware because the severity of malware
+  // threat is higher.
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE,
+                          /*expected_subresource_filter_match=*/{});
 
   CheckHistogramValues(
       /*expected_result=*/UmaRemoteCallResult::MATCH);
@@ -169,21 +226,11 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   AddSafetyNetBlocklistResponse(url, metadata,
                                 {SafetyNetJavaThreatType::SUBRESOURCE_FILTER});
 
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_SUBRESOURCE_FILTER);
-            SubresourceFilterMatch expected_subresource_filter_match = {
-                {SubresourceFilterType::ABUSIVE,
-                 SubresourceFilterLevel::ENFORCE}};
-            EXPECT_EQ(metadata.subresource_filter_match,
-                      expected_subresource_filter_match);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url,
-      CreateSBThreatTypeSet({SB_THREAT_TYPE_SUBRESOURCE_FILTER}));
-  task_environment_.RunUntilIdle();
+  RunHashDatabaseUrlCheck(
+      url, /*threat_types=*/{SB_THREAT_TYPE_SUBRESOURCE_FILTER},
+      /*expected_threat_type=*/SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+      /*expected_subresource_filter_match=*/
+      {{SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}});
 
   CheckHistogramValues(
       /*expected_result=*/UmaRemoteCallResult::MATCH);
@@ -200,25 +247,14 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   AddSafetyNetBlocklistResponse(safe_url, metadata_safe,
                                 {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
 
-  auto unsafe_callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_URL_PHISHING);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(unsafe_callback), unsafe_url,
-      CreateSBThreatTypeSet({SB_THREAT_TYPE_URL_PHISHING}));
-  auto safe_callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_SAFE);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(safe_callback), safe_url,
-      CreateSBThreatTypeSet({SB_THREAT_TYPE_URL_PHISHING}));
-  task_environment_.RunUntilIdle();
+  RunHashDatabaseUrlCheck(unsafe_url,
+                          /*threat_types=*/{SB_THREAT_TYPE_URL_PHISHING},
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashDatabaseUrlCheck(safe_url,
+                          /*threat_types=*/{SB_THREAT_TYPE_URL_PHISHING},
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
 
   histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CheckDelta",
                                        /*sample=*/kExpectedCheckDeltaMs,
@@ -236,15 +272,10 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
       env_, static_cast<int>(SafetyNetRemoteCallResultStatus::TIMEOUT));
   GURL url("https://example.com");
 
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce([](SBThreatType matched_threat_type,
-                            const ThreatMetadata& metadata) {
-            EXPECT_EQ(matched_threat_type, SB_THREAT_TYPE_SAFE);
-          }));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url, GetAllThreatTypes());
-  task_environment_.RunUntilIdle();
+  RunHashDatabaseUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
 
   CheckHistogramValues(
       /*expected_result=*/UmaRemoteCallResult::TIMEOUT);
@@ -261,6 +292,65 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {
       env_, j_url, false);
   EXPECT_FALSE(
       SafeBrowsingApiHandlerBridge::GetInstance().StartCSDAllowlistCheck(url));
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_Safe) {
+  GURL url("https://example.com");
+  AddSafeBrowsingResponse(url, SafeBrowsingJavaThreatType::NO_THREAT,
+                          GetAllSafeBrowsingThreatTypes(),
+                          SafeBrowsingJavaProtocol::REAL_TIME);
+
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_ThreatMatch) {
+  GURL url("https://example.com");
+  AddSafeBrowsingResponse(url, SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
+                          GetAllSafeBrowsingThreatTypes(),
+                          SafeBrowsingJavaProtocol::REAL_TIME);
+
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+}
+
+// Verifies that the callback_id counters are accumulated correctly.
+// Call order: SafetyNet unsafe URL, SafeBrowsing unsafe URL, SafetyNet safe
+// URL, SafeBrowsing safe URL.
+TEST_F(SafeBrowsingApiHandlerBridgeTest, MultipleRequestsWithDifferentApis) {
+  GURL safetynet_unsafe_url("https://safetynet.unsafe.com");
+  GURL safetynet_safe_url("https://safetynet.safe.com");
+  GURL safebrowsing_unsafe_url("https://safebrowsing.unsafe.com");
+  GURL safebrowsing_safe_url("https://safebrowsing.safe.com");
+  std::string metadata_unsafe = "{\"matches\":[{\"threat_type\":\"5\"}]}";
+  std::string metadata_safe = "{}";
+  AddSafetyNetBlocklistResponse(safetynet_unsafe_url, metadata_unsafe,
+                                GetAllSafetyNetThreatsOfInterest());
+  AddSafetyNetBlocklistResponse(safetynet_safe_url, metadata_safe,
+                                GetAllSafetyNetThreatsOfInterest());
+  AddSafeBrowsingResponse(
+      safebrowsing_unsafe_url, SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+  AddSafeBrowsingResponse(
+      safebrowsing_safe_url, SafeBrowsingJavaThreatType::NO_THREAT,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  RunHashDatabaseUrlCheck(safetynet_unsafe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashRealTimeUrlCheck(safebrowsing_unsafe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+  RunHashDatabaseUrlCheck(safetynet_safe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashRealTimeUrlCheck(safebrowsing_safe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
 }
 
 }  // namespace safe_browsing

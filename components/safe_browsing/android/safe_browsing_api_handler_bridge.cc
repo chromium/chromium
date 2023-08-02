@@ -26,6 +26,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaIntArrayToIntVector;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaIntArray;
@@ -89,6 +90,61 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafetyNetJavaArray(
   return ToJavaIntArray(env, int_threat_types, threat_types.size());
 }
 
+// Convert a Java threat type for SafeBrowsing to a SBThreatType.
+SBThreatType SafeBrowsingJavaToSBThreatType(
+    SafeBrowsingJavaThreatType java_threat_num) {
+  switch (java_threat_num) {
+    case SafeBrowsingJavaThreatType::NO_THREAT:
+      return SB_THREAT_TYPE_SAFE;
+    case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
+      return SB_THREAT_TYPE_URL_UNWANTED;
+    case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
+      return SB_THREAT_TYPE_URL_MALWARE;
+    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
+      return SB_THREAT_TYPE_URL_PHISHING;
+    case SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER:
+      return SB_THREAT_TYPE_SUBRESOURCE_FILTER;
+    case SafeBrowsingJavaThreatType::BILLING:
+      return SB_THREAT_TYPE_BILLING;
+  }
+}
+
+// Convert a SBThreatType to a Java threat type for SafeBrowsing. We only
+// support a few.
+SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
+    const SBThreatType& sb_threat_type) {
+  switch (sb_threat_type) {
+    case SB_THREAT_TYPE_URL_UNWANTED:
+      return SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE;
+    case SB_THREAT_TYPE_URL_MALWARE:
+      return SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION;
+    case SB_THREAT_TYPE_URL_PHISHING:
+      return SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING;
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+      return SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER;
+    case SB_THREAT_TYPE_BILLING:
+      return SafeBrowsingJavaThreatType::BILLING;
+    default:
+      NOTREACHED();
+      return SafeBrowsingJavaThreatType::NO_THREAT;
+  }
+}
+
+// Convert a vector of SBThreatTypes to JavaIntArray of SafeBrowsing API's
+// threat types.
+ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
+    JNIEnv* env,
+    const SBThreatTypeSet& threat_types) {
+  DCHECK_LT(0u, threat_types.size());
+  int int_threat_types[threat_types.size()];
+  int* itr = &int_threat_types[0];
+  for (auto threat_type : threat_types) {
+    *itr++ = static_cast<int>(
+        SBThreatTypeToSafeBrowsingApiJavaThreatType(threat_type));
+  }
+  return ToJavaIntArray(env, int_threat_types, threat_types.size());
+}
+
 // The map that holds the callback_id used to reference each pending request
 // sent to Java, and the corresponding callback to call on receiving the
 // response.
@@ -106,6 +162,19 @@ PendingCallbacksMap& GetPendingSafetyNetCallbacksMapOnSBThread() {
   // The key is a unique count-up integer.
   static base::NoDestructor<PendingCallbacksMap> pending_safety_net_callbacks;
   return *pending_safety_net_callbacks;
+}
+
+PendingCallbacksMap& GetPendingSafeBrowsingCallbacksMapOnSBThread() {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
+
+  // Holds the list of callback objects that we are currently waiting to hear
+  // the result of from GmsCore.
+  // The key is a unique count-up integer.
+  static base::NoDestructor<PendingCallbacksMap>
+      pending_safe_browsing_callbacks;
+  return *pending_safe_browsing_callbacks;
 }
 
 bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
@@ -219,6 +288,81 @@ void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafetyNetApi(
                                 callback_id, result_status, metadata_str));
 }
 
+// Respond to the URL reputation request by looking up the callback information
+// stored in |pending_safe_browsing_callbacks|. Must be called on the original
+// thread that starts the lookup.
+void OnUrlCheckDoneOnSBThreadBySafeBrowsingApi(
+    jlong callback_id,
+    SafeBrowsingApiLookupResult lookup_result,
+    SafeBrowsingJavaThreatType threat_type,
+    std::vector<int> threat_attributes,
+    SafeBrowsingJavaResponseStatus response_status) {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
+
+  PendingCallbacksMap& pending_callbacks =
+      GetPendingSafeBrowsingCallbacksMapOnSBThread();
+  bool found = base::Contains(pending_callbacks, callback_id);
+  DCHECK(found) << "Not found in pending_safe_browsing_callbacks: "
+                << callback_id;
+  if (!found) {
+    return;
+  }
+
+  std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback =
+      std::move((pending_callbacks)[callback_id]);
+  pending_callbacks.erase(callback_id);
+
+  // TODO(crbug.com/1444511): Consume other fields before returning the
+  // threat_type.
+  std::move(*callback).Run(SafeBrowsingJavaToSBThreatType(threat_type),
+                           ThreatMetadata());
+}
+
+// Java->Native call, invoked when a SafeBrowsing check is done. |env| is the
+// JNI environment that stores local pointers. |callback_id| is a key into the
+// |pending_safe_browsing_callbacks| map, whose value is a ::ResponseCallback
+// that will be called and then deleted on the IO thread. |j_lookup_result| is a
+// @LookupResult from SafeBrowsingApiHandler.java. |j_threat_type| is the threat
+// type that matched against the URL. |j_threat_attributes| is the threat
+// attributes that matched against the URL. |j_response_status| reflects how the
+// API gets the response. |check_delta_ms| is the number of microseconds it
+// took to look up the URL reputation from GmsCore.
+//
+// Careful note: this can be called on multiple threads, so make sure there is
+// nothing thread unsafe happening here.
+void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
+    JNIEnv* env,
+    jlong callback_id,
+    jint j_lookup_result,
+    jint j_threat_type,
+    const JavaParamRef<jintArray>& j_threat_attributes,
+    jint j_response_status,
+    jlong check_delta_ms) {
+  // TODO(crbug.com/1444511): Add a histogram to log check_delta_ms.
+  auto task_runner =
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::GetUIThreadTaskRunner({})
+          : content::GetIOThreadTaskRunner({});
+
+  // TODO(crbug.com/1444511): Add a check that j_threat_type,
+  // j_threat_attributes and j_response_status are all defined values (in case
+  // that there is a mismatch between Clank and SafeBrowsing API).
+  SafeBrowsingApiLookupResult lookup_result =
+      static_cast<SafeBrowsingApiLookupResult>(j_lookup_result);
+  SafeBrowsingJavaThreatType threat_type =
+      static_cast<SafeBrowsingJavaThreatType>(j_threat_type);
+  std::vector<int> threat_attributes;
+  JavaIntArrayToIntVector(env, j_threat_attributes, &threat_attributes);
+  SafeBrowsingJavaResponseStatus response_status =
+      static_cast<SafeBrowsingJavaResponseStatus>(j_response_status);
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&OnUrlCheckDoneOnSBThreadBySafeBrowsingApi,
+                                callback_id, lookup_result, threat_type,
+                                std::move(threat_attributes), response_status));
+}
+
 //
 // SafeBrowsingApiHandlerBridge
 //
@@ -229,6 +373,14 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
+}
+
+void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(
+    std::unique_ptr<ResponseCallback> callback,
+    const GURL& url,
+    const SBThreatTypeSet& threat_types) {
+  StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
+                              SafeBrowsingJavaProtocol::REAL_TIME);
 }
 
 void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
@@ -265,6 +417,36 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
 
   Java_SafeBrowsingApiBridge_startUriLookupBySafetyNetApi(
       env, callback_id, j_url, j_threat_types);
+}
+
+void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
+    std::unique_ptr<ResponseCallback> callback,
+    const GURL& url,
+    const SBThreatTypeSet& threat_types,
+    const SafeBrowsingJavaProtocol& protocol) {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
+  JNIEnv* env = AttachCurrentThread();
+
+  // TODO(crbug.com/1444511): Check if the device has required GMSCore version.
+  // If not, fall back to hash database check through SafetyNet API. Also add a
+  // histogram to track the proportion of users who don't have required version
+  // to inform when we can remove the fallback.
+
+  jlong callback_id = next_safe_browsing_callback_id_++;
+  GetPendingSafeBrowsingCallbacksMapOnSBThread().insert(
+      {callback_id, std::move(callback)});
+
+  DCHECK(!threat_types.empty());
+
+  ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
+  ScopedJavaLocalRef<jintArray> j_threat_types =
+      SBThreatTypeSetToSafeBrowsingJavaArray(env, threat_types);
+  int j_int_protocol = static_cast<int>(protocol);
+
+  Java_SafeBrowsingApiBridge_startUriLookupBySafeBrowsingApi(
+      env, callback_id, j_url, j_threat_types, j_int_protocol);
 }
 
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {

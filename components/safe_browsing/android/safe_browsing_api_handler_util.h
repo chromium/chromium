@@ -33,6 +33,51 @@ enum class SafetyNetJavaThreatType {
   MAX_VALUE
 };
 
+// Must match what SafeBrowsingApiHandler.java uses for |lookupResult|.
+// This is self-defined enum in Chromium. The difference between this enum and
+// the |SafeBrowsingJavaResponseStatus| enum is that this enum represents the
+// call result to the API (e.g. not able to connect, timed out, invalid input)
+// while |SafeBrowsingJavaResponseStatus| is obtained directly from the API
+// response in a successful call. In other words, ResponseStatus is valid only
+// when LookupResult is SUCCESS.
+// TODO(crbug.com/1444511): Break down FAILURE into more granular buckets.
+enum class SafeBrowsingApiLookupResult { SUCCESS = 0, FAILURE = 1 };
+
+// Must match the definition in SafeBrowsing::ThreatType in SafeBrowsing
+// API.
+enum class SafeBrowsingJavaThreatType {
+  NO_THREAT = 0,
+  UNWANTED_SOFTWARE = 3,
+  POTENTIALLY_HARMFUL_APPLICATION = 4,
+  SOCIAL_ENGINEERING = 5,
+  SUBRESOURCE_FILTER = 13,
+  BILLING = 15,
+};
+
+// Must match the definition in SafeBrowsing::ThreatAttribute in
+// SafeBrowsing API.
+enum class SafeBrowsingJavaThreatAttribute {
+  CANARY = 1,
+  FRAME_ONLY = 2,
+};
+
+// Must match the definition in SafeBrowsing::Protocol in the SafeBrowsing
+// API.
+enum class SafeBrowsingJavaProtocol { LOCAL_BLOCK_LIST = 4, REAL_TIME = 5 };
+
+// Must match the definition in SafeBrowsingResponse::SafeBrowsingResponseStatus
+// in SafeBrowsing API. This enum is converted directly from the API response.
+// See the comment above |SafeBrowsingApiLookupResult| for the difference
+// between the two enums.
+enum class SafeBrowsingJavaResponseStatus {
+  SUCCESS_WITH_LOCAL_BLOCKLIST = 0,
+  SUCCESS_WITH_REAL_TIME = 1,
+  SUCCESS_FALLBACK_REAL_TIME_TIMEOUT = 2,
+  SUCCESS_FALLBACK_REAL_TIME_THROTTLED = 3,
+  FAILURE_NETWORK_UNAVAILABLE = 4,
+  FAILURE_BLOCK_LIST_UNAVAILABLE = 5
+};
+
 // Do not reorder or delete entries, and make sure changes here are reflected
 // in SB2RemoteCallResult histogram.
 enum class UmaRemoteCallResult {

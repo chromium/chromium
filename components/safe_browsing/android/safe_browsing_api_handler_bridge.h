@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 class GURL;
@@ -42,6 +43,13 @@ class SafeBrowsingApiHandlerBridge {
                                  const GURL& url,
                                  const SBThreatTypeSet& threat_types);
 
+  // Makes Native-to-Java call to perform the privacy-preserving hash real-time
+  // check.
+  // TODO(crbug.com/1444511): Connect this function with production code.
+  void StartHashRealTimeUrlCheck(std::unique_ptr<ResponseCallback> callback,
+                                 const GURL& url,
+                                 const SBThreatTypeSet& threat_types);
+
   bool StartCSDAllowlistCheck(const GURL& url);
 
   void SetInterceptorForTesting(UrlCheckInterceptor* interceptor) {
@@ -54,9 +62,20 @@ class SafeBrowsingApiHandlerBridge {
                                 const GURL& url,
                                 const SBThreatTypeSet& threat_types);
 
+  // Makes Native-to-Java call to check the URL through GMSCore SafeBrowsing
+  // API.
+  void StartUrlCheckBySafeBrowsing(std::unique_ptr<ResponseCallback> callback,
+                                   const GURL& url,
+                                   const SBThreatTypeSet& threat_types,
+                                   const SafeBrowsingJavaProtocol& protocol);
+
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore SafetyNet API.
   jlong next_safety_net_callback_id_ = 0;
+
+  // Used as a key to identify unique requests sent to Java to get Safe Browsing
+  // reputation from GmsCore SafeBrowsing API.
+  jlong next_safe_browsing_callback_id_ = 0;
 
   raw_ptr<UrlCheckInterceptor> interceptor_for_testing_ = nullptr;
 };
