@@ -41,16 +41,6 @@
       "use_remoteexec": true
     }
   },
-  "fuchsia-x64-cast-receiver-siso-rel": {
-    "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_os": "fuchsia",
-      "use_remoteexec": true
-    }
-  },
   "fuchsia-x64-dbg": {
     "gn_args": {
       "is_component_build": true,
