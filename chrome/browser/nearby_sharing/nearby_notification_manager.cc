@@ -336,6 +336,17 @@ std::u16string GetConnectionRequestNotificationMessage(
   return message;
 }
 
+absl::optional<std::u16string> GetReceivedNotificationTextMessage(
+    const ShareTarget& share_target) {
+  size_t text_count = share_target.text_attachments.size();
+  if (text_count < 1) {
+    return absl::nullopt;
+  }
+
+  const TextAttachment& attachment = share_target.text_attachments[0];
+  return base::UTF8ToUTF16(attachment.GetDescription());
+}
+
 ui::ImageModel GetImageFromShareTarget(const ShareTarget& share_target) {
   // TODO(crbug.com/1102348): Create or get profile picture of |share_target|.
   return ui::ImageModel();
@@ -1072,10 +1083,16 @@ void NearbyNotificationManager::ShowIncomingSuccess(
 
   std::vector<message_center::ButtonInfo> notification_actions;
   switch (type) {
-    case ReceivedContentType::kText:
+    case ReceivedContentType::kText: {
       notification_actions.emplace_back(l10n_util::GetStringUTF16(
           IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD));
+      absl::optional<std::u16string> message =
+          GetReceivedNotificationTextMessage(share_target);
+      if (message) {
+        notification.set_message(message.value());
+      }
       break;
+    }
     case ReceivedContentType::kSingleUrl:
       notification_actions.emplace_back(
           l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL));
