@@ -75,7 +75,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardDoesNotHaveFooterView);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterUpdates);
+                           HoverCardFooterUpdatesTabAlertStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsDiscardStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,

@@ -48,11 +48,13 @@ class FooterRow : public FadeWrapper<views::View, T> {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterUpdates);
+                           HoverCardFooterUpdatesTabAlertStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsDiscardStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
+                           HoverCardShowsMemoryOnMemoryRefresh);
   const bool is_fade_out_view_ = false;
   raw_ptr<views::Label> footer_label_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
@@ -85,6 +87,7 @@ class FooterView : public views::View {
   using PerformanceFadeView = FadeView<FadePerformanceFooterRow,
                                        FadePerformanceFooterRow,
                                        PerformanceRowData>;
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardFooterElementId);
 
   FooterView();
   ~FooterView() override = default;

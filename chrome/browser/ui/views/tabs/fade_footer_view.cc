@@ -173,7 +173,10 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 // FooterView
 // -----------------------------------------------------------------------
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FooterView, kHoverCardFooterElementId);
+
 FooterView::FooterView() {
+  SetProperty(views::kElementIdentifierKey, kHoverCardFooterElementId);
   const gfx::Insets footer_margins =
       features::IsChromeRefresh2023() ? kFooterRefreshMargins : kFooterMargins;
   flex_layout_ =
