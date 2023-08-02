@@ -51,6 +51,8 @@ class OverlayViewTestBase : public ash::AshTestBase {
   raw_ptr<ActionViewListItem, DanglingUntriaged> tap_action_list_item_;
   raw_ptr<ActionViewListItem, DanglingUntriaged> tap_action_list_item_two_;
   raw_ptr<ActionViewListItem, DanglingUntriaged> move_action_list_item_;
+
+  gfx::Point local_location_;
 };
 }  // namespace arc::input_overlay
 

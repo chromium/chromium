@@ -45,6 +45,40 @@ EditingList::~EditingList() {
   controller_->RemoveTouchInjectorObserver(this);
 }
 
+bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
+  OnDragStart(event);
+  return true;
+}
+
+bool EditingList::OnMouseDragged(const ui::MouseEvent& event) {
+  OnDragUpdate(event);
+  return true;
+}
+
+void EditingList::OnMouseReleased(const ui::MouseEvent& event) {
+  OnDragEnd(event);
+}
+
+void EditingList::OnGestureEvent(ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      OnDragStart(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      OnDragUpdate(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
+      OnDragEnd(*event);
+      event->SetHandled();
+      break;
+    default:
+      return;
+  }
+}
+
 void EditingList::Init() {
   SetUseDefaultFillLayout(true);
 
@@ -248,6 +282,31 @@ void EditingList::OnActionNameUpdated(const Action& action) {
       break;
     }
   }
+}
+
+void EditingList::OnDragStart(const ui::LocatedEvent& event) {
+  start_drag_event_pos_ = event.location();
+  start_drag_pos_ = origin();
+  window_bounds_ = controller_->GetEditingListWidgetBoundsInRootWindow();
+}
+
+void EditingList::OnDragUpdate(const ui::LocatedEvent& event) {
+  auto target_position = origin() + (event.location() - start_drag_event_pos_);
+  ClampPosition(target_position);
+  SetPosition(target_position);
+}
+
+void EditingList::OnDragEnd(const ui::LocatedEvent& event) {
+  auto reposition_delta = origin() - start_drag_pos_;
+  controller_->UpdateEditingListWidgetPosition(reposition_delta);
+  SetPosition(gfx::Point(0, 0));
+}
+
+void EditingList::ClampPosition(gfx::Point& position) {
+  position.set_x(std::clamp(position.x(), window_bounds_.x(),
+                            window_bounds_.right() - width()));
+  position.set_y(std::clamp(position.y(), window_bounds_.y(),
+                            window_bounds_.bottom() - height()));
 }
 
 }  // namespace arc::input_overlay

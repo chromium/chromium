@@ -118,6 +118,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void UpdateButtonOptionsMenuWidgetBounds(Action* action);
   void UpdateInputMappingWidgetBounds();
   void UpdateEditingListWidgetBounds();
+  void UpdateEditingListWidgetPosition(const gfx::Vector2d& reposition_delta);
+  gfx::Rect GetEditingListWidgetBoundsInRootWindow();
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -197,6 +199,8 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
+  // Used for the magnetic function of the editing list.
+  void SetMagneticPosition();
 
   // Close `MessageView` if `LocatedEvent` happens outside
   // of their view bounds.
@@ -235,6 +239,10 @@ class DisplayOverlayController : public ui::EventHandler,
   void DismissEducationalViewForTesting();
   InputMenuView* GetInputMenuView() { return input_menu_view_; }
   MenuEntryView* GetMenuEntryView() { return menu_entry_; }
+
+  // For editing list reposition. It is nullopt only the first time the editing
+  // list view and widget are created.
+  absl::optional<gfx::Point> editing_list_origin_ = absl::nullopt;
 
   const raw_ptr<TouchInjector> touch_injector_;
 

@@ -746,13 +746,93 @@ void DisplayOverlayController::UpdateEditingListWidgetBounds() {
   if (!editing_list_widget_) {
     return;
   }
-
-  auto origin = touch_injector_->content_bounds().origin();
-  origin.Offset(24, 24);
+  if (!editing_list_origin_.has_value()) {
+    editing_list_origin_ = touch_injector_->content_bounds().origin();
+    editing_list_origin_.value().Offset(24, 24);
+  }
   auto* list_view = editing_list_widget_->GetContentsView();
+  if (!list_view) {
+    LOG(ERROR) << "Editing list widget has no editing list view";
+    return;
+  }
+
   UpdateWidgetBoundsInRootWindow(
       editing_list_widget_.get(),
-      gfx::Rect(origin, list_view->GetPreferredSize()));
+      gfx::Rect(editing_list_origin_.value(), list_view->GetPreferredSize()));
+}
+
+void DisplayOverlayController::UpdateEditingListWidgetPosition(
+    const gfx::Vector2d& reposition_delta) {
+  if (!editing_list_widget_ || !editing_list_origin_.has_value()) {
+    return;
+  }
+  auto* list_view = editing_list_widget_->GetContentsView();
+  if (!list_view) {
+    LOG(ERROR) << "Editing list widget has no editing list view";
+    return;
+  }
+
+  editing_list_origin_ = editing_list_origin_.value() + reposition_delta;
+  SetMagneticPosition();
+  UpdateWidgetBoundsInRootWindow(
+      editing_list_widget_.get(),
+      gfx::Rect(editing_list_origin_.value(), list_view->GetPreferredSize()));
+}
+
+void DisplayOverlayController::SetMagneticPosition() {
+  if (!editing_list_origin_.has_value()) {
+    return;
+  }
+
+  auto app_window_bounds = touch_injector_->content_bounds();
+  auto list_preferred_size =
+      editing_list_widget_->GetContentsView()->GetPreferredSize();
+  // Editing list is partially outside the app:
+  if (editing_list_origin_.value().x() < app_window_bounds.x()) {
+    // Set the editing list at the top right if it's partially outside to the
+    // right.
+    editing_list_origin_.value().set_x(app_window_bounds.x() -
+                                       list_preferred_size.width());
+    editing_list_origin_.value().set_y(app_window_bounds.y());
+    return;
+  } else if (editing_list_origin_.value().x() + list_preferred_size.width() >
+             app_window_bounds.right()) {
+    // Set the editing list at the top left if it's partially outside to the
+    // left.
+    editing_list_origin_.value().set_x(app_window_bounds.right());
+    editing_list_origin_.value().set_y(app_window_bounds.y());
+    return;
+  }
+
+  auto app_window_center = app_window_bounds.CenterPoint();
+  // Editing list is within the app:
+  if (editing_list_origin_.value().x() + list_preferred_size.width() / 2 <
+      app_window_center.x()) {
+    // Set the editing list to the left if it's closer to the left.
+    editing_list_origin_.value().set_x(app_window_bounds.x());
+  } else {
+    // Set the editing list to the right if it's closer to the right.
+    editing_list_origin_.value().set_x(app_window_bounds.right() -
+                                       list_preferred_size.width());
+  }
+  if (editing_list_origin_.value().y() + list_preferred_size.height() / 2 <
+      app_window_center.y()) {
+    // Set the editing list to the top if it's closer to the top.
+    editing_list_origin_.value().set_y(app_window_bounds.y());
+  } else {
+    // Set the editing list to the bottom if it's closer to the bottom.
+    editing_list_origin_.value().set_y(app_window_bounds.bottom() -
+                                       list_preferred_size.height());
+  }
+}
+
+gfx::Rect DisplayOverlayController::GetEditingListWidgetBoundsInRootWindow() {
+  if (!editing_list_origin_.has_value()) {
+    return gfx::Rect();
+  }
+  auto root_bounds =
+      touch_injector_->window()->GetRootWindow()->GetBoundsInScreen();
+  return root_bounds - editing_list_origin_.value().OffsetFromOrigin();
 }
 
 void DisplayOverlayController::UpdateWidgetBoundsInRootWindow(
