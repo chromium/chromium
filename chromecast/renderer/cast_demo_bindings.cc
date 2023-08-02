@@ -168,10 +168,10 @@ void CastDemoBindings::OnGetStoreId(v8::Global<v8::Promise::Resolver> resolver,
                                     v8::Global<v8::Context> original_context,
                                     const std::string& store_id) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   resolver.Get(isolate)
@@ -211,10 +211,10 @@ void CastDemoBindings::OnGetDefaultVolumeLevel(
     v8::Global<v8::Context> original_context,
     float level) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   resolver.Get(isolate)
@@ -252,10 +252,10 @@ void CastDemoBindings::OnGetAvailableWifiNetworks(
     v8::Global<v8::Context> original_context,
     base::Value network_list) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   std::unique_ptr<content::V8ValueConverter> v8_converter =
@@ -289,10 +289,10 @@ void CastDemoBindings::OnGetConnectionStatus(
     v8::Global<v8::Context> original_context,
     base::Value status) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   std::unique_ptr<content::V8ValueConverter> v8_converter =
