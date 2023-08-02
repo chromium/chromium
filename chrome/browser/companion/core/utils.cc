@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
+#include "net/base/url_util.h"
 
 namespace companion {
 
@@ -94,6 +95,36 @@ bool IsSafeURLFromCompanion(const GURL& url) {
     return false;
   }
 
+  return true;
+}
+
+std::string GetCompanionIPHBlocklistedPageURLs() {
+  return base::GetFieldTrialParamValueByFeature(
+      features::internal::kCompanionEnabledByObservingExpsNavigations,
+      "companion-iph-blocklisted-page-urls");
+}
+
+// Checks to see if the page url is a valid one to be sent to companion.
+bool IsValidPageURLForCompanion(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  if (!url.has_host()) {
+    return false;
+  }
+  if (net::IsLocalhost(url)) {
+    return false;
+  }
+  if (url.HostIsIPAddress()) {
+    return false;
+  }
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  if (url.has_username() || url.has_password()) {
+    return false;
+  }
   return true;
 }
 

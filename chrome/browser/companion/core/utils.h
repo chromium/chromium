@@ -18,6 +18,8 @@ bool ShouldEnableOpenCompanionForWebSearch();
 bool ShouldOpenLinksInCurrentTab();
 std::string GetExpsRegistrationSuccessPageURLs();
 bool IsSafeURLFromCompanion(const GURL& url);
+std::string GetCompanionIPHBlocklistedPageURLs();
+bool IsValidPageURLForCompanion(const GURL& url);
 
 }  // namespace companion
 
