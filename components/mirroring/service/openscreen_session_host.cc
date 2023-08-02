@@ -501,7 +501,7 @@ void OpenscreenSessionHost::OnNegotiated(
             &OpenscreenSessionHost::CreateVideoEncodeAccelerator,
             weak_factory_.GetWeakPtr()),
         std::move(senders.video_sender),
-        std::make_unique<media::MojoVideoEncoderMetricsProvider>(
+        media::CreateMojoVideoEncoderMetricsProvider(
             media::mojom::VideoEncoderUseCase::kCastMirroring,
             std::move(metrics_provider_pending_remote)),
         base::BindRepeating(&OpenscreenSessionHost::SetTargetPlayoutDelay,

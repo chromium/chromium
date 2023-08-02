@@ -39,16 +39,17 @@ class MojoVideoEncoderMetricsProviderTest : public ::testing::Test {
   MojoVideoEncoderMetricsProviderTest() = default;
 
   static constexpr auto kUseCase = mojom::VideoEncoderUseCase::kMediaRecorder;
+
   void SetUp() override {
     mojo::PendingRemote<mojom::VideoEncoderMetricsProvider> pending_remote;
     mojo_encoder_metrics_receiver_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<MockMojomVideoEncoderMetricsProvider>(),
         pending_remote.InitWithNewPipeAndPassReceiver());
 
-    mojo_encoder_metrics_provider_ =
-        std::make_unique<MojoVideoEncoderMetricsProvider>(
-            kUseCase, std::move(pending_remote));
+    mojo_encoder_metrics_provider_ = CreateMojoVideoEncoderMetricsProvider(
+        kUseCase, std::move(pending_remote));
   }
+
   void TearDown() override {
     // The destruction of a mojo::SelfOwnedReceiver closes the bound message
     // pipe but does not destroy the implementation object(s): this needs to
