@@ -726,6 +726,26 @@ TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   EXPECT_EQ(LayoutRect(-70, 0, 230, 210), a->VisualOverflowRect());
 }
 
+TEST_F(LayoutBoxTest, HitTestOverflowClipMargin) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="width: 200px; height: 200px; overflow: clip;
+                               overflow-clip-margin: 50px">
+      <div id="child" style="width: 300px; height: 100px"></div>
+    </div>
+  )HTML");
+
+  auto* container = GetDocument().getElementById(AtomicString("container"));
+  auto* child = GetDocument().getElementById(AtomicString("child"));
+  // In child overflowing container but within the overflow clip.
+  EXPECT_EQ(child, HitTest(230, 50));
+  // Outside of the overflow clip, would be in child without the clip.
+  EXPECT_EQ(GetDocument().body(), HitTest(280, 50));
+  // In container's border box rect, not in child.
+  EXPECT_EQ(container, HitTest(100, 150));
+  // In the bottom clip margin, but there is nothing.
+  EXPECT_EQ(GetDocument().documentElement(), HitTest(100, 230));
+}
+
 TEST_F(LayoutBoxTest, HitTestContainPaint) {
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='width: 100px; height: 200px; contain: paint'>

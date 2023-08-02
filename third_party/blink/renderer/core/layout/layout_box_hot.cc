@@ -17,30 +17,45 @@
 
 namespace blink {
 
+bool LayoutBox::HasHitTestableOverflow() const {
+  // See MayIntersect() for the reason of using HasVisualOverflow here.
+  if (!HasVisualOverflow()) {
+    return false;
+  }
+  if (!ShouldClipOverflowAlongBothAxis()) {
+    return true;
+  }
+  return ShouldApplyOverflowClipMargin() &&
+         StyleRef().OverflowClipMargin()->GetMargin() > 0;
+}
+
 // Hit Testing
 bool LayoutBox::MayIntersect(const HitTestResult& result,
                              const HitTestLocation& hit_test_location,
                              const PhysicalOffset& accumulated_offset) const {
   NOT_DESTROYED();
   // Check if we need to do anything at all.
-  // If we have clipping, then we can't have any spillout.
-  // TODO(pdr): Why is this optimization not valid for the effective root?
-  if (UNLIKELY(IsEffectiveRootScroller()))
+  // The root scroller always fills the whole view.
+  if (UNLIKELY(IsEffectiveRootScroller())) {
     return true;
+  }
 
   PhysicalRect overflow_box;
   if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
     overflow_box = PhysicalVisualOverflowRectIncludingFilters();
+  } else if (HasHitTestableOverflow()) {
+    // PhysicalVisualOverflowRect is an approximation of
+    // PhsyicalLayoutOverflowRect excluding self-painting descendants (which
+    // hit test by themselves), with false-positive (which won't cause any
+    // functional issues) when the point is only in visual overflow, but
+    // excluding self-painting descendants is more important for performance.
+    overflow_box = PhysicalVisualOverflowRect();
+    if (ShouldClipOverflowAlongEitherAxis()) {
+      overflow_box.Intersect(OverflowClipRect(PhysicalOffset()));
+    }
+    overflow_box.Unite(PhysicalBorderBoxRect());
   } else {
     overflow_box = PhysicalBorderBoxRect();
-    if (!ShouldClipOverflowAlongBothAxis() && HasVisualOverflow()) {
-      // PhysicalVisualOverflowRect is an approximation of
-      // PhsyicalLayoutOverflowRect excluding self-painting descendants (which
-      // hit test by themselves), with false-positive (which won't cause any
-      // functional issues) when the point is only in visual overflow, but
-      // excluding self-painting descendants is more important for performance.
-      overflow_box.Unite(PhysicalVisualOverflowRect());
-    }
   }
 
   overflow_box.Move(accumulated_offset);

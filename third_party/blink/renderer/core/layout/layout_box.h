@@ -769,6 +769,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) override;
+  bool HasHitTestableOverflow() const;
   // Fast check if |NodeAtPoint| may find a hit.
   bool MayIntersect(const HitTestResult& result,
                     const HitTestLocation& hit_test_location,
