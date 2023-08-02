@@ -93,8 +93,12 @@ class BASE_EXPORT Process {
   static Process OpenWithAccess(ProcessId pid, DWORD desired_access);
 #endif
 
-  // Returns true if processes can be backgrounded.
-  static bool CanBackgroundProcesses();
+  // Returns true if changing the priority of processes through `SetPriority()`
+  // is possible.
+  static bool CanSetPriority();
+
+  // TODO(1466479): Migrate callers and remove.
+  static bool CanBackgroundProcesses() { return CanSetPriority(); }
 
   // Terminates the current process immediately with |exit_code|.
   [[noreturn]] static void TerminateCurrentProcessImmediately(int exit_code);
@@ -190,37 +194,64 @@ class BASE_EXPORT Process {
   // process though that should be avoided.
   void Exited(int exit_code) const;
 
+  // The different priorities that a process can have.
+  // TODO(pmonette): Consider merging with base::TaskPriority when the API is
+  //                 stable.
+  enum class Priority {
+    // The process does not contribute to content that is currently important
+    // to the user. Lowest priority.
+    kBestEffort,
+
+    // The process contributes to content that is visible to the user. High
+    // priority.
+    kUserVisible,
+
+    // The process contributes to content that is of the utmost importance to
+    // the user, like producing audible content, or visible content in the
+    // focused window. Highest priority.
+    kUserBlocking,
+  };
+
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
   // The Mac needs a Mach port in order to manipulate a process's priority,
   // and there's no good way to get that from base given the pid. These Mac
-  // variants of the IsProcessBackgrounded() and SetProcessBackgrounded() API
-  // take a port provider for this reason. See crbug.com/460102
-  //
-  // A process is backgrounded when its task priority is
-  // |TASK_BACKGROUND_APPLICATION|.
-  //
-  // Returns true if the port_provider can locate a task port for the process
-  // and it is backgrounded. If port_provider is null, returns false.
-  bool IsProcessBackgrounded(PortProvider* port_provider) const;
+  // variants of the `GetPriority()` and `SetPriority()` API take a port
+  // provider for this reason. See crbug.com/460102.
 
-  // Set the process as backgrounded. If value is
-  // true, the priority of the associated task will be set to
-  // TASK_BACKGROUND_APPLICATION. If value is false, the
-  // priority of the process will be set to TASK_FOREGROUND_APPLICATION.
-  //
-  // Returns true if the priority was changed, false otherwise. If
-  // |port_provider| is null, this is a no-op and it returns false.
-  bool SetProcessBackgrounded(PortProvider* port_provider, bool value);
+  // Retrieves the priority of the process. Defaults to Priority::kUserBlocking
+  // if the priority could not be retrieved, or if `port_provider` is null.
+  Priority GetPriority(PortProvider* port_provider) const;
+
+  // Sets the priority of the process process. Returns true if the priority was
+  // changed, false otherwise. If `port_provider` is null, this is a no-op and
+  // it returns false.
+  bool SetPriority(PortProvider* port_provider, Priority priority);
+
+  // TODO(1466479): Migrate callers and remove.
+  bool IsProcessBackgrounded(PortProvider* port_provider) const {
+    return GetPriority(port_provider) == Priority::kBestEffort;
+  }
+  bool SetProcessBackgrounded(PortProvider* port_provider, bool background) {
+    return SetPriority(port_provider, background ? Priority::kBestEffort
+                                                 : Priority::kUserBlocking);
+  }
 #else
-  // A process is backgrounded when it's priority is lower than normal.
-  // Return true if this process is backgrounded, false otherwise.
-  bool IsProcessBackgrounded() const;
+  // Retrieves the priority of the process. Defaults to Priority::kUserBlocking
+  // if the priority could not be retrieved.
+  Priority GetPriority() const;
 
-  // Set a process as backgrounded. If value is true, the priority of the
-  // process will be lowered. If value is false, the priority of the process
-  // will be made "normal" - equivalent to default process priority.
-  // Returns true if the priority was changed, false otherwise.
-  bool SetProcessBackgrounded(bool value);
+  // Sets the priority of the process process. Returns true if the priority was
+  // changed, false otherwise.
+  bool SetPriority(Priority priority);
+
+  // TODO(1466479): Migrate callers and remove.
+  bool IsProcessBackgrounded() const {
+    return GetPriority() == Priority::kBestEffort;
+  }
+  bool SetProcessBackgrounded(bool background) {
+    return SetPriority(background ? Priority::kBestEffort
+                                  : Priority::kUserBlocking);
+  }
 #endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 
   // Returns an integer representing the priority of a process. The meaning
@@ -245,8 +276,8 @@ class BASE_EXPORT Process {
 
   // Initializes the process's priority. If OneGroupPerRenderer is enabled, it
   // creates a unique cgroup for the process. This should be called before
-  // SetProcessBackgrounded(). This is a no-op if the Process is not valid
-  // or if it has already been called.
+  // SetPriority(). This is a no-op if the Process is not valid or if it has
+  // already been called.
   void InitializePriority();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -297,7 +328,7 @@ class BASE_EXPORT Process {
 // Exposed for testing.
 // Given the contents of the /proc/<pid>/cgroup file, determine whether the
 // process is backgrounded or not.
-BASE_EXPORT bool IsProcessBackgroundedCGroup(
+BASE_EXPORT Process::Priority GetProcessPriorityCGroup(
     const StringPiece& cgroup_contents);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

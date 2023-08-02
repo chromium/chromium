@@ -102,11 +102,11 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
 
 void Process::Exited(int exit_code) const {}
 
-bool Process::IsProcessBackgrounded() const {
-  return false;
+Process::Priority Process::GetPriority() const {
+  return Priority::kUserBlocking;
 }
 
-bool Process::SetProcessBackgrounded(bool value) {
+bool Process::SetPriority(Priority priority) {
   return false;
 }
 

@@ -71,11 +71,11 @@ Time Process::CreationTime() const {
   return Time::FromTimeVal(proc->kp_proc.p_un.__p_starttime);
 }
 
-bool Process::CanBackgroundProcesses() {
+bool Process::CanSetPriority() {
   return true;
 }
 
-bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {
+Process::Priority Process::GetPriority(PortProvider* port_provider) const {
   DCHECK(IsValid());
   DCHECK(port_provider);
 
@@ -84,15 +84,17 @@ bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {
   // TASK_FOREGROUND_APPLICATION).
   absl::optional<task_role_t> task_role =
       GetTaskCategoryPolicyRole(port_provider, Pid());
-  return task_role && *task_role == TASK_BACKGROUND_APPLICATION;
+  if (task_role && *task_role == TASK_BACKGROUND_APPLICATION) {
+    return Priority::kBestEffort;
+  }
+  return Priority::kUserBlocking;
 }
 
-bool Process::SetProcessBackgrounded(PortProvider* port_provider,
-                                     bool background) {
+bool Process::SetPriority(PortProvider* port_provider, Priority priority) {
   DCHECK(IsValid());
   DCHECK(port_provider);
 
-  if (!CanBackgroundProcesses()) {
+  if (!CanSetPriority()) {
     return false;
   }
 
@@ -106,6 +108,7 @@ bool Process::SetProcessBackgrounded(PortProvider* port_provider,
     return false;
   }
 
+  const bool background = priority == base::Process::Priority::kBestEffort;
   if ((background && *current_role == TASK_BACKGROUND_APPLICATION) ||
       (!background && *current_role == TASK_FOREGROUND_APPLICATION)) {
     return true;
