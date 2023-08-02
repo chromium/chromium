@@ -8,6 +8,8 @@ source_set("info_popover_view_controller") {
   sources = [
     "info_popover_view_controller.h",
     "info_popover_view_controller.mm",
+    "supervised_user_info_popover_view_controller.h",
+    "supervised_user_info_popover_view_controller.mm",
   ]
 
   frameworks = [ "UIKit.framework" ]
@@ -15,7 +17,9 @@ source_set("info_popover_view_controller") {
   deps = [
     ":constants",
     "//base:base",
+    "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",

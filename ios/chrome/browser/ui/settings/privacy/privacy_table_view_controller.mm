@@ -18,6 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/elements/supervised_user_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -624,17 +626,22 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // Called when the user taps on the information button of the disabled Incognito
 // reauth setting's UI cell.
 - (void)didTapIncognitoReauthDisabledInfoButton:(UIButton*)buttonView {
-  NSString* popoverMessage =
-      IsIncognitoModeDisabled(_browserState->GetPrefs())
-          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
-          : l10n_util::GetNSString(
-                IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT);
-  InfoPopoverViewController* popover =
-      IsIncognitoModeDisabled(_browserState->GetPrefs())
-          ? [[EnterpriseInfoPopoverViewController alloc]
-                initWithMessage:popoverMessage
-                 enterpriseName:nil]
-          : [[InfoPopoverViewController alloc] initWithMessage:popoverMessage];
+  InfoPopoverViewController* popover;
+  if (supervised_user::IsSubjectToParentalControls(_browserState->GetPrefs())) {
+    popover = [[SupervisedUserInfoPopoverViewController alloc]
+        initWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED_BY_PARENT)];
+  } else if (IsIncognitoModeDisabled(_browserState->GetPrefs())) {
+    popover = [[EnterpriseInfoPopoverViewController alloc]
+        initWithMessage:l10n_util::GetNSString(
+                            IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
+         enterpriseName:nil];
+  } else {
+    popover = [[InfoPopoverViewController alloc]
+        initWithMessage:l10n_util::GetNSString(
+                            IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT)];
+  }
 
   [self showInfoPopover:popover forInfoButton:buttonView];
 }
@@ -642,14 +649,23 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // Called when the user taps on the information button of the disabled Incognito
 // interstitial setting's UI cell.
 - (void)didTapIncognitoInterstitialDisabledInfoButton:(UIButton*)buttonView {
-  NSString* popoverMessage =
-      IsIncognitoModeDisabled(_browserState->GetPrefs())
-          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
-          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED);
-  EnterpriseInfoPopoverViewController* popover =
-      [[EnterpriseInfoPopoverViewController alloc]
-          initWithMessage:popoverMessage
-           enterpriseName:nil];
+  InfoPopoverViewController* popover;
+  if (supervised_user::IsSubjectToParentalControls(_browserState->GetPrefs())) {
+    popover = [[SupervisedUserInfoPopoverViewController alloc]
+        initWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED_BY_PARENT)];
+  } else {
+    NSString* popoverMessage =
+        IsIncognitoModeDisabled(_browserState->GetPrefs())
+            ? l10n_util::GetNSString(
+                  IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
+            : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED);
+
+    popover = [[EnterpriseInfoPopoverViewController alloc]
+        initWithMessage:popoverMessage
+         enterpriseName:nil];
+  }
 
   [self showInfoPopover:popover forInfoButton:buttonView];
 }

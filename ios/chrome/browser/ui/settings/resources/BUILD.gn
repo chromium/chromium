@@ -12,6 +12,14 @@ imageset("enterprise_icon") {
   ]
 }
 
+imageset("family_link_icon") {
+  sources = [
+    "family_link_icon.imageset/Contents.json",
+    "family_link_icon.imageset/family_link_icon@2x.png",
+    "family_link_icon.imageset/family_link_icon@3x.png",
+  ]
+}
+
 imageset("settings") {
   sources = [
     "settings.imageset/Contents.json",

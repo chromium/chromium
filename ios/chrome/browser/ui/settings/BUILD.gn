@@ -79,6 +79,7 @@ source_set("settings") {
     ":constants",
     ":settings_root",
     "resources:enterprise_icon",
+    "resources:family_link_icon",
     "resources:settings_accounts_add_account",
     "//base",
     "//base:i18n",

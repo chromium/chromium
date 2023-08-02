@@ -9,3 +9,5 @@
 #endif
 
 NSString* const kEnterpriseInfoBubbleViewId = @"kEnterpriseInfoBubbleViewId";
+NSString* const kSupervisedUserInfoBubbleViewId =
+    @"kSupervisedUserInfoBubbleViewId";
