@@ -15,7 +15,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SnackbarCoordinator ()
+@interface SnackbarCoordinator () <MDCSnackbarManagerDelegate>
 
 @property(nonatomic, weak) id<SnackbarCoordinatorDelegate> delegate;
 
@@ -39,13 +39,9 @@
 - (void)start {
   DCHECK(self.browser);
 
-  // Set the font which supports the Dynamic Type.
-  UIFont* defaultSnackbarFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  [[MDCSnackbarManager defaultManager] setMessageFont:defaultSnackbarFont];
-  [[MDCSnackbarManager defaultManager] setButtonFont:defaultSnackbarFont];
-
-  [MDCSnackbarManager defaultManager].usesGM3Shapes = YES;
+  MDCSnackbarManager* manager = [MDCSnackbarManager defaultManager];
+  manager.delegate = self;
+  manager.usesGM3Shapes = YES;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
@@ -94,6 +90,17 @@
   message.completionHandler = completionAction;
 
   [self showSnackbarMessage:message];
+}
+
+#pragma mark - MDCSnackbarManagerDelegate
+
+- (void)snackbarManager:(MDCSnackbarManager*)snackbarManager
+    willPresentSnackbarWithMessageView:(MDCSnackbarMessageView*)messageView {
+  // Set the font which supports the Dynamic Type.
+  UIFont* defaultSnackbarFont =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  messageView.messageFont = defaultSnackbarFont;
+  messageView.buttonFont = defaultSnackbarFont;
 }
 
 @end
