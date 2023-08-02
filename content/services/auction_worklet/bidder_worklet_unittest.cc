@@ -4657,8 +4657,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: setPriority requires 1 double "
-       "parameter."});
+      {"https://url.test/:6 Uncaught TypeError: setPriority(): at least 1 "
+       "argument(s) are required."});
   // priority not a double
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
@@ -4668,8 +4668,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: setPriority requires 1 double "
-       "parameter."});
+      {"https://url.test/:6 Uncaught TypeError: setPriority(): Converting "
+       "argument 'priority' to a Number did not produce a finite double."});
   // priority not finite
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
@@ -4679,8 +4679,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: setPriority requires 1 finite "
-       "double parameter."});
+      {"https://url.test/:6 Uncaught TypeError: setPriority(): Converting "
+       "argument 'priority' to a Number did not produce a finite double."});
   // priority called twice
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
@@ -4740,6 +4740,19 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/9.0);
+
+  // priority argument doesn't terminate
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setPriority({
+              valueOf:() => {while(true) {}}
+            });
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 }
 
 TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
@@ -4751,19 +4764,40 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride "
-       "requires at least 1 parameter."});
+      {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride(): "
+       "at least 1 argument(s) are required."});
 
-  // Key not a string.
+  // Key not a string, so it gets turned into one.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(R"({bid:1, render:"https://response.test/" })",
                               /*extra_code=*/R"(
             setPrioritySignalsOverride(15, 15);
           )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New(
+          "null", 1, /*bid_currency=*/absl::nullopt, /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt,
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_set_priority=*/absl::nullopt,
+      /*expected_update_priority_signals_overrides=*/{{"15", 15}});
+
+  // Key can't be turned into a string.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(R"({bid:1, render:"https://response.test/" })",
+                              /*extra_code=*/R"(
+            setPrioritySignalsOverride({
+              toString: () => { return {} }
+            }, 15);
+          )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: First argument to "
-       "setPrioritySignalsOverride must be a String."});
+      {"https://url.test/:6 Uncaught TypeError: Cannot convert object to "
+       "primitive value."});
 
   // Value not a double.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -4773,8 +4807,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: Second argument to "
-       "setPrioritySignalsOverride must be a finite Number or null."});
+      {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride(): "
+       "Converting argument 'priority' to a Number did not produce a finite "
+       "double."});
 
   // Value not finite.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -4784,8 +4819,21 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:6 Uncaught TypeError: Second argument to "
-       "setPrioritySignalsOverride must be a finite Number or null."});
+      {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride(): "
+       "Converting argument 'priority' to a Number did not produce a finite "
+       "double."});
+
+  // Value conversion doesn't terminate.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(R"({bid:1, render:"https://response.test/" })",
+                              /*extra_code=*/R"(
+            setPrioritySignalsOverride("key", {
+              valueOf:() => {while(true) {}}
+            });
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 
   // A key with no value means the value should be removed.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -4978,6 +5026,14 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
+
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(sendReportTo({
+              toString:() => {while(true) {}}
+         }))",
+      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      {"https://url.test/ execution of `reportWin` timed out."});
 }
 
 // Debug win/loss reporting APIs should do nothing when feature
@@ -6417,11 +6473,43 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportsInvalidParameter) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss())"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: "
+       "reportAdAuctionLoss(): at least 1 argument(s) are required."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin())"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: "
+       "reportAdAuctionWin(): at least 1 argument(s) are required."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss({toString:42}))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: Cannot convert object to "
+       "primitive value."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin({toString:42}))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: Cannot convert object to "
+       "primitive value."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionLoss requires 1 string parameter."});
+       "reportAdAuctionLoss must be passed a valid HTTPS url."});
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
@@ -6429,7 +6517,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionWin requires 1 string parameter."});
+       "reportAdAuctionWin must be passed a valid HTTPS url."});
 
   std::vector<std::string> non_https_urls = {"http://report.url",
                                              "file:///foo/", "Not a URL"};
@@ -6497,6 +6585,27 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
       GURL("https://win.url2"));
+}
+
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyArgumentTimeout) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss({
+              toString:() => {while(true) {}}
+          }))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionWin({
+              toString:() => {while(true) {}}
+          }))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 }
 
 TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
@@ -6882,6 +6991,24 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/true);
+  }
+
+  {
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_host_remote_ = receiver.BindNewPipeAndPassRemote();
+
+    RunReportWinWithFunctionBodyExpectingResult(
+        R"(
+          sharedStorage.delete({toString: () => {
+              while(true) {}
+            }
+          });
+        )",
+        /*expected_report_url =*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_errors=*/
+        {"https://url.test/ execution of `reportWin` timed out."});
   }
 }
 

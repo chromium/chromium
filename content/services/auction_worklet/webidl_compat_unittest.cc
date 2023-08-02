@@ -138,6 +138,31 @@ class WebIDLCompatTest : public testing::Test {
         .Check();
   }
 
+  // Helper for the various ArgsConverter tests.
+  //
+  // Binds a method called "binding" that takes two arguments and attempts to
+  // convert the first to a string, the second to a double. Any conversion
+  // errors are reported to V8.
+  void SetBindingForArgConverterTest(v8::Local<v8::Context> context) {
+    SetBinding(context);
+    binding_callback_ = base::BindRepeating(
+        [](scoped_refptr<AuctionV8Helper> v8_helper, WebIDLCompatTest& fixture,
+           const v8::FunctionCallbackInfo<v8::Value>& args) {
+          AuctionV8Helper::TimeLimitScope time_limit_scope(
+              v8_helper->GetTimeLimit());
+          ArgsConverter args_convert(v8_helper.get(), time_limit_scope,
+                                     "binding(): ", &args,
+                                     /*min_required_args=*/2);
+          bool ok = args_convert.ConvertArg(0, "arg0", fixture.arg0_) &&
+                    args_convert.ConvertArg(1, "arg1", fixture.arg1_);
+
+          auto status = args_convert.TakeStatus();
+          EXPECT_EQ(status.is_success(), ok);
+          status.PropagateErrorsToV8(v8_helper.get());
+        },
+        v8_helper_, std::ref(*this));
+  }
+
  protected:
   static void DispatchBinding(const v8::FunctionCallbackInfo<v8::Value>& args) {
     WebIDLCompatTest* self = static_cast<WebIDLCompatTest*>(
@@ -154,6 +179,10 @@ class WebIDLCompatTest : public testing::Test {
   std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
   base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>
       binding_callback_;
+
+  // Output from SetBindingForArgConverterTest.
+  std::string arg0_;
+  double arg1_ = -1;
 };
 
 TEST_F(WebIDLCompatTest, StandaloneDouble) {
@@ -396,6 +425,53 @@ TEST_F(WebIDLCompatTest, StandaloneString) {
                                    {"v4", "scalar"}, in_value, out);
     EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
     EXPECT_EQ(out, "123");
+  }
+}
+
+TEST_F(WebIDLCompatTest, StandaloneString16) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => '\u0491'");
+    std::u16string out;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test1",
+                                   {"v1", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(out.length(), 1u);
+    EXPECT_EQ(out[0], 0x0491);
+  }
+
+  {
+    const char kScript[] = R"(
+      function make() {
+        return {
+          toString: () => {
+            return {};
+          }
+        }
+      }
+    )";
+    auto in_value = MakeValueFromScript(context, kScript);
+    std::u16string out_unchecked;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test2",
+                                   {"v2", "scalar"}, in_value, out_unchecked);
+    ASSERT_FALSE(res.is_success());
+    EXPECT_EQ(
+        "undefined:0 Uncaught TypeError: Cannot convert object to primitive "
+        "value.",
+        res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 12");
+    std::u16string out;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test3",
+                                   {"v1", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    ASSERT_EQ(out.length(), 2u);
+    EXPECT_EQ(out[0], '1');
+    EXPECT_EQ(out[1], '2');
   }
 }
 
@@ -1468,6 +1544,96 @@ TEST_F(WebIDLCompatTest, SequenceUnsetValueOk) {
   for (const auto& entry : out) {
     EXPECT_TRUE(entry->IsUndefined());
   }
+}
+
+TEST_F(WebIDLCompatTest, ArgsConverter) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBindingForArgConverterTest(context);
+  const char kTest[] = R"(
+    binding();
+  )";
+  std::vector<std::string> errors =
+      RunScript(context, kTest, /*expect_success=*/false);
+  EXPECT_THAT(errors,
+              ElementsAre("https://example.org/:2 Uncaught TypeError: "
+                          "binding(): at least 2 argument(s) are required."));
+}
+
+TEST_F(WebIDLCompatTest, ArgsConverter2) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBindingForArgConverterTest(context);
+  const char kTest[] = R"(
+    binding("hi");
+  )";
+  std::vector<std::string> errors =
+      RunScript(context, kTest, /*expect_success=*/false);
+  EXPECT_THAT(errors,
+              ElementsAre("https://example.org/:2 Uncaught TypeError: "
+                          "binding(): at least 2 argument(s) are required."));
+}
+
+TEST_F(WebIDLCompatTest, ArgsConverter3) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBindingForArgConverterTest(context);
+  const char kTest[] = R"(
+    let notS = {
+      toString: () => { return {}; }
+    }
+    binding(notS, 0/0);
+  )";
+  std::vector<std::string> errors =
+      RunScript(context, kTest, /*expect_success=*/false);
+  EXPECT_THAT(errors, ElementsAre("https://example.org/:5 Uncaught TypeError: "
+                                  "Cannot convert object to primitive value."));
+}
+
+TEST_F(WebIDLCompatTest, ArgsConverter4) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBindingForArgConverterTest(context);
+  const char kTest[] = R"(
+      binding("hi", 0/0);
+  )";
+  std::vector<std::string> errors =
+      RunScript(context, kTest, /*expect_success=*/false);
+  EXPECT_THAT(
+      errors,
+      ElementsAre(
+          "https://example.org/:2 Uncaught TypeError: binding(): Converting "
+          "argument 'arg1' to a Number did not produce a finite double."));
+}
+
+TEST_F(WebIDLCompatTest, ArgsConverter5) {
+  // A successful call.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBindingForArgConverterTest(context);
+  const char kTest[] = R"(
+      binding("hi", 10);
+  )";
+  std::vector<std::string> errors =
+      RunScript(context, kTest, /*expect_success=*/true);
+  EXPECT_THAT(errors, ElementsAre());
+  EXPECT_EQ(arg0_, "hi");
+  EXPECT_EQ(arg1_, 10.0);
+}
+
+TEST_F(WebIDLCompatTest, ArgsConverter6) {
+  // A successful call with some coercions.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBindingForArgConverterTest(context);
+  const char kTest[] = R"(
+      binding(23, "12");
+  )";
+  std::vector<std::string> errors =
+      RunScript(context, kTest, /*expect_success=*/true);
+  EXPECT_THAT(errors, ElementsAre());
+  EXPECT_EQ(arg0_, "23");
+  EXPECT_EQ(arg1_, 12.0);
 }
 
 }  // namespace auction_worklet

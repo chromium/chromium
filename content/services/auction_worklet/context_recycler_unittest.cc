@@ -733,7 +733,8 @@ TEST_F(ContextRecyclerTest, SetPriorityBindings) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
-                    "setPriority requires 1 double parameter."));
+                    "setPriority(): Converting argument 'priority' to a Number "
+                    "did not produce a finite double."));
   }
 
   {
@@ -969,6 +970,12 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
       auction_worklet::TestAuctionSharedStorageHost::RequestType;
   using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
+  const std::string kInvalidValue(
+      static_cast<size_t>(
+          blink::features::kMaxSharedStorageStringLength.Get()) +
+          1,
+      '*');
+
   const char kScript[] = R"(
     function testSet(...args) {
       sharedStorage.set(...args);
@@ -1112,8 +1119,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: Missing or "
-            "invalid \"key\" argument in sharedStorage.set()."));
+            "https://example.org/script.js:3 Uncaught TypeError: "
+            "sharedStorage.set(): at least 2 argument(s) are required."));
   }
 
   {
@@ -1126,8 +1133,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: Missing or "
-            "invalid \"value\" argument in sharedStorage.set()."));
+            "https://example.org/script.js:3 Uncaught TypeError: "
+            "sharedStorage.set(): at least 2 argument(s) are required."));
   }
 
   {
@@ -1142,7 +1149,56 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
-                    "Invalid \"options\" argument in sharedStorage.set()."));
+                    "sharedStorage.set 'options' argument "
+                    "Value passed as dictionary is neither object, null, nor "
+                    "undefined."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testSet", error_msgs, /*args=*/
+        std::vector<v8::Local<v8::Value>>(
+            {gin::ConvertToV8(helper_->isolate(), std::string("")),
+             gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+                    "Invalid 'key' argument in sharedStorage.set()."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testSet", error_msgs, /*args=*/
+        std::vector<v8::Local<v8::Value>>(
+            {gin::ConvertToV8(helper_->isolate(), std::string("a")),
+             gin::ConvertToV8(helper_->isolate(), kInvalidValue)}));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+                    "Invalid 'value' argument in sharedStorage.set()."));
+  }
+
+  // This shows that if there is a semantic error in argument 0 and a type error
+  // in argument 2 the type error is what's reported.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testSet", error_msgs, /*args=*/
+        std::vector<v8::Local<v8::Value>>(
+            {gin::ConvertToV8(helper_->isolate(), std::string("")),
+             gin::ConvertToV8(helper_->isolate(), std::string("b")),
+             gin::ConvertToV8(helper_->isolate(), true)}));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+                    "sharedStorage.set 'options' argument "
+                    "Value passed as dictionary is neither object, null, nor "
+                    "undefined."));
   }
 
   {
@@ -1154,8 +1210,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:7 Uncaught TypeError: Missing or "
-            "invalid \"key\" argument in sharedStorage.append()."));
+            "https://example.org/script.js:7 Uncaught TypeError: "
+            "sharedStorage.append(): at least 2 argument(s) are required."));
   }
 
   {
@@ -1168,8 +1224,36 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:7 Uncaught TypeError: Missing or "
-            "invalid \"value\" argument in sharedStorage.append()."));
+            "https://example.org/script.js:7 Uncaught TypeError: "
+            "sharedStorage.append(): at least 2 argument(s) are required."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testAppend", error_msgs, /*args=*/
+        std::vector<v8::Local<v8::Value>>(
+            {gin::ConvertToV8(helper_->isolate(), std::string("")),
+             gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:7 Uncaught TypeError: "
+                    "Invalid 'key' argument in sharedStorage.append()."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testAppend", error_msgs, /*args=*/
+        std::vector<v8::Local<v8::Value>>(
+            {gin::ConvertToV8(helper_->isolate(), std::string("a")),
+             gin::ConvertToV8(helper_->isolate(), kInvalidValue)}));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:7 Uncaught TypeError: "
+                    "Invalid 'value' argument in sharedStorage.append()."));
   }
 
   {
@@ -1181,8 +1265,21 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:11 Uncaught TypeError: Missing or "
-            "invalid \"key\" argument in sharedStorage.delete()."));
+            "https://example.org/script.js:11 Uncaught TypeError: "
+            "sharedStorage.delete(): at least 1 argument(s) are required."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testDelete", error_msgs, /*args=*/
+        std::vector<v8::Local<v8::Value>>(
+            {gin::ConvertToV8(helper_->isolate(), std::string(""))}));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:11 Uncaught TypeError: "
+                    "Invalid 'key' argument in sharedStorage.delete()."));
   }
 }
 

@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "gin/converter.h"
+#include "content/services/auction_worklet/webidl_compat.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "v8/include/v8-exception.h"
@@ -40,7 +40,7 @@ void ReportBindings::AttachToContext(v8::Local<v8::Context> context) {
 
 void ReportBindings::Reset() {
   report_url_ = absl::nullopt;
-  exception_thrown_ = false;
+  already_called_ = false;
 }
 
 void ReportBindings::SendReportTo(
@@ -49,19 +49,19 @@ void ReportBindings::SendReportTo(
       static_cast<ReportBindings*>(v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               "sendReportTo(): ", &args,
+                               /*min_required_args=*/1);
   std::string url_string;
-  if (args.Length() < 1 || args[0].IsEmpty() ||
-      !gin::ConvertFromV8(v8_helper->isolate(), args[0], &url_string)) {
-    bindings->exception_thrown_ = true;
-    bindings->report_url_.reset();
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "sendReportTo requires 1 string parameter")));
+  if (!args_converter.ConvertArg(0, "url", url_string)) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    // Note that we do not set `already_called_` here since in spec-land the
+    // call did not actually happen.
     return;
   }
 
-  if (bindings->exception_thrown_ || bindings->report_url_) {
-    bindings->exception_thrown_ = true;
+  if (bindings->already_called_) {
     bindings->report_url_.reset();
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
@@ -69,9 +69,10 @@ void ReportBindings::SendReportTo(
     return;
   }
 
+  bindings->already_called_ = true;
+
   GURL url(url_string);
   if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
-    bindings->exception_thrown_ = true;
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "sendReportTo must be passed a valid HTTPS url")));

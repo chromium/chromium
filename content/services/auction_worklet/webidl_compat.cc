@@ -152,6 +152,28 @@ IdlConvert::Status IdlConvert::Convert(
   return Status::MakeSuccess();
 }
 
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    std::u16string& out) {
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::String> v8_string;
+  if (value->IsString()) {
+    v8_string = value.As<v8::String>();
+  } else if (!value->ToString(isolate->GetCurrentContext())
+                  .ToLocal(&v8_string)) {
+    return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                 "String");
+  }
+
+  bool gin_ok =
+      gin::Converter<std::u16string>::FromV8(isolate, v8_string, &out);
+  DCHECK(gin_ok);  // Should never fail on a v8::String
+  return Status::MakeSuccess();
+}
+
 // static
 IdlConvert::Status IdlConvert::Convert(
     v8::Isolate* isolate,
@@ -432,6 +454,27 @@ void DictConverter::MarkFailedIter(std::string_view field,
   } else {
     MarkFailed(base::StrCat({"Trouble iterating over '", field, "'."}));
   }
+}
+
+ArgsConverter::ArgsConverter(AuctionV8Helper* v8_helper,
+                             AuctionV8Helper::TimeLimitScope& time_limit_scope,
+                             std::string error_prefix,
+                             const v8::FunctionCallbackInfo<v8::Value>* args,
+                             int min_required_args)
+    : v8_helper_(v8_helper), error_prefix_(error_prefix), args_(*args) {
+  DCHECK(time_limit_scope.has_time_limit());
+  if (args->Length() < min_required_args) {
+    status_ = IdlConvert::Status::MakeErrorMessage(base::StrCat(
+        {error_prefix_, "at least ", base::NumberToString(min_required_args),
+         " argument(s) are required."}));
+  }
+}
+
+ArgsConverter::~ArgsConverter() = default;
+
+void ArgsConverter::SetStatus(IdlConvert::Status status) {
+  DCHECK(!is_failed());
+  status_ = std::move(status);
 }
 
 }  // namespace auction_worklet

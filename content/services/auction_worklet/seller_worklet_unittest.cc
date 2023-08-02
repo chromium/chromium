@@ -2520,7 +2520,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
-       "sendReportTo requires 1 string parameter."});
+       "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo([5]))",
       /*expected_signals_for_winner=*/absl::nullopt,
@@ -2528,7 +2528,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
-       "sendReportTo requires 1 string parameter."});
+       "sendReportTo must be passed a valid HTTPS url."});
 }
 
 TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
@@ -4512,13 +4512,13 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateScoreAdScript("1", R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
       0,
       {"https://url.test/:4 Uncaught TypeError: "
-       "reportAdAuctionLoss requires 1 string parameter."});
+       "reportAdAuctionLoss must be passed a valid HTTPS url."});
 
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript("1", R"(forDebuggingOnly.reportAdAuctionWin([5]))"),
       0,
       {"https://url.test/:4 Uncaught TypeError: "
-       "reportAdAuctionWin requires 1 string parameter."});
+       "reportAdAuctionWin must be passed a valid HTTPS url."});
 
   std::vector<std::string> non_https_urls = {"http://report.url",
                                              "file:///foo/", "Not a URL"};
