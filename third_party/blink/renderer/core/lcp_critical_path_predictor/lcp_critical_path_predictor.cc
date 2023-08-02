@@ -27,7 +27,6 @@ bool LCPCriticalPathPredictor::HasAnyHintData() const {
 
 void LCPCriticalPathPredictor::set_lcp_element_locators(
     Vector<ElementLocator> locators) {
-  CHECK(lcp_element_locators_.empty());
   lcp_element_locators_ = std::move(locators);
 }
 
