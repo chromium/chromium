@@ -2470,6 +2470,7 @@ targets.windowed_test_launcher(
         "--enable-gpu",
         "--test-launcher-bot-mode",
         "--test-launcher-jobs=1",
+        "--test-launcher-retry-limit=0",
         "--enable-pixel-output-in-tests",
     ],
 )
