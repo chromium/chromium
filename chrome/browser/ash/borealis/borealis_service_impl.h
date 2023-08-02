@@ -45,8 +45,8 @@ class BorealisServiceImpl : public BorealisService {
 
   BorealisAppLauncherImpl app_launcher_;
   BorealisAppUninstaller app_uninstaller_;
-  BorealisContextManagerImpl context_manager_;
   BorealisDiskManagerDispatcher disk_manager_dispatcher_;
+  BorealisContextManagerImpl context_manager_;
   BorealisFeatures features_;
   BorealisInstallerImpl installer_;
   BorealisInstallUrlHandler install_url_handler_;
