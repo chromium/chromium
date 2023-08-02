@@ -773,13 +773,14 @@ class LocalDeviceInstrumentationTestRun(
       extras['coverageFile'] = jacoco_coverage_device_file
 
       # Setting up for clang coverage.
-      clang_profile_dir = code_coverage_utils.GetDeviceClangCoverageDir(device)
+      device_clang_profile_dir = code_coverage_utils.GetDeviceClangCoverageDir(
+          device)
       # "%2m" is used to expand to 2 raw profiles at runtime. "%p" writes
       # process ID.
       # See https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
       clang_profile_filename = '%s_%s.profraw' % (coverage_basename, '%2m_%p')
       extras[EXTRA_CLANG_COVERAGE_DEVICE_FILE] = posixpath.join(
-          clang_profile_dir, clang_profile_filename)
+          device_clang_profile_dir, clang_profile_filename)
 
     if self._test_instance.enable_breakpad_dump:
       # Use external storage directory so that the breakpad dump can be accessed
@@ -950,21 +951,25 @@ class LocalDeviceInstrumentationTestRun(
             # Handling Clang coverage data.
             profraw_parent_dir = os.path.join(
                 self._test_instance.coverage_directory, coverage_basename)
-            # Note: The function pulls |clang_profile_dir| folder, instead of
-            # profraw files, into |profraw_parent_dir|. the function also
-            # removes |clang_profile_dir| from device.
-            code_coverage_utils.PullClangCoverageFiles(device,
-                                                       clang_profile_dir,
-                                                       profraw_parent_dir)
-            # Merge data into one merged file if llvm-profdata tool exists.
-            if os.path.isfile(code_coverage_utils.LLVM_PROFDATA_PATH):
-              profraw_folder_name = os.path.basename(
-                  os.path.normpath(clang_profile_dir))
-              profraw_dir = os.path.join(profraw_parent_dir,
-                                         profraw_folder_name)
-              code_coverage_utils.MergeClangCoverageFiles(
-                  self._test_instance.coverage_directory, profraw_dir)
-              shutil.rmtree(profraw_parent_dir)
+            if device.PathExists(device_clang_profile_dir, retries=0):
+              # Note: The function pulls |device_clang_profile_dir| folder,
+              # instead of profraw files, into |profraw_parent_dir|. the
+              # function also removes |device_clang_profile_dir| from device.
+              code_coverage_utils.PullClangCoverageFiles(
+                  device, device_clang_profile_dir, profraw_parent_dir)
+              # Merge data into one merged file if llvm-profdata tool exists.
+              if os.path.isfile(code_coverage_utils.LLVM_PROFDATA_PATH):
+                profraw_folder_name = os.path.basename(
+                    os.path.normpath(device_clang_profile_dir))
+                profraw_dir = os.path.join(profraw_parent_dir,
+                                           profraw_folder_name)
+                code_coverage_utils.MergeClangCoverageFiles(
+                    self._test_instance.coverage_directory, profraw_dir)
+                shutil.rmtree(profraw_parent_dir)
+            else:
+              logging.warning('Clang coverage data folder does not exist: %s',
+                              profraw_parent_dir)
+
           except (OSError, base_error.BaseError) as e:
             logging.warning('Failed to handle coverage data after tests: %s', e)
 
