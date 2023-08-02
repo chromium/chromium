@@ -363,7 +363,7 @@ def __input_deps(ctx, input_deps):
     # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
     input_deps["third_party/jdk/current:current"] = [
         "third_party/jdk/current/bin/java",
-        "third_party/jdk/current/bin/java.orig",
+        "third_party/jdk/current/bin/java.chromium",
         "third_party/jdk/current/conf/logging.properties",
         "third_party/jdk/current/conf/security/java.security",
         "third_party/jdk/current/lib/ct.sym",

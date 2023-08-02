@@ -35,7 +35,7 @@ DIR_SOURCE_ROOT = os.path.relpath(
             os.pardir)))
 JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 JAVA_PATH = os.path.join(JAVA_HOME, 'bin', 'java')
-JAVA_PATH_FOR_INPUTS = f'{JAVA_PATH}.orig'
+JAVA_PATH_FOR_INPUTS = f'{JAVA_PATH}.chromium'
 JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')
 JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
 KOTLIN_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'kotlinc', 'current')
