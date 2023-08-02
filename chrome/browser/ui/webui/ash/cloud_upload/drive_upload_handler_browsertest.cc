@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -110,7 +110,8 @@ class DriveUploadHandlerTest
       Profile* profile) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     fake_drivefs_helpers_[profile] =
-        std::make_unique<drive::FakeDriveFsHelper>(profile, drive_mount_point_);
+        std::make_unique<file_manager::test::FakeSimpleDriveFsHelper>(
+            profile, drive_mount_point_);
     auto* integration_service = new drive::DriveIntegrationService(
         profile, "", drive_mount_point_,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
@@ -277,7 +278,7 @@ class DriveUploadHandlerTest
   }
 
  protected:
-  drivefs::FakeDriveFs& fake_drivefs() {
+  file_manager::test::FakeSimpleDriveFs& fake_drivefs() {
     return fake_drivefs_helpers_[profile()]->fake_drivefs();
   }
 
@@ -373,7 +374,8 @@ class DriveUploadHandlerTest
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
-  std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
+  std::map<Profile*,
+           std::unique_ptr<file_manager::test::FakeSimpleDriveFsHelper>>
       fake_drivefs_helpers_;
 
   // Used to track the upload progress during the tests.
