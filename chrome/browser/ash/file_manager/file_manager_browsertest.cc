@@ -696,6 +696,10 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
           add_files_cb.Get());
       return true;
     }
+    if (name == "enableNewFilesPolicyUX") {
+      policy::DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(true);
+      return true;
+    }
     return false;
   }
 
@@ -1801,7 +1805,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFolderDlpRestricted").EnableDlp(),
 #endif
         TestCase("fileTasksDlpRestricted").EnableDlp(),
-        TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp()));
+        TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp(),
+        TestCase("blockShowsPanelItem").EnableDlp()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */

@@ -11,6 +11,31 @@ import {FakeTask} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
+ * Copies or moves a file to provided location.
+ * @param {string} appId ID of the Files app window.
+ * @param {TestEntryInfo} file Test entry info to be copied/cut.
+ * @param {string} destination Name of the destination folder.
+ * @param {boolean} isCopy Whether it should copy or move the file.
+ * @return {Promise} Promise fulfilled on success.
+ */
+async function copyOrMove(appId, file, destination, isCopy) {
+  if (!file || !file.nameText || !destination) {
+    chrome.test.assertTrue(false, 'copyOrMove invalid parameters');
+  }
+
+  await remoteCall.waitForFiles(appId, [file.getExpectedRow()]);
+
+  await remoteCall.waitUntilSelected(appId, file.nameText);
+
+  const command = isCopy ? 'copy' : 'cut';
+  await remoteCall.callRemoteTestUtil('execCommand', appId, [command]);
+
+  await navigateWithDirectoryTree(appId, destination);
+
+  await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']);
+}
+
+/**
  * Tests that DLP block toast is shown when a restricted file is cut.
  */
 testcase.transferShowDlpToast = async () => {
@@ -32,19 +57,8 @@ testcase.transferShowDlpToast = async () => {
   const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
   await remoteCall.waitForElement(appId, usbVolumeQuery);
 
-  // Select the file.
-  await remoteCall.waitUntilSelected(appId, entry.nameText);
-
-  // Cut the file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('execCommand', appId, ['cut']));
-
-  // Select USB volume.
-  await navigateWithDirectoryTree(appId, '/fake-usb');
-
-  // Paste the file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
+  // Cut and paste the file.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
 
   // Check: a toast should be displayed because cut is disallowed.
   await remoteCall.waitForElement(appId, '#toast');
@@ -749,4 +763,67 @@ testcase.zipExtractRestrictedArchiveCheckContent = async () => {
         ['image.png', '--', 'PNG image'],
       ],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
+};
+
+/**
+ * Tests that a copy or move IO task that completed with error due to block
+ * restriction properly updates the task state and shows a correct panel item.
+ */
+testcase.blockShowsPanelItem = async () => {
+  // Enable the new UX flow.
+  await sendTestMessage({name: 'enableNewFilesPolicyUX'});
+
+  // Add entry to Downloads.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Setup the restrictions.
+  await sendTestMessage({
+    name: 'setBlockedFilesTransfer',
+    fileNames: [entry.nameText],
+  });
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Copy and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check the error panel is open and the primary and secondary text is
+  // correct.
+  let panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+  chrome.test.assertEq(
+      'File blocked from copying', panel.attributes['primary-text']);
+  chrome.test.assertEq(
+      `${entry.nameText} was blocked because of policy`,
+      panel.attributes['secondary-text']);
+
+  // Dismiss.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId,
+      [['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']]));
+
+  // Navigate back to Downloads.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // Cut and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
+
+  // Check the error panel is open and the primary and secondary text is
+  // correct.
+  panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+  chrome.test.assertEq(
+      'File blocked from moving', panel.attributes['primary-text']);
+  chrome.test.assertEq(
+      `${entry.nameText} was blocked because of policy`,
+      panel.attributes['secondary-text']);
 };
