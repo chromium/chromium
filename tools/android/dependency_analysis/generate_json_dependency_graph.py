@@ -120,7 +120,7 @@ JarTargetDict = Dict[str, pathlib.Path]
 
 
 def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
-                                    j_value: Optional[str], show_ninja: bool,
+                                    show_ninja: bool,
                                     src_path: pathlib.Path) -> JarTargetDict:
     """Runs list_java_targets.py to find all jars generated in the build.
 
@@ -140,8 +140,6 @@ def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
         '--query',
         'deps_info.unprocessed_jar_path',
     ]
-    if j_value:
-        cmd += ['-j', j_value]
     if not show_ninja:
         cmd.append('-q')
     output = subprocess_utils.run_command(cmd)
@@ -299,7 +297,7 @@ def main():
             gn_desc_output, args.build_output_dir, cr_position)
     else:
         target_jars: JarTargetDict = run_and_parse_list_java_targets(
-            args.build_output_dir, args.j, args.show_ninja, src_path)
+            args.build_output_dir, args.show_ninja, src_path)
 
     if args.skip_rebuild:
         logging.info(f'Skipping rebuilding jars.')
