@@ -44,7 +44,7 @@ const char* BackingTypeToString(SharedImageBackingType type) {
     case SharedImageBackingType::kSharedMemory:
       return "SharedMemoryImageBacking";
     case SharedImageBackingType::kVideo:
-      return "SharedImageVideo";
+      return "AndroidVideoImageBacking";
     case SharedImageBackingType::kWrappedSkImage:
       return "WrappedSkImage";
     case SharedImageBackingType::kCompound:

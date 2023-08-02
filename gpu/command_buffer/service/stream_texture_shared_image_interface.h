@@ -20,7 +20,7 @@ namespace gpu {
 class TextureOwner;
 class TextureBase;
 
-// This class lets SharedImageVideo draw video frames.
+// This class lets AndroidVideoImageBacking draw video frames.
 class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
     : public base::RefCounted<StreamTextureSharedImageInterface> {
  public:

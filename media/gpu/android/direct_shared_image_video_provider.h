@@ -56,8 +56,8 @@ class MEDIA_GPU_EXPORT DirectSharedImageVideoProvider
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 };
 
-// GpuSharedImageVideoFactory creates SharedImageVideo objects.  It must be run
-// on the gpu main thread.
+// GpuSharedImageVideoFactory creates AndroidVideoImageBacking objects.  It must
+// be run on the gpu main thread.
 //
 // GpuSharedImageVideoFactory is an implementation detail of
 // DirectSharedImageVideoProvider.  It's here since we'll likely re-use it for

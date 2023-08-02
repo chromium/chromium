@@ -1088,8 +1088,8 @@ BASE_FEATURE(kUseAudioLatencyFromHAL,
              "UseAudioLatencyFromHAL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable pooling of SharedImageVideo objects for use by MCVD, to save a hop to
-// the GPU main thread during VideoFrame construction.
+// Enable pooling of AndroidVideoImageBacking objects for use by MCVD, to save a
+// hop to the GPU main thread during VideoFrame construction.
 BASE_FEATURE(kUsePooledSharedImageVideoProvider,
              "UsePooledSharedImageVideoProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);

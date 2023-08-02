@@ -40,8 +40,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
   // threads. To implement thread safetyness, we are using a global ref
   // counted lock here. CodecImage, CodecOutputBufferRenderer,
   // CodecBufferWaitCoordinator expects this ref counted lock to be held by the
-  // classes which are accessing them (SharedImageVideo, MRE, FrameInfoHelper
-  // etc.)
+  // classes which are accessing them (AndroidVideoImageBacking, MRE,
+  // FrameInfoHelper etc.)
   if (features::NeedThreadSafeAndroidMedia()) {
     ref_counted_lock = base::MakeRefCounted<gpu::RefCountedLock>();
   }
