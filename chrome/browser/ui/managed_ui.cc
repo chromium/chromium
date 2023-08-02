@@ -335,6 +335,42 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
+#else
+std::u16string GetManagementPageSubtitle(Profile* profile) {
+  absl::optional<std::string> account_manager =
+      GetAccountManagerIdentity(profile);
+  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+
+  switch (GetManagementStringType(profile)) {
+    case BROWSER_MANAGED:
+      return l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE);
+    case BROWSER_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
+                                        base::UTF8ToUTF16(*device_manager));
+    case BROWSER_PROFILE_SAME_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_SUBTITLE_BROWSER_AND_PROFILE_SAME_MANAGED_BY,
+          base::UTF8ToUTF16(*device_manager));
+    case BROWSER_PROFILE_DIFFERENT_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_SUBTITLE_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY,
+          base::UTF8ToUTF16(*device_manager),
+          base::UTF8ToUTF16(*account_manager));
+    case BROWSER_MANAGED_PROFILE_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_SUBTITLE_BROWSER_MANAGED_AND_PROFILE_MANAGED_BY,
+          base::UTF8ToUTF16(*account_manager));
+    case PROFILE_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_SUBTITLE_PROFILE_MANAGED_BY,
+          base::UTF8ToUTF16(*account_manager));
+    case SUPERVISED:
+      return l10n_util::GetStringUTF16(IDS_MANAGED_BY_PARENT);
+    case NOT_MANAGED:
+      return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
+  }
+  return std::u16string();
+}
 #endif
 
 absl::optional<std::string> GetDeviceManagerIdentity() {

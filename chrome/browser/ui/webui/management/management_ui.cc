@@ -222,21 +222,7 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
                                     l10n_util::GetStringUTF16(device_type),
                                     base::UTF8ToUTF16(account_manager));
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto account_manager =
-      chrome::GetAccountManagerIdentity(profile).value_or(std::string());
-  const auto managed =
-      profile->GetProfilePolicyConnector()->IsManaged() ||
-      g_browser_process->browser_policy_connector()->HasMachineLevelPolicies();
-  if (account_manager.empty()) {
-    return l10n_util::GetStringUTF16(managed
-                                         ? IDS_MANAGEMENT_SUBTITLE
-                                         : IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
-  }
-  if (managed) {
-    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                      base::UTF8ToUTF16(account_manager));
-  }
-  return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
+  return chrome::GetManagementPageSubtitle(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

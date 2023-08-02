@@ -79,6 +79,9 @@ std::u16string GetDeviceManagedUiHelpLabel(Profile* profile);
 // The label for the WebUI footnote for Managed UI indicating that the device
 // is mananged. These strings contain HTML for an <a> element.
 std::u16string GetDeviceManagedUiWebUILabel();
+#else
+// The subtitle for the management page.
+std::u16string GetManagementPageSubtitle(Profile* profile);
 #endif
 
 // Returns nullopt if the device is not managed, the UTF8-encoded string
