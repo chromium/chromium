@@ -121,6 +121,7 @@ public class PasswordSavingIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1468472")
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));
 
