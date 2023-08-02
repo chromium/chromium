@@ -541,9 +541,7 @@ void TabUsageRecorderBrowserAgent::WebStateListDidChange(
     const WebStateListStatus& status) {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach_change =
@@ -573,18 +571,11 @@ void TabUsageRecorderBrowserAgent::WebStateListDidChange(
       break;
     }
   }
-}
 
-void TabUsageRecorderBrowserAgent::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  if (reason == ActiveWebStateChangeReason::Replaced)
-    return;
-
-  RecordTabSwitched(old_web_state, new_web_state);
+  if (status.active_web_state_change() &&
+      change.type() != WebStateListChange::Type::kReplace) {
+    RecordTabSwitched(status.old_active_web_state, status.new_active_web_state);
+  }
 }
 
 void TabUsageRecorderBrowserAgent::SessionRestorationFinished(

@@ -155,11 +155,6 @@ class TabUsageRecorderBrowserAgent
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override;
 
   // SessionRestorationObserver implementation.
   void SessionRestorationFinished(
