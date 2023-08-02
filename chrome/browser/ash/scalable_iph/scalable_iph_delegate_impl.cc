@@ -35,7 +35,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/buildflags.h"
@@ -91,9 +93,6 @@ const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
            {ActionType::kOpenGoogleDocs,
             "https://docs.google.com/document/?usp=installed_webapp/"},
            {ActionType::kOpenGooglePhotos, "https://photos.google.com/"},
-           {ActionType::kOpenSettingsPrinter,
-            "chrome://os-settings/cupsPrinters/"},
-           {ActionType::kOpenPhoneHub, "chrome://os-settings/multidevice/"},
            {ActionType::kOpenYouTube, "https://www.youtube.com/"}});
   return *action_type_urls;
 }
@@ -409,14 +408,13 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenSettingsPrinter: {
-      OpenUrlForProfile(
-          profile_,
-          GURL(GetActionTypeURLs().at(ActionType::kOpenSettingsPrinter)));
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile_, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
       break;
     }
     case ActionType::kOpenPhoneHub: {
-      OpenUrlForProfile(
-          profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenPhoneHub)));
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile_, chromeos::settings::mojom::kMultiDeviceSectionPath);
       break;
     }
     case ActionType::kOpenYouTube: {
