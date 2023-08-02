@@ -152,11 +152,14 @@ std::string GetParamValue(const base::Feature& feature,
 UiType ParseUiType(const base::Feature& feature) {
   std::string ui_type = GetParamValue(feature, kCustomUiTypeParamName);
   CHECK(ui_type == kCustomUiTypeValueNotification ||
-        ui_type == kCustomUiTypeValueBubble);
+        ui_type == kCustomUiTypeValueBubble ||
+        ui_type == kCustomUiTypeValueNone);
   if (ui_type == kCustomUiTypeValueNotification) {
     return UiType::kNotification;
+  } else if (ui_type == kCustomUiTypeValueBubble) {
+    return UiType::kBubble;
   }
-  return UiType::kBubble;
+  return UiType::kNone;
 }
 
 ActionType ParseActionType(const std::string& action_type_string) {
@@ -439,7 +442,6 @@ void ScalableIph::CheckTriggerConditions() {
     // TODO(b/289267799): Check our custom extension version number.
     if (CheckCustomConditions(*feature) &&
         tracker_->ShouldTriggerHelpUI(*feature)) {
-      // TODO(b/284053005): Support other ui types.
       UiType ui_type = ParseUiType(*feature);
       switch (ui_type) {
         case UiType::kNotification:
@@ -452,8 +454,8 @@ void ScalableIph::CheckTriggerConditions() {
               ParseBubbleParams(*feature),
               std::make_unique<IphSession>(*feature, tracker_, this));
           break;
-        case UiType::kHelpApp:
-          CHECK(false) << "Help App Scalable IPH is not supported";
+        case UiType::kNone:
+          break;
       }
     }
   }

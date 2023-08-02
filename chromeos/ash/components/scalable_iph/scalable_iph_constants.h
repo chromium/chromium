@@ -88,15 +88,15 @@ constexpr char kCustomConditionClientAgeInDaysParamName[] =
     "x_CustomConditionClientAgeInDays";
 
 // `UiType` param indicates which IPH UI is used for an event config.
-// Notification is the only value supported now.
 constexpr char kCustomUiTypeParamName[] = "x_CustomUiType";
 constexpr char kCustomUiTypeValueNotification[] = "Notification";
 constexpr char kCustomUiTypeValueBubble[] = "Bubble";
+constexpr char kCustomUiTypeValueNone[] = "None";
 
 enum class UiType {
   kNotification,
   kBubble,
-  kHelpApp,
+  kNone,
 };
 
 // Parameters for a notification UI. All fields are required field.
