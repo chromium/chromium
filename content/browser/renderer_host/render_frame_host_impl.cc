@@ -1712,19 +1712,36 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     CHECK(frame_tree_node_);
     NavigationRequest* navigation_request =
         frame_tree_node_->navigation_request();
-    if (navigation_request &&
-        navigation_request->state() >=
-            NavigationRequest::WILL_PROCESS_RESPONSE &&
-        navigation_request->GetRenderFrameHost() == this) {
-      frame_tree_node_->ResetNavigationRequest(
-          NavigationDiscardReason::kRenderFrameHostDestruction);
-      // As we are unable to come up with a case that will lead to this path, we
-      // instead record the dumps for debugging the scenario.
-      // TODO(crbug.com/1430653): if we verify that this path is impossible,
-      // replace the `DumpWithoutCrashing` with a `CHECK`. Otherwise, add a new
-      // browser test for it.
-      base::debug::DumpWithoutCrashing();
-      NOTREACHED();
+    if (navigation_request) {
+      if (navigation_request
+              ->GetRenderFrameHostRestoredFromBackForwardCache() == this) {
+        CHECK(navigation_request->IsServedFromBackForwardCache());
+        frame_tree_node_->RestartBackForwardCachedNavigationAsync(
+            navigation_request->nav_entry_id());
+        // TODO(crbug.com/1468984): Remove.
+        // Before the RFH restored from BFCache is destroyed, the BFCache
+        // NavigationRequest should be reset already. Record the some crash keys
+        // here for further investigation.
+        SCOPED_CRASH_KEY_NUMBER("Bug1468984", "navigation_request_state",
+                                navigation_request->state());
+        SCOPED_CRASH_KEY_BOOL("Bug1468984", "frame_tree_being_destroyed",
+                              frame_tree_->IsBeingDestroyed());
+        SCOPED_CRASH_KEY_BOOL("Bug1468984", "is_evicted_from_bfcache",
+                              is_evicted_from_back_forward_cache());
+        base::debug::DumpWithoutCrashing();
+      } else if (navigation_request->state() >=
+                     NavigationRequest::WILL_PROCESS_RESPONSE &&
+                 navigation_request->GetRenderFrameHost() == this) {
+        frame_tree_node_->ResetNavigationRequest(
+            NavigationDiscardReason::kRenderFrameHostDestruction);
+        // As we are unable to come up with a case that will lead to this path,
+        // we instead record the dumps for debugging the scenario.
+        // TODO(crbug.com/1430653): if we verify that this path is impossible,
+        // replace the `DumpWithoutCrashing` with a `CHECK`. Otherwise, add a
+        // new browser test for it.
+        base::debug::DumpWithoutCrashing();
+        NOTREACHED();
+      }
     }
   }
 
