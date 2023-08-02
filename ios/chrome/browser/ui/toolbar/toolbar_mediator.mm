@@ -354,7 +354,6 @@ BOOL ShouldSwitchOmniboxToBottom(
 /// Updates the default setting for bottom omnibox.
 - (void)updateOmniboxDefaultPosition {
   CHECK(IsBottomOmniboxSteadyStateEnabled());
-  CHECK(_isIncognito || self.deviceSwitcherResultDispatcher);
   CHECK(self.prefService);
 
   // This only needs to be executed once and deviceSwitcherResult are not
