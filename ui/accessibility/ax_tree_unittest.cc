@@ -1232,7 +1232,12 @@ TEST(AXTreeTest, TreeObserverIsNotCalledForReparenting) {
 
 // https://crbug.com/1359080
 // UAF caught by ax_tree_fuzzer
-TEST(AXTreeTest, DISABLED_BogusAXTree) {
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_BogusAXTree DISABLED_BogusAXTree
+#else
+#define MAYBE_BogusAXTree BogusAXTree
+#endif
+TEST(AXTreeTest, MAYBE_BogusAXTree) {
   AXTreeUpdate initial_state;
   AXNodeData node;
   node.id = 0;
