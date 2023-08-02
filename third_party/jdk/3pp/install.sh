@@ -10,11 +10,11 @@ set -x
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-mv current/bin/java current/bin/java.orig
+mv current/bin/java current/bin/java.chromium
 echo '#!/bin/sh
 
 # https://crbug.com/1441023
-exec "$0.orig" -XX:+PerfDisableSharedMem "$@"
+exec "$0.chromium" -XX:+PerfDisableSharedMem "$@"
 ' > current/bin/java
 chmod a+x current/bin/java
 
