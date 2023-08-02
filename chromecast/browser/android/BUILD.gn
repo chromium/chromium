@@ -145,6 +145,7 @@ android_library("crash_handler_java") {
     ":reactive_android_java",
     "//base:base_java",
     "//base:jni_java",
+    "//chromecast/base:base_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
