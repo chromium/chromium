@@ -115,6 +115,8 @@ static_library("ui") {
     "find_bar/find_bar_state.h",
     "find_bar/find_bar_state_factory.cc",
     "find_bar/find_bar_state_factory.h",
+    "hats/survey_config.cc",
+    "hats/survey_config.h",
     "idle_bubble.h",
     "interventions/intervention_delegate.h",
     "interventions/intervention_infobar_delegate.cc",
