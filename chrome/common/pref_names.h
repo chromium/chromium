@@ -2126,11 +2126,6 @@ inline constexpr char kDNSInterceptionChecksEnabled[] =
 
 // An enum value of how the browser was shut down (see browser_shutdown.h).
 inline constexpr char kShutdownType[] = "shutdown.type";
-// Number of processes that were open when the user shut down.
-inline constexpr char kShutdownNumProcesses[] = "shutdown.num_processes";
-// Number of processes that were shut down using the slow path.
-inline constexpr char kShutdownNumProcessesSlow[] =
-    "shutdown.num_processes_slow";
 
 // Whether to restart the current Chrome session automatically as the last thing
 // before shutting everything down.

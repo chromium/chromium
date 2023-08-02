@@ -55,6 +55,32 @@ class BrowserClosingObserver : public BrowserListObserver {
 // ChromeOS has the different shutdown flow on user initiated exit process.
 // See the comment for chrome::AttemptUserExit() function declaration.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Mac browser shutdown is flaky: https://crbug.com/1259913
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClosingShutdownHistograms DISABLED_ClosingShutdownHistograms
+#else
+#define MAYBE_ClosingShutdownHistograms ClosingShutdownHistograms
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
+                       MAYBE_ClosingShutdownHistograms) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
+  CloseBrowserSynchronously(browser());
+  // RecordShutdownMetrics() is called in the ChromeMainDelegate destructor.
+  browser_shutdown::RecordShutdownMetrics();
+
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_EQ(browser_shutdown::GetShutdownType(),
+            browser_shutdown::ShutdownType::kWindowClose);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Shutdown.ShutdownType2",
+      static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
+  histogram_tester_.ExpectTotalCount("Shutdown.WindowClose.Time2", 1);
+  histogram_tester_.ExpectTotalCount("Shutdown.Renderers.Total2", 1);
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        PRE_TwoBrowsersClosingShutdownHistograms) {
   ASSERT_TRUE(
@@ -77,6 +103,15 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   EXPECT_EQ(browser_shutdown::GetShutdownType(),
             browser_shutdown::ShutdownType::kWindowClose);
   BrowserList::RemoveObserver(&closing_observer);
+
+  // RecordShutdownMetrics() is called in the ChromeMainDelegate destructor.
+  browser_shutdown::RecordShutdownMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Shutdown.ShutdownType2",
+      static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
+  histogram_tester_.ExpectTotalCount("Shutdown.WindowClose.Time2", 1);
+  histogram_tester_.ExpectTotalCount("Shutdown.Renderers.Total2", 1);
 }
 
 // Flakes on Mac12.0: https://crbug.com/1259913
@@ -92,8 +127,6 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "Shutdown.ShutdownType",
       static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
-  histogram_tester_.ExpectTotalCount("Shutdown.Renderers.Total", 1);
-  histogram_tester_.ExpectTotalCount("Shutdown.WindowClose.Time", 1);
 }
 #else
 // On Chrome OS, the shutdown accelerator is handled by Ash and requires
