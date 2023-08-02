@@ -23,7 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/compositor/layer_owner.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -489,6 +488,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   };
 
   explicit WindowState(aura::Window* window);
+
+  void Init();
 
   WindowStateDelegate* delegate() { return delegate_.get(); }
   BoundsChangeAnimationType bounds_animation_type() {

@@ -306,16 +306,20 @@ namespace {
 
 class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
  public:
-  TestShadowControllerDelegate() {}
+  TestShadowControllerDelegate() = default;
 
   TestShadowControllerDelegate(const TestShadowControllerDelegate&) = delete;
   TestShadowControllerDelegate& operator=(const TestShadowControllerDelegate&) =
       delete;
 
-  ~TestShadowControllerDelegate() override {}
+  ~TestShadowControllerDelegate() override = default;
 
   bool ShouldShowShadowForWindow(const aura::Window* window) override {
     return window->parent();
+  }
+
+  bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) override {
+    return true;
   }
 };
 
@@ -323,7 +327,7 @@ class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
 
 TEST_F(ShadowControllerTest, UpdateShadowWhenAddedToParent) {
   InstallShadowController(std::make_unique<TestShadowControllerDelegate>());
-  std::unique_ptr<aura::Window> window1(new aura::Window(NULL));
+  std::unique_ptr<aura::Window> window1(new aura::Window(nullptr));
   window1->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window1->Init(ui::LAYER_TEXTURED);
   window1->SetBounds(gfx::Rect(10, 20, 300, 400));

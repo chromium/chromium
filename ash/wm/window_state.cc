@@ -8,9 +8,6 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/app_types.h"
-#include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -43,7 +40,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
@@ -52,7 +48,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -61,6 +56,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/ime_util_chromeos.h"
+#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -834,6 +830,9 @@ WindowState::WindowState(aura::Window* window)
       current_state_(
           new DefaultState(chromeos::ToWindowStateType(GetShowState()))) {
   window_->AddObserver(this);
+}
+
+void WindowState::Init() {
   UpdateWindowPropertiesFromStateType();
   OnPrePipStateChange(WindowStateType::kDefault);
 }
@@ -905,6 +904,15 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
   if (GetStateType() != window_->GetProperty(chromeos::kWindowStateTypeKey)) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
     window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
+
+    // During `Shell` deletion, we can be here after the shadow controller has
+    // been destroyed.
+    if (auto* shadow_controller = Shell::Get()->shadow_controller()) {
+      // We change shadow radius based on WindowStateType. Shadow controller
+      // does not react to ash's extended window state. Therefore we need to
+      // manually call `UpdateShadowForWindow()`.
+      shadow_controller->UpdateShadowForWindow(window_);
+    }
   }
 
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
@@ -1217,6 +1225,12 @@ WindowState* WindowState::Get(aura::Window* window) {
 
   state = new WindowState(window);
   window->SetProperty(kWindowStateKey, state);
+
+  // Initialize the window state after setting it as a window property.
+  // Otherwise, as part of window state initialization we end of calling
+  // `WindowState::Get()` and will end up creating window state again
+  // recursively.
+  state->Init();
   return state;
 }
 
