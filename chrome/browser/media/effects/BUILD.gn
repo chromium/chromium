@@ -1,0 +1,32 @@
+source_set("effects") {
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+    "//services/video_capture/public/mojom",
+    "//third_party/abseil-cpp:absl",
+  ]
+  sources = [
+    "media_effects_service.cc",
+    "media_effects_service.h",
+    "media_effects_service_factory.cc",
+    "media_effects_service_factory.h",
+    "video_effects_manager_impl.cc",
+    "video_effects_manager_impl.h",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  deps = [
+    ":effects",
+    "//base",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+  sources = [
+    "media_effects_service_factory_unittest.cc",
+    "media_effects_service_unittest.cc",
+    "video_effects_manager_impl_unittest.cc",
+  ]
+}
