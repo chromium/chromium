@@ -45,6 +45,9 @@ shopping_list::mojom::ProductInfoPtr ProductInfoToMojoProduct(
           GURL(url)));
   product_info->product_url = url;
   product_info->image_url = info->image_url;
+  if (info->product_cluster_id.has_value()) {
+    product_info->cluster_id = info->product_cluster_id.value();
+  }
 
   std::unique_ptr<payments::CurrencyFormatter> formatter =
       std::make_unique<payments::CurrencyFormatter>(info->currency_code,
