@@ -63,7 +63,8 @@ enum class OfficeFilesUploadResult {
   kCloudQuotaFull = 12,
   kCloudError = 13,
   kNoConnection = 14,
-  kMaxValue = kNoConnection,
+  kDestinationUrlError = 15,
+  kMaxValue = kDestinationUrlError,
 };
 
 // Query actions for this path to get ODFS Metadata.

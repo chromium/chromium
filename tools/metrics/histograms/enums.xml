@@ -77634,6 +77634,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Cloud quota full"/>
   <int value="13" label="Cloud error"/>
   <int value="14" label="No connectivity to cloud or sync disabled"/>
+  <int value="15" label="Failed to generate destination file system URL"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">

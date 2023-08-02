@@ -127,7 +127,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
     OnEndUpload(base::unexpected(GetGenericErrorMessage()),
-                OfficeFilesUploadResult::kFileSystemNotFound);
+                OfficeFilesUploadResult::kDestinationUrlError);
     return;
   }
 
