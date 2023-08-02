@@ -31,4 +31,8 @@ mojo::Remote<mojom::RoutineObserver>* FakeRoutineController::GetObserver() {
   return nullptr;
 }
 
+mojo::Receiver<mojom::RoutineControl>* FakeRoutineController::GetReceiver() {
+  return &receiver_;
+}
+
 }  // namespace ash::cros_healthd

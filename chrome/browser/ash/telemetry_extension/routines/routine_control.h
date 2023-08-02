@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_ROUTINE_CONTROL_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_ROUTINE_CONTROL_H_
 
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -17,13 +20,17 @@ namespace ash {
 class CrosHealthdRoutineControl
     : public crosapi::mojom::TelemetryDiagnosticRoutineControl {
  public:
-  using DeleterCallback = base::OnceCallback<void(CrosHealthdRoutineControl*)>;
-
-  CrosHealthdRoutineControl();
+  explicit CrosHealthdRoutineControl(
+      mojo::PendingRemote<cros_healthd::mojom::RoutineControl> pending_remote);
   CrosHealthdRoutineControl(const CrosHealthdRoutineControl&) = delete;
   CrosHealthdRoutineControl& operator=(const CrosHealthdRoutineControl&) =
       delete;
   ~CrosHealthdRoutineControl() override;
+
+  mojo::Remote<cros_healthd::mojom::RoutineControl>& GetRemote();
+
+ private:
+  mojo::Remote<cros_healthd::mojom::RoutineControl> remote_;
 };
 
 }  // namespace ash

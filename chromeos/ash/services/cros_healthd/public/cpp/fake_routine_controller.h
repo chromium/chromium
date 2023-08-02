@@ -24,6 +24,7 @@ class FakeRoutineController : public mojom::RoutineControl {
   FakeRoutineController& operator=(const FakeRoutineController&) = delete;
 
   mojo::Remote<mojom::RoutineObserver>* GetObserver();
+  mojo::Receiver<mojom::RoutineControl>* GetReceiver();
 
  private:
   mojo::Remote<mojom::RoutineObserver> routine_observer_;

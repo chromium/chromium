@@ -142,6 +142,10 @@ void FakeCrosHealthd::SetIsEventSupportedResponseForTesting(
   is_event_supported_response_.Swap(&result);
 }
 
+void FakeCrosHealthd::FlushRoutineServiceForTesting() {
+  routines_provider_.FlushForTesting();
+}
+
 FakeRoutineController* FakeCrosHealthd::GetRoutineControllerForArgumentTag(
     mojom::RoutineArgument::Tag tag) {
   auto it = routine_controllers_.find(tag);

@@ -1,0 +1,262 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
+
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace ash {
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+namespace healthd = cros_healthd::mojom;
+
+class TestRoutineObserver : crosapi::TelemetryDiagnosticRoutineObserver {
+ public:
+  TestRoutineObserver() = default;
+  TestRoutineObserver(const TestRoutineObserver&) = delete;
+  TestRoutineObserver& operator=(const TestRoutineObserver&) = delete;
+  ~TestRoutineObserver() override = default;
+
+  mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineObserver>
+  GetPendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  mojo::Receiver<crosapi::TelemetryDiagnosticRoutineObserver>& GetReceiver() {
+    return receiver_;
+  }
+
+  void Reset() { receiver_.reset(); }
+
+ private:
+  mojo::Receiver<crosapi::TelemetryDiagnosticRoutineObserver> receiver_{this};
+};
+
+}  // namespace
+
+class TelemetryDiagnosticsRoutineServiceAshTest : public testing::Test {
+ public:
+  void SetUp() override { cros_healthd::FakeCrosHealthd::Initialize(); }
+  void TearDown() override { cros_healthd::FakeCrosHealthd::Shutdown(); }
+
+  crosapi::TelemetryDiagnosticRoutinesServiceProxy* routines_service() const {
+    return remote_routines_service_.get();
+  }
+
+  mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineObserver>
+  GetEmptyObserver() {
+    return mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineObserver>();
+  }
+
+ protected:
+  void FlushForTesting() {
+    remote_routines_service_.FlushForTesting();
+    cros_healthd::FakeCrosHealthd::Get()->FlushRoutineServiceForTesting();
+  }
+
+  void ResetDiagnosticsRoutinesService() { routines_service_.reset(); }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+
+  // Remote which is usually used by code in Lacros to call into Ash.
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutinesService>
+      remote_routines_service_;
+  // Ash-side implementation of the interface.
+  std::unique_ptr<crosapi::TelemetryDiagnosticRoutinesService>
+      routines_service_{TelemetryDiagnosticsRoutineServiceAsh::Factory::Create(
+          remote_routines_service_.BindNewPipeAndPassReceiver())};
+  mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
+};
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  FlushForTesting();
+
+  EXPECT_TRUE(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument));
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, OnCrosapiDisconnectControl) {
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+
+  base::test::TestFuture<void> future;
+  fake_controller->GetReceiver()->set_disconnect_handler(future.GetCallback());
+
+  control_remote.reset();
+
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest,
+       OnCrosHealthdDisconnectControl) {
+  constexpr uint32_t kReason = 123;
+  constexpr char kMsg[] = "test";
+
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+
+  base::test::TestFuture<uint32_t, const std::string&> future;
+  control_remote.set_disconnect_with_reason_handler(future.GetCallback());
+
+  fake_controller->GetReceiver()->ResetWithReason(kReason, kMsg);
+
+  FlushForTesting();
+
+  ASSERT_TRUE(future.Wait());
+  auto [actual_reason, actual_msg] = future.Take();
+  EXPECT_EQ(actual_reason, kReason);
+  EXPECT_EQ(actual_msg, kMsg);
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, OnCrosapiDisconnectObserver) {
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+  TestRoutineObserver observer;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    observer.GetPendingRemote());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+  ASSERT_TRUE(fake_controller->GetObserver());
+
+  base::test::TestFuture<void> future;
+  fake_controller->GetObserver()->set_disconnect_handler(future.GetCallback());
+
+  observer.Reset();
+
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest,
+       OnCrosHealthdDisconnectObserver) {
+  TestRoutineObserver observer;
+
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    observer.GetPendingRemote());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+  ASSERT_TRUE(fake_controller->GetObserver());
+
+  base::test::TestFuture<void> future;
+  observer.GetReceiver().set_disconnect_handler(future.GetCallback());
+
+  fake_controller->GetObserver()->reset();
+
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest,
+       OnTelemetryDiagnosticsServiceAshDestroyed) {
+  TestRoutineObserver observer;
+
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    observer.GetPendingRemote());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+  ASSERT_TRUE(fake_controller->GetObserver());
+
+  base::test::TestFuture<void> crosapi_control;
+  base::test::TestFuture<void> crosapi_observer;
+  base::test::TestFuture<void> cros_healthd_control;
+  base::test::TestFuture<void> cros_healthd_observer;
+
+  control_remote.set_disconnect_handler(crosapi_control.GetCallback());
+  observer.GetReceiver().set_disconnect_handler(crosapi_observer.GetCallback());
+  fake_controller->GetReceiver()->set_disconnect_handler(
+      cros_healthd_control.GetCallback());
+  fake_controller->GetObserver()->set_disconnect_handler(
+      cros_healthd_observer.GetCallback());
+
+  ResetDiagnosticsRoutinesService();
+
+  FlushForTesting();
+
+  EXPECT_TRUE(crosapi_control.Wait());
+  EXPECT_TRUE(crosapi_observer.Wait());
+  EXPECT_TRUE(cros_healthd_control.Wait());
+  EXPECT_TRUE(cros_healthd_observer.Wait());
+}
+
+}  // namespace ash

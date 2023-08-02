@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_TELEMETRY_DIAGNOSTIC_ROUTINE_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_TELEMETRY_DIAGNOSTIC_ROUTINE_SERVICE_ASH_H_
 
-#include "chrome/browser/ash/telemetry_extension/routines/routine_events_forwarder.h"
+#include <memory>
+
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/containers/flat_set.h"
+#include "chrome/browser/ash/telemetry_extension/routines/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,6 +23,28 @@ namespace ash {
 class TelemetryDiagnosticsRoutineServiceAsh
     : public crosapi::mojom::TelemetryDiagnosticRoutinesService {
  public:
+  // Factory for creating instances of `TelemetryDiagnosticsRoutineServiceAsh`.
+  // Provides a method for setting a test instance.
+  class Factory {
+   public:
+    static std::unique_ptr<crosapi::mojom::TelemetryDiagnosticRoutinesService>
+    Create(mojo::PendingReceiver<
+           crosapi::mojom::TelemetryDiagnosticRoutinesService> receiver);
+
+    static void SetForTesting(Factory* test_factory);
+
+    virtual ~Factory();
+
+   protected:
+    virtual std::unique_ptr<crosapi::mojom::TelemetryDiagnosticRoutinesService>
+    CreateInstance(
+        mojo::PendingReceiver<
+            crosapi::mojom::TelemetryDiagnosticRoutinesService> receiver) = 0;
+
+   private:
+    static Factory* test_factory_;
+  };
+
   TelemetryDiagnosticsRoutineServiceAsh();
   TelemetryDiagnosticsRoutineServiceAsh(
       const TelemetryDiagnosticsRoutineServiceAsh&) = delete;
@@ -39,6 +65,14 @@ class TelemetryDiagnosticsRoutineServiceAsh
           observer) override;
 
  private:
+  // Called when a routine controller or observer connection is closed. This
+  // removes the controller / observer from our list.
+  void OnConnectionClosed(SelfOwnedMojoProxyInterface* closed_connection);
+
+  // The routine controls and observers created for each running routine.
+  base::flat_set<base::raw_ptr<SelfOwnedMojoProxyInterface, ExperimentalAsh>>
+      routine_controls_and_observers_;
+
   // Support any number of connections.
   mojo::ReceiverSet<crosapi::mojom::TelemetryDiagnosticRoutinesService>
       receivers_;

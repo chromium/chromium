@@ -145,6 +145,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Set the result for a call to `IsEventSupported`.
   void SetIsEventSupportedResponseForTesting(mojom::SupportStatusPtr& result);
 
+  // Flushes the service provider for routines.
+  void FlushRoutineServiceForTesting();
+
   // Gets the `FakeRoutineController` for a certain type of routine. The
   // returned object allows for setting expectations in tests and accessing
   // certain properties that might change during tests. If there is no

@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_ROUTINE_EVENTS_FORWARDER_H_
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -26,12 +29,19 @@ namespace ash {
 class CrosHealthdRoutineEventsForwarder
     : public cros_healthd::mojom::RoutineObserver {
  public:
-  CrosHealthdRoutineEventsForwarder();
+  explicit CrosHealthdRoutineEventsForwarder(
+      mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
+          observer);
   CrosHealthdRoutineEventsForwarder(const CrosHealthdRoutineEventsForwarder&) =
       delete;
   CrosHealthdRoutineEventsForwarder& operator=(
       const CrosHealthdRoutineEventsForwarder&) = delete;
   ~CrosHealthdRoutineEventsForwarder() override;
+
+  mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineObserver>& GetRemote();
+
+ private:
+  mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineObserver> remote_;
 };
 
 }  // namespace ash

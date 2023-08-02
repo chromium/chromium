@@ -4,12 +4,32 @@
 
 #include "chrome/browser/ash/telemetry_extension/routines/routine_events_forwarder.h"
 
+#include <utility>
+
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
 namespace ash {
 
-CrosHealthdRoutineEventsForwarder::CrosHealthdRoutineEventsForwarder() =
-    default;
+namespace {
+
+namespace crosapi = crosapi::mojom;
+namespace healthd = cros_healthd::mojom;
+
+}  // namespace
+
+CrosHealthdRoutineEventsForwarder::CrosHealthdRoutineEventsForwarder(
+    mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineObserver>
+        pending_remote)
+    : remote_(std::move(pending_remote)) {}
 
 CrosHealthdRoutineEventsForwarder::~CrosHealthdRoutineEventsForwarder() =
     default;
+
+mojo::Remote<crosapi::TelemetryDiagnosticRoutineObserver>&
+CrosHealthdRoutineEventsForwarder::GetRemote() {
+  return remote_;
+}
 
 }  // namespace ash
