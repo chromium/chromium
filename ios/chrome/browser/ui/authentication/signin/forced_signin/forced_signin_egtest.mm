@@ -1271,4 +1271,18 @@ void OpenGoogleServicesSettings() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that the Forced SignIn screen cannot be dismissed by the user swiping
+// down on the view, as some other signin screens can be dismissed.
+- (void)testSignInScreenCannotBeDismissedBySwipe {
+  // Verify the signin screen appears.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_notNil()];
+  // Swipe to dismiss the signin screen.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Verify that the signin screen is still there.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_notNil()];
+}
+
 @end
