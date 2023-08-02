@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iterator>
 #include <list>
 #include <memory>
 #include <tuple>
@@ -181,6 +182,16 @@ const std::list<ash::ClipboardHistoryItem>& GetClipboardItems() {
   return GetClipboardHistoryController()->history()->GetItems();
 }
 
+// Returns the clipboard history item at the specified `index`, which is assumed
+// to exist in the clipboard history list.
+const ash::ClipboardHistoryItem& GetClipboardItemAt(size_t index) {
+  const auto& items = GetClipboardItems();
+  CHECK_LT(index, items.size());
+  auto items_iter = items.begin();
+  std::advance(items_iter, index);
+  return *items_iter;
+}
+
 gfx::Rect GetClipboardHistoryMenuBoundsInScreen() {
   return GetClipboardHistoryController()->GetMenuBoundsInScreenForTest();
 }
@@ -270,6 +281,10 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
         delete_button->GetTooltipText(delete_button->bounds().CenterPoint()),
         l10n_util::GetStringUTF16(
             IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT));
+    EXPECT_EQ(
+        delete_button->GetAccessibleName(),
+        l10n_util::GetStringFUTF16(IDS_CLIPBOARD_HISTORY_DELETE_ITEM_TEXT,
+                                   GetClipboardItemAt(index).display_text()));
     GetEventGenerator()->ClickLeftButton();
   }
 

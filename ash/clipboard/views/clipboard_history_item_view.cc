@@ -471,7 +471,8 @@ std::unique_ptr<views::View> ClipboardHistoryItemView::CreateDeleteButton() {
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
       .AddChild(views::Builder<views::Button>(
-                    std::make_unique<ClipboardHistoryDeleteButton>(this))
+                    std::make_unique<ClipboardHistoryDeleteButton>(
+                        this, item->display_text()))
                     .SetProperty(views::kMarginsKey,
                                  GetDeleteButtonMargins(item->display_format()))
                     .CopyAddressTo(&delete_button_))

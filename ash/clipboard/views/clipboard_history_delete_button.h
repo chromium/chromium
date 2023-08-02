@@ -21,7 +21,8 @@ class ClipboardHistoryDeleteButton : public CloseButton {
  public:
   METADATA_HEADER(ClipboardHistoryDeleteButton);
 
-  explicit ClipboardHistoryDeleteButton(ClipboardHistoryItemView* listener);
+  ClipboardHistoryDeleteButton(ClipboardHistoryItemView* listener,
+                               const std::u16string& item_text);
   ClipboardHistoryDeleteButton(const ClipboardHistoryDeleteButton& rhs) =
       delete;
   ClipboardHistoryDeleteButton& operator=(
