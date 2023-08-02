@@ -27,8 +27,9 @@ import java.util.LinkedHashSet;
  *     }
  *
  *     public static void setMyClassForTesting(MyClass myClassObj) {
+ *         var oldInstance = sInstance
  *         sInstance = myClassObj;
- *         ResettersForTesting.register(() -> sInstance = null);
+ *         ResettersForTesting.register(() -> sInstance = oldInstance);
  *     }
  * }
  * </code>
@@ -41,11 +42,7 @@ import java.util.LinkedHashSet;
  *     private static Foo sFooForTesting;
  *
  *     public void doThing() {
- *         Foo foo;
- *         if (sFooForTesting != null) {
- *             foo = sFooForTesting;
- *         } else {*             foo = new FooImpl();
- *         }
+ *         Foo foo = sFooForTesting != null ? sFooForTesting : new FooImpl();
  *         foo.doItsThing();
  *     }
  *
