@@ -202,6 +202,15 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "Hashed descriptions of the form and its fields. User data is not "
             "sent."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//components/autofill/OWNERS"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-07-31"
         }
         policy {
           cookies_allowed: NO
@@ -210,9 +219,15 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "fill out web forms in a single click.' in Chromium's settings "
             "under 'Passwords and forms'. The feature is enabled by default."
           chrome_policy {
-            AutoFillEnabled {
+            AutofillCreditCardEnabled {
                 policy_options {mode: MANDATORY}
-                AutoFillEnabled: false
+                AutofillCreditCardEnabled: false
+            }
+          }
+          chrome_policy {
+            AutofillAddressEnabled {
+                policy_options {mode: MANDATORY}
+                AutofillAddressEnabled: false
             }
           }
         })");
@@ -236,6 +251,15 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           "data given to each field, if recognized from the user's "
           "profile(s). User data is not sent."
         destination: GOOGLE_OWNED_SERVICE
+        internal {
+          contacts {
+            owners: "//components/autofill/OWNERS"
+          }
+        }
+        user_data {
+          type: NONE
+        }
+        last_reviewed: "2023-07-31"
       }
       policy {
         cookies_allowed: NO
@@ -244,9 +268,15 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           "fill out web forms in a single click.' in Chromium's settings "
           "under 'Passwords and forms'. The feature is enabled by default."
         chrome_policy {
-          AutoFillEnabled {
+          AutofillCreditCardEnabled {
               policy_options {mode: MANDATORY}
-              AutoFillEnabled: false
+              AutofillCreditCardEnabled: false
+          }
+        }
+        chrome_policy {
+          AutofillAddressEnabled {
+              policy_options {mode: MANDATORY}
+              AutofillAddressEnabled: false
           }
         }
       })");
