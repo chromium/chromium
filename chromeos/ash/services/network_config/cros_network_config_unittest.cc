@@ -45,6 +45,7 @@
 #include "chromeos/ash/services/network_config/test_apn_data.h"
 #include "chromeos/ash/services/network_config/test_network_configuration_observer.h"
 #include "chromeos/components/onc/onc_utils.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/onc/onc_constants.h"
@@ -1057,6 +1058,26 @@ class CrosNetworkConfigTest : public testing::Test {
     histogram_tester_.ExpectBucketCount(
         CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
         ApnTypes::kDefaultAndAttach, count.num_disable_type_default_and_attach);
+  }
+
+  void AssertCellularAllowTextMessages(const std::string& guid,
+                                       absl::optional<bool> expected_value) {
+    mojom::ManagedPropertiesPtr properties = GetManagedProperties(guid);
+
+    ASSERT_TRUE(properties);
+    ASSERT_EQ(guid, properties->guid);
+    ASSERT_TRUE(properties->type_properties->is_cellular());
+    if (expected_value.has_value()) {
+      ASSERT_TRUE(
+          properties->type_properties->get_cellular()->allow_text_messages);
+      // TODO(b/293432140)  Add checks for policy value along with policy source
+      // when they are in effect.
+      EXPECT_EQ(expected_value, properties->type_properties->get_cellular()
+                                    ->allow_text_messages->active_value);
+    } else {
+      EXPECT_FALSE(
+          properties->type_properties->get_cellular()->allow_text_messages);
+    }
   }
 
   NetworkHandlerTestHelper* helper() { return helper_.get(); }
@@ -3038,6 +3059,77 @@ TEST_F(CrosNetworkConfigTest, AllowRoaming) {
   ASSERT_TRUE(properties->type_properties->is_cellular());
   ASSERT_TRUE(
       properties->type_properties->get_cellular()->allow_roaming->active_value);
+}
+
+TEST_F(CrosNetworkConfigTest,
+       AllowTextMessagesWithSuppressTextMessagesFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSuppressTextMessages);
+
+  // When never set, allow_text_messages will be true.
+  AssertCellularAllowTextMessages(kCellularGuid, /*expected_value=*/true);
+
+  // When text message state is set to false, the value will be updated to
+  // false.
+  auto config = mojom::ConfigProperties::New();
+  auto cellular_config = mojom::CellularConfigProperties::New();
+  auto new_text_message_state = mojom::TextMessagesAllowState::New();
+
+  new_text_message_state->allow_text_messages = false;
+  cellular_config->text_message_allow_state = std::move(new_text_message_state);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+  ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
+  AssertCellularAllowTextMessages(kCellularGuid, /*expected_value=*/false);
+
+  // When text message state is undefined, this will not update the last saved
+  // value of false.
+  config = mojom::ConfigProperties::New();
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      mojom::CellularConfigProperties::New());
+  ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
+  AssertCellularAllowTextMessages(kCellularGuid, /*expected_value=*/false);
+
+  // When text message state is set to true, the value will be updated to true.
+  config = mojom::ConfigProperties::New();
+  cellular_config = mojom::CellularConfigProperties::New();
+  new_text_message_state = mojom::TextMessagesAllowState::New();
+
+  new_text_message_state->allow_text_messages = true;
+  cellular_config->text_message_allow_state = std::move(new_text_message_state);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+
+  ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
+  AssertCellularAllowTextMessages(kCellularGuid, /*expected_value=*/true);
+
+  // When text message state is undefined, this will not update the last saved
+  // value of true.
+  config = mojom::ConfigProperties::New();
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      mojom::CellularConfigProperties::New());
+  ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
+  AssertCellularAllowTextMessages(kCellularGuid, /*expected_value=*/true);
+}
+
+TEST_F(CrosNetworkConfigTest,
+       AllowTextMessagesWithSuppressTextMessagesFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSuppressTextMessages);
+
+  // When never set, this will return undefined.
+  AssertCellularAllowTextMessages(kCellularGuid,
+                                  /*expected_value=*/absl::nullopt);
+
+  // When set to any value, will still return undefined.
+  auto config = mojom::ConfigProperties::New();
+  auto cellular_config = mojom::CellularConfigProperties::New();
+  auto new_text_message_state = mojom::TextMessagesAllowState::New();
+
+  new_text_message_state->allow_text_messages = true;
+  cellular_config->text_message_allow_state = std::move(new_text_message_state);
+  AssertCellularAllowTextMessages(kCellularGuid,
+                                  /*expected_value=*/absl::nullopt);
 }
 
 TEST_F(CrosNetworkConfigTest, ConfigureNetwork) {

@@ -1725,7 +1725,8 @@ class SettingsInternetDetailPageElement extends
     }
     const config = this.getDefaultConfigProperties_();
     const apn = event.detail;
-    config.typeConfig.cellular = {apn, roaming: undefined};
+    config.typeConfig
+        .cellular = {apn, roaming: undefined, textMessageAllowState: undefined};
     this.setMojoNetworkProperties_(config);
   }
 

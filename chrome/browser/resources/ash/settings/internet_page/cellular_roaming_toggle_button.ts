@@ -104,6 +104,7 @@ class CellularRoamingToggleButtonElement extends
         allowRoaming: this.isRoamingAllowedForNetwork_,
       },
       apn: undefined,
+      textMessageAllowState: undefined,
     };
     this.networkConfig_.setProperties(this.managedProperties.guid, config)
         .then(response => {

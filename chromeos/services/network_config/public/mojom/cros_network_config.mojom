@@ -689,6 +689,7 @@ struct ManagedCellularProperties {
   // Note: |sim_locked| field is not part of ONC spec.
   bool sim_locked = false;
   ManagedBoolean? allow_roaming;
+  ManagedBoolean? allow_text_messages;
   ManagedApnList? apn_list;
   ManagedBoolean? auto_connect;
   // List of user-entered custom APN entries. Note: This field is not
@@ -958,6 +959,10 @@ struct WireGuardConfigProperties {
   array<WireGuardPeerProperties>? peers;
 };
 
+struct TextMessagesAllowState {
+  bool allow_text_messages;
+};
+
 // Only one of {Cellular|Ethernet|VPN|Wifi}ConfigProperties is allowed.
 // TODO(stevenjb): Make these a union.
 struct CellularConfigProperties {
@@ -967,6 +972,10 @@ struct CellularConfigProperties {
   // If not provided the default allow_roaming behavior will be used for the
   // network.
   RoamingProperties? roaming;
+
+  // If not provided the existing user/policy set behavior
+  // text_message_allow_state will be used.
+  TextMessagesAllowState? text_message_allow_state;
 };
 
 struct EthernetConfigProperties {
