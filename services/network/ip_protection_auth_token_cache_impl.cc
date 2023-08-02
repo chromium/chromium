@@ -19,10 +19,10 @@ namespace {
 // modifying the consumers of the API.
 
 // Size of a "batch" of tokens to request in one attempt.
-const int kBatchSize = 1024;
+const int kBatchSize = 64;
 
 // Cache size under which we will request new tokens.
-const int kCacheLowWaterMark = 256;
+const int kCacheLowWaterMark = 16;
 
 // Additional time beyond which the token must be valid to be considered
 // not "expired" by `RemoveExpiredTokens`.

@@ -16,7 +16,7 @@ namespace network {
 
 namespace {
 
-const int kExpectedBatchSize = 1024;
+const int kExpectedBatchSize = 64;
 const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);
 constexpr char kGetAuthTokenResultHistogram[] =
     "NetworkService.IpProtection.GetAuthTokenResult";
