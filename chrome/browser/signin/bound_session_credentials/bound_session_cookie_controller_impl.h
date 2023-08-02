@@ -85,13 +85,12 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
 
   std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;
+  std::unique_ptr<SessionBindingHelper> session_binding_helper_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
 
   std::vector<base::OnceClosure> resume_blocked_requests_;
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer cookie_refresh_timer_;
-
-  std::unique_ptr<SessionBindingHelper> session_binding_helper_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;
