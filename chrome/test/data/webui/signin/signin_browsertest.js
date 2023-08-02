@@ -125,86 +125,6 @@ GEN('#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)');
 
 /**
  * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_creation_flow/profile_type_choice.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var ProfileTypeChoiceTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_type_choice_test.js';
-  }
-};
-
-TEST_F('ProfileTypeChoiceTest', 'Buttons', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_picker_app.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var ProfilePickerAppTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_picker_app_test.js';
-  }
-};
-
-TEST_F('ProfilePickerAppTest', 'All', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_picker_main_view.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var ProfilePickerMainViewTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_picker_main_view_test.js';
-  }
-};
-
-TEST_F('ProfilePickerMainViewTest', 'All', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_card_menu.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var ProfileCardMenuTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_card_menu_test.js';
-  }
-};
-
-TEST_F('ProfileCardMenuTest', 'All', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_switch.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var ProfileSwitchTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_switch_test.js';
-  }
-};
-
-TEST_F('ProfileSwitchTest', 'All', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for
  * chrome/browser/resources/signin/profile_customization/profile_customization_app.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
@@ -234,21 +154,3 @@ var SigninEnterpriseProfileWelcomeTest = class extends SigninBrowserTest {
 TEST_F('SigninEnterpriseProfileWelcomeTest', 'Dialog', function() {
   mocha.run();
 });
-
-GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
-/**
- * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_creation_flow/account_selection_lacros.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var AccountSelectionLacrosTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/account_selection_lacros_test.js';
-  }
-};
-
-TEST_F('AccountSelectionLacrosTest', 'All', function() {
-  mocha.run();
-});
-GEN('#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)');

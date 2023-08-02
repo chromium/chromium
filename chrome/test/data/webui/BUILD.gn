@@ -68,7 +68,10 @@ source_set("browser_tests") {
   }
 
   if (!is_chromeos_ash) {
-    sources += [ "intro/intro_browsertest.cc" ]
+    sources += [
+      "intro/intro_browsertest.cc",
+      "signin/profile_picker_browsertest.cc",
+    ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
