@@ -4,10 +4,10 @@
 
 #include "ash/system/unified/tasks_bubble_view.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
@@ -42,7 +42,6 @@ constexpr int kMaximumTasks = 5;
 constexpr int kTasksIconRightPadding = 4;
 constexpr int kTasksIconViewSize = 32;
 constexpr int kInteriorGlanceableBubbleMargin = 16;
-constexpr auto kHeaderViewMargins = gfx::Insets::TLBR(0, 0, 16, 0);
 constexpr auto kAddNewTaskButtonMargins = gfx::Insets::TLBR(0, 0, 16, 0);
 
 constexpr char kTasksManagementPage[] =
@@ -97,7 +96,9 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1));
-  tasks_header_view_->SetProperty(views::kMarginsKey, kHeaderViewMargins);
+
+  progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   task_items_container_view_ = AddChildView(std::make_unique<views::View>());
   task_items_container_view_->SetID(
@@ -191,6 +192,8 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
     return;
   }
 
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
+
   GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
@@ -201,6 +204,8 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
 
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       ui::ListModel<GlanceablesTask>* tasks) {
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+
   const int old_tasks_shown = num_tasks_shown_;
   num_tasks_shown_ = 0;
   int num_tasks = 0;

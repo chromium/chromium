@@ -22,6 +22,7 @@ class LabelButton;
 namespace ash {
 
 class GlanceablesListFooterView;
+class GlanceablesProgressBarView;
 class TasksComboboxModel;
 
 // 'TasksBubbleView' uses nested `FlexLayoutView`s to layout the tasks bubble.
@@ -30,6 +31,9 @@ class TasksComboboxModel;
 // |`TasksBubbleView`                                              |
 // | +-----------------------------------------------------------+ |
 // | |'tasks_header_view_'                                       | |
+// | +-----------------------------------------------------------+ |
+// | +-----------------------------------------------------------+ |
+// | |'progress_bar_'                                            | |
 // | +-----------------------------------------------------------+ |
 // | +-----------------------------------------------------------+ |
 // | |'task_items_container_view_'                               | |
@@ -104,6 +108,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   raw_ptr<views::LabelButton, ExperimentalAsh> add_new_task_button_ = nullptr;
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
+  raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
 
   base::WeakPtrFactory<TasksBubbleView> weak_ptr_factory_{this};
 };

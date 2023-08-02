@@ -10,6 +10,7 @@
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -33,8 +34,6 @@
 
 namespace ash {
 namespace {
-
-constexpr int kSpacingAboveListContainerView = 16;
 
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 
@@ -79,6 +78,9 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   // TODO(b:283370907): Implement accessibility behavior.
   combo_box_view_->SetTooltipTextAndAccessibleName(u"Assignment list selector");
 
+  progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+
   list_container_view_ = AddChildView(std::make_unique<views::View>());
   list_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
@@ -86,9 +88,6 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   list_container_view_->layer()->SetFillsBoundsOpaquely(false);
   list_container_view_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(16));
-  list_container_view_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(kSpacingAboveListContainerView, 0, 0, 0));
   auto* layout =
       list_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
@@ -115,6 +114,8 @@ void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void ClassroomBubbleBaseView::OnGetAssignments(
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+
   const size_t old_item_count = list_container_view_->children().size();
   list_container_view_->RemoveAllChildViews();
 

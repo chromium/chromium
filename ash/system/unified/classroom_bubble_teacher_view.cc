@@ -10,6 +10,7 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -125,6 +126,8 @@ void ClassroomBubbleTeacherView::SelectedAssignmentListChanged() {
 
   // Cancel any old pending assignment callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
+
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
 
   auto callback = base::BindOnce(&ClassroomBubbleTeacherView::OnGetAssignments,
                                  weak_ptr_factory_.GetWeakPtr());

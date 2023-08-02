@@ -29,6 +29,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -123,6 +124,11 @@ class ClassroomBubbleViewTest : public AshTestBase {
   views::LabelButton* GetListFooterSeeAllButton() const {
     return views::AsViewClass<views::LabelButton>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
+  }
+
+  const views::ProgressBar* GetProgressBar() const {
+    return views::AsViewClass<views::ProgressBar>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
  protected:
@@ -375,6 +381,40 @@ TEST_F(ClassroomBubbleTeacherViewTest, OpensClassroomUrlForListItem) {
   EXPECT_CALL(classroom_client_,
               OpenUrl(GURL("https://classroom.google.com/test-link")));
   LeftClickOn(GetListContainerView()->children().at(0));
+}
+
+TEST_F(ClassroomBubbleStudentViewTest, ShowsProgressBar) {
+  EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
+      .WillOnce([&](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
+        // Progress bar is visible before replying to pending request.
+        EXPECT_TRUE(GetProgressBar()->GetVisible());
+
+        std::move(cb).Run({});
+
+        // Progress bar is hidden after replying to pending request.
+        EXPECT_FALSE(GetProgressBar()->GetVisible());
+      });
+
+  ASSERT_TRUE(GetProgressBar());
+  ASSERT_TRUE(GetComboBoxView());
+  GetComboBoxView()->MenuSelectionAt(3);
+}
+
+TEST_F(ClassroomBubbleTeacherViewTest, ShowsProgressBar) {
+  EXPECT_CALL(classroom_client_, GetGradedTeacherAssignments(_))
+      .WillOnce([&](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
+        // Progress bar is visible before replying to pending request.
+        EXPECT_TRUE(GetProgressBar()->GetVisible());
+
+        std::move(cb).Run({});
+
+        // Progress bar is hidden after replying to pending request.
+        EXPECT_FALSE(GetProgressBar()->GetVisible());
+      });
+
+  ASSERT_TRUE(GetProgressBar());
+  ASSERT_TRUE(GetComboBoxView());
+  GetComboBoxView()->MenuSelectionAt(3);
 }
 
 }  // namespace ash

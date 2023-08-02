@@ -22,6 +22,7 @@ class ComboboxModel;
 namespace ash {
 
 class GlanceablesListFooterView;
+class GlanceablesProgressBarView;
 struct GlanceablesClassroomAssignment;
 
 class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
@@ -56,6 +57,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
   raw_ptr<views::View, ExperimentalAsh> list_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
+  raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
 
   base::WeakPtrFactory<ClassroomBubbleBaseView> weak_ptr_factory_{this};
 };

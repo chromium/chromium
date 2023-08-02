@@ -15,6 +15,9 @@ enum class GlanceablesViewId {
   kListFooterItemsCountLabel,
   kListFooterSeeAllButton,
 
+  // `GlanceablesProgressBarView`.
+  kProgressBar,
+
   // `ClassroomBubbleBaseView`.
   kClassroomBubbleComboBox,
   kClassroomBubbleListContainer,
