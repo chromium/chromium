@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Checkout `browser-automation-bot/update-browser-version` if exits
+        run: |
+          (git ls-remote --exit-code --heads origin refs/heads/browser-automation-bot/update-browser-version &&
+          git checkout browser-automation-bot/update-browser-version &&
+          git rebase main) || exit 0
       - name: Set up Node.js
         uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
         with:
