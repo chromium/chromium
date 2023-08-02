@@ -124,6 +124,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Set the pending scale.
   void SetScale(double scale);
 
+  // Commit the pending scale if it was changed. The scale set by SetScale() is
+  // otherwise committed by OnPostWidgetCommit().
+  void CommitPendingScale();
+
   // Sends the request to change the zoom level to the client.
   void ChangeZoomLevel(ZoomChange change);
 
@@ -219,6 +223,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   ash::WideFrameView* wide_frame_for_test() { return wide_frame_.get(); }
 
+  // Exposed for testing. Returns the effective scale as opposed to
+  // |pending_scale_|.
+  double scale() const { return scale_; }
+
   // Used to scale incoming coordinates from the client to DP.
   float GetClientToDpScale() const;
 
@@ -258,6 +266,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   bool OnPreWidgetCommit() override;
   void OnPostWidgetCommit() override;
   void OnSurfaceDestroying(Surface* surface) override;
+  void OnContentSizeChanged(Surface* surface) override;
 
   // Update frame status. This may create (or destroy) a wide frame
   // that spans the full work area width if the surface didn't cover
@@ -291,6 +300,11 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   gfx::Rect GetClientBoundsForWindowBoundsAndWindowState(
       const gfx::Rect& window_bounds,
       chromeos::WindowStateType window_state) const;
+
+  double scale_ = 1.0;
+  // The pending scale is initialized to 0.0 to indicate that the scale is not
+  // yet initialized.
+  double pending_scale_ = 0.0;
 
   uint32_t frame_visible_button_mask_ = 0;
   uint32_t frame_enabled_button_mask_ = 0;
