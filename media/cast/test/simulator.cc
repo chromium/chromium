@@ -68,6 +68,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -91,7 +92,6 @@
 #include "media/cast/test/utility/test_util.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "media/cast/test/utility/video_utility.h"
-#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 
 using media::cast::proto::IPPModel;
 using media::cast::proto::NetworkSimulationModel;
@@ -435,8 +435,7 @@ void RunSimulation(const base::FilePath& source_path,
                                base::BindOnce(&LogAudioOperationalStatus));
   cast_sender->InitializeVideo(
       media_source.get_video_config(),
-      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
       base::BindRepeating(&LogVideoOperationalStatus), base::DoNothing());
   task_runner->RunTasks();
 

@@ -29,6 +29,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "media/base/media.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -44,7 +45,6 @@
 #include "media/cast/test/fake_media_source.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/input_builder.h"
-#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 
 namespace {
 
@@ -292,14 +292,12 @@ int main(int argc, char** argv) {
       media::cast::CastSender::Create(cast_environment, transport_sender.get());
   io_task_executor.task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &media::cast::CastSender::InitializeVideo,
-          base::Unretained(cast_sender.get()),
-          fake_media_source->get_video_config(),
-          std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-              media::mojom::VideoEncoderUseCase::kCastMirroring),
-          base::BindRepeating(&QuitLoopOnInitializationResult),
-          base::DoNothing()));
+      base::BindOnce(&media::cast::CastSender::InitializeVideo,
+                     base::Unretained(cast_sender.get()),
+                     fake_media_source->get_video_config(),
+                     std::make_unique<media::MockVideoEncoderMetricsProvider>(),
+                     base::BindRepeating(&QuitLoopOnInitializationResult),
+                     base::DoNothing()));
   base::RunLoop().Run();  // Wait for video initialization.
   io_task_executor.task_runner()->PostTask(
       FROM_HERE,

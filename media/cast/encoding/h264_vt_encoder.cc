@@ -23,12 +23,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/mac/video_frame_mac.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/common/video_frame_factory.h"
 #include "media/cast/constants.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
@@ -159,7 +159,7 @@ bool H264VideoToolboxEncoder::IsSupported(
 H264VideoToolboxEncoder::H264VideoToolboxEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
-    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb)
     : cast_environment_(cast_environment),
       video_config_(video_config),

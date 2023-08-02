@@ -318,4 +318,12 @@ MockMediaClient::MockMediaClient() = default;
 
 MockMediaClient::~MockMediaClient() = default;
 
+MockVideoEncoderMetricsProvider::MockVideoEncoderMetricsProvider() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+MockVideoEncoderMetricsProvider::~MockVideoEncoderMetricsProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MockDestroy();
+}
 }  // namespace media

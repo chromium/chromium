@@ -10,11 +10,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,8 +168,8 @@ class MockVideoTrackRecorderCallbackInterface
        base::TimeTicks timestamp,
        bool is_key_frame),
       (override));
-  MOCK_METHOD(std::unique_ptr<media::MojoVideoEncoderMetricsProvider>,
-              CreateMojoVideoEncoderMetricsProvider,
+  MOCK_METHOD(std::unique_ptr<media::VideoEncoderMetricsProvider>,
+              CreateVideoEncoderMetricsProvider,
               (),
               (override));
 
@@ -183,10 +183,10 @@ class VideoTrackRecorderTestBase {
   VideoTrackRecorderTestBase()
       : mock_callback_interface_(
             MakeGarbageCollected<MockVideoTrackRecorderCallbackInterface>()) {
-    ON_CALL(*mock_callback_interface_, CreateMojoVideoEncoderMetricsProvider())
-        .WillByDefault(::testing::Invoke(
-            this, &VideoTrackRecorderTestBase::
-                      CreateMockMojoVideoEncoderMetricsProvider));
+    ON_CALL(*mock_callback_interface_, CreateVideoEncoderMetricsProvider())
+        .WillByDefault(
+            ::testing::Invoke(this, &VideoTrackRecorderTestBase::
+                                        CreateMockVideoEncoderMetricsProvider));
   }
 
  protected:
@@ -195,10 +195,9 @@ class VideoTrackRecorderTestBase {
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
-  CreateMockMojoVideoEncoderMetricsProvider() {
-    return std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-        media::mojom::VideoEncoderUseCase::kMediaRecorder);
+  std::unique_ptr<media::VideoEncoderMetricsProvider>
+  CreateMockVideoEncoderMetricsProvider() {
+    return std::make_unique<media::MockVideoEncoderMetricsProvider>();
   }
 
   Persistent<MockVideoTrackRecorderCallbackInterface> mock_callback_interface_;
@@ -470,7 +469,7 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
 }
 
 // Same as VideoEncoding but add the EXPECT_CALL for the
-// MojoVideoEncoderMetricsProvider.
+// VideoEncoderMetricsProvider.
 TEST_P(VideoTrackRecorderTest, CheckMetricsProviderInVideoEncoding) {
   InitializeRecorder(testing::get<0>(GetParam()));
 
@@ -488,9 +487,8 @@ TEST_P(VideoTrackRecorderTest, CheckMetricsProviderInVideoEncoding) {
       MediaVideoCodecProfileFromCodecId(testing::get<0>(GetParam()));
 
   auto metrics_provider =
-      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-          media::mojom::VideoEncoderUseCase::kMediaRecorder);
-  media::MockMojoVideoEncoderMetricsProvider* mock_metrics_provider =
+      std::make_unique<media::MockVideoEncoderMetricsProvider>();
+  media::MockVideoEncoderMetricsProvider* mock_metrics_provider =
       metrics_provider.get();
   int initialize_time = 1;
   if (encode_alpha_channel &&
@@ -501,8 +499,7 @@ TEST_P(VideoTrackRecorderTest, CheckMetricsProviderInVideoEncoding) {
 
   base::RunLoop run_loop1;
   InSequence s;
-  EXPECT_CALL(*mock_callback_interface_,
-              CreateMojoVideoEncoderMetricsProvider())
+  EXPECT_CALL(*mock_callback_interface_, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(::testing::ByMove(std::move(metrics_provider))));
   EXPECT_CALL(*mock_metrics_provider,
               MockInitialize(video_codec_profile, frame_size,
@@ -545,7 +542,7 @@ TEST_P(VideoTrackRecorderTest, CheckMetricsProviderInVideoEncoding) {
   run_loop1.Run();
 
   // Since |encoder_| is destroyed on the encoder sequence checker, it and the
-  // MockMojoVideoEncoderMetricsProvider are asynchronously. It causes the leak
+  // MockVideoEncoderMetricsProvider are asynchronously. It causes the leak
   // mock object, |mock_metrics_provider|. Avoid it by waiting until the
   // mock object is destroyed.
   base::RunLoop run_loop2;

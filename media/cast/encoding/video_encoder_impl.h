@@ -14,7 +14,7 @@
 
 namespace media {
 
-class MojoVideoEncoderMetricsProvider;
+class VideoEncoderMetricsProvider;
 class VideoFrame;
 
 namespace cast {
@@ -34,7 +34,7 @@ class VideoEncoderImpl final : public VideoEncoder {
   VideoEncoderImpl(
       scoped_refptr<CastEnvironment> cast_environment,
       const FrameSenderConfig& video_config,
-      std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb);
 
   VideoEncoderImpl(const VideoEncoderImpl&) = delete;

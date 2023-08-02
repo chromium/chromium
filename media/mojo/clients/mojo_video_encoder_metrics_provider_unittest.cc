@@ -69,8 +69,7 @@ class MojoVideoEncoderMetricsProviderTest : public ::testing::Test {
   mojo::SelfOwnedReceiverRef<mojom::VideoEncoderMetricsProvider>
       mojo_encoder_metrics_receiver_;
 
-  std::unique_ptr<MojoVideoEncoderMetricsProvider>
-      mojo_encoder_metrics_provider_;
+  std::unique_ptr<VideoEncoderMetricsProvider> mojo_encoder_metrics_provider_;
 };
 
 TEST_F(MojoVideoEncoderMetricsProviderTest, CreateAndDestroy) {}

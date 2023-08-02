@@ -11,10 +11,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
-#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
@@ -67,8 +67,7 @@ class H264EncoderFixture : public ::testing::Test {
                                              level_),
             bitrate_) {
     auto metrics_provider =
-        std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-            media::mojom::VideoEncoderUseCase::kMediaRecorder);
+        std::make_unique<media::MockVideoEncoderMetricsProvider>();
     mock_metrics_provider_ = metrics_provider.get();
     encoder_.metrics_provider_ = std::move(metrics_provider);
   }
@@ -140,7 +139,7 @@ class H264EncoderFixture : public ::testing::Test {
   const absl::optional<media::VideoCodecProfile> profile_;
   const absl::optional<uint8_t> level_;
   const uint32_t bitrate_;
-  media::MockMojoVideoEncoderMetricsProvider* mock_metrics_provider_;
+  media::MockVideoEncoderMetricsProvider* mock_metrics_provider_;
   H264Encoder encoder_;
 };
 

@@ -11,9 +11,9 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "media/base/encoder_status.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/gfx/geometry/size.h"
 

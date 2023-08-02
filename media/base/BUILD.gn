@@ -342,6 +342,7 @@ source_set("base") {
     "video_decoder_config.h",
     "video_encoder.cc",
     "video_encoder.h",
+    "video_encoder_metrics_provider.h",
     "video_frame.cc",
     "video_frame.h",
     "video_frame_layout.cc",

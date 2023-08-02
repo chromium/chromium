@@ -6,10 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/cast/encoding/encoding_support.h"
 #include "media/cast/encoding/external_video_encoder.h"
 #include "media/cast/encoding/video_encoder_impl.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "media/cast/encoding/h264_vt_encoder.h"
@@ -21,7 +21,7 @@ namespace media::cast {
 std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
-    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
 // On MacOS and iOS: attempt to use the system VideoToolbox library to

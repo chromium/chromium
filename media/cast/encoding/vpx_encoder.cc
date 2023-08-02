@@ -6,11 +6,11 @@
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
@@ -68,7 +68,7 @@ bool HasSufficientFeedback(
 
 VpxEncoder::VpxEncoder(
     const FrameSenderConfig& video_config,
-    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider)
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider)
     : cast_config_(video_config),
       target_encoder_utilization_(
           video_config.video_codec_params.number_of_encode_threads > 2

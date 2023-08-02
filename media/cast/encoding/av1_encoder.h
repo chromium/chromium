@@ -17,7 +17,7 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
-class MojoVideoEncoderMetricsProvider;
+class VideoEncoderMetricsProvider;
 class VideoFrame;
 }  // namespace media
 
@@ -28,7 +28,7 @@ class Av1Encoder final : public SoftwareVideoEncoder {
  public:
   explicit Av1Encoder(
       const FrameSenderConfig& video_config,
-      std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider);
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider);
 
   ~Av1Encoder() final;
 
@@ -57,7 +57,7 @@ class Av1Encoder final : public SoftwareVideoEncoder {
 
   const double target_encoder_utilization_;
 
-  const std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider_;
+  const std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
 
   // AV1 internal objects.  These are valid for use only while is_initialized()
   // returns true.

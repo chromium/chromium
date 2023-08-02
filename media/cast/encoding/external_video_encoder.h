@@ -21,7 +21,7 @@
 
 namespace media {
 
-class MojoVideoEncoderMetricsProvider;
+class VideoEncoderMetricsProvider;
 
 namespace cast {
 
@@ -47,7 +47,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
   ExternalVideoEncoder(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
-      MojoVideoEncoderMetricsProvider& metrics_provider,
+      VideoEncoderMetricsProvider& metrics_provider,
       const gfx::Size& frame_size,
       FrameId first_frame_id,
       StatusChangeCallback status_change_cb,
@@ -86,7 +86,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
 
   const scoped_refptr<CastEnvironment> cast_environment_;
 
-  base::raw_ref<MojoVideoEncoderMetricsProvider> metrics_provider_;
+  base::raw_ref<VideoEncoderMetricsProvider> metrics_provider_;
 
   // The size of the visible region of the video frames to be encoded.
   const gfx::Size frame_size_;
@@ -109,7 +109,7 @@ class SizeAdaptableExternalVideoEncoder final
   SizeAdaptableExternalVideoEncoder(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
-      std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 

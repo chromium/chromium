@@ -9,9 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/cast/common/sender_encoded_frame.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 
 namespace media {
 namespace cast {
@@ -19,7 +19,7 @@ namespace cast {
 SizeAdaptableVideoEncoderBase::SizeAdaptableVideoEncoderBase(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
-    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb)
     : cast_environment_(cast_environment),
       video_config_(video_config),

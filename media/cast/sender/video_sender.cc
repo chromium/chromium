@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
@@ -23,7 +24,6 @@
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
@@ -110,7 +110,7 @@ VideoSender::VideoSender(
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     CastTransport* const transport_sender,
-    std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+    std::unique_ptr<media::VideoEncoderMetricsProvider>
         encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb)
@@ -132,7 +132,7 @@ VideoSender::VideoSender(
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     std::unique_ptr<openscreen::cast::Sender> sender,
-    std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+    std::unique_ptr<media::VideoEncoderMetricsProvider>
         encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
@@ -162,7 +162,7 @@ VideoSender::VideoSender(
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     std::unique_ptr<FrameSender> sender,
-    std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+    std::unique_ptr<media::VideoEncoderMetricsProvider>
         encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_callback)

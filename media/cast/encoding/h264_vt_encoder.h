@@ -32,7 +32,7 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   H264VideoToolboxEncoder(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
-      std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb);
 
   H264VideoToolboxEncoder(const H264VideoToolboxEncoder&) = delete;
@@ -107,7 +107,7 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   // a frame of a different size, which will cause a compression session reset.
   gfx::Size frame_size_;
 
-  const std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider_;
+  const std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
 
   // Callback used to report initialization status and runtime errors.
   const StatusChangeCallback status_change_cb_;

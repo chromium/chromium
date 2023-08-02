@@ -15,10 +15,10 @@
 #if BUILDFLAG(ENABLE_LIBAOM)
 #include "media/cast/encoding/av1_encoder.h"
 #endif
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/fake_software_video_encoder.h"
 #include "media/cast/encoding/vpx_encoder.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 
 namespace media {
 namespace cast {
@@ -57,7 +57,7 @@ void EncodeVideoFrameOnEncoderThread(
 VideoEncoderImpl::VideoEncoderImpl(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& video_config,
-    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb)
     : cast_environment_(cast_environment) {
   CHECK(cast_environment_->HasVideoThread());

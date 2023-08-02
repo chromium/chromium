@@ -39,7 +39,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace media {
-class MojoVideoEncoderMetricsProvider;
+class VideoEncoderMetricsProvider;
 class VideoFrame;
 }
 
@@ -97,8 +97,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         base::TimeTicks timestamp,
         bool is_key_frame) = 0;
 
-    virtual std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
-    CreateMojoVideoEncoderMetricsProvider() = 0;
+    virtual std::unique_ptr<media::VideoEncoderMetricsProvider>
+    CreateVideoEncoderMetricsProvider() = 0;
 
     // Called on encountering encoder errors.
     virtual void OnVideoEncodingError() = 0;
@@ -167,8 +167,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // on the codec-specific task runner.
     void InitializeEncoder(
         KeyFrameRequestProcessor::Configuration key_frame_config,
-        std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
-            metrics_provider);
+        std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider);
 
     // Start encoding |frame|, returning via |on_encoded_video_cb_|. This
     // call will also trigger an encode configuration upon first frame arrival
@@ -251,7 +250,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     bool awaiting_first_frame_ = true;
     std::vector<uint8_t> resize_buffer_
         ALLOW_DISCOURAGED_TYPE("Avoids conversion when passed to media:: code");
-    std::unique_ptr<media::MojoVideoEncoderMetricsProvider> metrics_provider_;
+    std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider_;
 
     media::VideoFramePool frame_pool_;
   };

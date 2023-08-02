@@ -60,20 +60,12 @@ buildflag_header("buildflags") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "clients/mock_mojo_video_encoder_metrics_provider.cc",
-    "clients/mock_mojo_video_encoder_metrics_provider.h",
-  ]
   public_deps = [
     "//media/mojo/clients",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:test_interfaces",
     "//media/mojo/services",
-  ]
-  deps = [
-    "//testing/gmock",
-    "//ui/gfx:test_support",
   ]
 }
 

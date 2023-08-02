@@ -29,6 +29,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -39,7 +40,6 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/logging/logging_defines.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/h264_parser.h"
 
 namespace {
@@ -636,7 +636,7 @@ class ExternalVideoEncoder::VEAClientImpl final
 ExternalVideoEncoder::ExternalVideoEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
-    MojoVideoEncoderMetricsProvider& metrics_provider,
+    VideoEncoderMetricsProvider& metrics_provider,
     const gfx::Size& frame_size,
     FrameId first_frame_id,
     StatusChangeCallback status_change_cb,
@@ -801,7 +801,7 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
 SizeAdaptableExternalVideoEncoder::SizeAdaptableExternalVideoEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
-    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb)
     : SizeAdaptableVideoEncoderBase(cast_environment,

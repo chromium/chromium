@@ -18,10 +18,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -420,7 +420,7 @@ VideoTrackRecorderImpl::Encoder::~Encoder() = default;
 
 void VideoTrackRecorderImpl::Encoder::InitializeEncoder(
     KeyFrameRequestProcessor::Configuration key_frame_config,
-    std::unique_ptr<media::MojoVideoEncoderMetricsProvider> metrics_provider) {
+    std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider) {
   key_frame_processor_.UpdateConfig(key_frame_config);
   metrics_provider_ = std::move(metrics_provider);
   Initialize();
@@ -940,7 +940,7 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 
   CHECK(callback_interface());
   auto metrics_provider =
-      callback_interface()->CreateMojoVideoEncoderMetricsProvider();
+      callback_interface()->CreateVideoEncoderMetricsProvider();
   CHECK(metrics_provider);
   encoder_.emplace(encoding_task_runner, std::move(encoder));
   encoder_.AsyncCall(&Encoder::InitializeEncoder)

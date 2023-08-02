@@ -682,8 +682,8 @@ void MediaRecorderHandler::OnEncodedAudio(
   }
 }
 
-std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
-MediaRecorderHandler::CreateMojoVideoEncoderMetricsProvider() {
+std::unique_ptr<media::VideoEncoderMetricsProvider>
+MediaRecorderHandler::CreateVideoEncoderMetricsProvider() {
   DCHECK(IsMainThread());
   mojo::PendingRemote<media::mojom::VideoEncoderMetricsProvider>
       video_encoder_metrics_provider;

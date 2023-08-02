@@ -8,7 +8,6 @@
 
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
-#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 
@@ -122,8 +121,7 @@ class MediaRecorderEncoderWrapperTest : public ::testing::Test {
             WTF::BindRepeating(&MediaRecorderEncoderWrapperTest::OnError,
                                base::Unretained(this))) {
     auto metrics_provider =
-        std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-            media::mojom::VideoEncoderUseCase::kMediaRecorder);
+        std::make_unique<media::MockVideoEncoderMetricsProvider>();
     mock_metrics_provider_ = metrics_provider.get();
     encoder_wrapper_.metrics_provider_ = std::move(metrics_provider);
 
@@ -192,7 +190,7 @@ class MediaRecorderEncoderWrapperTest : public ::testing::Test {
   media::VideoEncoder::OutputCB output_cb;
 
   media::MockVideoEncoder mock_encoder_;
-  media::MockMojoVideoEncoderMetricsProvider* mock_metrics_provider_;
+  media::MockVideoEncoderMetricsProvider* mock_metrics_provider_;
   MediaRecorderEncoderWrapper encoder_wrapper_;
 };
 

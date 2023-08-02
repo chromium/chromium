@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_encoder_wrapper.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 

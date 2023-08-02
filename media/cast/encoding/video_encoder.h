@@ -18,7 +18,7 @@
 
 namespace media {
 
-class MojoVideoEncoderMetricsProvider;
+class VideoEncoderMetricsProvider;
 
 namespace cast {
 
@@ -41,7 +41,7 @@ class VideoEncoder {
   static std::unique_ptr<VideoEncoder> Create(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
-      std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 

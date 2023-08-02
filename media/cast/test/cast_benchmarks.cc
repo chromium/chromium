@@ -49,6 +49,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -68,7 +69,6 @@
 #include "media/cast/test/utility/test_util.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "media/cast/test/utility/video_utility.h"
-#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -500,8 +500,7 @@ void RunOneBenchmark::Create(const MeasuringPoint& p) {
                                 base::BindOnce(&ExpectAudioSuccess));
   cast_sender_->InitializeVideo(
       video_sender_config_,
-      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
-          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
       base::BindRepeating(&ExpectVideoSuccess), base::DoNothing());
 
   receiver_to_sender_->Initialize(CreateSimplePipe(p),
