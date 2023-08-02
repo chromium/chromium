@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.qrcode.scan_tab;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
 import org.chromium.ui.base.WindowAndroid;
@@ -41,6 +42,11 @@ public class QrCodeScanCoordinator implements QrCodeDialogTab {
     @Override
     public View getView() {
         return mScanView.getView();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !BuildInfo.getInstance().isAutomotive;
     }
 
     @Override

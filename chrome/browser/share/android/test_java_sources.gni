@@ -16,6 +16,7 @@ share_test_java_sources = [
 ]
 
 share_unit_device_javatest_java_sources = [
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialogTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetViewTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContentTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilderTest.java",
