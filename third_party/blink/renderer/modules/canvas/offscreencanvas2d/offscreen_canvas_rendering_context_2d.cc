@@ -377,8 +377,13 @@ String OffscreenCanvasRenderingContext2D::font() const {
 
   if (font_description.Style() == ItalicSlopeValue())
     serialized_font.Append("italic ");
-  if (font_description.Weight() == BoldWeightValue())
+  if (font_description.Weight() == BoldWeightValue()) {
     serialized_font.Append("bold ");
+  } else if (font_description.Weight() != NormalWeightValue()) {
+    int weight_as_int = static_cast<int>((float)font_description.Weight());
+    serialized_font.AppendNumber(weight_as_int);
+    serialized_font.Append(" ");
+  }
   if (font_description.VariantCaps() == FontDescription::kSmallCaps)
     serialized_font.Append("small-caps ");
 
