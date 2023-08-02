@@ -44,7 +44,10 @@ class EventRouter {
       extensions::ExtensionId extension_id,
       crosapi::mojom::TelemetryEventCategoryEnum category);
 
-  // Checks whether an extension has an observation for a certain extension.
+  // Checks whether an extension is observing any event.
+  bool IsExtensionObserving(extensions::ExtensionId extension_id);
+
+  // Checks whether an extension is observing a certain category of event.
   bool IsExtensionObservingForCategory(
       extensions::ExtensionId extension_id,
       crosapi::mojom::TelemetryEventCategoryEnum category);

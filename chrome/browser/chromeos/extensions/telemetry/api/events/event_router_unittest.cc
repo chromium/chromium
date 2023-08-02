@@ -64,8 +64,10 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversForExtension) {
   ASSERT_FALSE(remote_one.is_connected());
   ASSERT_TRUE(remote_two.is_connected());
 
+  EXPECT_FALSE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
   EXPECT_FALSE(GetEventRouter()->IsExtensionObservingForCategory(
       kExtensionIdOne, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
   EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
       kExtensionIdTwo, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 }
@@ -101,6 +103,16 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
   ASSERT_FALSE(remote_one_audio.is_connected());
   ASSERT_TRUE(remote_one_unmapped.is_connected());
   ASSERT_TRUE(remote_two.is_connected());
+
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
+
+  // Reset the last category of extension one.
+  GetEventRouter()->ResetReceiversOfExtensionByCategory(
+      kExtensionIdOne, crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
+
+  EXPECT_FALSE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
 }
 
 }  // namespace chromeos
