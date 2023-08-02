@@ -849,6 +849,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 }
                 return false;
             });
+            menuItem.setIntent(item.intent);
         }
     }
 
