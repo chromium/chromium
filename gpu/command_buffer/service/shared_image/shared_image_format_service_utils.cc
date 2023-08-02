@@ -90,15 +90,43 @@ SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
   }
 }
 
+SkColorType ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format) {
+  CHECK(format.PrefersExternalSampler());
+  auto channel_format = format.channel_format();
+  switch (channel_format) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return format.HasAlpha() ? kRGBA_8888_SkColorType : kRGB_888x_SkColorType;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return kRGBA_1010102_SkColorType;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return kR16G16B16A16_unorm_SkColorType;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return kRGBA_F16_SkColorType;
+  }
+}
+
 GLFormatDesc ToGLFormatDescExternalSampler(viz::SharedImageFormat format) {
-  DCHECK(format.is_multi_plane());
-  DCHECK(format.PrefersExternalSampler());
-  const GLenum ext_format = format.HasAlpha() ? GL_RGBA : GL_RGB;
+  CHECK(format.PrefersExternalSampler());
+  GLenum ext_format = format.HasAlpha() ? GL_RGBA : GL_RGB;
   GLFormatDesc gl_format;
   gl_format.data_type = GL_NONE;
   gl_format.data_format = ext_format;
   gl_format.image_internal_format = ext_format;
-  gl_format.storage_internal_format = ext_format;
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      gl_format.storage_internal_format =
+          format.HasAlpha() ? GL_RGBA8_OES : GL_RGB8_OES;
+      break;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      gl_format.storage_internal_format = GL_RGB10_A2_EXT;
+      break;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      gl_format.storage_internal_format = GL_RGBA16_EXT;
+      break;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      gl_format.storage_internal_format = GL_RGBA16F_EXT;
+      break;
+  }
   gl_format.target = GL_TEXTURE_EXTERNAL_OES;
   return gl_format;
 }

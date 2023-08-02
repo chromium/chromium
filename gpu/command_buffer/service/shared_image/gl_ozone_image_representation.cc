@@ -259,6 +259,8 @@ GLOzoneImageRepresentationShared::CreateTextureHolder(
   gles2::Texture* texture =
       gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
 
+  // TODO(crbug.com/1468989): Make sure these match with corresponding formats
+  // from ToGLFormatDesc{ExternalSampler}.
   GLuint internal_format = np_gl_binding->GetInternalFormat();
   GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
   GLenum gl_type = np_gl_binding->GetDataType();
@@ -288,6 +290,8 @@ GLOzoneImageRepresentationShared::CreateTextureHolderPassthrough(
     return nullptr;
   }
 
+  // TODO(crbug.com/1468989): Make sure these match with corresponding formats
+  // from ToGLFormatDesc{ExternalSampler}.
   GLuint internal_format = np_gl_binding->GetInternalFormat();
   GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
   GLenum gl_type = np_gl_binding->GetDataType();

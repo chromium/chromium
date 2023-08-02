@@ -610,7 +610,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   CHECK(format.is_single_plane() || format.PrefersExternalSampler());
   FulfillForPlane* fulfill = new FulfillForPlane(image_context);
   SkColorType color_type =
-      ToClosestSkColorType(/*gpu_compositing=*/true, format);
+      format.PrefersExternalSampler()
+          ? gpu::ToClosestSkColorTypeExternalSampler(format)
+          : ToClosestSkColorType(/*gpu_compositing=*/true, format);
   if (graphite_recorder_) {
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
         dependency_->gr_context_type(), format, /*plane_index=*/0,

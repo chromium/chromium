@@ -386,7 +386,9 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
     DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
     auto color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+        format.PrefersExternalSampler()
+            ? ToClosestSkColorTypeExternalSampler(format)
+            : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
     return SkImages::BorrowTextureFrom(
         context_state->gr_context(), promise_image_texture()->backendTexture(),
         surface_origin, color_type, alpha_type, sk_color_space,
@@ -612,7 +614,9 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
     CHECK_EQ(static_cast<int>(graphite_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
     auto color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+        format.PrefersExternalSampler()
+            ? ToClosestSkColorTypeExternalSampler(format)
+            : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
     return SkImages::AdoptTextureFrom(recorder, graphite_texture(), color_type,
                                       alpha_type, sk_color_space);
   } else {

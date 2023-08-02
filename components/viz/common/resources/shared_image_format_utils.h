@@ -43,9 +43,9 @@ COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format);
 
-// Returns the closest SkColorType for a given `format` and `plane_index`. For
-// single planar formats (eg. RGBA) the plane_index must be zero and it's
-// equivalent to calling function above.
+// Returns the closest SkColorType for a given `format` that does not prefer
+// external sampler and `plane_index`. For single planar formats (eg. RGBA) the
+// plane_index must be zero and it's equivalent to calling function above.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format,

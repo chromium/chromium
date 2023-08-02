@@ -58,8 +58,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   // on the planes in the PlaneConfig. For individual planes like Y_V_U, U and V
   // are both 8 bit channel formats whereas for Y_UV, the UV plane contains 2
   // channels with each being an 8 bit channel format.
-  // TODO(hitawala): Add a helper function that gets the channel format for UV
-  // plane.
   enum class ChannelFormat : uint8_t {
     k8,   // 8 bit unorm
     k10,  // 10 bit unorm

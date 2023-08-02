@@ -59,6 +59,11 @@ GPU_GLES2_EXPORT SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(
 GPU_GLES2_EXPORT SkYUVAInfo::Subsampling ToSkYUVASubsampling(
     viz::SharedImageFormat format);
 
+// Returns the closest SkColorType for a given multiplanar `format` with
+// external sampler.
+GPU_GLES2_EXPORT SkColorType
+ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format);
+
 // Following functions return the appropriate GL type/format for a
 // SharedImageFormat.
 // Return the GLFormatDesc when using external sampler for a given `format`.
