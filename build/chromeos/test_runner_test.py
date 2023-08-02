@@ -299,6 +299,7 @@ class GTestTest(TestRunnerTest):
           {0}
           chown -R chronos: ../..
           sudo -E -u chronos -- /bin/bash -c \"{1}\"
+          start ui
           """).format(dbus_cmd, core_cmd)
       else:
         expected_device_script += core_cmd + '\n'
