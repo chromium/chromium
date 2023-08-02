@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -137,7 +138,7 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
       absl::optional<int> response = kSuccessUploadCode) {
     EXPECT_CALL(*mock_launcher_, SynchronizePublicKey(_, _))
         .WillOnce(Invoke(
-            [response](const SigningKeyPair& key_pair,
+            [response](scoped_refptr<SigningKeyPair> key_pair,
                        KeyRotationLauncher::SynchronizationCallback callback) {
               std::move(callback).Run(response);
             }));

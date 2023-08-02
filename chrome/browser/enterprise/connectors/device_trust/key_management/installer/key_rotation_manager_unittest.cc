@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -130,13 +131,12 @@ class KeyRotationManagerTest : public testing::Test {
 
   void SetUpOldKey(bool exists = true) {
     if (exists) {
-      auto old_key = std::make_unique<SigningKeyPair>(
+      old_key_pair_ = base::MakeRefCounted<SigningKeyPair>(
           CreateHardwareKey(), BPKUR::CHROME_BROWSER_HW_KEY);
-      old_key_pair_ = old_key.get();
       EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair())
-          .WillOnce(Return(ByMove(std::move(old_key))));
+          .WillOnce(Return(old_key_pair_));
     } else {
-      old_key_pair_ = nullptr;
+      old_key_pair_.reset();
       EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair())
           .WillOnce(Invoke([]() { return nullptr; }));
     }
@@ -149,11 +149,10 @@ class KeyRotationManagerTest : public testing::Test {
 
   void SetUpNewKeyCreation(bool success = true) {
     if (success) {
-      auto new_key = std::make_unique<SigningKeyPair>(
+      new_key_pair_ = base::MakeRefCounted<SigningKeyPair>(
           CreateHardwareKey(), BPKUR::CHROME_BROWSER_HW_KEY);
-      new_key_pair_ = new_key.get();
       EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair())
-          .WillOnce(Return(ByMove(std::move(new_key))));
+          .WillOnce(Return(new_key_pair_));
     } else {
       EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair())
           .WillOnce(Invoke([]() { return nullptr; }));
@@ -212,8 +211,8 @@ class KeyRotationManagerTest : public testing::Test {
   raw_ptr<StrictMock<MockKeyPersistenceDelegate>, DanglingUntriaged>
       mock_persistence_delegate_;
 
-  raw_ptr<SigningKeyPair, DanglingUntriaged> old_key_pair_;
-  raw_ptr<SigningKeyPair, DanglingUntriaged> new_key_pair_;
+  scoped_refptr<SigningKeyPair> old_key_pair_;
+  scoped_refptr<SigningKeyPair> new_key_pair_;
   absl::optional<std::string> captured_upload_body_;
 
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,14 +39,14 @@ class KeyPersistenceDelegate {
   // generated signing key with a trust level of BPKUR::CHROME_BROWSER_HW_KEY
   // if available, or a new EC signing key pair with
   // BPKUR::CHROME_BROWSER_OS_KEY trust level is returned if available.
-  virtual std::unique_ptr<SigningKeyPair> LoadKeyPair() = 0;
+  virtual scoped_refptr<SigningKeyPair> LoadKeyPair() = 0;
 
   // Creates a key pair composed of a hardware-backed signing key and trust
   // level BPKUR::CHROME_BROWSER_HW_KEY pair if available,
   // Otherwise an EC signing key pair with a and trust level
   // BPKUR::CHROME_BROWSER_OS_KEY is created if available. If neither are
   // available, a nullptr is returned.
-  virtual std::unique_ptr<SigningKeyPair> CreateKeyPair() = 0;
+  virtual scoped_refptr<SigningKeyPair> CreateKeyPair() = 0;
 
   // Deletes the signing key in the temporary key storage after a successful
   // key rotation. This method is only overridden in Mac platforms since signing

@@ -43,7 +43,7 @@ class KeyRotationLauncher {
 
   // Verifies if `key_pair`'s public key is known by the management server.
   // Invokes `callback` with the upload code if a request was made.
-  virtual void SynchronizePublicKey(const SigningKeyPair& key_pair,
+  virtual void SynchronizePublicKey(scoped_refptr<SigningKeyPair> key_pair,
                                     SynchronizationCallback callback) = 0;
 };
 

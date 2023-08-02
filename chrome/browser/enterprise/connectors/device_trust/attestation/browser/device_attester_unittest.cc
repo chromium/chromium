@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/device_attester.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -86,7 +87,7 @@ class DeviceAttesterTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
-  std::unique_ptr<SigningKeyPair> test_key_pair_;
+  scoped_refptr<SigningKeyPair> test_key_pair_;
   absl::optional<std::vector<uint8_t>> signature;
   std::string public_key_;
   testing::StrictMock<test::MockDeviceTrustKeyManager> mock_key_manager_;

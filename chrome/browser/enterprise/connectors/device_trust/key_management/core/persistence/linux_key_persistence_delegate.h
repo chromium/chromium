@@ -30,8 +30,8 @@ class LinuxKeyPersistenceDelegate : public KeyPersistenceDelegate {
   bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
-  std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
+  scoped_refptr<SigningKeyPair> LoadKeyPair() override;
+  scoped_refptr<SigningKeyPair> CreateKeyPair() override;
 
  private:
   friend class LinuxKeyPersistenceDelegateTest;
