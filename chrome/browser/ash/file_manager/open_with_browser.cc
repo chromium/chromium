@@ -203,24 +203,26 @@ bool OpenNewTabForHostedOfficeFile(const GURL& url) {
   if (!url_with_query_param.is_valid()) {
     UMA_HISTOGRAM_ENUMERATION(
         file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveErrors::INVALID_ALTERNATE_URL);
+        file_tasks::OfficeDriveOpenErrors::kInvalidAlternateUrl);
     LOG(ERROR) << "Invalid URL";
     return false;
   }
   if (url_with_query_param.host() == "drive.google.com") {
     UMA_HISTOGRAM_ENUMERATION(
         file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveErrors::DRIVE_ALTERNATE_URL);
+        file_tasks::OfficeDriveOpenErrors::kDriveAlternateUrl);
     LOG(ERROR) << "URL was from drive.google.com";
     return false;
   }
   if (url_with_query_param.host() != "docs.google.com") {
     UMA_HISTOGRAM_ENUMERATION(
         file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveErrors::UNEXPECTED_ALTERNATE_URL);
+        file_tasks::OfficeDriveOpenErrors::kUnexpectedAlternateUrl);
     LOG(ERROR) << "URL was not from docs.google.com";
     return false;
   }
+  UMA_HISTOGRAM_ENUMERATION(file_tasks::kDriveErrorMetricName,
+                            file_tasks::OfficeDriveOpenErrors::kSuccess);
 
   return OpenNewTab(url_with_query_param);
 }

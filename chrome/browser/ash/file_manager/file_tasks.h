@@ -157,6 +157,8 @@ TaskType StringToTaskType(const std::string& str);
 std::string TaskTypeToString(TaskType task_type);
 
 constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
+constexpr char kOneDriveErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Errors.OneDrive";
 constexpr char kDriveTaskResultMetricName[] =
     "FileBrowser.OfficeFiles.TaskResult.Drive";
 
@@ -174,17 +176,33 @@ enum class OfficeTaskResult {
 };
 
 // List of UMA enum values for Office File Handler task results for Drive. The
-// enum values must be kept in sync with OfficeDriveErrors in
+// enum values must be kept in sync with OfficeDriveOpenErrors in
 // tools/metrics/histograms/enums.xml.
-enum class OfficeDriveErrors {
-  OFFLINE = 0,
-  DRIVEFS_INTERFACE = 1,
-  TIMEOUT = 2,
-  NO_METADATA = 3,
-  INVALID_ALTERNATE_URL = 4,
-  DRIVE_ALTERNATE_URL = 5,
-  UNEXPECTED_ALTERNATE_URL = 6,
-  kMaxValue = UNEXPECTED_ALTERNATE_URL,
+enum class OfficeDriveOpenErrors {
+  kOffline = 0,
+  kDriveFsInterface = 1,
+  kTimeout = 2,
+  kNoMetadata = 3,
+  kInvalidAlternateUrl = 4,
+  kDriveAlternateUrl = 5,
+  kUnexpectedAlternateUrl = 6,
+  kSuccess = 7,
+  kMaxValue = kSuccess,
+};
+
+// List of UMA enum values for opening Office files from OneDrive, with the
+// MS365 PWA. The enum values must be kept in sync with OfficeOneDriveOpenErrors
+// in tools/metrics/histograms/enums.xml.
+enum class OfficeOneDriveOpenErrors {
+  kSuccess = 0,
+  kOffline = 1,
+  kNoProfile = 2,
+  kNoFileSystemURL = 3,
+  kInvalidFileSystemURL = 4,
+  kGetActionsGenericError = 5,
+  kGetActionsReauthRequired = 6,
+  kGetActionsInvalidUrl = 7,
+  kMaxValue = kGetActionsInvalidUrl,
 };
 
 // UMA metric name that tracks the result of using a MS Office file outside

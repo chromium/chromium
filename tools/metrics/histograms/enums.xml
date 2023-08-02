@@ -77578,7 +77578,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Suggestions popup shown (once)"/>
 </enum>
 
-<enum name="OfficeDriveErrors">
+<enum name="OfficeDriveOpenErrors">
   <int value="0" label="Offline"/>
   <int value="1" label="DriveFs interface not available"/>
   <int value="2" label="Timed out waiting for metadata"/>
@@ -77586,6 +77586,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Empty or invalid alternate URL"/>
   <int value="5" label="Alternate URL does not allow editing"/>
   <int value="6" label="Unexpected alternate URL"/>
+  <int value="7" label="Success"/>
 </enum>
 
 <enum name="OfficeFileHandler">
@@ -77702,6 +77703,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="503" label="503: Service Unavailable"/>
   <int value="504" label="504: Gateway Timeout"/>
   <int value="505" label="505: HTTP Version Not Supported"/>
+</enum>
+
+<enum name="OfficeOneDriveOpenErrors">
+  <int value="0" label="Success"/>
+  <int value="1" label="Offline"/>
+  <int value="2" label="No profile"/>
+  <int value="3" label="No filesystem URL"/>
+  <int value="4" label="Invalid filesystem URL"/>
+  <int value="5" label="getActions: generic error"/>
+  <int value="6" label="getActions: re-authentication required"/>
+  <int value="7" label="getActions: invalid URL"/>
 </enum>
 
 <enum name="OfficeOpenExtensions">

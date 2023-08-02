@@ -145,7 +145,7 @@ void OpenAlreadyHostedDriveUrl(drive::FileError error,
   if (error != drive::FILE_ERROR_OK) {
     UMA_HISTOGRAM_ENUMERATION(
         file_manager::file_tasks::kDriveErrorMetricName,
-        file_manager::file_tasks::OfficeDriveErrors::NO_METADATA);
+        file_manager::file_tasks::OfficeDriveOpenErrors::kNoMetadata);
     LOG(ERROR) << "Drive metadata error: " << error;
     return;
   }
@@ -265,14 +265,26 @@ void OpenFileFromODFS(
              base::File::Error result) {
             Profile* profile = profile_weak_ptr.get();
             if (!profile) {
+              UMA_HISTOGRAM_ENUMERATION(
+                  ::file_manager::file_tasks::kOneDriveErrorMetricName,
+                  ::file_manager::file_tasks::OfficeOneDriveOpenErrors::
+                      kNoProfile);
               return;
             }
             if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
               ShowAccessDeniedNotification(profile);
+              UMA_HISTOGRAM_ENUMERATION(
+                  ::file_manager::file_tasks::kOneDriveErrorMetricName,
+                  ::file_manager::file_tasks::OfficeOneDriveOpenErrors::
+                      kGetActionsReauthRequired);
               return;
             }
             if (result != base::File::Error::FILE_OK) {
               ShowUnableToOpenNotification(profile);
+              UMA_HISTOGRAM_ENUMERATION(
+                  ::file_manager::file_tasks::kOneDriveErrorMetricName,
+                  ::file_manager::file_tasks::OfficeOneDriveOpenErrors::
+                      kGetActionsGenericError);
               return;
             }
             for (const file_system_provider::Action& action : actions) {
@@ -281,6 +293,10 @@ void OpenFileFromODFS(
                 // attribute to be opened using an installed web app.
                 GURL url(action.title);
                 if (!url.is_valid()) {
+                  UMA_HISTOGRAM_ENUMERATION(
+                      ::file_manager::file_tasks::kOneDriveErrorMetricName,
+                      ::file_manager::file_tasks::OfficeOneDriveOpenErrors::
+                          kGetActionsInvalidUrl);
                   return;
                 }
 
@@ -290,6 +306,10 @@ void OpenFileFromODFS(
                                         /*event_flags=*/ui::EF_NONE, url,
                                         apps::LaunchSource::kFromFileManager,
                                         /*window_info=*/nullptr);
+                UMA_HISTOGRAM_ENUMERATION(
+                    ::file_manager::file_tasks::kOneDriveErrorMetricName,
+                    ::file_manager::file_tasks::OfficeOneDriveOpenErrors::
+                        kSuccess);
                 return;
               }
             }
@@ -301,11 +321,18 @@ void OpenFileFromODFS(
 void OpenODFSUrl(Profile* profile, const storage::FileSystemURL& url) {
   if (!url.is_valid()) {
     LOG(ERROR) << "Invalid uploaded file URL";
+    UMA_HISTOGRAM_ENUMERATION(
+        ::file_manager::file_tasks::kOneDriveErrorMetricName,
+        ::file_manager::file_tasks::OfficeOneDriveOpenErrors::kNoFileSystemURL);
     return;
   }
   ash::file_system_provider::util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     LOG(ERROR) << "Path not in FSP";
+    UMA_HISTOGRAM_ENUMERATION(
+        ::file_manager::file_tasks::kOneDriveErrorMetricName,
+        ::file_manager::file_tasks::OfficeOneDriveOpenErrors::
+            kInvalidFileSystemURL);
     return;
   }
   OpenFileFromODFS(profile, parser.file_system(), parser.file_path());

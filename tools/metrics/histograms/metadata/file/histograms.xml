@@ -872,13 +872,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.Errors.Drive" enum="OfficeDriveErrors"
-    expires_after="M124">
+<histogram name="FileBrowser.OfficeFiles.Errors.Drive"
+    enum="OfficeDriveOpenErrors" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Chrome OS File Browser: Errors that can occur when opening an Office file
-    with Google Drive Web.
+    Chrome OS File Browser: Errors that can occur when opening an Office file on
+    Drive with Google Drive Web.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.Errors.OneDrive"
+    enum="OfficeOneDriveOpenErrors" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Errors that can occur when opening an Office file on
+    OneDrive with the Microsoft 365 PWA.
   </summary>
 </histogram>
 

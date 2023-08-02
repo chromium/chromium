@@ -480,14 +480,14 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
   if (!integration_service || !integration_service->IsMounted() ||
       !integration_service->GetDriveFsInterface()) {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveErrors::DRIVEFS_INTERFACE);
+                              OfficeDriveOpenErrors::kDriveFsInterface);
 
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
         ash::office_fallback::FallbackReason::kDriveUnavailable);
   } else if (offline) {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveErrors::OFFLINE);
+                              OfficeDriveOpenErrors::kOffline);
     // TODO(petermarshall): Quick Office vs. other default handler.
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
@@ -508,10 +508,11 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
                              const std::vector<FileSystemURL>& file_urls,
                              gfx::NativeWindow modal_parent) {
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
+    UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName,
+                              OfficeOneDriveOpenErrors::kOffline);
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
         ash::office_fallback::FallbackReason::kOffline);
-    // TODO(petermarshall): UMAs.
   }
 
   return ash::cloud_upload::CloudOpenTask::Execute(
