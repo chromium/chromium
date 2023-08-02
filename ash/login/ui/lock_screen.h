@@ -100,8 +100,7 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   std::unique_ptr<views::Widget> widget_;
 
   // Unowned pointer to the LockContentsView hosted in lock window.
-  raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh>
-      contents_view_ = nullptr;
+  raw_ptr<LockContentsView> contents_view_ = nullptr;
 
   bool is_shown_ = false;
 

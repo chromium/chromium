@@ -3412,8 +3412,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(1);
@@ -3435,8 +3434,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest, ShouldHideKioskDefaultMessage) {
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);
@@ -3458,8 +3456,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);
@@ -3482,8 +3479,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(1);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);
@@ -3507,8 +3503,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);

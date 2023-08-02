@@ -90,6 +90,7 @@ LockScreen::LockScreen(ScreenType type) : type_(type) {
 }
 
 LockScreen::~LockScreen() {
+  contents_view_ = nullptr;
   widget_.reset();
 
   if (Shell::Get()->session_controller()->GetSessionState() !=
