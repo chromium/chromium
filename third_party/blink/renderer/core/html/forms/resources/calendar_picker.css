@@ -242,7 +242,6 @@ body {
 }
 
 .calendar-navigation-button {
-    align-self: center;
     width: 28px;
     height: 24px;
     min-width: 0 !important;
@@ -422,7 +421,6 @@ body {
 }
 
 .clear-button, .today-button {
-  align-self: center;
   background-color: #ffffff;
   border: 1px solid transparent;
   bottom: 12px;
