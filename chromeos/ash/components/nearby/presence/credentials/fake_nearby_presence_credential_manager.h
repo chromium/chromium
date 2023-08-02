@@ -32,8 +32,11 @@ class FakeNearbyPresenceCredentialManager
   void InitializeDeviceMetadata(
       base::OnceClosure on_metadata_initialized_callback) override;
 
+  bool WasUpdateCredentialsCalled() { return was_update_credentials_called_; }
+
  private:
   bool is_registered_ = true;
+  bool was_update_credentials_called_ = false;
 };
 
 }  // namespace ash::nearby::presence

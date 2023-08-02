@@ -51,7 +51,8 @@ class NearbyPresenceServiceImpl
       ScanDelegate* scan_delegate,
       base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
           on_start_scan_callback) override;
-  void Initialize() override;
+  void Initialize(base::OnceClosure on_initialized_callback) override;
+  void UpdateCredentials() override;
 
  private:
   void OnScanStarted(
@@ -75,8 +76,10 @@ class NearbyPresenceServiceImpl
   void OnDeviceLost(mojom::PresenceDevicePtr device) override;
 
   void OnCredentialManagerInitialized(
+      base::OnceClosure on_initialized_callback,
       std::unique_ptr<NearbyPresenceCredentialManager>
           initialized_credential_manager);
+  void UpdateCredentialsAfterCredentialManagerInitialized();
 
   const raw_ptr<PrefService> pref_service_ = nullptr;
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

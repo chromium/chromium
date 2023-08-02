@@ -19,8 +19,9 @@ bool FakeNearbyPresenceCredentialManager::IsLocalDeviceRegistered() {
 void FakeNearbyPresenceCredentialManager::RegisterPresence(
     base::OnceCallback<void(bool)> on_registered_callback) {}
 
-// Not implemented.
-void FakeNearbyPresenceCredentialManager::UpdateCredentials() {}
+void FakeNearbyPresenceCredentialManager::UpdateCredentials() {
+  was_update_credentials_called_ = true;
+}
 
 // Not implemented.
 void FakeNearbyPresenceCredentialManager::InitializeDeviceMetadata(

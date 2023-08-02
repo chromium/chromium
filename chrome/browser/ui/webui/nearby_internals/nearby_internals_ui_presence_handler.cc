@@ -160,7 +160,7 @@ void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
   if (service) {
     NS_LOG(VERBOSE) << __func__
                     << ": NearbyPresenceService was retrieved successfully";
-    // TODO(b/276307539): Call NPS function to sync credentials.
+    service->UpdateCredentials();
   }
 }
 
@@ -181,7 +181,10 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
     pref_service->SetBoolean(ash::nearby::presence::prefs::
                                  kNearbyPresenceFirstTimeRegistrationComplete,
                              false);
-    service->Initialize();
+    service->Initialize(
+        base::BindOnce(&NearbyInternalsPresenceHandler::
+                           OnNearbyPresenceCredentialManagerInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -197,6 +200,11 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
     // TODO(b/276307539): Pass error status back to WebUI.
     return;
   }
+}
+
+void NearbyInternalsPresenceHandler::
+    OnNearbyPresenceCredentialManagerInitialized() {
+  NS_LOG(VERBOSE) << __func__;
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(

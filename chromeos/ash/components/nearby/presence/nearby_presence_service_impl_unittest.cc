@@ -162,6 +162,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
   bool IsScanSessionActive() { return scan_session_ != nullptr; }
 
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   FakeNearbyPresence fake_nearby_presence_;
   testing::NiceMock<MockNearbyProcessManager> nearby_process_manager_;
@@ -341,13 +342,28 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
 TEST_F(NearbyPresenceServiceImplTest, Initialize) {
   auto credential_manager =
       std::make_unique<FakeNearbyPresenceCredentialManager>();
+  auto* fake_credential_manager = credential_manager.get();
   NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
       std::move(credential_manager));
-  nearby_presence_service_->Initialize();
 
-  // TODO(b/4641058): Verify the correct calls are triggered on
-  // |fake_credential_manager| once `CredentialManager::UpdateCredentials()`
-  // is implemented and plumbed to NPS.
+  base::MockCallback<base::OnceClosure> mock_on_initialized_callback;
+  EXPECT_CALL(mock_on_initialized_callback, Run);
+  nearby_presence_service_->Initialize(mock_on_initialized_callback.Get());
+
+  nearby_presence_service_->UpdateCredentials();
+  EXPECT_TRUE(fake_credential_manager->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, UpdateCredentials) {
+  auto credential_manager =
+      std::make_unique<FakeNearbyPresenceCredentialManager>();
+  auto* fake_credential_manager = credential_manager.get();
+  NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
+      std::move(credential_manager));
+
+  EXPECT_FALSE(fake_credential_manager->WasUpdateCredentialsCalled());
+  nearby_presence_service_->UpdateCredentials();
+  EXPECT_TRUE(fake_credential_manager->WasUpdateCredentialsCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {

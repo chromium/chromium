@@ -121,7 +121,15 @@ class NearbyPresenceService {
       base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
           on_start_scan_callback) = 0;
 
-  virtual void Initialize() = 0;
+  virtual void Initialize(base::OnceClosure on_initialized_callback) = 0;
+
+  // Triggers an immediate request to update Nearby Presence credentials, which
+  // involves:
+  //     1. Fetching the local device's credentials from the NP library and
+  ///       uploading them to the NP server.
+  //     2. Downloading remote devices' credentials from the NP server and
+  //        saving them to the NP library.
+  virtual void UpdateCredentials() = 0;
 };
 
 }  // namespace ash::nearby::presence

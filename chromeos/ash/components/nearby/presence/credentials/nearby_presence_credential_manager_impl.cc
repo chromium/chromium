@@ -84,7 +84,8 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
     const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
     std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider,
     CreateCallback on_created) {
-  CHECK(!has_credential_manager_been_created_);
+  CHECK(!has_credential_manager_been_created_ ||
+        g_is_credential_manager_set_for_testing_);
   has_credential_manager_been_created_ = true;
 
   on_created_ = (std::move(on_created));

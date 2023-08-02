@@ -139,7 +139,8 @@ void NearbyPresenceServiceImpl::StartScan(
                      std::move(on_start_scan_callback)));
 }
 
-void NearbyPresenceServiceImpl::Initialize() {
+void NearbyPresenceServiceImpl::Initialize(
+    base::OnceClosure on_initialized_callback) {
   if (!SetProcessReference()) {
     LOG(ERROR) << "Failed to create process reference.";
     return;
@@ -152,6 +153,23 @@ void NearbyPresenceServiceImpl::Initialize() {
       pref_service_, identity_manager_, url_loader_factory_,
       process_reference_->GetNearbyPresence(),
       base::BindOnce(&NearbyPresenceServiceImpl::OnCredentialManagerInitialized,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_initialized_callback)));
+}
+
+void NearbyPresenceServiceImpl::UpdateCredentials() {
+  // If the `credential_manager_` field is non-null, it means the initialization
+  // flow has already occurred, and we can move forward with updating
+  // credentials.
+  if (credential_manager_) {
+    credential_manager_->UpdateCredentials();
+    return;
+  }
+
+  // Otherwise, initialize a `CredentialManager` before updating credentials.
+  Initialize(
+      base::BindOnce(&NearbyPresenceServiceImpl::
+                         UpdateCredentialsAfterCredentialManagerInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -235,9 +253,17 @@ void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
 }
 
 void NearbyPresenceServiceImpl::OnCredentialManagerInitialized(
+    base::OnceClosure on_initialized_callback,
     std::unique_ptr<NearbyPresenceCredentialManager>
         initialized_credential_manager) {
   credential_manager_ = std::move(initialized_credential_manager);
+  std::move(on_initialized_callback).Run();
+}
+
+void NearbyPresenceServiceImpl::
+    UpdateCredentialsAfterCredentialManagerInitialized() {
+  CHECK(credential_manager_);
+  credential_manager_->UpdateCredentials();
 }
 
 }  // namespace ash::nearby::presence
