@@ -74,7 +74,11 @@ class TabStripControlButton : public views::LabelButton {
     UpdateColors();
   }
 
+  virtual int GetCornerRadius();
+
  private:
+  void UpdateBackground();
+
   // Icon for the label button.
   const raw_ref<const gfx::VectorIcon> icon_;
 

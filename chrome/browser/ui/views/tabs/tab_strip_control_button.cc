@@ -23,16 +23,9 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
   foreground_frame_active_color_id_ = kColorTabForegroundInactiveFrameActive;
   foreground_frame_inactive_color_id_ =
       kColorNewTabButtonCRForegroundFrameInactive;
-  if (is_chrome_refresh) {
-    background_frame_active_color_id_ =
-        kColorNewTabButtonCRBackgroundFrameActive;
-    background_frame_inactive_color_id_ =
-        kColorNewTabButtonCRBackgroundFrameInactive;
-  } else {
-    background_frame_active_color_id_ = kColorNewTabButtonBackgroundFrameActive;
-    background_frame_inactive_color_id_ =
-        kColorNewTabButtonBackgroundFrameInactive;
-  }
+  background_frame_active_color_id_ = kColorNewTabButtonBackgroundFrameActive;
+  background_frame_inactive_color_id_ =
+      kColorNewTabButtonBackgroundFrameInactive;
 
   UpdateIcon();
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -87,6 +80,8 @@ void TabStripControlButton::UpdateColors() {
     return;
   }
 
+  UpdateBackground();
+
   const bool frame_active = (GetWidget() && GetWidget()->ShouldPaintAsActive());
   const ui::ColorId hover_color =
       features::IsChromeRefresh2023()
@@ -99,6 +94,15 @@ void TabStripControlButton::UpdateColors() {
       color_provider->GetColor(hover_color));
   UpdateIcon();
   SchedulePaint();
+}
+
+void TabStripControlButton::UpdateBackground() {
+  SetBackground(views::CreateThemedRoundedRectBackground(GetBackgroundColor(),
+                                                         GetCornerRadius()));
+}
+
+int TabStripControlButton::GetCornerRadius() {
+  return width() / 2;
 }
 
 void TabStripControlButton::AddedToWidget() {

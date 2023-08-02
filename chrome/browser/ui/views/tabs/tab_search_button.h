@@ -29,10 +29,11 @@ class TabSearchButton : public TabStripControlButton {
 
   // TabStripControlsButton:
   void NotifyClick(const ui::Event& event) final;
-  void UpdateColors() final;
+
+ protected:
+  int GetCornerRadius() override;
 
  private:
-  int GetCornerRadius();
 
   std::unique_ptr<TabSearchBubbleHost> tab_search_bubble_host_;
 };

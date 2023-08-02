@@ -38,6 +38,12 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip)
   UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   UpdateForegroundFrameInactiveColorId(
       kColorNewTabButtonForegroundFrameInactive);
+  if (features::IsChromeRefresh2023()) {
+    UpdateBackgroundFrameActiveColorId(
+        kColorNewTabButtonCRBackgroundFrameActive);
+    UpdateBackgroundFrameInactiveColorId(
+        kColorNewTabButtonCRBackgroundFrameInactive);
+  }
   UpdateColors();
 }
 
@@ -50,15 +56,6 @@ void TabSearchButton::NotifyClick(const ui::Event& event) {
   // with a MenuButtonController.
   static_cast<views::MenuButtonController*>(button_controller())
       ->Activate(&event);
-}
-
-void TabSearchButton::UpdateColors() {
-  TabStripControlButton::UpdateColors();
-
-  if (features::IsChromeRefresh2023()) {
-    SetBackground(views::CreateThemedRoundedRectBackground(GetBackgroundColor(),
-                                                           GetCornerRadius()));
-  }
 }
 
 int TabSearchButton::GetCornerRadius() {
