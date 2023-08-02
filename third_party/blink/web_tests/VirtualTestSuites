@@ -798,6 +798,7 @@
   },
   {
     "prefix": "dark-color-scheme",
+    "owners": ["futhark@chromium.org", "andruud@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-color/system-color-consistency.html",
               "external/wpt/css/css-color-adjust/rendering/dark-color-scheme",
@@ -807,7 +808,7 @@
               "fast/loader/plain-text-document-appearance.html",
               "http/tests/eye-dropper"],
     "args": ["--blink-settings=preferredColorScheme=0"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "force-eager",
@@ -826,6 +827,7 @@
   },
   {
     "prefix": "css-trigonometric-functions-disabled",
+    "owners": ["seokho@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/css/css-values/sin-cos-tan-serialize.html",
@@ -840,6 +842,7 @@
   },
    {
     "prefix": "css-sign-related-functions-disabled",
+    "owners": ["seokho@chromium.org", "sakhapov@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/css/css-values/signs-abs-computed.html",
@@ -847,10 +850,11 @@
       "external/wpt/css/css-values/signs-abs-invalid.html"
     ],
     "args": ["--disable-blink-features=CSSSignRelatedFunctions"],
-    "expires": "Jul 1, 2023"
+    "expires": "Aug 1, 2024"
   },
   {
     "prefix": "css-nesting-ident",
+    "owners": ["andruud@chromium.org", "futhark@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "wpt_internal/css/css-nesting/ident"
