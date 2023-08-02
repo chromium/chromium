@@ -62,31 +62,6 @@
 
 namespace blink {
 
-void V8Window::FrameElementAttributeGetterCustom(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  LocalDOMWindow* impl =
-      To<LocalDOMWindow>(V8Window::ToWrappableUnsafe(info.Holder()));
-  Element* frameElement = impl->frameElement();
-
-  if (!BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(info.GetIsolate()),
-                                            frameElement)) {
-    V8SetReturnValueNull(info);
-    return;
-  }
-
-  // The wrapper for an <iframe> should get its prototype from the context of
-  // the frame it's in, rather than its own frame.
-  // So, use its containing document as the creation context when wrapping.
-  v8::Local<v8::Value> creation_context =
-      ToV8(frameElement->GetDocument().domWindow(), info.Holder(),
-           info.GetIsolate());
-  CHECK(!creation_context.IsEmpty());
-  v8::Local<v8::Value> wrapper =
-      ToV8(frameElement, v8::Local<v8::Object>::Cast(creation_context),
-           info.GetIsolate());
-  V8SetReturnValue(info, wrapper);
-}
-
 void V8Window::OpenerAttributeSetterCustom(
     v8::Local<v8::Value> value,
     const v8::FunctionCallbackInfo<v8::Value>& info) {

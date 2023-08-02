@@ -1729,26 +1729,26 @@ def make_v8_set_return_value(cg_context):
     # and 'getSVGDocument' operation of HTML{IFrame,Frame,Object,Embed}Element
     # interfaces, and Window.frameElement attribute, so far.
     #
-    # All the interfaces above except for Window support 'contentWindow'
-    # attribute and that's the global object of the creation context of the
-    # returned V8 wrapper.  Window.frameElement is implemented with [Custom]
-    # for now and there is no need to support it.
-    #
     # Note that the global object has its own context and there is no need to
     # pass the creation context to ToV8.
     if (cg_context.member_like.extended_attributes.value_of("CheckSecurity") ==
             "ReturnValue"):
-        condition = F(
-            "!ToV8Traits<{}>::ToV8(ToScriptState(To<LocalFrame>("
-            "${blink_receiver}->contentWindow()->GetFrame()), "
-            "${script_state}->World()), ${return_value})"
-            ".ToLocal(&v8_value)", native_value_tag(return_type))
         node = CxxBlockNode([
             T("// [CheckSecurity=ReturnValue]"),
-            T("DCHECK(IsA<LocalFrame>("
-              "${blink_receiver}->contentWindow()->GetFrame()));"),
+            F(
+                "Frame* blink_frame = {};",
+                "${blink_receiver}->GetFrame()->Parent()"
+                if cg_context.member_like.identifier == "frameElement" else
+                "${blink_receiver}->contentWindow()->GetFrame()"),
+            T("DCHECK(IsA<LocalFrame>(blink_frame));"),
             T("v8::Local<v8::Value> v8_value;"),
-            CxxUnlikelyIfNode(cond=condition, body=T("return;")),
+            CxxUnlikelyIfNode(cond=F(
+                "!ToV8Traits<{}>::ToV8("
+                "ToScriptState(To<LocalFrame>(blink_frame), "
+                "${script_state}->World()),"
+                "${return_value}).ToLocal(&v8_value)",
+                native_value_tag(return_type)),
+                              body=T("return;")),
             T("bindings::V8SetReturnValue(${info}, v8_value);"),
         ])
         node.accumulate(

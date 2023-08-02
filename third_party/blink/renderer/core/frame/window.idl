@@ -65,7 +65,7 @@
     // FIXME: opener should be of type any.
     [CrossOrigin, Custom=Setter, ImplementedAs=OpenerWithMetrics] attribute Window opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
-    [CheckSecurity=ReturnValue, Custom=Getter] readonly attribute Element? frameElement;
+    [CheckSecurity=ReturnValue] readonly attribute Element? frameElement;
 
     [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [LegacyNullToEmptyString] DOMString features = "");
 

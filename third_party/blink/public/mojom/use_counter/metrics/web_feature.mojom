@@ -3950,6 +3950,7 @@ enum WebFeature {
   kURLPatternReliantOnImplicitURLComponentsInString = 4610,
   kURLPatternReliantOnLaterComponentFromBaseURL = 4611,
   kV8Navigator_CreateAuctionNonce_Method = 4612,
+  kCrossOriginWindowFrameElement = 4613,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
