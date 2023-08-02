@@ -2360,13 +2360,6 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   // this identifier.
   ukm::SourceId document_ukm_source_id = ukm::NoURLSourceId();
 
-  // If the document creating a new iframe is a main frame, we only apply
-  // restriction when the document is an initial empty document.
-  if (GetFrame() == GetFrame()->Tree().Top() &&
-      !GetFrame()->Loader().IsOnInitialEmptyDocument()) {
-    policy_container_data->allow_cross_origin_isolation = true;
-  }
-
   auto complete_initialization = [this, owner_element, &policy_container_remote,
                                   &policy_container_data, &name,
                                   document_ukm_source_id](
