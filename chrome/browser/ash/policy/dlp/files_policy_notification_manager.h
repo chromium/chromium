@@ -120,10 +120,6 @@ class FilesPolicyNotificationManager
   // to true.
   void OnIOTaskResumed(file_manager::io_task::IOTaskId task_id);
 
-  // Force shows a desktop notification for all tracked IO tasks with blocked
-  // files.
-  void ShowBlockedNotifications();
-
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
   // Returns whether IO task has a warning timeout timer.
@@ -247,11 +243,6 @@ class FilesPolicyNotificationManager
     base::TimeTicks created_at;
     base::OneShotTimer timeout_timer;
   };
-
-  // Shows a Files Policy warning or error desktop notification with
-  // `notification_id` for an IOTask with `task_id`.
-  void ShowFilesPolicyNotification(const std::string& notification_id,
-                                   file_manager::io_task::IOTaskId task_id);
 
   // Click handler for Data Leak Prevention or Enterprise Connectors policy
   // warning notifications.
