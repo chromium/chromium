@@ -12,30 +12,10 @@
 
 namespace apps {
 
-AppRegistryCache::Observer::Observer(AppRegistryCache* cache) {
-  Observe(cache);
-}
-
 AppRegistryCache::Observer::Observer() = default;
 
 AppRegistryCache::Observer::~Observer() {
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-}
-
-void AppRegistryCache::Observer::Observe(AppRegistryCache* cache) {
-  if (cache == cache_) {
-    // Early exit to avoid infinite loops if we're in the middle of a callback.
-    return;
-  }
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-  cache_ = cache;
-  if (cache_) {
-    cache_->AddObserver(this);
-  }
+  CHECK(!IsInObserverList());
 }
 
 AppRegistryCache::AppRegistryCache() : account_id_(EmptyAccountId()) {}

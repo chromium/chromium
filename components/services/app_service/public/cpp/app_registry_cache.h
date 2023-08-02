@@ -67,32 +67,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     virtual void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) = 0;
 
    protected:
-    // Use this constructor when the observer `this` is tied to a single
-    // AppRegistryCache for its entire lifetime, or until the observee (the
-    // AppRegistryCache) is destroyed, whichever comes first.
-    //
-    // DEPRECATED: Prefer using a base::ScopedObservation for idiomatic observer
-    // behavior.
-    // TODO(crbug.com/1453127): Remove this method.
-    explicit Observer(AppRegistryCache* cache);
-
-    // Use this constructor when the observer `this` wants to observe a
-    // AppRegistryCache for part of its lifetime. It can then call Observe() to
-    // start and stop observing.
     Observer();
 
     ~Observer() override;
-
-    // Start observing a different AppRegistryCache. `cache` may be nullptr,
-    // meaning to stop observing.
-    //
-    // DEPRECATED: Prefer using a base::ScopedObservation for idiomatic observer
-    // behavior.
-    // TODO(crbug.com/1453127): Remove this method.
-    void Observe(AppRegistryCache* cache);
-
-   private:
-    raw_ptr<AppRegistryCache> cache_ = nullptr;
   };
 
   AppRegistryCache();
@@ -102,6 +79,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   ~AppRegistryCache();
 
+  // Prefer using a base::ScopedObservation for idiomatic observer behavior.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
