@@ -220,13 +220,12 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
   TestPdfAccessibilityTree(const TestPdfAccessibilityTree&) = delete;
   TestPdfAccessibilityTree& operator=(const TestPdfAccessibilityTree&) = delete;
 
-  std::vector<std::vector<const ui::AXTreeUpdate>>& GetTreeUpdates() {
+  std::vector<std::vector<ui::AXTreeUpdate>>& GetTreeUpdates() {
     return tree_updates_;
   }
 
-  void OnOcrDataReceived(
-      std::vector<const PdfOcrRequest> ocr_requests,
-      std::vector<const ui::AXTreeUpdate> tree_updates) override {
+  void OnOcrDataReceived(std::vector<PdfOcrRequest> ocr_requests,
+                         std::vector<ui::AXTreeUpdate> tree_updates) override {
     for (uint32_t i = 0; i < ocr_requests.size(); ++i) {
       base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
                                     PdfOcrRequestStatus::kPerformed);
@@ -235,7 +234,7 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
   }
 
  private:
-  std::vector<std::vector<const ui::AXTreeUpdate>> tree_updates_;
+  std::vector<std::vector<ui::AXTreeUpdate>> tree_updates_;
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -2332,9 +2331,9 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
 
   EXPECT_EQ(child_tree_update.tree_data.tree_id, ui::AXTreeIDUnknown());
   pdf_accessibility_tree.OnOcrDataReceived(
-      std::vector<const PdfAccessibilityTree::PdfOcrRequest>{
+      std::vector<PdfAccessibilityTree::PdfOcrRequest>{
           {image_node->id(), image, paragraph_node->id()}},
-      std::vector<const ui::AXTreeUpdate>{child_tree_update});
+      std::vector<ui::AXTreeUpdate>{child_tree_update});
   WaitForThreadTasks();
 
   // TODO(crbug.com/1423810): Convert these in-line comments into EXPECT() with
@@ -2572,8 +2571,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrServicePageBatching) {
 
   ASSERT_EQ(kBatchCount, tree_updates.size());
   for (uint32_t i = 0; i < tree_updates.size(); ++i) {
-    const std::vector<const ui::AXTreeUpdate>& page_tree_updates =
-        tree_updates[i];
+    const std::vector<ui::AXTreeUpdate>& page_tree_updates = tree_updates[i];
     if (i == 0) {  // First batch.
       ASSERT_EQ(10u, page_tree_updates.size())
           << "There should be five pages in the first batch with two images "

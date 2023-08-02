@@ -2078,8 +2078,8 @@ void PdfAccessibilityTree::OnDestruct() {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfAccessibilityTree::OnOcrDataReceived(
-    std::vector<const PdfOcrRequest> ocr_requests,
-    std::vector<const ui::AXTreeUpdate> tree_updates) {
+    std::vector<PdfOcrRequest> ocr_requests,
+    std::vector<ui::AXTreeUpdate> tree_updates) {
   content::RenderAccessibility* render_accessibility =
       GetRenderAccessibilityIfEnabled();
   if (!render_accessibility) {

@@ -87,8 +87,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   class PdfOcrService final {
    public:
     using OnOcrDataReceivedCallback = base::RepeatingCallback<void(
-        std::vector<const PdfOcrRequest> ocr_requests,
-        std::vector<const ui::AXTreeUpdate> tree_updates)>;
+        std::vector<PdfOcrRequest> ocr_requests,
+        std::vector<ui::AXTreeUpdate> tree_updates)>;
 
     PdfOcrService(content::RenderFrame& render_frame,
                   uint32_t page_count,
@@ -132,8 +132,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     // `PdfOcrRequest.is_last_on_page` indicates which request is the last on
     // each page.
     base::queue<PdfOcrRequest> all_requests_;
-    std::vector<const PdfOcrRequest> batch_requests_;
-    std::vector<const ui::AXTreeUpdate> batch_tree_updates_;
+    std::vector<PdfOcrRequest> batch_requests_;
+    std::vector<ui::AXTreeUpdate> batch_tree_updates_;
     OnOcrDataReceivedCallback on_ocr_data_received_callback_;
     mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
     SEQUENCE_CHECKER(sequence_checker_);
@@ -214,9 +214,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // After receiving a batch of tree updates containing the results of the OCR
   // Service, this method adds each piece of OCRed text in the correct page,
   // replacing each image node for which we have OCRed text.
-  virtual void OnOcrDataReceived(
-      std::vector<const PdfOcrRequest> ocr_requests,
-      std::vector<const ui::AXTreeUpdate> tree_updates);
+  virtual void OnOcrDataReceived(std::vector<PdfOcrRequest> ocr_requests,
+                                 std::vector<ui::AXTreeUpdate> tree_updates);
 
   const ui::AXTree& tree_for_testing() const { return tree_; }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
