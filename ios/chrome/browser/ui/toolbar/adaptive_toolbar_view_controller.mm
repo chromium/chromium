@@ -391,6 +391,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 }
 
 - (void)collapsedToolbarButtonTapped {
+  base::RecordAction(base::UserMetricsAction("MobileFullscreenExitedManually"));
   [self exitFullscreen];
 }
 
