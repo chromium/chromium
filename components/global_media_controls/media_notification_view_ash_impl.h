@@ -145,6 +145,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
+  // Whether the media is currently in picture-in-picture.
+  bool in_picture_in_picture_ = false;
+
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;

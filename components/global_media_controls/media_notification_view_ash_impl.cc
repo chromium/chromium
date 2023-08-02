@@ -323,11 +323,11 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   }
 
-  bool in_picture_in_picture =
+  in_picture_in_picture_ =
       session_info &&
       session_info->picture_in_picture_state ==
           media_session::mojom::MediaPictureInPictureState::kInPictureInPicture;
-  if (in_picture_in_picture) {
+  if (in_picture_in_picture_) {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
         media_message_center::kMediaExitPipIcon,
@@ -437,16 +437,29 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   for (auto* button : action_buttons_) {
     bool should_show = base::Contains(
         enabled_actions_, static_cast<MediaSessionAction>(button->GetID()));
+
+    if (button == picture_in_picture_button_) {
+      // Force the picture-in-picture button to be visible if the media is
+      // currently in the picture-in-picture state, since the media actions
+      // may not contain pip actions for a short period of time for unknown
+      // reason, which can cause the picture-in-picture button to lose focus,
+      // but we want the button to keep the focus so that the user is able to
+      // undo the pip action immediately if needed.
+      if (in_picture_in_picture_) {
+        should_show = true;
+      }
+
+      // The picture-in-picture button remains invisible if there is a footer
+      // view regardless of media actions.
+      if (footer_view_) {
+        should_show = false;
+      }
+    }
+
     if (should_show != button->GetVisible()) {
       button->SetVisible(should_show);
       should_invalidate_layout = true;
     }
-  }
-
-  // The picture-in-picture button remains invisible if there is a footer view
-  // regardless of media actions.
-  if (footer_view_) {
-    picture_in_picture_button_->SetVisible(false);
   }
 
   if (should_invalidate_layout) {
