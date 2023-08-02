@@ -53,10 +53,10 @@ class KioskAppDataBase {
   // This method does not load the icon from disk.
   bool LoadFromDictionary(const base::Value::Dict& dict);
 
-  // Starts loading the icon from |icon_path_|;
+  // Starts loading the icon from `icon_path_`;
   void DecodeIcon(KioskAppIconLoader::ResultCallback callback);
 
-  // Helper to cache |icon| to |cache_dir|.
+  // Helper to cache `icon` to `cache_dir`.
   void SaveIcon(const SkBitmap& icon, const base::FilePath& cache_dir);
 
   // In protected section to allow derived classes to modify.

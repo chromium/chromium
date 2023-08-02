@@ -43,10 +43,10 @@ class KioskModeIdleAppNameNotification
   // Begins listening for user activity and calls ResetTimer().
   void Start();
 
-  // Resets |timer_| to fire when the application idle message should be shown.
+  // Resets `timer_` to fire when the application idle message should be shown.
   void ResetTimer();
 
-  // Invoked by |timer_| to display the application idle message.
+  // Invoked by `timer_` to display the application idle message.
   void OnTimeout();
 
   base::OneShotTimer timer_;

@@ -28,11 +28,11 @@ class KioskAppManagerObserver : public base::CheckedObserver {
   // Invoked when the Kiosk Apps configuration changes.
   virtual void OnKioskAppsSettingsChanged() {}
 
-  // Invoked when kiosk app cache is updated for |app_id|.
+  // Invoked when kiosk app cache is updated for `app_id`.
   virtual void OnKioskAppCacheUpdated(const std::string& app_id) {}
 
   // Invoked when kiosk app updating from usb stick has been completed.
-  // |success| indicates if all the updates are completed successfully.
+  // `success` indicates if all the updates are completed successfully.
   virtual void OnKioskAppExternalUpdateComplete(bool success) {}
 
   // Called when kiosk app session initialization is complete - i.e. when

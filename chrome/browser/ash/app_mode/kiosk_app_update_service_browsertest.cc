@@ -54,9 +54,9 @@ namespace {
 constexpr base::TimeDelta kAutomaticRebootManagerInitTimeout =
     base::Seconds(60);
 
-// Blocks until |manager| is initialized and then sets |success_out| to true and
-// runs |quit_closure|. If initialization does not occur within |timeout|, sets
-// |success_out| to false and runs |quit_closure|.
+// Blocks until `manager` is initialized and then sets `success_out` to true and
+// runs `quit_closure`. If initialization does not occur within `timeout`, sets
+// `success_out` to false and runs `quit_closure`.
 void WaitForAutomaticRebootManagerInit(system::AutomaticRebootManager* manager,
                                        const base::TimeDelta& timeout,
                                        base::OnceClosure quit_closure,
@@ -108,7 +108,7 @@ class KioskAppUpdateServiceTest
     automatic_reboot_manager_ =
         g_browser_process->platform_part()->automatic_reboot_manager();
 
-    // Wait for |automatic_reboot_manager_| to finish initializing.
+    // Wait for `automatic_reboot_manager_` to finish initializing.
     bool initialized = false;
     base::RunLoop run_loop;
     base::ThreadPool::PostTask(

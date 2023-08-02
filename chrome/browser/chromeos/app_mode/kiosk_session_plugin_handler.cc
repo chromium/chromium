@@ -110,7 +110,7 @@ void KioskSessionPluginHandler::OnWebContentsDestroyed(Observer* observer) {
       it->release();
       watchers_.erase(it);
 
-      // Schedule the delete later after |observer|'s WebContentsDestroyed
+      // Schedule the delete later after `observer`'s WebContentsDestroyed
       // finishes.
       base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                     observer);

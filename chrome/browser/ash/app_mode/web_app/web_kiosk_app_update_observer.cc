@@ -68,8 +68,8 @@ void WebKioskAppUpdateObserver::OnAppRegistryCacheWillBeDestroyed(
 void WebKioskAppUpdateObserver::UpdateWebAppFromAppService(
     const std::string& app_id,
     bool icon_updated) {
-  // |apps::AppUpdate| passed to |OnAppUpdate()| only contains updated info. To
-  // get all info we have to use |AppRegistryCache::ForOneApp()|.
+  // `apps::AppUpdate` passed to `OnAppUpdate()` only contains updated info. To
+  // get all info we have to use `AppRegistryCache::ForOneApp()`.
   app_service_->AppRegistryCache().ForOneApp(
       app_id, [this, &icon_updated](const apps::AppUpdate& app_info) {
         GURL start_url = GURL(app_info.PublisherId());

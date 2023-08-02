@@ -153,7 +153,7 @@ class StubCrdAdminSessionController
   // Returns if TerminateSession() was called to terminate the active session.
   bool IsActiveSessionTerminated() const { return terminate_session_called_; }
 
-  // Returns the |SessionParameters| sent to the last StartCrdHostAndGetCode()
+  // Returns the `SessionParameters` sent to the last StartCrdHostAndGetCode()
   // call.
   SessionParameters session_parameters() {
     EXPECT_TRUE(received_session_parameters_.has_value());

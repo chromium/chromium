@@ -52,8 +52,8 @@ ParseExternalUpdateManifest(const base::FilePath& external_update_dir) {
                         KioskExternalUpdater::ErrorCode::kNone);
 }
 
-// Copies |external_crx_file| to |temp_crx_file|, and removes |temp_dir|
-// created for unpacking |external_crx_file|.
+// Copies `external_crx_file` to `temp_crx_file`, and removes `temp_dir`
+// created for unpacking `external_crx_file`.
 bool CopyExternalCrxAndDeleteTempDir(const base::FilePath& external_crx_file,
                                      const base::FilePath& temp_crx_file,
                                      const base::FilePath& temp_dir) {
@@ -61,8 +61,8 @@ bool CopyExternalCrxAndDeleteTempDir(const base::FilePath& external_crx_file,
   return base::CopyFile(external_crx_file, temp_crx_file);
 }
 
-// Returns true if |version_1| < |version_2|, and
-// if |update_for_same_version| is true and |version_1| = |version_2|.
+// Returns true if `version_1` < `version_2`, and
+// if `update_for_same_version` is true and `version_1` = `version_2`.
 bool ShouldUpdateForHigherVersion(const std::string& version_1,
                                   const std::string& version_2,
                                   bool update_for_same_version) {

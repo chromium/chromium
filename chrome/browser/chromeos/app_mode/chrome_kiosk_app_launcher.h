@@ -36,7 +36,7 @@ class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override;
 
-  // |KioskAppServiceLauncher| callback.
+  // `KioskAppServiceLauncher` callback.
   void OnAppServiceAppLaunched(bool success);
 
   void WaitForAppWindow();

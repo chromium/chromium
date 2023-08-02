@@ -256,8 +256,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
 
 IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
                        PRE_CanLoadFromCacheAfterUpdatingFromWebAppInfo) {
-  // We do not use |icon_url| for loading icon in this test, it is set to
-  // correctly test |LoadFromCache| function.
+  // We do not use `icon_url` for loading icon in this test, it is set to
+  // correctly test `LoadFromCache` function.
   WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl), "",
                            /*icon_url=*/GURL(kIconExampleUrl1));
 

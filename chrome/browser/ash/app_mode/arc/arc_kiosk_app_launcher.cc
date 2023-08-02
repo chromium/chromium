@@ -56,7 +56,7 @@ void ArcKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
   window->AddObserver(this);
   windows_.insert(window);
 
-  // The |window|’s task ID might not be set yet. Record the window and
+  // The `window`’s task ID might not be set yet. Record the window and
   // OnTaskCreated will check if it's the window we're looking for.
   if (task_id_ == -1) {
     return;

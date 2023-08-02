@@ -170,8 +170,8 @@ void WebKioskAppLauncher::OnAppDataObtained(
   DCHECK(absl::holds_alternative<web_app::WebAppInstallInfo>(info));
   const auto& app_info = absl::get<web_app::WebAppInstallInfo>(info);
 
-  // When received |app_info.start_url| origin does not match the origin of
-  // |install_url|, fail.
+  // When received `app_info.start_url` origin does not match the origin of
+  // `install_url`, fail.
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
       url::Origin::Create(app_info.start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";

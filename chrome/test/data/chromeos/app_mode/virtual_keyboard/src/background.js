@@ -117,7 +117,7 @@ chrome.test.runTests([
         function(config) {
           chrome.test.assertTrue(!!config);
           // The callback parameter should be the same as the return value of
-          // |getKeyboardConfig|
+          // `getKeyboardConfig`
           chrome.virtualKeyboardPrivate.getKeyboardConfig(
               chrome.test.callbackPass(function(config2) {
                 chrome.test.assertEq(config, config2);

@@ -46,10 +46,10 @@ WebKioskAppInstaller::WebKioskAppInstaller(Profile& profile,
 WebKioskAppInstaller::~WebKioskAppInstaller() = default;
 
 void WebKioskAppInstaller::GetInstallState(InstallStateCallback callback) {
-  // If a web app |install_url| requires authentication, it will be assigned a
-  // temporary |app_id| which will be changed to the correct |app_id| once the
+  // If a web app `install_url` requires authentication, it will be assigned a
+  // temporary `app_id` which will be changed to the correct `app_id` once the
   // authentication is done. The only key that is safe to be used as identifier
-  // for Kiosk web apps is |install_url|.
+  // for Kiosk web apps is `install_url`.
   auto app_id = web_app_provider().registrar_unsafe().LookUpAppIdByInstallUrl(
       install_url_);
   if (!app_id || app_id->empty()) {

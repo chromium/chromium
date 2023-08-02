@@ -26,7 +26,7 @@ namespace ash {
 // This class launches a Kiosk app with the following steps:
 // 1. Checks if the app is ready to be launched. If not then observes the
 //    registry cache until the app is ready.
-// 2. Starts the app using |AppServiceProxy::LaunchAppWithParams()| interface
+// 2. Starts the app using `AppServiceProxy::LaunchAppWithParams()` interface
 //    and waits for the launch to complete.
 class KioskAppServiceLauncher :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -36,7 +36,7 @@ class KioskAppServiceLauncher :
  public:
   // Callback when the app is launched by App Service. App window instance is
   // not active at this point. If called with false then the app launch has
-  // failed. Corresponds to |KioskLaunchController::OnAppLaunched()|.
+  // failed. Corresponds to `KioskLaunchController::OnAppLaunched()`.
   using AppLaunchedCallback = base::OnceCallback<void(bool)>;
 
   // Histogram to log the app readiness while launching app.
@@ -57,13 +57,13 @@ class KioskAppServiceLauncher :
                               AppLaunchedCallback app_launched_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ensures that |app_type| is initialized in App Service.
+  // Ensures that `app_type` is initialized in App Service.
   void EnsureAppTypeInitialized(
       apps::AppType app_type,
       base::OnceClosure app_type_initialized_callback);
 
-  // Same as the other |CheckAndMaybeLaunchApp|, but also waits for app window
-  // to be visible by observing |apps::InstanceRegistry|. Only works in Ash.
+  // Same as the other `CheckAndMaybeLaunchApp`, but also waits for app window
+  // to be visible by observing `apps::InstanceRegistry`. Only works in Ash.
   void CheckAndMaybeLaunchApp(const std::string& app_id,
                               AppLaunchedCallback app_launched_callback,
                               base::OnceClosure app_visible_callback);

@@ -64,7 +64,7 @@ class ChromeKioskAppInstaller
   // Returns true if all secondary apps have been installed.
   bool AreSecondaryAppsInstalled() const;
 
-  // Returns true if the app with id |id| is pending an install.
+  // Returns true if the app with id `id` is pending an install.
   bool IsAppInstallPending(const std::string& id) const;
 
   // Returns true if any secondary app is pending.
@@ -73,7 +73,7 @@ class ChromeKioskAppInstaller
   // Returns true if the primary app has a pending update.
   bool PrimaryAppHasPendingUpdate() const;
 
-  // Returns true if the app with |id| failed, and it is the primary or one of
+  // Returns true if the app with `id` failed, and it is the primary or one of
   // the secondary apps.
   bool DidPrimaryOrSecondaryAppFailedToInstall(bool success,
                                                const std::string& id) const;

@@ -63,7 +63,7 @@ void StartupAppLauncherUpdateChecker::MarkUpdateFound(
 }
 
 void StartupAppLauncherUpdateChecker::OnExtensionUpdaterDone() {
-  // It is not safe to use |this| after the callback has been run.
+  // It is not safe to use `this` after the callback has been run.
   std::move(callback_).Run(update_found_);
 }
 

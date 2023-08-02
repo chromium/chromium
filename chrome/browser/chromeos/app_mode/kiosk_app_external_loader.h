@@ -19,11 +19,11 @@ namespace ash {
 // apps.
 // It registers a callback with KioskAppManager that is called when the kiosk
 // app information is updated - when run, the callback will finish extension
-// load handled by |this|.
-// Note that |this| might call extensions::ExternalLoader::OnUpdated(), because
+// load handled by `this`.
+// Note that `this` might call extensions::ExternalLoader::OnUpdated(), because
 // in certain cases kiosk app properties might get updated.
 // This lives on the UI thread, even though it's ref counted as a subclass
-// of |extensions::ExternalLoader|.
+// of `extensions::ExternalLoader`.
 class KioskAppExternalLoader : public extensions::ExternalLoader {
  public:
   enum class AppClass { kPrimary, kSecondary };
@@ -45,7 +45,7 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
   void SetPrefsChangedHandler(
       ChromeKioskExternalLoaderBroker::InstallDataChangeCallback handler);
 
-  // Sends |prefs| through to the external loader owner (using
+  // Sends `prefs` through to the external loader owner (using
   // extensions::ExternalLoader interface).
   void SendPrefs(base::Value::Dict prefs);
 

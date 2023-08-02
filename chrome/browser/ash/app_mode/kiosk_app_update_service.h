@@ -81,7 +81,7 @@ class KioskAppUpdateService : public KeyedService,
 // profiles.
 class KioskAppUpdateServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the KioskAppUpdateService for |profile|, creating it if it is not
+  // Returns the KioskAppUpdateService for `profile`, creating it if it is not
   // yet created.
   static KioskAppUpdateService* GetForProfile(Profile* profile);
 

@@ -116,7 +116,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
     app_service_test_.SetUp(profile());
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
 
-    // |WebKioskAppUpdateObserver| requires WebAppProvider to be ready before it
+    // `WebKioskAppUpdateObserver` requires WebAppProvider to be ready before it
     // is created.
     fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());

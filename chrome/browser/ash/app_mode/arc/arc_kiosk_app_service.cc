@@ -115,7 +115,7 @@ void ArcKioskAppService::OnTaskDestroyed(int32_t task_id) {
 void ArcKioskAppService::OnMaintenanceSessionCreated() {
   maintenance_session_running_ = true;
   PreconditionsChanged();
-  // Safe to bind |this| as timer is auto-cancelled on destruction.
+  // Safe to bind `this` as timer is auto-cancelled on destruction.
   maintenance_timeout_timer_.Start(
       FROM_HERE, kArcKioskMaintenanceSessionTimeout,
       base::BindOnce(&ArcKioskAppService::OnMaintenanceSessionFinished,
@@ -261,7 +261,7 @@ std::string ArcKioskAppService::GetAppId() {
   if (app_ids.empty()) {
     return std::string();
   }
-  // If |activity| and |intent| are not specified, return any app from the
+  // If `activity` and `intent` are not specified, return any app from the
   // package.
   if (app->activity().empty() && app->intent().empty()) {
     return *app_ids.begin();

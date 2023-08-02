@@ -32,7 +32,7 @@ constexpr char kKeyIcon[] = "icon";
 // Icon file extension.
 constexpr char kIconFileExtension[] = ".png";
 
-// Save |raw_icon| for given |app_id|.
+// Save `raw_icon` for given `app_id`.
 void SaveIconToLocalOnBlockingPool(const base::FilePath& icon_path,
                                    std::vector<unsigned char> image_data) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

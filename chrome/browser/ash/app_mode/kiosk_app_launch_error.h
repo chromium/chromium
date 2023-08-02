@@ -37,7 +37,7 @@ class KioskAppLaunchError {
     kMaxValue = kExtensionsPolicyInvalid,  // Max value of errors.
   };
 
-  // Returns a message for given |error|.
+  // Returns a message for given `error`.
   static std::string GetErrorMessage(Error error);
 
   // Saves a launch error. The error is used on the next Chrome run to report

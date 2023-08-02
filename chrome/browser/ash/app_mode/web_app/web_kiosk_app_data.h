@@ -50,13 +50,13 @@ class WebKioskAppData : public KioskAppDataBase {
   // Loads the locally cached data. Returns true on success.
   bool LoadFromCache();
 
-  // Updates |icon_| from either |KioskAppDataBase::icon_path_| or |icon_url_|.
+  // Updates `icon_` from either `KioskAppDataBase::icon_path_` or `icon_url_`.
   void LoadIcon();
 
   // Get a proper URL to launch according to the app status.
   GURL GetLaunchableUrl() const;
 
-  // Updates |status_|. Based on |notify|, we will notify |delegate_| about data
+  // Updates `status_`. Based on `notify`, we will notify `delegate_` about data
   // update.
   void SetStatus(Status status, bool notify = true);
 
@@ -91,7 +91,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // Url for loading the app icon in case the app has not been installed earlier
   // and a user opened the App menu in the login screen.
   GURL icon_url_;
-  // Used to download icon from |icon_url_|.
+  // Used to download icon from `icon_url_`.
   std::unique_ptr<IconFetcher> icon_fetcher_;
 
   base::OnceClosure on_loaded_closure_for_testing_;

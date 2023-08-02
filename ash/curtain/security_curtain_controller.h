@@ -45,7 +45,7 @@ class ASH_EXPORT SecurityCurtainController {
     InitParams& operator=(InitParams&&);
     ~InitParams();
 
-    // Filter to specify which input |ui::Event|s should or should not be
+    // Filter to specify which input `ui::Event`s should or should not be
     // suppressed. If unspecified all input events will be suppressed.
     EventFilter event_filter;
 

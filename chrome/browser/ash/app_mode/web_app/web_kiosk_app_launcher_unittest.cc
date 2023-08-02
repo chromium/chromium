@@ -211,7 +211,7 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
  protected:
   AccountId account_id_;
   raw_ptr<web_app::TestWebAppUrlLoader, ExperimentalAsh>
-      url_loader_;  // Owned by |launcher_|.
+      url_loader_;  // Owned by `launcher_`.
 
  private:
   std::unique_ptr<WebKioskAppManager> app_manager_;

@@ -53,10 +53,10 @@ class WebKioskAppLauncher : public KioskAppLauncher,
       base::RepeatingCallback<std::unique_ptr<web_app::WebAppDataRetriever>()>
           data_retriever_factory);
 
-  // Replaces default browser window with |window| during launch.
+  // Replaces default browser window with `window` during launch.
   void SetBrowserWindowForTesting(BrowserWindow* window);
 
-  // Replaces current |url_loader_| with one provided.
+  // Replaces current `url_loader_` with one provided.
   void SetUrlLoaderForTesting(
       std::unique_ptr<web_app::WebAppUrlLoader> url_loader);
 
@@ -93,7 +93,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   void NotifyAppWindowCreated();
 
   bool is_installed_ = false;  // Whether the installation was completed.
-  // |profile_| may become nullptr if the profile is being destroyed.
+  // `profile_` may become nullptr if the profile is being destroyed.
   raw_ptr<Profile, ExperimentalAsh> profile_;
   const AccountId account_id_;
   const bool should_skip_install_;

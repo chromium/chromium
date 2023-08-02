@@ -56,7 +56,7 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
   void LaunchApp() override;
 
  private:
-  // |KioskAppServiceLauncher| callbacks.
+  // `KioskAppServiceLauncher` callbacks.
   void OnWebAppInitialized();
   void NotifyAppPrepared(const absl::optional<web_app::AppId>& app_id);
   void OnAppLaunched(bool success);

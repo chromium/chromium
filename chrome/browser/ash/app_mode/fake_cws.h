@@ -53,7 +53,7 @@ class FakeCWS {
                      std::string icon_url,
                      std::string manifest_json);
 
-  // Returns the current |update_check_count_| and resets it.
+  // Returns the current `update_check_count_` and resets it.
   int GetUpdateCheckCountAndReset();
 
  private:
