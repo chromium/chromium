@@ -52,8 +52,10 @@ class WebKioskBaseTest : public OobeBaseTest {
   std::unique_ptr<ScopedDeviceSettings> settings_;
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
-  // Network can always be configured.
-  ScopedCanConfigureNetwork can_configure_network_override_{true};
+
+  std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+      can_configure_network_override_ =
+          NetworkUiController::SetCanConfigureNetworkForTesting(true);
 };
 
 }  // namespace ash

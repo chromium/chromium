@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
 }
 IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
                        HittingNetworkAcceleratorShouldShowNetworkScreen) {
-  ScopedCanConfigureNetwork can_configure_network(true);
+  auto auto_reset = NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
   // Block app loading until the welcome screen is shown.
   BlockAppLaunch(true);
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
 IN_PROC_BROWSER_TEST_F(
     KioskEnterpriseTest,
     LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
-  ScopedCanConfigureNetwork can_configure_network(true);
+  auto auto_reset = NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
   // Start app launch with network portal state.
   StartAppLaunchFromLoginScreen(

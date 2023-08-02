@@ -318,7 +318,7 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
 }
 
 void KioskBaseTest::RunAppLaunchNetworkDownTest() {
-  ScopedCanConfigureNetwork can_configure_network(true);
+  auto auto_reset = NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
   // Start app launch and wait for network connectivity timeout.
   StartAppLaunchFromLoginScreen(

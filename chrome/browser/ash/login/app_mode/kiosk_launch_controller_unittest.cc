@@ -172,6 +172,9 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     disable_wait_timer_and_login_operations_for_testing_ =
         KioskLaunchController::DisableLoginOperationsForTesting();
 
+    can_configure_network_for_testing_ =
+        NetworkUiController::SetCanConfigureNetworkForTesting(true);
+
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
     auto network_monitor_unique = std::make_unique<FakeNetworkMonitor>();
     network_monitor_ = network_monitor_unique->GetWeakPtr();
@@ -292,7 +295,9 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       keyboard_controller_client_;
   std::unique_ptr<WebKioskAppManager> kiosk_app_manager_;
 
-  ScopedCanConfigureNetwork can_configure_network_for_testing_{true};
+  std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+      can_configure_network_for_testing_;
+
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
@@ -827,6 +832,9 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
     disable_wait_timer_and_login_operations_for_testing_ =
         KioskLaunchController::DisableLoginOperationsForTesting();
 
+    can_configure_network_for_testing_ =
+        NetworkUiController::SetCanConfigureNetworkForTesting(true);
+
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
     controller_ = std::make_unique<KioskLaunchController>(
         /*host=*/nullptr, view_.get(),
@@ -930,7 +938,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
       keyboard_controller_client_;
   std::unique_ptr<WebKioskAppManager> kiosk_app_manager_;
 
-  ScopedCanConfigureNetwork can_configure_network_for_testing_{true};
+  std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+      can_configure_network_for_testing_;
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;

@@ -317,7 +317,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkDown) {
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
-  ScopedCanConfigureNetwork can_configure_network(false);
+  auto auto_reset =
+      NetworkUiController::SetCanConfigureNetworkForTesting(false);
 
   // Start app launch and wait for network connectivity timeout.
   StartAppLaunchFromLoginScreen(

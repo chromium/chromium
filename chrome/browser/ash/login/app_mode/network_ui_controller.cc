@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -25,7 +26,7 @@ namespace {
 constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
-base::RepeatingCallback<bool()>* g_can_configure_network_callback = nullptr;
+absl::optional<bool> g_can_configure_network_for_testing;
 
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
@@ -254,8 +255,8 @@ void NetworkUiController::OnNetworkWaitTimeout() {
 }
 
 bool NetworkUiController::CanConfigureNetwork() {
-  if (g_can_configure_network_callback) {
-    return g_can_configure_network_callback->Run();
+  if (g_can_configure_network_for_testing.has_value()) {
+    return g_can_configure_network_for_testing.value();
   }
 
   if (IsDeviceEnterpriseManaged()) {
@@ -274,9 +275,11 @@ void NetworkUiController::MaybeShowNetworkConfigureUIForConsumerKiosk() {
 }
 
 // static
-void NetworkUiController::SetCanConfigureNetworkCallbackForTesting(
-    base::RepeatingCallback<bool()>* callback) {
-  g_can_configure_network_callback = callback;
+std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+NetworkUiController::SetCanConfigureNetworkForTesting(
+    bool can_configure_network) {
+  return std::make_unique<base::AutoReset<absl::optional<bool>>>(
+      &g_can_configure_network_for_testing, can_configure_network);
 }
 
 }  // namespace ash
