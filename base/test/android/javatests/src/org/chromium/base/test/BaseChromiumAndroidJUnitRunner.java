@@ -16,6 +16,7 @@ import android.content.pm.InstrumentationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,6 +48,7 @@ import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.MainDex;
@@ -474,7 +476,16 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             try {
-                return mDelegateLoader.loadClass(name);
+                var ret = mDelegateLoader.loadClass(name);
+                // Prevent loading classes that should be skipped due to @MinAndroidSdkLevelon.
+                // Loading them can cause NoClassDefFoundError to be thrown by junit when listing
+                // methods (if methods contain types from higher sdk version).
+                // E.g.: https://chromium-review.googlesource.com/c/chromium/src/+/4738415/1
+                MinAndroidSdkLevel annotation = ret.getAnnotation(MinAndroidSdkLevel.class);
+                if (annotation != null && annotation.value() > VERSION.SDK_INT) {
+                    throw new ClassNotFoundException();
+                }
+                return ret;
             } catch (NoClassDefFoundError e) {
                 throw new ClassNotFoundException(name, e);
             }
