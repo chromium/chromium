@@ -113,19 +113,7 @@ bool IsWebContentsActive(Browser* browser, content::WebContents* contents) {
 }
 
 std::string GetAppIdForTab(content::WebContents* contents, Profile* profile) {
-  std::string app_id = GetInstanceAppIdForWebContents(contents).value_or("");
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!app_id.empty()) {
-    auto* registry = extensions::ExtensionRegistry::Get(profile);
-    auto* extension = registry->GetInstalledExtension(app_id);
-    // Return muxed app_id for Lacros hosted app.
-    if (extension && extension->is_hosted_app())
-      return lacros_extensions_util::MuxId(profile, extension);
-  }
-#endif
-
-  return app_id;
+  return GetInstanceAppIdForWebContents(contents).value_or("");
 }
 
 std::string GetAppIdForBrowser(Browser* browser) {
@@ -137,16 +125,9 @@ std::string GetAppIdForBrowser(Browser* browser) {
   if (!extension)
     return app_id;
 
-  if (extension->is_hosted_app()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return lacros_extensions_util::MuxId(browser->profile(), extension);
-#else
+  if (extension->is_hosted_app() || extension->is_legacy_packaged_app()) {
     return app_id;
-#endif
   }
-
-  if (extension->is_legacy_packaged_app())
-    return app_id;
 
   return "";
 }

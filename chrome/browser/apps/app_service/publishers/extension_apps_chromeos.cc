@@ -780,7 +780,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     }
 
     // Do not publish extensions in Ash if it should run in Lacros instead.
-    if (!apps::ShouldMuxExtensionIds()) {
+    if (crosapi::browser_util::ShouldEnforceAshExtensionKeepList()) {
       return false;
     }
 

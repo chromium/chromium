@@ -69,13 +69,8 @@ void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   init_params->restore_session_id = app_window()->session_id().id();
-  // `MuxId` could return a non-empty string even if extension is null, so don't
-  // save `restore_window_id_source` to avoid that.
   if (app_window()->GetExtension()) {
-    Profile* profile =
-        Profile::FromBrowserContext(app_window()->browser_context());
-    init_params->restore_window_id_source =
-        lacros_extensions_util::MuxId(profile, app_window()->GetExtension());
+    init_params->restore_window_id_source = app_window()->GetExtension()->id();
   }
 #endif
 

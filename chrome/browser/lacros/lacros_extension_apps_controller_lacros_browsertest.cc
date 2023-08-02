@@ -40,7 +40,7 @@ class LacrosExtensionAppsControllerTest
     DCHECK(app_id_.empty());
     const extensions::Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-    app_id_ = lacros_extensions_util::MuxId(profile(), extension);
+    app_id_ = extension->id();
   }
 
   const std::string& app_id() const { return app_id_; }

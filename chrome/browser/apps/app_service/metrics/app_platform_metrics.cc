@@ -482,11 +482,9 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kChromeApp:
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:
-      return ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kStandaloneBrowserExtension:
-      return ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(
-          GetStandaloneBrowserExtensionAppId(app_id));
+      return ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
     case AppType::kArc:
     case AppType::kWeb:
     case AppType::kSystemWeb: {

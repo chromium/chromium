@@ -211,13 +211,11 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     // The extension also has to match.
     if (!which_type_.Matches(app_window->GetExtension()))
       return;
-    std::string muxed_id =
-        lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
     std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
         app_window->GetNativeWindow());
     app_window_id_cache_[app_window] = window_id;
 
-    publisher_->OnAppWindowAdded(muxed_id, window_id);
+    publisher_->OnAppWindowAdded(app_window->GetExtension()->id(), window_id);
   }
 
   void OnAppWindowRemoved(extensions::AppWindow* app_window) override {
@@ -231,9 +229,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     if (it == app_window_id_cache_.end())
       return;
 
-    std::string muxed_id = apps::MuxId(profile_, app_window->extension_id());
     std::string window_id = it->second;
-    publisher_->OnAppWindowRemoved(muxed_id, window_id);
+    publisher_->OnAppWindowRemoved(app_window->extension_id(), window_id);
 
     app_window_id_cache_.erase(app_window);
   }
@@ -276,8 +273,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     apps::AppType app_type = which_type_.ChooseForChromeAppOrExtension(
         apps::AppType::kStandaloneBrowserChromeApp,
         apps::AppType::kStandaloneBrowserExtension);
-    auto app = std::make_unique<apps::App>(
-        app_type, lacros_extensions_util::MuxId(profile_, extension));
+    auto app = std::make_unique<apps::App>(app_type, extension->id());
     app->readiness = readiness;
     app->name = extension->name();
     app->short_name = extension->short_name();
@@ -487,7 +483,8 @@ void LacrosExtensionAppsPublisher::UpdateAppWindowMode(
     apps::WindowMode window_mode) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
+  bool success = lacros_extensions_util::GetProfileAndExtension(
+      app_id, &profile, &extension);
   if (!success)
     return;
 

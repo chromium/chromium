@@ -26,24 +26,14 @@ bool IsExtensionApp(const extensions::Extension* extension);
 const extensions::Extension* MaybeGetExtension(Profile* profile,
                                                const std::string& extension_id);
 
-// Returns a muxed id that consists of the profile base name joined to the
-// extension id.
-std::string MuxId(const Profile* profile,
-                  const extensions::Extension* extension);
-
-// Takes |muxed_id| and extracts the corresponding Profile* and Extension*. On
-// success, returns true and populates variables |output_profile| and
-// |output_extension|. We pass a Profile** and an Extension** instead of
-// Profile*& and Extension*& for clarity -- the root problem is that Profiles
-// and Extensions are always passed by raw pointer to begin with.
-bool DemuxId(const std::string& muxed_id,
-             Profile** output_profile,
-             const extensions::Extension** output_extension);
-
-// Same as DemuxId(), but requires the Extension* to be a v2 platform app.
-bool DemuxPlatformAppId(const std::string& muxed_id,
-                        Profile** output_profile,
-                        const extensions::Extension** output_extension);
+// Gets the profile and extension from |extension_id|. On success, returns true
+// and populates variables |output_profile| and |output_extension|. We pass a
+// Profile** and an Extension** instead of Profile*& and Extension*& for clarity
+// -- the root problem is that Profiles and Extensions are always passed by raw
+// pointer to begin with.
+bool GetProfileAndExtension(const std::string& extension_id,
+                            Profile** output_profile,
+                            const extensions::Extension** output_extension);
 
 }  // namespace lacros_extensions_util
 
