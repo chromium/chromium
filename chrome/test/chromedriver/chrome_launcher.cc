@@ -266,10 +266,8 @@ Status CheckVersion(const BrowserInfo& browser_info,
       LOG(WARNING) << "Unable to retrieve " << kBrowserShortName
                    << " version. Unable to verify browser compatibility.";
     } else if (browser_info.major_version == CHROME_VERSION_MAJOR + 1) {
-      // TODO(https://crbug.com/chromedriver/2656): Since we don't currently
-      // release ChromeDriver for dev or canary channels, allow using
-      // ChromeDriver version n (e.g., Beta) with Chrome version n+1 (e.g., Dev
-      // or Canary), with a warning.
+      // Allow using ChromeDriver version n (e.g. Beta) with Chrome version
+      // n+1 (e.g. Dev or Canary), with a warning.
       LOG(WARNING) << "This version of " << kChromeDriverProductFullName
                    << " has not been tested with " << kBrowserShortName
                    << " version " << browser_info.major_version << ".";
