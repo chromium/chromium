@@ -72,11 +72,8 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
 
         @Override
         public void onSheetOpened(@StateChangeReason int reason) {
-            if (mBottomSheetController.getCurrentSheetContent()
-                    != PasswordMigrationWarningView.this) {
-                return;
-            }
-            if (mScreenType != ScreenType.NONE && getContentView().isShown()) {
+            if (mBottomSheetController.getCurrentSheetContent() == PasswordMigrationWarningView.this
+                    && mScreenType != ScreenType.NONE && getContentView().isShown()) {
                 setFragment();
             }
         }
@@ -118,7 +115,8 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
 
     void setScreen(@ScreenType int screenType) {
         mScreenType = screenType;
-        if (getContentView().isShown()) {
+        if (mBottomSheetController.getCurrentSheetContent() == PasswordMigrationWarningView.this
+                && getContentView().isShown()) {
             setFragment();
         }
         // Makes sure the sheet is fully expanded.
