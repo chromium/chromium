@@ -52,7 +52,7 @@ void FakeHlsDataSource::Read(uint64_t pos,
   if (pos > data_.size()) {
     return std::move(cb).Run(HlsDataSource::ReadStatusCodes::kError);
   }
-  size_t len = std::min(size, data_.size() - pos);
+  size_t len = std::min(size, static_cast<size_t>(data_.size() - pos));
   memcpy(buf, &data_[pos], len);
   std::move(cb).Run(len);
 }
