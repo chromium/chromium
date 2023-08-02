@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -448,12 +449,14 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   if (use_pin_authentication_ && !is_resume_after_update_) {
     QS_LOG(INFO) << "Pin authentication completed!";
+    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/false);
     connection_->MarkConnectionAuthenticated();
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
     absl::optional<std::string> auth_token =
         nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
+    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/true);
     connection_->InitiateHandshake(
         *auth_token,
         base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted,

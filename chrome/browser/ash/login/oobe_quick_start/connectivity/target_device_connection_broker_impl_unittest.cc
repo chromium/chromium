@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
@@ -377,6 +378,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
   raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
       nullptr;
+  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
       std::make_unique<FakeQuickStartDecoder>();
@@ -685,6 +687,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Success) {
 
   connection()->HandleHandshakeResult(/*success=*/true);
   EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
+  histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted", true, 1);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Failed) {
@@ -707,6 +710,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Failed) {
 
   connection()->HandleHandshakeResult(/*success=*/false);
   EXPECT_FALSE(connection_lifecycle_listener_.connection_authenticated_);
+  histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted", true, 1);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
@@ -727,6 +731,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   ASSERT_TRUE(connection());
   EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
   EXPECT_NE(connection_lifecycle_listener_.authenticated_connection_, nullptr);
+  histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted", false, 1);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,

@@ -121,14 +121,15 @@ std::vector<uint8_t> BuildHandshakeMessage(
                               auth_message_serialized.end());
 }
 
-bool VerifyHandshakeMessage(base::span<const uint8_t> auth_message_bytes,
-                            const std::string& auth_token,
-                            std::array<uint8_t, 32> secret,
-                            DeviceRole role) {
+VerifyHandshakeMessageStatus VerifyHandshakeMessage(
+    base::span<const uint8_t> auth_message_bytes,
+    const std::string& auth_token,
+    std::array<uint8_t, 32> secret,
+    DeviceRole role) {
   absl::optional<proto::V1Message> v1_message =
       ParseAuthMessage(auth_message_bytes);
   if (!v1_message) {
-    return false;
+    return VerifyHandshakeMessageStatus::kFailedToParse;
   }
 
   absl::optional<std::vector<uint8_t>> decrypted_bytes =
@@ -139,28 +140,50 @@ bool VerifyHandshakeMessage(base::span<const uint8_t> auth_message_bytes,
                                           v1_message->nonce().end()));
   if (!decrypted_bytes) {
     QS_LOG(ERROR) << "Auth payload failed to decrypt.";
-    return false;
+    return VerifyHandshakeMessageStatus::kFailedToDecryptAuthPayload;
   }
 
   absl::optional<proto::V1Message::AuthenticationPayload> auth_payload =
       ParseAuthPayload(*decrypted_bytes);
   if (!auth_payload) {
-    return false;
+    return VerifyHandshakeMessageStatus::kFailedToParseAuthPayload;
   }
 
   if (auth_payload->role() != static_cast<int32_t>(role)) {
     QS_LOG(ERROR) << "AuthenticationPayload role does not match expected role ("
                   << (role == DeviceRole::kSource ? "Source" : "Target")
                   << ").";
-    return false;
+    return VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadRole;
   }
 
   if (auth_payload->auth_string() != auth_token) {
     QS_LOG(ERROR)
         << "AuthenticationPayload auth_string does not match auth token.";
-    return false;
+    return VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadAuthToken;
   }
-  return true;
+  return VerifyHandshakeMessageStatus::kSuccess;
+}
+
+quick_start_metrics::HandshakeErrorCode MapHandshakeStatusToErrorCode(
+    VerifyHandshakeMessageStatus handshake_status) {
+  switch (handshake_status) {
+    case VerifyHandshakeMessageStatus::kSuccess:
+      return quick_start_metrics::HandshakeErrorCode::
+          kInvalidHandshakeErrorCode;
+    case VerifyHandshakeMessageStatus::kFailedToParse:
+      return quick_start_metrics::HandshakeErrorCode::kFailedToParse;
+    case VerifyHandshakeMessageStatus::kFailedToDecryptAuthPayload:
+      return quick_start_metrics::HandshakeErrorCode::
+          kFailedToDecryptAuthPayload;
+    case VerifyHandshakeMessageStatus::kFailedToParseAuthPayload:
+      return quick_start_metrics::HandshakeErrorCode::kFailedToParseAuthPayload;
+    case VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadRole:
+      return quick_start_metrics::HandshakeErrorCode::
+          kUnexpectedAuthPayloadRole;
+    case VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadAuthToken:
+      return quick_start_metrics::HandshakeErrorCode::
+          kUnexpectedAuthPayloadAuthToken;
+  }
 }
 
 }  // namespace ash::quick_start::handshake

@@ -62,8 +62,19 @@ enum class NearbyConnectionsAdvertisingErrorCode {
   kFailedToStart,
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should be never modified
+// or deleted. Only additions possible.
 enum class HandshakeErrorCode {
-  kFailedToReadResponse,
+  kFailedToReadResponse = 0,
+  kFailedToParse = 1,
+  kFailedToDecryptAuthPayload = 2,
+  kFailedToParseAuthPayload = 3,
+  kUnexpectedAuthPayloadRole = 4,
+  kUnexpectedAuthPayloadAuthToken = 5,
+  kInvalidHandshakeErrorCode = 6,
+  kMaxValue = kInvalidHandshakeErrorCode,
 };
 
 // This enum is tied directly to a UMA enum defined in
@@ -160,11 +171,10 @@ void RecordNearbyConnectionsAdvertisementEnded(
     int duration,
     absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
-void RecordHandshakeStarted(int32_t session_id);
+void RecordHandshakeStarted(bool handshake_started);
 
-void RecordHandshakeResult(int32_t session_id,
-                           bool succeeded,
-                           int duration,
+void RecordHandshakeResult(bool succeeded,
+                           base::TimeDelta duration,
                            absl::optional<HandshakeErrorCode> error_code);
 
 void RecordMessageSent(MessageType message_type);

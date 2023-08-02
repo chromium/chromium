@@ -82,6 +82,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.HandshakeResult.Duration" units="ms"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Duration of handshake message sent till a response being verified. Recorded
+    when a response is received.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeResult.ErrorCode"
+    enum="QuickStartHandshakeResultErrorCode" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The error code associated with failing to successfully verify the handshake
+    response. Recorded when a response is received.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeResult.Succeeded" enum="BooleanSuccess"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether handshake response was parsed and verified. Recorded when receiving
+    a handshake response.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeStarted" enum="BooleanAttempted"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether handshake was attempted to authenticate connection. Handshake is
+    attempted when an incoming connection is accepted and using QR code
+    authentication. Recorded when an incoming connection is accepted.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.MessageReceived.DesiredMessageType"
     enum="QuickStartMessageType" expires_after="2023-12-01">
   <owner>bhartmire@google.com</owner>

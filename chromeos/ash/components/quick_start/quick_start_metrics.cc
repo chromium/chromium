@@ -44,6 +44,13 @@ constexpr const char kMessageReceivedDesiredMessageTypeName[] =
     "QuickStart.MessageReceived.DesiredMessageType";
 constexpr const char kMessageSentMessageTypeName[] =
     "QuickStart.MessageSent.MessageType";
+constexpr const char kHandshakeResultSucceededName[] =
+    "QuickStart.HandshakeResult.Succeeded";
+constexpr const char kHandshakeResultDurationName[] =
+    "QuickStart.HandshakeResult.Duration";
+constexpr const char kHandshakeResultErrorCodeName[] =
+    "QuickStart.HandshakeResult.ErrorCode";
+constexpr const char kHandshakeStartedName[] = "QuickStart.HandshakeStarted";
 
 std::string MapMessageTypeToMetric(MessageType message_type) {
   switch (message_type) {
@@ -118,15 +125,22 @@ void RecordNearbyConnectionsAdvertisementEnded(
   // TODO(279614071): Add advertising metrics.
 }
 
-void RecordHandshakeStarted(int32_t session_id) {
-  // TODO(279614284): Add FIDO assertion metrics.
+void RecordHandshakeStarted(bool handshake_started) {
+  base::UmaHistogramBoolean(kHandshakeStartedName, handshake_started);
 }
 
-void RecordHandshakeResult(int32_t session_id,
-                           bool succeded,
-                           int duration,
+void RecordHandshakeResult(bool succeeded,
+                           base::TimeDelta duration,
                            absl::optional<HandshakeErrorCode> error_code) {
-  // TODO(279614284): Add FIDO assertion metrics.
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(kHandshakeResultErrorCodeName,
+                                  error_code.value());
+  }
+  base::UmaHistogramBoolean(kHandshakeResultSucceededName, succeeded);
+  base::UmaHistogramTimes(kHandshakeResultDurationName, duration);
 }
 
 void RecordMessageSent(MessageType message_type) {

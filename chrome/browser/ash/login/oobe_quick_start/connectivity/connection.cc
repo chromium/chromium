@@ -317,6 +317,7 @@ void Connection::InitiateHandshake(const std::string& authentication_token,
       base::BindOnce(&Connection::OnHandshakeResponse,
                      weak_ptr_factory_.GetWeakPtr(), authentication_token,
                      std::move(callback)));
+  handshake_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void Connection::OnHandshakeResponse(
@@ -325,11 +326,29 @@ void Connection::OnHandshakeResponse(
     absl::optional<std::vector<uint8_t>> response_bytes) {
   if (!response_bytes) {
     QS_LOG(ERROR) << "Failed to read handshake response from NearbyConnection";
+    quick_start_metrics::RecordHandshakeResult(
+        /*success=*/false, /*duration=*/handshake_elapsed_timer_->Elapsed(),
+        /*error_code=*/
+        quick_start_metrics::HandshakeErrorCode::kFailedToReadResponse);
+    handshake_elapsed_timer_.reset();
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  bool success = handshake::VerifyHandshakeMessage(
-      *response_bytes, authentication_token, session_context_.shared_secret());
+  handshake::VerifyHandshakeMessageStatus status =
+      handshake::VerifyHandshakeMessage(*response_bytes, authentication_token,
+                                        session_context_.shared_secret());
+  bool success = status == handshake::VerifyHandshakeMessageStatus::kSuccess;
+  if (success) {
+    quick_start_metrics::RecordHandshakeResult(
+        /*success=*/true, /*duration=*/handshake_elapsed_timer_->Elapsed(),
+        /*error_code=*/absl::nullopt);
+  } else {
+    quick_start_metrics::RecordHandshakeResult(
+        /*success=*/false, /*duration=*/handshake_elapsed_timer_->Elapsed(),
+        /*error_code=*/
+        handshake::MapHandshakeStatusToErrorCode(status));
+  }
+  handshake_elapsed_timer_.reset();
   std::move(callback).Run(success);
 }
 
@@ -427,6 +446,10 @@ void Connection::OnResponseTimeout(QuickStartResponseType response_type) {
       /*listen_duration=*/kDefaultRoundTripTimeout,
       quick_start_metrics::MessageReceivedErrorCode::kTimeOut);
   message_elapsed_timer_.reset();
+  if (response_type == QuickStartResponseType::kHandshake &&
+      handshake_elapsed_timer_) {
+    handshake_elapsed_timer_.reset();
+  }
 }
 
 void Connection::OnResponseReceived(

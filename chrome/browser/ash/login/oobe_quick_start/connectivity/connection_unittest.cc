@@ -166,6 +166,11 @@ class ConnectionTest : public testing::Test {
         quick_start_metrics::MessageReceivedErrorCode::kDeserializationFailure);
   }
 
+  void OnHandshakeResponse(base::OnceCallback<void(bool)> callback) {
+    connection_->OnHandshakeResponse(kAuthToken, std::move(callback),
+                                     absl::nullopt);
+  }
+
   void TestMessageMetrics(
       bool should_succeed,
       quick_start_metrics::MessageType message_type,
@@ -250,6 +255,19 @@ class ConnectionTest : public testing::Test {
         }
         break;
     }
+  }
+
+  void TestHandshakeMetrics(
+      bool should_succeed,
+      absl::optional<quick_start_metrics::HandshakeErrorCode> error_code) {
+    if (!should_succeed) {
+      histogram_tester_.ExpectBucketCount(
+          "QuickStart.HandshakeResult.ErrorCode", error_code.value(), 1);
+    }
+    histogram_tester_.ExpectBucketCount("QuickStart.HandshakeResult.Succeeded",
+                                        should_succeed, 1);
+    histogram_tester_.ExpectTotalCount("QuickStart.HandshakeResult.Duration",
+                                       1);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -638,9 +656,10 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
 TEST_F(ConnectionTest, InitiateHandshake) {
   base::test::TestFuture<bool> future;
   connection_->InitiateHandshake(kAuthToken, future.GetCallback());
-  EXPECT_TRUE(handshake::VerifyHandshakeMessage(
-      fake_nearby_connection_->GetWrittenData(), kAuthToken, kSharedSecret,
-      handshake::DeviceRole::kTarget));
+  EXPECT_EQ(handshake::VerifyHandshakeMessage(
+                fake_nearby_connection_->GetWrittenData(), kAuthToken,
+                kSharedSecret, handshake::DeviceRole::kTarget),
+            handshake::VerifyHandshakeMessageStatus::kSuccess);
 
   std::vector<uint8_t> response = handshake::BuildHandshakeMessage(
       kAuthToken, kSharedSecret, kNonce, handshake::DeviceRole::kSource);
@@ -650,6 +669,7 @@ TEST_F(ConnectionTest, InitiateHandshake) {
       /*should_succeed=*/true,
       /*message_type=*/quick_start_metrics::MessageType::kHandshake,
       /*error_code=*/absl::nullopt);
+  TestHandshakeMetrics(/*should_succeed=*/true, /*error_code=*/absl::nullopt);
 }
 
 TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
@@ -662,6 +682,18 @@ TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
   // the target device. Should fail because it uses the wrong role.
   fake_nearby_connection_->AppendReadableData(written_payload);
   EXPECT_FALSE(future.Get());
+  TestHandshakeMetrics(/*should_succeed=*/false,
+                       /*error_code=*/quick_start_metrics::HandshakeErrorCode::
+                           kUnexpectedAuthPayloadRole);
+}
+
+TEST_F(ConnectionTest, EmptyHandshakeResponse) {
+  base::test::TestFuture<bool> future;
+  connection_->InitiateHandshake(kAuthToken, future.GetCallback());
+  OnHandshakeResponse(future.GetCallback());
+  TestHandshakeMetrics(/*should_succeed=*/false,
+                       /*error_code=*/quick_start_metrics::HandshakeErrorCode::
+                           kFailedToReadResponse);
 }
 
 TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {

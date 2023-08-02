@@ -90734,6 +90734,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Invalid advertisement error code"/>
 </enum>
 
+<enum name="QuickStartHandshakeResultErrorCode">
+  <int value="0" label="Error: Could not read response"/>
+  <int value="1" label="Error: Failed to parse message"/>
+  <int value="2" label="Error: Failed to decrypt authentication payload"/>
+  <int value="3" label="Error: Failed to parse authentication payload"/>
+  <int value="4"
+      label="Error: Authentication payload role does not match role"/>
+  <int value="5"
+      label="Error: Authentication payload auth token does not match auth
+             token"/>
+  <int value="6" label="Error: Invalid error code"/>
+</enum>
+
 <enum name="QuickStartMessageReceivedErrorCode">
   <int value="0" label="Timed out"/>
   <int value="1" label="Deserialization failure"/>

@@ -205,6 +205,7 @@ class Connection
   std::string challenge_b64url_;
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
   std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
+  std::unique_ptr<base::ElapsedTimer> handshake_elapsed_timer_;
 
   // Separate WeakPtrFactory for use with |OnResponseReceived()| to allow for
   // canceling the response.
