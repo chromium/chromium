@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <memory>
 
-#include "media/mojo/services/video_encoder_metrics_provider.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
@@ -32,27 +32,27 @@ Create(const std::string& url) {
   ukm::SourceId source_id = test_recorder->GetNewSourceID();
   test_recorder->UpdateSourceURL(source_id, GURL(url));
   mojo::Remote<mojom::VideoEncoderMetricsProvider> provider;
-  VideoEncoderMetricsProvider::Create(source_id,
-                                      provider.BindNewPipeAndPassReceiver());
+  MojoVideoEncoderMetricsProviderService::Create(
+      source_id, provider.BindNewPipeAndPassReceiver());
   return {std::move(test_recorder), std::move(provider)};
 }
 }  // namespace
 
-class VideoEncoderMetricsProviderTest
+class MojoVideoEncoderMetricsProviderServiceTest
     : public TestWithParam<testing::tuple<mojom::VideoEncoderUseCase,
                                           VideoCodecProfile,
                                           gfx::Size,
                                           bool,
                                           SVCScalabilityMode>> {
  public:
-  VideoEncoderMetricsProviderTest() = default;
-  ~VideoEncoderMetricsProviderTest() override = default;
+  MojoVideoEncoderMetricsProviderServiceTest() = default;
+  ~MojoVideoEncoderMetricsProviderServiceTest() override = default;
 
  protected:
   base::TestMessageLoop message_loop_;
 };
 
-TEST_F(VideoEncoderMetricsProviderTest, Create_NoUKMReport) {
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest, Create_NoUKMReport) {
   auto [test_recorder, provider] = Create(kTestURL);
   provider.reset();
   base::RunLoop().RunUntilIdle();
@@ -63,7 +63,8 @@ TEST_F(VideoEncoderMetricsProviderTest, Create_NoUKMReport) {
 #define EXPECT_UKM(name, value) \
   test_recorder->ExpectEntryMetric(entry, name, value)
 
-TEST_F(VideoEncoderMetricsProviderTest, CreateAndInitialize_ReportUKM) {
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
+       CreateAndInitialize_ReportUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
@@ -90,7 +91,7 @@ TEST_F(VideoEncoderMetricsProviderTest, CreateAndInitialize_ReportUKM) {
 }
 
 TEST_F(
-    VideoEncoderMetricsProviderTest,
+    MojoVideoEncoderMetricsProviderServiceTest,
     CreateAndInitializeAndSetSmallNumberEncodedFrameCount_ReportUKMWithOneBucket) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -118,7 +119,7 @@ TEST_F(
   EXPECT_UKM(UkmEntry::kWidthName, kEncodeSize.width());
 }
 
-TEST_P(VideoEncoderMetricsProviderTest,
+TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
        CreateAndInitializeAndSetEncodedFrameCount_ReportUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
   auto encoder_use_case = std::get<0>(GetParam());
@@ -151,7 +152,7 @@ TEST_P(VideoEncoderMetricsProviderTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    VideoEncoderMetricsProviderTest,
+    MojoVideoEncoderMetricsProviderServiceTest,
     ::testing::Combine(ValuesIn({
                            mojom::VideoEncoderUseCase::kCastMirroring,
                            mojom::VideoEncoderUseCase::kMediaRecorder,
@@ -174,7 +175,7 @@ INSTANTIATE_TEST_SUITE_P(
                            SVCScalabilityMode::kL3T3Key,
                        })));
 
-TEST_F(VideoEncoderMetricsProviderTest,
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        InitializeWithVerfiyLargeResoloution_ReportCappedResolutionUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -205,7 +206,7 @@ TEST_F(VideoEncoderMetricsProviderTest,
   EXPECT_UKM(UkmEntry::kWidthName, kWidth);
 }
 
-TEST_F(VideoEncoderMetricsProviderTest,
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CallSetEncodedFrameCounts_ReportUKMWithTheLastEncodedFrameCount) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -237,7 +238,7 @@ TEST_F(VideoEncoderMetricsProviderTest,
   EXPECT_UKM(UkmEntry::kWidthName, kWidth);
 }
 
-TEST_F(VideoEncoderMetricsProviderTest,
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CreateAndInitializeAndCallSetErrors_ReportUKMWithTheFirstError) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -271,7 +272,7 @@ TEST_F(VideoEncoderMetricsProviderTest,
   EXPECT_UKM(UkmEntry::kWidthName, kWidth);
 }
 
-TEST_F(VideoEncoderMetricsProviderTest,
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CallErrorAndNoCallSetEncodedFramesCount_ReportUKMWithTheFirstError) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -306,7 +307,7 @@ TEST_F(VideoEncoderMetricsProviderTest,
 }
 
 TEST_F(
-    VideoEncoderMetricsProviderTest,
+    MojoVideoEncoderMetricsProviderServiceTest,
     CallSetEncodedFrameCountsAndSetError_ReportUKMWithTheFirstErrorAndTheLastEncodedFrameCount) {
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -343,7 +344,7 @@ TEST_F(
   EXPECT_UKM(UkmEntry::kWidthName, kWidth);
 }
 
-TEST_F(VideoEncoderMetricsProviderTest,
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CreateAndTwoInitializeAndSetEncodedFrameCounts_ReportTwoUKMs) {
   const struct {
     mojom::VideoEncoderUseCase use_case;

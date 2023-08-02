@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/video_encoder_metrics_provider.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 
 #include <algorithm>
 
@@ -14,23 +14,24 @@
 namespace media {
 
 // static
-void VideoEncoderMetricsProvider::Create(
+void MojoVideoEncoderMetricsProviderService::Create(
     ukm::SourceId source_id,
     mojo::PendingReceiver<mojom::VideoEncoderMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new VideoEncoderMetricsProvider(source_id)),
+      base::WrapUnique(new MojoVideoEncoderMetricsProviderService(source_id)),
       std::move(receiver));
 }
 
-VideoEncoderMetricsProvider::VideoEncoderMetricsProvider(
+MojoVideoEncoderMetricsProviderService::MojoVideoEncoderMetricsProviderService(
     ukm::SourceId source_id)
     : source_id_(source_id) {}
 
-VideoEncoderMetricsProvider::~VideoEncoderMetricsProvider() {
+MojoVideoEncoderMetricsProviderService::
+    ~MojoVideoEncoderMetricsProviderService() {
   ReportUKMIfNeeded();
 }
 
-void VideoEncoderMetricsProvider::ReportUKMIfNeeded() const {
+void MojoVideoEncoderMetricsProviderService::ReportUKMIfNeeded() const {
   // If Initialize() is not called, no UKM is reported.
   if (!initialized_) {
     return;
@@ -67,7 +68,7 @@ void VideoEncoderMetricsProvider::ReportUKMIfNeeded() const {
   // TODO(b/275663480): Report UMAs.
 }
 
-void VideoEncoderMetricsProvider::Initialize(
+void MojoVideoEncoderMetricsProviderService::Initialize(
     mojom::VideoEncoderUseCase encoder_use_case,
     VideoCodecProfile codec_profile,
     const gfx::Size& encode_size,
@@ -84,12 +85,13 @@ void VideoEncoderMetricsProvider::Initialize(
   svc_mode_ = svc_mode;
 }
 
-void VideoEncoderMetricsProvider::SetEncodedFrameCount(
+void MojoVideoEncoderMetricsProviderService::SetEncodedFrameCount(
     uint64_t num_encoded_frames) {
   num_encoded_frames_ = num_encoded_frames;
 }
 
-void VideoEncoderMetricsProvider::SetError(const EncoderStatus& status) {
+void MojoVideoEncoderMetricsProviderService::SetError(
+    const EncoderStatus& status) {
   CHECK(!status.is_ok());
   if (encoder_status_.is_ok()) {
     encoder_status_ = status;

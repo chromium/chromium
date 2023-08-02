@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MOJO_SERVICES_VIDEO_ENCODER_METRICS_PROVIDER_H_
-#define MEDIA_MOJO_SERVICES_VIDEO_ENCODER_METRICS_PROVIDER_H_
+#ifndef MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODER_METRICS_PROVIDER_SERVICE_H_
+#define MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODER_METRICS_PROVIDER_SERVICE_H_
 
 #include "media/base/encoder_status.h"
 #include "media/base/svc_scalability_mode.h"
@@ -16,14 +16,14 @@
 namespace media {
 
 // See mojom::VideoEncoderMetricsProvider for documentation.
-class MEDIA_MOJO_EXPORT VideoEncoderMetricsProvider
+class MEDIA_MOJO_EXPORT MojoVideoEncoderMetricsProviderService
     : public mojom::VideoEncoderMetricsProvider {
  public:
   static void Create(
       ukm::SourceId source_id,
       mojo::PendingReceiver<mojom::VideoEncoderMetricsProvider> receiver);
 
-  ~VideoEncoderMetricsProvider() override;
+  ~MojoVideoEncoderMetricsProviderService() override;
 
   // mojom::VideoEncoderMetricsProvider implementation.
   void Initialize(mojom::VideoEncoderUseCase encoder_use_case,
@@ -35,7 +35,7 @@ class MEDIA_MOJO_EXPORT VideoEncoderMetricsProvider
   void SetError(const EncoderStatus& status) override;
 
  private:
-  explicit VideoEncoderMetricsProvider(ukm::SourceId source_id);
+  explicit MojoVideoEncoderMetricsProviderService(ukm::SourceId source_id);
 
   void ReportUKMIfNeeded() const;
 
@@ -51,4 +51,4 @@ class MEDIA_MOJO_EXPORT VideoEncoderMetricsProvider
   EncoderStatus encoder_status_;
 };
 }  // namespace media
-#endif  // MEDIA_MOJO_SERVICES_VIDEO_ENCODER_METRICS_PROVIDER_H_
+#endif  // MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODER_METRICS_PROVIDER_SERVICE_H_

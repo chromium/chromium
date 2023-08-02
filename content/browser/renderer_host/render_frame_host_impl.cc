@@ -11553,8 +11553,8 @@ void RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver(
   // while prerendering. This is ensured as the BrowserInterfaceBinders defers
   // binding until the frame's activation.
   CHECK(!IsInLifecycleState(LifecycleState::kPrerendering));
-  media::VideoEncoderMetricsProvider::Create(GetPageUkmSourceId(),
-                                             std::move(receiver));
+  media::MojoVideoEncoderMetricsProviderService::Create(GetPageUkmSourceId(),
+                                                        std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

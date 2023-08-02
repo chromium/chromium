@@ -49,7 +49,7 @@
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
-#include "media/mojo/services/video_encoder_metrics_provider.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -314,8 +314,8 @@ void CastMirroringServiceHost::GetVideoCaptureHost(
 
 void CastMirroringServiceHost::GetVideoEncoderMetricsProvider(
     mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver) {
-  media::VideoEncoderMetricsProvider::Create(ukm::NoURLSourceId(),
-                                             std::move(receiver));
+  media::MojoVideoEncoderMetricsProviderService::Create(ukm::NoURLSourceId(),
+                                                        std::move(receiver));
 }
 
 void CastMirroringServiceHost::SetVideoCaptureHost(
