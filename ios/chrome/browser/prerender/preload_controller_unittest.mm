@@ -7,7 +7,10 @@
 #import "base/ios/device_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/prerender/preload_controller.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -64,6 +67,10 @@ class PreloadControllerTest : public PlatformTest {
 
     controller_ = [[PreloadController alloc]
         initWithBrowserState:chrome_browser_state_.get()];
+
+    // Enable URL filtering feature for supervised users.
+    scoped_feature_list_.InitAndEnableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
   // Set the "Preload webpages" setting to "Always".
@@ -106,6 +113,8 @@ class PreloadControllerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   std::unique_ptr<TestNetworkChangeNotifier> network_change_notifier_;
   PreloadController* controller_;
 };
@@ -188,6 +197,23 @@ TEST_F(PreloadControllerTest, TestIsPrerenderingEnabled_preloadNever) {
   EXPECT_FALSE(controller_.enabled);
 
   SimulateCellularConnection();
+  EXPECT_FALSE(controller_.enabled);
+}
+
+TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
+  // Never prerender pages for supervised users regardless of the setting for
+  // "Preload Webpages".
+  supervised_user::EnableParentalControls(*chrome_browser_state_->GetPrefs());
+
+  SimulateWiFiConnection();
+
+  PreloadWebpagesAlways();
+  EXPECT_FALSE(controller_.enabled);
+
+  PreloadWebpagesWiFiOnly();
+  EXPECT_FALSE(controller_.enabled);
+
+  PreloadWebpagesNever();
   EXPECT_FALSE(controller_.enabled);
 }
 

@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/itunes_urls",
   "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/supervised_user",
   "+ios/chrome/browser/tabs",
   "+ios/chrome/browser/ntp",
   "+ios/chrome/browser/sessions",

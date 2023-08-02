@@ -15,6 +15,8 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/download/mime_type_util.h"
@@ -25,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -87,6 +90,15 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   base::FieldTrial* trial =
       base::FieldTrialList::Find(kTabEvictionFieldTrialName);
   return trial && trial->group_name() == kPrerenderTabEvictionTrialGroup;
+}
+
+// Returns true if the primary account is subject to parental controls and the
+// URL filtering control has been enabled.
+bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForBrowserState(browserState);
+  return supervised_user_service &&
+         supervised_user_service->IsURLFilteringEnabled();
 }
 
 // Returns whether `url` can be prerendered.
@@ -373,7 +385,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   if (IsPrerenderTabEvictionExperimentalGroup() ||
       ios::device_util::IsSingleCoreDevice() ||
       !ios::device_util::RamIsAtLeast512Mb() ||
-      net::NetworkChangeNotifier::IsOffline()) {
+      net::NetworkChangeNotifier::IsOffline() ||
+      IsSubjectToParentalControls(_browserState)) {
     return false;
   }
 
