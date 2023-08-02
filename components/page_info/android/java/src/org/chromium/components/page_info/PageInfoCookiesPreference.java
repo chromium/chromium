@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -44,6 +45,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
+    private Callback<Activity> mOnFeedbackClicked;
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
@@ -59,6 +61,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         public Callback<Boolean> onCheckedChangedCallback;
         public Runnable onClearCallback;
         public Runnable onCookieSettingsLinkClicked;
+        public Callback<Activity> onFeedbackLinkClicked;
         public boolean disableCookieDeletion;
         public CharSequence hostName;
     }
@@ -126,6 +129,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         updateCookieDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
+        mOnFeedbackClicked = params.onFeedbackLinkClicked;
         mHostName = params.hostName;
     }
 
@@ -176,9 +180,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
         boolean permanentException = (expiration == 0);
 
-        // TODO(crbug.com/1446230): Implement feedback click handling.
-        NoUnderlineClickableSpan feedbackSpan =
-                new NoUnderlineClickableSpan(getContext(), (view) -> {});
+        NoUnderlineClickableSpan feedbackSpan = new NoUnderlineClickableSpan(
+                getContext(), (view) -> { mOnFeedbackClicked.onResult(this.getActivity()); });
 
         if (blockingEnabled) {
             mThirdPartyCookiesTitle.setTitle(

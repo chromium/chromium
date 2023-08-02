@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,6 +22,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
@@ -83,6 +86,11 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     private String mOfflinePageCreationDate;
     private final TabCreator mTabCreator;
 
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+
+    static final String FEEDBACK_REPORT_TYPE =
+            "com.google.chrome.browser.page_info.USER_INITIATED_FEEDBACK_REPORT";
+
     public ChromePageInfoControllerDelegate(Context context, WebContents webContents,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
@@ -107,6 +115,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
 
         TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(EventConstants.PAGE_INFO_OPENED);
+
+        mHelpAndFeedbackLauncher = HelpAndFeedbackLauncherImpl.getForProfile(mProfile);
     }
 
     private void initOfflinePageParams() {
@@ -203,6 +213,17 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public void showCookieSettings() {
         SiteSettingsHelper.showCategorySettings(
                 mContext, mProfile, SiteSettingsCategory.Type.COOKIES);
+    }
+
+    @Override
+    public void showCookieFeedback(Activity activity) {
+        Tab tab = TabUtils.fromWebContents(mWebContents);
+
+        // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
+        // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
+        // matching an allow list rule.
+        mHelpAndFeedbackLauncher.showFeedback(
+                activity, tab.getOriginalUrl().getHost(), FEEDBACK_REPORT_TYPE);
     }
 
     @Override

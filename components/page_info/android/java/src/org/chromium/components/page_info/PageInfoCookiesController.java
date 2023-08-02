@@ -95,6 +95,7 @@ public class PageInfoCookiesController
         params.onCheckedChangedCallback = this::onCheckedChangedCallback;
         params.onClearCallback = this::onClearCookiesClicked;
         params.onCookieSettingsLinkClicked = getDelegate()::showCookieSettings;
+        params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
         mSubPage.setParams(params);
