@@ -1011,7 +1011,7 @@ class InterestGroupAuction::BuyerHelper
     // TODO(1457931): Implement reporting
 
     return std::make_unique<Bid>(
-        bid_role, matching_ad->metadata.value_or(""), bid,
+        bid_role, matching_ad->metadata.value_or("null"), bid,
         /*bid_currency=*/absl::nullopt,
         /*ad_cost=*/absl::nullopt, std::move(ad_descriptor),
         std::move(ad_component_descriptors),

@@ -149,15 +149,15 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   output.bid = input_dict->FindDouble("bid");
 
   base::Value::Dict* win_reporting_urls =
-      input_dict->FindDict("winReportingUrls");
+      input_dict->FindDict("winReportingURLs");
   if (win_reporting_urls) {
     base::Value::Dict* buyer_reporting =
-        win_reporting_urls->FindDict("buyerReportingUrls");
+        win_reporting_urls->FindDict("buyerReportingURLs");
     if (buyer_reporting) {
       output.buyer_reporting = ReportingURLs::TryParse(buyer_reporting);
     }
     base::Value::Dict* seller_reporting =
-        win_reporting_urls->FindDict("topLevelSellerReportingUrls");
+        win_reporting_urls->FindDict("topLevelSellerReportingURLs");
     if (seller_reporting) {
       output.seller_reporting = ReportingURLs::TryParse(seller_reporting);
     }
@@ -179,7 +179,7 @@ absl::optional<BiddingAndAuctionResponse::ReportingURLs>
 BiddingAndAuctionResponse::ReportingURLs::TryParse(
     base::Value::Dict* input_dict) {
   ReportingURLs output;
-  std::string* maybe_reporting_url = input_dict->FindString("reportingUrl");
+  std::string* maybe_reporting_url = input_dict->FindString("reportingURL");
   if (maybe_reporting_url) {
     GURL reporting_url(*maybe_reporting_url);
     if (reporting_url.is_valid() &&
@@ -188,7 +188,7 @@ BiddingAndAuctionResponse::ReportingURLs::TryParse(
     }
   }
   base::Value::Dict* interaction_reporting =
-      input_dict->FindDict("interactionReportingUrls");
+      input_dict->FindDict("interactionReportingURLs");
   if (interaction_reporting) {
     std::vector<std::pair<std::string, GURL>> beacon_urls;
     for (const auto interaction : *interaction_reporting) {

@@ -254,21 +254,21 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(
-              CreateValidResponseDict().Set("winReportingUrls", "not a dict")),
+              CreateValidResponseDict().Set("winReportingURLs", "not a dict")),
           CreateExpectedValidResponse(),  // ignore the error
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls", base::Value(base::Value::Dict().Set(
-                                      "buyerReportingUrls", "not a dict")))),
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "buyerReportingURLs", "not a dict")))),
           CreateExpectedValidResponse(),  // ignore the error
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls", base::Value(base::Value::Dict().Set(
-                                            "reportingUrl", "not a URL")))))),
+                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+                                            "reportingURL", "not a URL")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.buyer_reporting.emplace();
@@ -278,10 +278,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls", base::Value(base::Value::Dict().Set(
-                                            "reportingUrl", kUntrustedURL)))))),
+                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+                                            "reportingURL", kUntrustedURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.buyer_reporting.emplace();
@@ -291,10 +291,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls", base::Value(base::Value::Dict().Set(
-                                            "reportingUrl", kReportingURL)))))),
+                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+                                            "reportingURL", kReportingURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.buyer_reporting.emplace();
@@ -304,11 +304,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls",
+                  "buyerReportingURLs",
                   base::Value(base::Value::Dict().Set(
-                      "interactionReportingUrls", "not a dict")))))),
+                      "interactionReportingURLs", "not a dict")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.buyer_reporting.emplace();
@@ -318,11 +318,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls",
+                  "buyerReportingURLs",
                   base::Value(base::Value::Dict().Set(
-                      "interactionReportingUrls",
+                      "interactionReportingURLs",
                       base::Value(base::Value::Dict().Set("click", 5)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -333,10 +333,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls", base::Value(base::Value::Dict().Set(
-                                            "interactionReportingUrls",
+                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+                                            "interactionReportingURLs",
                                             base::Value(base::Value::Dict().Set(
                                                 "click", kUntrustedURL)))))))),
           []() {
@@ -348,10 +348,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "buyerReportingUrls", base::Value(base::Value::Dict().Set(
-                                            "interactionReportingUrls",
+                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+                                            "interactionReportingURLs",
                                             base::Value(base::Value::Dict().Set(
                                                 "click", kReportingURL)))))))),
           []() {
@@ -364,17 +364,17 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
-              base::Value(base::Value::Dict().Set("topLevelSellerReportingUrls",
+              "winReportingURLs",
+              base::Value(base::Value::Dict().Set("topLevelSellerReportingURLs",
                                                   "not a dict")))),
           CreateExpectedValidResponse(),  // ignore the error
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls", base::Value(base::Value::Dict().Set(
-                                      "topLevelSellerReportingUrls",
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "topLevelSellerReportingURLs",
                                       base::Value(base::Value::Dict().Set(
-                                          "reportingUrl", "not a URL")))))),
+                                          "reportingURL", "not a URL")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.seller_reporting.emplace();
@@ -384,10 +384,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls", base::Value(base::Value::Dict().Set(
-                                      "topLevelSellerReportingUrls",
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "topLevelSellerReportingURLs",
                                       base::Value(base::Value::Dict().Set(
-                                          "reportingUrl", kUntrustedURL)))))),
+                                          "reportingURL", kUntrustedURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.seller_reporting.emplace();
@@ -397,10 +397,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls", base::Value(base::Value::Dict().Set(
-                                      "topLevelSellerReportingUrls",
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "topLevelSellerReportingURLs",
                                       base::Value(base::Value::Dict().Set(
-                                          "reportingUrl", kReportingURL)))))),
+                                          "reportingURL", kReportingURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.seller_reporting.emplace();
@@ -410,11 +410,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "topLevelSellerReportingUrls",
+                  "topLevelSellerReportingURLs",
                   base::Value(base::Value::Dict().Set(
-                      "interactionReportingUrls", "not a dict")))))),
+                      "interactionReportingURLs", "not a dict")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.seller_reporting.emplace();
@@ -424,11 +424,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls",
+              "winReportingURLs",
               base::Value(base::Value::Dict().Set(
-                  "topLevelSellerReportingUrls",
+                  "topLevelSellerReportingURLs",
                   base::Value(base::Value::Dict().Set(
-                      "interactionReportingUrls",
+                      "interactionReportingURLs",
                       base::Value(base::Value::Dict().Set("click", 5)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -439,10 +439,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls", base::Value(base::Value::Dict().Set(
-                                      "topLevelSellerReportingUrls",
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "topLevelSellerReportingURLs",
                                       base::Value(base::Value::Dict().Set(
-                                          "interactionReportingUrls",
+                                          "interactionReportingURLs",
                                           base::Value(base::Value::Dict().Set(
                                               "click", kUntrustedURL)))))))),
           []() {
@@ -454,10 +454,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingUrls", base::Value(base::Value::Dict().Set(
-                                      "topLevelSellerReportingUrls",
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "topLevelSellerReportingURLs",
                                       base::Value(base::Value::Dict().Set(
-                                          "interactionReportingUrls",
+                                          "interactionReportingURLs",
                                           base::Value(base::Value::Dict().Set(
                                               "click", kReportingURL)))))))),
           []() {

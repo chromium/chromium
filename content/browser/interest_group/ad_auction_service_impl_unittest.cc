@@ -8458,16 +8458,16 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
     "biddingGroups": {
       "https://a.test/": [0]
       },
-    "winReportingUrls": {
-      "buyerReportingUrls": {
-        "reportingUrl": "https://d.test/buyerReporting",
-        "interactionReportingUrls": {
+    "winReportingURLs": {
+      "buyerReportingURLs": {
+        "reportingURL": "https://d.test/buyerReporting",
+        "interactionReportingURLs": {
           "click": "https://e.test/buyerInteractionReporting"
           }
         },
-      "topLevelSellerReportingUrls": {
-        "reportingUrl": "https://d.test/sellerReporting",
-        "interactionReportingUrls": {
+      "topLevelSellerReportingURLs": {
+        "reportingURL": "https://d.test/sellerReporting",
+        "interactionReportingURLs": {
           "click": "https://e.test/sellerInteractionReporting"
           }
         }
@@ -8476,11 +8476,10 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   */
   // Converted to base64 with `cat | sed 's/#.*//' | xxd -r -p | gzip | base64`
   ASSERT_TRUE(base::Base64Decode(
-      "AgAAAMgfiwgAAAAAAAADhZBNCsIwEIU9hiC61k279wIiFIVKD5Amgw1NkziZ/"
-      "rj0KBW8p6Wl0JSiy3m87/"
-      "Exn5yJGLQATOKoyoisO4YhDwgchUwEGRWqSKUQUt9PaErrWjO22NB6rWwtdQzWIHWtBJV7Y1"
-      "o+Af1M4eRstuOKGFZ8oFlLTYCMkzT+dAtcSZ43+5GHCX9egJoNGRtBBeoGSv2W2s2knE/"
-      "8tzrMrIaBJa1HP9V1+q9eWAGCM3ToxddaA87//QX3lE15swEAAA==",
+      "AgAAAMcfiwgAAAAAAAADhZBBCsIwEEU9hiC61k279wIiFIWKB0iTwQbTJE6mbVx6lAre09JS"
+      "aErR5Xz+e3zmc2ciBS0Ar2lS5UTW7eOYRwSOYiainApVZFIIqW8HNKV1jRlarG+"
+      "9FraWOgVrkNpW63FvzMonYJgpHJ1+PVhEbwkBv5SaABknaUJ1A1xJfvfbgYcRf5yB/"
+      "IqMTaACdQGlfo/aTEa5kPi/ajdZ1QvmZj06VdvpvnpiBQjO0GEQn2sNOP33Fyx+ip+zAQAA",
       &response));
 
   network_responder_->RegisterReportResponse("/buyerReporting",
