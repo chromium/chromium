@@ -136,7 +136,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     if (!cookie_refresh_service_) {
       cookie_refresh_service_ =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
-              fake_unexportable_key_service_, &signin_client_);
+              fake_unexportable_key_service_, &prefs_, &signin_client_);
       cookie_refresh_service_->set_controller_factory_for_testing(
           base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
                                   GetBoundSessionCookieController,

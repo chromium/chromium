@@ -30,8 +30,9 @@ const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
+    PrefService* pref_service,
     SigninClient* client)
-    : key_service_(key_service), client_(client) {}
+    : key_service_(key_service), pref_service_(pref_service), client_(client) {}
 
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
@@ -75,7 +76,7 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
 }
 
 bool BoundSessionCookieRefreshServiceImpl::IsBoundSession() const {
-  return client_->GetPrefs()->HasPrefPath(kRegistrationParamsPref);
+  return pref_service_->HasPrefPath(kRegistrationParamsPref);
 }
 
 chrome::mojom::BoundSessionParamsPtr
@@ -162,15 +163,14 @@ bool BoundSessionCookieRefreshServiceImpl::PersistRegistrationParams(
 
   std::string encoded_serialized_params;
   base::Base64Encode(serialized_params, &encoded_serialized_params);
-  client_->GetPrefs()->SetString(kRegistrationParamsPref,
-                                 encoded_serialized_params);
+  pref_service_->SetString(kRegistrationParamsPref, encoded_serialized_params);
   return true;
 }
 
 absl::optional<bound_session_credentials::RegistrationParams>
 BoundSessionCookieRefreshServiceImpl::GetRegistrationParams() {
   std::string encoded_params_str =
-      client_->GetPrefs()->GetString(kRegistrationParamsPref);
+      pref_service_->GetString(kRegistrationParamsPref);
   if (encoded_params_str.empty()) {
     return absl::nullopt;
   }
@@ -192,7 +192,7 @@ void BoundSessionCookieRefreshServiceImpl::OnBoundSessionParamsChanged() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
-  client_->GetPrefs()->ClearPref(kRegistrationParamsPref);
+  pref_service_->ClearPref(kRegistrationParamsPref);
   OnBoundSessionUpdated();
 }
 

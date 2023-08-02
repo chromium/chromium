@@ -64,7 +64,8 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<BoundSessionCookieRefreshService>
       bound_session_cookie_refresh_service =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
-              *key_service, ChromeSigninClientFactory::GetForProfile(profile));
+              *key_service, profile->GetPrefs(),
+              ChromeSigninClientFactory::GetForProfile(profile));
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
 }

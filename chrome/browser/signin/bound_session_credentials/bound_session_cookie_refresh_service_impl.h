@@ -20,6 +20,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SigninClient;
+class PrefService;
 
 namespace unexportable_keys {
 class UnexportableKeyService;
@@ -35,6 +36,7 @@ class BoundSessionCookieRefreshServiceImpl
  public:
   explicit BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
+      PrefService* pref_service,
       SigninClient* client);
 
   ~BoundSessionCookieRefreshServiceImpl() override;
@@ -111,6 +113,7 @@ class BoundSessionCookieRefreshServiceImpl
   void UpdateAllRenderers();
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
+  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<SigninClient> client_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
   RendererBoundSessionParamsUpdaterDelegate renderer_updater_;
