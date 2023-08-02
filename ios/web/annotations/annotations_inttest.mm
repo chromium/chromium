@@ -162,11 +162,12 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
 
   // Loads given `html` and waits until text is extracted.
   void LoadHtmlAndExtractText(const std::string& html) {
+    int seq_id = observer()->seq_id();
     ASSERT_TRUE(LoadHtml(html));
     ASSERT_TRUE(WaitForWebFramesCount(1));
 
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-      return !observer()->extracted_text().empty();
+      return observer()->seq_id() > seq_id;
     }));
   }
 
@@ -255,6 +256,20 @@ TEST_F(AnnotationTextManagerTest, ExtractText) {
             "\nCastro Street, Mountain View, CA"
             "\nEnjoy",
             observer()->extracted_text());
+}
+
+// Tests intents disabled
+TEST_F(AnnotationTextManagerTest, ExtractTextDisabled) {
+  LoadHtmlAndExtractText("<html>"
+                         "<head>"
+                         "<meta name=\"chrome\" content=\"nointentdetection\"/>"
+                         "</head>"
+                         "<body>"
+                         "<p>You'll find it on</p>"
+                         "<p>Castro Street, <span>Mountain View</span>, CA</p>"
+                         "<p>Enjoy</p>"
+                         "</body></html>");
+  EXPECT_EQ("", observer()->extracted_text());
 }
 
 // Tests page decoration when page doesn't change.

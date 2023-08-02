@@ -110,6 +110,18 @@ class MutationsDuringClickTracker {
   }
 }
 
+function areIntentsDisabled() {
+  const metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+    if (metas[i]!.getAttribute('name') === 'chrome' &&
+        metas[i]!.getAttribute('content') === 'nointentdetection') {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const highlightTextColor = "#000";
 const highlightBackgroundColor = "rgba(20,111,225,0.25)";
 const decorationStyles = 'border-bottom-width: 1px; ' +
@@ -382,10 +394,14 @@ function enumerateSectionsNodes(process: EnumNodesFunction): void {
 }
 
 /**
- * Returns first `maxChars` text characters from the page.
+ * Returns first `maxChars` text characters from the page. If intents are
+ * disabled, return an empty string.
  * @param maxChars - maximum number of characters to parse out.
  */
 function getPageText(maxChars: number): string {
+  if (areIntentsDisabled()) {
+    return '';
+  }
   const parts: string[] = [];
   sections = [];
   enumerateTextNodes(document.body, function(node, index, text) {
