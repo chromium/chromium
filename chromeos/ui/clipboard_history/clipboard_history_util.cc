@@ -50,7 +50,12 @@ void SetQueryItemDescriptorsImpl(QueryItemDescriptorsImpl impl) {
 }
 
 QueryItemDescriptorsImpl::ResultType QueryItemDescriptors() {
-  return GetQueryItemDescriptorsImpl().Run();
+  // `SetQueryItemDescriptorsImpl()` may not have been called in unit tests.
+  if (auto& query_callback = GetQueryItemDescriptorsImpl()) {
+    return query_callback.Run();
+  }
+
+  return QueryItemDescriptorsImpl::ResultType();
 }
 
 void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl) {
@@ -63,7 +68,10 @@ void PasteClipboardItemById(
     const base::UnguessableToken& id,
     int event_flags,
     crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
-  GetPasteClipboardItemByIdImpl().Run(id, event_flags, paste_source);
+  // `SetPasteClipboardItemByIdImpl()` may not have been called in unit tests.
+  if (auto& paste_callback = GetPasteClipboardItemByIdImpl()) {
+    paste_callback.Run(id, event_flags, paste_source);
+  }
 }
 
 ui::ImageModel GetIconForDescriptor(
