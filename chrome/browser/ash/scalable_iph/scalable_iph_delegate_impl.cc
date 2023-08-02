@@ -9,6 +9,7 @@
 #include "apps/launcher.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -252,6 +253,10 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile)
   CHECK(power_manager_client);
   power_manager_client_observer_.Observe(power_manager_client);
 
+  AppListController* app_list_controller = AppListController::Get();
+  CHECK(app_list_controller);
+  app_list_controller_observer_.Observe(app_list_controller);
+
   MessageViewFactory::SetCustomNotificationViewFactory(
       kWallpaperNotificationType,
       base::BindRepeating(&WallpaperAshNotificationView::CreateWithPreview));
@@ -461,6 +466,7 @@ void ScalableIphDelegateImpl::OnActiveNetworksChanged(
 }
 
 void ScalableIphDelegateImpl::OnShellDestroying() {
+  app_list_controller_observer_.Reset();
   power_manager_client_observer_.Reset();
   session_observer_.Reset();
   shell_observer_.Reset();
@@ -479,6 +485,13 @@ void ScalableIphDelegateImpl::SuspendDone(base::TimeDelta sleep_duration) {
     return;
   }
   NotifyUnlockedOrSuspendDone();
+}
+
+void ScalableIphDelegateImpl::OnAppListVisibilityChanged(bool shown,
+                                                         int64_t display_id) {
+  for (DelegateObserver& observer : observers_) {
+    observer.OnAppListVisibilityChanged(shown);
+  }
 }
 
 void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {

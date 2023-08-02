@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -29,7 +31,8 @@ class ScalableIphDelegateImpl
       public chromeos::network_config::CrosNetworkConfigObserver,
       public ShellObserver,
       public SessionObserver,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public AppListControllerObserver {
  public:
   explicit ScalableIphDelegateImpl(Profile* profile);
   ~ScalableIphDelegateImpl() override;
@@ -64,6 +67,9 @@ class ScalableIphDelegateImpl
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
+  // AppListControllerObserver:
+  void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
+
  private:
   void SetHasOnlineNetwork(bool has_online_network);
   void QueryOnlineNetworkState();
@@ -93,6 +99,8 @@ class ScalableIphDelegateImpl
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observer_{this};
+  base::ScopedObservation<AppListController, AppListControllerObserver>
+      app_list_controller_observer_{this};
 
   base::WeakPtrFactory<ScalableIphDelegateImpl> weak_ptr_factory_{this};
 };

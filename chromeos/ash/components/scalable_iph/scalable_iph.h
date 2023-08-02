@@ -78,7 +78,7 @@ class ScalableIph : public KeyedService,
                     public IphSession::Delegate {
  public:
   // List of events ScalableIph supports.
-  enum class Event { kFiveMinTick = 0, kUnlocked };
+  enum class Event { kFiveMinTick = 0, kUnlocked, kAppListShown };
 
   ScalableIph(feature_engagement::Tracker* tracker,
               std::unique_ptr<ScalableIphDelegate> delegate);
@@ -94,6 +94,7 @@ class ScalableIph : public KeyedService,
   // ScalableIphDelegate::Observer:
   void OnConnectionChanged(bool online) override;
   void OnUnlockedOrSuspendDone() override;
+  void OnAppListVisibilityChanged(bool shown) override;
 
   // IphSession::Delegate:
   void PerformActionForIphSession(ActionType action_type) override;

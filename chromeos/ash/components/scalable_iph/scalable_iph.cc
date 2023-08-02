@@ -43,6 +43,7 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
       event_names_map({
           {ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick},
           {ScalableIph::Event::kUnlocked, kEventNameUnlocked},
+          {ScalableIph::Event::kAppListShown, kEventNameAppListShown},
       });
   return *event_names_map;
 }
@@ -323,6 +324,12 @@ void ScalableIph::OnConnectionChanged(bool online) {
 
 void ScalableIph::OnUnlockedOrSuspendDone() {
   RecordEvent(Event::kUnlocked);
+}
+
+void ScalableIph::OnAppListVisibilityChanged(bool shown) {
+  if (shown) {
+    RecordEvent(Event::kAppListShown);
+  }
 }
 
 void ScalableIph::PerformActionForIphSession(ActionType action_type) {

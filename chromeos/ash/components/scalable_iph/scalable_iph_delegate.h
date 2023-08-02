@@ -28,6 +28,9 @@ class ScalableIphDelegate {
     // Called when device is unlocked. If lock screen is not set up, it will be
     // called when the system resumes from suspension.
     virtual void OnUnlockedOrSuspendDone() {}
+
+    // Called when the visibility of an app list has changed.
+    virtual void OnAppListVisibilityChanged(bool shown) {}
   };
 
   // Have a virtual destructor as we can put `ScalableIphDelegate` in

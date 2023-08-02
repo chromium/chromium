@@ -49,6 +49,11 @@ constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
 // `SuspendDone` if the lock screen is not enabled.
 constexpr char kEventNameUnlocked[] = "ScalableIphUnlocked";
 
+// `AppListShown` event is recorded every time an app list (launcher) becomes
+// visible. An expected usage of this event is for `event_used` of an app list
+// IPH.
+constexpr char kEventNameAppListShown[] = "ScalableIphAppListShown";
+
 // Constants for custom conditions.
 // Naming convention:
 // Camel case starting with a capital letter. Note that param names must start

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
@@ -399,6 +400,15 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OnSuspendDoneWithLockScreen) {
   tester.Lock();
   SendSuspendDone();
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameAppListShown));
+
+  ash::AppListController* app_list_controller = ash::AppListController::Get();
+  CHECK(app_list_controller);
+  app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnection, Online) {
