@@ -322,6 +322,13 @@ class GpuIntegrationTest(
 
     # Append the new arguments.
     browser_options.AppendExtraBrowserArgs(browser_args)
+    # TODO(crbug.com/1469670): Handle this without accessing the private
+    # attribute once browser options have the ability to consolidate args
+    # themselves.
+    # pylint: disable=protected-access
+    browser_options._extra_browser_args = set(
+        _ConsolidateBrowserArgs(list(browser_options.extra_browser_args)))
+    # pylint: enable=protected-access
 
     # Override profile directory behavior if specified.
     if profile_dir:
