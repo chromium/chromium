@@ -30,5 +30,7 @@ bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
 
   // Return true if the primary identity is managed. Return false if there is
   // no account that is syncing (can be signed out or signed in with sync off).
+  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
+  // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
   return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSync);
 }

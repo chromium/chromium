@@ -126,6 +126,8 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
 }
 
 signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
+  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
+  // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
   return signin::ConsentLevel::kSync;
 }
 
