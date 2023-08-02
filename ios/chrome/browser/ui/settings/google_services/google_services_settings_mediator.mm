@@ -12,6 +12,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -82,7 +83,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // instead of this when available.
 // Returns true when sign-in can be enabled/disabled by the user from the
 // google service settings.
-bool IsSigninControllableByUser() {
+bool IsSigninControllableByUser(const PrefService* prefService) {
+  if (supervised_user::IsSubjectToParentalControls(prefService)) {
+    return false;
+  }
   BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
       GetApplicationContext()->GetLocalState()->GetInteger(
           prefs::kBrowserSigninPolicy));
@@ -193,7 +197,7 @@ bool GetStatusForSigninPolicy() {
 }
 
 - (TableViewItem*)allowChromeSigninItem {
-  if (IsSigninControllableByUser()) {
+  if (IsSigninControllableByUser(self.userPrefService)) {
     return
         [self switchItemWithItemType:AllowChromeSigninItemType
                         textStringID:
@@ -234,7 +238,7 @@ bool GetStatusForSigninPolicy() {
       case AllowChromeSigninItemType: {
         SyncSwitchItem* signinDisabledItem =
             base::mac::ObjCCast<SyncSwitchItem>(item);
-        if (IsSigninControllableByUser()) {
+        if (IsSigninControllableByUser(self.userPrefService)) {
           signinDisabledItem.on = self.allowChromeSigninPreference.value;
         } else {
           signinDisabledItem.on = NO;

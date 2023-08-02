@@ -105,8 +105,9 @@ bool EmitLogSegmentHistogram(const std::vector<AccountInfo>& primary_accounts) {
   return false;
 }
 
-bool IsSubjectToParentalControls(const PrefService& pref_service) {
-  return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
+bool IsSubjectToParentalControls(const PrefService* pref_service) {
+  return pref_service &&
+         pref_service->GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
 
 }  // namespace supervised_user

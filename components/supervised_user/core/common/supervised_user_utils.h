@@ -83,7 +83,7 @@ bool EmitLogSegmentHistogram(const std::vector<AccountInfo>& primary_accounts);
 
 // Returns true if the primary account is a child account subject to parental
 // controls.
-bool IsSubjectToParentalControls(const PrefService& pref_service);
+bool IsSubjectToParentalControls(const PrefService* pref_service);
 
 }  // namespace supervised_user
 

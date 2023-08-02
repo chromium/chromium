@@ -43,7 +43,7 @@
   _consumer = consumer;
   [_consumer
       updateParentalControlStatus:supervised_user::IsSubjectToParentalControls(
-                                      *_prefService)];
+                                      _prefService)];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -51,7 +51,7 @@
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kSupervisedUserId) {
     [_consumer updateParentalControlStatus:
-                   supervised_user::IsSubjectToParentalControls(*_prefService)];
+                   supervised_user::IsSubjectToParentalControls(_prefService)];
   }
 }
 
