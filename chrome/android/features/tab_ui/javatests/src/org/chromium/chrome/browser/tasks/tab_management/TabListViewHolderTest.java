@@ -57,6 +57,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -548,6 +549,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @DisabledTest(message = "crbug.com/1469464")
     public void testHiddenGC() {
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
