@@ -1,5 +1,15 @@
 Basic functionality of debugging FLEDGE worklets.
 Attached to target https://a.test:8443/inspector-protocol/resources/fledge_join.html
-Auction winner:undefined
+Attached to target https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+  Bidder instrumentation breakpoint set attempted
+Attached to target https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+  Bidder instrumentation breakpoint set attempted
+Paused at  with reason "EventListener".
+Console call of type: log arg0: generateBid running at https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:8
+Paused at  with reason "EventListener".
+Console call of type: log arg0: generateBid running at https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:8
+Attached to target https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+  Bidder instrumentation breakpoint set attempted
+Auction winner:urn:uuid:(randomized)
 DONE
 

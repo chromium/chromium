@@ -6,7 +6,7 @@ Detached: about:blank
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
     (title: a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
-Auction winner:undefined
+Auction winner:urn:uuid:(randomized)
 Attached to page target: about:blank
     (title: )
     (waiting: false)
@@ -17,6 +17,18 @@ Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
     (title: a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
-Auction winner:undefined
+Attached to auction_worklet target: https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+    (title: FLEDGE seller worklet for https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php)
+    (waiting: false)
+Attached to auction_worklet target: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    (title: FLEDGE bidder worklet for https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php)
+    (waiting: false)
+Detached: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+Detached: https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+Attached to auction_worklet target: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    (title: FLEDGE bidder worklet for https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php)
+    (waiting: false)
+Detached: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+Auction winner:urn:uuid:(randomized)
 DONE
 

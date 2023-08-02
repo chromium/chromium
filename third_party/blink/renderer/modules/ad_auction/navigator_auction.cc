@@ -3058,6 +3058,12 @@ ScriptPromise NavigatorAuction::createAuctionNonce(
     ScriptState* script_state,
     Navigator& navigator,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
+
   return From(ExecutionContext::From(script_state), navigator)
       .createAuctionNonce(script_state, exception_state);
 }

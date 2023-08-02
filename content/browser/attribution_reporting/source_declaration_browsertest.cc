@@ -6,6 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -14,6 +15,7 @@
 #include "content/browser/attribution_reporting/test/source_observer.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,9 +44,9 @@ using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
-class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
+class AttributionSourceBrowserTest : public ContentBrowserTest {
  public:
-  AttributionSourceDisabledBrowserTest() = default;
+  AttributionSourceBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -73,6 +75,19 @@ class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
+class AttributionSourceDisabledBrowserTest : public AttributionSourceBrowserTest {
+ public:
+  AttributionSourceDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {},
+        /*disabled_features=*/{features::kPrivacySandboxAdsAPIsM1Override});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verifies that impressions are not logged when the Runtime feature isn't
 // enabled.
 IN_PROC_BROWSER_TEST_F(AttributionSourceDisabledBrowserTest,
@@ -99,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDisabledBrowserTest,
 }
 
 class AttributionSourceDeclarationBrowserTest
-    : public AttributionSourceDisabledBrowserTest {
+    : public AttributionSourceBrowserTest {
  public:
   AttributionSourceDeclarationBrowserTest() = default;
 
