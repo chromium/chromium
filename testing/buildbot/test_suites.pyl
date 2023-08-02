@@ -324,26 +324,6 @@
         },
         'test': 'android_browsertests',
       },
-      'bf_cache_chrome_public_test_apk': {
-        'args': [
-          '--disable-features=BackForwardCache',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'test': 'chrome_public_test_apk',
-      },
-      'bf_cache_content_shell_test_apk': {
-        'args': [
-          '--disable-features=BackForwardCache',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
-        ],
-        'test': 'content_shell_test_apk',
-      },
     },
 
     'bfcache_generic_gtests': {
