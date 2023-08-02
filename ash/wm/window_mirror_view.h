@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -27,6 +28,8 @@ namespace ash {
 class ASH_EXPORT WindowMirrorView : public views::View,
                                     public aura::WindowObserver {
  public:
+  METADATA_HEADER(WindowMirrorView);
+
   explicit WindowMirrorView(aura::Window* source,
                             bool show_non_client_view = false,
                             bool sync_bounds = false);
