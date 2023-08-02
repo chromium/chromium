@@ -133,6 +133,7 @@ TEST(SincResamplerTest, Flush) {
   }
 }
 
+// This test is designed to be executed manually.
 TEST(SincResamplerTest, DISABLED_SetRatioBench) {
   MockSource mock_source;
   SincResampler resampler(kSampleRateRatio, SincResampler::kDefaultRequestSize,
