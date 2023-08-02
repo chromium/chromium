@@ -79,11 +79,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
       ReceiverContext context,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
-  void AddDatabaseBinding(
-      std::unique_ptr<blink::mojom::IDBDatabase> database,
-      mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabase>
-          pending_receiver);
-
   mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> CreateCursorBinding(
       const storage::BucketLocator& bucket_locator,
       std::unique_ptr<IndexedDBCursor> cursor);
@@ -150,8 +145,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   mojo::ReceiverSet<blink::mojom::IDBFactory,
                     IndexedDBDispatcherHost::ReceiverContext>
       receivers_;
-  mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBDatabase>
-      database_receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBCursor> cursor_receivers_;
 
   std::map<base::FilePath, std::unique_ptr<IndexedDBDataItemReader>>

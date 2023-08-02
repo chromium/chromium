@@ -203,14 +203,6 @@ void IndexedDBDispatcherHost::AddReceiver(
   receivers_.Add(this, std::move(pending_receiver), std::move(context));
 }
 
-void IndexedDBDispatcherHost::AddDatabaseBinding(
-    std::unique_ptr<blink::mojom::IDBDatabase> database,
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabase>
-        pending_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  database_receivers_.Add(std::move(database), std::move(pending_receiver));
-}
-
 mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>
 IndexedDBDispatcherHost::CreateCursorBinding(
     const storage::BucketLocator& bucket_locator,

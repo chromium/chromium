@@ -22,6 +22,7 @@
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -42,6 +43,19 @@ const char kBadTransactionMode[] = "Bad transaction mode";
 const char kTransactionAlreadyExists[] = "Transaction already exists";
 
 }  // namespace
+
+// static
+mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
+DatabaseImpl::CreateAndBind(std::unique_ptr<IndexedDBConnection> connection,
+                            const storage::BucketInfo& bucket,
+                            IndexedDBDispatcherHost* dispatcher_host) {
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      base::WrapUnique(
+          new DatabaseImpl(std::move(connection), bucket, dispatcher_host)),
+      pending_remote.InitWithNewEndpointAndPassReceiver());
+  return pending_remote;
+}
 
 DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
                            const storage::BucketInfo& bucket,

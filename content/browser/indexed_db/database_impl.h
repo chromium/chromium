@@ -32,14 +32,20 @@ class IndexedDBDispatcherHost;
 
 class DatabaseImpl : public blink::mojom::IDBDatabase {
  public:
+  static mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> CreateAndBind(
+      std::unique_ptr<IndexedDBConnection> connection,
+      const storage::BucketInfo& bucket,
+      IndexedDBDispatcherHost* dispatcher_host);
+
+  ~DatabaseImpl() override;
+
+ private:
   explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
                         const storage::BucketInfo& bucket,
                         IndexedDBDispatcherHost* dispatcher_host);
 
   DatabaseImpl(const DatabaseImpl&) = delete;
   DatabaseImpl& operator=(const DatabaseImpl&) = delete;
-
-  ~DatabaseImpl() override;
 
   // blink::mojom::IDBDatabase implementation
   void RenameObjectStore(int64_t transaction_id,
@@ -117,7 +123,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   void Abort(int64_t transaction_id) override;
   void DidBecomeInactive() override;
 
- private:
   storage::BucketLocator bucket_locator() {
     return bucket_info_.ToBucketLocator();
   }
