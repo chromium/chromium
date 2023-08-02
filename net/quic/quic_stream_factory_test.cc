@@ -12721,9 +12721,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCache) {
 
 // With different NetworkAnonymizationKeys enabled for HttpServerProperties,
 // there should only be one global CryptoCache per NetworkAnonymizationKey.
-// TODO(https://crbug.com/1335453): The test is flaky.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_CryptoConfigCacheWithNetworkAnonymizationKey) {
+TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkAnonymizationKey) {
   const char kUserAgentId1[] = "spoon";
   const char kUserAgentId2[] = "fork";
   const char kUserAgentId3[] = "another spoon";
