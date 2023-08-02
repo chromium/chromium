@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.base;
+package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,14 +11,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-
 /** Represents graphical decoration for the suggestion components. */
-public class SuggestionDrawableState {
+public class OmniboxDrawableState {
     /** Embedded drawable object. */
     public final Drawable drawable;
     /** Whether supplied drawable can be tinted */
@@ -32,7 +29,7 @@ public class SuggestionDrawableState {
     // chrome/android/native_java_unittests
     public final @DrawableRes int resourceId;
 
-    /** Helper to construct SuggestionDrawableState objects.  */
+    /** Helper to construct OmniboxDrawableState objects.  */
     public static final class Builder {
         private final Drawable mDrawable;
         private boolean mAllowTint;
@@ -46,12 +43,12 @@ public class SuggestionDrawableState {
          * @param drawable Drawable object to use.
          */
         private Builder(Drawable drawable) {
-            assert drawable != null : "SuggestionDrawableState needs a Drawable object";
+            assert drawable != null : "OmniboxDrawableState needs a Drawable object";
             mDrawable = drawable;
         }
 
         /**
-         * Associate Bitmap with built SuggestionDrawableState object.
+         * Associate Bitmap with built OmniboxDrawableState object.
          * @param ctx Current context.
          * @param bitmap Bitmap to use.
          */
@@ -60,7 +57,7 @@ public class SuggestionDrawableState {
         }
 
         /**
-         * Associate Color with built SuggestionDrawableState object.
+         * Associate Color with built OmniboxDrawableState object.
          *
          * @param color Color to use.
          */
@@ -69,17 +66,7 @@ public class SuggestionDrawableState {
         }
 
         /**
-         * Associate Color with built SuggestionDrawableState object.
-         *
-         * @param ctx Current context.
-         * @param colorRes Color resource to use.
-         */
-        public static Builder forColorRes(Context ctx, @ColorRes int colorRes) {
-            return new Builder(new ColorDrawable(ctx.getColor(colorRes)));
-        }
-
-        /**
-         * Associate Drawable with built SuggestionDrawableState object.
+         * Associate Drawable with built OmniboxDrawableState object.
          *
          * @param ctx Current context.
          * @param res Drawable resource to use.
@@ -89,7 +76,7 @@ public class SuggestionDrawableState {
         }
 
         /**
-         * Create new SuggestionDrawableState representing a supplied Drawable object.
+         * Create new OmniboxDrawableState representing a supplied Drawable object.
          *
          * @param d Drawable object to use.
          */
@@ -138,15 +125,15 @@ public class SuggestionDrawableState {
         }
 
         /**
-         * Build SuggestionDrawableState object.
+         * Build OmniboxDrawableState object.
          */
-        public SuggestionDrawableState build() {
-            return new SuggestionDrawableState(
+        public OmniboxDrawableState build() {
+            return new OmniboxDrawableState(
                     mDrawable, mUseRoundedCorners, mIsLarge, mAllowTint, mResourceId);
         }
     }
 
-    private SuggestionDrawableState(Drawable drawable, boolean useRoundedCorners, boolean isLarge,
+    private OmniboxDrawableState(Drawable drawable, boolean useRoundedCorners, boolean isLarge,
             boolean allowTint, @DrawableRes int resId) {
         this.drawable = drawable;
         this.useRoundedCorners = useRoundedCorners;
@@ -158,8 +145,8 @@ public class SuggestionDrawableState {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (!(object instanceof SuggestionDrawableState)) return false;
-        SuggestionDrawableState other = (SuggestionDrawableState) object;
+        if (!(object instanceof OmniboxDrawableState)) return false;
+        OmniboxDrawableState other = (OmniboxDrawableState) object;
 
         return isLarge == other.isLarge && useRoundedCorners == other.useRoundedCorners
                 && allowTint == other.allowTint && ObjectsCompat.equals(drawable, other.drawable);

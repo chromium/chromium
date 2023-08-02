@@ -14,10 +14,10 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -86,8 +86,8 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         // Ensure an image fetcher is available prior to requesting images.
         if (mImageSupplier == null) return;
         mImageSupplier.fetchImage(imageUrl, bitmap -> {
-            setSuggestionDrawableState(model,
-                    SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
+            setOmniboxDrawableState(model,
+                    OmniboxDrawableState.Builder.forBitmap(mContext, bitmap)
                             .setUseRoundedCorners(true)
                             .setLarge(true)
                             .build());
@@ -118,9 +118,8 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES, details[0].mMaxLines);
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES, details[1].mMaxLines);
 
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder
-                        .forDrawableRes(mContext, getSuggestionIcon(suggestion))
+        setOmniboxDrawableState(model,
+                OmniboxDrawableState.Builder.forDrawableRes(mContext, getSuggestionIcon(suggestion))
                         .setLarge(true)
                         .build());
 

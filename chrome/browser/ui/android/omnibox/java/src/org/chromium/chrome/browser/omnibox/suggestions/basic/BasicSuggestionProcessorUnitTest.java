@@ -34,10 +34,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -170,7 +170,7 @@ public class BasicSuggestionProcessorUnitTest {
 
     private void assertSuggestionTypeAndIcon(
             @OmniboxSuggestionType int expectedType, @DrawableRes int expectedIconRes) {
-        SuggestionDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
         @DrawableRes
         int actualIconRes = shadowOf(sds.drawable).getCreatedFromResId();
         Assert.assertEquals(
@@ -329,7 +329,7 @@ public class BasicSuggestionProcessorUnitTest {
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
-        final SuggestionDrawableState iconState = actions.get(0).icon;
+        final OmniboxDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(iconState.resourceId, R.drawable.btn_suggestion_refine);
     }
 
@@ -345,7 +345,7 @@ public class BasicSuggestionProcessorUnitTest {
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
-        final SuggestionDrawableState iconState = actions.get(0).icon;
+        final OmniboxDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(iconState.resourceId, R.drawable.switch_to_tab);
     }
 
@@ -355,12 +355,12 @@ public class BasicSuggestionProcessorUnitTest {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
         verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
         callback.getValue().onResult(mBitmap);
-        SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
         Assert.assertNotEquals(icon1, icon2);
@@ -392,12 +392,12 @@ public class BasicSuggestionProcessorUnitTest {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
         verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
         callback.getValue().onResult(null);
-        SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
         Assert.assertEquals(icon1, icon2);

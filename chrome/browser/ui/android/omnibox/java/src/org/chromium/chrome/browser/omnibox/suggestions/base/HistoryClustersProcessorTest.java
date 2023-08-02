@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
@@ -103,7 +104,7 @@ public class HistoryClustersProcessorTest {
                 propertyModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
         assertTrue(propertyModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
         assertNull(propertyModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
-        SuggestionDrawableState sds = propertyModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState sds = propertyModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(sds);
         assertEquals(R.drawable.action_journeys, sds.resourceId);
 

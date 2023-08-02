@@ -14,10 +14,10 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -128,9 +128,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         final SuggestionSpannable textLine1 =
                 getSuggestedQuery(suggestion, !isSearchSuggestion, !urlHighlighted);
 
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder
-                        .forDrawableRes(mContext, getSuggestionIcon(suggestion))
+        setOmniboxDrawableState(model,
+                OmniboxDrawableState.Builder.forDrawableRes(mContext, getSuggestionIcon(suggestion))
                         .setAllowTint(true)
                         .build());
 

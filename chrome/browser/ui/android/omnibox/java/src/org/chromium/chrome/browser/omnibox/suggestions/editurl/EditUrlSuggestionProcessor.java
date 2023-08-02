@@ -11,6 +11,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -109,14 +109,14 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT,
                 new SuggestionSpannable(suggestion.getDisplayText()));
 
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forDrawableRes(mContext, R.drawable.ic_globe_24dp)
+        setOmniboxDrawableState(model,
+                OmniboxDrawableState.Builder.forDrawableRes(mContext, R.drawable.ic_globe_24dp)
                         .setAllowTint(true)
                         .build());
 
         setActionButtons(model,
                 Arrays.asList(
-                        new Action(SuggestionDrawableState.Builder
+                        new Action(OmniboxDrawableState.Builder
                                            .forDrawableRes(mContext, R.drawable.ic_share_white_24dp)
                                            .setLarge(true)
                                            .setAllowTint(true)
@@ -125,7 +125,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         mContext, R.string.menu_share_page),
                                 null, this::onShareLink),
                         new Action(
-                                SuggestionDrawableState.Builder
+                                OmniboxDrawableState.Builder
                                         .forDrawableRes(mContext, R.drawable.ic_content_copy_black)
                                         .setLarge(true)
                                         .setAllowTint(true)
@@ -134,7 +134,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 () -> onCopyLink(suggestion)),
                         // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
                         new Action(
-                                SuggestionDrawableState.Builder
+                                OmniboxDrawableState.Builder
                                         .forDrawableRes(mContext, R.drawable.bookmark_edit_active)
                                         .setLarge(true)
                                         .setAllowTint(true)

@@ -11,10 +11,10 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -53,8 +53,8 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
 
     private void fetchEntityImage(GURL imageUrl, PropertyModel model) {
         mImageSupplier.fetchImage(imageUrl, bitmap -> {
-            setSuggestionDrawableState(model,
-                    SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
+            setOmniboxDrawableState(model,
+                    OmniboxDrawableState.Builder.forBitmap(mContext, bitmap)
                             .setUseRoundedCorners(true)
                             .setLarge(true)
                             .build());
@@ -75,8 +75,8 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
             return;
         }
 
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forColor(color)
+        setOmniboxDrawableState(model,
+                OmniboxDrawableState.Builder.forColor(color)
                         .setLarge(true)
                         .setUseRoundedCorners(true)
                         .build());
@@ -85,8 +85,8 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder
+        setOmniboxDrawableState(model,
+                OmniboxDrawableState.Builder
                         .forDrawableRes(mContext, R.drawable.ic_suggestion_magnifier)
                         .setAllowTint(true)
                         .build());

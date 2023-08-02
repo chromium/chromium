@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
@@ -83,8 +84,8 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
                 () -> onJourneysSuggestionClicked(pedal, position));
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
                 () -> onJourneysSuggestionClicked(pedal, position));
-        SuggestionDrawableState sds =
-                SuggestionDrawableState.Builder.forDrawableRes(mContext, pedal.icon.iconRes)
+        OmniboxDrawableState sds =
+                OmniboxDrawableState.Builder.forDrawableRes(mContext, pedal.icon.iconRes)
                         .setAllowTint(false)
                         .build();
         model.set(BaseSuggestionViewProperties.ICON, sds);

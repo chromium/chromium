@@ -14,12 +14,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -106,8 +106,8 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean isUrlSuggestion = suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL;
         final @DrawableRes int icon =
                 isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
+        setOmniboxDrawableState(model,
+                OmniboxDrawableState.Builder.forDrawableRes(mContext, icon)
                         .setAllowTint(true)
                         .build());
 
@@ -134,8 +134,8 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                         bitmap = Bitmap.createScaledBitmap(bitmap, (int) Math.round(scale * width),
                                 (int) Math.round(scale * height), true);
                     }
-                    setSuggestionDrawableState(model,
-                            SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
+                    setOmniboxDrawableState(model,
+                            OmniboxDrawableState.Builder.forBitmap(mContext, bitmap)
                                     .setUseRoundedCorners(true)
                                     .setLarge(true)
                                     .build());
@@ -170,12 +170,11 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);
         setActionButtons(model,
-                Arrays.asList(
-                        new Action(SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
-                                           .setLarge(true)
-                                           .setAllowTint(true)
-                                           .build(),
-                                iconString, announcementString, action)));
+                Arrays.asList(new Action(OmniboxDrawableState.Builder.forDrawableRes(mContext, icon)
+                                                 .setLarge(true)
+                                                 .setAllowTint(true)
+                                                 .build(),
+                        iconString, announcementString, action)));
     }
 
     @Override

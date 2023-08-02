@@ -31,6 +31,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -198,7 +199,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     private static <T extends View> void updateSuggestionIcon(
             PropertyModel model, BaseSuggestionView<T> baseView) {
         final ImageView rciv = baseView.decorationIcon;
-        final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
+        final OmniboxDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
             // Ensure the decoration icon size does not exceed the maximum edge size.
@@ -320,7 +321,7 @@ public final class BaseSuggestionViewBinder<T extends View>
 
     /** Update image view using supplied drawable state object. */
     private static void updateIcon(
-            ImageView view, SuggestionDrawableState sds, @ColorRes int tintRes) {
+            ImageView view, OmniboxDrawableState sds, @ColorRes int tintRes) {
         view.setVisibility(sds == null ? View.GONE : View.VISIBLE);
         if (sds == null) {
             // Release any drawable that is still attached to this view to reclaim memory.

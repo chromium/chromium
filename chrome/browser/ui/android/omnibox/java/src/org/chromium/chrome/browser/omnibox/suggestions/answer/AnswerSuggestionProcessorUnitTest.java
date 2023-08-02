@@ -32,10 +32,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -135,7 +135,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
         /** Get Drawable associated with the suggestion. */
         Drawable getIcon() {
-            final SuggestionDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
+            final OmniboxDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
             return state == null ? null : state.drawable;
         }
     }

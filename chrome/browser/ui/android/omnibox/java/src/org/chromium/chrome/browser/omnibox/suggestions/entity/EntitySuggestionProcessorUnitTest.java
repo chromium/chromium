@@ -35,10 +35,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -84,7 +84,7 @@ public class EntitySuggestionProcessorUnitTest {
 
         /** Get Drawable associated with the suggestion. */
         Drawable getIcon() {
-            final SuggestionDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
+            final OmniboxDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
             return state == null ? null : state.drawable;
         }
     }

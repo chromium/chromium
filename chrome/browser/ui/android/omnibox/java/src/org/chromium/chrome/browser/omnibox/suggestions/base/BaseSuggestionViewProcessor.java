@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -80,17 +81,16 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     /**
-     * Specify SuggestionDrawableState for suggestion decoration.
+     * Specify OmniboxDrawableState for suggestion decoration.
      *
-     * @param decoration SuggestionDrawableState object defining decoration for the suggestion.
+     * @param decoration OmniboxDrawableState object defining decoration for the suggestion.
      */
-    protected void setSuggestionDrawableState(
-            PropertyModel model, SuggestionDrawableState decoration) {
+    protected void setOmniboxDrawableState(PropertyModel model, OmniboxDrawableState decoration) {
         model.set(BaseSuggestionViewProperties.ICON, decoration);
     }
 
     /**
-     * Specify SuggestionDrawableState for action button.
+     * Specify OmniboxDrawableState for action button.
      *
      * @param model Property model to update.
      * @param actions List of actions for the suggestion.
@@ -124,12 +124,11 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
         setActionButtons(model,
-                Arrays.asList(
-                        new Action(SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
-                                           .setLarge(true)
-                                           .setAllowTint(true)
-                                           .build(),
-                                iconString, action)));
+                Arrays.asList(new Action(OmniboxDrawableState.Builder.forDrawableRes(mContext, icon)
+                                                 .setLarge(true)
+                                                 .setAllowTint(true)
+                                                 .build(),
+                        iconString, action)));
     }
 
     /**
@@ -227,8 +226,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
         mImageSupplier.fetchFavicon(url, icon -> {
             if (icon != null) {
-                setSuggestionDrawableState(model,
-                        SuggestionDrawableState.Builder.forBitmap(mContext, icon)
+                setOmniboxDrawableState(model,
+                        OmniboxDrawableState.Builder.forBitmap(mContext, icon)
                                 .setUseRoundedCorners(true)
                                 .build());
             }
