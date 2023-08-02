@@ -28,6 +28,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -97,11 +98,9 @@ struct DowncastTraits<StylePendingImage> {
 };
 
 inline bool StylePendingImage::IsEqual(const StyleImage& other) const {
-  if (!other.IsPendingImage()) {
-    return false;
-  }
-  const auto& other_pending = To<StylePendingImage>(other);
-  return base::ValuesEquivalent(value_, other_pending.value_);
+  // Ignore pending status when comparing; as long as the values are
+  // the same, the images should be considered equal, too.
+  return base::ValuesEquivalent(value_.Get(), other.CssValue());
 }
 
 }  // namespace blink

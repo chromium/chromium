@@ -246,6 +246,9 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     exclusions.insert(DebugField::font_);
   }
 
+  // See crbug.com/1469327. (This is a real bug, which we're hiding here.)
+  exclusions.insert(DebugField::filter_);
+
   // Images use instance equality rather than value equality (see
   // crbug.com/781461).
   if (!CSSPropertyEquality::PropertiesEqual(
@@ -2292,6 +2295,16 @@ void StyleResolver::CascadeAndApplyMatchedProperties(
               state.StyleBuilder())) {
         cascade.Apply(filter.Add(CSSProperty::kInherited, true));
       }
+#if DCHECK_IS_ON()
+      // Verify that our application went as planned.
+      scoped_refptr<const ComputedStyle> applied_style =
+          state.StyleBuilder().CloneStyle();
+      cascade.Apply(filter);
+      scoped_refptr<const ComputedStyle> correct_style =
+          state.StyleBuilder().CloneStyle();
+      DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(applied_style.get(),
+                                                          *correct_style));
+#endif
     } else {
       cascade.Apply(filter);
     }
