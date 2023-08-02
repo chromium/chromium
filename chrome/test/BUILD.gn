@@ -2795,8 +2795,10 @@ if (!is_android) {
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/web_applications/app_service",
         "//chromeos/constants",
+        "//chromeos/dbus/dlp:dlp",
         "//chromeos/ui/frame",
         "//components/account_manager_core:test_support",
+        "//components/file_access:test_support",
         "//ui/chromeos/styles:cros_tokens_color_mappings",
       ]
       sources += [
@@ -2808,6 +2810,7 @@ if (!is_android) {
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_data_transfer_notifier_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_rules_manager_impl_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate_browsertest.cc",
         "../browser/chromeos/video_conference/video_conference_media_listener_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",

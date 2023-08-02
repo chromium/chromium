@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_SCOPED_FILE_ACCESS_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_SCOPED_FILE_ACCESS_DELEGATE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,8 @@ class DlpScopedFileAccessDelegate
  private:
   friend class DlpScopedFileAccessDelegateTest;
   friend class DlpScopedFileAccessDelegateInteractiveUITest;
+  friend std::unique_ptr<DlpScopedFileAccessDelegate>
+  std::make_unique<DlpScopedFileAccessDelegate>(chromeos::DlpClient*&& client);
 
   // Starts a RequestFileAccess request to the daemon.
   void PostRequestFileAccessToDaemon(

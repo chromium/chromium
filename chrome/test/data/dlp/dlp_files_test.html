@@ -1,0 +1,161 @@
+<html>
+
+<head>
+    <script defer type="module" type="text/javascript">
+
+        let directory
+        let file
+        let worker = new Worker("dlp_files_test_worker.js");
+        let shared = new SharedWorker("dlp_files_test_worker.js");
+        shared.port.onmessage = (e) => {
+            console.log(e.data);
+        };
+        shared.port.start();
+
+        document.getElementById('write').addEventListener('click', async () => {
+            if (!directory) {
+                directory = await window.showDirectoryPicker({ mode: "readwrite" });
+            }
+            if ((await directory.queryPermission()) === 'granted') {
+                let dirFile = await directory.getFileHandle('write', { create: true });
+                let w = await dirFile.createWritable();
+                await w.write("test");
+                await w.close();
+            }
+        })
+        document.getElementById('save').addEventListener('click', async () => {
+            if (!file) {
+                file = await window.showSaveFilePicker({});
+            }
+            let w = await file.createWritable();
+            await w.write("test");
+            await w.close();
+        })
+        document.getElementById('touch').addEventListener('click', async () => {
+            file = await window.showSaveFilePicker({});
+        })
+        document.getElementById('read').addEventListener('click', async () => {
+            if (!file) {
+                [file] = await window.showOpenFilePicker({});
+            }
+            let r = await file.getFile();
+            let content = await r.text();
+            console.log(content);
+        })
+        document.getElementById('reset').addEventListener('click', async () => {
+            file = null;
+            directory = null;
+        })
+        document.getElementById('ded_write').addEventListener('click', async () => {
+            if (!directory) {
+                directory = await window.showDirectoryPicker({ mode: "readwrite" });
+            }
+            if ((await directory.queryPermission()) === 'granted') {
+                worker.postMessage({ 'action': 0, 'directory': directory });
+            }
+        })
+        document.getElementById('ded_save').addEventListener('click', async () => {
+            if (!file) {
+                file = await window.showSaveFilePicker({});
+            }
+            worker.postMessage({ 'action': 1, 'file': file });
+        })
+        document.getElementById('ded_read').addEventListener('click', async () => {
+            if (!file) {
+                [file] = await window.showOpenFilePicker({});
+            }
+            worker.postMessage({ 'action': 2, 'file': file });
+        })
+        document.getElementById('file').addEventListener('change', async (e) => {
+            try {
+                const content = await e.target.files[0].text();
+                console.log(content);
+            } catch (err) {
+                console.log("Could not read file.");
+                console.log(err.name + ": " + err.message);
+            }
+        })
+        document.getElementById('file_worker').addEventListener('change', async (e) => {
+            worker.postMessage({ 'action': 3, 'file': e.target.files[0] });
+        })
+        document.getElementById('file_shared').addEventListener('change', async (e) => {
+            shared.port.postMessage({ 'action': 3, 'file': e.target.files[0] });
+        })
+        document.getElementById('file_service').addEventListener('change', async (e) => {
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.active.postMessage({ 'action': 3, 'file': e.target.files[0], 'response': true });
+            });
+        })
+        document.getElementById('private').addEventListener('click', async () => {
+            const url = new URL(window.location);
+            url.pathname = "/private";
+            window.history.pushState({}, "", url);
+        })
+        document.getElementById('public').addEventListener('click', async () => {
+            const url = new URL(window.location);
+            url.pathname = "/public";
+            window.history.pushState({}, "", url);
+        })
+        const registerServiceWorker = async () => {
+            const registration = await navigator.serviceWorker.register("dlp_files_test_worker.js", { scope: "/" });
+            if (registration.installing) {
+                console.log("sw installing");
+            } else if (registration.waiting) {
+                console.log("sw waiting");
+            } else if (registration.active) {
+                console.log("sw active");
+            }
+            navigator.serviceWorker.onmessage = (e) => {
+                console.log(e.data);
+            };
+        }
+        registerServiceWorker();
+    </script>
+
+</head>
+
+<body>
+    <form id="form">
+        <dev>
+            <h3>Filesystem Access FrameHost</h3>
+            <input type="button" id="write" value="write" />
+            <input type="button" id="save" value="save" />
+            <input type="button" id="touch" value="touch" />
+            <input type="button" id="read" value="read" />
+            <input type="button" id="reset" value="reset" />
+        </dev>
+        <dev>
+            <h3>FileSystem Access DedicatedWorkerThread</h3>
+            <input type="button" id="ded_write" value="write" />
+            <input type="button" id="ded_save" value="save" />
+            <input type="button" id="ded_read" value="read" />
+        </dev>
+        <dev>
+            <h3>File API</h3>
+            <input type="file" id="file" />
+        </dev>
+        <dev>
+            <h3>File API DedicatedWorker</h3>
+            <input type="file" id="file_worker" value="file_worker" />
+        </dev>
+        <dev>
+            <h3>File API SharedWorker</h3>
+            <input type="file" id="file_shared" value="file_shared" />
+        </dev>
+        <dev>
+            <h3>File API ServiceWorker</h3>
+            <input type="file" id="file_service" value="file_service" />
+        </dev>
+        <dev>
+            <h3>Change url / history</h3>
+            <input type="button" id="private" value="private" />
+            <input type="button" id="public" value="public" />
+        </dev>
+        <dev>
+            <h3>Download Link</h3>
+            <a href="index.html" download> download </a>
+        </dev>
+    </form>
+</body>
+
+</html>
