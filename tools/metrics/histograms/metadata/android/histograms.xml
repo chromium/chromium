@@ -2703,7 +2703,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the amount of extra time that would be needed for the initial tab to
     be created before the delegate completes. Note that this metric undercounts
-    the rare case where two ChromeTabbedActity initial tabs are being created
+    the rare case where two ChromeTabbedActivity initial tabs are being created
     before the async customization completes (only the first is recorded).
     Recorded when the delegate completes customization successfully during
     startup, but too late to determine what kind of initial Tab to create.
@@ -2719,12 +2719,13 @@ chromium-metrics-reviews@google.com.
     Records the amount of extra time that would be needed for the initial tab to
     be created before the delegate completes for the delegate
     &quot;{CustomizationDelegate}&quot;. Note that this metric undercounts the
-    rare case where two ChromeTabbedActity initial tabs are being created before
-    the async customization completes (only the first is recorded). Recorded
-    when the delegate &quot;{CustomizationDelegate}&quot; completes
+    rare case where two ChromeTabbedActivity initial tabs are being created
+    before the async customization completes (only the first is recorded).
+    Recorded when the delegate &quot;{CustomizationDelegate}&quot; completes
     customization successfully during startup, but too late to determine what
     kind of initial Tab to create.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram
@@ -2735,7 +2736,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the amount of extra time that would be needed for the initial tab to
     be created before the delegate completes. Note that this metric undercounts
-    the rare case where two ChromeTabbedActity initial tabs are being created
+    the rare case where two ChromeTabbedActivity initial tabs are being created
     before the async customization completes (only the first is recorded).
     Recorded when there is no cached Partner Homepage and the delegate completes
     customization successfully during startup, but too late to determine what
@@ -2751,13 +2752,14 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the amount of extra time that would be needed for the initial tab to
     be created before the delegate completes. Note that this metric undercounts
-    the rare case where two ChromeTabbedActity initial tabs are being created
+    the rare case where two ChromeTabbedActivity initial tabs are being created
     before the async customization completes (only the first is recorded).
     Recorded when there is no cached Partner Homepage and the delegate
     &quot;{CustomizationDelegate}&quot; completes customization successfully
     during startup, but too late to determine what kind of initial Tab to
     create.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram name="Android.PartnerCustomization.HomepageCustomizationOutcome"
@@ -2791,6 +2793,7 @@ chromium-metrics-reviews@google.com.
     Homepage was correctly created when customization changes. Recorded at the
     end of customization or initial Tab creation, whichever is last.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram
@@ -2809,6 +2812,7 @@ chromium-metrics-reviews@google.com.
     customization changes. Recorded at the end of customization or initial Tab
     creation, whichever is last.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram
@@ -2821,6 +2825,7 @@ chromium-metrics-reviews@google.com.
     to initialize. Recorded when the delegate is loaded successfully during
     startup and ready to produce custom data.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram name="Android.PartnerCustomization.TaskCompletion"
@@ -2857,6 +2862,7 @@ chromium-metrics-reviews@google.com.
     Recorded when the async task is completed or canceled during Chrome's start
     up.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram
@@ -2877,6 +2883,7 @@ chromium-metrics-reviews@google.com.
     Recorded when the async task is completed or canceled during Chrome's start
     up when no homepage is already cached.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram
@@ -2892,6 +2899,7 @@ chromium-metrics-reviews@google.com.
     some possible reasons. Trying to use the PreloadApk delegate is only done
     when actually needed so these numbers should reflect actual usage attempts.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram
@@ -2907,6 +2915,7 @@ chromium-metrics-reviews@google.com.
     delegate is only done when actually needed so these numbers should reflect
     actual usage attempts.
   </summary>
+  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
 </histogram>
 
 <histogram name="Android.PartnerCustomization.Usage"
