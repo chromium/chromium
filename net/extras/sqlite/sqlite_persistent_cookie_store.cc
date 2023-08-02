@@ -126,14 +126,19 @@ namespace {
 // Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
 // Version 15 - 2021/07/01 - https://crrev.com/c/3001822
+//
+// Versions older than two years should be removed and marked as unsupported.
+// This was last done August 1, 2023. https://crrev.com/c/4701765
+// Be sure to update SQLitePersistentCookieStoreTest.TestInvalidVersionRecovery
+// to test the latest unsupported version number.
+//
+// Unsupported versions:
 // Version 14 - 2021/02/23 - https://crrev.com/c/2036899
 // Version 13 - 2020/10/28 - https://crrev.com/c/2505468
 // Version 12 - 2019/11/20 - https://crrev.com/c/1898301
 // Version 11 - 2019/04/17 - https://crrev.com/c/1570416
 // Version 10 - 2018/02/13 - https://crrev.com/c/906675
 // Version 9  - 2015/04/17 - https://codereview.chromium.org/1083623003
-//
-// Unsupported versions:
 // Version 8  - 2015/02/23 - https://codereview.chromium.org/876973003
 // Version 7  - 2013/12/16 - https://codereview.chromium.org/24734007
 // Version 6  - 2013/04/23 - https://codereview.chromium.org/14208017
@@ -553,67 +558,7 @@ class IncrementTimeDelta {
 
 // Initializes the cookies table, returning true on success.
 // The table cannot exist when calling this function.
-bool CreateV10Schema(sql::Database* db) {
-  DCHECK(!db->DoesTableExist("cookies"));
-
-  std::string stmt(base::StringPrintf(
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL DEFAULT 1,"
-      "is_persistent INTEGER NOT NULL DEFAULT 1,"
-      "priority INTEGER NOT NULL DEFAULT %d,"
-      "encrypted_value BLOB DEFAULT '',"
-      "firstpartyonly INTEGER NOT NULL DEFAULT %d,"
-      "UNIQUE (host_key, name, path))",
-      CookiePriorityToDBCookiePriority(COOKIE_PRIORITY_DEFAULT),
-      CookieSameSiteToDBCookieSameSite(CookieSameSite::NO_RESTRICTION)));
-  if (!db->Execute(stmt.c_str()))
-    return false;
-
-  return true;
-}
-
-// Initializes the cookies table, returning true on success.
-// The table cannot exist when calling this function.
-bool CreateV11Schema(sql::Database* db) {
-  DCHECK(!db->DoesTableExist("cookies"));
-
-  std::string stmt(base::StringPrintf(
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL DEFAULT 1,"
-      "is_persistent INTEGER NOT NULL DEFAULT 1,"
-      "priority INTEGER NOT NULL DEFAULT %d,"
-      "encrypted_value BLOB DEFAULT '',"
-      "samesite INTEGER NOT NULL DEFAULT %d,"
-      "UNIQUE (host_key, name, path))",
-      CookiePriorityToDBCookiePriority(COOKIE_PRIORITY_DEFAULT),
-      CookieSameSiteToDBCookieSameSite(CookieSameSite::UNSPECIFIED)));
-  if (!db->Execute(stmt.c_str()))
-    return false;
-
-  return true;
-}
-
-// Initializes the cookies table, returning true on success.
-// The table cannot exist when calling this function.
-bool CreateV15Schema(sql::Database* db) {
+bool CreateV16Schema(sql::Database* db) {
   DCHECK(!db->DoesTableExist("cookies"));
 
   std::string stmt(base::StringPrintf(
@@ -649,7 +594,7 @@ bool CreateV15Schema(sql::Database* db) {
 
 // Initializes the cookies table, returning true on success.
 // The table cannot exist when calling this function.
-bool CreateV16Schema(sql::Database* db) {
+bool CreateV17Schema(sql::Database* db) {
   DCHECK(!db->DoesTableExist("cookies"));
 
   const char* kCreateTableQuery =
@@ -683,12 +628,6 @@ bool CreateV16Schema(sql::Database* db) {
     return false;
 
   return true;
-}
-
-// Initializes the cookies table, returning true on success.
-// The table/index cannot exist when calling this function.
-bool CreateV17Schema(sql::Database* db) {
-  return CreateV16Schema(db);
 }
 
 // Initializes the cookies table, returning true on success.
@@ -1067,237 +1006,6 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
 absl::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-  if (cur_version == 9) {
-    sql::Transaction transaction(db());
-    if (!transaction.Begin())
-      return absl::nullopt;
-
-    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
-      return absl::nullopt;
-    if (!db()->Execute("DROP INDEX IF EXISTS domain"))
-      return absl::nullopt;
-    if (!db()->Execute("DROP INDEX IF EXISTS is_transient"))
-      return absl::nullopt;
-
-    if (!CreateV10Schema(db())) {
-      // Not clear what good a false return here will do since the calling
-      // code will just init the table.
-      // TODO(rdsmith): Also, wait, nothing drops the old table and
-      // InitTable() just returns true if the table exists, so if
-      // EnsureDatabaseVersion() fails, initting the table won't do any
-      // further good.  Fix?
-      return absl::nullopt;
-    }
-    // If any cookies violate the new uniqueness constraints (no two
-    // cookies with the same (name, domain, path)), pick the newer version,
-    // since that's what CookieMonster would do anyway.
-    if (!db()->Execute(
-            "INSERT OR REPLACE INTO cookies "
-            "(creation_utc, host_key, name, value, path, expires_utc, "
-            "is_secure, is_httponly, last_access_utc, has_expires, "
-            "is_persistent, priority, encrypted_value, firstpartyonly) "
-            "SELECT creation_utc, host_key, name, value, path, expires_utc, "
-            "       secure, httponly, last_access_utc, has_expires, "
-            "       persistent, priority, encrypted_value, firstpartyonly "
-            "FROM cookies_old ORDER BY creation_utc ASC")) {
-      return absl::nullopt;
-    }
-    if (!db()->Execute("DROP TABLE cookies_old"))
-      return absl::nullopt;
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return absl::nullopt;
-    }
-  }
-
-  if (cur_version == 10) {
-    sql::Transaction transaction(db());
-    if (!transaction.Begin())
-      return absl::nullopt;
-
-    // Copy the data into a new table, renaming the firstpartyonly column to
-    // samesite.
-    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old; "
-                       "ALTER TABLE cookies RENAME TO cookies_old"))
-      return absl::nullopt;
-    if (!CreateV11Schema(db()))
-      return absl::nullopt;
-    if (!db()->Execute(
-            "INSERT INTO cookies "
-            "(creation_utc, host_key, name, value, path, expires_utc, "
-            "is_secure, is_httponly, last_access_utc, has_expires, "
-            "is_persistent, priority, encrypted_value, samesite) "
-            "SELECT creation_utc, host_key, name, value, path, expires_utc, "
-            "       is_secure, is_httponly, last_access_utc, has_expires, "
-            "       is_persistent, priority, encrypted_value, firstpartyonly "
-            "FROM cookies_old")) {
-      return absl::nullopt;
-    }
-    if (!db()->Execute("DROP TABLE cookies_old"))
-      return absl::nullopt;
-
-    // Update stored SameSite values of kCookieSameSiteNoRestriction into
-    // kCookieSameSiteUnspecified.
-    std::string update_stmt(base::StringPrintf(
-        "UPDATE cookies SET samesite=%d WHERE samesite=%d",
-        CookieSameSiteToDBCookieSameSite(CookieSameSite::UNSPECIFIED),
-        CookieSameSiteToDBCookieSameSite(CookieSameSite::NO_RESTRICTION)));
-    if (!db()->Execute(update_stmt.c_str()))
-      return absl::nullopt;
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return absl::nullopt;
-    }
-  }
-
-  if (cur_version == 11) {
-    sql::Transaction transaction(db());
-    if (!transaction.Begin())
-      return absl::nullopt;
-
-    std::string update_stmt(
-        base::StringPrintf("ALTER TABLE cookies ADD COLUMN source_scheme "
-                           "INTEGER NOT NULL DEFAULT %d;",
-                           static_cast<int>(CookieSourceScheme::kUnset)));
-    if (!db()->Execute(update_stmt.c_str()))
-      return absl::nullopt;
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return absl::nullopt;
-    }
-  }
-
-  if (cur_version == 12) {
-    sql::Transaction transaction(db());
-    if (!transaction.Begin())
-      return absl::nullopt;
-
-    std::string update_stmt(
-        base::StringPrintf("ALTER TABLE cookies ADD COLUMN source_port "
-                           "INTEGER NOT NULL DEFAULT %d;"
-                           "ALTER TABLE cookies ADD COLUMN is_same_party "
-                           "INTEGER NOT NULL DEFAULT 0;",
-                           kDefaultUnknownPort));
-    if (!db()->Execute(update_stmt.c_str()))
-      return absl::nullopt;
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return absl::nullopt;
-    }
-  }
-
-  if (cur_version == 13) {
-    sql::Transaction transaction(db());
-    if (!transaction.Begin())
-      return absl::nullopt;
-
-#if BUILDFLAG(IS_WIN)
-    // Migration is only needed on Windows. On other platforms, this is a no-op.
-    if (crypto_ && crypto_->ShouldEncrypt()) {
-      sql::Statement select_statement, update_statement;
-
-      select_statement.Assign(
-          db()->GetCachedStatement(SQL_FROM_HERE,
-                                   "SELECT rowid, encrypted_value "
-                                   "FROM cookies WHERE encrypted_value != ''"));
-
-      update_statement.Assign(
-          db()->GetCachedStatement(SQL_FROM_HERE,
-                                   "UPDATE cookies SET encrypted_value=? WHERE "
-                                   "rowid=?"));
-
-      if (!select_statement.is_valid() || !update_statement.is_valid())
-        return absl::nullopt;
-
-      std::map<int64_t, std::string> encrypted_values;
-
-      while (select_statement.Step()) {
-        int64_t rowid = select_statement.ColumnInt64(0);
-        std::string encrypted_value = select_statement.ColumnString(1);
-        DCHECK(!encrypted_value.empty());
-        std::string decrypted_value;
-        if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
-          RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
-          continue;
-        }
-        std::string new_encrypted_value;
-        if (!crypto_->EncryptString(decrypted_value, &new_encrypted_value)) {
-          RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
-          continue;
-        }
-        encrypted_values[rowid] = new_encrypted_value;
-      }
-
-      for (const auto& entry : encrypted_values) {
-        update_statement.Reset(true);
-        update_statement.BindString(0, entry.second);
-        update_statement.BindInt64(1, entry.first);
-        if (!update_statement.Run())
-          return absl::nullopt;
-      }
-    }
-#endif
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return absl::nullopt;
-    }
-  }
-
-  if (cur_version == 14) {
-    sql::Transaction transaction(db());
-    if (!transaction.Begin())
-      return absl::nullopt;
-
-    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old"))
-      return absl::nullopt;
-    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
-      return absl::nullopt;
-
-    if (!CreateV15Schema(db()))
-      return absl::nullopt;
-    std::string insert_cookies_sql = base::StringPrintf(
-        "INSERT OR REPLACE INTO cookies "
-        "(creation_utc, top_frame_site_key, host_key, name, value, "
-        " encrypted_value, path, expires_utc, is_secure, is_httponly, "
-        " last_access_utc, has_expires, is_persistent, priority, samesite, "
-        " source_scheme, source_port, is_same_party) "
-        "SELECT creation_utc, '%s', host_key, name, value, encrypted_value, "
-        "       path, expires_utc, is_secure, is_httponly, last_access_utc, "
-        "       has_expires, is_persistent, priority, samesite, source_scheme, "
-        "       source_port, is_same_party "
-        "FROM cookies_old ORDER BY creation_utc ASC",
-        net::kEmptyCookiePartitionKey);
-    if (!db()->Execute(insert_cookies_sql.c_str()))
-      return absl::nullopt;
-    if (!db()->Execute("DROP TABLE cookies_old"))
-      return absl::nullopt;
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return absl::nullopt;
-    }
-  }
 
   if (cur_version == 15) {
     sql::Transaction transaction(db());
@@ -1309,8 +1017,9 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
       return absl::nullopt;
 
-    if (!CreateV15Schema(db()))
+    if (!CreateV16Schema(db())) {
       return absl::nullopt;
+    }
     std::string insert_cookies_sql = base::StringPrintf(
         "INSERT OR REPLACE INTO cookies "
         "(creation_utc, host_key, top_frame_site_key, name, value, "
