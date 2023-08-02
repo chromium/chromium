@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -105,12 +106,12 @@ class MockDownloadStatusUpdater : public DownloadStatusUpdater {
 // DownloadStatusUpdaterBrowserTest --------------------------------------------
 
 // Base class for tests of `DownloadStatusUpdater`.
-class DownloadStatusUpdaterBrowserTest : public InProcessBrowserTest {
+class DownloadStatusUpdaterBrowserTest : public DownloadTestBase {
  public:
-  // InProcessBrowserTest:
+  // DownloadTestBase:
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    DownloadTestBase::CreatedBrowserMainParts(browser_main_parts);
 
     // Replace the binding for the Ash Chrome download status updater with a
     // mock that can be observed for interactions with Lacros Chrome.
@@ -129,7 +130,7 @@ class DownloadStatusUpdaterBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    DownloadTestBase::SetUpOnMainThread();
 
     // Associate the mock download manager with the Lacros Chrome browser.
     ON_CALL(download_manager_, GetBrowserContext())
@@ -187,28 +188,83 @@ class DownloadStatusUpdaterBrowserTest : public InProcessBrowserTest {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that `DownloadStatusUpdaterClient::Cancel()` works as intended. Note
-// that this API is currently hard-coded to no-op and return `false`.
+// Verifies that `DownloadStatusUpdaterClient::Cancel()` works as intended.
 IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Cancel) {
   DownloadStatusUpdaterClientAsyncWaiter client(
       download_status_updater_client());
-  EXPECT_FALSE(client.Cancel(/*guid=*/base::EmptyString()));
+  download::DownloadItem* item = CreateSlowTestDownload();
+  ASSERT_NE(item->GetState(), download::DownloadItem::CANCELLED);
+  EXPECT_TRUE(client.Cancel(item->GetGuid()));
+  EXPECT_EQ(item->GetState(), download::DownloadItem::CANCELLED);
 }
 
-// Verifies that `DownloadStatusUpdaterClient::Pause()` works as intended. Note
-// that this API is currently hard-coded to no-op and return `false`.
-IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Pause) {
+// Verifies that `DownloadStatusUpdaterClient::Pause()` and `Resume()` work as
+// intended.
+IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, PauseAndResume) {
   DownloadStatusUpdaterClientAsyncWaiter client(
       download_status_updater_client());
-  EXPECT_FALSE(client.Pause(/*guid=*/base::EmptyString()));
+  download::DownloadItem* item = CreateSlowTestDownload();
+  ASSERT_NE(item->GetState(), download::DownloadItem::CANCELLED);
+  ASSERT_FALSE(item->IsPaused());
+
+  EXPECT_TRUE(client.Pause(item->GetGuid()));
+  EXPECT_TRUE(item->IsPaused());
+
+  EXPECT_TRUE(client.Resume(item->GetGuid()));
+  EXPECT_FALSE(item->IsPaused());
+  EXPECT_NE(item->GetState(), download::DownloadItem::CANCELLED);
+
+  // Clean up: cancel the item to allow the test to exit.
+  item->Cancel(false);
 }
 
-// Verifies that `DownloadStatusUpdaterClient::Resume()` works as intended. Note
-// that this API is currently hard-coded to no-op and return `false`.
-IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Resume) {
+// Tests the case where `Pause()` is called on an already-paused item.
+IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, PauseNoOp) {
   DownloadStatusUpdaterClientAsyncWaiter client(
       download_status_updater_client());
-  EXPECT_FALSE(client.Resume(/*guid=*/base::EmptyString()));
+  download::DownloadItem* item = CreateSlowTestDownload();
+  ASSERT_FALSE(item->IsPaused());
+  item->Pause();
+  ASSERT_TRUE(item->IsPaused());
+
+  // Handled because item was found (despite being a no-op).
+  EXPECT_TRUE(client.Pause(item->GetGuid()));
+  EXPECT_TRUE(item->IsPaused());
+
+  // Clean up: cancel the item to allow the test to exit.
+  item->Cancel(false);
+}
+
+// Tests the case where `Resume()` is called on a not-paused item.
+IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, ResumeNoOp) {
+  DownloadStatusUpdaterClientAsyncWaiter client(
+      download_status_updater_client());
+  download::DownloadItem* item = CreateSlowTestDownload();
+  ASSERT_NE(item->GetState(), download::DownloadItem::CANCELLED);
+  ASSERT_FALSE(item->CanResume());
+
+  // Handled because item was found (despite being a no-op).
+  EXPECT_TRUE(client.Resume(item->GetGuid()));
+  EXPECT_NE(item->GetState(), download::DownloadItem::CANCELLED);
+  EXPECT_FALSE(item->CanResume());
+
+  // Clean up: cancel the item to allow the test to exit.
+  item->Cancel(false);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, NoItem) {
+  DownloadStatusUpdaterClientAsyncWaiter client(
+      download_status_updater_client());
+
+  // Create an item and then remove it so it no longer can be found.
+  download::DownloadItem* item = CreateSlowTestDownload();
+  std::string guid = item->GetGuid();
+  item->Cancel(false);
+  item->Remove();
+
+  EXPECT_FALSE(client.Pause(guid));
+  EXPECT_FALSE(client.Resume(guid));
+  EXPECT_FALSE(client.Cancel(guid));
 }
 
 // Verifies that `DownloadStatusUpdaterClient::ShowInBrowser()` works as
