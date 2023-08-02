@@ -117,7 +117,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       main_thread_scheduler_(main_thread_scheduler),
       parent_page_scheduler_(parent_page_scheduler),
       delegate_(delegate),
-      throttling_state_(SchedulingLifecycleState::kNotThrottled),
       frame_visible_(true,
                      "FrameScheduler.FrameVisible",
                      &tracing_controller_,

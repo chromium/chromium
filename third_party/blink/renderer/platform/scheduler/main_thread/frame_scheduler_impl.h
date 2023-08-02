@@ -322,7 +322,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
   PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED
   FrameScheduler::Delegate* delegate_;                    // NOT OWNED
-  SchedulingLifecycleState throttling_state_;
   TraceableState<bool, TracingCategory::kInfo> frame_visible_;
   TraceableState<bool, TracingCategory::kInfo> frame_paused_;
   TraceableState<FrameOriginType, TracingCategory::kInfo> frame_origin_type_;
