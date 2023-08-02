@@ -60,7 +60,7 @@
 <!-- TODO(crbug.com/1395210): Make grid adaptive. -->
 <cr-grid columns="4" role="radiogroup"
     aria-label="[[i18n('colorsContainerLabel')]]">
-  <template is="dom-if" if="[[!themeHasMainColor_(theme_)]]" restamp>
+  <template is="dom-if" if="[[!showMainColor_]]" restamp>
     <cr-theme-color
         id="defaultColor"
         background-color="[[defaultColor_.background]]"
@@ -95,7 +95,7 @@
         basic-color>
     </cr-theme-color>
   </template>
-  <template is="dom-if" if="[[themeHasMainColor_(theme_)]]" restamp>
+  <template is="dom-if" if="[[showMainColor_]]" restamp>
     <cr-theme-color
         id="mainColor"
         foreground-color="[[mainColor_]]"

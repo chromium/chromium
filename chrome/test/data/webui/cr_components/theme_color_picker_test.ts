@@ -10,6 +10,7 @@ import {Color, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_
 import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 import {ThemeColorPickerElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 import {ChromeColor, Theme, ThemeColorPickerClientCallbackRouter, ThemeColorPickerClientRemote, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
+import {skColorToHexColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,6 +42,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
   let chromeColorsResolver: PromiseResolver<{colors: ChromeColor[]}>;
 
   setup(() => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         ThemeColorPickerHandlerRemote,
@@ -176,6 +178,21 @@ suite('CrComponentsThemeColorPickerTest', () => {
             colorsElement, '#mainColor')!.foregroundColor.value);
   });
 
+  test('do not render main color in GM3', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    initializeElement();
+    const theme: Theme = createTheme();
+    theme.foregroundColor = {value: 7};
+    theme.hasBackgroundImage = true;
+    theme.backgroundImageMainColor = {value: 7};
+
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(colorsElement);
+
+    assertTrue(!$$<ThemeColorElement>(colorsElement, '#mainColor'));
+  });
+
   test('sets main color', async () => {
     initializeElement();
     const theme = createTheme();
@@ -297,6 +314,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     // Set a custom color theme.
     const customColortheme = createTheme();
+    customColortheme.seedColor = {value: 0xffffff00};
     customColortheme.backgroundColor = {value: 0xffff0000};
     customColortheme.foregroundColor = {value: 0xff00ff00};
     customColortheme.colorPickerIconColor = {value: 0xff0000ff};
@@ -311,6 +329,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     // Set a theme that is not a custom color theme.
     const otherTheme = createTheme();
+    otherTheme.seedColor = {value: 0xff00ff00};
     otherTheme.backgroundColor = {value: 0xffffffff};
     otherTheme.foregroundColor = undefined;  // Makes a default theme.
     otherTheme.colorPickerIconColor = {value: 0xffffffff};
@@ -322,6 +341,53 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(0xff00ff00, colorsElement.$.customColor.foregroundColor.value);
     assertStyle(
         colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)');
+  });
+
+  test('update colorPicker value for theme in GM3', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    initializeElement();
+    const colors = {
+      colors: [
+        {
+          id: 1,
+          name: 'foo',
+          seed: {value: 3},
+          background: {value: 1},
+          foreground: {value: 2},
+          base: {value: 3},
+          variant: BrowserColorVariant.kTonalSpot,
+        },
+      ],
+    };
+    chromeColorsResolver.resolve(colors);
+
+    // Set a custom color theme.
+    const customColortheme = createTheme();
+    customColortheme.seedColor = {value: 0xffffff00};
+    customColortheme.backgroundColor = {value: 0xffff0000};
+    customColortheme.foregroundColor = {value: 0xff00ff00};
+    customColortheme.colorPickerIconColor = {value: 0xff0000ff};
+    callbackRouter.setTheme(customColortheme);
+    await callbackRouter.$.flushForTesting();
+
+    // Custom colorpicker value should be updated.
+    assertEquals(
+        colorsElement.$.colorPicker.value,
+        skColorToHexColor(customColortheme.seedColor));
+
+    // Set a theme that is not a custom color theme.
+    const otherTheme = createTheme();
+    otherTheme.seedColor = {value: 0xff00ff00};
+    otherTheme.backgroundColor = {value: 0xffffffff};
+    otherTheme.foregroundColor = undefined;  // Makes a default theme.
+    otherTheme.colorPickerIconColor = {value: 0xffffffff};
+    callbackRouter.setTheme(otherTheme);
+    await callbackRouter.$.flushForTesting();
+
+    // Custom colorpicker should still be the same.
+    assertEquals(
+        colorsElement.$.colorPicker.value,
+        skColorToHexColor(customColortheme.seedColor));
   });
 
   test('checks selected color', async () => {

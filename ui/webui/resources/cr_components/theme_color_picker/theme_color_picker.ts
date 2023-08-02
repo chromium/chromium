@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {hexColorToSkColor, skColorToHexColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -91,6 +91,10 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         type: Boolean,
         computed: 'computeShowCustomColorBackgroundColor_(theme_)',
       },
+      showMainColor_: {
+        type: Boolean,
+        computed: 'computeShowMainColor_(theme_)',
+      },
       isChromeRefresh2023_: {
         type: Boolean,
         value: () =>
@@ -161,6 +165,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (this.theme_.backgroundImageMainColor &&
         this.theme_.backgroundImageMainColor!.value ===
             this.theme_.seedColor.value) {
+      if (this.isChromeRefresh2023_) {
+        return {type: ColorType.CUSTOM};
+      }
       return {type: ColorType.MAIN};
     }
     if (this.colors_.find(
@@ -225,8 +232,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return !!this.theme_ && !!this.theme_.hasBackgroundImage;
   }
 
-  private themeHasMainColor_(): boolean {
-    return !!this.theme_ && !!this.theme_.backgroundImageMainColor;
+  private computeShowMainColor_(): boolean {
+    return !this.isChromeRefresh2023_ && !!this.theme_ &&
+        !!this.theme_.backgroundImageMainColor;
   }
 
   private computeShowBackgroundColor_(): boolean {
@@ -294,6 +302,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     };
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
+    if (this.isChromeRefresh2023_) {
+      this.$.colorPicker.value = skColorToHexColor(this.theme_.seedColor);
+    }
   }
 
   private updateColors_() {
