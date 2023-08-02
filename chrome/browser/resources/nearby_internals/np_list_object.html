@@ -1,4 +1,4 @@
-<style>
+<style include="shared-style">
   .info-text {
     display: inline-block;
     text-align: start;
@@ -7,16 +7,38 @@
 
   #item {
     padding: 6px;
+    display: flex;
+  }
+
+  #device-info {
+    width: 75%;
+    height: 100%;
+  }
+
+  #button-container {
+    width: 15%;
+  }
+
+  cr-button {
+    height: 35px;
+    padding: 5px;
+    width: 150px;
   }
 </style>
 <div id="item">
-  <span id="status_text_connectable"
-      hidden="[[!item.connectable]]">Connectable Device</span>
-  <span id="status_text_lost"
-      hidden="[[item.connectable]]">Not Connectable Device</span>
-  <span id="type" class="info-text">[[item.type]]</span>
-  <span id="endpoint_id"
-      class="info-text">Endpoint ID: [[item.endpoint_id]]</span>
-  <span id="actions"
-      class="info-text">Associated Actions: [[item.actions]]</span>
+  <div id="device-info">
+    <span id="status_text_connectable"
+        hidden="[[!device.connectable]]">Connectable Device</span>
+    <span id="status_text_lost"
+        hidden="[[device.connectable]]">Not Connectable Device</span>
+    <span id="type" class="info-text">[[device.type]]</span>
+    <span id="endpoint_id"
+        class="info-text">Endpoint ID: [[device.endpoint_id]]</span>
+    <span id="actions"
+        class="info-text">Associated Actions: [[device.actions]]</span>
+  </div>
+  <div id="button-container">
+    <cr-button class="internals-button"
+        on-click="onConnectClicked_">Connect</cr-button>
+  </div>
 </div>

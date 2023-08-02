@@ -119,6 +119,11 @@ void NearbyInternalsPresenceHandler::RegisterMessages() {
       base::BindRepeating(
           &NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "ConnectToPresenceDevice",
+      base::BindRepeating(
+          &NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice,
+          base::Unretained(this)));
 }
 
 void NearbyInternalsPresenceHandler::OnJavascriptAllowed() {}
@@ -231,4 +236,12 @@ void NearbyInternalsPresenceHandler::OnPresenceDeviceLost(
 void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
   scan_session_.reset();
   HandleStartPresenceScan(/*args=*/{});
+}
+
+void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
+    const base::Value::List& args) {
+  // TODO(b/276642472): Add connect functionality.
+  NS_LOG(VERBOSE) << __func__
+                  << ": Connection attempt for device with endpoint id: "
+                  << args[0].GetString();
 }

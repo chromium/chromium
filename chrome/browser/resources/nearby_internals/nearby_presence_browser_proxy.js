@@ -44,6 +44,10 @@ export class NearbyPresenceBrowserProxy {
   SendFirstTimeFlow() {
     chrome.send('FirstTimePresenceFlow');
   }
+
+  ConnectToPresenceDevice(endpointId) {
+    chrome.send('ConnectToPresenceDevice', [endpointId]);
+  }
 }
 
 addSingletonGetter(NearbyPresenceBrowserProxy);
