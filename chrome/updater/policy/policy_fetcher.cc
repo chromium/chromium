@@ -43,9 +43,11 @@ scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunner() {
 
 PolicyFetcher::PolicyFetcher(
     const GURL& server_url,
-    const absl::optional<PolicyServiceProxyConfiguration>& proxy_configuration)
+    const absl::optional<PolicyServiceProxyConfiguration>& proxy_configuration,
+    const absl::optional<bool>& override_is_managed_device)
     : server_url_(server_url),
       policy_service_proxy_configuration_(proxy_configuration),
+      override_is_managed_device_(override_is_managed_device),
       sequenced_task_runner_(GetBlockingTaskRunner()) {
   VLOG(0) << "Policy server: " << server_url_.possibly_invalid_spec();
 }
@@ -127,7 +129,7 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
   VLOG(1) << __func__;
 
   if (result == DMClient::RequestResult::kSuccess)
-    return CreateDMPolicyManager();
+    return CreateDMPolicyManager(override_is_managed_device_);
 
   for (const auto& validation_result : validation_results) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

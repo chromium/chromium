@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
+#include "base/enterprise_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,7 +26,9 @@ static NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
 
 class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
-  explicit ManagedPreferencePolicyManager(CRUUpdatePolicyDictionary* policy);
+  ManagedPreferencePolicyManager(
+      CRUUpdatePolicyDictionary* policy,
+      const absl::optional<bool>& override_is_managed_device);
   ManagedPreferencePolicyManager(const ManagedPreferencePolicyManager&) =
       delete;
   ManagedPreferencePolicyManager& operator=(
@@ -60,18 +63,23 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
  private:
   ~ManagedPreferencePolicyManager() override;
+
   CRUManagedPreferencePolicyManager* __strong impl_;
+  const bool is_managed_device_;
 };
 
 ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
-    CRUUpdatePolicyDictionary* policyDict)
+    CRUUpdatePolicyDictionary* policyDict,
+    const absl::optional<bool>& override_is_managed_device)
     : impl_([[CRUManagedPreferencePolicyManager alloc]
-          initWithDictionary:policyDict]) {}
+          initWithDictionary:policyDict]),
+      is_managed_device_(override_is_managed_device.value_or(
+          base::IsManagedOrEnterpriseDevice())) {}
 
 ManagedPreferencePolicyManager::~ManagedPreferencePolicyManager() = default;
 
 bool ManagedPreferencePolicyManager::HasActiveDevicePolicies() const {
-  return impl_.managed;
+  return is_managed_device_ && impl_.hasActivePolicy;
 }
 
 std::string ManagedPreferencePolicyManager::source() const {
@@ -216,9 +224,11 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
   return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }
 
-scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager() {
+scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager(
+    const absl::optional<bool>& override_is_managed_device) {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
-  return base::MakeRefCounted<ManagedPreferencePolicyManager>(policyDict);
+  return base::MakeRefCounted<ManagedPreferencePolicyManager>(
+      policyDict, override_is_managed_device);
 }
 
 }  // namespace updater

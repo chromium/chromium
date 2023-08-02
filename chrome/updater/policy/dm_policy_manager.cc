@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -78,19 +79,27 @@ int PolicyValueFromProtoUpdateValue(
 
 DMPolicyManager::DMPolicyManager(
     const ::wireless_android_enterprise_devicemanagement::
-        OmahaSettingsClientProto& omaha_settings)
-    : omaha_settings_(omaha_settings) {}
+        OmahaSettingsClientProto& omaha_settings,
+    const absl::optional<bool>& override_is_managed_device)
+    :
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      is_managed_device_(
+          override_is_managed_device.value_or(base::IsManagedDevice())),
+#else
+      is_managed_device_(override_is_managed_device.value_or(false)),
+#endif
+      omaha_settings_(omaha_settings) {
+}
 
 DMPolicyManager::~DMPolicyManager() = default;
 
 bool DMPolicyManager::HasActiveDevicePolicies() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsManagedDevice();
-#else
-  // crbug.com/1276162 - implement.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1276162) - `is_managed_device_` is not properly initialized
+  // if the platform is not Windows or macOS.
   NOTIMPLEMENTED();
-  return false;
 #endif
+  return is_managed_device_;
 }
 
 std::string DMPolicyManager::source() const {
@@ -289,7 +298,8 @@ absl::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
   return apps_with_policy;
 }
 
-scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager() {
+scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager(
+    const absl::optional<bool>& override_is_managed_device) {
   scoped_refptr<DMStorage> default_dm_storage = GetDefaultDMStorage();
   if (!default_dm_storage) {
     return nullptr;
@@ -300,7 +310,8 @@ scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager() {
   if (!omaha_settings) {
     return nullptr;
   }
-  return base::MakeRefCounted<DMPolicyManager>(*omaha_settings);
+  return base::MakeRefCounted<DMPolicyManager>(*omaha_settings,
+                                               override_is_managed_device);
 }
 
 }  // namespace updater

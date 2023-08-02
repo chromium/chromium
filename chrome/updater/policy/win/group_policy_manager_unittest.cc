@@ -17,6 +17,7 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -195,7 +196,8 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, L"1"));
 
   scoped_refptr<PolicyManagerInterface> policy_manager =
-      base::MakeRefCounted<GroupPolicyManager>(true);
+      base::MakeRefCounted<GroupPolicyManager>(true, true);
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);

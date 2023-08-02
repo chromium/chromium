@@ -71,16 +71,19 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
 
 #if BUILDFLAG(IS_WIN)
   managers.push_back(base::MakeRefCounted<GroupPolicyManager>(
-      should_take_policy_critical_section));
+      should_take_policy_critical_section,
+      external_constants->IsMachineManaged()));
 #endif
 
-  if (dm_policy_manager)
+  if (dm_policy_manager) {
     managers.push_back(std::move(dm_policy_manager));
+  }
 
 #if BUILDFLAG(IS_MAC)
   // Managed preference policy manager is being deprecated and thus has a lower
   // priority than DM policy manager.
-  managers.push_back(CreateManagedPreferencePolicyManager());
+  managers.push_back(CreateManagedPreferencePolicyManager(
+      external_constants->IsMachineManaged()));
 #endif
 
   managers.push_back(GetDefaultValuesPolicyManager());
@@ -108,7 +111,7 @@ PolicyService::PolicyService(
     : policy_managers_(SortManagers(CreatePolicyManagerVector(
           /*should_take_policy_critical_section*/ false,
           external_constants,
-          CreateDMPolicyManager()))),
+          CreateDMPolicyManager(external_constants->IsMachineManaged())))),
       external_constants_(external_constants) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
@@ -121,7 +124,8 @@ void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
 
   auto fetcher = base::MakeRefCounted<PolicyFetcher>(
       external_constants_->DeviceManagementURL(),
-      PolicyServiceProxyConfiguration::Get(this));
+      PolicyServiceProxyConfiguration::Get(this),
+      external_constants_->IsMachineManaged());
   fetcher->FetchPolicies(base::BindOnce(&PolicyService::FetchPoliciesDone, this,
                                         fetcher, std::move(callback)));
 }

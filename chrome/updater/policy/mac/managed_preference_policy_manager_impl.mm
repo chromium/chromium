@@ -205,11 +205,11 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
       __strong _appPolicies;
 }
 
-@synthesize managed = _managed;
+@synthesize hasActivePolicy = _hasActivePolicy;
 
 - (instancetype)initWithDictionary:(CRUUpdatePolicyDictionary*)policies {
   if (([super init])) {
-    _managed = policies.count > 0 && base::IsManagedOrEnterpriseDevice();
+    _hasActivePolicy = policies.count > 0;
 
     // Always create a global policy instance for default values.
     _globalPolicy = [[CRUManagedPreferenceGlobalPolicySettings alloc]

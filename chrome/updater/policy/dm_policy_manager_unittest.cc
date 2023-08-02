@@ -11,6 +11,7 @@
 #include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -102,6 +103,18 @@ const uint8_t kOmahaPolicyResponseData[] = {
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
+
+TEST(DMPolicyManager, DeviceManagementOverride) {
+  ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+
+  auto policy_manager =
+      base::MakeRefCounted<DMPolicyManager>(omaha_settings, true);
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
+
+  policy_manager = base::MakeRefCounted<DMPolicyManager>(omaha_settings, false);
+  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
+}
 
 TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
