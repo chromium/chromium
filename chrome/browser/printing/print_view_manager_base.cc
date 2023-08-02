@@ -529,16 +529,6 @@ void PrintViewManagerBase::DidGetPrintedPagesCount(int32_t cookie,
   OpportunisticallyCreatePrintJob(cookie);
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-void PrintViewManagerBase::SetAccessibilityTree(
-    int32_t cookie,
-    const ui::AXTreeUpdate& accessibility_tree) {
-  auto* client = PrintCompositeClient::FromWebContents(web_contents());
-  if (client)
-    client->SetAccessibilityTree(cookie, accessibility_tree);
-}
-#endif
-
 bool PrintViewManagerBase::PrintJobHasDocument(int cookie) {
   if (!OpportunisticallyCreatePrintJob(cookie))
     return false;
@@ -621,9 +611,7 @@ void PrintViewManagerBase::DidPrintDocument(
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->DoCompositeDocumentToPdf(
         params->document_cookie, GetCurrentTargetFrame(), content,
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
         ui::AXTreeUpdate(),
-#endif
         base::BindOnce(&PrintViewManagerBase::OnComposePdfDone,
                        weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
                        params->page_size, params->content_area,
@@ -778,6 +766,15 @@ void PrintViewManagerBase::UpdatePrintSettings(
 
   CompleteUpdatePrintSettings(std::move(job_settings),
                               std::move(print_settings), std::move(callback));
+}
+
+void PrintViewManagerBase::SetAccessibilityTree(
+    int32_t cookie,
+    const ui::AXTreeUpdate& accessibility_tree) {
+  auto* client = PrintCompositeClient::FromWebContents(web_contents());
+  if (client) {
+    client->SetAccessibilityTree(cookie, accessibility_tree);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -1365,10 +1362,7 @@ void PrintViewManagerBase::OnGotSnapshotCallback(
   if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->DoCompositeDocumentToPdf(
-        params->document_cookie, rfh, *params->content,
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-        ui::AXTreeUpdate(),
-#endif
+        params->document_cookie, rfh, *params->content, ui::AXTreeUpdate(),
         base::BindOnce(&PrintViewManagerBase::OnCompositedForContentAnalysis,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(data), rfh_id));

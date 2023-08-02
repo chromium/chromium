@@ -94,9 +94,7 @@ void PdfPrintJob::OnDidPrintWithParams(
   printing::PrintCompositeClient::FromWebContents(web_contents())
       ->DoCompositeDocumentToPdf(
           params->document_cookie, printing_rfh_, content,
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
           result->get_data()->accessibility_tree,
-#endif
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr()));
 }

@@ -410,14 +410,13 @@ class TestPrintManagerHost
     base::RunLoop().RunUntilIdle();
     std::move(callback).Run(preview_ui_->ShouldCancelRequest());
   }
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
+
   void SetAccessibilityTree(
       int32_t cookie,
       const ui::AXTreeUpdate& accessibility_tree) override {
     ++accessibility_tree_set_count_;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   bool IsSetupScriptedPrintPreview() {
     return is_setup_scripted_print_preview_;
@@ -450,11 +449,9 @@ class TestPrintManagerHost
   }
 #endif
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
   int accessibility_tree_set_count() const {
     return accessibility_tree_set_count_;
   }
-#endif
 
  private:
   void Init(content::RenderFrame* frame) {
@@ -484,9 +481,7 @@ class TestPrintManagerHost
   bool is_printing_enabled_ = true;
   // True to simulate user clicking print. False to cancel.
   bool print_dialog_user_response_ = true;
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
   int accessibility_tree_set_count_ = 0;
-#endif
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
 };
 
@@ -2024,12 +2019,11 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
   VerifyPagesPrinted(false);
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
+
   int expected_accessibility_tree_set_count =
       ExpectsSetAccessibilityTreeCalls() ? 1 : 0;
   EXPECT_EQ(expected_accessibility_tree_set_count,
             print_manager()->accessibility_tree_set_count());
-#endif
 
   print_settings().Set(kSettingScaleFactor, 200);
   OnPrintPreviewRerender();
@@ -2042,12 +2036,11 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
   VerifyPagesPrinted(false);
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
+
   expected_accessibility_tree_set_count =
       ExpectsSetAccessibilityTreeCalls() ? 2 : 0;
   EXPECT_EQ(expected_accessibility_tree_set_count,
             print_manager()->accessibility_tree_set_count());
-#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

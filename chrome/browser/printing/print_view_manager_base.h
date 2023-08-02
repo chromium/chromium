@@ -25,6 +25,7 @@
 #include "components/printing/common/print.mojom-forward.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/accessibility/ax_tree_update_forward.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -33,10 +34,6 @@
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-#include "ui/accessibility/ax_tree_update_forward.h"
-#endif
 
 namespace base {
 class RefCountedMemory;
@@ -125,16 +122,14 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void DidGetPrintedPagesCount(int32_t cookie, uint32_t number_pages) override;
   void DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
                         DidPrintDocumentCallback callback) override;
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-  void SetAccessibilityTree(
-      int32_t cookie,
-      const ui::AXTreeUpdate& accessibility_tree) override;
-#endif
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
+  void SetAccessibilityTree(
+      int32_t cookie,
+      const ui::AXTreeUpdate& accessibility_tree) override;
 #endif
   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;
   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,

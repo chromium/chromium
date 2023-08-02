@@ -147,12 +147,10 @@ void PrintCompositorImpl::AddSubframeContent(
   UpdateRequestsWithSubframeInfo(frame_guid, pending_subframes);
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
 void PrintCompositorImpl::SetAccessibilityTree(
     const ui::AXTreeUpdate& accessibility_tree) {
   accessibility_tree_ = accessibility_tree;
 }
-#endif
 
 void PrintCompositorImpl::CompositePageToPdf(
     uint64_t frame_guid,

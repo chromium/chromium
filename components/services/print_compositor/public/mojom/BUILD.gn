@@ -11,15 +11,7 @@ mojom("mojom") {
     "//components/discardable_memory/public/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//ui/accessibility/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  if (enable_tagged_pdf) {
-    assert(enable_print_preview)
-    enabled_features = [ "enable_tagged_pdf" ]
-
-    # Accessibility dependencies for exporting tagged PDFs on platforms
-    # that support print preview only (desktop platforms).
-    public_deps += [ "//ui/accessibility/mojom" ]
-  }
 }

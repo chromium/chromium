@@ -446,8 +446,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
                                            SkColorSetRGB(0xff, 0xff, 0xff)));
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-
 class HeadlessModeTaggedPrintToPdfCommandBrowserTest
     : public HeadlessModePrintToPdfCommandBrowserTestBase {
  public:
@@ -498,7 +496,5 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
 
   EXPECT_THAT(kExpectedStructTreeJSON, base::test::IsJson((struct_tree)));
 }
-
-#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
 }  // namespace headless

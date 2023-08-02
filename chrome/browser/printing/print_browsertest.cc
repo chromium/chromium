@@ -1203,10 +1203,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   client->DoCompositeDocumentToPdf(
       kDefaultDocumentCookie, main_frame,
       *TestPrintRenderFrame::GetDefaultDidPrintContentParams(),
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-      ui::AXTreeUpdate(),
-#endif
-      base::DoNothing());
+      ui::AXTreeUpdate(), base::DoNothing());
   ASSERT_TRUE(client->GetCompositeRequest(kDefaultDocumentCookie));
   // `requested_subframes_` should be empty.
   ASSERT_TRUE(client->requested_subframes_.empty());

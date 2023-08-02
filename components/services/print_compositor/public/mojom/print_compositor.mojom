@@ -6,10 +6,8 @@ module printing.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
-import "url/mojom/url.mojom";
-
-[EnableIf=enable_tagged_pdf]
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "url/mojom/url.mojom";
 
 [ServiceSandbox=sandbox.mojom.Sandbox.kPrintCompositor]
 interface PrintCompositor {
@@ -44,7 +42,7 @@ interface PrintCompositor {
   // TODO(crbug.com/1141990): AXTreeUpdate can be quite large, hence the
   // [UnlimitedSize] tag. It may be possible to remove this if AXTreeUpdate
   // can be reworked to avoid very large serialized values.
-  [EnableIf=enable_tagged_pdf, UnlimitedSize]
+  [UnlimitedSize]
   SetAccessibilityTree(ax.mojom.AXTreeUpdate accessibility_tree);
 
   // Requests to composite a page and convert it into a PDF file.

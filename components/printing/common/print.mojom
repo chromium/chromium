@@ -9,10 +9,8 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "printing/mojom/print.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
-
-[EnableIf=enable_tagged_pdf]
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Preview Ids, the id of the preview request and the print preview ui
 // associated with this request.
@@ -282,7 +280,6 @@ interface PrintPreviewUI {
 
 struct PrintWithParamsResultData {
   DidPrintDocumentParams params;
-  [EnableIf=enable_tagged_pdf]
   ax.mojom.AXTreeUpdate accessibility_tree;
 };
 
@@ -431,9 +428,7 @@ interface PrintManagerHost {
   CheckForCancel(int32 preview_ui_id, int32 request_id) => (bool cancel);
 
   // Sends the accessibility tree corresponding to a document being
-  // printed, needed for a tagged (accessible) PDF. Note that
-  // enable_print_preview must be set to true as well, but Mojo cannot express
-  // that. Instead, this dependency is enforced by GN.
-  [EnableIf=enable_tagged_pdf]
+  // printed, needed for a tagged (accessible) PDF.
+  [EnableIf=enable_print_preview]
   SetAccessibilityTree(int32 cookie, ax.mojom.AXTreeUpdate accessibility_tree);
 };

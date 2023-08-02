@@ -82,14 +82,11 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
-
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-#include "ui/accessibility/ax_tree_update.h"
-#endif
 
 #if DCHECK_IS_ON()
 #include "base/containers/circular_deque.h"
@@ -2413,9 +2410,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   if (print_with_params_callback_) {
     auto result = mojom::PrintWithParamsResultData::New();
     result->params = std::move(page_params);
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
     result->accessibility_tree = std::move(accessibility_tree);
-#endif
     std::move(print_with_params_callback_)
         .Run(mojom::PrintWithParamsResult::NewData(std::move(result)));
     Reset();
@@ -2836,7 +2831,6 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   TRACE_EVENT1("print", "PrintRenderFrameHelper::PreviewPageRendered",
                "page_number", page_number);
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
   // Make sure the RenderFrame is alive before taking the snapshot.
   if (render_frame_gone_)
     snapshotter_.reset();
@@ -2854,7 +2848,6 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
     GetPrintManagerHost()->SetAccessibilityTree(
         print_pages_params_->params->document_cookie, accessibility_tree);
   }
-#endif
 
   auto preview_page_params = mojom::DidPreviewPageParams::New();
   preview_page_params->content = mojom::DidPrintContentParams::New();

@@ -23,8 +23,6 @@
 
 namespace {
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-
 // Table 333 in PDF 32000-1:2008 spec, section 14.8.4.2
 const char kPDFStructureTypeDocument[] = "Document";
 const char kPDFStructureTypeParagraph[] = "P";
@@ -64,8 +62,6 @@ SkString GetHeadingStructureType(int heading_level) {
   return SkString(kPDFStructureTypeHeading);
 }
 
-#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
-
 SkTime::DateTime TimeToSkTime(base::Time time) {
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
@@ -95,7 +91,6 @@ sk_sp<SkPicture> GetEmptyPicture() {
 // have enough data to build a valid tree.
 bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
                                  SkPDF::StructureElementNode* tag) {
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
   bool valid = false;
 
   tag->fNodeId = ax_node->GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId);
@@ -212,9 +207,6 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   }
 
   return valid;
-#else  // BUILDFLAG(ENABLE_TAGGED_PDF)
-  return false;
-#endif
 }
 
 }  // namespace

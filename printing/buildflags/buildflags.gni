@@ -52,9 +52,6 @@ declare_args() {
 }
 
 declare_args() {
-  # Enables exporting to tagged PDF.
-  enable_tagged_pdf = enable_print_preview
-
   enable_concurrent_basic_print_dialogs = enable_basic_print_dialog && is_linux
 
   # Enables the printing system dialog being invoked from out-of-process for

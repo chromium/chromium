@@ -479,8 +479,6 @@ class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFDisableLazyLoading);
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-
 const char kExpectedStructTreeJSON[] = R"({
    "lang": "en",
    "type": "Document",
@@ -701,6 +699,5 @@ HEADLESS_DEVTOOLED_TEST_P(HeadlessTaggedPDFDisabledBrowserTest);
 INSTANTIATE_TEST_SUITE_P(All,
                          HeadlessTaggedPDFDisabledBrowserTest,
                          ::testing::ValuesIn(kTaggedPDFTestData));
-#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
 }  // namespace headless

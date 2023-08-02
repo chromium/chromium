@@ -154,7 +154,6 @@ void PrintCompositeClient::OnDidPrintFrameContent(
   printed_subframes_.insert(render_frame_host);
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
 void PrintCompositeClient::SetAccessibilityTree(
     int document_cookie,
     const ui::AXTreeUpdate& accessibility_tree) {
@@ -164,7 +163,6 @@ void PrintCompositeClient::SetAccessibilityTree(
   auto* compositor = GetCompositeRequest(document_cookie);
   compositor->SetAccessibilityTree(accessibility_tree);
 }
-#endif
 
 void PrintCompositeClient::PrintCrossProcessSubframe(
     const gfx::Rect& rect,
@@ -265,17 +263,13 @@ void PrintCompositeClient::DoCompositeDocumentToPdf(
     int document_cookie,
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPrintContentParams& content,
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
     const ui::AXTreeUpdate& accessibility_tree,
-#endif
     mojom::PrintCompositor::CompositeDocumentToPdfCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
   auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
   compositor->SetAccessibilityTree(accessibility_tree);
-#endif
 
   for (auto& requested : requested_subframes_) {
     if (!IsDocumentCookieValid(requested->document_cookie_))
