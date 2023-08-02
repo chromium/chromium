@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
 
@@ -177,6 +178,37 @@ void NGFragmentBuilder::PropagateFromLayoutResult(
       child_result.HasOrthogonalFallbackSizeDescendant();
 }
 
+ScrollStartTargetCandidates& NGFragmentBuilder::EnsureScrollStartTargets() {
+  if (!scroll_start_targets_) {
+    scroll_start_targets_ = MakeGarbageCollected<ScrollStartTargetCandidates>();
+  }
+  return *scroll_start_targets_;
+}
+
+void NGFragmentBuilder::PropagateScrollStartTarget(
+    const NGPhysicalFragment& child) {
+  auto UpdateScrollStartTarget = [](Member<const LayoutBox>& old_target,
+                                    const LayoutBox* new_target) {
+    if (new_target &&
+        (!old_target || old_target->IsBeforeInPreOrder(*new_target))) {
+      old_target = new_target;
+    }
+  };
+  const auto* child_box = DynamicTo<LayoutBox>(child.GetLayoutObject());
+  if (child.Style().ScrollStartTargetY() != EScrollStartTarget::kNone) {
+    UpdateScrollStartTarget(EnsureScrollStartTargets().y, child_box);
+  }
+  if (child.Style().ScrollStartTargetX() != EScrollStartTarget::kNone) {
+    UpdateScrollStartTarget(EnsureScrollStartTargets().x, child_box);
+  }
+
+  // Prefer deeper scroll-start-targets.
+  if (const auto* targets = child.PropagatedScrollStartTargets()) {
+    UpdateScrollStartTarget(EnsureScrollStartTargets().y, targets->y);
+    UpdateScrollStartTarget(EnsureScrollStartTargets().x, targets->x);
+  }
+}
+
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
 void NGFragmentBuilder::PropagateFromFragment(
@@ -188,6 +220,8 @@ void NGFragmentBuilder::PropagateFromFragment(
   // |child| itself may have an anchor.
   PropagateChildAnchors(child, child_offset + relative_offset);
   PropagateStickyDescendants(child);
+
+  PropagateScrollStartTarget(child);
 
   if (child.NeedsOOFPositionedInfoPropagation() &&
       !disable_oof_descendants_propagation_) {

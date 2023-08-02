@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
+#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -617,6 +618,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void MainThreadScrollingDidChange();
   virtual void StopApplyingScrollStart() {}
+  const ScrollStartTargetCandidates* GetScrollStartTargets() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,
@@ -658,6 +660,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       mojom::blink::ScrollBehavior behavior =
           mojom::blink::ScrollBehavior::kSmooth,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
+
+  void ScrollToScrollStartTarget(const LayoutBox*, cc::SnapAxis);
+  void ScrollToScrollStartTargets(const ScrollStartTargetCandidates*);
 
   // This animator is used to handle painting animations for MacOS scrollbars
   // using AppKit-specific code (Cocoa APIs). It requires input from

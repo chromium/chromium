@@ -258,6 +258,14 @@
             method: "SkipsContents()",
             field_dependencies: ["content-visibility"]
           },
+          {
+            method: "ScrollStartTargetX()",
+            field_dependencies: ["scroll-start-target-x"]
+          },
+          {
+            method: "ScrollStartTargetY()",
+            field_dependencies: ["scroll-start-target-y"]
+          }
         ],
 	predicates_to_test: [
 	  {

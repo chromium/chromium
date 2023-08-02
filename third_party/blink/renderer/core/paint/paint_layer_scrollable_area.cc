@@ -519,7 +519,8 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   if (FragmentAnchor* anchor = frame_view->GetFragmentAnchor())
     anchor->DidScroll(scroll_type);
 
-  if (IsExplicitScrollType(scroll_type)) {
+  if (IsExplicitScrollType(scroll_type) ||
+      scroll_type == mojom::blink::ScrollType::kScrollStart) {
     // We don't need to show scrollbars for kCompositor scrolls unless the
     // scrollbar is non-composited (!NeedsCompositorScrolling). See
     // PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar.
@@ -1143,7 +1144,13 @@ Element* PaintLayerScrollableArea::GetElementForScrollStart() const {
 
 bool PaintLayerScrollableArea::IsApplyingScrollStart() const {
   if (Element* element = GetElementForScrollStart()) {
-    return !(element->HasBeenExplicitlyScrolled() || ScrollStartIsDefault());
+    if (element->HasBeenExplicitlyScrolled()) {
+      return false;
+    }
+    if (GetScrollStartTargets()) {
+      return true;
+    }
+    return !ScrollStartIsDefault();
   }
   return false;
 }

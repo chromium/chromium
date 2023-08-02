@@ -953,6 +953,7 @@ void LayoutBox::LayoutSubtreeRoot() {
   // for layout if:
   //  - Our baselines have shifted.
   //  - We've propagated any sticky-descendants.
+  //  - We've propagated any scroll-start-targets.
   //
   // NOTE: We could weaken the constraints in ObjectIsRelayoutBoundary, and use
   // this technique to detect size-changes, etc if we wanted to expand this
@@ -962,7 +963,8 @@ void LayoutBox::LayoutSubtreeRoot() {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   if (previous_fragment.FirstBaseline() != fragment.FirstBaseline() ||
       previous_fragment.LastBaseline() != fragment.LastBaseline() ||
-      fragment.PropagatedStickyDescendants()) {
+      fragment.PropagatedStickyDescendants() ||
+      fragment.PropagatedScrollStartTargets()) {
     if (auto* containing_block = ContainingBlock()) {
       containing_block->SetNeedsLayout(
           layout_invalidation_reason::kChildChanged, kMarkContainerChain);

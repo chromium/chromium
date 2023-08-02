@@ -37,6 +37,7 @@
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
 #include "cc/input/snap_selection_strategy.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -45,18 +46,23 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
+#include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
+#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -454,7 +460,67 @@ bool ScrollableArea::ScrollStartIsDefault() const {
          GetLayoutBox()->Style()->ScrollStartY() == ScrollStartData();
 }
 
+const ScrollStartTargetCandidates* ScrollableArea::GetScrollStartTargets()
+    const {
+  for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
+    if (auto* scroll_start_targets = fragment.ScrollStartTargets()) {
+      return scroll_start_targets;
+    }
+  }
+  return nullptr;
+}
+
+void ScrollableArea::ScrollToScrollStartTarget(
+    const LayoutBox* scroll_start_target,
+    cc::SnapAxis axis) {
+  using Behavior = mojom::ScrollAlignment_Behavior;
+  mojom::blink::ScrollAlignment align_x(
+      Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
+  mojom::blink::ScrollAlignment align_y(
+      Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
+  if (axis == cc::SnapAxis::kY || axis == cc::SnapAxis::kBoth) {
+    align_y = GetLayoutBox()->HasTopOverflow() ? ScrollAlignment::BottomAlways()
+                                               : ScrollAlignment::TopAlways();
+  }
+  if (axis == cc::SnapAxis::kX || axis == cc::SnapAxis::kBoth) {
+    align_x = GetLayoutBox()->HasLeftOverflow() ? ScrollAlignment::RightAlways()
+                                                : ScrollAlignment::LeftAlways();
+  }
+  mojom::blink::ScrollIntoViewParamsPtr params =
+      ScrollAlignment::CreateScrollIntoViewParams(align_x, align_y);
+  params->behavior = mojom::blink::ScrollBehavior::kInstant;
+  params->type = mojom::blink::ScrollType::kScrollStart;
+  ScrollIntoView(
+      scroll_start_target->AbsoluteBoundingBoxRectForScrollIntoView(), params);
+}
+
+void ScrollableArea::ScrollToScrollStartTargets(
+    const ScrollStartTargetCandidates* targets) {
+  const LayoutBox* scroll_start_target_y = targets->y;
+  const LayoutBox* scroll_start_target_x = targets->x;
+  if (!scroll_start_target_y && !scroll_start_target_x) {
+    return;
+  }
+
+  if (scroll_start_target_y == scroll_start_target_x) {
+    ScrollToScrollStartTarget(scroll_start_target_y, cc::SnapAxis::kBoth);
+  } else {
+    if (scroll_start_target_y) {
+      ScrollToScrollStartTarget(scroll_start_target_y, cc::SnapAxis::kY);
+    }
+    if (scroll_start_target_x) {
+      ScrollToScrollStartTarget(scroll_start_target_x, cc::SnapAxis::kX);
+    }
+  }
+}
+
 void ScrollableArea::ApplyScrollStart() {
+  if (const auto* scroll_start_targets = GetScrollStartTargets()) {
+    ScrollToScrollStartTargets(scroll_start_targets);
+    // scroll-start-target takes precedence over scroll-start, so we should
+    // return here.
+    return;
+  }
   const auto& y_data = GetLayoutBox()->Style()->ScrollStartY();
   const auto& x_data = GetLayoutBox()->Style()->ScrollStartX();
   ScrollOffset scroll_start_offset =
