@@ -52,6 +52,8 @@ extern NSString* const kDinoSymbol;
 extern NSString* const kChromeProductSymbol;
 extern NSString* const kTunerSymbol;
 extern NSString* const kMoveFolderSymbol;
+extern NSString* const kTopOmniboxOptionSymbol;
+extern NSString* const kBottomOmniboxOptionSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.

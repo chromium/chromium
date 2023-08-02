@@ -245,3 +245,17 @@ symbolset("folder_badge_arrow_forward") {
     "folder_badge_arrow_forward.symbolset/folder.badge.arrow.forward.cr.svg",
   ]
 }
+
+symbolset("top_omnibox_option") {
+  sources = [
+    "top_omnibox_option.symbolset/Contents.json",
+    "top_omnibox_option.symbolset/top.omnibox.cr.svg",
+  ]
+}
+
+symbolset("bottom_omnibox_option") {
+  sources = [
+    "bottom_omnibox_option.symbolset/Contents.json",
+    "bottom_omnibox_option.symbolset/bottom.omnibox.cr.svg",
+  ]
+}
