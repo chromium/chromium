@@ -12,6 +12,8 @@ namespace views::borealis {
 void ShowInstallerDisallowedDialog(
     ::borealis::BorealisFeatures::AllowStatus status);
 
+void ShowLauncherDisallowedDialog(
+    ::borealis::BorealisFeatures::AllowStatus status);
 }
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_DISALLOWED_DIALOG_H_

@@ -141,8 +141,8 @@ class DisallowedFlag : public BehaviourProvider {
 
 class BorealisDisallowedDialog : public DialogDelegate {
  public:
-  explicit BorealisDisallowedDialog(
-      std::unique_ptr<BehaviourProvider> behaviour) {
+  BorealisDisallowedDialog(std::unique_ptr<BehaviourProvider> behaviour,
+                           int title_id) {
     DCHECK(!g_instance_);
 
     SetTitle(IDS_BOREALIS_INSTALLER_APP_NAME);
@@ -160,7 +160,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
       SetButtonLabel(ui::DIALOG_BUTTON_OK,
                      l10n_util::GetStringUTF16(IDS_CLOSE));
     }
-    InitializeView(*behaviour);
+    InitializeView(*behaviour, title_id);
     SetModalType(ui::MODAL_TYPE_NONE);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
@@ -176,7 +176,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
   bool ShouldShowWindowTitle() const override { return false; }
 
  private:
-  void InitializeView(const BehaviourProvider& behaviour) {
+  void InitializeView(const BehaviourProvider& behaviour, int title_id) {
     auto view = std::make_unique<views::View>();
 
     views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -186,8 +186,8 @@ class BorealisDisallowedDialog : public DialogDelegate {
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
     views::Label* title_label = new views::Label(
-        l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_TITLE),
-        CONTEXT_IPH_BUBBLE_TITLE, views::style::STYLE_EMPHASIZED);
+        l10n_util::GetStringUTF16(title_id), CONTEXT_IPH_BUBBLE_TITLE,
+        views::style::STYLE_EMPHASIZED);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetMultiLine(true);
     view->AddChildView(title_label);
@@ -241,9 +241,7 @@ std::unique_ptr<BehaviourProvider> StatusBehaviour(AllowStatus status) {
   }
 }
 
-}  // namespace
-
-void ShowInstallerDisallowedDialog(AllowStatus status) {
+void ShowDisallowedDialog(AllowStatus status, int title_id) {
   DCHECK(status != AllowStatus::kAllowed);
 
   // TODO(b/248938308): Closing and reopening the dialog this way is not
@@ -252,13 +250,23 @@ void ShowInstallerDisallowedDialog(AllowStatus status) {
     g_instance_->CloseNow();
   }
 
-  auto delegate =
-      std::make_unique<BorealisDisallowedDialog>(StatusBehaviour(status));
+  auto delegate = std::make_unique<BorealisDisallowedDialog>(
+      StatusBehaviour(status), title_id);
   g_instance_ = views::DialogDelegate::CreateDialogWidget(std::move(delegate),
                                                           nullptr, nullptr);
   g_instance_->GetNativeWindow()->SetProperty(
       ash::kShelfIDKey, ash::ShelfID(::borealis::kInstallerAppId).Serialize());
   g_instance_->Show();
+}
+
+}  // namespace
+
+void ShowInstallerDisallowedDialog(AllowStatus status) {
+  ShowDisallowedDialog(status, IDS_BOREALIS_DISALLOWED_TITLE);
+}
+
+void ShowLauncherDisallowedDialog(AllowStatus status) {
+  ShowDisallowedDialog(status, IDS_BOREALIS_LAUNCH_ERROR_TITLE);
 }
 
 }  // namespace views::borealis
