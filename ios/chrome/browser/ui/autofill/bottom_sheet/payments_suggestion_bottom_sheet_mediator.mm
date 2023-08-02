@@ -7,8 +7,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager_observer.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -66,19 +68,33 @@
 
 @end
 
-@interface PaymentsSuggestionBottomSheetMediator () <CRWWebStateObserver,
-                                                     WebStateListObserving>
+@interface PaymentsSuggestionBottomSheetMediator () <
+    CRWWebStateObserver,
+    PersonalDataManagerObserver,
+    WebStateListObserving>
 
 @end
 
 @implementation PaymentsSuggestionBottomSheetMediator {
   // The WebStateList observed by this mediator and the observer bridge.
   raw_ptr<WebStateList> _webStateList;
-  std::unique_ptr<web::WebStateObserverBridge> _observer;
-  std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<ActiveWebStateObservationForwarder>
+      _activeWebStateObservationForwarder;
 
   // Personal Data Manager from which we can get Credit Card information.
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
+
+  // C++ to ObjC bridge for PersonalDataManagerObserver.
+  std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
+      _personalDataManagerObserver;
+
+  // Scoped observer used to track registration of the
+  // PersonalDataManagerObserverBridge.
+  std::unique_ptr<
+      base::ScopedObservation<autofill::PersonalDataManager,
+                              autofill::PersonalDataManagerObserver>>
+      _scopedPersonalDataManagerObservation;
 
   // Whether the field that triggered the bottom sheet will need to refocus when
   // the bottom sheet is dismissed. Default is true.
@@ -103,21 +119,40 @@
     _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;
-    _personalDataManager = personalDataManager;
+    if (personalDataManager) {
+      _personalDataManager = personalDataManager;
+      _personalDataManagerObserver.reset(
+          new autofill::PersonalDataManagerObserverBridge(self));
+      _scopedPersonalDataManagerObservation = std::make_unique<
+          base::ScopedObservation<autofill::PersonalDataManager,
+                                  autofill::PersonalDataManagerObserver>>(
+          _personalDataManagerObserver.get());
+      _scopedPersonalDataManagerObservation->Observe(_personalDataManager);
+    }
 
     // Create and register the observers.
-    _observer = std::make_unique<web::WebStateObserverBridge>(self);
-    _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
-        webStateList, _observer.get());
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    _activeWebStateObservationForwarder =
+        std::make_unique<ActiveWebStateObservationForwarder>(
+            webStateList, _webStateObserver.get());
   }
   return self;
 }
 
 #pragma mark - Public
 
+- (void)dealloc {
+  [self disconnect];
+}
+
 - (void)disconnect {
-  _forwarder = nullptr;
-  _observer = nullptr;
+  if (_personalDataManager && _personalDataManagerObserver.get()) {
+    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
+    _personalDataManagerObserver.reset();
+  }
+  _scopedPersonalDataManagerObservation.reset();
+  _activeWebStateObservationForwarder = nullptr;
+  _webStateObserver = nullptr;
   _webStateList = nullptr;
 }
 
@@ -210,6 +245,17 @@
   }
 }
 
+#pragma mark - PersonalDataManagerObserver
+
+- (void)onPersonalDataChanged {
+  DCHECK(_personalDataManager);
+
+  // Refresh the data in the consumer
+  if (self.consumer) {
+    [self setConsumer:self.consumer];
+  }
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
@@ -252,8 +298,8 @@
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
   DCHECK_EQ(webStateList, _webStateList);
-  _forwarder = nullptr;
-  _observer = nullptr;
+  _activeWebStateObservationForwarder = nullptr;
+  _webStateObserver = nullptr;
   _webStateList = nullptr;
   [self onWebStateChange];
 }

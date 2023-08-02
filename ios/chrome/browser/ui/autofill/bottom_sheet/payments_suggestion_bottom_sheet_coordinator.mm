@@ -21,6 +21,9 @@
 @interface PaymentsSuggestionBottomSheetCoordinator () {
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;
+
+  // Currently in the process of dismissing the bottom sheet.
+  bool _dismissing;
 }
 
 // This mediator is used to fetch data related to the bottom sheet.
@@ -45,6 +48,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _params = params;
+    _dismissing = NO;
 
     ChromeBrowserState* browserState =
         browser->GetBrowserState()->GetOriginalChromeBrowserState();
@@ -77,6 +81,7 @@
   // can happen between these two operations.
   if (!self.mediator.hasCreditCards) {
     [self.mediator disableBottomSheet];
+    [self.mediator disconnect];
     return;
   }
 
@@ -108,7 +113,6 @@
                          }];
 }
 
-// Displays the payment details menu.
 - (void)displayPaymentDetailsForCreditCardIdentifier:
     (NSString*)creditCardIdentifier {
   autofill::CreditCard* creditCard =
@@ -123,6 +127,37 @@
                                  showCreditCardDetails:creditCard];
                            }];
   }
+}
+
+- (void)primaryButtonTapped:(NSString*)backendIdentifier {
+  _dismissing = YES;
+  __weak __typeof(self) weakSelf = self;
+  [self.viewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           [weakSelf didSelectCreditCard:backendIdentifier];
+                         }];
+}
+
+- (void)secondaryButtonTapped {
+  // "No thanks" button, which dismisses the bottom sheet.
+  [self.viewController dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  if (_dismissing) {
+    return;
+  }
+
+  [self.mediator disconnect];
+}
+
+#pragma mark - Private
+
+- (void)didSelectCreditCard:(NSString*)backendIdentifier {
+  // Send a notification to fill the credit card related fields.
+  [self.mediator didSelectCreditCard:backendIdentifier];
+  [self.mediator disconnect];
 }
 
 @end

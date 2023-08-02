@@ -128,6 +128,153 @@ CGFloat const kSpacing = 10;
   [super viewIsAppearing:animated];
 #endif
 
+  [self updateHeight];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  if (self.disableBottomSheetOnExit) {
+    [self.delegate disableBottomSheet];
+  }
+  [self.handler viewDidDisappear:animated];
+}
+
+#pragma mark - PaymentsSuggestionBottomSheetConsumer
+
+- (void)setCreditCardData:
+            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
+        showGooglePayLogo:(BOOL)showGooglePayLogo {
+  BOOL requiresUpdate = (_creditCardData != nil);
+  _creditCardData = creditCardData;
+  self.showGooglePayLogo = showGooglePayLogo;
+  if (requiresUpdate) {
+    [self reloadTableViewData];
+    [self updateHeight];
+  }
+}
+
+- (void)dismiss {
+  [self dismissViewControllerAnimated:NO completion:NULL];
+}
+
+#pragma mark - UITableViewDelegate
+
+// Long press open context menu.
+- (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
+    contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
+                                        point:(CGPoint)point {
+  __weak __typeof(self) weakSelf = self;
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        NSMutableArray<UIMenuElement*>* menuElements =
+            [[NSMutableArray alloc] initWithArray:suggestedActions];
+
+        PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
+        if (strongSelf) {
+          [menuElements addObject:[strongSelf openPaymentMethodsAction]];
+          [menuElements
+              addObject:[strongSelf openPaymentDetailsForIndexPath:indexPath]];
+        }
+
+        return [UIMenu menuWithTitle:@"" children:menuElements];
+      };
+
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView*)tableView
+    numberOfRowsInSection:(NSInteger)section {
+  return _creditCardData.count;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return 1;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewDetailIconCell* cell =
+      [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  return [self layoutCell:cell forTableView:tableView atIndexPath:indexPath];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [self.handler primaryButtonTapped:[_creditCardData[[self selectedRow]]
+                                        backendIdentifier]];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self.handler secondaryButtonTapped];
+}
+
+#pragma mark - Private
+
+// Returns the logo to display as title. It should return the Google Pay badge
+// image corresponding to the current UIUserInterfaceStyle (light/dark mode) if
+// `showGooglePayLogo` value is YES otherwise the Chrome logo is shown.
+- (UIImage*)titleImage {
+  // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (self.showGooglePayLogo) {
+    return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+               ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
+               : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+  }
+#endif
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kChromeSymbol, kInfobarSymbolPointSize));
+#else
+  return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+}
+
+// Returns the string to display at a given row in the table view.
+- (NSString*)suggestionAtRow:(NSInteger)row {
+  return [_creditCardData[row] cardNameAndLastFourDigits];
+}
+
+// Returns the display description at a given row in the table view.
+- (NSString*)descriptionAtRow:(NSInteger)row {
+  return [_creditCardData[row] cardDetails];
+}
+
+// Returns the credit card icon at a given row in the table view.
+- (UIImage*)iconAtRow:(NSInteger)row {
+  return [_creditCardData[row] icon];
+}
+
+// Creates the payments bottom sheet's table view.
+- (UITableView*)createTableView {
+  UITableView* tableView = [super createTableView];
+
+  tableView.dataSource = self;
+  [tableView registerClass:TableViewDetailIconCell.class
+      forCellReuseIdentifier:@"cell"];
+
+  _minimizedHeightConstraint = [tableView.heightAnchor
+      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
+                                [self initialNumberOfVisibleCells]];
+  _minimizedHeightConstraint.priority = UILayoutPriorityDefaultLow;
+  _heightConstraint = [tableView.heightAnchor
+      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
+                                _creditCardData.count];
+
+  _minimizedHeightConstraint.active = _tableViewIsMinimized;
+  _heightConstraint.active = !_tableViewIsMinimized;
+
+  return tableView;
+}
+
+// Updates the bottom sheet's height based on the number of credit cards to
+// show.
+- (void)updateHeight {
   BOOL useMinimizedState = _tableViewIsMinimized;
 
   if (_creditCardData.count) {
@@ -197,154 +344,6 @@ CGFloat const kSpacing = 10;
     presentationController.selectedDetentIdentifier =
         useMinimizedState ? @"customDetent" : @"customDetentExpand";
   }
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  if (self.disableBottomSheetOnExit) {
-    [self.delegate disableBottomSheet];
-  }
-}
-
-#pragma mark - PaymentsSuggestionBottomSheetConsumer
-
-- (void)setCreditCardData:
-            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
-        showGooglePayLogo:(BOOL)showGooglePayLogo {
-  _creditCardData = creditCardData;
-  self.showGooglePayLogo = showGooglePayLogo;
-}
-
-- (void)dismiss {
-  [self dismissViewControllerAnimated:NO completion:NULL];
-}
-
-#pragma mark - UITableViewDelegate
-
-// Long press open context menu.
-- (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
-    contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
-                                        point:(CGPoint)point {
-  __weak __typeof(self) weakSelf = self;
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        NSMutableArray<UIMenuElement*>* menuElements =
-            [[NSMutableArray alloc] initWithArray:suggestedActions];
-
-        PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
-        if (strongSelf) {
-          [menuElements addObject:[strongSelf openPaymentMethodsAction]];
-          [menuElements
-              addObject:[strongSelf openPaymentDetailsForIndexPath:indexPath]];
-        }
-
-        return [UIMenu menuWithTitle:@"" children:menuElements];
-      };
-
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)tableView:(UITableView*)tableView
-    numberOfRowsInSection:(NSInteger)section {
-  return _creditCardData.count;
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  return 1;
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewDetailIconCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"cell"];
-  return [self layoutCell:cell forTableView:tableView atIndexPath:indexPath];
-}
-
-#pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertPrimaryAction {
-  // Use payments button
-  __weak __typeof(self) weakSelf = self;
-  [self dismissViewControllerAnimated:NO
-                           completion:^{
-                             // Send a notification to fill the
-                             // credit card related fields
-                             [weakSelf didSelectCreditCard];
-                           }];
-}
-
-- (void)confirmationAlertSecondaryAction {
-  // "No thanks" button, which dismisses the bottom sheet.
-  [self dismiss];
-}
-
-#pragma mark - Private
-
-// Returns the logo to display as title. It should return the Google Pay badge
-// image corresponding to the current UIUserInterfaceStyle (light/dark mode) if
-// `showGooglePayLogo` value is YES otherwise the Chrome logo is shown.
-- (UIImage*)titleImage {
-  // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (self.showGooglePayLogo) {
-    return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-               ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
-               : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-  }
-#endif
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kInfobarSymbolPointSize));
-#else
-  return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-}
-
-// Returns the string to display at a given row in the table view.
-- (NSString*)suggestionAtRow:(NSInteger)row {
-  return [_creditCardData[row] cardNameAndLastFourDigits];
-}
-
-// Returns the display description at a given row in the table view.
-- (NSString*)descriptionAtRow:(NSInteger)row {
-  return [_creditCardData[row] cardDetails];
-}
-
-// Returns the credit card icon at a given row in the table view.
-- (UIImage*)iconAtRow:(NSInteger)row {
-  return [_creditCardData[row] icon];
-}
-
-// Creates the payments bottom sheet's table view.
-- (UITableView*)createTableView {
-  UITableView* tableView = [super createTableView];
-
-  tableView.dataSource = self;
-  [tableView registerClass:TableViewDetailIconCell.class
-      forCellReuseIdentifier:@"cell"];
-
-  _minimizedHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                [self initialNumberOfVisibleCells]];
-  _minimizedHeightConstraint.priority = UILayoutPriorityDefaultLow;
-  _heightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                _creditCardData.count];
-
-  _minimizedHeightConstraint.active = _tableViewIsMinimized;
-  _heightConstraint.active = !_tableViewIsMinimized;
-
-  return tableView;
-}
-
-// Notifies the delegate that a credit card was selected by the user.
-- (void)didSelectCreditCard {
-  [self.delegate didSelectCreditCard:[_creditCardData[[self selectedRow]]
-                                         backendIdentifier]];
 }
 
 // Returns whether the provided index path points to the last row of the table

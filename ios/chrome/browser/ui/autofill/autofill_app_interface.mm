@@ -435,7 +435,7 @@ class SaveCardInfobarEGTestHelper
   return [self personalDataManager] -> GetCreditCards().size();
 }
 
-+ (void)saveMaskedCreditCard {
++ (NSString*)saveMaskedCreditCard {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
   autofill::CreditCard card = autofill::test::GetMaskedServerCard();
@@ -444,6 +444,7 @@ class SaveCardInfobarEGTestHelper
   personalDataManager->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(card));
   personalDataManager->NotifyPersonalDataObserver();
+  return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }
 
 + (void)setUpSaveCardInfobarEGTestHelper {

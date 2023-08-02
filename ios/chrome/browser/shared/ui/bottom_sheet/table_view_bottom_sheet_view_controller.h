@@ -18,6 +18,9 @@
 // Performs the expand bottom sheet animation.
 - (void)expand:(NSInteger)numberOfRows;
 
+// Request to relaod data from the table view's data source.
+- (void)reloadTableViewData;
+
 // Returns the estimated height of the bottom sheet.
 - (CGFloat)bottomSheetEstimatedHeight;
 

@@ -15,6 +15,16 @@
 - (void)displayPaymentDetailsForCreditCardIdentifier:
     (NSString*)creditCardIdentifier;
 
+// Handles tapping the primary button. The selected credit card's backend
+// identifier must be provided.
+- (void)primaryButtonTapped:(NSString*)backendIdentifier;
+
+// Handles tapping the secondary button.
+- (void)secondaryButtonTapped;
+
+// Handles the view disappearing.
+- (void)viewDidDisappear:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_

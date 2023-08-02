@@ -120,6 +120,10 @@ CGFloat const kInitialHeightPadding = 5;
   [self selectFirstRow];
 }
 
+- (void)reloadTableViewData {
+  [_tableView reloadData];
+}
+
 - (CGFloat)bottomSheetEstimatedHeight {
   return kEstimatedBaseHeightForBottomSheet;
 }

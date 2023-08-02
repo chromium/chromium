@@ -111,6 +111,8 @@ id<GREYMatcher> NicknameTextField() {
 
 #pragma mark - Tests
 
+// Tests that the Payments Bottom Sheet appears when tapping on a credit card
+// related field.
 - (void)testOpenPaymentsBottomSheetUseCreditCard {
   [self loadPaymentsPage];
 
@@ -124,6 +126,37 @@ id<GREYMatcher> NicknameTextField() {
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 }
 
+// Tests that the Payments Bottom Sheet updates its contents when a new credit
+// card becomes available in the personal data manager.
+- (void)testUpdateBottomSheetOnAddServerCreditCard {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Add a credit card to the Personal Data Manager.
+  id<GREYMatcher> serverCreditCardEntry =
+      grey_text([AutofillAppInterface saveMaskedCreditCard]);
+
+  // Make sure the Bottom Sheet has been updated with the new credit card.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:serverCreditCardEntry];
+
+  // Make sure the initial credit card is still there.
+  id<GREYMatcher> localCreditCardEntry = grey_text(_lastDigits);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:localCreditCardEntry];
+
+  // Select and use the new credit card.
+  [[EarlGrey selectElementWithMatcher:serverCreditCardEntry]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+}
+
+// Tests that accessing a long press menu does not disable the bottom sheet.
 - (void)testOpenPaymentsBottomSheetAfterLongPress {
   [self loadPaymentsPage];
 
