@@ -215,7 +215,7 @@
     "rollup": "3.26.2",
     "sinon": "15.2.0",
     "source-map-support": "0.5.21",
-    "terser": "5.19.0",
+    "terser": "5.19.2",
     "tslib": "2.6.0",
     "typescript": "5.1.6",
     "websocket": "1.0.34",
