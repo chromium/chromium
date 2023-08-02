@@ -21,11 +21,11 @@
     </template>
     <div class="settings-box">
       <div class="start settings-box-text" id="mouseSwapButtonLabel">
-        $i18n{mouseSwapButtons}
+        $i18n{mouseSwapButtonsLabel}
       </div>
       <settings-dropdown-menu id="mouseSwapButtonDropdown"
           aria-describedby="mouseName"
-          label="$i18n{mouseSwapButtons}"
+          label="$i18n{mouseSwapButtonsLabel}"
           pref="{{primaryRightPref}}"
           menu-options="[[swapPrimaryOptions]]"
           deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
@@ -35,6 +35,7 @@
         class="hr"
         pref="{{accelerationPref}}"
         label="[[getCursorAccelerationString()]]"
+        sub-label="[[getMouseAccelerationDescription()]]"
         aria-describedby="mouseName"
         deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
     </settings-toggle-button>
@@ -62,15 +63,18 @@
             aria-describedby="mouseName"
             on-click="onLearnMoreLinkClicked_"
             id="enableMouseReverseScrollingLabel"
-            localized-string="$i18n{mouseReverseScroll}"
+            localized-string="$i18n{mouseReverseScrollLabel}"
             link-url="$i18n{naturalScrollLearnMoreLink}">
         </localized-link>
+        <div class="secondary" hidden="[[!isRevampWayfindingEnabled_]]">
+          $i18n{mouseReverseScrollDescription}
+        </div>
       </div>
       <cr-toggle id="mouseReverseScroll"
           checked="{{reverseScrollValue}}"
           aria-describedby="mouseName"
           aria-label=
-              "[[getLabelWithoutLearnMore('mouseReverseScroll')]]"
+              "[[getLabelWithoutLearnMore('mouseReverseScrollLabel')]]"
           deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
       </cr-toggle>
     </div>
