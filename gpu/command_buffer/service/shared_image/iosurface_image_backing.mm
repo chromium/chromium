@@ -47,8 +47,6 @@ namespace gpu {
 
 namespace {
 
-using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
-
 // Returns BufferFormat for given multiplanar `format`.
 gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
                                           int plane) {
@@ -768,8 +766,8 @@ IOSurfaceImageBacking::RetainGLTexture() {
        plane_index++) {
     // Allocate the GL texture.
     scoped_refptr<gles2::TexturePassthrough> gl_texture;
-    GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-        gl_target_, framebuffer_attachment_angle_, &gl_texture, nullptr);
+    MakeTextureAndSetParameters(gl_target_, framebuffer_attachment_angle_,
+                                &gl_texture, nullptr);
     // Set the IOSurface to be initially unbound from the GL texture.
     gl_texture->SetEstimatedSize(GetEstimatedSize());
     gl_texture->set_bind_pending();

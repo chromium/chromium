@@ -83,10 +83,9 @@ ScopedUnpackState::~ScopedUnpackState() {
     api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, unpack_buffer_);
 }
 
-GLTextureImageBackingHelper::ScopedRestoreTexture::ScopedRestoreTexture(
-    gl::GLApi* api,
-    GLenum target,
-    GLuint new_binding)
+ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api,
+                                           GLenum target,
+                                           GLuint new_binding)
     : api_(api), target_(target) {
   GLenum get_target = GL_TEXTURE_BINDING_2D;
   switch (target) {
@@ -110,12 +109,11 @@ GLTextureImageBackingHelper::ScopedRestoreTexture::ScopedRestoreTexture(
     api_->glBindTextureFn(target_, new_binding);
 }
 
-GLTextureImageBackingHelper::ScopedRestoreTexture::~ScopedRestoreTexture() {
+ScopedRestoreTexture::~ScopedRestoreTexture() {
   api_->glBindTextureFn(target_, old_binding_);
 }
 
-// static
-GLuint GLTextureImageBackingHelper::MakeTextureAndSetParameters(
+GLuint MakeTextureAndSetParameters(
     GLenum target,
     bool framebuffer_attachment_angle,
     scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,

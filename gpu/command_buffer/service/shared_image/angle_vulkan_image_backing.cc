@@ -36,8 +36,6 @@ namespace gpu {
 
 namespace {
 
-using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
-
 gl::ScopedEGLImage CreateEGLImage(VkImage image,
                                   const VkImageCreateInfo* create_info,
                                   unsigned int internal_format) {
@@ -657,11 +655,9 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     }
 
     scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
-    GLuint texture_id =
-        GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-            GL_TEXTURE_2D,
-            /*framebuffer_attachment_angle=*/true, &passthrough_texture,
-            nullptr);
+    GLuint texture_id = MakeTextureAndSetParameters(
+        GL_TEXTURE_2D,
+        /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
     passthrough_texture->SetEstimatedSize(GetEstimatedSize());
 
     gl::GLApi* api = gl::g_current_gl_context;

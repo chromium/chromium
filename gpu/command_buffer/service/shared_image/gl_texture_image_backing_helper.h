@@ -12,6 +12,8 @@
 
 namespace gpu {
 
+// Common utilities for various backings.
+
 // Sets GL state for readback.
 class ScopedPackState {
  public:
@@ -68,34 +70,30 @@ class ScopedUnpackState {
   absl::optional<gl::ScopedPixelStore> unpack_lsb_first_;
 };
 
-// Common helper functions for various backings.
-class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
+// At destruction time, restore `target`'s binding as of construction time. If
+// `new_binding` is non-zero, then bind `target` to it at construction time.
+// TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
+class ScopedRestoreTexture {
  public:
-  // At destriction time, restore `target`'s binding as of construction time. If
-  // `new_binding` is non-zero, then bind `target` to it at construction time.
-  // TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
-  class ScopedRestoreTexture {
-   public:
-    ScopedRestoreTexture(gl::GLApi* api, GLenum target, GLuint new_binding = 0);
+  ScopedRestoreTexture(gl::GLApi* api, GLenum target, GLuint new_binding = 0);
 
-    ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
-    ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
+  ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
+  ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
 
-    ~ScopedRestoreTexture();
+  ~ScopedRestoreTexture();
 
-   private:
-    raw_ptr<gl::GLApi> api_;
-    GLenum target_;
-    GLuint old_binding_ = 0;
-  };
-
-  // Creates a new GL texture and returns GL texture ID.
-  static GLuint MakeTextureAndSetParameters(
-      GLenum target,
-      bool framebuffer_attachment_angle,
-      scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
-      raw_ptr<gles2::Texture>* texture);
+ private:
+  raw_ptr<gl::GLApi> api_;
+  GLenum target_;
+  GLuint old_binding_ = 0;
 };
+
+// Creates a new GL texture and returns GL texture ID.
+GLuint MakeTextureAndSetParameters(
+    GLenum target,
+    bool framebuffer_attachment_angle,
+    scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
+    raw_ptr<gles2::Texture>* texture);
 
 }  // namespace gpu
 
