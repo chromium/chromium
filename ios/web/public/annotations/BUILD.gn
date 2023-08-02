@@ -19,3 +19,17 @@ source_set("annotations") {
 
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("custom_text_check_result") {
+  deps = [
+    "//base",
+    "//ui/base",
+  ]
+
+  sources = [
+    "custom_text_checking_result.h",
+    "custom_text_checking_result.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}

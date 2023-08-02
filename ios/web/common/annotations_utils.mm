@@ -5,10 +5,12 @@
 #import "ios/web/common/annotations_utils.h"
 
 #import "base/logging.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/annotations/custom_text_checking_result.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,6 +55,24 @@ NSString* EncodeNSTextCheckingResultData(NSTextCheckingResult* match) {
     [dict setObject:@"email" forKey:@"type"];
     if (match.URL) {
       [dict setObject:match.URL.resourceSpecifier forKey:@"email"];
+    }
+  } else if (match.resultType == TCTextCheckingTypeParcelTracking) {
+    CustomTextCheckingResult* custom_match =
+        base::mac::ObjCCastStrict<CustomTextCheckingResult>(match);
+    [dict setObject:@"parcel" forKey:@"type"];
+    if (custom_match.carrier) {
+      [dict setObject:[NSNumber numberWithInt:custom_match.carrier]
+               forKey:@"carrier"];
+    }
+    if (custom_match.carrierNumber) {
+      [dict setObject:custom_match.carrierNumber forKey:@"carrierNumber"];
+    }
+  } else if (match.resultType == TCTextCheckingTypeMeasurement) {
+    CustomTextCheckingResult* custom_match =
+        base::mac::ObjCCastStrict<CustomTextCheckingResult>(match);
+    [dict setObject:@"measurement" forKey:@"type"];
+    if (custom_match.measurement) {
+      [dict setObject:custom_match.measurement forKey:@"measurement"];
     }
   }
 
@@ -110,6 +130,19 @@ NSTextCheckingResult* DecodeNSTextCheckingResultData(NSString* base64_data) {
   } else if ([type isEqualToString:@"email"]) {
     NSString* email = dict[@"email"];
     return MakeNSTextCheckingResultEmail(email, range);
+  } else if ([type isEqualToString:@"parcel"]) {
+    NSNumber* number = dict[@"carrier"];
+    int carrier = number.intValue;
+    NSString* carrierNumber = dict[@"carrierNumber"];
+    return
+        [CustomTextCheckingResult parcelCheckingResultWithRange:range
+                                                        carrier:carrier
+                                                  carrierNumber:carrierNumber];
+  } else if ([type isEqualToString:@"parcel"]) {
+    NSMeasurement* measurement = dict[@"measurement"];
+    return [CustomTextCheckingResult
+        measurementCheckingResultWithRange:range
+                               measurement:measurement];
   }
   return nil;
 }
