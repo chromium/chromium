@@ -28,6 +28,7 @@ build_webui("build") {
   }
 
   non_web_component_files = [
+    "drag_drop_reorder_tile_list_delegate.ts",
     "ensure_lazy_loaded.ts",
     "lazy_load.ts",
     "manage_profiles_browser_proxy.ts",

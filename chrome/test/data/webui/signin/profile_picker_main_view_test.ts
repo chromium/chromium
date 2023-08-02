@@ -7,7 +7,7 @@ import 'chrome://profile-picker/profile_picker.js';
 import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixin, ProfileCardElement, ProfilePickerMainViewElement, ProfileState, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -301,26 +301,204 @@ suite('ProfilePickerMainViewTest', function() {
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
   });
 
+  // This function makes sure that the test data is valid and consistent.
+  function checkTestData(
+      numberOfProfiles: number, dragIndex: number,
+      dragEnterEvents:
+          Array<{index: number, expectedResultIndices: number[]}>) {
+    assertTrue(
+        0 <= dragIndex && dragIndex < numberOfProfiles,
+        'Test setup error: Drag index is out of bounds.');
 
-  test('ProfilesDragStartEnd', async function() {
+    dragEnterEvents.forEach(event => {
+      assertTrue(
+          0 <= event.index && event.index < numberOfProfiles,
+          'Test setup error:  Event index is out of bounds');
+      const indicesSet = new Set();
+      event.expectedResultIndices.forEach(resultIndex => {
+        assertTrue(
+            0 <= resultIndex && resultIndex < numberOfProfiles,
+            'Test setup error:  Expected index result is out of bounds');
+        assertFalse(
+            indicesSet.has(resultIndex),
+            'Test setup error: Expected indices should\'nt have a repeated index');
+        indicesSet.add(resultIndex);
+      });
+    });
+  }
+
+  // This function tests the current DOMCRect of the elements in `cards` with
+  // their expected positions in `expectedIndices` vs their initial positions
+  // stored in `initialRects` with their initial position indices (that are
+  // simply ordered).
+  // This check works because we expect profile cards to take the spot of other
+  // cards when they move due to drag events.
+  function assertProfilesPositions(
+      cards: ProfileCardElement[], draggingIndex: number|null,
+      initialRects: DOMRect[], expectedIndices: number[]) {
+    for (let i = 0; i < expectedIndices.length; ++i) {
+      const expectedIndex = expectedIndices[i]!;
+      // Do not compare the dragging profile element position, as it does not
+      // move, it is only hidden.
+      if (draggingIndex != null && draggingIndex === expectedIndex) {
+        assertTrue(cards[draggingIndex]!.classList.contains('dragging'));
+        continue;
+      }
+
+      // Initial indices are ordered, so we can use the loop index as the
+      // basis.
+      assertDeepEquals(
+          cards[expectedIndex]!.getBoundingClientRect(), initialRects[i]);
+    }
+  }
+
+  // Sets up the profile picker with the reorder functionality and creates
+  // profiles.
+  async function setupProfileReorderingTest(numberOfProfiles: number) {
+    // Activates the profile reordering feature.
     loadTimeData.overrideValues({profilesReorderingEnabled: true});
 
-    const profiles = generateProfilesList(2);
+    // Remove transition duration to avoid waiting during tests.
+    mainViewElement.setDraggingTransitionDurationForTesting(0);
+
+    // Create the profiles and push them to the main profile picker view.
+    const profiles = generateProfilesList(numberOfProfiles);
     webUIListenerCallback('profiles-list-changed', [...profiles]);
     flushTasks();
 
-    // Make sure to wait for the initialization of the DragDelegate.
+    // Make sure to wait for the initialization of the DragDelegate which
+    // happens once the profile cards are rendered.
     await waitAfterNextRender(mainViewElement.$.profiles);
+  }
 
-    const profileCards =
-        mainViewElement.shadowRoot!.querySelectorAll('profile-card');
-    assertEquals(profileCards.length, 2);
-    const draggingCard = profileCards[0]!;
+  // This test function simulates a full drag event cycle.
+  // It first creates multiple profiles based on `numberOfProfiles` and
+  // initialize the profile picker main view then perform some drag events:
+  // - dragstart: with the given `dragIndex`.
+  // - dragenter: multiple events through `dragEnterEvents`.
+  // - dragend: with the given `dragIndex`.
+  //
+  // Multiple checks are done through the test to guarantee the state after each
+  // drag event.
+  //
+  // Variables:
+  // - `numberOfProfiles`: number of profiles created for the drag cycle.
+  // - `dragIndex`: the index of the card being dragged in this cycle.
+  // - `dragEnterEvents`: the list of drag enters that will happen in the cycle.
+  //    - `index`: the index of the card that will be entered.
+  //    - `expectedResultIndices`: the expected indices of profiles after the
+  //    drag enter event.
+  async function testProfileReorderingDragCycle(dragData: {
+    numberOfProfiles: number,
+    dragIndex: number,
+    dragEnterEvents: Array<{index: number, expectedResultIndices: number[]}>,
+  }) {
+    // Preliminary `dragData` checks before proceeding with the actual test.
+    checkTestData(
+        dragData.numberOfProfiles, dragData.dragIndex,
+        dragData.dragEnterEvents);
 
-    draggingCard.dispatchEvent(new DragEvent('dragstart'));
-    assertTrue(draggingCard.classList.contains('dragging'));
+    await setupProfileReorderingTest(dragData.numberOfProfiles);
 
-    draggingCard.dispatchEvent(new DragEvent('dragend'));
-    assertFalse(draggingCard.classList.contains('dragging'));
+    const cards = Array.from(
+        mainViewElement.shadowRoot!.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+
+    // Store the initial profile cards rects for later comparison.
+    const initialRects =
+        cards.map(card => card.getBoundingClientRect()) as DOMRect[];
+
+    // Equivalent to an array {0, 1, 2. ... , numberOfProfiles - 1}.
+    const initialIndices = Array.from(Array(dragData.numberOfProfiles).keys());
+    // Check that the initial positions of the profiles are aligned.
+    assertProfilesPositions(cards, null, initialRects, initialIndices);
+
+    // ----------------- Start of the Drag Events -----------------
+
+    // - Perform the Drag Start.
+    cards[dragData.dragIndex]!.dispatchEvent(new DragEvent('dragstart'));
+    assertTrue(cards[dragData.dragIndex]!.classList.contains('dragging'));
+
+    // - Perform the list of Drag Enter events with position checks.
+    dragData.dragEnterEvents.forEach(event => {
+      // Perform the drag enter event.
+      cards[event.index]!.dispatchEvent(new DragEvent('dragenter'));
+      // Check that the positions of the cards are as expected after each enter
+      // events.
+      assertProfilesPositions(
+          cards, dragData.dragIndex, initialRects, event.expectedResultIndices);
+    });
+
+    // - Perform the Drag End.
+    cards[dragData.dragIndex]!.dispatchEvent(new DragEvent('dragend'));
+    assertFalse(cards[dragData.dragIndex]!.classList.contains('dragging'));
+  }
+
+  test('ProfileReorder_DragStartEndNoEnter', async function() {
+    await testProfileReorderingDragCycle(
+        {numberOfProfiles: 3, dragIndex: 1, dragEnterEvents: []});
+  });
+
+  // This test simulates the dragged card to generate a 'dragenter' event on
+  // itself (the hidden dragging card). This should have no effect on the order.
+  test('ProfileReorder_DragEnterOnDraggedCardHasNoEffect', async function() {
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 3,
+      dragIndex: 1,
+      dragEnterEvents: [{index: 1, expectedResultIndices: [0, 1, 2]}],
+    });
+  });
+
+  test('ProfileReorder_DragEnterOnNextCard', async function() {
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 3,
+      dragIndex: 1,
+      dragEnterEvents: [{index: 2, expectedResultIndices: [0, 2, 1]}],
+    });
+  });
+
+  test('ProfileReorder_DragEnterOnFurtherCard', async function() {
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 3,
+      dragIndex: 0,
+      dragEnterEvents: [{index: 2, expectedResultIndices: [1, 2, 0]}],
+    });
+  });
+
+  test('ProfileReorder_DragMultipleEnters', async function() {
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 4,
+      dragIndex: 3,
+      dragEnterEvents: [
+        {index: 2, expectedResultIndices: [0, 1, 3, 2]},
+        {index: 1, expectedResultIndices: [0, 3, 1, 2]},
+        {index: 0, expectedResultIndices: [3, 0, 1, 2]},
+      ],
+    });
+  });
+
+  // This test makes sure that if any draggable object (not a profile) triggers
+  // a `dragenter` event for a profile-card the reordering is not triggered and
+  // the profile order is not affected.
+  test('ProfileReorder_DragEnterOutOfDragCycleHasNoEffect', async function() {
+    setupProfileReorderingTest(3);
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot!.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+
+    // Store the initial profile cards rects for later comparison.
+    const initialRects =
+        cards.map(card => card.getBoundingClientRect()) as DOMRect[];
+    const initiIndices = [0, 1, 2];
+    assertProfilesPositions(cards, null, initialRects, initiIndices);
+
+    // Simulate a dragenter event without having a prior dragstart that started
+    // the drag cycle event.
+    cards[0]!.dispatchEvent(new DragEvent('dragenter'));
+
+    // Same assertion as the drag event should have no effect, or cause no
+    // crash.
+    assertProfilesPositions(cards, null, initialRects, initiIndices);
   });
 });

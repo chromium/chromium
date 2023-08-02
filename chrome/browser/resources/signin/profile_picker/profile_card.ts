@@ -110,6 +110,16 @@ export class ProfileCardElement extends ProfileCardElementBase {
         this.profileState.profilePath);
   }
 
+  private onNameInputPointerEnter_() {
+    this.dispatchEvent(new CustomEvent(
+        'toggle-drag', {composed: true, detail: {toggle: false}}));
+  }
+
+  private onNameInputPointerLeave_() {
+    this.dispatchEvent(new CustomEvent(
+        'toggle-drag', {composed: true, detail: {toggle: true}}));
+  }
+
   /**
    * Handler for when the profile name field is changed, then blurred.
    */
