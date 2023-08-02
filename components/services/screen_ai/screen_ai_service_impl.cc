@@ -180,6 +180,15 @@ void ScreenAIService::InitializeOCR(
   bool init_successful = library_->InitOCR(library_path.DirName());
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
+
+  // TODO(crbug.com/1443349): Add a separate initialization interface for
+  // layout extraction.
+  if (features::IsLayoutExtractionEnabled()) {
+    if (!library_->InitLayoutExtraction()) {
+      VLOG(0) << "Could not initialize layout extraction.";
+    }
+  }
+
   if (!init_successful) {
     std::move(callback).Run(false);
     return;

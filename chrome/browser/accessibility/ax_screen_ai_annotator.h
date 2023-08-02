@@ -56,13 +56,17 @@ class AXScreenAIAnnotator : public KeyedService,
   // Binds `screen_ai_annotator_` to the Screen AI service.
   virtual void BindToScreenAIService(content::BrowserContext* browser_context);
 
-  // Receives an screenshot and sends it to ScreenAI library for processing.
+  // Receives a screenshot and passes it to `ExtractSemanticLayout` for
+  // processing.
   // `ax_tree_id` represents the accessibility tree that is associated with the
   // snapshot at the time of triggering the request. `start_time` represents
   // the time when the screenshot is requested.
   virtual void OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
                                     const base::TimeTicks& start_time,
                                     gfx::Image snapshot);
+
+  void ExtractSemanticLayout(const ui::AXTreeID& ax_tree_id,
+                             const SkBitmap bitmap);
 
   // Informs this instance that the Screen AI Service has finished creating the
   // semantic layout. `parent_tree_id` is the ID of the accessibility tree
