@@ -290,7 +290,6 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       // TODO(https://crbug.com/1467483): Handle signin errors in the profile
       // picker.
       show_signin_error_callback = base::DoNothing();
-      redirect_url = GaiaUrls::GetInstance()->blank_page_url();
       break;
     case DiceTabHelperMode::kInBrowser:
       // This is used when a SAML flow is detected (through a navigation outside

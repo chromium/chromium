@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
@@ -78,7 +79,7 @@ class SigninViewController {
   // DEPRECATED: Use ShowDiceEnableSyncTab instead.
   void ShowSignin(profiles::BubbleViewMode mode,
                   signin_metrics::AccessPoint access_point,
-                  const GURL& redirect_url = GURL::EmptyGURL());
+                  const GURL& redirect_url = GURL(chrome::kChromeUINewTabURL));
 
   // Shows a Chrome Sync signin tab. |email_hint| may be empty.
   // Note: If the user has already set a primary account, then this is

@@ -64,7 +64,7 @@ void WelcomeHandler::HandleActivateSignIn(const base::Value::List& args) {
     // them away to the NTP instead.
     GoToNewTabPage();
   } else {
-    GURL redirect_url = GURL::EmptyGURL();
+    GURL redirect_url(chrome::kChromeUINewTabURL);
     if (args.size() == 1U) {
       const std::string& url_string = args[0].GetString();
       redirect_url = GURL(url_string);

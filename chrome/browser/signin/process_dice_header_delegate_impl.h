@@ -75,7 +75,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // Returns true if sync should be enabled after the user signs in.
   bool ShouldEnableSync();
 
-  // Navigate to `redirect_url_` or the NTP if no url is specified.
+  // Navigates to `redirect_url_`. Does nothing if the url is empty.
   void Redirect();
 
   const base::WeakPtr<content::WebContents> web_contents_;

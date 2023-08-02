@@ -1405,15 +1405,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   StartDiceSignIn();
 
-  // Simulate Dice token exchange failure.
+  // Simulate Dice token exchange failure. This should not crash.
   auto process_dice_header_delegate_impl =
       ProcessDiceHeaderDelegateImpl::Create(web_contents());
   process_dice_header_delegate_impl->HandleTokenExchangeFailure(
       "example@gmail.com",
       GoogleServiceAuthError::FromServiceError("SomeError"));
-
-  // This should not crash.
-  WaitForLoadStop(GaiaUrls::GetInstance()->blank_page_url());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

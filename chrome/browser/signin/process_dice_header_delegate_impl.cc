@@ -15,20 +15,12 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/common/url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace {
-
-void RedirectToUrl(content::WebContents* contents, const GURL& url) {
-  VLOG(1) << "RedirectToUrl " << url;
-  contents->GetController().LoadURL(url, content::Referrer(),
-                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                    std::string());
-}
 
 // Helper function similar to DiceTabHelper::FromWebContents(), but also handles
 // the case where |contents| is nullptr.
@@ -181,16 +173,12 @@ signin_metrics::AccessPoint ProcessDiceHeaderDelegateImpl::GetAccessPoint() {
 
 void ProcessDiceHeaderDelegateImpl::Redirect() {
   content::WebContents* web_contents = web_contents_.get();
-  if (!web_contents) {
+  if (!web_contents || redirect_url_.is_empty()) {
     return;
   }
 
-  DCHECK(redirect_url_.is_empty() || redirect_url_.is_valid())
-      << "Invalid redirect url: " << redirect_url_;
-
-  // After signing in to Chrome, the user should be redirected to the NTP,
-  // unless specified otherwise.
-  RedirectToUrl(web_contents, redirect_url_.is_empty()
-                                  ? GURL(chrome::kChromeUINewTabURL)
-                                  : redirect_url_);
+  DCHECK(redirect_url_.is_valid()) << "Invalid redirect url: " << redirect_url_;
+  web_contents->GetController().LoadURL(redirect_url_, content::Referrer(),
+                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                        std::string());
 }

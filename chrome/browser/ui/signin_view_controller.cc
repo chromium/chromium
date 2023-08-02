@@ -343,10 +343,10 @@ void SigninViewController::ShowDiceSigninTab(
   }
 #endif
 
-  // If redirect_url is empty, we would like to redirect to the NTP, but it's
-  // not possible through the continue_url, because Gaia cannot redirect to
-  // chrome:// URLs. Use the google base URL instead here, and the DiceTabHelper
-  // may do the redirect to the NTP later.
+  // We would like to redirect to the NTP, but it's not possible through the
+  // `continue_url`, because Gaia cannot redirect to chrome:// URLs. Use the
+  // google base URL instead here, and the `DiceTabHelper` redirect to the NTP
+  // later.
   // Note: Gaia rejects some continue URLs as invalid and responds with HTTP
   // error 400. This seems to happen in particular if the continue URL is not a
   // Google-owned domain. Chrome cannot enforce that only valid URLs are used,
