@@ -128,13 +128,13 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
           AuthenticatorTransport::kHybrid};
 
-      std::array<uint8_t, device::kP256X962Length> public_key = {0};
-      AuthenticatorRequestDialogModel::PairedPhone phone(
-          AuthenticatorRequestDialogModel::PairedPhone::PairingSource::kQR,
-          "Phone", 0, public_key, {});
+      std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
+      auto pairing = std::make_unique<device::cablev2::Pairing>();
+      pairing->from_sync_deviceinfo = false;
+      pairing->name = "Phone";
+      phones.emplace_back(std::move(pairing));
       dialog_model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt,
-          /*paired_phones=*/{phone},
+          /*extension_is_v2=*/absl::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       dialog_model_->StartFlow(std::move(transport_availability),
                                /*is_conditional_mediation=*/false);

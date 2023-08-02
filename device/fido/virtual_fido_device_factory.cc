@@ -4,6 +4,7 @@
 
 #include "device/fido/virtual_fido_device_factory.h"
 
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device_discovery.h"
 
@@ -54,11 +55,11 @@ bool VirtualFidoDeviceFactory::IsTestOverride() {
   return true;
 }
 
-base::RepeatingCallback<void(size_t)>
+base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
 VirtualFidoDeviceFactory::get_cable_contact_callback() {
-  base::RepeatingCallback<void(size_t)> ret;
-  std::tie(ret, contact_device_stream_) =
-      FidoDeviceDiscovery::EventStream<size_t>::New();
+  base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> ret;
+  std::tie(ret, contact_device_stream_) = FidoDeviceDiscovery::EventStream<
+      std::unique_ptr<cablev2::Pairing>>::New();
   return ret;
 }
 

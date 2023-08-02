@@ -194,6 +194,9 @@ bool Pairing::EqualPublicKeys(const std::unique_ptr<Pairing>& a,
   return a->peer_public_key_x962 == b->peer_public_key_x962;
 }
 
+Pairing::Pairing(const Pairing&) = default;
+Pairing& Pairing::operator=(const Pairing&) = default;
+
 }  // namespace cablev2
 
 }  // namespace device

@@ -93,12 +93,9 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
       device::FidoRequestType request_type,
       std::vector<device::CableDiscoveryData> data,
       const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
-          qr_generator_key,
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings)
-      override {
+          qr_generator_key) override {
     cable_data = std::move(data);
     qr_key = qr_generator_key;
-    v2_pairings = std::move(pairings);
   }
 
   void set_android_accessory_params(
@@ -109,7 +106,6 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
 
   std::vector<device::CableDiscoveryData> cable_data;
   absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
-  std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings;
   bool aoa_configured = false;
 };
 
@@ -398,14 +394,12 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
                                  : test.expected_result) {
         case Result::kNone:
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
-          EXPECT_TRUE(discovery_factory.v2_pairings.empty());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
           break;
 
         case Result::kV1:
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
-          EXPECT_TRUE(discovery_factory.v2_pairings.empty());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
@@ -414,7 +408,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
 
         case Result::kServerLink:
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
-          EXPECT_TRUE(discovery_factory.v2_pairings.empty());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
@@ -424,7 +417,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
 
         case Result::k3rdParty:
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
-          EXPECT_TRUE(discovery_factory.v2_pairings.empty());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),

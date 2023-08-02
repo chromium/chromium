@@ -563,9 +563,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
 
-  phone_names_.clear();
-  phone_public_keys_.clear();
-
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
   const bool cable_extension_provided =
       cable_extension_permitted && !pairings_from_extension.empty();
@@ -602,15 +599,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       origin.DomainIs("google.com") && discovery_factory->no_cable_linking;
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
-  std::vector<AuthenticatorRequestDialogModel::PairedPhone>
-      paired_phone_entries;
-  base::RepeatingCallback<void(size_t)> contact_phone_callback;
+  base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
+      contact_phone_callback;
   if (!ignore_linked_cable_devices &&
       (!cable_extension_provided ||
        base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere))) {
-    DCHECK(phone_names_.empty());
-    DCHECK(phone_public_keys_.empty());
-
     std::unique_ptr<cablev2::KnownDevices> known_devices =
         cablev2::KnownDevices::FromProfile(
             Profile::FromBrowserContext(GetBrowserContext()));
@@ -631,19 +624,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     FIDO_LOG(DEBUG) << "Found " << paired_phones.size() << " caBLEv2 devices";
 
     if (!paired_phones.empty()) {
-      for (size_t i = 0; i < paired_phones.size(); i++) {
-        const auto& phone = paired_phones[i];
-        paired_phone_entries.emplace_back(
-            phone->from_sync_deviceinfo
-                ? AuthenticatorRequestDialogModel::PairedPhone::PairingSource::
-                      kSyncDeviceInfo
-                : AuthenticatorRequestDialogModel::PairedPhone::PairingSource::
-                      kQR,
-            phone->name, i, phone->peer_public_key_x962, phone->last_updated);
-        phone_names_.push_back(phone->name);
-        phone_public_keys_.push_back(phone->peer_public_key_x962);
-      }
-
       contact_phone_callback = discovery_factory->get_cable_contact_callback();
     }
   }
@@ -711,11 +691,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       extension_is_v2 = cablev2_extension_provided;
     }
     dialog_model_->set_cable_transport_info(
-        extension_is_v2, std::move(paired_phone_entries),
+        extension_is_v2, std::move(paired_phones),
         std::move(contact_phone_callback), qr_string);
     discovery_factory->set_cable_data(request_type, std::move(pairings),
-                                      qr_generator_key,
-                                      std::move(paired_phones));
+                                      qr_generator_key);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -978,18 +957,18 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
 }
 
 void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
-    size_t failed_contact_index) {
+    std::unique_ptr<device::cablev2::Pairing> failed_pairing) {
   PrefService* const prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
 
   // A pairing was reported to be invalid. Delete it unless it came from Sync,
   // in which case there's nothing to be done.
-  cablev2::DeletePairingByPublicKey(
-      prefs, phone_public_keys_.at(failed_contact_index));
+  cablev2::DeletePairingByPublicKey(prefs,
+                                    failed_pairing->peer_public_key_x962);
 
   // Contact the next phone with the same name, if any, given that no
   // notification has been sent.
-  dialog_model_->OnPhoneContactFailed(phone_names_.at(failed_contact_index));
+  dialog_model_->OnPhoneContactFailed(failed_pairing->name);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnCableEvent(
