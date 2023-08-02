@@ -27247,6 +27247,19 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="81" label="Breakpoint removed from gutter context menu"/>
   <int value="82" label="Breakpoint removed from gutter toggle"/>
   <int value="83" label="Style property inside a keyframe rule edited"/>
+  <int value="84" label="Override Content From Sources Context Menu"/>
+  <int value="85" label="Override Content From Network Context Menu"/>
+  <int value="86" label="Override Script"/>
+  <int value="87" label="Override StyleSheet"/>
+  <int value="88" label="Override Document"/>
+  <int value="89" label="Override Fetch and XHR"/>
+  <int value="90" label="Override Image"/>
+  <int value="91" label="Override Font"/>
+  <int value="92" label="Override Content Context Menu Setup"/>
+  <int value="93" label="Override Content Context Menu Abandon Setup"/>
+  <int value="94" label="Override Content Context Menu Activate Disabled"/>
+  <int value="95" label="Override Content Context Menu Open Existing File"/>
+  <int value="96" label="Override Content Context Menu Save New File"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
