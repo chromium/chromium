@@ -18,6 +18,7 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
+class Time;
 class Version;
 }  // namespace base
 
@@ -122,6 +123,11 @@ class PersistedData {
   // These functions access the fingerprint for the specified |id|.
   std::string GetFingerprint(const std::string& id) const;
   void SetFingerprint(const std::string& id, const std::string& fingerprint);
+
+  // These functions get and set the time after which update checks are allowed.
+  // To clear the throttle, pass base::Time().
+  base::Time GetThrottleUpdatesUntil() const;
+  void SetThrottleUpdatesUntil(const base::Time& time);
 
  private:
   // Returns nullptr if the app key does not exist.

@@ -25,10 +25,6 @@
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class TimeTicks;
-}  // namespace base
-
 namespace update_client {
 
 class Configurator;
@@ -129,12 +125,6 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
 
   // Contains the contexts associated with each update in progress.
   UpdateContexts update_contexts_;
-
-  // Implements a rate limiting mechanism for background update checks. Has the
-  // effect of rejecting the update call if the update call occurs before
-  // a certain time, which is negotiated with the server as part of the
-  // update protocol. See the comments for X-Retry-After header.
-  base::TimeTicks throttle_updates_until_;
 };
 
 // Describes a group of components which are installed or updated together.
