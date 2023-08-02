@@ -1490,104 +1490,97 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
     case device::MakeCredentialStatus::kSuccess:
-      DCHECK(response_data.has_value());
-      DCHECK(authenticator);
-
-      absl::optional<device::FidoTransportProtocol> transport =
-          authenticator->AuthenticatorTransport();
-      bool is_transport_used_internal = false;
-      bool is_transport_used_cable = false;
-      if (transport) {
-        is_transport_used_internal =
-            *transport == device::FidoTransportProtocol::kInternal;
-        is_transport_used_cable =
-            *transport == device::FidoTransportProtocol::kHybrid;
-      }
-
-      absl::optional<device::DevicePublicKeyOutput> device_public_key_output =
-          response_data->GetDevicePublicKeyResponse();
-      const bool have_enterprise_attestation =
-          response_data->enterprise_attestation_returned ||
-          (device_public_key_output &&
-           device_public_key_output->enterprise_attestation_returned);
-      const bool device_public_key_included_attestation =
-          device_public_key_output &&
-          device_public_key_output->attestation_format !=
-              device::kNoneAttestationValue;
-      const auto attestation =
-          req_state_->ctap_make_credential_request->attestation_preference;
-      absl::optional<AttestationErasureOption> attestation_erasure;
-
-      if (response_data->attestation_should_be_filtered &&
-          !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-              GetBrowserContext(), req_state_->caller_origin,
-              req_state_->relying_party_id)) {
-        attestation_erasure =
-            AttestationErasureOption::kEraseAttestationAndAaguid;
-      } else if (attestation == device::AttestationConveyancePreference::
-                                    kEnterpriseApprovedByBrowser) {
-        // If enterprise attestation was approved by policy then it can be
-        // returned immediately.
-        attestation_erasure = AttestationErasureOption::kIncludeAttestation;
-      } else if (attestation == device::AttestationConveyancePreference::
-                                    kEnterpriseIfRPListedOnAuthenticator &&
-                 !response_data->enterprise_attestation_returned) {
-        // If enterprise attestation was requested, not approved by policy, and
-        // not approved by the authenticator, then any attestation is stripped.
-        attestation_erasure =
-            AttestationErasureOption::kEraseAttestationAndAaguid;
-      } else if (is_transport_used_cable) {
-        // Attestation is not returned when caBLEv2 is used, but the AAGUID is
-        // maintained.
-        attestation_erasure =
-            AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-      } else if (is_transport_used_internal) {
-        // Direct attestation from platform authenticators is known to be
-        // privacy preserving, so we always return it when requested. Also,
-        // counter to what the WebAuthn spec says, we do not erase the AAGUID
-        // even when attestation wasn't requested.
-        attestation_erasure =
-            attestation != device::AttestationConveyancePreference::kNone
-                ? AttestationErasureOption::kIncludeAttestation
-                : AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-      } else if (attestation ==
-                     device::AttestationConveyancePreference::kNone &&
-                 response_data->attestation_object.IsSelfAttestation()) {
-        attestation_erasure = AttestationErasureOption::kIncludeAttestation;
-      } else if (attestation ==
-                 device::AttestationConveyancePreference::kNone) {
-        attestation_erasure =
-            AttestationErasureOption::kEraseAttestationAndAaguid;
-      }
-
-      if (attestation_erasure.has_value() &&
-          // If a DPK attestation was requested then we show a prompt. (If
-          // the RP ID is allowlisted by policy then the prompt will be
-          // resolved immediately and never actually shown.)
-          !req_state_->device_public_key_attestation_requested) {
-        CompleteMakeCredentialRequest(
-            blink::mojom::AuthenticatorStatus::SUCCESS,
-            CreateMakeCredentialResponse(std::move(*response_data),
-                                         *attestation_erasure),
-            nullptr, Focus::kDoCheck);
-      } else {
-        req_state_->awaiting_attestation_response = true;
-        req_state_->request_delegate->ShouldReturnAttestation(
-            req_state_->relying_party_id, authenticator,
-            have_enterprise_attestation,
-            base::BindOnce(
-                &AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided,
-                weak_factory_.GetWeakPtr(),
-                attestation_erasure.value_or(
-                    AttestationErasureOption::kIncludeAttestation),
-                device_public_key_output.has_value(),
-                device_public_key_included_attestation,
-                std::move(*response_data)));
-      }
-
-      return;
+      break;
   }
-  NOTREACHED();
+
+  DCHECK(response_data.has_value());
+  DCHECK(authenticator);
+
+  absl::optional<device::FidoTransportProtocol> transport =
+      authenticator->AuthenticatorTransport();
+  bool is_transport_used_internal = false;
+  bool is_transport_used_cable = false;
+  if (transport) {
+    is_transport_used_internal =
+        *transport == device::FidoTransportProtocol::kInternal;
+    is_transport_used_cable =
+        *transport == device::FidoTransportProtocol::kHybrid;
+  }
+
+  absl::optional<device::DevicePublicKeyOutput> device_public_key_output =
+      response_data->GetDevicePublicKeyResponse();
+  const bool have_enterprise_attestation =
+      response_data->enterprise_attestation_returned ||
+      (device_public_key_output &&
+       device_public_key_output->enterprise_attestation_returned);
+  const bool device_public_key_included_attestation =
+      device_public_key_output &&
+      device_public_key_output->attestation_format !=
+          device::kNoneAttestationValue;
+  const auto attestation =
+      req_state_->ctap_make_credential_request->attestation_preference;
+  absl::optional<AttestationErasureOption> attestation_erasure;
+
+  if (response_data->attestation_should_be_filtered &&
+      !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+          GetBrowserContext(), req_state_->caller_origin,
+          req_state_->relying_party_id)) {
+    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+  } else if (attestation == device::AttestationConveyancePreference::
+                                kEnterpriseApprovedByBrowser) {
+    // If enterprise attestation was approved by policy then it can be
+    // returned immediately.
+    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
+  } else if (attestation == device::AttestationConveyancePreference::
+                                kEnterpriseIfRPListedOnAuthenticator &&
+             !response_data->enterprise_attestation_returned) {
+    // If enterprise attestation was requested, not approved by policy, and
+    // not approved by the authenticator, then any attestation is stripped.
+    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+  } else if (is_transport_used_cable) {
+    // Attestation is not returned when caBLEv2 is used, but the AAGUID is
+    // maintained.
+    attestation_erasure =
+        AttestationErasureOption::kEraseAttestationButIncludeAaguid;
+  } else if (is_transport_used_internal) {
+    // Direct attestation from platform authenticators is known to be
+    // privacy preserving, so we always return it when requested. Also,
+    // counter to what the WebAuthn spec says, we do not erase the AAGUID
+    // even when attestation wasn't requested.
+    attestation_erasure =
+        attestation != device::AttestationConveyancePreference::kNone
+            ? AttestationErasureOption::kIncludeAttestation
+            : AttestationErasureOption::kEraseAttestationButIncludeAaguid;
+  } else if (attestation == device::AttestationConveyancePreference::kNone &&
+             response_data->attestation_object.IsSelfAttestation()) {
+    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
+  } else if (attestation == device::AttestationConveyancePreference::kNone) {
+    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+  }
+
+  if (attestation_erasure.has_value() &&
+      // If a DPK attestation was requested then we show a prompt. (If
+      // the RP ID is allowlisted by policy then the prompt will be
+      // resolved immediately and never actually shown.)
+      !req_state_->device_public_key_attestation_requested) {
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::SUCCESS,
+        CreateMakeCredentialResponse(std::move(*response_data),
+                                     *attestation_erasure),
+        nullptr, Focus::kDoCheck);
+  } else {
+    req_state_->awaiting_attestation_response = true;
+    req_state_->request_delegate->ShouldReturnAttestation(
+        req_state_->relying_party_id, authenticator,
+        have_enterprise_attestation,
+        base::BindOnce(
+            &AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided,
+            weak_factory_.GetWeakPtr(),
+            attestation_erasure.value_or(
+                AttestationErasureOption::kIncludeAttestation),
+            device_public_key_output.has_value(),
+            device_public_key_included_attestation, std::move(*response_data)));
+  }
 }
 
 void AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided(
