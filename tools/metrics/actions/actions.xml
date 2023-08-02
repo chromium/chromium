@@ -7677,6 +7677,22 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CookieControls.Bubble.CookiesAllowed.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls bubble opened while third-party cookies are allowed.
+  </description>
+</action>
+
+<action name="CookieControls.Bubble.CookiesBlocked.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls bubble opened while third-party cookies are blocked.
+  </description>
+</action>
+
 <action name="CookieControls.Bubble.CookiesInUse">
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
@@ -7720,6 +7736,15 @@ should be able to be added at any place in this file.
   <owner>huanzhong@chromium.org</owner>
   <description>
     Cookie blocking was enabled for a site through the cookie controls UI.
+  </description>
+</action>
+
+<action name="CookieControls.Bubble.UnknownState.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls bubble opened for an error condition that shouldn't be
+    reached.
   </description>
 </action>
 

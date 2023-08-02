@@ -35,6 +35,12 @@ const char kUMAMediumConfidenceShown[] =
     "CookieControls.MediumConfidence.Shown";
 const char kUMAMediumConfidenceOpened[] =
     "CookieControls.MediumConfidence.Opened";
+const char kUMABubbleOpenedBlocked[] =
+    "CookieControls.Bubble.CookiesBlocked.Opened";
+const char kUMABubbleOpenedAllowed[] =
+    "CookieControls.Bubble.CookiesAllowed.Opened";
+const char kUMABubbleOpenedUnknown[] =
+    "CookieControls.Bubble.UnknownState.Opened";
 
 // A fake CookieControlsBubbleCoordinator that has a no-op ShowBubble().
 class MockCookieControlsBubbleCoordinator
@@ -112,6 +118,11 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
 TEST_F(CookieControlsIconViewUnitTest, DefaultNotVisible) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
+  // Execute a improperly initialized icon view.
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
@@ -131,6 +142,7 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 1);
   ExecuteIcon();
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
@@ -149,6 +161,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 1);
   ExecuteIcon();
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
@@ -166,6 +179,9 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
 }
 
 //// Default third-party cookie blocking disabled.
@@ -185,6 +201,9 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
@@ -202,6 +221,8 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
@@ -219,6 +240,8 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
 /// Disabled third-party cookie blocking for site.
@@ -237,6 +260,8 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 1);
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
@@ -253,6 +278,8 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 1);
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
@@ -268,4 +295,6 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }

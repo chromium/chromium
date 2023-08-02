@@ -234,6 +234,23 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 void CookieControlsIconView::ShowCookieControlsBubble() {
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
+  switch (status_) {
+    case CookieControlsStatus::kEnabled:
+      // Cookie blocking is enabled.
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesBlocked.Opened"));
+      break;
+    case CookieControlsStatus::kDisabled:
+    case CookieControlsStatus::kDisabledForSite:
+      // Cookie blocking is disabled.
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesAllowed.Opened"));
+      break;
+    case CookieControlsStatus::kUninitialized:
+      base::RecordAction(
+          base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
+      break;
+  }
 }
 
 void CookieControlsIconView::OnExecuting(
