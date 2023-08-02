@@ -103,43 +103,29 @@ void OneDrivePageHandler::ConnectToOneDrive(
 
 void OneDrivePageHandler::DisconnectFromOneDrive(
     DisconnectFromOneDriveCallback callback) {
-  file_system_provider::Service* service =
-      file_system_provider::Service::Get(profile_);
-  CHECK(service);
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          extension_misc::kODFSExtensionId);
-  std::vector<file_system_provider::ProvidedFileSystemInfo>
-      odfs_file_system_infos =
-          service->GetProvidedFileSystemInfoList(provider_id);
-  if (odfs_file_system_infos.size() == 0) {
+  absl::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
+      cloud_upload::GetODFSInfo(profile_);
+  if (!file_system) {
     // ODFS is not mounted.
     std::move(callback).Run(false);
     return;
   }
-  std::move(callback).Run(
-      service->RequestUnmount(odfs_file_system_infos[0].provider_id(),
-                              odfs_file_system_infos[0].file_system_id()));
+  auto* service = file_system_provider::Service::Get(profile_);
+  std::move(callback).Run(service->RequestUnmount(
+      file_system->provider_id(), file_system->file_system_id()));
 }
 
 void OneDrivePageHandler::OpenOneDriveFolder(
     OpenOneDriveFolderCallback callback) {
-  file_system_provider::Service* service =
-      file_system_provider::Service::Get(profile_);
-  CHECK(service);
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          extension_misc::kODFSExtensionId);
-  std::vector<file_system_provider::ProvidedFileSystemInfo>
-      odfs_file_system_infos =
-          service->GetProvidedFileSystemInfoList(provider_id);
-  if (odfs_file_system_infos.size() == 0) {
+  absl::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
+      cloud_upload::GetODFSInfo(profile_);
+  if (!file_system) {
     // ODFS is not mounted.
     std::move(callback).Run(false);
     return;
   }
   file_manager::util::ShowItemInFolder(
-      profile_, odfs_file_system_infos[0].mount_path(),
+      profile_, file_system->mount_path(),
       base::BindOnce(&OnShowItemInFolder, std::move(callback)));
 }
 
