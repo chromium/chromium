@@ -322,10 +322,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                             weak_ptr_factory_.GetWeakPtr(),
                             drivefs::mojom::MirrorPathStatus::kStop));
     web_ui()->RegisterMessageCallback(
-        "setBulkPinningEnabled",
-        base::BindRepeating(&DriveInternalsWebUIHandler::SetBulkPinningEnabled,
-                            weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
         "enableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
@@ -382,6 +378,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         base::BindRepeating(
             &DriveInternalsWebUIHandler::UpdateBulkPinningMaxQueueSize,
             weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "setBulkPinningEnabled",
+        base::BindRepeating(&DriveInternalsWebUIHandler::SetBulkPinningEnabled,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Called when the page is first loaded.
@@ -403,7 +403,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     UpdateInFlightOperationsSection();
     UpdateDriveDebugSection();
     UpdateMirrorSyncSection();
-    UpdateBulkPinningSection();
 
     // When the drive-internals page is reloaded by the reload key, the page
     // content is recreated, but this WebUI object is not (instead, OnPageLoaded
@@ -607,7 +606,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                         Value(drive::FileErrorToString(status)));
   }
 
-  void UpdateBulkPinningSection() {
+  void UpdateBulkPinningDeveloperSection() {
     DriveIntegrationService* const service = GetIntegrationService();
     if (!service) {
       return;
@@ -695,6 +694,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     DCHECK(developer_mode_);
     MaybeCallJavascript("updateStartupArguments", Value(arguments));
     SetSectionEnabled("developer-mode-controls", true);
+    UpdateBulkPinningDeveloperSection();
   }
 
   // Called when AmountOfFreeDiskSpace() is complete.
@@ -871,7 +871,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
     const bool enabled = args[0].GetBool();
     GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, enabled);
-    UpdateBulkPinningSection();
+    UpdateBulkPinningDeveloperSection();
     drivefs::pinning::RecordBulkPinningEnabledSource(
         drivefs::pinning::BulkPinningEnabledSource::kDriveInternal);
   }
