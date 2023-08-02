@@ -698,17 +698,24 @@ export class RemoteCallFilesApp extends RemoteCall {
 
     const caller = getCaller();
     return repeatUntil(async () => {
-      let element =
+      const element =
           await this.callRemoteTestUtil('getActiveElement', appId, []);
       if (element && element.attributes['id'] === elementId) {
         return true;
       }
       // Try to check the shadow root.
-      element =
-          await this.callRemoteTestUtil('deepGetActiveElement', appId, []);
-      if (element && element.attributes['id'] === elementId) {
+      const activeElements =
+          await this.callRemoteTestUtil('deepGetActivePath', appId, []);
+      const matches =
+          activeElements.filter(el => el.attributes['id'] === elementId);
+      if (matches.length === 1) {
         return true;
       }
+      if (matches.length > 1) {
+        console.error(`Found ${
+            matches.length} active elements with the same id: ${elementId}`);
+      }
+
       return pending(
           caller,
           'Waiting for active element with id: "' + elementId +
