@@ -9,6 +9,8 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,7 @@ import com.ark.browser.utils.ThreadPool;
 import com.zpj.bus.Consumer;
 import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.ZDialog;
+import com.zpj.fragmentation.helper.BlockActionQueue;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.FileUtils;
 
@@ -68,12 +71,24 @@ public class ArkMainFragment extends BaseFragment implements
 
     private static final String TAG = "ArkMainFragment";
 
+    protected final BlockActionQueue mHasInitActionQueue = new BlockActionQueue(new Handler(Looper.getMainLooper()));
+
     private ArkCompositorViewHolder mViewHolder;
 
     private TabSwitcherManager mSwitcherManager;
 
     @Nullable
     protected ManagedMessageDispatcher mMessageDispatcher;
+
+    public ArkMainFragment() {
+        TabGroupManager.global().restore(result -> {
+            mHasInitActionQueue.post(() -> {
+                if (mSwitcherManager != null) {
+                    mSwitcherManager.onRestore();
+                }
+            });
+        });
+    }
 
 
     public ArkWindowAndroid createWindowAndroid(Context context) {
@@ -206,14 +221,6 @@ public class ArkMainFragment extends BaseFragment implements
                     }
                 })
                 .subscribe();
-
-        TabGroupManager.global().restore(result -> {
-            ThreadPool.postOnUIThread(() -> {
-                if (mSwitcherManager != null) {
-                    mSwitcherManager.onRestore();
-                }
-            });
-        });
     }
 
     @Override
@@ -304,6 +311,7 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onDestroy() {
+        mHasInitActionQueue.onDestroy();
         super.onDestroy();
     }
 
@@ -351,6 +359,7 @@ public class ArkMainFragment extends BaseFragment implements
             initMessageDispatcher();
             ArkLogger.e(TAG, "initCompositor");
             mSwitcherManager.initCompositor(getWindowAndroid());
+            mHasInitActionQueue.start();
         });
     }
 

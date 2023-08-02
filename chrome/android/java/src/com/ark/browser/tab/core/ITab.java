@@ -37,6 +37,8 @@ public interface ITab {
 
     ITabGroup getParentTab();
 
+    void setParentGroup(ITabGroup group);
+
     ITab cloneByGroupTab(ITabGroup group);
 
     /**

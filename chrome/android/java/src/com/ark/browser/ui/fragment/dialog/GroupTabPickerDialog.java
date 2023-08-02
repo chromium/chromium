@@ -120,6 +120,9 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
         ITabGroup group = parent.getTabGroup();
         for (ITab child : group.getTabList()) {
             if (child instanceof ITabGroup) {
+                if (mTab instanceof ITabGroup && mTab.getId() == child.getId()) {
+                    continue;
+                }
                 TreeMultiData childNode = new TreeMultiData(parent, (ITabGroup) child);
                 childNode.setIndex(index + 1);
                 parent.getData().add(childNode);

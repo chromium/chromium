@@ -152,17 +152,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
-            notifyDataSetChanged();
-        }
-
-        @Override
         public void didMoveTab(ITab tab) {
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void didRemoveTab(ITab tab) {
             notifyDataSetChanged();
         }
     };
@@ -1293,12 +1283,14 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             int pos = mFirstPosition + indexOfChild(v);
             mCurrentTouchView = v;
             ITab tab = mTabGroup.getTabAt(pos);
-            // TODO GroupTab or ChildTab
-            if (tab instanceof ChildTab) {
-                TabActionDialog.newInstance(tab, mDownX, mDownY).show(getContext());
-            } else {
-                Toast.makeText(getContext(), "TODO GroupTab Long Click", Toast.LENGTH_SHORT).show();
-            }
+            TabActionDialog.newInstance(tab, mDownX, mDownY)
+                    .setRenameCallback(new com.zpj.utils.Callback<String>() {
+                        @Override
+                        public void onCallback(String s) {
+                            adapter.onBindViewHolder(v, tab, pos);
+                        }
+                    })
+                    .show(getContext());
             return true;
         });
         view.measure(MeasureSpec.makeMeasureSpec(mChildWidth, MeasureSpec.EXACTLY),

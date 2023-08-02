@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
@@ -312,6 +313,53 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
 
+        if (mParams.isImage()) {
+            ModelList imageGroup = new ModelList();
+            boolean isSrcDownloadableScheme =
+                    UrlUtilities.isDownloadableScheme(mParams.getSrcUrl());
+            // Avoid showing open image option for same image which is already opened.
+//            if (mMode == ContextMenuMode.CUSTOM_TAB
+//                    && !mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
+//                imageGroup.add(createListItem(Item.OPEN_IMAGE));
+//            }
+            if (!mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
+                imageGroup.add(createListItem(Item.OPEN_IMAGE));
+            }
+//            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
+//                if (mShowEphemeralTabNewLabel == null) {
+//                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
+//                }
+//                imageGroup.add(createListItem(
+//                        Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
+//            }
+            if (isSrcDownloadableScheme) {
+                imageGroup.add(createListItem(Item.SAVE_IMAGE));
+                hasSaveImage = true;
+            }
+
+            imageGroup.add(createListItem(Item.COPY_IMAGE));
+
+            if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
+                imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
+            }
+
+            recordSaveImageContextMenuResult(isSrcDownloadableScheme);
+            groupedItems.add(new Pair<>(R.string.contextmenu_image_title, imageGroup));
+        }
+
+        if (mParams.isVideo() && mParams.canSaveMedia()
+                && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+            ModelList videoGroup = new ModelList();
+            videoGroup.add(createListItem(Item.SAVE_VIDEO));
+            groupedItems.add(new Pair<>(R.string.contextmenu_video_title, videoGroup));
+        }
+
+        Log.e("ContextMenuPopulator", "buildContextMenu isAnchor=" + mParams.isAnchor()
+                + " url=" + mParams.getUrl()
+                + " link=" + mParams.getLinkUrl()
+                + " linkText=" + mParams.getLinkText()
+                + " mode=" + mMode);
+
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
             if (!isEmptyUrl(mParams.getUrl())
@@ -372,47 +420,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (linkGroup.size() > 0) {
                 groupedItems.add(new Pair<>(R.string.contextmenu_link_title, linkGroup));
             }
-        }
-
-        if (mParams.isImage()) {
-            ModelList imageGroup = new ModelList();
-            boolean isSrcDownloadableScheme =
-                    UrlUtilities.isDownloadableScheme(mParams.getSrcUrl());
-            // Avoid showing open image option for same image which is already opened.
-//            if (mMode == ContextMenuMode.CUSTOM_TAB
-//                    && !mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
-//                imageGroup.add(createListItem(Item.OPEN_IMAGE));
-//            }
-            if (!mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
-                imageGroup.add(createListItem(Item.OPEN_IMAGE));
-            }
-//            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
-//                if (mShowEphemeralTabNewLabel == null) {
-//                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
-//                }
-//                imageGroup.add(createListItem(
-//                        Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
-//            }
-            if (isSrcDownloadableScheme) {
-                imageGroup.add(createListItem(Item.SAVE_IMAGE));
-                hasSaveImage = true;
-            }
-
-            imageGroup.add(createListItem(Item.COPY_IMAGE));
-
-            if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
-                imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
-            }
-
-            recordSaveImageContextMenuResult(isSrcDownloadableScheme);
-            groupedItems.add(new Pair<>(R.string.contextmenu_image_title, imageGroup));
-        }
-
-        if (mParams.isVideo() && mParams.canSaveMedia()
-                && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
-            ModelList videoGroup = new ModelList();
-            videoGroup.add(createListItem(Item.SAVE_VIDEO));
-            groupedItems.add(new Pair<>(R.string.contextmenu_video_title, videoGroup));
         }
 
         if (mParams.getOpenedFromHighlight()) {

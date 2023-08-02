@@ -34,7 +34,7 @@ public class ChildTab implements ITab, IPageGroup {
 
     private static final String TAG = "TabImpl";
 
-    private final ITabGroup mParentTab;
+    private ITabGroup mParentTab;
     private final TabInfo mTabInfo;
 
     private transient ChildTab mFloatingTab;
@@ -102,6 +102,11 @@ public class ChildTab implements ITab, IPageGroup {
     @Override
     public ITabGroup getParentTab() {
         return mParentTab;
+    }
+
+    @Override
+    public void setParentGroup(ITabGroup group) {
+        mParentTab = group;
     }
 
     @Override
@@ -272,19 +277,7 @@ public class ChildTab implements ITab, IPageGroup {
             long time = System.currentTimeMillis();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
-            int version = 5;
-            os.writeInt(version);
-            os.writeInt(tabInfo.getId());
-            os.writeInt(tabInfo.getParentId());
-            os.writeBoolean(tabInfo.isGroup());
-            os.writeInt(tabInfo.getLaunchType());
-            os.writeLong(tabInfo.getCreateTime());
-            os.writeBoolean(tabInfo.isIncognito());
-            os.writeBoolean(tabInfo.isLocked());
-            os.writeInt(tabInfo.getChildIndex());
-            os.writeInt(tabInfo.getCurrentPageId());
-            os.writeInt(tabInfo.getPosition());
-            os.writeLong(tabInfo.getAccessTime());
+            tabInfo.wrapStream(os);
             os.writeInt(mPages.size());
 
             ArkLogger.e(this, "saveTabInfo info=" + tabInfo

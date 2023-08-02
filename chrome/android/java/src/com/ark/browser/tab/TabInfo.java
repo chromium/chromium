@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 @Keep
@@ -201,6 +202,23 @@ public class TabInfo {
         return manager;
     }
 
+    public void wrapStream(DataOutputStream os) throws IOException {
+        int version = 6;
+        os.writeInt(version);
+        os.writeInt(tabId);
+        os.writeInt(mParentId);
+        os.writeBoolean(mIsGroup);
+        os.writeInt(mLaunchType);
+        os.writeLong(createTime);
+        os.writeBoolean(incognito);
+        os.writeBoolean(isLocked);
+        os.writeInt(childIndex);
+        os.writeInt(currentChildId);
+        os.writeInt(position);
+        os.writeLong(accessTime);
+        os.writeUTF(mTitle == null ? "" : mTitle);
+    }
+
     public static TabInfo create(DataInputStream is) throws IOException {
         int version = is.readInt();
         int tabId = is.readInt();
@@ -237,6 +255,9 @@ public class TabInfo {
         newTabInfo.setCurrentPageId(is.readInt());
         newTabInfo.setPosition(is.readInt());
         newTabInfo.setAccessTime(is.readLong());
+        if (version >= 6) {
+            newTabInfo.setTitle(is.readUTF());
+        }
         return newTabInfo;
     }
 

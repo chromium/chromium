@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.Keys;
@@ -11,8 +12,12 @@ import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.IPageGroup;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
+import com.zpj.bus.ZBus;
+import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.toast.ZToast;
+import com.zpj.utils.Callback;
+import com.zpj.utils.ScreenUtils;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.Clipboard;
@@ -20,7 +25,7 @@ import org.chromium.ui.base.Clipboard;
 public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Action>
         implements AttachListDialogFragment.OnSelectListener<TabActionDialog.Action> {
 
-    abstract static class Action {
+    public abstract static class Action {
 
         private final String mTitle;
 
@@ -32,6 +37,7 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
 
     }
 
+    private Callback<String> mRenameCallback;
     private ITab mTab;
 
     public static TabActionDialog newInstance(ITab tab, float x, float y) {
@@ -51,6 +57,7 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
     public TabActionDialog() {
         setOnSelectListener(this);
         onBindTitle((textView, action, i) -> textView.setText(action.mTitle));
+        mMinWidth = (int)(ScreenUtils.getScreenWidth() / 2.1F);
     }
 
     @Override
@@ -80,7 +87,6 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-
         addItem(new Action(mTab.getTabInfo().isLocked() ? "解锁标签" : "锁定标签") {
             @Override
             void onClick() {
@@ -88,35 +94,63 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
             }
         });
 
+
         addItem(new Action("复制标题") {
             @Override
             void onClick() {
-                Clipboard.getInstance().setTextFromUser(mTab.getCurrentPageInfo().getTitle());
+                Clipboard.getInstance().setTextFromUser(mTab.getTitle());
                 ZToast.success("标题复制成功");
             }
         });
 
-        addItem(new Action("复制链接") {
-            @Override
-            void onClick() {
-                Clipboard.getInstance().setTextFromUser(mTab.getCurrentPageInfo().getUrl());
-                ZToast.success("链接复制成功");
+        boolean isGroup = mTab.getTabInfo().isGroup();
+        if (isGroup) {
+            if (mRenameCallback != null) {
+                addItem(new Action("编辑群组标题") {
+                    @Override
+                    void onClick() {
+                        ZDialog.input()
+                                .setHint("请输入群组标题")
+                                .setEditText(mTab.getTabInfo().getTitle())
+                                .setEmptyable(false)
+                                .setAutoShowKeyboard(true)
+                                .setTitle("重命名群组标题")
+                                .setPositiveButton((fragment, which) -> {
+                                    String text = fragment.getText();
+                                    mTab.getTabInfo().setTitle(text);
+                                    mTab.saveTabInfo();
+                                    if (mRenameCallback != null) {
+                                        mRenameCallback.onCallback(text);
+                                        mRenameCallback = null;
+                                    }
+                                })
+                                .show(context);
+                    }
+                });
             }
-        });
+        } else {
+            addItem(new Action("复制链接") {
+                @Override
+                void onClick() {
+                    Clipboard.getInstance().setTextFromUser(mTab.getCurrentPageInfo().getUrl());
+                    ZToast.success("链接复制成功");
+                }
+            });
+            addItem(new Action("新标签中打开") {
+                @Override
+                void onClick() {
+                    LoadUrlEvent.post(mTab.getCurrentPageInfo(), true, false);
+                }
+            });
 
-        addItem(new Action("新标签中打开") {
-            @Override
-            void onClick() {
-                LoadUrlEvent.post(mTab.getCurrentPageInfo(), true, false);
-            }
-        });
+            addItem(new Action("无痕标签中打开") {
+                @Override
+                void onClick() {
+                    LoadUrlEvent.post(mTab.getCurrentPageInfo(), true, true);
+                }
+            });
+        }
 
-        addItem(new Action("无痕标签中打开") {
-            @Override
-            void onClick() {
-                LoadUrlEvent.post(mTab.getCurrentPageInfo(), true, true);
-            }
-        });
 
         addItem(new Action("克隆标签") {
             @Override
@@ -130,25 +164,27 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
             }
         });
 
-        addItem(new Action("悬浮模式") {
-            @Override
-            void onClick() {
-                ZToast.normal("TODO 悬浮模式");
+        if (!isGroup) {
+            addItem(new Action("悬浮模式") {
+                @Override
+                void onClick() {
+                    ZToast.normal("TODO 悬浮模式");
 //                GetActivityEvent.post(new Callback<ChromeActivity>() {
 //                    @Override
 //                    public void onResult(ChromeActivity result) {
 //                        new FloatingTab(result, mTab).show();
 //                    }
 //                });
-            }
-        });
+                }
+            });
 
-        addItem(new Action("历史栈") {
-            @Override
-            void onClick() {
-                HistoryStackDialogFragment.newInstance(mTab.getId()).show(context);
-            }
-        });
+            addItem(new Action("历史栈") {
+                @Override
+                void onClick() {
+                    HistoryStackDialogFragment.newInstance(mTab.getId()).show(context);
+                }
+            });
+        }
 
 
         addItem(new Action("移动至群组") {
@@ -159,33 +195,37 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
         });
 
 
-        boolean canMoveTab = false;
-        if (mTab instanceof IPageGroup) {
-            canMoveTab = ((IPageGroup) mTab).getPages().size() > 1;
-        }
+        if (!isGroup) {
+            boolean canMoveTab = false;
+            if (mTab instanceof IPageGroup) {
+                canMoveTab = ((IPageGroup) mTab).getPages().size() > 1;
+            }
 
-        if (canMoveTab) {
-            addItem(new Action("移动至新窗口") {
+            if (canMoveTab) {
+                addItem(new Action("移动至新标签") {
+                    @Override
+                    void onClick() {
+                        boolean r = TabGroupManager.moveToNewTab(mTab.getCurrentPageInfo());
+                        if (r) {
+                            ZToast.success("移动页面成功！");
+                        } else {
+                            ZToast.error("移动页面失败！");
+                        }
+                    }
+                });
+            }
+
+            addItem(new Action("网页设置") {
                 @Override
                 void onClick() {
-                    boolean r = TabGroupManager.moveToNewTab(mTab.getCurrentPageInfo());
-                    if (r) {
-                        ZToast.success("移动页面成功！");
-                    } else {
-                        ZToast.error("移动页面失败！");
-                    }
+                    start(SingleWebsiteFragment.newInstance(mTab.getCurrentPageInfo()));
                 }
             });
         }
-
-        addItem(new Action("网页设置") {
-            @Override
-            void onClick() {
-                start(SingleWebsiteFragment.newInstance(mTab.getCurrentPageInfo()));
-            }
-        });
-
         super.initView(view, savedInstanceState);
+
+        CardView cardView = findViewById(org.chromium.chrome.R.id.cv_container);
+        cardView.setElevation(ScreenUtils.dp2pxInt(4));
     }
 
     @Override
@@ -194,5 +234,9 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
         fragment.dismiss();
     }
 
+    public TabActionDialog setRenameCallback(Callback<String> callback) {
+        mRenameCallback = callback;
+        return this;
+    }
 }
 

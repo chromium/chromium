@@ -39,7 +39,7 @@ public class GroupTab implements ITabGroup {
 
     private static final String TAG = "TabGroupImpl";
 
-    private final ITabGroup mParentTab;
+    private ITabGroup mParentTab;
     protected final TabInfo mTabInfo;
     private final List<ITab> mTabList;
 
@@ -78,6 +78,11 @@ public class GroupTab implements ITabGroup {
     }
 
     @Override
+    public void setParentGroup(ITabGroup group) {
+        mParentTab = group;
+    }
+
+    @Override
     public ITab cloneByGroupTab(ITabGroup group) {
         GroupTab tab = new GroupTab(group, mTabInfo, new ArrayList<>(mTabList), mObservers);
         mTabInfo.setParentId(group.getId());
@@ -111,6 +116,9 @@ public class GroupTab implements ITabGroup {
             mTabInfo.setCurrentPageId(is.readInt());
             mTabInfo.setPosition(is.readInt());
             mTabInfo.setAccessTime(is.readLong());
+            if (version >= 6) {
+                mTabInfo.setTitle(is.readUTF());
+            }
 
             int count = is.readInt();
             ArkLogger.e(TabInfo.class, "readGroupFile id="
@@ -352,15 +360,16 @@ public class GroupTab implements ITabGroup {
         if (tab.getParentTab() == this) {
             return false;
         }
-        if (tab.getParentTab().removeTab(tab)) {
-            ITab newTab = tab.cloneByGroupTab(this);
-            newTab.getTabInfo().setPosition(mTabList.size());
-            mTabList.add(newTab);
+        ITabGroup oldGroup = tab.getParentTab();
+        if (oldGroup.removeTab(tab)) {
+            tab.setParentGroup(this);
+            tab.getTabInfo().setPosition(mTabList.size());
+            mTabList.add(tab);
             saveTabInfo();
-            newTab.saveTabInfo();
+            tab.saveTabInfo();
 
-            ITab current = newTab;
-            ITabGroup parent = newTab.getParentTab();
+            ITab current = tab;
+            ITabGroup parent = tab.getParentTab();
             while (parent != null) {
                 parent.onIndexChanged(parent.indexOf(current));
                 current = parent;
@@ -368,9 +377,9 @@ public class GroupTab implements ITabGroup {
             }
 
             // TODO optimise
-            TabGroupManager.global().notifyTabMoved(newTab);
+            TabGroupManager.global().notifyTabMoved(tab, oldGroup);
             for (TabInfoObserver observer : mObservers) {
-                observer.didMoveTab(newTab);
+                observer.didMoveTab(tab);
             }
             return true;
         }
@@ -551,19 +560,7 @@ public class GroupTab implements ITabGroup {
             long time = System.currentTimeMillis();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
-            int version = 5;
-            os.writeInt(version);
-            os.writeInt(tabInfo.getId());
-            os.writeInt(tabInfo.getParentId());
-            os.writeBoolean(tabInfo.isGroup());
-            os.writeInt(tabInfo.getLaunchType());
-            os.writeLong(tabInfo.getCreateTime());
-            os.writeBoolean(tabInfo.isIncognito());
-            os.writeBoolean(tabInfo.isLocked());
-            os.writeInt(tabInfo.getChildIndex());
-            os.writeInt(tabInfo.getCurrentPageId());
-            os.writeInt(tabInfo.getPosition());
-            os.writeLong(tabInfo.getAccessTime());
+            tabInfo.wrapStream(os);
             os.writeInt(getCount());
 
             ArkLogger.e(this, "saveGroupFile info=" + tabInfo

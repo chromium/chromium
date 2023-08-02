@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
@@ -11,6 +12,7 @@ import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.IPage;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.toast.ZToast;
+import com.zpj.utils.ScreenUtils;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.Clipboard;
@@ -32,6 +34,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
 
     public PageActionDialog() {
         setOnSelectListener(this);
+        mMinWidth = (int)(ScreenUtils.getScreenWidth() / 2.1F);
     }
 
     @Override
@@ -72,6 +75,8 @@ public class PageActionDialog extends AttachListDialogFragment<String>
                 .addItem("复制链接");
         addItem("网页设置");
         super.initView(view, savedInstanceState);
+        CardView cardView = findViewById(org.chromium.chrome.R.id.cv_container);
+        cardView.setElevation(ScreenUtils.dp2pxInt(4));
     }
 
     @Override

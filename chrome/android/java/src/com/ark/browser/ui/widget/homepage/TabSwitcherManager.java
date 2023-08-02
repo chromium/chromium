@@ -186,13 +186,17 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
             }
 
             @Override
-            public void onTabMoved(ITab tab) {
+            public void onTabMoved(ITab tab, ITabGroup oldGroup) {
                 Tab nativeTab = mViewHolder.getTab();
                 int id = nativeTab == null ? -1 : nativeTab.getId();
                 ArkLogger.e(this, "TabManagerObserver onTabMoved id="
                         + tab.getId() + " currentId=" + id);
                 if (id == tab.getId()) {
                     mSwitcher.setTabGroup(tab.getParentTab());
+                    mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
+                    mViewHolder.setTab(TabCacheManager.getInstance().findTab(tab));
+                } else if (oldGroup == mSwitcher.getTabGroup()) {
+                    mSwitcher.notifyDataSetChanged();
                 }
             }
         });

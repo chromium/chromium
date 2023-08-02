@@ -62,7 +62,9 @@ public class ArkTabAdapter implements Adapter {
         btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TabActionDialog.newInstance(tab.getId()).show(v);
+                TabActionDialog.newInstance(tab.getId())
+                        .setRenameCallback(tvTitle::setText)
+                        .show(v);
             }
         });
         CardView cardView = view.findViewById(R.id.card_view);

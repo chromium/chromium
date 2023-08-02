@@ -6,6 +6,7 @@ package com.ark.browser.tab;
 
 
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.core.ITabGroup;
 
 /**
  * Observes changes to the tab model selector.
@@ -14,6 +15,6 @@ public interface TabManagerObserver {
 
     void onChange();
 
-    void onTabMoved(ITab tab);
+    void onTabMoved(ITab tab, ITabGroup oldGroup);
 
 }

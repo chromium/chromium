@@ -226,11 +226,11 @@ public class TabGroupManager {
             }
         }
 
-        public void notifyTabMoved(ITab tab) {
+        public void notifyTabMoved(ITab tab, ITabGroup oldGroup) {
             ArkLogger.d(TAG, "notifyTabMoved size=" + mObservers.size());
             for (TabManagerObserver listener : mObservers) {
                 ArkLogger.d(TAG, "notifyTabMoved listener=" + listener);
-                listener.onTabMoved(tab);
+                listener.onTabMoved(tab, oldGroup);
             }
         }
 
