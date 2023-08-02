@@ -769,8 +769,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                   MatchesLoginAndRealm("user", "pass", GetPSLOrigin())));
 }
 
+// TODO(crbug.com/1469411): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DontOfferToSavePrimaryAccountCredential \
+  DISABLED_DontOfferToSavePrimaryAccountCredential
+#else
+#define MAYBE_DontOfferToSavePrimaryAccountCredential \
+  DontOfferToSavePrimaryAccountCredential
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       DontOfferToSavePrimaryAccountCredential) {
+                       MAYBE_DontOfferToSavePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   SetupSyncTransportWithPasswordAccountStorage();
@@ -790,8 +798,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_FALSE(bubble_observer.IsSavePromptAvailable());
 }
 
+// TODO(crbug.com/1469411): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
+  DISABLED_OfferToSaveNonPrimaryAccountCredential
+#else
+#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
+  OfferToSaveNonPrimaryAccountCredential
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       OfferToSaveNonPrimaryAccountCredential) {
+                       MAYBE_OfferToSaveNonPrimaryAccountCredential) {
   // Disable signin interception, because it suppresses the password bubble.
   // See PasswordManagerBrowserTestWithSigninInterception for tests with
   // interception enabled.
@@ -817,8 +833,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_TRUE(bubble_observer.IsSavePromptAvailable());
 }
 
+// TODO(crbug.com/1469411): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OfferToUpdatePrimaryAccountCredential \
+  DISABLED_OfferToUpdatePrimaryAccountCredential
+#else
+#define MAYBE_OfferToUpdatePrimaryAccountCredential \
+  OfferToUpdatePrimaryAccountCredential
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       OfferToUpdatePrimaryAccountCredential) {
+                       MAYBE_OfferToUpdatePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // The password for the primary account is already saved.
