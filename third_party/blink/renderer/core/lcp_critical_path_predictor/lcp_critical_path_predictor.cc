@@ -34,8 +34,13 @@ void LCPCriticalPathPredictor::set_lcp_element_locators(
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {
   if (lcp_element && IsA<HTMLImageElement>(lcp_element)) {
-    GetHost().SetLcpElementLocator(
-        element_locator::OfElement(lcp_element)->SerializeAsString());
+    std::string lcp_element_locator_string =
+        element_locator::OfElement(lcp_element)->SerializeAsString();
+    if (lcp_element_locator_string.size() <=
+        base::checked_cast<size_t>(
+            features::kLCPCriticalPathPredictorMaxElementLocatorLength.Get())) {
+      GetHost().SetLcpElementLocator(lcp_element_locator_string);
+    }
   }
 }
 
