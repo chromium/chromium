@@ -7,6 +7,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 
 namespace blink {
@@ -32,7 +33,7 @@ void LCPCriticalPathPredictor::set_lcp_element_locators(
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {
-  if (lcp_element) {
+  if (lcp_element && IsA<HTMLImageElement>(lcp_element)) {
     GetHost().SetLcpElementLocator(
         element_locator::OfElement(lcp_element)->SerializeAsString());
   }
