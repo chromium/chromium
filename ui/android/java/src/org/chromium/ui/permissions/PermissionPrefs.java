@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
 
 import java.util.List;
 
@@ -138,7 +139,7 @@ public class PermissionPrefs {
                 + PermissionPrefs.normalizePermissionName(
                         PermissionConstants.NOTIFICATION_PERMISSION);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().putLong(prefName, System.currentTimeMillis()).apply();
+        prefs.edit().putLong(prefName, TimeUtils.currentTimeMillis()).apply();
     }
 
     /**
