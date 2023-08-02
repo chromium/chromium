@@ -111,8 +111,6 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
     observer->OnEncryptedTypesChanged(state.GetEncryptedTypes(),
                                       /*encrypt_everything=*/true);
     observer->OnPassphraseAccepted();
-
-    base::UmaHistogramBoolean("Sync.CustomEncryption", true);
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}

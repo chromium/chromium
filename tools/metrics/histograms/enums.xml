@@ -102972,11 +102972,6 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Ready"/>
 </enum>
 
-<enum name="SyncCustomEncryptionEvent">
-  <int value="0" label="Default setup with an implicit passphrase"/>
-  <int value="1" label="Advanced setup with a custom passphrase"/>
-</enum>
-
 <enum name="SyncCustomPassphraseKeyDerivationMethodState">
   <int value="0" label="Not set"/>
   <int value="1" label="Unsupported method"/>
