@@ -105,6 +105,10 @@ void CookieControlsIconView::UpdateImpl() {
   UpdateVisibilityAndAnimate();
 }
 
+void CookieControlsIconView::OnIPHClosed() {
+  SetHighlighted(false);
+}
+
 void CookieControlsIconView::UpdateVisibilityAndAnimate(
     bool confidence_changed) {
   UpdateIconImage();
@@ -113,11 +117,24 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
     // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
-        auto label = GetLabelForStatus();
-        AnimateIn(label);
-        if (label.has_value()) {
-          GetViewAccessibility().AnnounceText(
-              l10n_util::GetStringUTF16(label.value()));
+        bool promo_shown = false;
+        SetVisible(true);
+        content::WebContents* web_contents = GetWebContents();
+        Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+        CHECK(browser != nullptr && browser->window() != nullptr);
+        promo_shown = browser->window()->MaybeShowFeaturePromo(
+            feature_engagement::kIPHCookieControlsFeature,
+            base::BindOnce(&CookieControlsIconView::OnIPHClosed,
+                           weak_ptr_factory_.GetWeakPtr()));
+        if (promo_shown) {
+          SetHighlighted(true);
+        } else {
+          auto label = GetLabelForStatus();
+          AnimateIn(label);
+          if (label.has_value()) {
+            GetViewAccessibility().AnnounceText(
+                l10n_util::GetStringUTF16(label.value()));
+          }
         }
         if (controller_) {
           controller_->OnEntryPointAnimated();
@@ -130,6 +147,7 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
   } else {
     UnpauseAnimation();
     ResetSlideAnimation(false);
+    SetVisible(false);
   }
   SetVisible(should_show);
   SetLabel(l10n_util::GetStringUTF16(

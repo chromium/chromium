@@ -57,6 +57,7 @@ class CookieControlsIconView : public PageActionIconView,
 
   bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
+  void OnIPHClosed();
 
   // Set confidence_changed = true to animate if the confidence level changed
   // even if the icon is already visible.
@@ -74,6 +75,7 @@ class CookieControlsIconView : public PageActionIconView,
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};
+  base::WeakPtrFactory<CookieControlsIconView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_ICON_VIEW_H_
