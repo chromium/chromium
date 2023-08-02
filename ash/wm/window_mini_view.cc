@@ -5,16 +5,13 @@
 #include "ash/wm/window_mini_view.h"
 
 #include <memory>
-#include <utility>
 
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,8 +23,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_util.h"
@@ -41,6 +36,42 @@ constexpr int kBackdropBorderRoundingDp = 4;
 constexpr int kFocusRingCornerRadius = 20;
 
 }  // namespace
+
+FocusableView::~FocusableView() = default;
+
+void FocusableView::UpdateFocusState(bool focus) {
+  if (is_focused_ == focus) {
+    return;
+  }
+
+  is_focused_ = focus;
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
+FocusableView::FocusableView() {
+  InstallFocusRing();
+}
+
+void FocusableView::InstallFocusRing() {
+  // In order to show the focus ring out of the content view, `border_inset`
+  // needs to be counted when setting the insets for the focus ring.
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kFocusRingHaloInset),
+      chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
+                                               : kBackdropBorderRoundingDp);
+  views::FocusRing::Install(this);
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<FocusableView>(view);
+        CHECK(v);
+        return v->is_focused_;
+      }));
+}
+
+BEGIN_METADATA(FocusableView, views::View)
+END_METADATA
 
 WindowMiniView::~WindowMiniView() = default;
 
@@ -131,15 +162,6 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
   layer->SetIsFastRoundedCorner(true);
 }
 
-void WindowMiniView::UpdateFocusState(bool focus) {
-  if (is_focused_ == focus) {
-    return;
-  }
-
-  is_focused_ = focus;
-  views::FocusRing::Get(this)->SchedulePaint();
-}
-
 gfx::Rect WindowMiniView::GetHeaderBounds() const {
   gfx::Rect header_bounds = GetContentsBounds();
   header_bounds.set_height(kHeaderHeightDp);
@@ -161,22 +183,6 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
   header_view_ = AddChildView(std::make_unique<WindowMiniViewHeaderView>(this));
   header_view_->SetPaintToLayer();
   header_view_->layer()->SetFillsBoundsOpaquely(false);
-
-  // In order to show the focus ring out of the content view, `border_inset`
-  // needs to be counted when setting the insets for the focus ring.
-  views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset),
-      chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
-                                               : kBackdropBorderRoundingDp);
-  views::FocusRing::Install(this);
-  views::FocusRing* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
-  focus_ring->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<WindowMiniView>(view);
-        CHECK(v);
-        return v->is_focused_;
-      }));
 }
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {
@@ -240,7 +246,7 @@ void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   header_view_->UpdateTitleLabel(window);
 }
 
-BEGIN_METADATA(WindowMiniView, views::View)
+BEGIN_METADATA(WindowMiniView, FocusableView)
 END_METADATA
 
 }  // namespace ash

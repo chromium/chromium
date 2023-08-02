@@ -11,7 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
 
 namespace views {
 class View;
@@ -21,10 +21,33 @@ namespace ash {
 class WindowMiniViewHeaderView;
 class WindowPreviewView;
 
+// Defines the interface that extracts the focus installation and update logic
+// to be used by `WindowMiniView` and `GroupContainerView`.
+class FocusableView : public views::View {
+ public:
+  METADATA_HEADER(FocusableView);
+
+  FocusableView(const FocusableView&) = delete;
+  FocusableView& operator=(const FocusableView&) = delete;
+  ~FocusableView() override;
+
+  // Shows or hides a focus ring around this.
+  void UpdateFocusState(bool focus);
+
+ protected:
+  FocusableView();
+
+ private:
+  void InstallFocusRing();
+
+  // True if this view is focused when using keyboard navigation.
+  bool is_focused_ = false;
+};
+
 // WindowMiniView is a view which contains a header and optionally a mirror of
 // the given window. Displaying the mirror is chosen by the subclass by calling
 // |SetShowPreview| in their constructors (or later on if they like).
-class ASH_EXPORT WindowMiniView : public views::View,
+class ASH_EXPORT WindowMiniView : public FocusableView,
                                   public aura::WindowObserver {
  public:
   METADATA_HEADER(WindowMiniView);
@@ -62,9 +85,6 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // Sets or hides rounded corners on |preview_view_|, if it exists.
   void UpdatePreviewRoundedCorners(bool show);
 
-  // Shows or hides a focus ring around this view.
-  void UpdateFocusState(bool focus);
-
  protected:
   explicit WindowMiniView(aura::Window* source_window);
 
@@ -101,9 +121,6 @@ class ASH_EXPORT WindowMiniView : public views::View,
 
   // Optionally shows a preview of |window_|.
   raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_ = nullptr;
-
-  // True if the window mini view is focused when using keyboard navigation.
-  bool is_focused_ = false;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

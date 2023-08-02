@@ -5,16 +5,18 @@
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/rect_f.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -26,6 +28,12 @@ constexpr int kMinPreviewWidthDp =
     WindowCycleItemView::kFixedPreviewHeightDp / 2;
 constexpr int kMaxPreviewWidthDp =
     WindowCycleItemView::kFixedPreviewHeightDp * 2;
+
+// The border padding value of the container view.
+constexpr auto kInsideContainerBorderInset = gfx::Insets(2);
+
+// Spacing between the child `WindowCycleItemView`s of the container view.
+constexpr int kBetweenCycleItemsSpacing = 2;
 
 }  // namespace
 
@@ -133,6 +141,26 @@ bool WindowCycleItemView::HandleAccessibleAction(
 }
 
 BEGIN_METADATA(WindowCycleItemView, WindowMiniView)
+END_METADATA
+
+GroupContainerView::GroupContainerView() {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  SetAccessibleName(u"Group container view");
+
+  // TODO(michelefan@): Orientation should correspond to the window layout.
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kInsideContainerBorderInset, kBetweenCycleItemsSpacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+}
+
+GroupContainerView::~GroupContainerView() = default;
+
+BEGIN_METADATA(GroupContainerView, FocusableView)
 END_METADATA
 
 }  // namespace ash

@@ -46,6 +46,18 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 };
 
+// Container view used to host multiple `WindowCycleItemView`s and be the focus
+// target for window groups while tabbing in window cycle view.
+class GroupContainerView : public FocusableView {
+ public:
+  METADATA_HEADER(GroupContainerView);
+
+  GroupContainerView();
+  GroupContainerView(const GroupContainerView&) = delete;
+  GroupContainerView& operator=(const GroupContainerView&) = delete;
+  ~GroupContainerView() override;
+};
+
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_ITEM_VIEW_H_
