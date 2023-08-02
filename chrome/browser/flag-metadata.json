@@ -7248,6 +7248,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "shopping-collection",
+    "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "shopping-list",
     "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 118

@@ -14,6 +14,7 @@ extern const char kBookmarkBarNodeUuid[];
 extern const char kOtherBookmarksNodeUuid[];
 extern const char kMobileBookmarksNodeUuid[];
 extern const char kManagedNodeUuid[];
+extern const char kShoppingCollectionUuid[];
 
 // A bug in sync caused some problematic UUIDs to be produced.
 extern const char kBannedUuidDueToPastSyncBug[];

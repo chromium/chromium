@@ -30,6 +30,9 @@ const char kMobileBookmarksNodeUuid[] = "4cf2e351-0e85-532b-bb37-df045d8f8d0f";
 // > uuid.uuid5(bookmarks_namespace, "managed_bookmarks")
 const char kManagedNodeUuid[] = "323123f4-9381-5aee-80e6-ea5fca2f7672";
 
+// > uuid.uuid5(bookmarks_namespace, "shopping_collection")
+const char kShoppingCollectionUuid[] = "e55c13d5-c108-52a6-bfd5-590b885500d0";
+
 // This value is the result of exercising sync's function
 // syncer::InferGuidForLegacyBookmark() with an empty input.
 const char kBannedUuidDueToPastSyncBug[] =

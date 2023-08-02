@@ -208,6 +208,7 @@ static_library("shopping_service") {
     "//components/search:search",
     "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
+    "//components/strings:components_strings_grit",
     "//components/sync/service",
     "//components/unified_consent",
     "//services/network/public/cpp:cpp",

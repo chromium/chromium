@@ -137,6 +137,12 @@ const std::u16string& GetBookmarkParentNameOrDefault(
     bookmarks::BookmarkModel* model,
     const GURL& url);
 
+// Gets the explicit "shopping collection" bookmark folder. There can only be
+// one shopping collection per profile.
+const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
+    bookmarks::BookmarkModel* model,
+    bool create_if_needed = false);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_PRICE_TRACKING_UTILS_H_

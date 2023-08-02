@@ -9,7 +9,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
@@ -670,6 +672,49 @@ TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentNameOrDefault) {
   ASSERT_EQ(
       bookmark_model_->mobile_node()->GetTitle(),
       commerce::GetBookmarkParentNameOrDefault(bookmark_model_.get(), url));
+}
+
+// Ensure the utility to get the shopping collection knows when to create or
+// simply lookup the folder. The folder's UUID should be deterministic.
+TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
+  test_features_.InitAndEnableFeature(kShoppingCollection);
+
+  const base::Uuid collection_uuid =
+      base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
+
+  const bookmarks::BookmarkNode* collection =
+      GetShoppingCollectionBookmarkFolder(bookmark_model_.get());
+
+  ASSERT_EQ(collection, nullptr);
+
+  collection = GetShoppingCollectionBookmarkFolder(bookmark_model_.get(), true);
+
+  ASSERT_NE(collection, nullptr);
+  ASSERT_EQ(collection->uuid(), collection_uuid);
+
+  // Deleting the collection should behave like any other bookmark node
+  // deletion.
+  bookmark_model_->Remove(collection,
+                          bookmarks::metrics::BookmarkEditSource::kUser);
+
+  collection = GetShoppingCollectionBookmarkFolder(bookmark_model_.get());
+
+  ASSERT_EQ(collection, nullptr);
+
+  // Creating the collection a second time should result in the same UUID.
+  collection = GetShoppingCollectionBookmarkFolder(bookmark_model_.get(), true);
+
+  ASSERT_NE(collection, nullptr);
+  ASSERT_EQ(collection->uuid(), collection_uuid);
+}
+
+TEST_F(PriceTrackingUtilsTest, GetShoppingCollection_InvalidParams) {
+  test_features_.InitAndDisableFeature(kShoppingCollection);
+
+  const bookmarks::BookmarkNode* collection =
+      GetShoppingCollectionBookmarkFolder(nullptr);
+
+  ASSERT_EQ(collection, nullptr);
 }
 
 }  // namespace

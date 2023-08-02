@@ -16,6 +16,9 @@ extern const char kCommerceLocalPDPDetectionDescription[];
 extern const char kCommercePriceTrackingName[];
 extern const char kCommercePriceTrackingDescription[];
 
+extern const char kShoppingCollectionName[];
+extern const char kShoppingCollectionDescription[];
+
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
 

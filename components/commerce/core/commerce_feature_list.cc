@@ -183,6 +183,10 @@ const base::FeatureParam<bool> kPriceInsightsShowFeedback{
 const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
 
+BASE_FEATURE(kShoppingCollection,
+             "ShoppingCollection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

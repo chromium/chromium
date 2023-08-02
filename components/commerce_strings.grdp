@@ -370,4 +370,7 @@
   <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users." formatter_data="android_java">
     Untrack price
   </message>
+  <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">
+    Shopping collection
+  </message>
 </grit-part>

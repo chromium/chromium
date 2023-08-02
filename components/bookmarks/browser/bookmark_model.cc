@@ -900,6 +900,8 @@ const BookmarkNode* BookmarkModel::AddURL(
     absl::optional<base::Time> creation_time,
     absl::optional<base::Uuid> uuid,
     bool added_by_user) {
+  // TODO(b/294100289): We should ensure that the specified UUID does not
+  //                    conflict with a reserved folder ID.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(url.is_valid());

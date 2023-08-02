@@ -62984,6 +62984,7 @@ from previous Chrome versions.
   <int value="-530480158" label="EnableSuggestedFiles:enabled"/>
   <int value="-529896675" label="SmartLockSignInRemoved:disabled"/>
   <int value="-528927088" label="AutofillCreditCardPopupLayout:disabled"/>
+  <int value="-528759276" label="ShoppingCollection:disabled"/>
   <int value="-528441522" label="AppsShortcutDefaultOff:disabled"/>
   <int value="-528149352" label="WebRtcUseEchoCanceller3:enabled"/>
   <int value="-527990339" label="ForceEnableFaceAe:enabled"/>
@@ -66624,6 +66625,7 @@ from previous Chrome versions.
       label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
   <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
+  <int value="1335454908" label="ShoppingCollection:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>
   <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>

@@ -15,6 +15,10 @@ const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";
 
+const char kShoppingCollectionName[] = "Shopping Collection";
+const char kShoppingCollectionDescription[] =
+    "Organize all products into an automatically created bookmark folder.";
+
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 
