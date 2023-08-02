@@ -3873,16 +3873,16 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the cookie controls bubble. Indicates that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_COOKIE_CONTROLS_PROMO_TEXT" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_PROMO_TEXT" desc="Text of the in-product-help bubble shown for the cookie controls bubble. Explains that sites may not work correctly without third-party cookies.">
         If you visit a site that uses cookies, you may need to temporarily enable cookies to make all site features work.
       </message>
-      <message name="IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT" desc="Text on the button that closes in the in-product-help bubble shown for the cookie controls bubble.">
         Close
       </message>
-      <message name="IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT" desc="Text on the button that opens the cookie controls bubble on the in-product-help bubble shown for the cookie controls bubble. Encourages users to see how to temporarily enable third-party cookies.">
         See how
       </message>
 
