@@ -96,14 +96,19 @@ bool WvrGraphicsDelegate::CreateOrResizeWebXrSurface(
     webxr_surface_texture_ = gl::SurfaceTexture::Create(webvr_texture_id_);
     webxr_surface_texture_->SetFrameAvailableCallback(
         std::move(on_webxr_frame_available));
-  }
 
-  if (!j_surface_texture_) {
+    DCHECK(!j_surface_texture_);
     JNIEnv* env = base::android::AttachCurrentThread();
     j_surface_texture_ = Java_WVRSurfaceTexture_create(
         env,
         texture_handle_id_,
         webxr_surface_texture_.get()->j_surface_texture());
+  }
+
+  if (size.IsEmpty()) {
+    // Defer until a new size arrives on a future bounds update.
+    DVLOG(1) << "Ignore resize, invalid size";
+    return false;
   }
 
   webxr_surface_texture_->SetDefaultBufferSize(size.width(), size.height());

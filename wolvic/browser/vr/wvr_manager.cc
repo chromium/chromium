@@ -133,6 +133,13 @@ std::vector<device::mojom::XRViewPtr> CreateViews(
   return views;
 }
 
+bool ValidateRect(const gfx::RectF& bounds) {
+  // Bounds should be between 0 and 1, with positive width/height.
+  // We simply clamp to [0,1], but still validate that the bounds are not NAN.
+  return !std::isnan(bounds.width()) && !std::isnan(bounds.height()) &&
+         !std::isnan(bounds.x()) && !std::isnan(bounds.y());
+}
+
 }  // namespace
 
 WvrManager::WvrManager(WvrApi *wvr_api, WvrGraphicsDelegate* graphics)
@@ -713,6 +720,21 @@ void WvrManager::UpdateLayerBounds(int16_t frame_index,
                                    const gfx::RectF& left_bounds,
                                    const gfx::RectF& right_bounds,
                                    const gfx::Size& source_size) {
+  if (!ValidateRect(left_bounds) || !ValidateRect(right_bounds)) {
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called with invalid bounds");
+    ClosePresentationBindings();
+    return;
+  }
+
+  if (frame_index >= 0 && !webxr_.HaveAnimatingFrame()) {
+    // The optional UpdateLayerBounds call must happen before SubmitFrame.
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called without animating frame");
+    ClosePresentationBindings();
+    return;
+  }
+
   CreateOrResizeWebXrSurface(source_size);
 }
 
