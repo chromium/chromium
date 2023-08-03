@@ -336,9 +336,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       OnDataTransferComplete();
       return;
     case MOJO_RESULT_BUSY:
+    case MOJO_RESULT_SHOULD_WAIT:
       return;
     default:
-      NOTREACHED();
+      NOTREACHED() << "BeginReadData result:" << result;
       return;
   }
 
