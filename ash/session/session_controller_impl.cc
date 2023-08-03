@@ -92,6 +92,11 @@ AddUserSessionPolicy SessionControllerImpl::GetAddUserPolicy() const {
   return add_user_session_policy_;
 }
 
+bool SessionControllerImpl::IsActiveAccountManaged() const {
+  CHECK(!user_sessions_.empty());
+  return user_sessions_[0]->user_info.is_managed;
+}
+
 bool SessionControllerImpl::IsActiveUserSessionStarted() const {
   return !user_sessions_.empty();
 }

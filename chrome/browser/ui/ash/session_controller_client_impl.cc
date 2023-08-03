@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -105,6 +106,8 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
   session->user_info.should_display_managed_ui =
       profile && chrome::ShouldDisplayManagedUi(profile);
   session->user_info.is_new_profile = profile->IsNewProfile();
+  session->user_info.is_managed =
+      profile->GetProfilePolicyConnector()->IsManaged();
 
   session->user_info.avatar.image = user.GetImage();
   if (session->user_info.avatar.image.isNull()) {

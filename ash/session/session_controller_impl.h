@@ -65,6 +65,10 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Gets the policy of adding a user session to ash.
   AddUserSessionPolicy GetAddUserPolicy() const;
 
+  // Returns true if the active user account is under any policy management.
+  // NOTE: This function should only be called if the active account exists.
+  bool IsActiveAccountManaged() const;
+
   // Returns |true| if the session has been fully started for the active user.
   // When a user becomes active, the profile and browser UI are not immediately
   // available. Only once this method starts returning |true| is the browser

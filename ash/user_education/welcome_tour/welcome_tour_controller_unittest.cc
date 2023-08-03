@@ -549,12 +549,14 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
 // Base class for tests of the `WelcomeTourController` which are concerned with
 // user eligibility, parameterized by:
 // (a) whether to force user eligibility via feature flag, and
-// (b) whether the user should be considered "new", "existing" or "unknown".
+// (b) whether the user should be considered "new", "existing" or "unknown", and
+// (c) whether the user is managed.
 class WelcomeTourControllerUserEligibilityTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<std::tuple<
           /*force_user_eligibility=*/bool,
-          /*is_new_user=*/absl::optional<bool>>> {
+          /*is_new_user=*/absl::optional<bool>,
+          /*is_managed_user=*/bool>> {
  public:
   WelcomeTourControllerUserEligibilityTest() {
     // Conditionally force user eligibility based on test parameterization.
@@ -564,6 +566,9 @@ class WelcomeTourControllerUserEligibilityTest
 
   // Returns whether user eligibility is forced based on test parameterization.
   bool ForceUserEligibility() const { return std::get<0>(GetParam()); }
+
+  // Returns whether the user is managed based on test parameterization.
+  bool IsManagedUser() const { return std::get<2>(GetParam()); }
 
   // Returns whether the user should be considered "new" based on test
   // parameterization.
@@ -580,6 +585,15 @@ class WelcomeTourControllerUserEligibilityTest
     // user should be considered "new" based on test parameterization.
     ON_CALL(*user_education_delegate(), IsNewUser)
         .WillByDefault(ReturnRefOfCopy(IsNewUser()));
+
+    // Add a user that is managed based on test parameterization.
+    TestSessionControllerClient* const session = GetSessionControllerClient();
+    constexpr char kUserEmail[] = "primary@test";
+    session->AddUserSession(kUserEmail, user_manager::USER_TYPE_REGULAR,
+                            /*provide_pref_service=*/true,
+                            /*is_new_profile=*/false,
+                            /*given_name=*/std::string(), IsManagedUser());
+    session->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
   }
 
   // Used to conditionally force user eligibility based on test
@@ -594,7 +608,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*is_new_user=*/
                              ::testing::Values(absl::make_optional(true),
                                                absl::make_optional(false),
-                                               absl::nullopt)));
+                                               absl::nullopt),
+                             /*is_managed_user=*/::testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -602,17 +617,20 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   // A user is eligible for the Welcome Tour if and only if:
   // (a) user eligibility is being explicitly forced, or
-  // (b) the user is known to be "new" on session activation.
+  // (b) the user satisfies the following conditions:
+  //     (1) known to be "new" on session activation, and
+  //     (2) not a managed user.
   const bool is_user_eligibility_expected =
-      ForceUserEligibility() || IsNewUser().value_or(false);
+      ForceUserEligibility() ||
+      (IsNewUser().value_or(false) && !IsManagedUser());
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(*user_education_delegate(),
               StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
       .Times(is_user_eligibility_expected ? 1u : 0u);
 
-  // Login the primary user and verify expectations.
-  SimulateUserLogin("primary@test");
+  // Activate the user session and verify expectations.
+  GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
 }
 
