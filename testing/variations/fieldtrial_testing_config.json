@@ -15916,9 +15916,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "CameraEffectsSupportedByHardware",
                         "CrOSLateBootAudioAPNoiseCancellation",
                         "CrOSLateBootAudioFlexibleLoopback",
                         "CrosPrivacyHubV2",
+                        "FeatureManagementVideoConference",
                         "SpeakOnMuteEnabled",
                         "SystemLiveCaption",
                         "VideoConference"
