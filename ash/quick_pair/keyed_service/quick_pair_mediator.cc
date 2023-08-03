@@ -233,10 +233,30 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   device_currently_showing_notification_ = device;
   ui_broker_->ShowDiscovery(device);
   fast_pair_repository_->FetchDeviceImages(device);
+
+  // Don't modify the delegate's list when flag is disabled.
+  if (!features::IsFastPairDevicesBluetoothSettingsEnabled() ||
+      device->protocol() != Protocol::kFastPairSubsequent) {
+    return;
+  }
+
+  // Add device to Subsequent Pairable devices list, AKA Account Linked
+  // devices for bluetooth.
+  fast_pair_bluetooth_config_delegate_->AddFastPairDevice(device);
 }
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(VERBOSE) << __func__ << ": " << device;
+
+  // Don't modify the delegate's list when flag is disabled.
+  if (!features::IsFastPairDevicesBluetoothSettingsEnabled() ||
+      device->protocol() != Protocol::kFastPairSubsequent) {
+    return;
+  }
+
+  // Remove device from Subsequent Pairable devices list, AKA Account Linked
+  // devices for bluetooth.
+  fast_pair_bluetooth_config_delegate_->RemoveFastPairDevice(device);
 }
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
@@ -288,6 +308,15 @@ void Mediator::CancelPairing() {
   // instance. Shut them down before destroying the handshakes.
   pairer_broker_->StopPairing();
   FastPairHandshakeLookup::GetInstance()->Clear();
+
+  // Don't modify the delegate's list when flag is disabled.
+  if (!features::IsFastPairDevicesBluetoothSettingsEnabled()) {
+    return;
+  }
+
+  // Clear Subsequent Pairable devices list, AKA Account Linked
+  // devices for bluetooth.
+  fast_pair_bluetooth_config_delegate_->ClearFastPairableDevices();
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
@@ -306,6 +335,16 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
 
   // Unban notifications for this device since it was successfully paired.
   RemoveFromDiscoveryBlockList(device);
+
+  // Don't modify the delegate's list when flag is disabled.
+  if (!features::IsFastPairDevicesBluetoothSettingsEnabled() ||
+      device->protocol() != Protocol::kFastPairSubsequent) {
+    return;
+  }
+
+  // Remove device from Subsequent Pairable devices list, AKA Account Linked
+  // devices for bluetooth.
+  fast_pair_bluetooth_config_delegate_->RemoveFastPairDevice(device);
 }
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,
@@ -313,6 +352,16 @@ void Mediator::OnPairFailure(scoped_refptr<Device> device,
   QP_LOG(VERBOSE) << __func__ << ": Device=" << device
                   << ",Failure=" << failure;
   ui_broker_->ShowPairingFailed(device);
+
+  // Don't modify the delegate's list when flag is disabled.
+  if (!features::IsFastPairDevicesBluetoothSettingsEnabled() ||
+      device->protocol() != Protocol::kFastPairSubsequent) {
+    return;
+  }
+
+  // Update device's pairing state to kError.
+  fast_pair_bluetooth_config_delegate_->UpdateFastPairableDevicePairingState(
+      device, bluetooth_config::mojom::FastPairableDevicePairingState::kError);
 }
 
 void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
@@ -388,6 +437,18 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
       }
 
       pairer_broker_->PairDevice(device);
+
+      // Don't modify the delegate's list when flag is disabled.
+      if (!features::IsFastPairDevicesBluetoothSettingsEnabled() ||
+          device->protocol() != Protocol::kFastPairSubsequent) {
+        break;
+      }
+
+      // Update device's pairing state to kPairing.
+      fast_pair_bluetooth_config_delegate_
+          ->UpdateFastPairableDevicePairingState(
+              device, bluetooth_config::mojom::FastPairableDevicePairingState::
+                          kPairing);
     } break;
     case DiscoveryAction::kDismissedByOs:
       break;
