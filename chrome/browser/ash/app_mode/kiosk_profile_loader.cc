@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <tuple>
+#include <variant>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -61,8 +63,6 @@ KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
   }
 }
 
-constexpr int kFailedMountRetries = 3;
-
 absl::optional<MountedState> ToResult(
     absl::optional<user_data_auth::IsMountedReply> reply) {
   if (!reply.has_value()) {
@@ -100,6 +100,118 @@ std::unique_ptr<CancellableJob> CheckCryptohome(
       /*n=*/5,
       /*job=*/base::BindRepeating(&CheckCryptohomeMountState),
       /*on_done=*/std::move(on_done));
+}
+
+class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
+ public:
+  enum class LoginError { kPolicyLoadFailed, kAllowlistCheckFailed };
+  using ErrorResult =
+      std::variant<LoginError,
+                   AuthFailure,
+                   KioskProfileLoader::OldEncryptionUserContext>;
+  using Result = base::expected<UserContext, ErrorResult>;
+  using ResultCallback = base::OnceCallback<void(Result result)>;
+
+  static std::unique_ptr<CancellableJob> Run(KioskAppType app_type,
+                                             AccountId account_id,
+                                             ResultCallback on_done) {
+    auto handle = base::WrapUnique(new SigninPerformer(std::move(on_done)));
+
+    switch (app_type) {
+      case KioskAppType::kArcApp:
+        handle->login_performer_->LoginAsArcKioskAccount(account_id);
+        break;
+      case KioskAppType::kChromeApp:
+        handle->login_performer_->LoginAsKioskAccount(account_id);
+        break;
+      case KioskAppType::kWebApp:
+        handle->login_performer_->LoginAsWebKioskAccount(account_id);
+        break;
+    }
+
+    return handle;
+  }
+
+  SigninPerformer(const SigninPerformer&) = delete;
+  SigninPerformer& operator=(const SigninPerformer&) = delete;
+  ~SigninPerformer() override = default;
+
+ private:
+  explicit SigninPerformer(ResultCallback on_done)
+      : on_done_(std::move(on_done)),
+        login_performer_(std::make_unique<ChromeLoginPerformer>(
+            this,
+            AuthEventsRecorder::Get())) {}
+
+  // LoginPerformer::Delegate overrides:
+  void OnAuthSuccess(const UserContext& user_context) override {
+    // `LoginPerformer` manages its own lifecycle on success, release ownership.
+    login_performer_->set_delegate(nullptr);
+    std::ignore = login_performer_.release();
+
+    std::move(on_done_).Run(user_context);
+  }
+  void OnAuthFailure(const AuthFailure& auth_error) override {
+    KioskAppLaunchError::SaveCryptohomeFailure(auth_error);
+    std::move(on_done_).Run(base::unexpected(auth_error));
+  }
+  void PolicyLoadFailed() override {
+    std::move(on_done_).Run(base::unexpected(LoginError::kPolicyLoadFailed));
+  }
+  void AllowlistCheckFailed(const std::string& email) override {
+    std::move(on_done_).Run(
+        base::unexpected(LoginError::kAllowlistCheckFailed));
+  }
+  void OnOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
+                               bool has_incomplete_migration) override {
+    std::move(on_done_).Run(base::unexpected(std::move(user_context)));
+  }
+
+  ResultCallback on_done_;
+  std::unique_ptr<LoginPerformer> login_performer_;
+};
+
+bool IsRetriableError(const SigninPerformer::Result& result) {
+  if (!result.has_value() &&
+      std::holds_alternative<AuthFailure>(result.error())) {
+    // Signal a retriable error if the cryptohome mount failed due to
+    // corruption of the on-disk state. We always ask to "create" cryptohome
+    // and the corrupted one was deleted under the hood.
+    return std::get<AuthFailure>(result.error()).reason() ==
+           AuthFailure::UNRECOVERABLE_CRYPTOHOME;
+  }
+  return false;
+}
+
+std::unique_ptr<CancellableJob> Signin(
+    KioskAppType app_type,
+    AccountId account_id,
+    SigninPerformer::ResultCallback on_done) {
+  return RunUpToNTimes<SigninPerformer::Result>(
+      /*n=*/3,
+      /*job=*/
+      base::BindRepeating(
+          [](KioskAppType app_type, AccountId account_id,
+             RetryResultCallback<SigninPerformer::Result> on_result) {
+            return SigninPerformer::Run(app_type, account_id,
+                                        std::move(on_result));
+          },
+          app_type, account_id),
+      /*should_retry=*/base::BindRepeating(&IsRetriableError),
+      /*on_done=*/
+      std::move(on_done));
+}
+KioskAppLaunchError::Error SigninErrorToKioskLaunchError(
+    SigninPerformer::LoginError error) {
+  switch (error) {
+    case SigninPerformer::LoginError::kPolicyLoadFailed:
+      return KioskAppLaunchError::Error::kPolicyLoadFailed;
+    case SigninPerformer::LoginError::kAllowlistCheckFailed:
+      // TODO(b/291198824) kNone causes this result to be ignore, which matches
+      // the historical behavior of this class. Introduce a new enum value.
+      NOTREACHED();
+      return KioskAppLaunchError::Error::kNone;
+  }
 }
 
 class SessionStarter : public CancellableJob,
@@ -140,21 +252,14 @@ class SessionStarter : public CancellableJob,
 KioskProfileLoader::KioskProfileLoader(const AccountId& app_account_id,
                                        KioskAppType app_type,
                                        Delegate* delegate)
-    : account_id_(app_account_id),
-      app_type_(app_type),
-      delegate_(delegate),
-      failed_mount_attempts_(0) {}
+    : account_id_(app_account_id), app_type_(app_type), delegate_(delegate) {}
 
 KioskProfileLoader::~KioskProfileLoader() = default;
 
 void KioskProfileLoader::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  login_performer_.reset();
   current_step_ = CheckCryptohome(base::BindOnce(
       [](KioskProfileLoader* self, absl::optional<MountedState> result) {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-        // Reset `current_step_` to free resources now the job is done.
-        self->current_step_.reset();
         if (!result.has_value()) {
           return self->ReportLaunchResult(
               KioskAppLaunchError::Error::kCryptohomedNotRunning);
@@ -172,61 +277,32 @@ void KioskProfileLoader::Start() {
 }
 
 void KioskProfileLoader::LoginAsKioskAccount() {
-  login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
-  switch (app_type_) {
-    case KioskAppType::kArcApp:
-      login_performer_->LoginAsArcKioskAccount(account_id_);
-      return;
-    case KioskAppType::kChromeApp:
-      login_performer_->LoginAsKioskAccount(account_id_);
-      return;
-    case KioskAppType::kWebApp:
-      login_performer_->LoginAsWebKioskAccount(account_id_);
-      return;
-  }
-}
-
-void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
-  // LoginPerformer will delete itself.
-  login_performer_->set_delegate(nullptr);
-  std::ignore = login_performer_.release();
-
-  failed_mount_attempts_ = 0;
-
-  PrepareProfile(user_context);
-}
-
-void KioskProfileLoader::OnAuthFailure(const AuthFailure& error) {
-  failed_mount_attempts_++;
-  if (error.reason() == AuthFailure::UNRECOVERABLE_CRYPTOHOME &&
-      failed_mount_attempts_ < kFailedMountRetries) {
-    // If the cryptohome mount failed due to corruption of the on disk state -
-    // try again: we always ask to "create" cryptohome and the corrupted one
-    // was deleted under the hood.
-    LoginAsKioskAccount();
-    return;
-  }
-  failed_mount_attempts_ = 0;
-
-  SYSLOG(ERROR) << "Kiosk auth failure: error=" << error.GetErrorString();
-  KioskAppLaunchError::SaveCryptohomeFailure(error);
-  ReportLaunchResult(LoginFailureToKioskAppLaunchError(error));
-}
-
-void KioskProfileLoader::AllowlistCheckFailed(const std::string& email) {
-  NOTREACHED();
-}
-
-void KioskProfileLoader::PolicyLoadFailed() {
-  ReportLaunchResult(KioskAppLaunchError::Error::kPolicyLoadFailed);
-}
-
-void KioskProfileLoader::OnOldEncryptionDetected(
-    std::unique_ptr<UserContext> user_context,
-    bool has_incomplete_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->OnOldEncryptionDetected(std::move(user_context));
+  current_step_ = Signin(
+      app_type_, account_id_,
+      /*on_done=*/
+      base::BindOnce(
+          [](KioskProfileLoader* self, SigninPerformer::Result result) {
+            if (result.has_value()) {
+              return self->PrepareProfile(result.value());
+            } else if (auto* error = std::get_if<SigninPerformer::LoginError>(
+                           &result.error())) {
+              return self->ReportLaunchResult(
+                  SigninErrorToKioskLaunchError(*error));
+            } else if (auto* auth_failure =
+                           std::get_if<AuthFailure>(&result.error())) {
+              return self->ReportLaunchResult(
+                  LoginFailureToKioskAppLaunchError(*auth_failure));
+            } else if (auto* user_context =
+                           std::get_if<OldEncryptionUserContext>(
+                               &result.error())) {
+              return self->ReportOldEncryptionUserContext(
+                  std::move(*user_context));
+            }
+            NOTREACHED_NORETURN();
+          },
+          // Safe because `this` owns `current_step_`
+          base::Unretained(this)));
 }
 
 void KioskProfileLoader::PrepareProfile(const UserContext& user_context) {
@@ -255,6 +331,12 @@ void KioskProfileLoader::ReportLaunchResult(KioskAppLaunchError::Error error) {
   if (error != KioskAppLaunchError::Error::kNone) {
     delegate_->OnProfileLoadFailed(error);
   }
+}
+
+void KioskProfileLoader::ReportOldEncryptionUserContext(
+    OldEncryptionUserContext user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->OnOldEncryptionDetected(std::move(user_context));
 }
 
 }  // namespace ash
