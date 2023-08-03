@@ -32,10 +32,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -55,7 +51,10 @@ namespace {
 
 constexpr float kTrayButtonsSpacing = 4;
 constexpr float kPrivacyIndicatorRadius = 3;
-constexpr float kIndicatorBorderWidth = 2;
+
+// The offset value from the bottom right corner of the icon to the place where
+// we actually want to draw the privacy indicator.
+constexpr float kPrivacyIndicatorOffset = 2;
 
 // Histogram names
 constexpr char kToggleButtonHistogramName[] =
@@ -126,6 +125,7 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
     PressedCallback callback,
     const gfx::VectorIcon* icon,
     const gfx::VectorIcon* toggled_icon,
+    const gfx::VectorIcon* capturing_icon,
     const int accessible_name_id)
     : IconButton(std::move(callback),
                  IconButton::Type::kMedium,
@@ -133,7 +133,9 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
                  accessible_name_id,
                  /*is_togglable=*/true,
                  /*has_border=*/true),
-      accessible_name_id_(accessible_name_id) {
+      accessible_name_id_(accessible_name_id),
+      icon_(icon),
+      capturing_icon_(capturing_icon) {
   SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemNegativeContainer);
   SetIconToggledColorId(cros_tokens::kCrosSysSystemOnNegativeContainer);
 
@@ -162,6 +164,8 @@ void VideoConferenceTrayButton::SetIsCapturing(bool is_capturing) {
   }
 
   is_capturing_ = is_capturing;
+
+  SetVectorIcon(is_capturing_ ? *capturing_icon_ : *icon_);
   UpdateCapturingState();
 }
 
@@ -183,77 +187,29 @@ void VideoConferenceTrayButton::UpdateCapturingState() {
   SchedulePaint();
 }
 
-gfx::ImageSkia VideoConferenceTrayButton::GetImageToPaint() {
-  auto image_skia = IconButton::GetImageToPaint();
+void VideoConferenceTrayButton::PaintButtonContents(gfx::Canvas* canvas) {
+  IconButton::PaintButtonContents(canvas);
 
-  // If we show the privacy indicator, we need to manipulate the image to draw
-  // this indicator.
   if (!show_privacy_indicator_) {
-    return image_skia;
+    return;
   }
 
-  const SkBitmap* bitmap = image_skia.bitmap();
-  int width = bitmap->width();
-  int height = bitmap->height();
+  const gfx::RectF bounds(GetContentsBounds());
+  auto image = GetImageToPaint();
+  auto indicator_origin_x = (bounds.width() - image.width()) / 2 +
+                            image.width() - kPrivacyIndicatorRadius;
+  auto indicator_origin_y = (bounds.height() - image.height()) / 2 +
+                            image.height() - kPrivacyIndicatorRadius;
 
-  // Since the original `bitmap` is marked as immutable. We need to create a new
-  // instance of bitmap to manipulate its content.
-  SkBitmap manipulated_bitmap;
-  manipulated_bitmap.allocN32Pixels(width, height);
-  manipulated_bitmap.eraseColor(SK_ColorTRANSPARENT);
-
-  // Copy all the color in each location of `bitmap` to `manipulated_bitmap`.
-  for (int y = 0; y < height; y++) {
-    const SkColor* src_color =
-        reinterpret_cast<SkColor*>(bitmap->getAddr32(0, y));
-    SkColor* preview_color =
-        reinterpret_cast<SkColor*>(manipulated_bitmap.getAddr32(0, y));
-
-    for (int x = 0; x < width; x++) {
-      SkColor target_color;
-
-      if (SkColorGetA(src_color[x]) < 1) {
-        target_color = SK_ColorTRANSPARENT;
-      } else {
-        target_color = src_color[x];
-      }
-
-      preview_color[x] = target_color;
-    }
-  }
-
-  // Use a canvas to perform DST_OUT and SRC_OVER operations and draw the green
-  // privacy indicator and the ring around it.
-  SkCanvas canvas(manipulated_bitmap);
-
-  SkPoint circle_center = SkPoint::Make(
-      image_skia.width() - kPrivacyIndicatorRadius - kIndicatorBorderWidth,
-      image_skia.height() - kPrivacyIndicatorRadius - kIndicatorBorderWidth);
-
-  SkPaint paint_outer_ring;
-  paint_outer_ring.setStyle(SkPaint::kFill_Style);
-  paint_outer_ring.setAntiAlias(true);
-
-  // DST_OUT operation to draw the circle act as the ring around the green
-  // privacy indicator. Note that we need to use DST_OUT operation here to erase
-  // the portion of the icon that overlap with the ring.
-  paint_outer_ring.setBlendMode(SkBlendMode::kDstOut);
-  canvas.drawCircle(circle_center,
-                    kPrivacyIndicatorRadius + kIndicatorBorderWidth,
-                    paint_outer_ring);
-
-  SkPaint paint_circle;
-  paint_circle.setColor(
+  // Draw the green dot privacy indicator.
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setAntiAlias(true);
+  flags.setColor(
       GetColorProvider()->GetColor(ui::kColorAshPrivacyIndicatorsBackground));
-  paint_circle.setStyle(SkPaint::kFill_Style);
-  paint_circle.setAntiAlias(true);
-
-  // SRC_OVER operation to paint the green privacy indicator at the center of
-  // the ring.
-  paint_circle.setBlendMode(SkBlendMode::kSrcOver);
-  canvas.drawCircle(circle_center, kPrivacyIndicatorRadius, paint_circle);
-
-  return gfx::ImageSkia::CreateFrom1xBitmap(manipulated_bitmap);
+  canvas->DrawCircle(gfx::PointF(indicator_origin_x - kPrivacyIndicatorOffset,
+                                 indicator_origin_y),
+                     kPrivacyIndicatorRadius, flags);
 }
 
 void VideoConferenceTrayButton::UpdateTooltip() {
@@ -283,13 +239,14 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
 
   tray_container()->SetSpacingBetweenChildren(kTrayButtonsSpacing);
 
-  audio_icon_ = tray_container()->AddChildView(
-      std::make_unique<VideoConferenceTrayButton>(
-          base::BindRepeating(&VideoConferenceTray::OnAudioButtonClicked,
-                              weak_ptr_factory_.GetWeakPtr()),
-          &kPrivacyIndicatorsMicrophoneIcon,
-          &kVideoConferenceMicrophoneMutedIcon,
-          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
+  audio_icon_ = tray_container()->AddChildView(std::make_unique<
+                                               VideoConferenceTrayButton>(
+      base::BindRepeating(&VideoConferenceTray::OnAudioButtonClicked,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*icon=*/&kPrivacyIndicatorsMicrophoneIcon,
+      /*toggled_icon=*/&kVideoConferenceMicrophoneMutedIcon,
+      /*capturing_icon=*/&kVideoConferenceMicrophoneCapturingIcon,
+      /*accessible_name_id=*/VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
   audio_icon_->SetVisible(false);
 
   camera_icon_ = tray_container()->AddChildView(
@@ -297,6 +254,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           base::BindRepeating(&VideoConferenceTray::OnCameraButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
           &kPrivacyIndicatorsCameraIcon, &kVideoConferenceCameraMutedIcon,
+          &kVideoConferenceCameraCapturingIcon,
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
   camera_icon_->SetVisible(false);
 
@@ -305,6 +263,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           base::BindRepeating(&VideoConferenceTray::OnScreenShareButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
           &kVideoConferenceScreenShareIcon, &kVideoConferenceScreenShareIcon,
+          &kVideoConferenceScreenShareIcon,
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
   // Toggling screen share stops screen share, and removes the item.
   screen_share_icon_->set_toggle_is_one_way();

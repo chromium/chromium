@@ -16,9 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
+class Canvas;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -56,6 +56,7 @@ class VideoConferenceTrayButton : public IconButton {
   VideoConferenceTrayButton(PressedCallback callback,
                             const gfx::VectorIcon* icon,
                             const gfx::VectorIcon* toggled_icon,
+                            const gfx::VectorIcon* capturing_icon,
                             const int accessible_name_id);
 
   VideoConferenceTrayButton(const VideoConferenceTrayButton&) = delete;
@@ -77,7 +78,7 @@ class VideoConferenceTrayButton : public IconButton {
   void UpdateCapturingState();
 
   // IconButton:
-  gfx::ImageSkia GetImageToPaint() override;
+  void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
   // Updates the tooltip according to the medium the button is for, the toggle
@@ -98,6 +99,13 @@ class VideoConferenceTrayButton : public IconButton {
   // The accessible name for this button's capture type (camera, microphone, or
   // screen share).
   const int accessible_name_id_;
+
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
+
+  // The icon that will be displayed when `is_capturing_` is true. Note that a
+  // green dot indicator will be drawn in the bottom right corner of this icon
+  // when displaying.
+  raw_ptr<const gfx::VectorIcon> capturing_icon_ = nullptr;
 };
 
 // This class represents the VC Controls tray button in the status area and
