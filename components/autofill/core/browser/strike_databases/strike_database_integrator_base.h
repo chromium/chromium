@@ -130,7 +130,7 @@ class StrikeDatabaseIntegratorBase {
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
 
-  raw_ptr<StrikeDatabaseBase, DanglingUntriaged> strike_database_;
+  const raw_ptr<StrikeDatabaseBase> strike_database_;
 
   // For projects in which strikes don't have unique identifiers, the
   // id suffix is set to |kSharedId|. This makes sure that projects requiring
