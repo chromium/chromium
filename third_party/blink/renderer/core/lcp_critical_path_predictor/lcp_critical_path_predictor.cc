@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -35,6 +36,11 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   if (lcp_element && IsA<HTMLImageElement>(lcp_element)) {
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element)->SerializeAsString();
+
+    base::UmaHistogramCounts10000(
+        "Blink.LCPP.LCPElementLocatorSize",
+        base::checked_cast<int>(lcp_element_locator_string.size()));
+
     if (lcp_element_locator_string.size() <=
         base::checked_cast<size_t>(
             features::kLCPCriticalPathPredictorMaxElementLocatorLength.Get())) {

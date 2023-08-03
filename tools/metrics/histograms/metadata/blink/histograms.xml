@@ -2500,6 +2500,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.LCPElementLocatorSize" units="bytes"
+    expires_after="2024-01-29">
+  <owner>kouhei@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the size of the identified LCP element locator in bytes.
+
+    The metric is emitted before the element locator is serialized to the LCP
+    Critical Path Predictor (LCPP) database, so it can inform us if the current
+    ElementLocator encoding scheme is reasonable in terms of its output size.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.PotentiallyLCPResourcePriorityBoosts" units="count"
     expires_after="2024-01-27">
   <owner>kouhei@chromium.org</owner>
