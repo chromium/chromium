@@ -65,7 +65,7 @@ public class CronetManifestTest {
                     assertWithMessage("Check failed for " + source)
                             .that(CronetManifest.isAppOptedInForTelemetry(
                                     mCronetTestFramework.getContext(), source))
-                            .isFalse();
+                            .isTrue();
                     break;
                 case CRONET_SOURCE_FALLBACK:
                     assertWithMessage("Check failed for " + source)
