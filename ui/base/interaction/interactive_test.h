@@ -859,10 +859,11 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
       [](ElementIdentifier id, U value, InteractionSequence* seq,
          TrackedElement* el) {
         auto* const typed = internal::StateObserverElementT<T>::LookupElement(
-            id, el->context(), seq);
+            id, el->context(), seq->IsCurrentStepInAnyContextForTesting());
         if (!typed) {
           LOG(ERROR) << "No state observer registered for identifier " << id
-                     << " in the current context.";
+                     << " in the current context. You must observe a state in "
+                        "the same context you observed it in.";
           seq->FailForTesting();
           return;
         }
