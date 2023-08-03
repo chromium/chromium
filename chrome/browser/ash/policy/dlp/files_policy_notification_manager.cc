@@ -1291,7 +1291,7 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningTimedOut(
   non_io_tasks_warning_timers_.erase(notification_id);
   // Dismiss the notification if it's still shown.
   Dismiss(context_, notification_id);
-  if (!HasNonIOTask(notification_id) || !HasWarning(notification_id)) {
+  if (!HasWarning(notification_id)) {
     return;
   }
 
@@ -1303,9 +1303,9 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningTimedOut(
       non_io_tasks_.at(notification_id).GetWarningInfo()->warning_callback)
       .Run(/*should_proceed=*/false);
 
-  non_io_tasks_.erase(notification_id);
+  ShowDlpWarningTimeoutNotification(non_io_tasks_.at(notification_id).action());
 
-  // TODO(aidazolic): Show warning timeout notification.
+  non_io_tasks_.erase(notification_id);
 }
 
 }  // namespace policy

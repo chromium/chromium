@@ -235,7 +235,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
   task_runner->FastForwardBy(kWarningTimeout);
   // The warning notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  // TODO(b/292491068): The warning timeout notification should be shown.
+  // The warning timeout notification should be shown.
+  EXPECT_TRUE(bridge_->GetDisplayedNotification("dlp_files_1").has_value());
 }
 
 // Tests that closing the warning notification (e.g. by X or Dismiss all)
@@ -343,7 +344,9 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   testing::Mock::VerifyAndClearExpectations(&cb);
   EXPECT_CALL(cb, Run(/*should_proceed=*/false)).Times(2);
   task_runner->FastForwardBy(kWarningTimeout);
-  // TODO(b/292491068): The warning timeout notification should be shown.
+  // The warning timeout notifications should be shown.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_2").has_value());
+  ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_3").has_value());
 }
 
 // Tests that clicking the OK button on a warning notification for multiple
