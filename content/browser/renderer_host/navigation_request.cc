@@ -7393,24 +7393,25 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
 
   // Add the crash keys for debugging navigation crashes with data URL.
   // TODO(https://crbug.com/1454273): Remove.
-  SCOPED_CRASH_KEY_STRING32("Bug1454273", "calculated_origin",
-                            origin_with_debug_info.first.Serialize());
-  SCOPED_CRASH_KEY_STRING32("Bug1454273", "origin_debug_info",
-                            origin_with_debug_info.second);
+  SCOPED_CRASH_KEY_STRING256("Bug1454273", "calculated_origin",
+                             origin_with_debug_info.first.GetDebugString());
+  SCOPED_CRASH_KEY_STRING256("Bug1454273", "origin_debug_info",
+                             origin_with_debug_info.second);
 
   SCOPED_CRASH_KEY_BOOL("Bug1454273", "is_in_main_frame", IsInMainFrame());
-  SCOPED_CRASH_KEY_STRING256("Bug1454273", "current_origin",
-                             frame_tree_node_->current_origin().Serialize());
+  SCOPED_CRASH_KEY_STRING256(
+      "Bug1454273", "current_origin",
+      frame_tree_node_->current_origin().GetDebugString());
   RenderFrameHostImpl* parent = frame_tree_node_->parent();
   SCOPED_CRASH_KEY_STRING256(
       "Bug1454273", "parent_origin",
-      parent ? parent->GetLastCommittedOrigin().Serialize() : "");
+      parent ? parent->GetLastCommittedOrigin().GetDebugString() : "");
   // `outer_doc` is only set when `parent` is null.
   RenderFrameHostImpl* outer_doc =
       parent ? nullptr : GetParentFrameOrOuterDocument();
   SCOPED_CRASH_KEY_STRING256(
       "Bug1454273", "outer_doc_origin",
-      outer_doc ? outer_doc->GetLastCommittedOrigin().Serialize() : "");
+      outer_doc ? outer_doc->GetLastCommittedOrigin().GetDebugString() : "");
   // `embedder` is only set when both `parent` and `outer_doc` are null.
   RenderFrameHostImpl* embedder =
       (parent || outer_doc)
@@ -7418,13 +7419,14 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
           : frame_tree_node()->GetParentOrOuterDocumentOrEmbedder();
   SCOPED_CRASH_KEY_STRING256(
       "Bug1454273", "embedder_origin",
-      embedder ? embedder->GetLastCommittedOrigin().Serialize() : "");
+      embedder ? embedder->GetLastCommittedOrigin().GetDebugString() : "");
 
   RenderFrameHost* initiator_rfh =
       initiator_document_.AsRenderFrameHostIfValid();
   SCOPED_CRASH_KEY_STRING256(
       "Bug1454273", "initiator_origin",
-      initiator_rfh ? initiator_rfh->GetLastCommittedOrigin().Serialize() : "");
+      initiator_rfh ? initiator_rfh->GetLastCommittedOrigin().GetDebugString()
+                    : "");
   SCOPED_CRASH_KEY_STRING32(
       "Bug1454273", "initiator_relationship",
       DetermineInitiatorRelationship(initiator_rfh,
