@@ -39,7 +39,10 @@ build_webui("build") {
     web_component_files = [ "lacros_app.ts" ]
   }
 
-  non_web_component_files = [ "browser_proxy.ts" ]
+  non_web_component_files = [
+    "default_browser/browser_proxy.ts",
+    "browser_proxy.ts",
+  ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true

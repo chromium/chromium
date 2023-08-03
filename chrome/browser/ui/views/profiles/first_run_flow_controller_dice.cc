@@ -136,17 +136,25 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
 
  private:
   void OnLoadFinished() {
-    // TODO(crbug.com/1465822): Configure WebUI controller and wait for a user
-    // choice to advance. For now we auto-advance as a placeholder.
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
+    auto* intro_ui = host()
+                         ->GetPickerContents()
+                         ->GetWebUI()
+                         ->GetController()
+                         ->GetAs<IntroUI>();
+    CHECK(intro_ui);
+    intro_ui->SetDefaultBrowserCallback(DefaultBrowserCallback(
         base::BindOnce(&DefaultBrowserStepController::OnStepCompleted,
-                       // WeakPtr: Because of the delayed task.
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(2));
+                       // WeakPtr: The callback is given to the WebUIController,
+                       // owned by the webcontents, which lifecycle is not
+                       // bounded by a single step.
+                       weak_ptr_factory_.GetWeakPtr())));
   }
 
-  void OnStepCompleted() {
+  void OnStepCompleted(DefaultBrowserChoice choice) {
+    if (choice == DefaultBrowserChoice::kSetAsDefault) {
+      // TODO(crbug.com/1465822): Set as default browser.
+      LOG(ERROR) << "DefaultBrowserChoice::kSetAsDefault";
+    }
     CHECK(step_completed_callback_);
     std::move(step_completed_callback_).Run();
   }

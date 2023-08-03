@@ -141,11 +141,13 @@
 
 <div id="button-row" class="tangible-sync-style">
   <div id="button-container">
-    <cr-button id="default-browser-skip" on-click="onSkipDefaultBrowserClick_">
+    <cr-button id="skip-button" on-click="onSkipDefaultBrowserClick_"
+        disabled="[[areButtonsDisabled_(anyButtonClicked_)]]">
       $i18n{defaultBrowserSkip}
     </cr-button>
-    <cr-button id="default-browser-confirm" class="action-button"
-        on-click="onConfirmDefaultBrowserClick_">
+    <cr-button id="confirmButton" class="action-button"
+        on-click="onConfirmDefaultBrowserClick_"
+        disabled="[[areButtonsDisabled_(anyButtonClicked_)]]">
       $i18n{defaultBrowserSetAsDefault}
     </cr-button>
   </div>

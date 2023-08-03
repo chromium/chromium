@@ -134,6 +134,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   // Unretained ok: `this` owns the handler.
   auto intro_handler = std::make_unique<IntroHandler>(
       base::BindRepeating(&IntroUI::HandleSigninChoice, base::Unretained(this)),
+      base::BindOnce(&IntroUI::HandleDefaultBrowserChoice,
+                     base::Unretained(this)),
       is_device_managed);
   intro_handler_ = intro_handler.get();
   web_ui->AddMessageHandler(std::move(intro_handler));
@@ -154,11 +156,29 @@ void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
 #endif
 }
 
+void IntroUI::SetDefaultBrowserCallback(DefaultBrowserCallback callback) {
+  DCHECK(!callback->is_null());
+  default_browser_callback_ = std::move(callback);
+  intro_handler_->ResetDefaultBrowserButtons();
+}
+
 void IntroUI::HandleSigninChoice(IntroChoice choice) {
   if (signin_choice_callback_->is_null()) {
     LOG(WARNING) << "Unexpected signin choice event";
   } else {
     std::move(signin_choice_callback_.value()).Run(choice);
+  }
+}
+
+// For a given `IntroUI` instance, this will be called only once, even if
+// `SetDefaultBrowserCallback()` is called again. This is because after the
+// first call, the handler will drop the link, since it took a OnceCallback.
+// This is fine because the step should not be shown more than once.
+void IntroUI::HandleDefaultBrowserChoice(DefaultBrowserChoice choice) {
+  if (default_browser_callback_->is_null()) {
+    LOG(WARNING) << "Unexpected default browser choice event";
+  } else {
+    std::move(default_browser_callback_.value()).Run(choice);
   }
 }
 

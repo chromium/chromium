@@ -65,6 +65,8 @@ const DeepQuery kDontSignInButton{"intro-app", "sign-in-promo",
                                   "#declineSignInButton"};
 const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
 const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
+const DeepQuery kConfirmDefaultBrowserButton{"default-browser-app",
+                                             "#confirmButton"};
 
 void FillNonCoreInfo(AccountInfo& account_info, const std::string& given_name) {
   account_info.given_name = given_name;
@@ -323,10 +325,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
           .SetMustRemainVisible(false),
 
       If([&] { return WithDefaultBrowserStep(); },
-         WaitForWebContentsNavigation(
-             kWebContentsId,
-             // TODO(crbug.com/1465822): Act on the page.
-             GURL(chrome::kChromeUIIntroDefaultBrowserURL))));
+         Steps(
+             WaitForWebContentsNavigation(
+                 kWebContentsId, GURL(chrome::kChromeUIIntroDefaultBrowserURL)),
+             EnsurePresent(kWebContentsId, kConfirmDefaultBrowserButton),
+             PressJsButton(kWebContentsId, kConfirmDefaultBrowserButton))));
 
   WaitForPickerClosed();
 

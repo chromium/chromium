@@ -18,10 +18,19 @@ enum class IntroChoice {
   kQuit,
 };
 
+enum class DefaultBrowserChoice {
+  kSetAsDefault,
+  kSkip,
+};
+
 // Callback specification for `SetSigninChoiceCallback()`.
 using IntroSigninChoiceCallback =
     base::StrongAlias<class IntroSigninChoiceCallbackTag,
                       base::OnceCallback<void(IntroChoice)>>;
+
+using DefaultBrowserCallback =
+    base::StrongAlias<class DefaultBrowserCallbackTag,
+                      base::OnceCallback<void(DefaultBrowserChoice)>>;
 
 // The WebUI controller for `chrome://intro`.
 // Drops user inputs until a callback to receive the next one is provided by
@@ -36,13 +45,16 @@ class IntroUI : public content::WebUIController {
   ~IntroUI() override;
 
   void SetSigninChoiceCallback(IntroSigninChoiceCallback callback);
+  void SetDefaultBrowserCallback(DefaultBrowserCallback callback);
 
  private:
   friend class ProfilePickerLacrosFirstRunBrowserTestBase;
 
   void HandleSigninChoice(IntroChoice choice);
+  void HandleDefaultBrowserChoice(DefaultBrowserChoice choice);
 
   IntroSigninChoiceCallback signin_choice_callback_;
+  DefaultBrowserCallback default_browser_callback_;
   raw_ptr<IntroHandler> intro_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
