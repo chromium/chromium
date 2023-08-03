@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/types/expected.h"
 
@@ -61,24 +60,6 @@ NSWorkspaceOpenConfiguration* GetOpenConfiguration(
   return config;
 }
 
-// Sometimes macOS 11 and 12 report an error launching even though the launch
-// succeeded anyway. This helper returns true for the error codes we have
-// observed where scanning the list of running applications appears to be a
-// usable workaround for this.
-bool ShouldScanRunningAppsForError(NSError* error) {
-  if (!error) {
-    return false;
-  }
-  if (error.domain == NSCocoaErrorDomain &&
-      error.code == NSFileReadUnknownError) {
-    return true;
-  }
-  if (error.domain == NSOSStatusErrorDomain && error.code == procNotFound) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 void LaunchApplication(const base::FilePath& app_bundle_path,
@@ -87,34 +68,6 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
                        LaunchApplicationOptions options,
                        LaunchApplicationCallback callback) {
   __block LaunchApplicationCallback callback_block_access = std::move(callback);
-  if (IsAtLeastOS11() && IsAtMostOS12() && !options.create_new_instance) {
-    // Sometimes macOS 11 and 12 report an error launching even though the
-    // launch succeeded anyway. To work around such cases, check if we can
-    // find a running application matching the app we were trying to launch.
-    // Only do this if `options.create_new_instance` is false though, as
-    // otherwise we wouldn't know which instance to return.
-    callback_block_access = base::BindOnce(
-        [](const base::FilePath& app_bundle_path,
-           LaunchApplicationCallback callback, NSRunningApplication* app,
-           NSError* error) {
-          if (!app && ShouldScanRunningAppsForError(error)) {
-            NSArray<NSRunningApplication*>* all_apps =
-                NSWorkspace.sharedWorkspace.runningApplications;
-            for (NSRunningApplication* running_app in all_apps) {
-              if (NSURLToFilePath(running_app.bundleURL) == app_bundle_path) {
-                LOG(ERROR) << "Launch succeeded despite error";
-                app = running_app;
-                break;
-              }
-            }
-            if (app) {
-              error = nil;
-            }
-          }
-          std::move(callback).Run(app, error);
-        },
-        app_bundle_path, std::move(callback_block_access));
-  }
 
   NSURL* bundle_url = FilePathToNSURL(app_bundle_path);
   if (!bundle_url) {

@@ -3721,7 +3721,6 @@ test("base_unittests") {
       "enterprise_util_mac_unittest.mm",
       "mac/call_with_eh_frame_unittest.mm",
       "mac/dispatch_source_mach_unittest.cc",
-      "mac/launch_application_unittest.mm",
       "mac/mac_util_unittest.mm",
       "mac/mach_port_rendezvous_unittest.cc",
       "mac/scoped_mach_vm_unittest.cc",
@@ -3732,7 +3731,6 @@ test("base_unittests") {
       "process/memory_unittest_mac.h",
       "process/memory_unittest_mac.mm",
     ]
-    data_deps += [ "//base/mac:launch_application_test_helper" ]
   }
 
   if (is_ios) {
