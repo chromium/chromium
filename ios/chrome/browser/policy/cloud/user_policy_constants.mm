@@ -6,6 +6,12 @@
 
 namespace policy {
 
-BASE_FEATURE(kUserPolicy, "UserPolicy", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserPolicyForSigninOrSyncConsentLevel,
+             "UserPolicyForSigninOrSyncConsentLevel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUserPolicyForSigninAndNoSyncConsentLevel,
+             "UserPolicyForSigninAndNoSyncConsentLevel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace policy

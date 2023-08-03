@@ -17,7 +17,6 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -435,13 +434,56 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
       signin_metrics::SigninAccountType::kManaged, 1);
 }
 
-// Tests sign-in and sync with a managed account that is elible for user
-// policy. A managed account is eligible for user policy it has sync
-// enabled and the user policy feature is enabled for the browser.
+// Tests sign-in without sync flow with a managed account that is elible for
+// user policy. A managed account is eligible for user policy if it has the
+// corresponding user policy feature enabled.
 TEST_F(AuthenticationFlowTest,
-       TestRegisterAndFetchUserPolicyWithManagedAccountWhenEligible) {
+       TestUserPolicyForManagedAccountForSigninConsentLevelWhenEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
+  scoped_feature_list.InitWithFeatures(
+      {policy::kUserPolicyForSigninAndNoSyncConsentLevel}, {});
+
+  CreateAuthenticationFlow(
+      PostSignInAction::kNone, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                                     clientID:kFakeClientID];
+  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
+  }] fetchUserPolicy:browser_state_.get()
+         withDmToken:kFakeDMToken
+            clientID:kFakeClientID
+            identity:managed_identity_];
+
+  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+
+  CheckSignInCompletion(/*expected_signed_in=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
+}
+
+// Tests sign-in+sync flow with a managed account that is elible for user
+// policy.  A managed account is eligible for user policy if it has the
+// corresponding user policy feature enabled.
+TEST_F(AuthenticationFlowTest,
+       TestUserPolicyForManagedAccountForSigninOrSyncWhenEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {policy::kUserPolicyForSigninOrSyncConsentLevel}, {});
 
   CreateAuthenticationFlow(
       PostSignInAction::kCommitSync, managed_identity_,
@@ -494,7 +536,8 @@ TEST_F(AuthenticationFlowTest,
 TEST_F(AuthenticationFlowTest,
        TestSkipFetchUserPolicyWithManagedAccountWhenRegistrationFailed) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
+  scoped_feature_list.InitWithFeatures(
+      {policy::kUserPolicyForSigninOrSyncConsentLevel}, {});
 
   CreateAuthenticationFlow(
       PostSignInAction::kCommitSync, managed_identity_,
@@ -544,7 +587,8 @@ TEST_F(AuthenticationFlowTest,
 // sync.
 TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
+  scoped_feature_list.InitWithFeatures(
+      {policy::kUserPolicyForSigninOrSyncConsentLevel}, {});
 
   CreateAuthenticationFlow(
       PostSignInAction::kCommitSync, managed_identity_,

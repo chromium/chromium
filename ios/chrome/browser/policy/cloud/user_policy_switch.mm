@@ -9,8 +9,18 @@
 
 namespace policy {
 
-bool IsUserPolicyEnabled() {
-  return base::FeatureList::IsEnabled(kUserPolicy);
+bool IsUserPolicyEnabledForSigninOrSyncConsentLevel() {
+  return base::FeatureList::IsEnabled(kUserPolicyForSigninOrSyncConsentLevel);
+}
+
+bool IsUserPolicyEnabledForSigninAndNoSyncConsentLevel() {
+  return base::FeatureList::IsEnabled(
+      kUserPolicyForSigninAndNoSyncConsentLevel);
+}
+
+bool IsAnyUserPolicyFeatureEnabled() {
+  return IsUserPolicyEnabledForSigninOrSyncConsentLevel() ||
+         IsUserPolicyEnabledForSigninAndNoSyncConsentLevel();
 }
 
 }  // namespace policy

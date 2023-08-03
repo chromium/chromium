@@ -204,13 +204,23 @@ void VerifyTheNotificationUI() {
   config.additional_args.push_back(
       base::StrCat({"--", switches::kGoogleApisUrl, "=",
                     embedded_test_server_->base_url().spec()}));
-  config.features_enabled.push_back(policy::kUserPolicy);
+  if ([self isRunningTest:@selector
+            (testThatPoliciesAreFetchedOnSignInAndSigninNoSyncFeature)] ||
+      [self isRunningTest:@selector
+            (testThatPoliciesAreNotFetchedOnSigninWithSyncButSigninNoSyncFeature
+                )]) {
+    config.features_enabled.push_back(
+        policy::kUserPolicyForSigninAndNoSyncConsentLevel);
+  } else {
+    config.features_enabled.push_back(
+        policy::kUserPolicyForSigninOrSyncConsentLevel);
+  }
   return config;
 }
 
 // Tests that the user policies are fetched and activated when turning on Sync
 // for a managed account.
-- (void)testThatPoliciesAreFetchedWhenTurnOnSync {
+- (void)testThatPoliciesAreFetchedOnSigninAndSync {
   // Turn on Sync for managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
@@ -219,6 +229,49 @@ void VerifyTheNotificationUI() {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
 
   VerifyThatPoliciesAreSet();
+}
+
+// Tests that the user policies are fetched and activated when signed in without
+// sync with a managed account.
+- (void)testThatPoliciesAreFetchedOnSignInWithoutSync {
+  // Turn on Sync for managed account to fetch user policies.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
+
+  VerifyThatPoliciesAreSet();
+}
+
+// Tests that the user policies are fetched and activated when signed in without
+// sync with a managed account and feature enabled for signed-in without sync.
+- (void)testThatPoliciesAreFetchedOnSignInAndSigninNoSyncFeature {
+  // Turn on Sync for managed account to fetch user policies.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
+
+  VerifyThatPoliciesAreSet();
+}
+
+// Tests that the user policies are not fetched when signed-in+sync but the
+// feature is only enabled for sign-in without sync.
+- (void)testThatPoliciesAreNotFetchedOnSigninWithSyncButSigninNoSyncFeature {
+  // Turn on Sync for managed account to attempt to fetch user policies.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:YES];
+
+  // Wait enough time to verifiy that the fetch wasn't unexpectedly triggered.
+  base::test::ios::SpinRunLoopWithMinDelay(
+      kWaitOnScheduledUserPolicyFetchInterval);
+
+  VerifyThatPoliciesAreNotSet();
 }
 
 // Tests that the user policies are cleared after sign out.
@@ -236,24 +289,24 @@ void VerifyTheNotificationUI() {
   VerifyThatPoliciesAreNotSet();
 }
 
-// TODO(crbug.com/1404093): Re-enable once we figure out a way to deal with the
-// Sync birthday.
-// Tests that the user policies are loaded from the store when Sync is still ON
-// at startup when the user policies were fetched in the previous session.
-- (void)DISABLED_testThatPoliciesAreLoadedFromStoreAtStartupIfSyncOn {
+// Tests that the user policies previously fetched are loaded from the store
+// when signed in at startup.
+- (void)testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup {
   // Turn on Sync for managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
                  gaiaID:@"exampleManagedID"
                    name:@"Fake Managed"];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
 
   VerifyThatPoliciesAreSet();
 
-  // Commit pending user prefs write to make sure that all Sync prefs are
-  // written before shutting down the browser. This is to make sure that Sync
-  // can be turned on when the browser is restarted.
-  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  // Set the notice as already shown as the show managed account dialog isn't
+  // yet part of the sign-in without sync flow.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(
+                       policy::policy_prefs::kUserPolicyNotificationWasShown)];
 
   // Restart the browser while keeping Sync ON by preserving the identity of the
   // managed account.

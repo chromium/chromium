@@ -79,7 +79,6 @@
 #import "ios/chrome/browser/iph_for_new_chrome_user/features.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
@@ -1178,9 +1177,17 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUIButtonConfigurationName,
      flag_descriptions::kEnableUIButtonConfigurationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableUIButtonConfiguration)},
-    {"enable-user-policy", flag_descriptions::kEnableUserPolicyName,
-     flag_descriptions::kEnableUserPolicyDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::kUserPolicy)},
+    {"enable-user-policy-for-signin-and-nosync-consent-level",
+     flag_descriptions::kEnableUserPolicyForSigninAndNoSyncConsentLevelName,
+     flag_descriptions::
+         kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(policy::kUserPolicyForSigninAndNoSyncConsentLevel)},
+    {"enable-user-policy-for-signin-or-sync-consent-level",
+     flag_descriptions::kEnableUserPolicyForSigninOrSyncConsentLevelName,
+     flag_descriptions::kEnableUserPolicyForSigninOrSyncConsentLevelDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(policy::kUserPolicyForSigninOrSyncConsentLevel)},
     {"enable-sync-history-datatype",
      flag_descriptions::kSyncEnableHistoryDataTypeName,
      flag_descriptions::kSyncEnableHistoryDataTypeDescription, flags_ui::kOsIos,

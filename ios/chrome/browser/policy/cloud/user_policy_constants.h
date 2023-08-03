@@ -9,8 +9,11 @@
 
 namespace policy {
 
-// Enables User Policy.
-BASE_DECLARE_FEATURE(kUserPolicy);
+// Enables User Policy for signed-in or signed-in+sync users.
+BASE_DECLARE_FEATURE(kUserPolicyForSigninOrSyncConsentLevel);
+
+// Enables User Policy for signed-in only and no sync users.
+BASE_DECLARE_FEATURE(kUserPolicyForSigninAndNoSyncConsentLevel);
 
 }  // namespace policy
 

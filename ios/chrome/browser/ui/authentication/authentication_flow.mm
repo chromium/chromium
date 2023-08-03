@@ -276,13 +276,20 @@ enum AuthenticationState {
           return COMMIT_SYNC;
         case PostSignInAction::kShowSnackbar:
           _shouldShowSigninSnackbar = YES;
-          return COMPLETE_WITH_SUCCESS;
+          [[fallthrough]];
         case PostSignInAction::kNone:
-          return COMPLETE_WITH_SUCCESS;
+          if (policy::IsAnyUserPolicyFeatureEnabled() &&
+              _shouldFetchUserPolicy) {
+            return REGISTER_FOR_USER_POLICY;
+          } else {
+            return COMPLETE_WITH_SUCCESS;
+          }
       }
     case COMMIT_SYNC:
-      if (policy::IsUserPolicyEnabled() && _shouldFetchUserPolicy)
+      if (policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel() &&
+          _shouldFetchUserPolicy) {
         return REGISTER_FOR_USER_POLICY;
+      }
       return COMPLETE_WITH_SUCCESS;
     case REGISTER_FOR_USER_POLICY:
       if (!_dmToken.length || !_clientID.length) {

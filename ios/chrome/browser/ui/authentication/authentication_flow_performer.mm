@@ -289,7 +289,7 @@ NSString* const kAuthenticationSnackbarCategory =
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser {
   DCHECK(!_alertCoordinator);
-  BOOL userPolicyEnabled = policy::IsUserPolicyEnabled();
+  BOOL userPolicyEnabled = policy::IsAnyUserPolicyFeatureEnabled();
   int titleID = userPolicyEnabled ? IDS_IOS_MANAGED_SYNC_TITLE
                                   : IDS_IOS_MANAGED_SIGNIN_TITLE;
   NSString* title = l10n_util::GetNSString(titleID);
@@ -415,7 +415,7 @@ NSString* const kAuthenticationSnackbarCategory =
 - (void)registerUserPolicy:(ChromeBrowserState*)browserState
                forIdentity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
-  DCHECK(policy::IsUserPolicyEnabled());
+  DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
 
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
@@ -449,7 +449,7 @@ NSString* const kAuthenticationSnackbarCategory =
                clientID:(NSString*)clientID
                identity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
-  DCHECK(policy::IsUserPolicyEnabled());
+  DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
 
   // Need a `dmToken` and a `clientID` to fetch user policies.
   DCHECK([dmToken length] > 0);
@@ -547,7 +547,7 @@ NSString* const kAuthenticationSnackbarCategory =
 #pragma mark - Private
 
 - (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
-  if (!policy::IsUserPolicyEnabled()) {
+  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
     // Don't set the notification pref if the User Policy feature isn't
     // enabled.
     return;

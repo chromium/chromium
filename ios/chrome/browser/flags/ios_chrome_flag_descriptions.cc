@@ -477,10 +477,17 @@ const char kEnableUIButtonConfigurationName[] =
 const char kEnableUIButtonConfigurationDescription[] =
     "Enable UIButtonConfiguration usage for UIButtons.";
 
-const char kEnableUserPolicyName[] = "Enable user policies";
-const char kEnableUserPolicyDescription[] =
-    "Enable the fetch and application of user policies when synced with a "
-    "managed account";
+const char kEnableUserPolicyForSigninAndNoSyncConsentLevelName[] =
+    "Enable user policies when signed-in only without sync";
+const char kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription[] =
+    "Enable the fetch and application of user policies when signed-in only with"
+    "a managed account, excluding signed-in+sync.";
+
+const char kEnableUserPolicyForSigninOrSyncConsentLevelName[] =
+    "Enable user policies when signed-in only or signed-in+sync";
+const char kEnableUserPolicyForSigninOrSyncConsentLevelDescription[] =
+    "Enable the fetch and application of user policies when signed-in only or "
+    "signed-in+sync with a managed account.";
 
 const char kEnableVariationsGoogleGroupFilteringName[] =
     "Enables filtering experiments by Google group membership";

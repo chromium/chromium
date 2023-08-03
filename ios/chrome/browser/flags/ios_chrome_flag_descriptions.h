@@ -405,9 +405,15 @@ extern const char kEnableSuggestionsScrollingOnIPadDescription[];
 extern const char kEnableSignedOutViewDemotionName[];
 extern const char kEnableSignedOutViewDemotionDescription[];
 
-// Title and description for the flag to enable user policies.
-extern const char kEnableUserPolicyName[];
-extern const char kEnableUserPolicyDescription[];
+// Title and description for the flag to enable user policies for users that
+// are signed-in only without sync (unless explicitly enabled for that level).
+extern const char kEnableUserPolicyForSigninAndNoSyncConsentLevelName[];
+extern const char kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription[];
+
+// Title and description for the flag to enable user policies for users that
+// are signed-in or signed-in+sync.
+extern const char kEnableUserPolicyForSigninOrSyncConsentLevelName[];
+extern const char kEnableUserPolicyForSigninOrSyncConsentLevelDescription[];
 
 // Title and description for the flag to enable filtering experiments by Google
 // group membership.

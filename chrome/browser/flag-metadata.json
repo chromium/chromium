@@ -3688,7 +3688,12 @@
     "expiry_milestone": 119
   },
   {
-    "name": "enable-user-policy",
+    "name": "enable-user-policy-for-signin-and-nosync-consent-level",
+    "owners": [ "vincb" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "enable-user-policy-for-signin-or-sync-consent-level",
     "owners": [ "vincb" ],
     "expiry_milestone": 130
   },

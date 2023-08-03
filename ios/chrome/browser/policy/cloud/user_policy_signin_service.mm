@@ -69,7 +69,7 @@ void UserPolicySigninService::Shutdown() {
 
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  if (IsTurnOffSyncEvent(event)) {
+  if (IsSignoutEvent(event)) {
     ShutdownCloudPolicyManager();
   }
 }
@@ -83,7 +83,7 @@ void UserPolicySigninService::TryInitialize() {
     return;
   }
 
-  if (!IsUserPolicyEnabled() ||
+  if (!IsAnyUserPolicyFeatureEnabled() ||
       !CanApplyPolicies(/*check_for_refresh_token=*/false)) {
     // Clear existing user policies if the feature is disabled or if policies
     // can no longer be applied.
@@ -99,6 +99,17 @@ void UserPolicySigninService::TryInitialize() {
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
+  // Can't apply policies for an account that is using Sync if the feature isn't
+  // explicitly enabled.
+  bool sync_on =
+      check_for_refresh_token
+          ? identity_manager()->HasPrimaryAccountWithRefreshToken(
+                signin::ConsentLevel::kSync)
+          : identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  if (!IsUserPolicyEnabledForSigninOrSyncConsentLevel() && sync_on) {
+    return false;
+  }
+
   if (!browser_state_prefs_->GetBoolean(
           policy::policy_prefs::kUserPolicyNotificationWasShown)) {
     // Return false if the user hasn't yet seen the notification about User
@@ -122,9 +133,7 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
 }
 
 signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
-  // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
-  return signin::ConsentLevel::kSync;
+  return signin::ConsentLevel::kSignin;
 }
 
 void UserPolicySigninService::OnUserPolicyNotificationSeen() {
