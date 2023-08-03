@@ -120,11 +120,18 @@ const CSSValuePair* ParseInsetPair(Document& document, const String str_value) {
 }
 
 bool IsStyleDependent(const CSSValue* value) {
-  if (!value)
+  if (!value) {
     return false;
+  }
 
   if (const CSSPrimitiveValue* css_primitive_value =
           DynamicTo<CSSPrimitiveValue>(value)) {
+    if (!value->IsNumericLiteralValue()) {
+      // Err on the side of caution with a math expression. No strict guarantee
+      // that we can extract a style-invariant length.
+      return true;
+    }
+
     return !css_primitive_value->IsPx() && !css_primitive_value->IsPercentage();
   }
 
@@ -143,6 +150,23 @@ Length InsetValueToLength(const CSSValue* inset_value,
   if (inset_value->IsIdentifierValue()) {
     DCHECK_EQ(To<CSSIdentifierValue>(inset_value)->GetValueID(),
               CSSValueID::kAuto);
+    return Length(Length::Type::kAuto);
+  }
+
+  // If the subject is detached from the document, we cannot resolve the style,
+  // and thus cannot construct length conversion data. Nonetheless, we can
+  // evaluate the length in trivial cases and rely on the inset value being
+  // marked as style dependent otherwise.
+  if (!subject->GetComputedStyle()) {
+    if (const CSSNumericLiteralValue* literal_value =
+            DynamicTo<CSSNumericLiteralValue>(inset_value)) {
+      if (literal_value->IsPx()) {
+        return Length(literal_value->DoubleValue(), Length::Type::kFixed);
+      } else if (literal_value->IsPercentage()) {
+        return Length(literal_value->DoubleValue(), Length::Type::kPercent);
+      }
+    }
+    DCHECK(IsStyleDependent(inset_value));
     return Length(Length::Type::kAuto);
   }
 
