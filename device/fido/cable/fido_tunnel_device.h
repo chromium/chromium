@@ -19,11 +19,14 @@
 #include "device/fido/fido_device.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace network::mojom {
+namespace network {
+namespace mojom {
 class NetworkContext;
 }
+}  // namespace network
 
-namespace device::cablev2 {
+namespace device {
+namespace cablev2 {
 
 class Crypter;
 class WebSocketAdapter;
@@ -243,6 +246,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   base::WeakPtrFactory<FidoTunnelDevice> weak_factory_{this};
 };
 
-}  // namespace device::cablev2
+}  // namespace cablev2
+}  // namespace device
 
 #endif  // DEVICE_FIDO_CABLE_FIDO_TUNNEL_DEVICE_H_

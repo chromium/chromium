@@ -27,8 +27,7 @@ VirtualFidoDeviceDiscovery::VirtualFidoDeviceDiscovery(
     ProtocolVersion supported_protocol,
     const VirtualCtap2Device::Config& ctap2_config,
     std::unique_ptr<FidoDeviceDiscovery::EventStream<bool>> disconnect_events,
-    std::unique_ptr<
-        FidoDeviceDiscovery::EventStream<std::unique_ptr<cablev2::Pairing>>>
+    std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
         contact_device_stream)
     : FidoDeviceDiscovery(transport),
       trace_(std::move(trace)),
@@ -67,8 +66,7 @@ void VirtualFidoDeviceDiscovery::StartInternal() {
   }
 }
 
-void VirtualFidoDeviceDiscovery::AddVirtualDeviceAsync(
-    std::unique_ptr<cablev2::Pairing> _) {
+void VirtualFidoDeviceDiscovery::AddVirtualDeviceAsync(size_t _) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&VirtualFidoDeviceDiscovery::AddVirtualDevice,
                                 AsWeakPtr()));

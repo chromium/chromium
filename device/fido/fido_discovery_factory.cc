@@ -88,7 +88,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
         if (qr_generator_key_.has_value() || have_v2_discovery_data) {
           ret.emplace_back(std::make_unique<cablev2::Discovery>(
               request_type_.value(), network_context_, qr_generator_key_,
-              v1_discovery->GetV2AdvertStream(),
+              v1_discovery->GetV2AdvertStream(), std::move(v2_pairings_),
               std::move(contact_device_stream_),
               cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_),
@@ -135,10 +135,12 @@ void FidoDiscoveryFactory::set_cable_data(
     FidoRequestType request_type,
     std::vector<CableDiscoveryData> cable_data,
     const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
-        qr_generator_key) {
+        qr_generator_key,
+    std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings) {
   request_type_ = request_type;
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
+  v2_pairings_ = std::move(v2_pairings);
 }
 
 void FidoDiscoveryFactory::set_android_accessory_params(
@@ -159,7 +161,7 @@ void FidoDiscoveryFactory::set_cable_pairing_callback(
 }
 
 void FidoDiscoveryFactory::set_cable_invalidated_pairing_callback(
-    base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> callback) {
+    base::RepeatingCallback<void(size_t)> callback) {
   cable_invalidated_pairing_callback_ = std::move(callback);
 }
 
@@ -168,13 +170,13 @@ void FidoDiscoveryFactory::set_cable_event_callback(
   cable_event_callback_ = std::move(callback);
 }
 
-base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
+base::RepeatingCallback<void(size_t)>
 FidoDiscoveryFactory::get_cable_contact_callback() {
   DCHECK(!contact_device_stream_);
 
-  base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> ret;
-  std::tie(ret, contact_device_stream_) = FidoDeviceDiscovery::EventStream<
-      std::unique_ptr<cablev2::Pairing>>::New();
+  base::RepeatingCallback<void(size_t)> ret;
+  std::tie(ret, contact_device_stream_) =
+      FidoDeviceDiscovery::EventStream<size_t>::New();
   return ret;
 }
 

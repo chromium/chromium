@@ -34,7 +34,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -213,9 +212,10 @@ const gfx::VectorIcon& GetCredentialIcon(device::AuthenticatorType type) {
 
 std::u16string GetMechanismDescription(
     device::AuthenticatorType type,
-    const absl::optional<std::u16string>& priority_phone_name) {
+    const absl::optional<AuthenticatorRequestDialogModel::PairedPhone>&
+        priority_phone) {
   if (type == device::AuthenticatorType::kPhone) {
-    return std::u16string(u"Use \"") + *priority_phone_name +
+    return std::u16string(u"Use \"") + base::UTF8ToUTF16(priority_phone->name) +
            u"\" (UNTRANSLATED)";
   }
   return l10n_util::GetStringUTF16(GetAuthenticatorLabel(type));
@@ -244,6 +244,24 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(
       callback(std::move(in_callback)) {}
 AuthenticatorRequestDialogModel::Mechanism::~Mechanism() = default;
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(Mechanism&&) = default;
+
+AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(const PairedPhone&) =
+    default;
+AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(
+    PairingSource pairing_source,
+    const std::string& name,
+    size_t contact_id,
+    const std::array<uint8_t, device::kP256X962Length> public_key_x962,
+    base::Time last_updated)
+    : pairing_source(pairing_source),
+      name(name),
+      contact_id(contact_id),
+      public_key_x962(public_key_x962),
+      last_updated(last_updated) {}
+AuthenticatorRequestDialogModel::PairedPhone::~PairedPhone() = default;
+AuthenticatorRequestDialogModel::PairedPhone&
+AuthenticatorRequestDialogModel::PairedPhone::operator=(const PairedPhone&) =
+    default;
 
 void AuthenticatorRequestDialogModel::ResetEphemeralState() {
   ephemeral_state_ = {};
@@ -861,11 +879,11 @@ void AuthenticatorRequestDialogModel::ContactPhoneForTesting(
 
 absl::optional<std::u16string>
 AuthenticatorRequestDialogModel::GetPrioritySyncedPhoneName() const {
-  absl::optional<int> phone_index = GetPrioritySyncedPhoneIndex();
-  if (!phone_index) {
+  absl::optional<PairedPhone> phone = GetPrioritySyncedPhone();
+  if (!phone) {
     return absl::nullopt;
   }
-  return base::UTF8ToUTF16(paired_phones_[*phone_index]->name);
+  return base::UTF8ToUTF16(phone->name);
 }
 
 void AuthenticatorRequestDialogModel::StartTransportFlowForTesting(
@@ -946,9 +964,8 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     absl::optional<bool> extension_is_v2,
-    std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
-    base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
-        contact_phone_callback,
+    std::vector<PairedPhone> paired_phones,
+    base::RepeatingCallback<void(size_t)> contact_phone_callback,
     const absl::optional<std::string>& cable_qr_string) {
   DCHECK(paired_phones.empty() || contact_phone_callback);
 
@@ -974,7 +991,7 @@ std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
     const {
   std::vector<std::string> names;
   base::ranges::transform(paired_phones_, std::back_inserter(names),
-                          &device::cablev2::Pairing::name);
+                          &PairedPhone::name);
   names.erase(std::unique(names.begin(), names.end()), names.end());
   return names;
 }
@@ -1079,7 +1096,7 @@ void AuthenticatorRequestDialogModel::StartICloudKeychain() {
 void AuthenticatorRequestDialogModel::ContactPrioritySyncedPhone() {
   // TODO(crbug.com/1453259): Dispatch to Windows instead if it handles
   // hybrid.
-  ContactPhone(paired_phones_[*GetPrioritySyncedPhoneIndex()]->name);
+  ContactPhone(GetPrioritySyncedPhone()->name);
 }
 
 void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name) {
@@ -1206,17 +1223,16 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
   bool found_name = false;
   ephemeral_state_.selected_phone_name_.reset();
   for (size_t i = 0; i != paired_phones_.size(); i++) {
-    const std::unique_ptr<device::cablev2::Pairing>& phone = paired_phones_[i];
-    if (phone->name == name) {
+    const PairedPhone& phone = paired_phones_[i];
+    if (phone.name == name) {
       found_name = true;
       ephemeral_state_.selected_phone_name_ = name;
       if (!paired_phones_contacted_[i]) {
         MaybeStoreLastUsedPairing(
             content::RenderFrameHost::FromID(frame_host_id_),
-            phone->peer_public_key_x962);
+            phone.public_key_x962);
         paired_phones_contacted_[i] = true;
-        contact_phone_callback_.Run(
-            std::make_unique<device::cablev2::Pairing>(*phone));
+        contact_phone_callback_.Run(phone.contact_id);
         break;
       }
     } else if (found_name) {
@@ -1229,28 +1245,26 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
   DCHECK(found_name);
 }
 
-absl::optional<size_t>
-AuthenticatorRequestDialogModel::GetPrioritySyncedPhoneIndex() const {
+absl::optional<AuthenticatorRequestDialogModel::PairedPhone>
+AuthenticatorRequestDialogModel::GetPrioritySyncedPhone() const {
   // Try finding the most recently used phone from sync.
   absl::optional<std::vector<uint8_t>> last_used_pairing =
       RetrieveLastUsedPairing(content::RenderFrameHost::FromID(frame_host_id_));
   if (last_used_pairing) {
-    for (size_t i = 0; i < paired_phones_.size(); ++i) {
-      if (paired_phones_[i]->from_sync_deviceinfo &&
-          base::ranges::equal(paired_phones_[i]->peer_public_key_x962,
-                              *last_used_pairing)) {
-        return i;
+    for (const PairedPhone& phone : paired_phones_) {
+      if (phone.pairing_source == PairedPhone::PairingSource::kSyncDeviceInfo &&
+          base::ranges::equal(phone.public_key_x962, *last_used_pairing)) {
+        return phone;
       }
     }
   }
   // Could not find a most recently used phone. Instead, return the phone that
   // last published to sync.
-  absl::optional<int> ret;
-  for (size_t i = 0; i < paired_phones_.size(); ++i) {
-    if (paired_phones_[i]->from_sync_deviceinfo) {
-      if (!ret || paired_phones_[*ret]->last_updated <
-                      paired_phones_[i]->last_updated) {
-        ret = i;
+  absl::optional<PairedPhone> ret;
+  for (const PairedPhone& phone : paired_phones_) {
+    if (phone.pairing_source == PairedPhone::PairingSource::kSyncDeviceInfo) {
+      if (!ret || ret->last_updated < phone.last_updated) {
+        ret = phone;
       }
     }
   }
@@ -1263,13 +1277,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   const bool is_new_get_assertion_ui =
       is_get_assertion &&
       base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
-  absl::optional<std::u16string> priority_phone_name;
-  absl::optional<size_t> priority_phone_index = GetPrioritySyncedPhoneIndex();
-  if (priority_phone_index) {
-    priority_phone_name =
-        base::UTF8ToUTF16(paired_phones_[*priority_phone_index]->name);
-  }
-  bool list_phone_passkeys = is_new_get_assertion_ui && priority_phone_index;
+  absl::optional<PairedPhone> priority_phone = GetPrioritySyncedPhone();
+  bool list_phone_passkeys = is_new_get_assertion_ui && priority_phone;
   bool specific_phones_listed = false;
   if (is_new_get_assertion_ui && !use_conditional_mediation_) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
@@ -1286,7 +1295,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
               &AuthenticatorRequestDialogModel::OnAccountPreselected,
               base::Unretained(this), cred.cred_id));
       mechanism.description =
-          GetMechanismDescription(cred.source, priority_phone_name);
+          GetMechanismDescription(cred.source, priority_phone);
     }
   }
 

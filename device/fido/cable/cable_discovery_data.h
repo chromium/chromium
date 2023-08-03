@@ -132,8 +132,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
 
   Pairing();
   ~Pairing();
-  Pairing(const Pairing&);
-  Pairing& operator=(const Pairing&);
+  Pairing(const Pairing&) = delete;
+  Pairing& operator=(const Pairing&) = delete;
 
   // Parse builds a `Pairing` from an authenticator message. The signature
   // within the structure is validated by using `local_identity_seed` and

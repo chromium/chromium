@@ -56,7 +56,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       FidoRequestType request_type,
       std::vector<CableDiscoveryData> cable_data,
       const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
-          qr_generator_key);
+          qr_generator_key,
+      std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings);
 
   // set_android_accessory_params configures values necessary for discovering
   // Android AOA devices. The |aoa_request_description| is a string that is sent
@@ -78,17 +79,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // will be called when a pairing is reported to be invalid by the
   // tunnelserver. It is passed the index of the invalid pairing.
   virtual void set_cable_invalidated_pairing_callback(
-      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>);
+      base::RepeatingCallback<void(size_t)>);
 
   // set_cable_event_callback installs a callback which will be called with
   // when a variety of events occur. See the definition of `cablev2::Event`.
   virtual void set_cable_event_callback(
       base::RepeatingCallback<void(cablev2::Event)> callback);
 
-  // get_cable_contact_callback returns a callback that can be called with a
-  // pairing to contact that device. Only a single callback is supported.
-  virtual base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
-  get_cable_contact_callback();
+  // get_cable_contact_callback returns a callback that can be called with
+  // indexes into the vector of pairings passed to |set_cable_data| in order
+  // to contact the indexed device. Only a single callback is supported.
+  virtual base::RepeatingCallback<void(size_t)> get_cable_contact_callback();
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
@@ -168,14 +169,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   absl::optional<std::vector<CableDiscoveryData>> cable_data_;
   absl::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   absl::optional<FidoRequestType> request_type_;
-  std::unique_ptr<
-      FidoDeviceDiscovery::EventStream<std::unique_ptr<cablev2::Pairing>>>
+  std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
       contact_device_stream_;
   absl::optional<
       base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>>
       cable_pairing_callback_;
-  absl::optional<
-      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>>
+  absl::optional<base::RepeatingCallback<void(size_t)>>
       cable_invalidated_pairing_callback_;
   absl::optional<base::RepeatingCallback<void(cablev2::Event)>>
       cable_event_callback_;

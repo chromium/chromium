@@ -236,8 +236,7 @@ class ChromeAuthenticatorRequestDelegate
   // information that will be broadcast by the device.
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
-  void OnInvalidatedCablePairing(
-      std::unique_ptr<device::cablev2::Pairing> failed_pairing);
+  void OnInvalidatedCablePairing(size_t failed_contact_index);
   void OnCableEvent(device::cablev2::Event event);
 
   // Adds GPM passkeys matching |rp_id| to |passkeys|.
@@ -258,6 +257,11 @@ class ChromeAuthenticatorRequestDelegate
   base::RepeatingClosure start_over_callback_;
   AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
+
+  // The next two fields are the same length and contain the names and public
+  // keys of paired phones.
+  std::vector<std::string> phone_names_;
+  std::vector<std::array<uint8_t, device::kP256X962Length>> phone_public_keys_;
 
   // If in the TransportAvailabilityInfo reported by the request handler,
   // disable_embedder_ui is set, this will be set to true. No UI must be

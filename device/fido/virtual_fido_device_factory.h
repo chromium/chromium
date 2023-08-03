@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -64,12 +63,10 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport) override;
   bool IsTestOverride() override;
-  base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
-  get_cable_contact_callback() override;
+  base::RepeatingCallback<void(size_t)> get_cable_contact_callback() override;
 
  private:
-  std::unique_ptr<
-      FidoDeviceDiscovery::EventStream<std::unique_ptr<cablev2::Pairing>>>
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
       contact_device_stream_;
   ProtocolVersion supported_protocol_ = ProtocolVersion::kU2f;
   FidoTransportProtocol transport_ =

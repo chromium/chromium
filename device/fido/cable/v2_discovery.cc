@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/features.h"
@@ -52,12 +51,12 @@ Discovery::Discovery(
     network::mojom::NetworkContext* network_context,
     absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,
-    std::unique_ptr<EventStream<std::unique_ptr<Pairing>>>
-        contact_device_stream,
+    std::vector<std::unique_ptr<Pairing>> pairings,
+    std::unique_ptr<EventStream<size_t>> contact_device_stream,
     const std::vector<CableDiscoveryData>& extension_contents,
     absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback,
-    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+    absl::optional<base::RepeatingCallback<void(size_t)>>
         invalidated_pairing_callback,
     absl::optional<base::RepeatingCallback<void(Event)>> event_callback)
     : FidoDeviceDiscovery(FidoTransportProtocol::kHybrid),
@@ -66,6 +65,7 @@ Discovery::Discovery(
       qr_keys_(KeysFromQRGeneratorKey(qr_generator_key)),
       extension_keys_(KeysFromExtension(extension_contents)),
       advert_stream_(std::move(advert_stream)),
+      pairings_(std::move(pairings)),
       contact_device_stream_(std::move(contact_device_stream)),
       pairing_callback_(std::move(pairing_callback)),
       invalidated_pairing_callback_(std::move(invalidated_pairing_callback)),
@@ -74,6 +74,7 @@ Discovery::Discovery(
   advert_stream_->Connect(
       base::BindRepeating(&Discovery::OnBLEAdvertSeen, base::Unretained(this)));
 
+  DCHECK(pairings_.empty() || contact_device_stream_);
   if (contact_device_stream_) {
     contact_device_stream_->Connect(base::BindRepeating(
         &Discovery::OnContactDevice, base::Unretained(this)));
@@ -86,8 +87,7 @@ void Discovery::StartInternal() {
   DCHECK(!started_);
 
   RecordEvent(CableV2DiscoveryEvent::kStarted);
-  if (pairing_callback_) {
-    // The pairing callback is null if there are no pairings.
+  if (!pairings_.empty()) {
     RecordEvent(CableV2DiscoveryEvent::kHavePairings);
   }
   if (qr_keys_) {
@@ -187,21 +187,25 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
   FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert) << ": no v2 match)";
 }
 
-void Discovery::OnContactDevice(std::unique_ptr<Pairing> pairing) {
-  auto pairing_copy = std::make_unique<Pairing>(*pairing);
+void Discovery::OnContactDevice(size_t pairing_index) {
+  DCHECK_LT(pairing_index, pairings_.size());
+  if (!pairings_[pairing_index]) {
+    return;
+  }
+
   tunnels_pending_advert_.emplace_back(std::make_unique<FidoTunnelDevice>(
-      request_type_, network_context_, std::move(pairing),
+      request_type_, network_context_, std::move(pairings_[pairing_index]),
       base::BindOnce(&Discovery::PairingIsInvalid, weak_factory_.GetWeakPtr(),
-                     std::move(pairing_copy)),
+                     pairing_index),
       event_callback_));
 }
 
-void Discovery::PairingIsInvalid(std::unique_ptr<Pairing> pairing) {
+void Discovery::PairingIsInvalid(size_t pairing_index) {
   if (!invalidated_pairing_callback_) {
     return;
   }
 
-  invalidated_pairing_callback_->Run(std::move(pairing));
+  invalidated_pairing_callback_->Run(pairing_index);
 }
 
 // static
