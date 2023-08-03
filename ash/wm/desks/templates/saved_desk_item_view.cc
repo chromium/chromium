@@ -58,7 +58,7 @@ namespace ash {
 namespace {
 
 // The padding values of the SavedDeskItemView.
-constexpr int kVerticalPaddingDp = 16;
+constexpr int kVerticalPaddingDp = 14;
 
 // The margin for the delete button.
 constexpr int kDeleteButtonMargin = 8;
@@ -153,9 +153,6 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .AddChildren(
                   views::Builder<views::FlexLayoutView>()
                       .SetOrientation(views::LayoutOrientation::kHorizontal)
-                      .SetPreferredSize(gfx::Size(
-                          kSavedDeskNameAndTimePreferredWidth,
-                          SavedDeskNameView::kSavedDeskNameViewHeight))
                       .AddChildren(
                           views::Builder<SavedDeskNameView>()
                               .CopyAddressTo(&name_view_)

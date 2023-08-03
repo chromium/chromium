@@ -30,11 +30,6 @@ void SavedDeskNameView::OnContentsChanged() {
   PreferredSizeChanged();
 }
 
-gfx::Size SavedDeskNameView::CalculatePreferredSize() const {
-  return gfx::Size(DeskTextfield::CalculatePreferredSize().width(),
-                   kSavedDeskNameViewHeight);
-}
-
 void SavedDeskNameView::OnGestureEvent(ui::GestureEvent* event) {
   DeskTextfield::OnGestureEvent(event);
   // Stop propagating this event so that the parent of `this`, which is a button
