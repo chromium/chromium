@@ -11,10 +11,6 @@
 #include "extensions/shell/browser/desktop_controller.h"
 #import "extensions/shell/browser/shell_native_app_window_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace extensions {
 
 std::unique_ptr<NativeAppWindow> ShellAppWindowClient::CreateNativeAppWindow(

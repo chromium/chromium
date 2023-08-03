@@ -16,10 +16,6 @@
 #include "ui/gfx/geometry/size.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShellNativeAppWindowController {
   // This field is not a raw_ptr<> because it is a pointer to Objective-C
   // object.
