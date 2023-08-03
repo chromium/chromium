@@ -35,7 +35,7 @@ static_library("core") {
     "//url",
   ]
   if (!is_android) {
-    deps += [ "//chrome/browser/companion/visual_search:visual_search" ]
+    deps += [ "//chrome/browser/companion/visual_search:flags" ]
   }
 }
 
@@ -57,7 +57,7 @@ source_set("unit_tests") {
       "proto",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/companion/visual_search:visual_search",
+      "//chrome/browser/companion/visual_search:flags",
       "//chrome/browser/ui/side_panel:side_panel_enums",
       "//chrome/test:test_support",
       "//components/prefs",

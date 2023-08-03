@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -54,6 +55,18 @@ void CloseModelFile(base::File model_file) {
   }
   model_file.Close();
 }
+
+// Convert metrics map from Mojom IPC to |VisualSuggestionMetrics|.
+VisualSuggestionsMetrics GenerateMetrics(const ClassificationStats& stats) {
+  VisualSuggestionsMetrics metrics;
+  metrics.eligible_count = stats->eligible_count;
+  metrics.shoppy_count = stats->shoppy_count;
+  metrics.sensitive_count = stats->sensitive_count;
+  metrics.shoppy_nonsensitive_count = stats->shoppy_nonsensitive_count;
+  metrics.results_count = stats->results_count;
+  return metrics;
+}
+
 }  // namespace
 
 VisualSearchClassifierHost::VisualSearchClassifierHost(
@@ -64,7 +77,8 @@ VisualSearchClassifierHost::VisualSearchClassifierHost(
 VisualSearchClassifierHost::~VisualSearchClassifierHost() = default;
 
 void VisualSearchClassifierHost::HandleClassification(
-    std::vector<mojom::VisualSearchSuggestionPtr> results) {
+    std::vector<mojom::VisualSearchSuggestionPtr> results,
+    mojom::ClassificationStatsPtr classification_stats) {
   LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.ClassificationResultsSize",
                              results.size());
   std::vector<std::string> data_uris;
@@ -85,7 +99,8 @@ void VisualSearchClassifierHost::HandleClassification(
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EndClassificationSuccess",
                           !result_callback_.is_null());
   if (!result_callback_.is_null()) {
-    std::move(result_callback_).Run(std::move(data_uris));
+    std::move(result_callback_)
+        .Run(std::move(data_uris), GenerateMetrics(classification_stats));
   }
   // Log latency from the time the companion page handler called
   // StartClassification to now, after the classification results have been

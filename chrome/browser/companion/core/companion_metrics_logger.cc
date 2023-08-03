@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -26,6 +27,9 @@ const int kMaxNumChildElements = 10;
 
 // The max count of text queries to report up to for UKM.
 const int kMaxNumTextSearches = 10;
+
+// Bucket spacing param to add noise to |VisualSuggestionsMetrics|.
+const double kBucketSpacing = 1.3;
 
 // Helper method to determine whether a UI surface is a list surface. List
 // surfaces are surfaces that take the form of a list with one or more items
@@ -196,6 +200,21 @@ void CompanionMetricsLogger::OnExpsOptInStatusAvailable(
   base::UmaHistogramBoolean("Companion.IsUserOptedInToExps", is_exps_opted_in);
 }
 
+void CompanionMetricsLogger::OnVisualSuggestionsResult(
+    const VisualSuggestionsMetrics& metrics) {
+  visual_suggestions_ = metrics;
+  visual_suggestions_->eligible_count =
+      ukm::GetExponentialBucketMin(metrics.eligible_count, kBucketSpacing);
+  visual_suggestions_->shoppy_count =
+      ukm::GetExponentialBucketMin(metrics.shoppy_count, kBucketSpacing);
+  visual_suggestions_->sensitive_count =
+      ukm::GetExponentialBucketMin(metrics.sensitive_count, kBucketSpacing);
+  visual_suggestions_->shoppy_nonsensitive_count = ukm::GetExponentialBucketMin(
+      metrics.shoppy_nonsensitive_count, kBucketSpacing);
+  visual_suggestions_->results_count =
+      ukm::GetExponentialBucketMin(metrics.results_count, kBucketSpacing);
+}
+
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
 
@@ -253,6 +272,19 @@ void CompanionMetricsLogger::FlushStats() {
     ukm_builder.SetPH_Feedback(static_cast<int>(last_ph_feedback_.value()));
     base::UmaHistogramEnumeration("Companion.PHFeedback.Result",
                                   last_ph_feedback_.value());
+  }
+
+  if (visual_suggestions_.has_value()) {
+    ukm_builder.SetVQS_VisualSearchTriggeredCount(
+        static_cast<unsigned int>(visual_suggestions_.value().results_count));
+    ukm_builder.SetVQS_VisualEligibleImagesCount(
+        static_cast<unsigned int>(visual_suggestions_.value().eligible_count));
+    ukm_builder.SetVQS_ImageSensitiveCount(
+        static_cast<unsigned int>(visual_suggestions_.value().sensitive_count));
+    ukm_builder.SetVQS_ImageShoppyCount(
+        static_cast<unsigned int>(visual_suggestions_.value().shoppy_count));
+    ukm_builder.SetVQS_ImageShoppyNotSensitiveCount(static_cast<unsigned int>(
+        visual_suggestions_.value().shoppy_nonsensitive_count));
   }
 
   // CQ surface.

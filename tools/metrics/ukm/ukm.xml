@@ -7307,6 +7307,36 @@ be describing additional metrics about the same event.
       value of 10.
     </summary>
   </metric>
+  <metric name="VQS.ImageSensitiveCount">
+    <summary>
+      The number of images classified as sensitive. Uses exponential bucket of
+      1.3 for privacy.
+    </summary>
+  </metric>
+  <metric name="VQS.ImageShoppyCount">
+    <summary>
+      The number of images classified as shoppy. Uses exponential bucket of 1.3
+      for privacy.
+    </summary>
+  </metric>
+  <metric name="VQS.ImageShoppyNotSensitiveCount">
+    <summary>
+      The number of images classified as shoppy and non-sensitive. Uses
+      exponential bucket of 1.3 for privacy.
+    </summary>
+  </metric>
+  <metric name="VQS.VisualEligibleImagesCount">
+    <summary>
+      The number of images eligible for visual classification. Uses exponential
+      bucket of 1.3 for privacy.
+    </summary>
+  </metric>
+  <metric name="VQS.VisualSearchTriggeredCount">
+    <summary>
+      The number of images that qualify for visual suggestions. Uses exponential
+      bucket of 1.3 for privacy.
+    </summary>
+  </metric>
 </event>
 
 <event name="Compositor.Rendering">

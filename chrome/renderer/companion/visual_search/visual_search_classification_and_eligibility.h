@@ -27,6 +27,29 @@ struct SingleImageFeaturesAndBytes {
   ~SingleImageFeaturesAndBytes() = default;
 };
 
+// Structure for classification metrics about the page being processed.
+struct ClassificationMetrics {
+  // Count for number of images that meet the eligibility specs for
+  // classification.
+  uint32_t eligible_count;
+
+  // Count for number of eligible images that pass the sensitivity threshold.
+  uint32_t sensitive_count;
+
+  // Count for number of eligible images that pass the shoppy threshold.
+  uint32_t shoppy_count;
+
+  // Count for number of eligible images that pass the shoppy threshold but
+  // does not trigger the sensitivity threshold.
+  uint32_t shoppy_nonsensitive_count;
+
+  // Count for number of images that pass all of our eligibility and
+  // classification thresholds.
+  uint32_t result_count;
+
+  ~ClassificationMetrics() = default;
+};
+
 class VisualClassificationAndEligibility {
  public:
   // Extract the SingleImageGeometryFeatures needed by the eligibility
@@ -48,6 +71,8 @@ class VisualClassificationAndEligibility {
       base::flat_map<ImageId, SingleImageFeaturesAndBytes>& images,
       const gfx::SizeF& viewport_size);
 
+  const ClassificationMetrics& classification_metrics() { return metrics_; }
+
   VisualClassificationAndEligibility(
       const VisualClassificationAndEligibility&) = delete;
   VisualClassificationAndEligibility& operator=(
@@ -60,6 +85,7 @@ class VisualClassificationAndEligibility {
 
   std::unique_ptr<tflite::task::vision::ImageClassifier> classifier_;
   std::unique_ptr<EligibilityModule> eligibility_module_;
+  ClassificationMetrics metrics_;
 };
 }  // namespace companion::visual_search
 #endif

@@ -126,6 +126,42 @@ TEST_F(CompanionMetricsLoggerTest, RecordPhFeedback) {
                                      PhFeedback::kThumbsDown, 1);
 }
 
+TEST_F(CompanionMetricsLoggerTest, RecordVQSResultCount) {
+  VisualSuggestionsMetrics metrics;
+  metrics.results_count = 6;
+  metrics.eligible_count = 200;
+  metrics.shoppy_count = 100;
+  metrics.sensitive_count = 65;
+  metrics.shoppy_nonsensitive_count = 17;
+  logger_->OnVisualSuggestionsResult(metrics);
+
+  // Bucketed counts of the above metrics with 1.3 exponential factor,
+  // rounded down to uint32.
+  uint32_t result_bucketed = 5;
+  uint32_t eligible_bucketed = 191;
+  uint32_t shoppy_bucketed = 87;
+  uint32_t sensitive_bucketed = 52;
+  uint32_t shoppy_nonsensitive_bucketed = 14;
+
+  // Destroy the logger. Verify that UKM event is recorded.
+  logger_.reset();
+
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_VisualSearchTriggeredCountName,
+      static_cast<unsigned int>(result_bucketed));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_VisualEligibleImagesCountName,
+      static_cast<unsigned int>(eligible_bucketed));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kVQS_ImageShoppyCountName,
+                 static_cast<unsigned int>(shoppy_bucketed));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_ImageSensitiveCountName,
+      static_cast<unsigned int>(sensitive_bucketed));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_ImageShoppyNotSensitiveCountName,
+      static_cast<unsigned int>(shoppy_nonsensitive_bucketed));
+}
+
 TEST_F(CompanionMetricsLoggerTest, TwoSurfaces_PH_and_CQ) {
   base::HistogramTester histogram_tester;
 

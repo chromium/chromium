@@ -167,7 +167,7 @@ void CompanionPageHandler::DidFinishLoad(
   }
 }
 
-void CompanionPageHandler::HandleVisualSearchResult(
+void CompanionPageHandler::SendVisualSearchResult(
     std::vector<std::string> results) {
   std::vector<side_panel::mojom::VisualSearchResultPtr> final_results;
   for (const auto& result : results) {
@@ -175,6 +175,13 @@ void CompanionPageHandler::HandleVisualSearchResult(
         side_panel::mojom::VisualSearchResult::New(result));
   }
   page_->OnDeviceVisualClassificationResult(std::move(final_results));
+}
+
+void CompanionPageHandler::HandleVisualSearchResult(
+    std::vector<std::string> results,
+    const VisualSuggestionsMetrics& metrics) {
+  SendVisualSearchResult(results);
+  metrics_logger_->OnVisualSuggestionsResult(metrics);
 }
 
 void CompanionPageHandler::OnLoadingState(
@@ -187,7 +194,7 @@ void CompanionPageHandler::OnLoadingState(
     const auto& visual_result =
         visual_search_host_->GetVisualResult(web_contents()->GetURL());
     if (visual_result) {
-      HandleVisualSearchResult(visual_result.value().second);
+      SendVisualSearchResult(visual_result.value().second);
     }
   }
 }

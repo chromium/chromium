@@ -46,6 +46,38 @@ bool OrOfThresholdingRuleLooksGood(const OrOfThresholdingRules& rules) {
   return true;
 }
 
+ClassificationMetrics CalculateClassificatonMetrics(
+    EligibilityModule& eligibility_module,
+    const std::vector<ImageId>& first_pass_images,
+    const std::vector<ImageId>& second_pass_images) {
+  ClassificationMetrics metrics;
+  uint32_t shoppy_count = 0, sensitive_count = 0, shoppy_nonsensitive_count = 0;
+  for (const auto& eligible_image_id : first_pass_images) {
+    const bool is_shoppy =
+        eligibility_module.IsImageShoppyForMetrics(eligible_image_id);
+    const bool is_sensitive =
+        eligibility_module.IsImageSensitiveForMetrics(eligible_image_id);
+
+    if (is_shoppy) {
+      ++shoppy_count;
+    }
+    if (is_sensitive) {
+      ++sensitive_count;
+    }
+
+    if (is_shoppy && !is_sensitive) {
+      ++shoppy_nonsensitive_count;
+    }
+  }
+  // Store important metrics needed for logging.
+  metrics.eligible_count = first_pass_images.size();
+  metrics.shoppy_count = shoppy_count;
+  metrics.sensitive_count = sensitive_count;
+  metrics.shoppy_nonsensitive_count = shoppy_nonsensitive_count;
+  metrics.result_count = second_pass_images.size();
+  return metrics;
+}
+
 // TODO(b/284645622): this really belongs in the eligibility module code.
 bool EligibilitySpecLooksGood(const EligibilitySpec& eligibility_spec) {
   bool all_good = true;
@@ -269,8 +301,12 @@ VisualClassificationAndEligibility::RunClassificationAndEligibility(
     sens_classifier_scores[eligible_image_id] = sens_score;
   }
 
-  return eligibility_module_->RunSecondPassPostClassificationEligibility(
-      shopping_classifier_scores, sens_classifier_scores);
+  auto second_pass_eligible =
+      eligibility_module_->RunSecondPassPostClassificationEligibility(
+          shopping_classifier_scores, sens_classifier_scores);
+  metrics_ = CalculateClassificatonMetrics(
+      *eligibility_module_, first_pass_eligible, second_pass_eligible);
+  return second_pass_eligible;
 }
 
 VisualClassificationAndEligibility::~VisualClassificationAndEligibility() =

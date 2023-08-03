@@ -67,8 +67,9 @@ class TestVisualResultHandler : mojom::VisualSuggestionsResultHandler {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD1(HandleClassification,
-               void(std::vector<mojom::VisualSearchSuggestionPtr>));
+  MOCK_METHOD2(HandleClassification,
+               void(std::vector<mojom::VisualSearchSuggestionPtr>,
+                    mojom::ClassificationStatsPtr));
 
  private:
   mojo::Receiver<mojom::VisualSuggestionsResultHandler> receiver_{this};
@@ -133,7 +134,7 @@ TEST_F(VisualSearchClassifierAgentTest, StartClassification_NoImages) {
   base::RunLoop().RunUntilIdle();
 
   // We don't expect handler to get called since there are no images in DOM.
-  EXPECT_CALL(test_handler_, HandleClassification(_)).Times(0);
+  EXPECT_CALL(test_handler_, HandleClassification(_, _)).Times(0);
 
   // TODO(b/287637476) - Remove the file valid check.
   // This validity check is needed because file path does not seem to work on
@@ -151,7 +152,7 @@ TEST_F(VisualSearchClassifierAgentTest, StartClassification_InvalidModel) {
   agent_->StartVisualClassification(file.Duplicate(), "",
                                     test_handler_.GetRemoteHandler());
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(test_handler_, HandleClassification(_)).Times(0);
+  EXPECT_CALL(test_handler_, HandleClassification(_, _)).Times(0);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualSearch.Agent.InvalidModelFailure", true, 1);
 }
