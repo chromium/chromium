@@ -8333,7 +8333,7 @@
   {
     "name": "xsurface-metrics-reporting",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "zero-copy-tab-capture",
