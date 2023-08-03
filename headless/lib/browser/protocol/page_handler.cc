@@ -53,6 +53,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
                              Maybe<String> footer_template,
                              Maybe<bool> prefer_css_page_size,
                              Maybe<String> transfer_mode,
+                             Maybe<bool> generate_tagged_pdf,
                              std::unique_ptr<PrintToPDFCallback> callback) {
   DCHECK(callback);
 
@@ -77,7 +78,8 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
           OptionalFromMaybe<double>(margin_right),
           OptionalFromMaybe<std::string>(header_template),
           OptionalFromMaybe<std::string>(footer_template),
-          OptionalFromMaybe<bool>(prefer_css_page_size));
+          OptionalFromMaybe<bool>(prefer_css_page_size),
+          OptionalFromMaybe<bool>(generate_tagged_pdf));
   if (absl::holds_alternative<std::string>(print_pages_params)) {
     callback->sendFailure(
         Response::InvalidParams(absl::get<std::string>(print_pages_params)));

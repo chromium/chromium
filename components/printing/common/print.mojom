@@ -164,6 +164,9 @@ struct PrintParams {
   // Defaults to 1 if the feature is disabled, and some number greater
   // than 1 otherwise.  See printing::NupParameters for supported values.
   uint32 pages_per_sheet = 1;
+  // Whether tagged (accessible) PDF should be generated. No value assumes
+  // embedder choice provided by PrintRenderFrameHelper delegate.
+  bool? generate_tagged_pdf;
 };
 
 // Parameters for a print setting that has parameters for a print request and an

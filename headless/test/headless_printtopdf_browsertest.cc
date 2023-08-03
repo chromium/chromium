@@ -700,4 +700,32 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HeadlessTaggedPDFDisabledBrowserTest,
                          ::testing::ValuesIn(kTaggedPDFTestData));
 
+class HeadlessGenerateTaggedPDFBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  const char* GetUrl() override { return "/structured_doc.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    base::Value::Dict params;
+    params.Set("generateTaggedPDF", generate_tagged_pdf());
+    return params;
+  }
+
+  bool generate_tagged_pdf() { return GetParam(); }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_THAT(num_pages, testing::Eq(1));
+
+    absl::optional<bool> is_pdf_tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    EXPECT_THAT(is_pdf_tagged, testing::Optional(generate_tagged_pdf()));
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessGenerateTaggedPDFBrowserTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessGenerateTaggedPDFBrowserTest,
+                         ::testing::Bool());
+
 }  // namespace headless

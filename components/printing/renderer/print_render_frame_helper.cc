@@ -2362,6 +2362,9 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   CHECK(metafile.Init());
   metafile.UtilizeTypefaceContext(&typeface_content_info);
 
+  bool generate_tagged_pdf = print_params.generate_tagged_pdf.value_or(
+      delegate_->ShouldGenerateTaggedPDF());
+
   // If tagged PDF exporting is enabled, we also need to capture an
   // accessibility tree and store it in the metafile. AXTreeSnapshotter
   // should stay alive through the end of this function, because text
@@ -2369,7 +2372,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   // is enabled.
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter;
   ui::AXTreeUpdate accessibility_tree;
-  if (delegate_->ShouldGenerateTaggedPDF()) {
+  if (generate_tagged_pdf) {
     snapshotter = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
     snapshotter->Snapshot(
         /*max_node_count=*/0,
