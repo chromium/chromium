@@ -771,14 +771,19 @@ void OverviewItem::SetShadowBounds(
       gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  if (!is_jellyroll_enabled) {
+  const bool continuous_scroll =
+      features::IsContinuousOverviewScrollAnimationEnabled() &&
+      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
+  if (!is_jellyroll_enabled || continuous_scroll) {
     bounds_in_item.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
   }
 
   bounds_in_item.ClampToCenteredSize(
       gfx::ToRoundedSize(bounds_in_screen->size()));
   shadow_->SetContentBounds(bounds_in_item);
-  if (is_jellyroll_enabled) {
+  if (continuous_scroll) {
+    shadow_->SetRoundedCornerRadius(/*radius=*/0.f);
+  } else if (is_jellyroll_enabled) {
     shadow_->SetRoundedCornerRadius(kOverviewItemCornerRadius);
   }
 }
@@ -846,14 +851,7 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
     // of the transformed window or preview view.
     gfx::RectF shadow_bounds;
     if (chromeos::features::IsJellyrollEnabled()) {
-      // If a continuous scroll is in progress and we should show the shadow,
-      // this is a non-minimized window which is being transformed during a
-      // continuous scroll, so the shadow should follow the transformed window.
-      if (continuous_scroll_in_progress) {
-        shadow_bounds = GetTransformedBounds();
-      } else {
-        shadow_bounds = target_bounds_;
-      }
+      shadow_bounds = target_bounds_;
     } else {
       shadow_bounds = GetWindowTargetBoundsWithInsets();
     }

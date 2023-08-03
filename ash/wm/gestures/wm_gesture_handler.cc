@@ -420,10 +420,10 @@ bool WmGestureHandler::UpdateScrollForContinuousOverviewAnimation() {
   if (in_overview && !scroll_data_->vertical_continuous_gesture_started) {
     scroll_data_->scroll_y = kVerticalThresholdDp + scroll_data_->scroll_y;
   }
+  scroll_data_->vertical_continuous_gesture_started = true;
   bool scroll_started = Handle3FingerContinuousVerticalScroll(
       std::clamp(scroll_data_->scroll_y, 0.f, kVerticalThresholdDp),
       /*scroll_in_progress=*/scroll_data_->vertical_continuous_gesture_started);
-  scroll_data_->vertical_continuous_gesture_started = true;
   return scroll_started;
 }
 
