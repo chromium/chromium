@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -35,7 +36,7 @@ using ::testing::_;
 
 const char kTestAccount[] = "user@test.com";
 const char kExpectedPassword[] = "qwerty";
-base::UnguessableToken kToken = base::UnguessableToken::Create();
+AuthProofToken kToken = "auth-proof-token";
 
 }  // namespace
 
@@ -81,7 +82,7 @@ class AuthenticationDialogTest : public AshTestBase {
     // underlying widget.
     dialog_ = new AuthenticationDialog(
         base::BindLambdaForTesting([&](bool success,
-                                       const base::UnguessableToken& token,
+                                       const AuthProofToken& token,
                                        base::TimeDelta timeout) {
           success_ = success;
           token_ = token;
@@ -116,7 +117,7 @@ class AuthenticationDialogTest : public AshTestBase {
   }
 
   absl::optional<bool> success_;
-  base::UnguessableToken token_;
+  AuthProofToken token_;
   raw_ptr<AuthenticationDialog, AcrossTasksDanglingUntriaged> dialog_;
   std::unique_ptr<MockInSessionAuthTokenProvider> auth_token_provider_;
   raw_ptr<MockAuthPerformer, AcrossTasksDanglingUntriaged> auth_performer_;

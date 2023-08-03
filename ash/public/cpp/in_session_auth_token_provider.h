@@ -10,13 +10,14 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 
 class ASH_PUBLIC_EXPORT InSessionAuthTokenProvider {
  public:
   using OnAuthTokenGenerated =
-      base::OnceCallback<void(const base::UnguessableToken&, base::TimeDelta)>;
+      base::OnceCallback<void(const AuthProofToken&, base::TimeDelta)>;
 
   virtual ~InSessionAuthTokenProvider() = default;
 

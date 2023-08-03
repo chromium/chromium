@@ -68,11 +68,10 @@ void InSessionAuthAsh::InvalidateToken(const std::string& token) {
 
 void InSessionAuthAsh::OnAuthComplete(RequestTokenCallback callback,
                                       bool success,
-                                      const base::UnguessableToken& token,
+                                      const ash::AuthProofToken& token,
                                       base::TimeDelta timeout) {
   std::move(callback).Run(
-      success ? mojom::RequestTokenReply::New(token.ToString(), timeout)
-              : nullptr);
+      success ? mojom::RequestTokenReply::New(token, timeout) : nullptr);
 }
 
 }  // namespace crosapi

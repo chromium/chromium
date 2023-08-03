@@ -9,7 +9,6 @@
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
@@ -17,8 +16,7 @@ namespace ash {
 class ASH_PUBLIC_EXPORT InSessionAuthTokenProviderImpl
     : public InSessionAuthTokenProvider {
  public:
-  using OnAuthTokenGenerated =
-      base::OnceCallback<void(const base::UnguessableToken&, base::TimeDelta)>;
+  using OnAuthTokenGenerated = InSessionAuthTokenProvider::OnAuthTokenGenerated;
 
   InSessionAuthTokenProviderImpl();
   ~InSessionAuthTokenProviderImpl() override = default;

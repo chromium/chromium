@@ -29,7 +29,7 @@ void InSessionAuthTokenProviderImpl::ExchangeForToken(
   quick_unlock_storage->CreateAuthToken(*user_context);
   auto token = quick_unlock_storage->GetAuthToken()->GetUnguessableToken();
   DCHECK(token.has_value());
-  std::move(callback).Run(token.value(),
+  std::move(callback).Run(token.value().ToString(),
                           quick_unlock::AuthToken::kTokenExpiration);
 }
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"

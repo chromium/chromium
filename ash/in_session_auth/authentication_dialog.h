@@ -11,7 +11,6 @@
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
@@ -68,7 +67,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // authentication was successful, and `success` == false if the dialog was
   // aborted.
   void NotifyResult(bool success,
-                    const base::UnguessableToken& token,
+                    const AuthProofToken& token,
                     base::TimeDelta timeout);
 
   // Modifies the Ok button to display the proper string and registers
