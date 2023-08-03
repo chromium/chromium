@@ -20,24 +20,20 @@ MemoryPurgeManager::MemoryPurgeManager(
 
 MemoryPurgeManager::~MemoryPurgeManager() = default;
 
-void MemoryPurgeManager::OnPageCreated(PageLifecycleState state) {
+void MemoryPurgeManager::OnPageCreated() {
   total_page_count_++;
-  if (state == PageLifecycleState::kFrozen) {
-    frozen_page_count_++;
-  } else {
-    base::MemoryPressureListener::SetNotificationsSuppressed(false);
-  }
+  base::MemoryPressureListener::SetNotificationsSuppressed(false);
 
   if (!CanPurge()) {
     purge_timer_.Stop();
   }
 }
 
-void MemoryPurgeManager::OnPageDestroyed(PageLifecycleState state) {
+void MemoryPurgeManager::OnPageDestroyed(bool frozen) {
   DCHECK_GT(total_page_count_, 0);
   DCHECK_GE(frozen_page_count_, 0);
   total_page_count_--;
-  if (state == PageLifecycleState::kFrozen) {
+  if (frozen) {
     frozen_page_count_--;
   }
 

@@ -2285,8 +2285,10 @@ void MainThreadSchedulerImpl::AddPageScheduler(
   main_thread_only().page_schedulers.insert(page_scheduler);
   DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
   if (page_scheduler->IsOrdinary()) {
-    memory_purge_manager_.OnPageCreated(
-        page_scheduler->GetPageLifecycleState());
+    // MemoryPurgeManager::OnPageCreated() assumes that the page isn't frozen.
+    // Its logic must be modified if this assumption is broken in the future.
+    CHECK(!page_scheduler->IsFrozen());
+    memory_purge_manager_.OnPageCreated();
   }
 
   base::AutoLock lock(any_thread_lock_);
@@ -2304,7 +2306,7 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
   main_thread_only().page_schedulers.erase(page_scheduler);
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(
-        page_scheduler->GetPageLifecycleState());
+        /* frozen=*/page_scheduler->IsFrozen());
   }
 
   if (IsIpcTrackingEnabledForAllPages()) {

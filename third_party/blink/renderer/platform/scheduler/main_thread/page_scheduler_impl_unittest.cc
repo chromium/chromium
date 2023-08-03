@@ -1410,16 +1410,12 @@ TEST_F(PageSchedulerImplTest, FreezingRecentlyAudiblePage) {
   page_scheduler_->SetPageFrozen(true);
   EXPECT_FALSE(page_scheduler_->IsAudioPlaying());
   EXPECT_TRUE(page_scheduler_->IsFrozen());
-  EXPECT_EQ(page_scheduler_->GetPageLifecycleState(),
-            PageLifecycleState::kFrozen);
 
   // Fast-forwarding past the recent audio delay should not affect the state.
   test_task_runner_->FastForwardBy(recent_audio_delay() +
                                    base::Milliseconds(10));
   EXPECT_FALSE(page_scheduler_->IsAudioPlaying());
   EXPECT_TRUE(page_scheduler_->IsFrozen());
-  EXPECT_EQ(page_scheduler_->GetPageLifecycleState(),
-            PageLifecycleState::kFrozen);
 }
 
 // Regression test for crbug.com/1431695. Test freezing and state changes work
@@ -1432,8 +1428,6 @@ TEST_F(PageSchedulerImplTest, FreezingAudiblePage) {
   page_scheduler_->SetPageVisible(false);
   page_scheduler_->SetPageFrozen(true);
   EXPECT_TRUE(page_scheduler_->IsFrozen());
-  EXPECT_EQ(page_scheduler_->GetPageLifecycleState(),
-            PageLifecycleState::kFrozen);
 
   EXPECT_TRUE(page_scheduler_->IsAudioPlaying());
   page_scheduler_->AudioStateChanged(false);
@@ -1441,16 +1435,12 @@ TEST_F(PageSchedulerImplTest, FreezingAudiblePage) {
   EXPECT_FALSE(page_scheduler_->IsAudioPlaying());
   // And the page should still be frozen.
   EXPECT_TRUE(page_scheduler_->IsFrozen());
-  EXPECT_EQ(page_scheduler_->GetPageLifecycleState(),
-            PageLifecycleState::kFrozen);
 
   // Fast-forwarding past the recent audio delay should not affect the state.
   test_task_runner_->FastForwardBy(recent_audio_delay() +
                                    base::Milliseconds(10));
   EXPECT_FALSE(page_scheduler_->IsAudioPlaying());
   EXPECT_TRUE(page_scheduler_->IsFrozen());
-  EXPECT_EQ(page_scheduler_->GetPageLifecycleState(),
-            PageLifecycleState::kFrozen);
 }
 
 TEST_F(PageSchedulerImplTest, BudgetBasedThrottlingForPageScheduler) {

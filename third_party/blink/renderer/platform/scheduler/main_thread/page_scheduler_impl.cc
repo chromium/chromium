@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_visibility_state.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
@@ -174,10 +173,6 @@ PageSchedulerImpl::PageSchedulerImpl(
           base::FeatureList::IsEnabled(features::kThrottleForegroundTimers)),
       foreground_timers_throttled_wake_up_interval_(
           GetForegroundTimersThrottledWakeUpInterval()) {
-  current_lifecycle_state_ =
-      (kDefaultPageVisibility == PageVisibilityState::kVisible
-           ? PageLifecycleState::kActive
-           : PageLifecycleState::kHiddenBackgrounded);
   do_throttle_cpu_time_callback_.Reset(base::BindRepeating(
       &PageSchedulerImpl::DoThrottleCPUTime, base::Unretained(this)));
   do_intensively_throttle_wake_ups_callback_.Reset(
@@ -215,17 +210,6 @@ void PageSchedulerImpl::SetPageVisible(bool page_visible) {
     return;
   page_visibility_ = page_visibility;
   page_visibility_changed_time_ = main_thread_scheduler_->NowTicks();
-
-  switch (page_visibility_) {
-    case PageVisibilityState::kVisible:
-      SetPageLifecycleState(PageLifecycleState::kActive);
-      break;
-    case PageVisibilityState::kHidden:
-      SetPageLifecycleState(IsBackgrounded()
-                                ? PageLifecycleState::kHiddenBackgrounded
-                                : PageLifecycleState::kHiddenForegrounded);
-      break;
-  }
 
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_)
     frame_scheduler->SetPageVisibilityForTracing(page_visibility_);
@@ -273,7 +257,6 @@ void PageSchedulerImpl::SetPageFrozenImpl(
       PageSchedulerImpl::NotificationPolicy::kNotifyFrames)
     NotifyFrames();
   if (frozen) {
-    SetPageLifecycleState(PageLifecycleState::kFrozen);
     main_thread_scheduler_->OnPageFrozen();
     if (audio_state_ == AudioState::kRecentlyAudible) {
       // A recently audible page is being frozen before the audio silent timer
@@ -284,15 +267,6 @@ void PageSchedulerImpl::SetPageFrozenImpl(
       OnAudioSilent();
     }
   } else {
-    // The new state may have already been set if unfreezing through the
-    // renderer, but that's okay - duplicate state changes won't be recorded.
-    if (IsPageVisible()) {
-      SetPageLifecycleState(PageLifecycleState::kActive);
-    } else if (IsBackgrounded()) {
-      SetPageLifecycleState(PageLifecycleState::kHiddenBackgrounded);
-    } else {
-      SetPageLifecycleState(PageLifecycleState::kHiddenForegrounded);
-    }
     // Since the page is no longer frozen, detach the handler that watches for
     // IPCs posted to frozen pages (or cancel setting up the handler).
     set_ipc_posted_handler_task_.Cancel();
@@ -395,9 +369,6 @@ void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
   if (is_audio_playing) {
     audio_state_ = AudioState::kAudible;
     on_audio_silent_closure_.Cancel();
-    if (!IsPageVisible()) {
-      SetPageLifecycleState(PageLifecycleState::kHiddenForegrounded);
-    }
     // Pages with audio playing should not be frozen.
     SetPageFrozenImpl(false, NotificationPolicy::kDoNotNotifyFrames);
     NotifyFrames();
@@ -429,9 +400,6 @@ void PageSchedulerImpl::OnAudioSilent() {
   audio_state_ = AudioState::kSilent;
   NotifyFrames();
   main_thread_scheduler_->OnAudioStateChanged();
-  if (IsBackgrounded() && !IsFrozen()) {
-    SetPageLifecycleState(PageLifecycleState::kHiddenBackgrounded);
-  }
   if (IsBackgrounded()) {
     MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
   }
@@ -499,9 +467,6 @@ void PageSchedulerImpl::OnThrottlingStatusUpdated() {
 }
 
 void PageSchedulerImpl::OnVirtualTimeEnabled() {
-  if (page_visibility_ == PageVisibilityState::kHidden) {
-    SetPageLifecycleState(PageLifecycleState::kHiddenForegrounded);
-  }
   UpdatePolicyOnVisibilityChange(NotificationPolicy::kNotifyFrames);
 }
 
@@ -828,16 +793,6 @@ void PageSchedulerImpl::DoFreezePage() {
   DCHECK(ShouldFreezePage());
 
   SetPageFrozenImpl(true, NotificationPolicy::kNotifyFrames);
-}
-
-PageLifecycleState PageSchedulerImpl::GetPageLifecycleState() const {
-  return current_lifecycle_state_;
-}
-
-void PageSchedulerImpl::SetPageLifecycleState(PageLifecycleState new_state) {
-  if (new_state == current_lifecycle_state_)
-    return;
-  current_lifecycle_state_ = new_state;
 }
 
 FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {

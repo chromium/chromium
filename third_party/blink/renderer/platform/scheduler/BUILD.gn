@@ -130,7 +130,6 @@ blink_platform_sources("scheduler") {
     "public/main_thread.h",
     "public/main_thread_scheduler.h",
     "public/non_main_thread.h",
-    "public/page_lifecycle_state.h",
     "public/page_scheduler.h",
     "public/post_cancellable_task.h",
     "public/post_cross_thread_task.h",
