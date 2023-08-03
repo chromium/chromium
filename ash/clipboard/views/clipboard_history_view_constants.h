@@ -16,6 +16,21 @@ constexpr auto kContentsInsets = gfx::Insets::VH(kContentsVerticalInset, 16);
 // The padding vertically separating the Ctrl+V label from the contents view.
 constexpr int kCtrlVLabelPadding = 6;
 
+// The corner radius for the footer content v2 background.
+constexpr int kFooterContentV2BackgroundCornerRadius = 8;
+
+// The child spacing for footer content v2.
+constexpr int kFooterContentV2ChildSpacing = 6;
+
+// The icon size for footer content v2.
+constexpr int kFooterContentV2IconSize = 20;
+
+// The insets for footer content v2.
+constexpr auto kFooterContentV2Insets = gfx::Insets(8);
+
+// The margins for footer content v2.
+constexpr auto kFooterContentV2Margins = gfx::Insets::TLBR(8, 12, 12, 12);
+
 // The size of the `DeleteButton`.
 constexpr int kDeleteButtonSizeDip = 16;
 

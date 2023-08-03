@@ -31,7 +31,10 @@ namespace ash {
 using ::testing::AllOf;
 using ::testing::Bool;
 using ::testing::Combine;
+using ::testing::Conditional;
 using ::testing::Eq;
+using ::testing::IsNull;
+using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
@@ -290,8 +293,8 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
     // The menu's last item should be a footer.
     ++expected_menu_item_count;
   }
-  const auto* const model =
-      controller->context_menu_for_test()->GetModelForTest();
+  const auto* const adapter = controller->context_menu_for_test();
+  const auto* const model = adapter->GetModelForTest();
   ASSERT_TRUE(model);
   ASSERT_EQ(model->GetItemCount(), expected_menu_item_count);
 
@@ -305,6 +308,20 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
   EXPECT_EQ(model->GetTypeAt(model->GetItemCount() - 1u),
             has_footer ? ui::MenuModel::ItemType::TYPE_TITLE
                        : ui::MenuModel::ItemType::TYPE_COMMAND);
+
+  if (!has_footer) {
+    return;
+  }
+
+  // Verify that footer content is of the expected version.
+  const int footer_index = model->GetItemCount() - 1u;
+  const auto* const footer = adapter->GetMenuItemViewAtForTest(footer_index);
+  EXPECT_THAT(
+      footer->GetViewByID(clipboard_history_util::kFooterContentViewID),
+      Conditional(IsClipboardHistoryRefreshEnabled(), IsNull(), NotNull()));
+  EXPECT_THAT(
+      footer->GetViewByID(clipboard_history_util::kFooterContentV2ViewID),
+      Conditional(IsClipboardHistoryRefreshEnabled(), NotNull(), IsNull()));
 }
 
 }  // namespace ash

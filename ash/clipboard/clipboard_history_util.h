@@ -62,6 +62,8 @@ enum MenuViewID {
   kCtrlVLabelID,
   kDeleteButtonViewID,
   kDisplayTextLabelID,
+  kFooterContentViewID,
+  kFooterContentV2ViewID,
   kSecondaryDisplayTextLabelID,
 };
 

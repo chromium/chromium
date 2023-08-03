@@ -134,10 +134,12 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
 
   // The model which holds the contents of the menu.
   std::unique_ptr<MenuModelWithWillCloseCallback> const model_;
+
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // |menu_runner_|.
   raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_view_ =
       nullptr;
+
   // Responsible for showing |root_view_|.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
@@ -161,6 +163,12 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // Indicates the number of item deletion operations in progress. Note that
   // a `ClipboardHistoryItemView` instance is deleted asynchronously.
   int item_deletion_in_progress_count_ = 0;
+
+  // The index of the clipboard history menu header, if it exists.
+  absl::optional<size_t> header_index_;
+
+  // The index of the clipboard history menu footer, if it exists.
+  absl::optional<size_t> footer_index_;
 
   std::unique_ptr<ScopedA11yIgnore> scoped_ignore_;
 
