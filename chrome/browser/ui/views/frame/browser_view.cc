@@ -3634,9 +3634,8 @@ views::ClientView* BrowserView::CreateClientView(views::Widget* widget) {
 views::View* BrowserView::CreateOverlayView() {
   overlay_view_ = new TopContainerOverlayView(weak_ptr_factory_.GetWeakPtr());
   overlay_view_->SetVisible(false);
-  overlay_view_targeter_ = std::make_unique<OverlayViewTargeterDelegate>();
-  overlay_view_->SetEventTargeter(
-      std::make_unique<views::ViewTargeter>(overlay_view_targeter_.get()));
+  overlay_view_->SetEventTargeter(std::make_unique<views::ViewTargeter>(
+      std::make_unique<OverlayViewTargeterDelegate>()));
   return overlay_view_;
 }
 
@@ -3678,9 +3677,8 @@ views::View* BrowserView::CreateMacOverlayView() {
       std::make_unique<TopContainerOverlayView>(weak_ptr_factory_.GetWeakPtr());
   overlay_view->set_context_menu_controller(frame());
 
-  overlay_view_targeter_ = std::make_unique<OverlayViewTargeterDelegate>();
-  overlay_view->SetEventTargeter(
-      std::make_unique<views::ViewTargeter>(overlay_view_targeter_.get()));
+  overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
+      std::make_unique<OverlayViewTargeterDelegate>()));
   overlay_view_ = overlay_view.get();
   overlay_widget_->GetRootView()->AddChildView(std::move(overlay_view));
 
@@ -3691,10 +3689,8 @@ views::View* BrowserView::CreateMacOverlayView() {
         std::make_unique<TabContainerOverlayView>(
             weak_ptr_factory_.GetWeakPtr());
     tab_overlay_view->set_context_menu_controller(frame());
-    tab_overlay_view_targeter_ =
-        std::make_unique<OverlayViewTargeterDelegate>();
     tab_overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
-        tab_overlay_view_targeter_.get()));
+        std::make_unique<OverlayViewTargeterDelegate>()));
     tab_overlay_view_ = tab_overlay_view.get();
     tab_overlay_widget_->GetRootView()->AddChildView(
         std::move(tab_overlay_view));

@@ -1076,7 +1076,6 @@ class BrowserView : public BrowserWindow,
   // during immersive reveal.
   // On Aura, this view is owned by the browser frame. On mac, this view is
   // owned by `overlay_widget_`.
-  std::unique_ptr<views::ViewTargeterDelegate> overlay_view_targeter_;
   raw_ptr<views::View, DanglingUntriaged> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
@@ -1093,10 +1092,6 @@ class BrowserView : public BrowserWindow,
 
   // The hosting view of TabStripRegionView during immersive fullscreen.
   raw_ptr<views::View, DanglingUntriaged> tab_overlay_view_ = nullptr;
-
-  // Targeter for the tab_overlay_view_. Ensures tab_overlay_view_ does not
-  // handle events, while allowing for child views to handle events.
-  std::unique_ptr<views::ViewTargeterDelegate> tab_overlay_view_targeter_;
 
 #endif
 
