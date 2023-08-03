@@ -47,6 +47,13 @@ TimeOfDay& TimeOfDay::SetLocalTimeConverter(
 base::Time TimeOfDay::ToTimeToday() const {
   base::Time::Exploded now;
   GetLocalTimeConverter().LocalExplode(GetNow(), &now);
+  // Per the `LocalExplode()` API:
+  // "If the conversion cannot be made, the output will be
+  // assigned invalid values. Use Exploded::HasValidValues() to confirm a
+  // successful conversion."
+  if (!now.HasValidValues()) {
+    return base::Time();
+  }
   now.hour = (offset_minutes_from_zero_hour_ / 60) % 24;
   now.minute = offset_minutes_from_zero_hour_ % 60;
   now.second = 0;
