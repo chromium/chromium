@@ -748,6 +748,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // WebContents.
   virtual bool IsPrivileged();
 
+  // Initiates previewing the given `url` within the given `web_contents`.
+  virtual void InitiatePreview(WebContents& web_contents, const GURL& url) {}
+
  protected:
   virtual ~WebContentsDelegate();
 

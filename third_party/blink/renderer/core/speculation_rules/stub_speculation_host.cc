@@ -19,15 +19,16 @@ void StubSpeculationHost::Bind(
       &StubSpeculationHost::OnConnectionLost, WTF::Unretained(this)));
 }
 
-void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {
-  candidates_ = std::move(candidates);
-  if (candidates_updated_callback_)
-    candidates_updated_callback_.Run(candidates_);
+void StubSpeculationHost::OnConnectionLost() {
   if (done_closure_)
     std::move(done_closure_).Run();
 }
 
-void StubSpeculationHost::OnConnectionLost() {
+void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {
+  candidates_ = std::move(candidates);
+  if (candidates_updated_callback_) {
+    candidates_updated_callback_.Run(candidates_);
+  }
   if (done_closure_)
     std::move(done_closure_).Run();
 }
@@ -35,5 +36,7 @@ void StubSpeculationHost::OnConnectionLost() {
 void StubSpeculationHost::EnableNoVarySearchSupport() {
   sent_no_vary_search_support_to_browser_ = true;
 }
+
+void StubSpeculationHost::InitiatePreview(const KURL& url) {}
 
 }  // namespace blink

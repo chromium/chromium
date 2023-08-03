@@ -24,6 +24,10 @@ interface SpeculationHost {
   UpdateSpeculationCandidates(array<SpeculationCandidate> candidates);
   // Enables matching prefetches according to No-Vary-Search response headers.
   EnableNoVarySearchSupport();
+  // Initiates previewing the given `url`.
+  // TODO(https://b/292184832): Give more hints, such as gfx.mjom.PointF
+  // screen_position.
+  InitiatePreview(url.mojom.Url url);
 };
 
 // The action that is proposed.

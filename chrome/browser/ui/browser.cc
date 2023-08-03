@@ -1971,6 +1971,12 @@ std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
   return window()->OpenEyeDropper(frame, listener);
 }
 
+void Browser::InitiatePreview(content::WebContents& web_contents,
+                              const GURL& url) {
+  // TODO(b/292184832): Implement PreviewManager and communicate with it here.
+  NOTIMPLEMENTED();
+}
+
 void Browser::DidFinishNavigation(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle) {

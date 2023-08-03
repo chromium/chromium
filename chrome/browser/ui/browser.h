@@ -747,6 +747,8 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;
+  void InitiatePreview(content::WebContents& web_contents,
+                       const GURL& url) override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }
