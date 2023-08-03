@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2023-09-10">
+    expires_after="2024-03-10">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -393,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CryptographerPendingKeys"
-    enum="SyncCryptographerPendingKeysState" expires_after="2023-08-08">
+    enum="SyncCryptographerPendingKeysState" expires_after="2024-02-08">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
