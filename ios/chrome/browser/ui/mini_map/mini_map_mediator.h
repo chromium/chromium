@@ -38,6 +38,12 @@ class WebState;
 // User did not consent in the interstitial.
 - (void)userDeclined;
 
+// User dismissed the window.
+- (void)userDismissed;
+
+// User pressed the content settings.
+- (void)userOpenedSettings;
+
 @end
 
 #endif

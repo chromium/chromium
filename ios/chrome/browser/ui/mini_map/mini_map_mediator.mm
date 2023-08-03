@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/web/annotations/annotations_util.h"
@@ -13,6 +14,19 @@
 namespace {
 // The type of address annotations.
 const char* const kDecorationAddress = "ADDRESS";
+
+// Enum representing the different outcomes of the consent flow.
+// Reported in histogram, do not change order.
+enum class ConsentOutcome {
+  kConsentNotRequired = 0,
+  kConsentSkipped = 1,
+  kUserAccepted = 2,
+  kUserDeclined = 3,
+  kUserOpenedSettings = 4,
+  kUserDismissed = 5,
+  kMaxValue = kUserDismissed,
+};
+
 }  // namespace
 
 @interface MiniMapMediator ()
@@ -52,6 +66,13 @@ const char* const kDecorationAddress = "ADDRESS";
     [self.delegate showConsentInterstitial];
     return;
   }
+  if (consentRequired) {
+    base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                  ConsentOutcome::kConsentSkipped);
+  } else {
+    base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                  ConsentOutcome::kConsentNotRequired);
+  }
   [self.delegate showMap];
 }
 
@@ -59,6 +80,8 @@ const char* const kDecorationAddress = "ADDRESS";
   if (!self.prefService) {
     return;
   }
+  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                ConsentOutcome::kUserAccepted);
   self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, true);
   [self.delegate showMap];
 }
@@ -67,6 +90,8 @@ const char* const kDecorationAddress = "ADDRESS";
   if (!self.prefService) {
     return;
   }
+  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                ConsentOutcome::kUserDeclined);
   self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, false);
   self.prefService->SetBoolean(prefs::kDetectAddressesEnabled, false);
   [self.delegate dismissConsentInterstitialWithCompletion:nil];
@@ -78,8 +103,16 @@ const char* const kDecorationAddress = "ADDRESS";
       manager->RemoveDecorationsWithType(kDecorationAddress);
     }
   }
+}
 
-  // TODO(crbug.com/1351353): disable address annotations.
+- (void)userDismissed {
+  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                ConsentOutcome::kUserDismissed);
+}
+
+- (void)userOpenedSettings {
+  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                ConsentOutcome::kUserOpenedSettings);
 }
 
 @end

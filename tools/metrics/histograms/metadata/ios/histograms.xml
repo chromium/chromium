@@ -1540,6 +1540,13 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
+<histogram name="IOS.MiniMap.ConsentOutcome" enum="IOSMiniMapConsentOutcome"
+    expires_after="2024-08-03">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>Outcome of the MiniMap consent screen.</summary>
+</histogram>
+
 <histogram name="IOS.MultiWindow.Configuration"
     enum="IOSMultiWindowConfiguration" expires_after="2022-12-11">
   <owner>marq@chromium.org</owner>

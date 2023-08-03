@@ -166,11 +166,13 @@
 
 - (void)dismissed {
   if (!_showingMap) {
+    [self.mediator userDismissed];
     [self workFlowEnded];
   }
 }
 
 - (void)userPressedContentSettings {
+  [self.mediator userOpenedSettings];
   id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
   [settings_command_handler
