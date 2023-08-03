@@ -18,6 +18,7 @@
 #import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/handoff/handoff_manager.h"
 #import "components/history/core/common/pref_names.h"
+#import "components/invalidation/impl/fcm_invalidation_service.h"
 #import "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #import "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #import "components/language/core/browser/language_prefs.h"
@@ -136,6 +137,7 @@ const char kTrialPrefName[] = "trending_queries.trial_version";
 const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 // Deprecated 07/2023.
 const char kNewTabPageFieldTrialPref[] = "new_tab_page.trial_version";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -549,4 +551,9 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   if (prefs->HasPrefPath(kNewTabPageFieldTrialPref)) {
     prefs->ClearPref(kNewTabPageFieldTrialPref);
   }
+
+  // Added 08/2023.
+  invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(prefs);
+  invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(prefs);
+  invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
 }

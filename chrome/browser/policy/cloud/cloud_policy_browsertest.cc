@@ -105,7 +105,6 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
     content::BrowserContext* context) {
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
-      std::make_unique<invalidation::FakeInvalidationService>(),
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&CreateInvalidationServiceForSenderId));

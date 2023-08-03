@@ -69,26 +69,8 @@ WebViewProfileInvalidationProviderFactory::BuildServiceInstanceFor(
       std::make_unique<invalidation::ProfileIdentityProvider>(
           WebViewIdentityManagerFactory::GetForBrowserState(browser_state));
 
-  auto service = std::make_unique<invalidation::FCMInvalidationService>(
-      identity_provider.get(),
-      base::BindRepeating(
-          &invalidation::FCMNetworkHandler::Create,
-          WebViewGCMProfileServiceFactory::GetForBrowserState(browser_state)
-              ->driver(),
-          WebViewInstanceIDProfileServiceFactory::GetForBrowserState(
-              browser_state)
-              ->driver()),
-      base::BindRepeating(
-          &invalidation::PerUserTopicSubscriptionManager::Create,
-          identity_provider.get(), browser_state->GetPrefs(),
-          browser_state->GetURLLoaderFactory()),
-      WebViewInstanceIDProfileServiceFactory::GetForBrowserState(browser_state)
-          ->driver(),
-      browser_state->GetPrefs());
-  service->Init();
-
   return std::make_unique<ProfileInvalidationProvider>(
-      std::move(service), std::move(identity_provider));
+      std::move(identity_provider));
 }
 
 void WebViewProfileInvalidationProviderFactory::RegisterBrowserStatePrefs(

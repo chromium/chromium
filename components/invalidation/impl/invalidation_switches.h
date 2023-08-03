@@ -11,8 +11,6 @@
 namespace invalidation {
 namespace switches {
 
-BASE_DECLARE_FEATURE(kSyncInstanceIDTokenTTL);
-extern const base::FeatureParam<int> kSyncInstanceIDTokenTTLSeconds;
 BASE_DECLARE_FEATURE(kPolicyInstanceIDTokenTTL);
 extern const base::FeatureParam<int> kPolicyInstanceIDTokenTTLSeconds;
 

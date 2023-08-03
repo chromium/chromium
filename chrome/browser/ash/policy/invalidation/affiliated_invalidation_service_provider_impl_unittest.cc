@@ -61,8 +61,7 @@ CreateInvalidationServiceForSenderId(const std::string& fcm_sender_id) {
 std::unique_ptr<KeyedService> BuildProfileInvalidationProvider(
     content::BrowserContext* context) {
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
-      nullptr, nullptr,
-      base::BindRepeating(&CreateInvalidationServiceForSenderId));
+      nullptr, base::BindRepeating(&CreateInvalidationServiceForSenderId));
 }
 
 void SendInvalidatorStateChangeNotification(

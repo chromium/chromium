@@ -61,8 +61,9 @@ void InvalidationsMessageHandler::UIReady(const base::Value::List& args) {
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(Profile::FromWebUI(web_ui()));
   if (invalidation_provider) {
-    logger_ = invalidation_provider->GetInvalidationService()
-                  ->GetInvalidationLogger();
+    // TODO(crbug.com/1056181): removed with old sync invalidation service,
+    // consider using for other invalidation services.
+    NOTIMPLEMENTED();
   }
   if (logger_ && !logger_->IsObserverRegistered(this))
     logger_->RegisterObserver(this);
@@ -74,9 +75,9 @@ void InvalidationsMessageHandler::HandleRequestDetailedStatus(
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(Profile::FromWebUI(web_ui()));
   if (invalidation_provider) {
-    invalidation_provider->GetInvalidationService()->RequestDetailedStatus(
-        base::BindRepeating(&InvalidationsMessageHandler::OnDetailedStatus,
-                            weak_ptr_factory_.GetWeakPtr()));
+    // TODO(crbug.com/1056181): removed with old sync invalidation service,
+    // consider using for other invalidation services.
+    NOTIMPLEMENTED();
   }
 }
 

@@ -1386,6 +1386,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kHatsPrivacyHubBaselineCycleEndTs, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
 }  // namespace
 
 void RegisterLocalState(PrefRegistrySimple* registry) {
@@ -2564,6 +2565,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kClearUserDataDir1Pref);
 #endif
+
+  // Added 08/2023.
+  invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(
+      profile_prefs);
+  invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(
+      profile_prefs);
+  invalidation::FCMInvalidationService::ClearDeprecatedPrefs(profile_prefs);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

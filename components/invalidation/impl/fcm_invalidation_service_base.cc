@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
@@ -21,8 +20,7 @@
 namespace invalidation {
 namespace {
 const char kApplicationName[] = "com.google.chrome.fcm.invalidations";
-// Sender ID coming from the Firebase console.
-const char kInvalidationGCMSenderId[] = "8181035976";
+constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 }  // namespace
 
 FCMInvalidationServiceBase::FCMInvalidationServiceBase(
@@ -32,15 +30,15 @@ FCMInvalidationServiceBase::FCMInvalidationServiceBase(
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* pref_service,
     const std::string& sender_id)
-    : sender_id_(sender_id.empty() ? kInvalidationGCMSenderId : sender_id),
-      invalidator_registrar_(pref_service,
-                             sender_id_,
-                             sender_id_ == kInvalidationGCMSenderId),
+    : sender_id_(sender_id),
+      invalidator_registrar_(pref_service, sender_id_),
       fcm_network_handler_callback_(std::move(fcm_network_handler_callback)),
       per_user_topic_subscription_manager_callback_(
           std::move(per_user_topic_subscription_manager_callback)),
       instance_id_driver_(instance_id_driver),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service) {
+  CHECK(!sender_id_.empty());
+}
 
 FCMInvalidationServiceBase::~FCMInvalidationServiceBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -54,6 +52,14 @@ FCMInvalidationServiceBase::~FCMInvalidationServiceBase() {
 // static
 void FCMInvalidationServiceBase::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kInvalidationClientIDCache);
+}
+
+// static
+void FCMInvalidationServiceBase::ClearDeprecatedPrefs(PrefService* prefs) {
+  if (prefs->HasPrefPath(prefs::kInvalidationClientIDCache)) {
+    ScopedDictPrefUpdate update(prefs, prefs::kInvalidationClientIDCache);
+    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
+  }
 }
 
 void FCMInvalidationServiceBase::RegisterInvalidationHandler(
@@ -307,11 +313,6 @@ void FCMInvalidationServiceBase::DoUpdateSubscribedTopicsIfNeeded() {
 }
 
 const std::string FCMInvalidationServiceBase::GetApplicationName() {
-  // If using the default |sender_id_|, use the bare |kApplicationName|, so the
-  // old app name is maintained.
-  if (sender_id_ == kInvalidationGCMSenderId) {
-    return kApplicationName;
-  }
   return base::StrCat({kApplicationName, "-", sender_id_});
 }
 

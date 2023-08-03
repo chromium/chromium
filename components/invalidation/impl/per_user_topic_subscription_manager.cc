@@ -33,6 +33,8 @@ namespace invalidation {
 
 namespace {
 
+constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
+
 const char kTypeSubscribedForInvalidations[] =
     "invalidation.per_sender_registered_for_invalidation";
 
@@ -111,6 +113,18 @@ void PerUserTopicSubscriptionManager::RegisterPrefs(
     PrefRegistrySimple* registry) {
   // Same as RegisterProfilePrefs; see comment in the header.
   RegisterProfilePrefs(registry);
+}
+
+// static
+void PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(PrefService* prefs) {
+  if (prefs->HasPrefPath(kTypeSubscribedForInvalidations)) {
+    ScopedDictPrefUpdate update(prefs, kTypeSubscribedForInvalidations);
+    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
+  }
+  if (prefs->HasPrefPath(kActiveRegistrationTokens)) {
+    ScopedDictPrefUpdate update(prefs, kActiveRegistrationTokens);
+    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
+  }
 }
 
 // State of the instance ID token when subscription is requested.

@@ -46,16 +46,6 @@ const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 // Returns the TTL (time-to-live) for the Instance ID token, or 0 if no TTL
 // should be specified.
 base::TimeDelta GetTimeToLive(const std::string& sender_id) {
-  // This magic value is identical to kInvalidationGCMSenderId, i.e. the value
-  // that Sync uses for its invalidations.
-  if (sender_id == "8181035976") {
-    if (!base::FeatureList::IsEnabled(switches::kSyncInstanceIDTokenTTL)) {
-      return base::TimeDelta();
-    }
-
-    return base::Seconds(switches::kSyncInstanceIDTokenTTLSeconds.Get());
-  }
-
   // This magic value is identical to kPolicyFCMInvalidationSenderID, i.e. the
   // value that ChromeOS policy uses for its invalidations.
   if (sender_id == "1013309121859") {
@@ -135,6 +125,7 @@ void RecordFCMMessageStatus(InvalidationParsingStatus status,
   // Also split the histogram by a few well-known senders. The actual constants
   // aren't accessible here (they're defined in higher layers), so we simply
   // duplicate them here, strictly only for the purpose of metrics.
+  // TODO(crbug.com/1404927): clean up sync-related metrics.
   constexpr char kInvalidationGCMSenderId[] = "8181035976";
   constexpr char kDriveFcmSenderId[] = "947318989803";
   constexpr char kPolicyFCMInvalidationSenderID[] = "1013309121859";

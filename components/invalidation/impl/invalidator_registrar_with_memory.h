@@ -33,8 +33,7 @@ BASE_DECLARE_FEATURE(kRestoreInterestingTopicsFeature);
 class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
  public:
   InvalidatorRegistrarWithMemory(PrefService* prefs,
-                                 const std::string& sender_id,
-                                 bool migrate_old_prefs);
+                                 const std::string& sender_id);
   InvalidatorRegistrarWithMemory(const InvalidatorRegistrarWithMemory& other) =
       delete;
   InvalidatorRegistrarWithMemory& operator=(
@@ -50,6 +49,8 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // unencrypted area.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  static void ClearDeprecatedPrefs(PrefService* prefs);
 
   // Starts sending notifications to |handler|.  |handler| must not be nullptr,
   // and it must not already be registered.

@@ -50,7 +50,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, Basic) {
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, "sender_id", /*migrate_old_prefs=*/false);
+      &pref_service, "sender_id");
 
   FakeInvalidationHandler handler("owner");
   invalidator->RegisterHandler(&handler);
@@ -119,7 +119,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, "sender_id", /*migrate_old_prefs=*/false);
+      &pref_service, "sender_id");
 
   FakeInvalidationHandler handler1("owner_1");
   FakeInvalidationHandler handler2("owner_2");
@@ -189,7 +189,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, MultipleRegistrations) {
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, "sender_id", /*migrate_old_prefs=*/false);
+      &pref_service, "sender_id");
 
   FakeInvalidationHandler handler1("owner1");
   FakeInvalidationHandler handler2("owner2");
@@ -222,7 +222,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, "sender_id", /*migrate_old_prefs=*/false);
+      &pref_service, "sender_id");
 
   FakeInvalidationHandler handler1("owner_1");
 
@@ -288,7 +288,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
   // Create an invalidator and make sure it correctly restored state from the
   // pref.
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, "sender_id", /*migrate_old_prefs=*/false);
+      &pref_service, "sender_id");
 
   std::map<std::string, TopicMetadata> expected_subscribed_topics{
       {"topic_1", TopicMetadata{true}},    {"topic_2", TopicMetadata{true}},
@@ -327,7 +327,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, ShouldKeepSubscriptionsAfterRestart) {
   pref_service.Set(kTopicsToHandler, std::move(*stored_topics));
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, "sender_id", /*migrate_old_prefs=*/false);
+      &pref_service, "sender_id");
   FakeInvalidationHandler handler("handler");
   invalidator->RegisterHandler(&handler);
 
@@ -388,7 +388,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, ShouldRemoveAllTopics) {
   pref_service.Set(kTopicsToHandler, base::Value(std::move(stored_topics)));
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, kSenderId, /*migrate_old_prefs=*/false);
+      &pref_service, kSenderId);
   invalidator->RegisterHandler(&handler);
 
   // Verify that all topics are successfully subscribed but not registered by
@@ -429,7 +429,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, ShouldRemoveUnregisteredTopics) {
   pref_service.Set(kTopicsToHandler, base::Value(std::move(stored_topics)));
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, kSenderId, /*migrate_old_prefs=*/false);
+      &pref_service, kSenderId);
   invalidator->RegisterHandler(&handler);
 
   // Verify that all topics are successfully subscribed but not registered by
