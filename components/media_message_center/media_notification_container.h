@@ -52,6 +52,15 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationContainer {
   // settings media detailed view.
   virtual void OnShowCastingDevicesRequested() {}
 
+  // Called when a media action button in MediaNotificationView is pressed and
+  // MediaNotificationContainer needs to handle the button event.
+  virtual void OnMediaSessionActionButtonPressed(
+      media_session::mojom::MediaSessionAction action) {}
+
+  // Called when a seek event is triggered in MediaNotificationView and
+  // MediaNotificationContainer needs to handle the event.
+  virtual void SeekTo(base::TimeDelta time) {}
+
  protected:
   virtual ~MediaNotificationContainer() = default;
 };

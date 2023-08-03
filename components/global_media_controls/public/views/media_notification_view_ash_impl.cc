@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/global_media_controls/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
 
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -34,7 +34,7 @@ namespace {
 constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr auto kMainRowInsets = gfx::Insets::TLBR(0, 8, 12, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
-constexpr auto kPlayPauseContainerInsets = gfx::Insets::VH(8, 0);
+constexpr auto kPlayPauseContainerInsets = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
 constexpr auto kDeviceSelectorSeparatorInsets = gfx::Insets::VH(10, 12);
 constexpr auto kDeviceSelectorSeparatorLineInsets = gfx::Insets::VH(1, 1);
@@ -42,6 +42,7 @@ constexpr auto kDeviceSelectorSeparatorLineInsets = gfx::Insets::VH(1, 1);
 constexpr int kMainRowSeparator = 8;
 constexpr int kMediaInfoSeparator = 4;
 constexpr int kControlsRowSeparator = 2;
+constexpr int kPlayPauseContainerSpacing = 12;
 constexpr int kChevronIconSize = 15;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
@@ -130,14 +131,20 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     std::unique_ptr<MediaItemUIFooter> footer_view,
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
+    std::unique_ptr<views::View> dismiss_button,
     media_message_center::MediaColorTheme theme,
     MediaDisplayPage media_display_page)
     : container_(container),
       item_(std::move(item)),
       theme_(theme),
       media_display_page_(media_display_page) {
-  DCHECK(container_);
-  DCHECK(item_);
+  CHECK(container_);
+
+  if (media_display_page_ == MediaDisplayPage::kLockScreenMediaView) {
+    CHECK(dismiss_button);
+  } else {
+    CHECK(item_);
+  }
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -207,12 +214,22 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
 
-  // Create the play/pause button.
+  // Create the play/pause button and add the dismiss button if it exists.
   auto* play_pause_container =
       main_row->AddChildView(std::make_unique<views::BoxLayoutView>());
-  play_pause_container->SetInsideBorderInsets(kPlayPauseContainerInsets);
+  play_pause_container->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  play_pause_container->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
   play_pause_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
+
+  if (dismiss_button) {
+    play_pause_container->SetBetweenChildSpacing(kPlayPauseContainerSpacing);
+    play_pause_container->AddChildView(std::move(dismiss_button));
+  } else {
+    play_pause_container->SetInsideBorderInsets(kPlayPauseContainerInsets);
+  }
 
   play_pause_button_ = CreateMediaButton(
       play_pause_container, static_cast<int>(MediaSessionAction::kPlay),
@@ -294,7 +311,9 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     device_selector_view_ = AddChildView(std::move(device_selector_view));
   }
 
-  item_->SetView(this);
+  if (item_) {
+    item_->SetView(this);
+  }
 }
 
 MediaNotificationViewAshImpl::~MediaNotificationViewAshImpl() {
@@ -468,29 +487,48 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
 }
 
 void MediaNotificationViewAshImpl::ButtonPressed(views::Button* button) {
-  item_->OnMediaSessionActionButtonPressed(
-      static_cast<MediaSessionAction>(button->GetID()));
+  const auto action = static_cast<MediaSessionAction>(button->GetID());
+  if (item_) {
+    item_->OnMediaSessionActionButtonPressed(action);
+  } else {
+    // LockScreenMediaView does not have MediaNotificationItem and will handle
+    // the action itself.
+    container_->OnMediaSessionActionButtonPressed(action);
+  }
 }
 
 void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {
-  item_->SeekTo(seek_progress * position_.duration());
+  const auto time = seek_progress * position_.duration();
+  if (item_) {
+    item_->SeekTo(time);
+  } else {
+    // LockScreenMediaView does not have MediaNotificationItem and will handle
+    // the seek event itself.
+    container_->SeekTo(time);
+  }
 }
 
 void MediaNotificationViewAshImpl::StartCastingButtonPressed() {
   CHECK(device_selector_view_);
 
-  // Clicking the button on the quick settings media view should redirect the
-  // user to the quick settings media detailed view and open the device selector
-  // view there instead.
-  if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
-    container_->OnShowCastingDevicesRequested();
-    return;
+  switch (media_display_page_) {
+    case MediaDisplayPage::kQuickSettingsMediaView: {
+      // Clicking the button on the quick settings media view should redirect
+      // the user to the quick settings media detailed view and open the device
+      // selector view there instead.
+      container_->OnShowCastingDevicesRequested();
+      break;
+    }
+    case MediaDisplayPage::kQuickSettingsMediaDetailedView: {
+      // Clicking the button on the quick settings media detailed view will open
+      // the device selector view to show the device list.
+      device_selector_view_->ShowOrHideDeviceList();
+      UpdateCastingState();
+      break;
+    }
+    default:
+      NOTREACHED();
   }
-
-  // Clicking the button on the quick settings media detailed view will open the
-  // device selector view to show the device list.
-  device_selector_view_->ShowOrHideDeviceList();
-  UpdateCastingState();
 }
 
 void MediaNotificationViewAshImpl::UpdateCastingState() {

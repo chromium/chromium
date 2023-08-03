@@ -106,6 +106,10 @@ void MediaSquigglyProgressView::AnimationProgressed(
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
+gfx::Size MediaSquigglyProgressView::CalculatePreferredSize() const {
+  return GetContentsBounds().size();
+}
+
 void MediaSquigglyProgressView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);

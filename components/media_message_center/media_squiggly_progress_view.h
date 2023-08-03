@@ -38,6 +38,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::View:
+  gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;

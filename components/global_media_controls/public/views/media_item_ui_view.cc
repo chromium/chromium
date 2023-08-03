@@ -139,8 +139,8 @@ MediaItemUIView::MediaItemUIView(
     view_ = swipeable_container_->AddChildView(
         std::make_unique<MediaNotificationViewAshImpl>(
             this, std::move(item), std::move(footer_view),
-            std::move(device_selector_view), media_color_theme.value(),
-            media_display_page.value()));
+            std::move(device_selector_view), /*dismiss_button=*/nullptr,
+            media_color_theme.value(), media_display_page.value()));
   } else {
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 

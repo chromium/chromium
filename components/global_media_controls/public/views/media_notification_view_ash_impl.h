@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
-#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -39,10 +39,12 @@ class MediaButton;
 
 // Indicates this media notification view will be displayed on which page.
 enum class MediaDisplayPage {
-  // Media will be display on the Quick Settings media view page.
+  // Media will be displayed on the Quick Settings media view page.
   kQuickSettingsMediaView = 0,
-  // Media will be display on the Quick Settings media detailed view page.
+  // Media will be displayed on the Quick Settings media detailed view page.
   kQuickSettingsMediaDetailedView = 1,
+  // Media will be displayed on the lock screen view.
+  kLockScreenMediaView = 2,
 };
 
 // CrOS implementation of media notification view.
@@ -56,6 +58,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       std::unique_ptr<MediaItemUIFooter> footer_view,
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
+      std::unique_ptr<views::View> dismiss_button,
       media_message_center::MediaColorTheme theme,
       MediaDisplayPage media_display_page);
   MediaNotificationViewAshImpl(const MediaNotificationViewAshImpl&) = delete;
@@ -169,4 +172,4 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
 
 }  // namespace global_media_controls
 
-#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_

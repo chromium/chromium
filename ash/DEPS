@@ -11,6 +11,7 @@ include_rules = [
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
   "+components/fullscreen_control",
+  "+components/global_media_controls",
   "+components/language/core/browser/pref_names.h",
   "+components/live_caption",
   "+components/media_message_center",

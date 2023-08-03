@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/global_media_controls/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
 
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
@@ -81,8 +81,9 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     widget_ = CreateTestWidget();
     view_ =
         widget_->SetContentsView(std::make_unique<MediaNotificationViewAshImpl>(
-            container_.get(), item_->GetWeakPtr(), nullptr,
-            std::move(device_selector), media_message_center::MediaColorTheme(),
+            container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
+            std::move(device_selector), /*dismiss_button=*/nullptr,
+            media_message_center::MediaColorTheme(),
             MediaDisplayPage::kQuickSettingsMediaDetailedView));
     widget_->Show();
   }
@@ -99,7 +100,8 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   std::unique_ptr<MediaNotificationViewAshImpl> CreateView(
       MediaDisplayPage media_display_page) {
     return std::make_unique<MediaNotificationViewAshImpl>(
-        container_.get(), item_->GetWeakPtr(), nullptr, nullptr,
+        container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
+        /*device_selector_view=*/nullptr, /*dismiss_button=*/nullptr,
         media_message_center::MediaColorTheme(), media_display_page);
   }
 
@@ -109,7 +111,8 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
         std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
     return std::make_unique<MediaNotificationViewAshImpl>(
         container_.get(), item_->GetWeakPtr(), std::move(footer),
-        std::move(device_selector), media_message_center::MediaColorTheme(),
+        std::move(device_selector), /*dismiss_button=*/nullptr,
+        media_message_center::MediaColorTheme(),
         MediaDisplayPage::kQuickSettingsMediaView);
   }
 

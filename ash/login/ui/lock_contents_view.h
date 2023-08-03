@@ -56,6 +56,7 @@ namespace ash {
 
 class KioskAppDefaultMessage;
 class LockScreenMediaControlsView;
+class LockScreenMediaView;
 class LoginAuthUserView;
 class LoginBigUserView;
 class LoginCameraTimeoutView;
@@ -425,9 +426,12 @@ class ASH_EXPORT LockContentsView
   raw_ptr<LoginBigUserView, ExperimentalAsh> opt_secondary_big_view_ = nullptr;
   raw_ptr<ScrollableUsersListView, ExperimentalAsh> users_list_ = nullptr;
 
-  // View for media controls that appear on the lock screen if user enabled.
+  // View for media controls that appear on the lock screen if it is enabled.
+  // |media_view_| is used if the flag media::kGlobalMediaControlsCrOSUpdatedUI
+  // is enabled, otherwise |media_controls_view_| is used.
   raw_ptr<LockScreenMediaControlsView, ExperimentalAsh> media_controls_view_ =
       nullptr;
+  raw_ptr<LockScreenMediaView, ExperimentalAsh> media_view_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> middle_spacing_view_ = nullptr;
 
   // View that contains the note action button and the system info labels,
