@@ -2948,7 +2948,8 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
           blink::features::kDefaultViewportIsDeviceWidth) &&
-      screen_width_in_dp >= kTabletWidthThreshold) {
+      screen_width_in_dp >= kTabletWidthThreshold &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }
 #endif
