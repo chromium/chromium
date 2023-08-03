@@ -25,7 +25,7 @@ jobs:
           cache: npm
           node-version: lts/*
       - name: Install dependencies
-        run: npm i
+        run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build BiDi
