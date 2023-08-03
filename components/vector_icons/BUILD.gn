@@ -198,6 +198,8 @@ aggregate_vector_icons("components_vector_icons") {
     "shopping_bag.icon",
     "shopping_bag_refresh.icon",
     "sms.icon",
+    "storage_access.icon",
+    "storage_access_off.icon",
     "submenu_arrow.icon",
     "submenu_arrow_chrome_refresh.icon",
     "sync.icon",

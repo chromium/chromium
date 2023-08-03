@@ -491,8 +491,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kDevicesIcon;
       break;
     case ContentSettingsType::STORAGE_ACCESS:
-      // TODO(crbug.com/1433644): Choose the right icon.
-      icon = &vector_icons::kCookieIcon;
+      icon = &vector_icons::kStorageAccessIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are

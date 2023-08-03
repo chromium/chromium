@@ -357,6 +357,10 @@ void GetIconChromeRefresh(ContentSettingsType type,
       *icon = blocked ? &vector_icons::kSensorsOffChromeRefreshIcon
                       : &vector_icons::kSensorsChromeRefreshIcon;
       return;
+    case ContentSettingsType::STORAGE_ACCESS:
+      *icon = blocked ? &vector_icons::kStorageAccessOffIcon
+                      : &vector_icons::kStorageAccessIcon;
+      return;
     case ContentSettingsType::POPUPS:
       *icon =
           blocked ? &vector_icons::kIframeOffIcon : &vector_icons::kIframeIcon;
@@ -430,6 +434,9 @@ void GetIconFromType(ContentSettingsType type,
       return;
     case ContentSettingsType::SENSORS:
       *icon = &vector_icons::kSensorsIcon;
+      return;
+    case ContentSettingsType::STORAGE_ACCESS:
+      *icon = &vector_icons::kStorageAccessIcon;
       return;
     case ContentSettingsType::POPUPS:
       *icon = &kWebIcon;
@@ -1214,8 +1221,8 @@ bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
   bool has_blocked_requests =
       base::ranges::any_of(entries, [](auto& entry) { return !entry.second; });
 
-  // TODO(crbug.com/1433644): Update icon and tooltips.
-  SetIcon(ContentSettingsType::COOKIES, /*blocked=*/has_blocked_requests);
+  SetIcon(ContentSettingsType::STORAGE_ACCESS,
+          /*blocked=*/has_blocked_requests);
   // set_explanatory_string_id(IDS_BLOCKED_POPUPS_EXPLANATORY_TEXT);
   set_tooltip(l10n_util::GetStringUTF16(
       has_blocked_requests ? IDS_STORAGE_ACCESS_PERMISSION_BLOCKED_TOOLTIP
