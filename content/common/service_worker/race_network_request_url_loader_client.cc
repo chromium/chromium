@@ -4,6 +4,8 @@
 
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -299,6 +301,16 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     MojoResult aresult) {
   TRACE_EVENT0("ServiceWorker",
                "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite");
+
+  if (!owner_) {
+    return;
+  }
+
+  std::string histogram_prefix = base::StrCat(
+      {"ServiceWorker.FetchEvent",
+       owner_->IsMainResourceLoader() ? ".MainResource" : ".Subresource",
+       ".RaceNetworkRequest.DataTransfer"});
+
   // Read data from |body_| data pipe.
   const void* buffer;
   // Contains the actual byte size for read/write data. The smallest number from
@@ -308,6 +320,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
 
   MojoResult result = body_->BeginReadData(&buffer, &num_bytes_to_consume,
                                            MOJO_READ_DATA_FLAG_NONE);
+  base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Read"}),
+                                ConvertMojoResultForUMA(result));
   switch (result) {
     case MOJO_RESULT_OK:
       break;
@@ -329,6 +343,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
   result = data_pipe_for_race_network_request_.producer->BeginWriteData(
       &write_buffer, &data_pipe_for_race_network_request_.num_write_bytes,
       MOJO_WRITE_DATA_FLAG_NONE);
+  base::UmaHistogramEnumeration(
+      base::StrCat({histogram_prefix, ".WriteForRaceNetworkRequset"}),
+      ConvertMojoResultForUMA(result));
   switch (result) {
     case MOJO_RESULT_OK:
       // Perhaps writable size may be smaller than the readable size. Choose the
@@ -355,6 +372,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
   result = data_pipe_for_fetch_handler_.producer->BeginWriteData(
       &write_buffer_for_fetch_handler,
       &data_pipe_for_fetch_handler_.num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  base::UmaHistogramEnumeration(
+      base::StrCat({histogram_prefix, ".WriteForFetchHandler"}),
+      ConvertMojoResultForUMA(result));
   switch (result) {
     case MOJO_RESULT_OK:
       // Perhaps writable size may be smaller than the readable size. Choose
@@ -427,6 +447,51 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
     case State::kAborted:
       state_ = new_state;
       break;
+  }
+}
+
+ServiceWorkerRaceNetworkRequestURLLoaderClient::MojoResultForUMA
+ServiceWorkerRaceNetworkRequestURLLoaderClient::ConvertMojoResultForUMA(
+    MojoResult mojo_result) {
+  switch (mojo_result) {
+    case MOJO_RESULT_OK:
+      return MojoResultForUMA::MOJO_RESULT_OK;
+    case MOJO_RESULT_CANCELLED:
+      return MojoResultForUMA::MOJO_RESULT_CANCELLED;
+    case MOJO_RESULT_UNKNOWN:
+      return MojoResultForUMA::MOJO_RESULT_UNKNOWN;
+    case MOJO_RESULT_INVALID_ARGUMENT:
+      return MojoResultForUMA::MOJO_RESULT_INVALID_ARGUMENT;
+    case MOJO_RESULT_DEADLINE_EXCEEDED:
+      return MojoResultForUMA::MOJO_RESULT_DEADLINE_EXCEEDED;
+    case MOJO_RESULT_NOT_FOUND:
+      return MojoResultForUMA::MOJO_RESULT_NOT_FOUND;
+    case MOJO_RESULT_ALREADY_EXISTS:
+      return MojoResultForUMA::MOJO_RESULT_ALREADY_EXISTS;
+    case MOJO_RESULT_PERMISSION_DENIED:
+      return MojoResultForUMA::MOJO_RESULT_PERMISSION_DENIED;
+    case MOJO_RESULT_RESOURCE_EXHAUSTED:
+      return MojoResultForUMA::MOJO_RESULT_RESOURCE_EXHAUSTED;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      return MojoResultForUMA::MOJO_RESULT_FAILED_PRECONDITION;
+    case MOJO_RESULT_ABORTED:
+      return MojoResultForUMA::MOJO_RESULT_ABORTED;
+    case MOJO_RESULT_OUT_OF_RANGE:
+      return MojoResultForUMA::MOJO_RESULT_OUT_OF_RANGE;
+    case MOJO_RESULT_UNIMPLEMENTED:
+      return MojoResultForUMA::MOJO_RESULT_UNIMPLEMENTED;
+    case MOJO_RESULT_INTERNAL:
+      return MojoResultForUMA::MOJO_RESULT_INTERNAL;
+    case MOJO_RESULT_UNAVAILABLE:
+      return MojoResultForUMA::MOJO_RESULT_UNAVAILABLE;
+    case MOJO_RESULT_DATA_LOSS:
+      return MojoResultForUMA::MOJO_RESULT_DATA_LOSS;
+    case MOJO_RESULT_BUSY:
+      return MojoResultForUMA::MOJO_RESULT_BUSY;
+    case MOJO_RESULT_SHOULD_WAIT:
+      return MojoResultForUMA::MOJO_RESULT_SHOULD_WAIT;
+    default:
+      NOTREACHED_NORETURN();
   }
 }
 

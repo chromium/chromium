@@ -42,6 +42,36 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     // Used when the pipe is closed unexpectedly.
     kAborted,
   };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // MojoResult for UMA. We create a dedicated MojoResult enum class here not to
+  // enforce the original to follow the rule from the histogram guidelines.
+  //
+  // The full set of MojoResult is defined in mojo/public/c/system/types.h.
+  enum class MojoResultForUMA {
+    MOJO_RESULT_OK = 0,
+    MOJO_RESULT_CANCELLED = 1,
+    MOJO_RESULT_UNKNOWN = 2,
+    MOJO_RESULT_INVALID_ARGUMENT = 3,
+    MOJO_RESULT_DEADLINE_EXCEEDED = 4,
+    MOJO_RESULT_NOT_FOUND = 5,
+    MOJO_RESULT_ALREADY_EXISTS = 6,
+    MOJO_RESULT_PERMISSION_DENIED = 7,
+    MOJO_RESULT_RESOURCE_EXHAUSTED = 8,
+    MOJO_RESULT_FAILED_PRECONDITION = 9,
+    MOJO_RESULT_ABORTED = 10,
+    MOJO_RESULT_OUT_OF_RANGE = 11,
+    MOJO_RESULT_UNIMPLEMENTED = 12,
+    MOJO_RESULT_INTERNAL = 13,
+    MOJO_RESULT_UNAVAILABLE = 14,
+    MOJO_RESULT_DATA_LOSS = 15,
+    MOJO_RESULT_BUSY = 16,
+    MOJO_RESULT_SHOULD_WAIT = 17,
+    kMaxValue = MOJO_RESULT_SHOULD_WAIT,
+  };
+
   // |data_pipe_capacity_num_bytes| indicates the byte size of the data pipe
   // which is newly created in the constructor.
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
@@ -85,6 +115,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     DataPipeInfo();
     ~DataPipeInfo();
   };
+  MojoResultForUMA ConvertMojoResultForUMA(MojoResult mojo_result);
 
   // Commits the head and body through |owner_|'s commit methods.
   // This method does not complete the commit process.
