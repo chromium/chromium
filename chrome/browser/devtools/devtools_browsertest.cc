@@ -1759,6 +1759,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                         extension_id, "/simple_test_page.html"}));
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       CantInspectFileUrlWithoutFileAccess) {
+  LoadExtension("can_inspect_url");
+  std::string file_url =
+      net::FilePathToFileURL(
+          base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
+              .AppendASCII("content/test/data/devtools/navigation.html"))
+          .spec();
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#", file_url}));
+}
+
 class DevToolsExtensionSidePanelTest
     : public DevToolsExtensionTest,
       public ::testing::WithParamInterface<bool> {
