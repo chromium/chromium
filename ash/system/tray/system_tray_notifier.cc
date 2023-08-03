@@ -121,6 +121,12 @@ void SystemTrayNotifier::NotifyTrayBubbleBoundsChanged(
   }
 }
 
+void SystemTrayNotifier::NotifyImeMenuTrayBubbleShown() {
+  for (auto& observer : system_tray_observers_) {
+    observer.OnImeMenuTrayBubbleShown();
+  }
+}
+
 void SystemTrayNotifier::AddVirtualKeyboardObserver(
     VirtualKeyboardObserver* observer) {
   virtual_keyboard_observers_.AddObserver(observer);

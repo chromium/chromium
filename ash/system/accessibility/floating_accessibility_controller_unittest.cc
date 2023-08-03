@@ -36,11 +36,6 @@ namespace {
 const int kMenuViewBoundsBuffer = 100;
 const char ImeEnglishId[] = "ime:english";
 
-ui::GestureEvent CreateTapEvent() {
-  return ui::GestureEvent(0, 0, 0, base::TimeTicks(),
-                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-}
-
 }  // namespace
 class FloatingAccessibilityControllerTest : public AshTestBase {
  public:
@@ -171,9 +166,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   void ClickOnAccessibilityTrayButton() {
     views::View* button =
         GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList);
-    ui::GestureEvent event = CreateTapEvent();
-    button->OnGestureEvent(&event);
+    GestureTapOn(button);
   }
+
+  void ClickOnImeTrayButton() { GestureTapOn(GetImeTray()); }
 
   void EnableAndClickOnVirtualKeyboardTrayButton() {
     accessibility_controller()->virtual_keyboard().SetEnabled(true);
@@ -239,12 +235,10 @@ TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayVisibility) {
 
   SetUpVisibleMenu();
 
-  // Tray bubble is visible when  a user taps on the IME icon.
-  GetImeTray()->PerformAction(CreateTapEvent());
+  ClickOnImeTrayButton();
   EXPECT_TRUE(IsImeTrayShown());
 
-  // Tray bubble is invisible when the user clicks on the IME icon again.
-  GetImeTray()->PerformAction(CreateTapEvent());
+  ClickOnImeTrayButton();
   EXPECT_FALSE(IsImeTrayShown());
 }
 
@@ -261,8 +255,7 @@ TEST_F(FloatingAccessibilityControllerTest,
 
   SetUpVisibleMenu();
 
-  // Tray bubble is visible when  a user taps on the IME icon.
-  GetImeTray()->PerformAction(CreateTapEvent());
+  ClickOnImeTrayButton();
 
   auto* ime_tray = GetImeTray()->GetBubbleView();
   ASSERT_TRUE(ime_tray);
@@ -275,6 +268,36 @@ TEST_F(FloatingAccessibilityControllerTest,
 TEST_F(FloatingAccessibilityControllerTest, MenuIsNotShownWhenNotEnabled) {
   accessibility_controller()->ShowFloatingMenuIfEnabled();
   EXPECT_EQ(controller(), nullptr);
+}
+
+TEST_F(FloatingAccessibilityControllerTest,
+       ImeTrayClosedWhenAccessibilityTrayIsShown) {
+  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
+
+  SetUpVisibleMenu();
+
+  ClickOnImeTrayButton();
+  ASSERT_TRUE(IsImeTrayShown());
+
+  ClickOnAccessibilityTrayButton();
+  ASSERT_TRUE(detailed_view_shown());
+
+  EXPECT_FALSE(IsImeTrayShown());
+}
+
+TEST_F(FloatingAccessibilityControllerTest,
+       AccessibilityTrayClosedWhenImeTrayIsShown) {
+  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
+
+  SetUpVisibleMenu();
+
+  ClickOnAccessibilityTrayButton();
+  ASSERT_TRUE(detailed_view_shown());
+
+  ClickOnImeTrayButton();
+  ASSERT_TRUE(IsImeTrayShown());
+
+  EXPECT_FALSE(detailed_view_shown());
 }
 
 TEST_F(FloatingAccessibilityControllerTest, ShowingMenu) {
@@ -358,8 +381,7 @@ TEST_F(FloatingAccessibilityControllerTest, CanChangePosition) {
       SCOPED_TRACE(base::StringPrintf(
           "Testing position #[%d]", static_cast<int>(test.expected_position)));
       // Tap the position button.
-      ui::GestureEvent event = CreateTapEvent();
-      button->OnGestureEvent(&event);
+      GestureTapOn(button);
 
       // Pref change happened.
       EXPECT_EQ(test.expected_position, menu_position());
@@ -381,12 +403,10 @@ TEST_F(FloatingAccessibilityControllerTest, DetailedViewToggle) {
   ASSERT_TRUE(button) << "No accessibility features list button found.";
   EXPECT_FALSE(detailed_view_shown());
 
-  ui::GestureEvent event = CreateTapEvent();
-  button->OnGestureEvent(&event);
+  GestureTapOn(button);
   EXPECT_TRUE(detailed_view_shown());
 
-  event = CreateTapEvent();
-  button->OnGestureEvent(&event);
+  GestureTapOn(button);
   EXPECT_FALSE(detailed_view_shown());
 }
 
@@ -441,10 +461,7 @@ TEST_F(FloatingAccessibilityControllerTest,
 TEST_F(FloatingAccessibilityControllerTest, DetailedViewPosition) {
   SetUpVisibleMenu();
 
-  views::View* button =
-      GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList);
-  ui::GestureEvent event = CreateTapEvent();
-  button->OnGestureEvent(&event);
+  ClickOnAccessibilityTrayButton();
 
   const struct { bool is_RTL; } kTestCases[] = {{true}, {false}};
   for (auto& test : kTestCases) {
@@ -524,10 +541,7 @@ TEST_F(FloatingAccessibilityControllerTest, CollisionWithAutoclicksMenu) {
       SCOPED_TRACE(base::StringPrintf(
           "Testing position #[%d]", static_cast<int>(test.expected_position)));
       // Tap the position button.
-      {
-        ui::GestureEvent event = CreateTapEvent();
-        button->OnGestureEvent(&event);
-      }
+      GestureTapOn(button);
 
       // Pref change happened.
       EXPECT_EQ(test.expected_position, menu_position());
@@ -535,11 +549,9 @@ TEST_F(FloatingAccessibilityControllerTest, CollisionWithAutoclicksMenu) {
       // Rotate around the autoclicks menu.
       for (int j = 0; j < 4; j++) {
         // The position button on autoclicks view.
-        ui::GestureEvent event = CreateTapEvent();
-        autoclick_menu_view()
-            ->GetViewByID(
-                static_cast<int>(AutoclickMenuView::ButtonId::kPosition))
-            ->OnGestureEvent(&event);
+
+        GestureTapOn(autoclick_menu_view()->GetViewByID(
+            static_cast<int>(AutoclickMenuView::ButtonId::kPosition)));
 
         // Menu is in generally the correct screen location.
         EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
@@ -631,7 +643,7 @@ TEST_F(FloatingAccessibilityControllerTest, ActiveFeaturesButtons) {
   EXPECT_EQ(GetMenuViewBounds(), original_bounds);
 }
 
-TEST_F(FloatingAccessibilityControllerTest, AccelatorFocusMenu) {
+TEST_F(FloatingAccessibilityControllerTest, AcceleratorFocusMenu) {
   SetUpVisibleMenu();
 
   ASSERT_TRUE(widget());
