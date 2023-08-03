@@ -896,7 +896,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
     PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
-        opts.memory_tagging == PartitionOptions::MemoryTagging::kEnabled;
+        opts.memory_tagging.enabled ==
+        PartitionOptions::MemoryTagging::kEnabled;
     // Memory tagging is not supported in the configurable pool because MTE
     // stores tagging information in the high bits of the pointer, it causes
     // issues with components like V8's ArrayBuffers which use custom pointer
@@ -904,6 +905,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // "is in configurable pool?" check, so we use that as a proxy.
     PA_CHECK(!settings.memory_tagging_enabled_ ||
              !settings.use_configurable_pool);
+
+    settings.memory_tagging_reporting_mode_ =
+        opts.memory_tagging.reporting_mode;
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
     // brp_enabled() is not supported in the configurable pool because
@@ -1311,8 +1315,9 @@ void* PartitionRoot::ReallocWithFlags(unsigned int flags,
     }
     if (success) {
       if (PA_UNLIKELY(!no_hooks && hooks_enabled)) {
-        PartitionAllocHooks::ReallocObserverHookIfEnabled(ptr, ptr, new_size,
-                                                          type_name);
+        PartitionAllocHooks::ReallocObserverHookIfEnabled(
+            CreateFreeNotificationData(ptr),
+            CreateAllocationNotificationData(ptr, new_size, type_name));
       }
       return ptr;
     }

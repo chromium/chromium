@@ -33,6 +33,7 @@ bool AllocationHook(void** out,
                     const char* type_name) {
   if (UNLIKELY(sampling_state.Sample())) {
     // Ignore allocation requests with unknown flags.
+    // TODO(crbug.com/1469794): Add support for memory tagging in GWP-Asan.
     constexpr int kKnownFlags = partition_alloc::AllocFlags::kReturnNull |
                                 partition_alloc::AllocFlags::kZeroFill;
     if (flags & ~kKnownFlags)

@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/types/strong_alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
@@ -198,6 +199,24 @@ enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
 // thread-cache on the main (malloc) partition will be disabled.
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void ConfigurePartitions(
+    EnableBrp enable_brp,
+    EnableMemoryTagging enable_memory_tagging,
+    partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
+    SplitMainPartition split_main_partition,
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    size_t ref_count_size,
+    BucketDistribution distribution);
+
+// If |thread_cache_on_non_quarantinable_partition| is specified, the
+// thread-cache will be enabled on the non-quarantinable partition. The
+// thread-cache on the main (malloc) partition will be disabled.
+// This is the deprecated version of ConfigurePartitions, kept for compatibility
+// with pdfium's test setup, see
+// third_party/pdfium/testing/allocator_shim_config.cpp.
+// TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
+// the new version.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void ConfigurePartitions(
     EnableBrp enable_brp,

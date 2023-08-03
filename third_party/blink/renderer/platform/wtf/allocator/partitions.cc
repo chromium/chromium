@@ -112,7 +112,7 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   return PartitionOptions{
       .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
       .backup_ref_ptr = brp_setting,
-      .memory_tagging = memory_tagging,
+      .memory_tagging = {.enabled = memory_tagging},
   };
 }
 
@@ -204,7 +204,8 @@ void Partitions::InitializeArrayBufferPartition() {
           .use_configurable_pool = partition_alloc::PartitionOptions::
               UseConfigurablePool::kIfAvailable,
           .memory_tagging =
-              partition_alloc::PartitionOptions::MemoryTagging::kDisabled,
+              {.enabled =
+                   partition_alloc::PartitionOptions::MemoryTagging::kDisabled},
       });
 
   array_buffer_root_ = array_buffer_allocator->root();

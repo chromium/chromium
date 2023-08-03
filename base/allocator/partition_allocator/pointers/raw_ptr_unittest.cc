@@ -1524,11 +1524,12 @@ class BackupRefPtrTest : public testing::Test {
       partition_alloc::PartitionAllocator(partition_alloc::PartitionOptions{
           .backup_ref_ptr =
               partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-          .memory_tagging =
-              base::CPU::GetInstanceNoAllocation().has_mte()
-                  ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-                  : partition_alloc::PartitionOptions::MemoryTagging::
-                        kDisabled});
+          .memory_tagging = {.enabled =
+                                 base::CPU::GetInstanceNoAllocation().has_mte()
+                                     ? partition_alloc::PartitionOptions::
+                                           MemoryTagging::kEnabled
+                                     : partition_alloc::PartitionOptions::
+                                           MemoryTagging::kDisabled}});
 };
 
 TEST_F(BackupRefPtrTest, Basic) {

@@ -42,6 +42,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
+#include "base/allocator/partition_allocator/partition_alloc_allocation_data.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
@@ -187,7 +188,11 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size = 0;
-  MemoryTagging memory_tagging = MemoryTagging::kDisabled;
+  struct {
+    MemoryTagging enabled = MemoryTagging::kDisabled;
+    TagViolationReportingMode reporting_mode =
+        TagViolationReportingMode::kUndefined;
+  } memory_tagging;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif
@@ -258,6 +263,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool use_configurable_pool = false;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
+    TagViolationReportingMode memory_tagging_reporting_mode_ =
+        TagViolationReportingMode::kUndefined;
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
     size_t ref_count_size = 0;
 #endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
@@ -463,8 +470,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Same as |AllocWithFlags()|, but allows specifying |slot_span_alignment|. It
   // has to be a multiple of partition page size, greater than 0 and no greater
   // than kMaxSupportedAlignment. If it equals exactly 1 partition page, no
-  // special action is taken as PartitoinAlloc naturally guarantees this
-  // alignment, otherwise a sub-optimial allocation strategy is used to
+  // special action is taken as PartitionAlloc naturally guarantees this
+  // alignment, otherwise a sub-optimal allocation strategy is used to
   // guarantee the higher-order alignment.
   PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocWithFlagsInternal(
       unsigned int flags,
@@ -538,6 +545,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   AllocationCapacityFromRequestedSize(size_t size) const;
 
   PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
+  PA_ALWAYS_INLINE TagViolationReportingMode
+  memory_tagging_reporting_mode() const;
 
   // Frees memory from this partition, if possible, by decommitting pages or
   // even entire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
@@ -821,7 +830,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Common path of Free() and FreeInUnknownRoot(). Returns
   // true if the caller should return immediately.
   template <unsigned int flags>
-  PA_ALWAYS_INLINE static bool FreeProlog(void* object);
+  PA_ALWAYS_INLINE static bool FreeProlog(void* object,
+                                          const PartitionRoot* root);
 
   // |buckets| has `kNumBuckets` elements, but we sometimes access it at index
   // `kNumBuckets`, which is occupied by the sentinel bucket. The correct layout
@@ -895,6 +905,15 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // May return an invalid thread cache.
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
   PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
+
+  PA_ALWAYS_INLINE AllocationNotificationData
+  CreateAllocationNotificationData(void* object,
+                                   size_t size,
+                                   const char* type_name) const;
+  PA_ALWAYS_INLINE static FreeNotificationData
+  CreateDefaultFreeNotificationData(void* address);
+  PA_ALWAYS_INLINE FreeNotificationData
+  CreateFreeNotificationData(void* address) const;
 
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
   static internal::Lock& GetEnumeratorLock();
@@ -1163,9 +1182,44 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
   return slot_start;
 }
 
+AllocationNotificationData PartitionRoot::CreateAllocationNotificationData(
+    void* object,
+    size_t size,
+    const char* type_name) const {
+  AllocationNotificationData notification_data(object, size, type_name);
+
+  if (IsMemoryTaggingEnabled()) {
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    notification_data.SetMteReportingMode(memory_tagging_reporting_mode());
+#endif
+  }
+
+  return notification_data;
+}
+
+FreeNotificationData PartitionRoot::CreateDefaultFreeNotificationData(
+    void* address) {
+  return FreeNotificationData(address);
+}
+
+FreeNotificationData PartitionRoot::CreateFreeNotificationData(
+    void* address) const {
+  FreeNotificationData notification_data =
+      CreateDefaultFreeNotificationData(address);
+
+  if (IsMemoryTaggingEnabled()) {
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    notification_data.SetMteReportingMode(memory_tagging_reporting_mode());
+#endif
+  }
+
+  return notification_data;
+}
+
 // static
 template <unsigned int flags>
-PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object) {
+PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
+                                                const PartitionRoot* root) {
   PA_DCHECK(flags < FreeFlags::kLastFlag << 1);
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
@@ -1179,7 +1233,14 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object) {
   }
 
   if (PartitionAllocHooks::AreHooksEnabled()) {
-    PartitionAllocHooks::FreeObserverHookIfEnabled(object);
+    // A valid |root| might not be available if this function is called from
+    // |FreeWithFlagsInUnknownRoot| and not deducible if object originates from
+    // an override hook.
+    // TODO(crbug.com/1137393): See if we can make the root available more
+    // reliably or even make this function non-static.
+    auto notification_data = root ? root->CreateFreeNotificationData(object)
+                                  : CreateDefaultFreeNotificationData(object);
+    PartitionAllocHooks::FreeObserverHookIfEnabled(notification_data);
     if (PartitionAllocHooks::FreeOverrideHookIfEnabled(object)) {
       return true;
     }
@@ -1190,7 +1251,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object) {
 
 template <unsigned int flags>
 PA_ALWAYS_INLINE void PartitionRoot::Free(void* object) {
-  bool early_return = FreeProlog<flags>(object);
+  bool early_return = FreeProlog<flags>(object, this);
   if (early_return) {
     return;
   }
@@ -1201,7 +1262,9 @@ PA_ALWAYS_INLINE void PartitionRoot::Free(void* object) {
 // static
 template <unsigned int flags>
 PA_ALWAYS_INLINE void PartitionRoot::FreeInUnknownRoot(void* object) {
-  bool early_return = FreeProlog<flags>(object);
+  // The correct PartitionRoot might not be deducible if the |object| originates
+  // from an override hook.
+  bool early_return = FreeProlog<flags>(object, nullptr);
   if (early_return) {
     return;
   }
@@ -1214,6 +1277,15 @@ PA_ALWAYS_INLINE bool PartitionRoot::IsMemoryTaggingEnabled() const {
   return settings.memory_tagging_enabled_;
 #else
   return false;
+#endif
+}
+
+PA_ALWAYS_INLINE TagViolationReportingMode
+PartitionRoot::memory_tagging_reporting_mode() const {
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+  return settings.memory_tagging_reporting_mode_;
+#else
+  return TagViolationReportingMode::kUndefined;
 #endif
 }
 
@@ -1810,6 +1882,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocWithFlagsInternal(
 
   PA_DCHECK(flags < AllocFlags::kLastFlag << 1);
   PA_DCHECK((flags & AllocFlags::kNoHooks) == 0);  // Internal only.
+  PA_DCHECK((flags & AllocFlags::kMemoryShouldBeTaggedForMte) ==
+            0);  // Internal only.
   PA_DCHECK(initialized);
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
@@ -1825,10 +1899,21 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocWithFlagsInternal(
   void* object = nullptr;
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   if (PA_UNLIKELY(hooks_enabled)) {
+    unsigned int additional_flags = 0;
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    if (IsMemoryTaggingEnabled()) {
+      additional_flags |= AllocFlags::kMemoryShouldBeTaggedForMte;
+    }
+#endif
+    // The override hooks will return false if it can't handle the request, i.e.
+    // due to unsupported flags. In this case, we forward the allocation request
+    // to the default mechanisms.
+    // TODO(crbug.com/1137393): See if we can make the forwarding more verbose
+    // to ensure that this situation doesn't go unnoticed.
     if (PartitionAllocHooks::AllocationOverrideHookIfEnabled(
-            &object, flags, requested_size, type_name)) {
+            &object, flags | additional_flags, requested_size, type_name)) {
       PartitionAllocHooks::AllocationObserverHookIfEnabled(
-          object, requested_size, type_name);
+          CreateAllocationNotificationData(object, requested_size, type_name));
       return object;
     }
   }
@@ -1836,8 +1921,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocWithFlagsInternal(
   object = AllocWithFlagsNoHooks(flags, requested_size, slot_span_alignment);
 
   if (PA_UNLIKELY(hooks_enabled)) {
-    PartitionAllocHooks::AllocationObserverHookIfEnabled(object, requested_size,
-                                                         type_name);
+    PartitionAllocHooks::AllocationObserverHookIfEnabled(
+        CreateAllocationNotificationData(object, requested_size, type_name));
   }
 
   return object;

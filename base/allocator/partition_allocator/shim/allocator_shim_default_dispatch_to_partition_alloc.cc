@@ -549,6 +549,7 @@ void EnablePartitionAllocMemoryReclaimer() {
 void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,
+    partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
@@ -609,11 +610,13 @@ void ConfigurePartitions(
                   ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
                   : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           .ref_count_size = ref_count_size,
-          .memory_tagging =
-              enable_memory_tagging
-                  ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-                  : partition_alloc::PartitionOptions::MemoryTagging::
-                        kDisabled});
+          .memory_tagging = {
+              .enabled = enable_memory_tagging
+                             ? partition_alloc::PartitionOptions::
+                                   MemoryTagging::kEnabled
+                             : partition_alloc::PartitionOptions::
+                                   MemoryTagging::kDisabled,
+              .reporting_mode = memory_tagging_reporting_mode}});
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
   partition_alloc::PartitionRoot* new_aligned_root;
@@ -665,6 +668,28 @@ void ConfigurePartitions(
   }
 
   PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
+}
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void ConfigurePartitions(
+    EnableBrp enable_brp,
+    EnableMemoryTagging enable_memory_tagging,
+    SplitMainPartition split_main_partition,
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    size_t ref_count_size,
+    BucketDistribution distribution) {
+  // Since the only user of this function is a test function, we use synchronous
+  // testing mode.
+  const partition_alloc::TagViolationReportingMode
+      memory_tagging_reporting_mode =
+          enable_memory_tagging
+              ? partition_alloc::TagViolationReportingMode::kSynchronous
+              : partition_alloc::TagViolationReportingMode::kDisabled;
+
+  ConfigurePartitions(enable_brp, enable_memory_tagging,
+                      memory_tagging_reporting_mode, split_main_partition,
+                      use_dedicated_aligned_partition, ref_count_size,
+                      distribution);
 }
 
 // No synchronization provided: `PartitionRoot.flags` is only written

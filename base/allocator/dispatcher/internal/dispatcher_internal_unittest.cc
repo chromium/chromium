@@ -166,7 +166,9 @@ TEST_F(AllocationEventDispatcherInternalTest,
   const auto dispatch_data =
       GetNotificationHooks(CreateTupleOfPointers(observers));
 
-  dispatch_data.GetAllocationObserverHook()(this, sizeof(*this), nullptr);
+  dispatch_data.GetAllocationObserverHook()(
+      partition_alloc::AllocationNotificationData(this, sizeof(*this),
+                                                  nullptr));
 }
 
 TEST_F(AllocationEventDispatcherInternalTest,
@@ -182,7 +184,8 @@ TEST_F(AllocationEventDispatcherInternalTest,
   const auto dispatch_data =
       GetNotificationHooks(CreateTupleOfPointers(observers));
 
-  dispatch_data.GetFreeObserverHook()(this);
+  dispatch_data.GetFreeObserverHook()(
+      partition_alloc::FreeNotificationData(this));
 }
 #endif
 

@@ -54,11 +54,12 @@ class PartitionAllocPCScanTestBase : public testing::Test {
             .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
             .star_scan_quarantine =
                 PartitionOptions::StarScanQuarantine::kAllowed,
-            .memory_tagging =
-                base::CPU::GetInstanceNoAllocation().has_mte()
-                    ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-                    : partition_alloc::PartitionOptions::MemoryTagging::
-                          kDisabled}) {
+            .memory_tagging = {
+                .enabled = base::CPU::GetInstanceNoAllocation().has_mte()
+                               ? partition_alloc::PartitionOptions::
+                                     MemoryTagging::kEnabled
+                               : partition_alloc::PartitionOptions::
+                                     MemoryTagging::kDisabled}}) {
     PartitionAllocGlobalInit([](size_t) { PA_LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit pools, therefore
     // we need to make sure that the card table is recommitted for each run.
