@@ -256,7 +256,8 @@ public class AccessibilityHistogramRecorder {
 
         // When the foreground and native usage times are close in value, then we will assume this
         // was an instance with an accessibility service always running, and record that usage.
-        if (Math.abs(mTimeOfNativeInitialization - mTimeOfFirstShown) < 250 /* ms */) {
+        long timeDiff = Math.abs(mTimeOfNativeInitialization - mTimeOfFirstShown);
+        if (timeDiff < 500 /* ms */ || ((double) timeDiff / mTimeOfFirstShown) < 0.03 /* % */) {
             RecordHistogram.recordLongTimesHistogram(
                     USAGE_ACCESSIBILITY_ALWAYS_ON_TIME, now - mTimeOfNativeInitialization);
         }
