@@ -75,6 +75,7 @@ build_webui("build") {
     "more_permissions_item.ts",
     "permission_item.ts",
     "run_on_os_login_item.ts",
+    "supported_links_dialog.ts",
     "toggle_row.ts",
     "uninstall_button.ts",
     "window_mode_item.ts",

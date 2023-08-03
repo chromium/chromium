@@ -55,7 +55,6 @@ import './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 import './os_apps_page/app_management_page/app_management_cros_shared_style.css.js';
 import './os_apps_page/app_management_page/app_management_cros_shared_vars.css.js';
 import './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
-import './os_apps_page/app_management_page/supported_links_dialog.js';
 import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
@@ -95,6 +94,7 @@ export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.
 export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+export {AppManagementSupportedLinksDialogElement} from 'chrome://resources/cr_components/app_management/supported_links_dialog.js';
 export {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
