@@ -1646,6 +1646,8 @@ int PageInfo::GetThirdPartySitesWithBlockedCookiesAccessCount(
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
     return 0;
+  // TODO(crbug.com/1466177): This needs to consider BrowsingDataModel counts as
+  // well.
   return settings->blocked_local_shared_objects().GetHostCount() -
          settings->blocked_local_shared_objects().GetHostCountForDomain(
              site_url);

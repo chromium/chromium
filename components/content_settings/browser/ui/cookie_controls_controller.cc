@@ -285,7 +285,8 @@ int CookieControlsController::GetAllowedCookieCount() const {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       GetWebContents()->GetPrimaryPage());
   if (pscs) {
-    return pscs->allowed_local_shared_objects().GetObjectCount();
+    return pscs->allowed_local_shared_objects().GetObjectCount() +
+           pscs->allowed_browsing_data_model()->size();
   } else {
     return 0;
   }
@@ -294,7 +295,8 @@ int CookieControlsController::GetBlockedCookieCount() const {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       GetWebContents()->GetPrimaryPage());
   if (pscs) {
-    return pscs->blocked_local_shared_objects().GetObjectCount();
+    return pscs->blocked_local_shared_objects().GetObjectCount() +
+           pscs->blocked_browsing_data_model()->size();
   } else {
     return 0;
   }
