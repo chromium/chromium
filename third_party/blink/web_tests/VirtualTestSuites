@@ -2282,5 +2282,16 @@
     ],
     "expires": "Jul 24, 2024",
     "owners": ["mych@chromium.org"]
+  },
+  {
+    "prefix": "deprecated-css-apperarance-values-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/issues/css-appearance-non-standard-issue.js",
+      "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js"
+    ],
+    "args": ["--disable-blink-features=RemoveNonStandardAppearanceValue"],
+    "owners": ["dizhangg@chromium.org"],
+    "expires": "Dec 21, 2023"
   }
 ]
