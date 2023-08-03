@@ -575,20 +575,17 @@ VkResult QueryVkExternalMemoryProperties(
   };
   format_info_2.pNext = &external_info;
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // From the Vulkan spec:
+  //   tiling must be VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT if and only if
+  //   the pNext chain includes VkPhysicalDeviceImageDrmFormatModifierInfoEXT
   VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
       .sType =
           VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
   };
-  // If image_tiling is VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT, a modifier_info
-  // struct has to be appended.
   if (tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT) {
     external_info.pNext = &modifier_info;
   }
-#endif
 
   VkImageFormatProperties2 image_format_properties_2 = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
