@@ -7,6 +7,8 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
+#include "components/media_router/common/media_route.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class NotificationDisplayService;
@@ -15,15 +17,16 @@ class Profile;
 namespace media_router {
 
 class MediaRouter;
-class MirroringMediaControllerHost;
 
 // Manages showing Chrome OS notifications when casting from Lacros and handling
 // user input from the notifications, e.g. to stop casting.
 //
 // Notifications for Cast sessions started from Ash are managed by
 // ash::CastNotificationController instead.
-class CastNotificationControllerLacros : public KeyedService,
-                                         public MediaRoutesObserver {
+class CastNotificationControllerLacros
+    : public KeyedService,
+      public MediaRoutesObserver,
+      public MirroringMediaControllerHost::Observer {
  public:
   explicit CastNotificationControllerLacros(Profile* profile);
   CastNotificationControllerLacros(
@@ -40,6 +43,9 @@ class CastNotificationControllerLacros : public KeyedService,
   // MediaRoutesObserver:
   void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
+  // MirroringMediaControllerHost::Observer:
+  void OnFreezeInfoChanged() override;
+
  private:
   void ShowNotification(const MediaRoute& route);
   void HideNotification();
@@ -52,15 +58,17 @@ class CastNotificationControllerLacros : public KeyedService,
   void OnNotificationClicked(absl::optional<int> button_index);
   void StopCasting();
   void FreezeOrUnfreezeCastStream();
+  void StopObservingFreezeHost();
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<NotificationDisplayService> notification_service_;
   const raw_ptr<MediaRouter> media_router_;
 
-  std::string displayed_route_id_;
+  absl::optional<MediaRoute> displayed_route_;
   bool displayed_route_is_frozen_ = false;
   absl::optional<int> freeze_button_index_;
   absl::optional<int> stop_button_index_;
+  raw_ptr<MirroringMediaControllerHost> freeze_host_ = nullptr;
 
   base::WeakPtrFactory<CastNotificationControllerLacros> weak_ptr_factory_{
       this};

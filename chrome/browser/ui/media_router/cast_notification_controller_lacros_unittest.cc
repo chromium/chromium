@@ -169,4 +169,28 @@ TEST_F(CastNotificationControllerLacrosTest, UnfreezeStream) {
   notification_controller_->OnRoutesUpdated({CreateMediaRoute()});
 }
 
+TEST_F(CastNotificationControllerLacrosTest, UpdateOnFreezeInfoChanged) {
+  const std::vector<MediaRoute> routes = {CreateMediaRoute()};
+  EnableFreezeMirroring();
+  EXPECT_CALL(freeze_host_, CanFreeze).WillRepeatedly(Return(true));
+  EXPECT_CALL(freeze_host_, AddObserver(notification_controller_.get()));
+  EXPECT_CALL(notification_service_, Display)
+      .WillOnce(
+          WithArg<1>([](const message_center::Notification& notification) {
+            // The "Stop" and "Pause" buttons should be present.
+            EXPECT_EQ(2u, notification.buttons().size());
+          }));
+  notification_controller_->OnRoutesUpdated(routes);
+  testing::Mock::VerifyAndClearExpectations(&freeze_host_);
+
+  EXPECT_CALL(freeze_host_, CanFreeze).WillRepeatedly(Return(false));
+  EXPECT_CALL(notification_service_, Display)
+      .WillOnce(
+          WithArg<1>([](const message_center::Notification& notification) {
+            // Just the "Stop" button should be present.
+            EXPECT_EQ(1u, notification.buttons().size());
+          }));
+  notification_controller_->OnRoutesUpdated(routes);
+}
+
 }  // namespace media_router
