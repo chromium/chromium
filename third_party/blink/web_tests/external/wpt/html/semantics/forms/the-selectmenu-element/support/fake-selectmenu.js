@@ -3,7 +3,7 @@ function replaceChildElement(newChild, oldChild) {
 }
 
 function createFakeSelectmenu(selectedValueText) {
-  const selectmenu = document.createElement('button');
+  const selectmenu = document.createElement('div');
   selectmenu.classList.add('fake-selectmenu-internal-selectmenu-button');
   selectmenu.innerHTML = `
     <div class="fake-selectmenu-selected-value"></div>
@@ -15,9 +15,12 @@ function createFakeSelectmenu(selectedValueText) {
       background-color: Field;
       border: 1px solid ButtonBorder;
       border-radius: 0.25em;
+      box-sizing: border-box;
+      box-shadow: none;
       color: ButtonText;
       cursor: default;
       display: inline-flex;
+      font: -webkit-small-control;
       font-size: .875em;
       overflow-x:hidden;
       overflow-y:hidden;
