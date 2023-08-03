@@ -134,11 +134,6 @@ BASE_FEATURE(kV8TurboFastApiCalls,
 // Enables faster DOM methods for megamorphic ICs
 BASE_FEATURE(kV8MegaDomIC, "V8MegaDomIC", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Schedules a single MemoryReducer GC.
-BASE_FEATURE(kV8MemoryReducerSingleGC,
-             "V8MemoryReducerSingleGC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Avoids background threads for GC if isolate is in background.
 BASE_FEATURE(kV8SingleThreadedGCInBackground,
              "V8SingleThreadedGCInBackground",
