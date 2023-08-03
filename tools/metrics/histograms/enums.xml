@@ -59714,21 +59714,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Entered"/>
 </enum>
 
-<enum name="LockScreenMediaControlsHideReason">
-  <int value="0" label="Session changed"/>
-  <int value="1" label="Dismissed by user"/>
-  <int value="2" label="Device unlocked"/>
-  <int value="3" label="Device sleep"/>
-</enum>
-
-<enum name="LockScreenMediaControlsShown">
-  <int value="0" label="Not shown - controls disabled"/>
-  <int value="1" label="Not shown - no session"/>
-  <int value="2" label="Not shown - session paused"/>
-  <int value="3" label="Shown"/>
-  <int value="4" label="Not shown - session sensitive"/>
-</enum>
-
 <enum name="LockScreenProgress">
   <int value="0" label="Start screen lock"/>
   <int value="1" label="Enter password correctly"/>

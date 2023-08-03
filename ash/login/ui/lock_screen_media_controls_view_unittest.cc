@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
@@ -526,8 +525,6 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonVisibility) {
 }
 
 TEST_F(LockScreenMediaControlsViewTest, CloseButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -551,15 +548,9 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonClick) {
 
   // Verify that the controls were hidden.
   EXPECT_FALSE(media_controls_view_->IsDrawn());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kStop, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, PreviousTrackButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -571,15 +562,9 @@ TEST_F(LockScreenMediaControlsViewTest, PreviousTrackButtonClick) {
   media_controls_view_->FlushForTesting();
 
   EXPECT_EQ(1, media_controller()->previous_track_count());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kPreviousTrack, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, PlayButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -597,15 +582,9 @@ TEST_F(LockScreenMediaControlsViewTest, PlayButtonClick) {
   media_controls_view_->FlushForTesting();
 
   EXPECT_EQ(1, media_controller()->resume_count());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kPlay, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, PauseButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -617,15 +596,9 @@ TEST_F(LockScreenMediaControlsViewTest, PauseButtonClick) {
   media_controls_view_->FlushForTesting();
 
   EXPECT_EQ(1, media_controller()->suspend_count());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kPause, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, NextTrackButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -637,15 +610,9 @@ TEST_F(LockScreenMediaControlsViewTest, NextTrackButtonClick) {
   media_controls_view_->FlushForTesting();
 
   EXPECT_EQ(1, media_controller()->next_track_count());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kNextTrack, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, SeekBackwardButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -657,15 +624,9 @@ TEST_F(LockScreenMediaControlsViewTest, SeekBackwardButtonClick) {
   media_controls_view_->FlushForTesting();
 
   EXPECT_EQ(1, media_controller()->seek_backward_count());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kSeekBackward, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, SeekForwardButtonClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -677,10 +638,6 @@ TEST_F(LockScreenMediaControlsViewTest, SeekForwardButtonClick) {
   media_controls_view_->FlushForTesting();
 
   EXPECT_EQ(1, media_controller()->seek_forward_count());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kSeekForward, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
@@ -982,8 +939,6 @@ TEST_F(LockScreenMediaControlsViewTest, DragBounds) {
 }
 
 TEST_F(LockScreenMediaControlsViewTest, SeekToClick) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -1005,15 +960,9 @@ TEST_F(LockScreenMediaControlsViewTest, SeekToClick) {
   media_controls_view_->FlushForTesting();
   EXPECT_EQ(1, media_controller()->seek_to_count());
   EXPECT_EQ(base::Seconds(300), media_controller()->seek_to_time());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kSeekTo, 1);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, SeekToTouch) {
-  base::HistogramTester tester;
-
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
@@ -1034,189 +983,6 @@ TEST_F(LockScreenMediaControlsViewTest, SeekToTouch) {
   media_controls_view_->FlushForTesting();
   EXPECT_EQ(1, media_controller()->seek_to_count());
   EXPECT_EQ(base::Seconds(300), media_controller()->seek_to_time());
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
-      MediaSessionAction::kSeekTo, 1);
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Shown_ControlsDisabled) {
-  base::HistogramTester tester;
-
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kLockScreenMediaControls);
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPlaying);
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kNotShownControlsDisabled, 1);
-  EXPECT_EQ(
-      0U, tester
-              .GetAllSamples(
-                  LockScreenMediaControlsView::kMediaControlsHideHistogramName)
-              .size());
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Shown_NoSession) {
-  base::HistogramTester tester;
-
-  media_controls_view_->MediaSessionInfoChanged(nullptr);
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kNotShownNoSession, 1);
-  EXPECT_EQ(
-      0U, tester
-              .GetAllSamples(
-                  LockScreenMediaControlsView::kMediaControlsHideHistogramName)
-              .size());
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Shown_SessionPaused) {
-  base::HistogramTester tester;
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPaused);
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kNotShownSessionPaused, 1);
-  EXPECT_EQ(
-      0U, tester
-              .GetAllSamples(
-                  LockScreenMediaControlsView::kMediaControlsHideHistogramName)
-              .size());
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Shown_Visible) {
-  base::HistogramTester tester;
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPlaying);
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kShown, 1);
-  EXPECT_EQ(
-      1U, tester
-              .GetAllSamples(
-                  LockScreenMediaControlsView::kMediaControlsHideHistogramName)
-              .size());
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Shown_SessionSensitive) {
-  base::HistogramTester tester;
-
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state =
-      media_session::mojom::MediaPlaybackState::kPlaying;
-  session_info->is_sensitive = true;
-
-  media_controls_view_->MediaSessionChanged(base::UnguessableToken::Create());
-  media_controls_view_->MediaSessionInfoChanged(session_info.Clone());
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kNotShownSessionSensitive, 1);
-  EXPECT_EQ(
-      0U, tester
-              .GetAllSamples(
-                  LockScreenMediaControlsView::kMediaControlsHideHistogramName)
-              .size());
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_SessionChanged) {
-  base::HistogramTester tester;
-
-  auto mock_timer_unique = std::make_unique<base::MockOneShotTimer>();
-  base::MockOneShotTimer* mock_timer = mock_timer_unique.get();
-  media_controls_view_->set_timer_for_testing(std::move(mock_timer_unique));
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPlaying);
-
-  // Simulate media session stopping and delay.
-  media_controls_view_->MediaSessionChanged(absl::nullopt);
-  mock_timer->Fire();
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsHideHistogramName,
-      LockScreenMediaControlsView::HideReason::kSessionChanged, 1);
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kShown, 1);
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_DismissedByUser) {
-  base::HistogramTester tester;
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPlaying);
-
-  // Move the mouse inside |media_controls_view_| and click the close button.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(
-      media_controls_view_->GetBoundsInScreen().CenterPoint());
-  generator->MoveMouseTo(close_button()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsHideHistogramName,
-      LockScreenMediaControlsView::HideReason::kDismissedByUser, 1);
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kShown, 1);
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_Unlocked) {
-  base::HistogramTester tester;
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPlaying);
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsHideHistogramName,
-      LockScreenMediaControlsView::HideReason::kUnlocked, 1);
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kShown, 1);
-}
-
-TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_DeviceSleep) {
-  base::HistogramTester tester;
-
-  SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState::kPlaying);
-
-  test_power_monitor_source_.GenerateSuspendEvent();
-
-  SimulateSessionUnlock();
-
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsHideHistogramName,
-      LockScreenMediaControlsView::HideReason::kDeviceSleep, 1);
-  tester.ExpectUniqueSample(
-      LockScreenMediaControlsView::kMediaControlsShownHistogramName,
-      LockScreenMediaControlsView::Shown::kShown, 1);
 }
 
 }  // namespace ash

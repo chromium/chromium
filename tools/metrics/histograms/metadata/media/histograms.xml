@@ -3395,40 +3395,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.LockScreenControls.Hidden"
-    enum="LockScreenMediaControlsHideReason" expires_after="2022-05-01">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The reason why the lock screen media controls were hidden if they were
-    previously shown. Recorded when the controls are destroyed by the lock
-    screen (e.g. unlock, switch user, shutdown). Warning: this histogram was
-    expired from 2020-01-31 to 2021-11-30; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Media.LockScreenControls.Shown"
-    enum="LockScreenMediaControlsShown" expires_after="2022-05-01">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the lock screen media controls were shown and if they will not be
-    shown the reason why. Warning: this histogram was expired from 2020-01-31 to
-    2021-11-30; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Media.LockScreenControls.UserAction" enum="MediaSessionAction"
-    expires_after="2022-05-01">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The action (e.g. pause) that a user clicked on the lock screen media
-    controls. Warning: this histogram was expired from 2020-01-31 to 2021-11-30;
-    data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.LowLatencyAudioCaptureStartupSuccess"
     enum="AudioCaptureStartupResult" expires_after="2024-01-07">
   <owner>armax@chromium.org</owner>

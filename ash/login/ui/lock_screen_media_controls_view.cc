@@ -16,7 +16,6 @@
 #include "ash/style/ash_color_id.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -218,16 +217,6 @@ class MediaActionButton : public views::ImageButton {
 };
 
 }  // namespace
-
-const char LockScreenMediaControlsView::kMediaControlsHideHistogramName[] =
-    "Media.LockScreenControls.Hide";
-
-const char LockScreenMediaControlsView::kMediaControlsShownHistogramName[] =
-    "Media.LockScreenControls.Shown";
-
-const char
-    LockScreenMediaControlsView::kMediaControlsUserActionHistogramName[] =
-        "Media.LockScreenControls.UserAction";
 
 LockScreenMediaControlsView::Callbacks::Callbacks() = default;
 
@@ -458,22 +447,6 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
 }
 
 LockScreenMediaControlsView::~LockScreenMediaControlsView() {
-  // If the screen is now unlocked and we were not hidden for another reason
-  // then we are being hidden because the device is now unlocked.
-  if (shown_ == Shown::kShown) {
-    if (!hide_reason_ &&
-        !Shell::Get()->session_controller()->IsScreenLocked()) {
-      hide_reason_ = HideReason::kUnlocked;
-    }
-
-    // Only record hide reason if there is one. The value could be missing
-    // when ash shuts down with the media controls.
-    if (hide_reason_) {
-      base::UmaHistogramEnumeration(kMediaControlsHideHistogramName,
-                                    *hide_reason_);
-    }
-  }
-
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
@@ -724,8 +697,6 @@ void LockScreenMediaControlsView::ButtonPressed(
     media_session::mojom::MediaSessionAction action) {
   if (base::Contains(enabled_actions_, action) &&
       media_session_id_.has_value()) {
-    base::UmaHistogramEnumeration(kMediaControlsUserActionHistogramName,
-                                  action);
     media_session::PerformMediaSessionAction(action, media_controller_remote_);
   }
 }
@@ -778,16 +749,9 @@ void LockScreenMediaControlsView::SeekTo(double seek_progress) {
   DCHECK(position_.has_value());
 
   media_controller_remote_->SeekTo(seek_progress * position_->duration());
-
-  base::UmaHistogramEnumeration(kMediaControlsUserActionHistogramName,
-                                MediaSessionAction::kSeekTo);
 }
 
 void LockScreenMediaControlsView::Hide(HideReason reason) {
-  if (!hide_reason_ && GetVisible()) {
-    hide_reason_ = reason;
-  }
-
   hide_media_controls_.Run();
 }
 
@@ -804,8 +768,6 @@ void LockScreenMediaControlsView::SetShown(Shown shown) {
 
   shown_ = shown;
 
-  base::UmaHistogramEnumeration(kMediaControlsShownHistogramName, shown);
-
   if (shown == Shown::kShown) {
     show_media_controls_.Run();
   } else {
@@ -815,9 +777,6 @@ void LockScreenMediaControlsView::SetShown(Shown shown) {
 
 void LockScreenMediaControlsView::Dismiss() {
   media_controller_remote_->Stop();
-
-  base::UmaHistogramEnumeration(kMediaControlsUserActionHistogramName,
-                                MediaSessionAction::kStop);
 
   Hide(HideReason::kDismissedByUser);
 }
