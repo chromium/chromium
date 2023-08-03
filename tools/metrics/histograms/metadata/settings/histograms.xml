@@ -396,7 +396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.DeprecatedRedirect"
-    enum="BooleanRedirected" expires_after="M115">
+    enum="BooleanRedirected" expires_after="M120">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
@@ -404,6 +404,8 @@ chromium-metrics-reviews@google.com.
     Whether or not navigations to the Privacy sandbox settings page occured
     because the user was redirected from the old version of the page. It occurs
     once per navigation to the privacy sandbox settings page.
+
+    Expired after M115, re-instated in M117.
   </summary>
 </histogram>
 
