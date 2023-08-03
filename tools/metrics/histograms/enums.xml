@@ -64931,7 +64931,6 @@ from previous Chrome versions.
   <int value="464979219" label="CrOSLateBootAudioHFPOffload:disabled"/>
   <int value="465600939" label="DefaultPassthroughCommandDecoder:enabled"/>
   <int value="466248382" label="disable-push-api-background-mode"/>
-  <int value="467497106" label="CCTResizableMultiWindowMode:disabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
   <int value="468959230"
@@ -66677,7 +66676,6 @@ from previous Chrome versions.
       label="ExperimentalWebAppStoragePartitionIsolation:enabled"/>
   <int value="1363136936" label="VrCustomTabBrowsing:enabled"/>
   <int value="1363151585" label="SyncPseudoUSSAppList:enabled"/>
-  <int value="1363257435" label="CCTResizableMultiWindowMode:enabled"/>
   <int value="1363283577" label="CrOSLateBootAudioFlexibleLoopback:enabled"/>
   <int value="1364309298" label="SupportToolCopyTokenButton:enabled"/>
   <int value="1365642727" label="IdentityStatusConsistency:enabled"/>

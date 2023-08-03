@@ -534,8 +534,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @Override
     protected boolean isFullHeight() {
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            return MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)
-                    && !ChromeFeatureList.sCctResizableMultiWindowMode.isEnabled();
+            return MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
         } else {
             return isLandscape() || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
         }

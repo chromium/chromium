@@ -57,8 +57,7 @@ import org.chromium.ui.base.LocalizationUtils;
 @Config(manifest = Config.NONE, shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
 @LooperMode(Mode.PAUSED)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_MULTI_WINDOW_MODE})
+        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
 public class PartialCustomTabDisplayManagerTest {
     private static final int BOTTOM_SHEET_MAX_WIDTH_DP = 900;
 
@@ -509,9 +508,60 @@ public class PartialCustomTabDisplayManagerTest {
 
     @Test
     public void calculatePartialCustomTabTypePermutations() {
-        calculatePartialCustomTabTypePermutations_setMultiWindow(false);
-        calculatePartialCustomTabTypePermutations_setMultiWindow(true);
-        calculatePartialCustomTabTypePermutations_MultiWindowFlagDisabled();
+        int initWidth = 0;
+        int initHeight = 0;
+        Supplier<Integer> displayWidthDp = null;
+        int breakPointDp = 0;
+
+        // Multi-window mode -> FULL
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
+
+        // Zero initial width/height -> FULL
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+        assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
+
+        // Non-zero height -> BOTTOM_SHEET
+        initWidth = 0;
+        initHeight = 500;
+        assertEquals("Type should be BOTTOM_SHEET", PartialCustomTabType.BOTTOM_SHEET,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
+
+        // Non-zero width -> either FULL_SIZE or SIDE_SHEET
+        initWidth = 500;
+        initHeight = 0;
+        displayWidthDp = () -> 1000;
+        breakPointDp = 1200;
+        assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
+
+        breakPointDp = 800;
+        assertEquals("Type should be SIDE_SHEET", PartialCustomTabType.SIDE_SHEET,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
+
+        // Non-zero width/height -> either SIDE_SHEET or BOTTOM_SHEET
+        initWidth = 300;
+        initHeight = 500;
+        displayWidthDp = () -> 1000;
+        breakPointDp = 400;
+        assertEquals("Type should be SIDE_SHEET", PartialCustomTabType.SIDE_SHEET,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
+
+        initWidth = 300;
+        initHeight = 500;
+        displayWidthDp = () -> 1000;
+        breakPointDp = 1200;
+        assertEquals("Type should be BOTTOM_SHEET", PartialCustomTabType.BOTTOM_SHEET,
+                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
     }
 
     @Test
@@ -550,82 +600,5 @@ public class PartialCustomTabDisplayManagerTest {
         when(provider.getActivityBreakPoint()).thenReturn(50);
         assertEquals(R.anim.slide_in_up,
                 PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
-    }
-
-    private void calculatePartialCustomTabTypePermutations_setMultiWindow(boolean multiWindowMode) {
-        boolean inMultiWindowWithFlagDisabled =
-                multiWindowMode && !ChromeFeatureList.sCctResizableMultiWindowMode.isEnabled();
-        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(multiWindowMode);
-
-        int initWidth = 0;
-        int initHeight = 0;
-        Supplier<Integer> displayWidthDp = null;
-        int breakPointDp = 0;
-
-        // Zero initial width/height -> FULL
-        assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
-                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
-
-        // Non-zero height -> BOTTOM_SHEET
-        initHeight = 500;
-        if (inMultiWindowWithFlagDisabled) {
-            assertFullSizePartialCustomTab(initWidth, initHeight, displayWidthDp, breakPointDp);
-        } else {
-            assertEquals("Type should be BOTTOM_SHEET", PartialCustomTabType.BOTTOM_SHEET,
-                    PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                            null, initWidth, initHeight, displayWidthDp, breakPointDp));
-        }
-
-        // Non-zero width -> either FULL_SIZE or SIDE_SHEET
-        initWidth = 500;
-        initHeight = 0;
-        displayWidthDp = () -> 1000;
-        breakPointDp = 1200;
-        assertFullSizePartialCustomTab(initWidth, initHeight, displayWidthDp, breakPointDp);
-
-        breakPointDp = 800;
-        if (inMultiWindowWithFlagDisabled) {
-            assertFullSizePartialCustomTab(initWidth, initHeight, displayWidthDp, breakPointDp);
-        } else {
-            assertEquals("Type should be SIDE_SHEET", PartialCustomTabType.SIDE_SHEET,
-                    PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                            null, initWidth, initHeight, displayWidthDp, breakPointDp));
-        }
-
-        // Non-zero width/height -> either SIDE_SHEET or BOTTOM_SHEET
-        initWidth = 300;
-        initHeight = 500;
-        displayWidthDp = () -> 1000;
-        breakPointDp = 400;
-        if (inMultiWindowWithFlagDisabled) {
-            assertFullSizePartialCustomTab(initWidth, initHeight, displayWidthDp, breakPointDp);
-        } else {
-            assertEquals("Type should be SIDE_SHEET", PartialCustomTabType.SIDE_SHEET,
-                    PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                            null, initWidth, initHeight, displayWidthDp, breakPointDp));
-        }
-
-        displayWidthDp = () -> 1000;
-        breakPointDp = 1200;
-        if (inMultiWindowWithFlagDisabled) {
-            assertFullSizePartialCustomTab(initWidth, initHeight, displayWidthDp, breakPointDp);
-        } else {
-            assertEquals("Type should be BOTTOM_SHEET", PartialCustomTabType.BOTTOM_SHEET,
-                    PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                            null, initWidth, initHeight, displayWidthDp, breakPointDp));
-        }
-    }
-
-    @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_MULTI_WINDOW_MODE})
-    private void calculatePartialCustomTabTypePermutations_MultiWindowFlagDisabled() {
-        calculatePartialCustomTabTypePermutations_setMultiWindow(true);
-    }
-
-    private void assertFullSizePartialCustomTab(
-            int width, int height, Supplier<Integer> displayWidthDp, int breakPointDp) {
-        assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
-                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, width, height, displayWidthDp, breakPointDp));
     }
 }

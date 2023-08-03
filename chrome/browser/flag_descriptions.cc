@@ -3788,10 +3788,6 @@ const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
-const char kCCTResizableMultiWindowModeName[] =
-    "Multi window mode for partial custom tabs";
-const char kCCTResizableMultiWindowModeDescription[] =
-    "Enable multi window mode for partial custom tabs";
 const char kCCTResizableSideSheetName[] = "Side sheet Custom Tabs";
 const char kCCTResizableSideSheetDescription[] =
     "Enable side sheet Custom Tabs";

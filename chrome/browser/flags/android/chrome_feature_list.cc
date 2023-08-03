@@ -201,7 +201,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTReportParallelRequestStatus,
     &kCCTResizable90MaximumHeight,
     &kCCTResizableForThirdParties,
-    &kCCTResizableMultiWindowMode,
     &kCCTResizableSideSheet,
     &kCCTResizableSideSheetForThirdParties,
     &kCCTResourcePrefetch,
@@ -593,10 +592,6 @@ BASE_FEATURE(kCCTResizable90MaximumHeight,
 BASE_FEATURE(kCCTResizableForThirdParties,
              "CCTResizableForThirdParties",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizableMultiWindowMode,
-             "CCTResizableMultiWindowMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResizableSideSheet,
              "CCTResizableSideSheet",

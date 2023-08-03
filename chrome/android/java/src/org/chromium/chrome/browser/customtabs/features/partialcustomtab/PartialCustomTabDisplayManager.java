@@ -24,7 +24,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -228,11 +227,9 @@ public class PartialCustomTabDisplayManager
     static @PartialCustomTabType int calculatePartialCustomTabType(Activity activity,
             int initialWidth, int initialHeight, Supplier<Integer> displayWidthDpSupplier,
             int breakPointDp) {
-        if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)
-                && !ChromeFeatureList.sCctResizableMultiWindowMode.isEnabled()) {
+        if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)) {
             return PartialCustomTabType.FULL_SIZE;
         }
-
         if (initialWidth == 0 && initialHeight == 0) {
             return PartialCustomTabType.FULL_SIZE;
         }
