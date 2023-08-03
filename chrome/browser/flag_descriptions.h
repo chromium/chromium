@@ -1843,6 +1843,9 @@ extern const char kSystemProxyForSystemServicesDescription[];
 extern const char kTabDragDropName[];
 extern const char kTabDragDropDescription[];
 
+extern const char kTabAndLinkDragDropName[];
+extern const char kTabAndLinkDragDropDescription[];
+
 extern const char kTabEngagementReportingName[];
 extern const char kTabEngagementReportingDescription[];
 

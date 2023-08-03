@@ -7643,6 +7643,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "tab-link-drag-drop",
+    "owners": [ "skavuluru@google.com", "twellington@google.com","clank-large-form-factors@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "tab-pickup-minimum-delay",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 121
