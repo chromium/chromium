@@ -1333,10 +1333,11 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   if (!web_frame->GetDocument().GetFrame())
     return;
 
-  if (in_scripted_print_)
+  if (print_in_progress_) {
     return;
+  }
 
-  in_scripted_print_ = true;
+  print_in_progress_ = true;
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1362,7 +1363,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   if (!weak_this)
     return;
 
-  in_scripted_print_ = false;
+  print_in_progress_ = false;
 }
 
 void PrintRenderFrameHelper::WillBeDestroyed() {
@@ -2128,14 +2129,14 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
     return;
   }
 
-  if (print_node_in_progress_) {
+  if (print_in_progress_) {
     // This can happen as a result of processing sync messages when printing
     // from ppapi plugins. It's a rare case, so its OK to just fail here.
     // See http://crbug.com/159165.
     return;
   }
 
-  print_node_in_progress_ = true;
+  print_in_progress_ = true;
 
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2172,7 +2173,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
       return;
   }
 
-  print_node_in_progress_ = false;
+  print_in_progress_ = false;
 }
 
 void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,

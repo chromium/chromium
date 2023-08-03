@@ -628,11 +628,10 @@ class PrintRenderFrameHelper
 
   ScriptingThrottler scripting_throttler_;
 
-  bool print_node_in_progress_ = false;
+  bool print_in_progress_ = false;
   PrintPreviewContext print_preview_context_;
   bool is_loading_ = false;
   bool is_scripted_preview_delayed_ = false;
-  bool in_scripted_print_ = false;
   int ipc_nesting_level_ = 0;
   bool render_frame_gone_ = false;
   bool delete_pending_ = false;
