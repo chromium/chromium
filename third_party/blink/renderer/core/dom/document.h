@@ -754,9 +754,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // data, otherwise use one of the |UpdateStyleAndLayout...| methods above.
   void EnsurePaintLocationDataValidForNode(const Node*,
                                            DocumentUpdateReason reason);
-  void EnsurePaintLocationDataValidForNode(const Node*,
-                                           DocumentUpdateReason reason,
-                                           CSSPropertyID property_id);
 
   // Gets the description for the specified page. This includes preferred page
   // size and margins in pixels, assuming 96 pixels per inch. The size and

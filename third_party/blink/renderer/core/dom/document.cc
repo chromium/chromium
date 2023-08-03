@@ -2742,21 +2742,6 @@ void Document::EnsurePaintLocationDataValidForNode(
   UpdateStyleAndLayout(reason);
 }
 
-void Document::EnsurePaintLocationDataValidForNode(const Node* node,
-                                                   DocumentUpdateReason reason,
-                                                   CSSPropertyID property_id) {
-  DCHECK(node);
-  if (!node->InActiveDocument())
-    return;
-
-  DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-      node, DisplayLockContext::ForcedPhase::kLayout);
-
-  // For all nodes we must have up-to-date style and have performed layout to do
-  // any location-based calculation.
-  UpdateStyleAndLayout(reason);
-}
-
 void Document::GetPageDescription(uint32_t page_index,
                                   WebPrintPageDescription* description) {
   GetPageDescription(*StyleForPage(page_index), description);
