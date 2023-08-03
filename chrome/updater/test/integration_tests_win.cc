@@ -147,30 +147,37 @@ HRESULT CreateLocalServer(GUID clsid,
               .HasValue(service_name.c_str());
 }
 
-// Apps like Chrome frequently write active bits to registry. These reg
-// values are allowed to be present after uninstall of updater. Everything else
-// should be deleted.
-void ExpectUpdateRegKeyCleanExcludeActivityRegValues(UpdaterScope scope) {
+// Checks that only `LastInstaller*` values and, if a user install, active bits
+// under `ClientState` are in the registry.
+void ExpectUpdateRegKeyClean(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
-  if (IsSystemInstall(scope)) {
-    // App activity bits are written to HKCU only.
-    EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
-    return;
-  }
 
   if (!RegKeyExists(root, UPDATER_KEY)) {
     return;
   }
 
-  // `ClientState` sub-key is the only possible child of `update` key.
-  EXPECT_EQ(
-      base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ)).GetValueCount(),
-      0u);
+  for (base::win::RegistryValueIterator updater_value_iter(root, UPDATER_KEY,
+                                                           KEY_WOW64_32KEY);
+       updater_value_iter.Valid(); ++updater_value_iter) {
+    EXPECT_TRUE(
+        base::Contains(kRegValuesLastInstaller, updater_value_iter.Name()))
+        << updater_value_iter.Name();
+  }
+
   base::win::RegistryKeyIterator updater_key_iter(root, UPDATER_KEY,
                                                   KEY_WOW64_32KEY);
+  if (IsSystemInstall(scope)) {
+    // App activity bits are written to HKCU only.
+    EXPECT_EQ(updater_key_iter.SubkeyCount(), 0u);
+    return;
+  }
+
   if (updater_key_iter.SubkeyCount() == 0) {
     return;
   }
+
+  // `ClientState` is the only allowed sub-key of `UPDATER_KEY` for user
+  // installs.
   EXPECT_EQ(updater_key_iter.SubkeyCount(), 1u);
   EXPECT_STREQ(updater_key_iter.Name(), L"ClientState");
 
@@ -255,7 +262,7 @@ void CheckInstallation(UpdaterScope scope,
         }
       }
       EXPECT_FALSE(RegKeyExists(root, CLIENTS_KEY));
-      ExpectUpdateRegKeyCleanExcludeActivityRegValues(scope);
+      ExpectUpdateRegKeyClean(scope);
 
       if (!IsSystemInstall(scope)) {
         ForEachRegistryRunValueWithPrefix(
@@ -755,16 +762,21 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
     return;
   }
 
+  EXPECT_EQ(registry_result, ERROR_SUCCESS);
+
   // Updater should have written "pv".
   ASSERT_TRUE(pv.IsValid());
   EXPECT_EQ(pv, kTestPV);
 
-  // App installer should have created the expected reg value.
-  std::wstring value;
-  EXPECT_EQ(registry_result, ERROR_SUCCESS);
-  EXPECT_EQ(key.ReadValue(kRegValueLastInstallerResultUIString, &value),
-            ERROR_SUCCESS);
-  EXPECT_EQ(value, L"CoolApp");
+  // Check for expected installer result API reg values.
+  base::win::RegKey updater_key(root, UPDATER_KEY, Wow6432(KEY_QUERY_VALUE));
+  ASSERT_TRUE(updater_key.Valid());
+  for (const base::win::RegKey* regkey : {&key, &updater_key}) {
+    std::wstring value;
+    EXPECT_EQ(regkey->ReadValue(kRegValueLastInstallerResultUIString, &value),
+              ERROR_SUCCESS);
+    EXPECT_EQ(value, L"CoolApp");
+  }
 
   if (!is_silent_install) {
     // Silent install does not run post-install command. For other cases the

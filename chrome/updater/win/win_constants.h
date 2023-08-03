@@ -80,6 +80,8 @@ extern const wchar_t kRegValueLastInstallerExtraCode1[];
 extern const wchar_t kRegValueLastInstallerResultUIString[];
 extern const wchar_t kRegValueLastInstallerSuccessLaunchCmdLine[];
 
+extern const wchar_t* const kRegValuesLastInstaller[5];
+
 // AppCommand registry constants.
 extern const wchar_t kRegKeyCommands[];
 extern const wchar_t kRegValueCommandLine[];
