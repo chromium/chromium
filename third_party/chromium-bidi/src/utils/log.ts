@@ -17,10 +17,9 @@
 
 export enum LogType {
   // keep-sorted start
-  bidi = 'BiDi Messages',
-  browsingContexts = 'Browsing Contexts',
-  cdp = 'CDP',
-  system = 'System',
+  bidi = 'bidi',
+  cdp = 'cdp',
+  debug = 'debug',
   // keep-sorted end
 }
 

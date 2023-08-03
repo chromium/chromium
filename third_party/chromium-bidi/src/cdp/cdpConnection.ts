@@ -107,7 +107,7 @@ export class CdpConnection implements ICdpConnection {
 
       const cdpMessageStr = JSON.stringify(cdpMessage);
       void this.#transport.sendMessage(cdpMessageStr)?.catch((error) => {
-        this.#logger?.(`${LogType.cdp}:ERROR`, error);
+        this.#logger?.(LogType.debug, error);
         this.#transport.close();
       });
       this.#logger?.(

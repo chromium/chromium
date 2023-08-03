@@ -68,7 +68,7 @@ void (async () => {
 
   const bidiServer = await createBidiServer(selfTargetId);
 
-  log(LogType.system, 'Launched');
+  log(LogType.debug, 'Launched');
 
   bidiServer.emitOutgoingMessage(
     OutgoingBidiMessage.createResolved({
@@ -269,7 +269,7 @@ function createBidiServer(selfTargetId: string) {
 async function waitSelfTargetId(): Promise<string> {
   return new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
-      log(LogType.system, 'Current target ID:', targetId);
+      log(LogType.debug, 'Current target ID:', targetId);
       resolve(targetId);
     };
   });

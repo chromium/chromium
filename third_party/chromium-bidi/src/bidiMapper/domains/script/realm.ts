@@ -105,7 +105,7 @@ export class Realm {
       } else {
         // No need to await for the object to be released.
         void this.#releaseObject(objectId).catch(
-          (error) => this.#logger?.(LogType.system, error)
+          (error) => this.#logger?.(LogType.debug, error)
         );
       }
     }

@@ -49,7 +49,7 @@ export class ProcessingQueue<T> {
           .then((entry) => {
             if (entry.kind === 'error') {
               this.#logger?.(
-                LogType.system,
+                LogType.debug,
                 'Event threw before sending:',
                 entry.error
               );
@@ -58,7 +58,7 @@ export class ProcessingQueue<T> {
             return this.#processor(entry.value);
           })
           .catch((e) => {
-            this.#logger?.(LogType.system, 'Event was not processed:', e);
+            this.#logger?.(LogType.debug, 'Event was not processed:', e);
           });
       }
     }

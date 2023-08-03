@@ -314,12 +314,12 @@ export class BrowsingContextProcessor {
         .then(() =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
         )
-        .catch((error) => this.#logger?.(LogType.system, error));
+        .catch((error) => this.#logger?.(LogType.debug, error));
       return;
     }
 
     this.#logger?.(
-      LogType.browsingContexts,
+      LogType.debug,
       'AttachedToTarget event received:',
       JSON.stringify(params, null, 2)
     );

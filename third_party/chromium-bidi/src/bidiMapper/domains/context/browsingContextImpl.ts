@@ -37,6 +37,8 @@ import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import type {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
+  static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
+
   /** The ID of this browsing context. */
   readonly #id: BrowsingContext.BrowsingContext;
 
@@ -541,7 +543,7 @@ export class BrowsingContextImpl {
           new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
       } else {
         this.#logger?.(
-          LogType.browsingContexts,
+          BrowsingContextImpl.LOGGER_PREFIX,
           'Document changed (navigatedWithinDocument)'
         );
       }
@@ -559,7 +561,7 @@ export class BrowsingContextImpl {
         new Deferred<Protocol.Page.LifecycleEventEvent>();
     } else {
       this.#logger?.(
-        LogType.browsingContexts,
+        BrowsingContextImpl.LOGGER_PREFIX,
         'Document changed (DOMContentLoaded)'
       );
     }
@@ -568,7 +570,10 @@ export class BrowsingContextImpl {
       this.#deferreds.Page.lifecycleEvent.load =
         new Deferred<Protocol.Page.LifecycleEventEvent>();
     } else {
-      this.#logger?.(LogType.browsingContexts, 'Document changed (load)');
+      this.#logger?.(
+        BrowsingContextImpl.LOGGER_PREFIX,
+        'Document changed (load)'
+      );
     }
   }
 

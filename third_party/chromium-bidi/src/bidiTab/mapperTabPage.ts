@@ -28,7 +28,7 @@ const mapperPageSource =
  * <h3>${name}</h3>
  * <div id="${name}_log" class="log">
  */
-function findOrCreateTypeLogContainer(logType: string): HTMLElement {
+function findOrCreateTypeLogContainer(logType: LogPrefix): HTMLElement {
   const containerId = `${logType}_log`;
 
   const existingContainer = document.getElementById(containerId);
@@ -58,9 +58,8 @@ export function generatePage() {
   globalThis.document.documentElement.innerHTML = mapperPageSource;
 
   // Create main log containers in proper order.
-  findOrCreateTypeLogContainer(LogType.system);
+  findOrCreateTypeLogContainer(LogType.debug);
   findOrCreateTypeLogContainer(LogType.bidi);
-  findOrCreateTypeLogContainer(LogType.browsingContexts);
   findOrCreateTypeLogContainer(LogType.cdp);
 }
 
