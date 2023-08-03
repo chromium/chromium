@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -77,6 +79,35 @@ void LogBytes(const std::vector<CharType>& data, std::string* out) {
         static_cast<unsigned>(data.size() - kMaxBytesToLog)));
   }
 #endif
+}
+
+template <typename CharType>
+void WriteCharVector(base::Pickle* m, const std::vector<CharType>& p) {
+  static_assert(sizeof(CharType) == 1);
+  static_assert(std::is_integral_v<CharType>);
+  if (p.empty()) {
+    m->WriteData(nullptr, 0);
+  } else {
+    const char* data = reinterpret_cast<const char*>(p.data());
+    m->WriteData(data, p.size());
+  }
+}
+
+template <typename CharType>
+bool ReadCharVector(const base::Pickle* m,
+                    base::PickleIterator* iter,
+                    std::vector<CharType>* r) {
+  static_assert(sizeof(CharType) == 1);
+  static_assert(std::is_integral_v<CharType>);
+  const char* data;
+  size_t data_size = 0;
+  if (!iter->ReadData(&data, &data_size)) {
+    return false;
+  }
+  const CharType* begin = reinterpret_cast<const CharType*>(data);
+  const CharType* end = begin + data_size;
+  r->assign(begin, end);
+  return true;
 }
 
 void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle);
@@ -431,24 +462,13 @@ void ParamTraits<std::wstring>::Log(const param_type& p, std::string* l) {
 
 void ParamTraits<std::vector<char>>::Write(base::Pickle* m,
                                            const param_type& p) {
-  if (p.empty()) {
-    m->WriteData(NULL, 0);
-  } else {
-    m->WriteData(&p.front(), p.size());
-  }
+  WriteCharVector(m, p);
 }
 
 bool ParamTraits<std::vector<char>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
-  const char *data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size))
-    return false;
-  r->resize(data_size);
-  if (data_size)
-    memcpy(&r->front(), data, data_size);
-  return true;
+  return ReadCharVector(m, iter, r);
 }
 
 void ParamTraits<std::vector<char> >::Log(const param_type& p, std::string* l) {
@@ -457,24 +477,13 @@ void ParamTraits<std::vector<char> >::Log(const param_type& p, std::string* l) {
 
 void ParamTraits<std::vector<unsigned char>>::Write(base::Pickle* m,
                                                     const param_type& p) {
-  if (p.empty()) {
-    m->WriteData(NULL, 0);
-  } else {
-    m->WriteData(reinterpret_cast<const char*>(&p.front()), p.size());
-  }
+  WriteCharVector(m, p);
 }
 
 bool ParamTraits<std::vector<unsigned char>>::Read(const base::Pickle* m,
                                                    base::PickleIterator* iter,
                                                    param_type* r) {
-  const char *data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size))
-    return false;
-  r->resize(data_size);
-  if (data_size)
-    memcpy(&r->front(), data, data_size);
-  return true;
+  return ReadCharVector(m, iter, r);
 }
 
 void ParamTraits<std::vector<unsigned char> >::Log(const param_type& p,
