@@ -20,8 +20,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 owners:
 - cros-3pidp@google.com
 - mgomezch@chromium.org
@@ -29,6 +27,8 @@ schema:
   items:
     type: string
   type: array
+supported_on:
+- chrome_os:117-
 tags:
 - filtering
 type: list
