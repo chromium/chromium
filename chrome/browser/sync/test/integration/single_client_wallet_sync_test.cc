@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -1091,60 +1090,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(kDefaultCardID, cards[0]->server_id());
   EXPECT_EQ(kDefaultBillingAddressID, cards[0]->billing_address_id());
-}
-
-// AutofillAccountProfilesUnionView deprecates support for server profiles.
-// TODO(crbug.com/1348294): Remove when launched.
-class SingleClientWalletServerAddressSyncTest
-    : public SingleClientWalletSyncTest {
- public:
-  SingleClientWalletServerAddressSyncTest() {
-    features_.InitAndDisableFeature(
-        autofill::features::kAutofillAccountProfilesUnionView);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientWalletServerAddressSyncTest,
-                       ConvertServerAddress) {
-  GetFakeServer()->SetWalletData(
-      {CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
-       CreateDefaultSyncPaymentsCustomerData()});
-  ASSERT_TRUE(SetupSync());
-
-  // Wait to make sure the address got converted locally.
-  AutofillWalletConversionChecker(0).Wait();
-
-  // Make sure the wallet_metadata is committed to the server, make an
-  // independent later commit and wait for it to happen.
-  ASSERT_TRUE(
-      bookmarks_helper::AddURL(0, "What are you syncing about?",
-                               GURL("https://google.com/synced-bookmark-1")));
-  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
-
-  // Make sure the data is present on the client.
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_EQ(1uL, pdm->GetServerProfiles().size());
-  ASSERT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
-
-  // Check also the data related to conversion to local profiles.
-  ASSERT_EQ(1uL, pdm->GetProfiles().size());
-  std::map<std::string, AutofillMetadata> addresses_metadata =
-      GetServerAddressesMetadata(0);
-  EXPECT_EQ(1U, addresses_metadata.size());
-  EXPECT_TRUE(addresses_metadata.begin()->second.has_converted);
-
-  // Check the data is correctly on the server.
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(
-                  syncer::AUTOFILL_WALLET_METADATA),
-              Contains(AddressHasConverted()));
-
-  histogram_tester_.ExpectBucketCount(
-      "Autofill.WalletAddressConversionType",
-      /*sample=*/AutofillMetrics::CONVERTED_ADDRESS_ADDED,
-      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,

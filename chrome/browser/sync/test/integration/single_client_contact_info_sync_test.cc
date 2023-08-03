@@ -15,7 +15,6 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -136,15 +135,7 @@ void AddSpecificsToServer(const sync_pb::ContactInfoSpecifics& specifics,
 
 class SingleClientContactInfoSyncTest : public SyncTest {
  public:
-  SingleClientContactInfoSyncTest() : SyncTest(SINGLE_CLIENT) {
-    // The `PersonalDataManager` only loads `kAccount` profiles when
-    // kAutofillAccountProfilesUnionView is enabled.
-    features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncEnableContactInfoDataType,
-                              autofill::features::
-                                  kAutofillAccountProfilesUnionView},
-        /*disabled_features=*/{});
-  }
+  SingleClientContactInfoSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   // In SINGLE_CLIENT tests, there's only a single PersonalDataManager.
   autofill::PersonalDataManager* GetPersonalDataManager() const {
@@ -152,7 +143,8 @@ class SingleClientContactInfoSyncTest : public SyncTest {
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      syncer::kSyncEnableContactInfoDataType};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {

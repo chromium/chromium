@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
@@ -79,16 +78,11 @@ class AutofillProfilesEqualChecker
 
 class TwoClientContactInfoSyncTest : public SyncTest {
  public:
-  TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncEnableContactInfoDataType,
-                              autofill::features::
-                                  kAutofillAccountProfilesUnionView},
-        /*disabled_features=*/{});
-  }
+  TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {}
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      syncer::kSyncEnableContactInfoDataType};
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {

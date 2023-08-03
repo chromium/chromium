@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -171,8 +170,7 @@ void TestPersonalDataManager::LoadProfiles() {
     OnWebDataServiceRequestDone(pending_synced_local_profiles_query_,
                                 std::move(result));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
+  {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
     account_profiles_.swap(profiles);
     auto result = std::make_unique<

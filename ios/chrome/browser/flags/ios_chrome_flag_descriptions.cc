@@ -27,11 +27,6 @@ const char kAutofillAccountProfilesStorageName[] =
 const char kAutofillAccountProfilesStorageDescription[] =
     "When enabled, the profiles would be saved to the Google Account";
 
-const char kAutofillAccountProfilesUnionViewName[] =
-    "Enable compatibility with GAS";
-const char kAutofillAccountProfilesUnionViewDescription[] =
-    "When enabled, the GAS profiles would start up showing in settings";
-
 const char kAutofillBrandingIOSName[] = "Autofill Branding on iOS";
 const char kAutofillBrandingIOSDescription[] =
     "Adds the Chrome logo in the form input suggestions bar. If select "

@@ -4,7 +4,6 @@
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -61,11 +60,7 @@ class CategoryResolvedKeyMetricsTest
     : public autofill_metrics::AutofillMetricsBaseTest,
       public testing::Test {
  public:
-  CategoryResolvedKeyMetricsTest() {
-    // Category-resolved metrics are only emitted when the union view is
-    // enabled.
-    features_.InitAndEnableFeature(features::kAutofillAccountProfilesUnionView);
-  }
+  CategoryResolvedKeyMetricsTest() = default;
 
   void SetUp() override { SetUpHelper(); }
   void TearDown() override { TearDownHelper(); }
@@ -102,7 +97,6 @@ class CategoryResolvedKeyMetricsTest
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_tester_;
 };
 

@@ -97,6 +97,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   // profiles using |app_locale| and filling in |primary_account_email| into
   // newly converted profiles. The task only converts profiles that have not
   // been converted before.
+  // TODO(crbug.com/1348294): Delete this function, which is unused.
   void ConvertWalletAddressesAndUpdateWalletCards(
       const std::string& app_locale,
       const std::string& primary_account_email);

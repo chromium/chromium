@@ -74,10 +74,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
-// Returns YES if the feature
-// `autofill::features::kAutofillAccountProfilesUnionView` is enabled.
-@property(nonatomic, assign) BOOL autofillAccountProfilesUnionViewEnabled;
-
 // The shown view controller.
 @property(nonatomic, weak) ChromeTableViewController* controller;
 
@@ -109,8 +105,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _userEmail = userEmail;
     _errorSectionPresented = NO;
     _accountProfile = NO;
-    _autofillAccountProfilesUnionViewEnabled = base::FeatureList::IsEnabled(
-        autofill::features::kAutofillAccountProfilesUnionView);
     _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
     _controller = controller;
     _settingsView = settingsView;
@@ -143,13 +137,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
         [self.controller.tableViewModel itemTypeForIndexPath:path];
 
     if (itemType == AutofillProfileDetailsItemTypeCountry) {
-      if (self.autofillAccountProfilesUnionViewEnabled) {
         [self.delegate
             updateProfileMetadataWithValue:self.homeAddressCountry
                          forAutofillUIType:
                              AutofillUITypeProfileHomeAddressCountry];
         continue;
-      }
     } else if (![self isItemTypeTextEditCell:itemType]) {
       continue;
     }
@@ -182,9 +174,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       continue;
     }
 
-    if (self.autofillAccountProfilesUnionViewEnabled &&
-        AutofillUITypeFromAutofillType(field.autofillType) ==
-            AutofillUITypeProfileHomeAddressCountry) {
+    if (AutofillUITypeFromAutofillType(field.autofillType) ==
+        AutofillUITypeProfileHomeAddressCountry) {
       [model addItem:[self countryItem]
           toSectionWithIdentifier:
               AutofillProfileDetailsSectionIdentifierFields];
@@ -220,8 +211,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     return tableViewTextButtonCell;
   }
 
-  if (self.autofillAccountProfilesUnionViewEnabled &&
-      itemType == AutofillProfileDetailsItemTypeCountry) {
+  if (itemType == AutofillProfileDetailsItemTypeCountry) {
     TableViewMultiDetailTextCell* multiDetailTextCell =
         base::mac::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
     multiDetailTextCell.accessibilityIdentifier =
@@ -240,8 +230,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger itemType =
       [self.controller.tableViewModel itemTypeForIndexPath:indexPath];
   if ([self showEditView]) {
-    if (self.autofillAccountProfilesUnionViewEnabled &&
-        itemType == AutofillProfileDetailsItemTypeCountry) {
+    if (itemType == AutofillProfileDetailsItemTypeCountry) {
       [self.delegate willSelectCountryWithCurrentlySelectedCountry:
                          self.homeAddressCountry];
     } else if (itemType != AutofillProfileDetailsItemTypeFooter &&
@@ -277,8 +266,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   CHECK(self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
 
-  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
-      _userEmail != nil) {
+  if (self.accountProfile && _userEmail != nil) {
     [model
         addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
     [model setFooter:[self footerItem]
@@ -312,8 +300,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if (self.autofillAccountProfilesUnionViewEnabled &&
-      (self.accountProfile || self.migrationPrompt)) {
+  if ((self.accountProfile || self.migrationPrompt)) {
     [self computeErrorIfRequiredTextField:tableViewItem];
     if (self.settingsView) {
       [self updateDoneButtonStatus];
@@ -331,7 +318,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 #pragma mark - AutofillProfileEditConsumer
 
 - (void)didSelectCountry:(NSString*)country {
-  CHECK(self.autofillAccountProfilesUnionViewEnabled);
   self.homeAddressCountry = country;
 
   [self.requiredFieldsWithEmptyValue removeAllObjects];
@@ -819,7 +805,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeEmailAddress:
       return YES;
     case AutofillProfileDetailsItemTypeCountry:
-      return !self.autofillAccountProfilesUnionViewEnabled;
     case AutofillProfileDetailsItemTypeError:
     case AutofillProfileDetailsItemTypeFooter:
     case AutofillProfileDetailsItemTypeSaveButton:

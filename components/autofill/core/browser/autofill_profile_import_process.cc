@@ -160,8 +160,6 @@ void ProfileImportProcess::DetermineProfileImportType() {
       if (allow_only_silent_updates_ ||
           (existing_profile->source() == AutofillProfile::Source::kAccount &&
            !(base::FeatureList::IsEnabled(
-                 features::kAutofillAccountProfilesUnionView) &&
-             base::FeatureList::IsEnabled(
                  features::kAutofillAccountProfileStorage)))) {
         ++number_of_unchanged_profiles;
         continue;
@@ -196,10 +194,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // If the profile changed but all settings-visible values are maintained,
     // the profile can be updated silently. Silent updates can also be disabled
     // using a feature flag.
-    if ((existing_profile->source() ==
-             AutofillProfile::Source::kLocalOrSyncable ||
-         features::kAutofillEnableSilentUpdatesForAccountProfiles.Get()) &&
-        !base::FeatureList::IsEnabled(
+    if (!base::FeatureList::IsEnabled(
             features::test::kAutofillDisableSilentProfileUpdates)) {
       merged_profile.set_modification_date(AutofillClock::Now());
       updated_profiles_.emplace_back(merged_profile);

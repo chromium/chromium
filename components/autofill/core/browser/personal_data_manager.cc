@@ -876,8 +876,6 @@ bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
   return sync_service_ &&
          sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO) &&
          base::FeatureList::IsEnabled(
-             features::kAutofillAccountProfilesUnionView) &&
-         base::FeatureList::IsEnabled(
              features::kAutofillAccountProfileStorage) &&
          (features::kAutofillAccountProfileStorageFromUnsupportedIPs.Get() ||
           IsCountryEligibleForAccountStorage(variations_country_code_));
@@ -2130,12 +2128,9 @@ void PersonalDataManager::LoadProfiles() {
   pending_synced_local_profiles_query_ =
       database_helper_->GetLocalDatabase()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, this);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
-    pending_account_profiles_query_ =
-        database_helper_->GetLocalDatabase()->GetAutofillProfiles(
-            AutofillProfile::Source::kAccount, this);
-  }
+  pending_account_profiles_query_ =
+      database_helper_->GetLocalDatabase()->GetAutofillProfiles(
+          AutofillProfile::Source::kAccount, this);
   if (database_helper_->GetServerDatabase()) {
     pending_creditcard_billing_addresses_query_ =
         database_helper_->GetServerDatabase()->GetServerProfiles(this);
@@ -2341,9 +2336,7 @@ void PersonalDataManager::LogStoredDataMetrics() const {
 
   const std::vector<AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView) &&
-      base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage)) {
     autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
                                                      app_locale_);
   }
@@ -2547,24 +2540,12 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
 void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
 
 void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
-  // If the full Sync feature isn't enabled, then do NOT convert any Wallet
-  // addresses to local ones.
-  // When syncing of account profiles is enabled, converting wallet addresses
-  // is unnecessary, since they are available through the ContactInfoSyncBridge.
-  if (!IsSyncFeatureEnabled() ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
-    // PDM expects that each call to
-    // ConvertWalletAddressesAndUpdateWalletCards() is followed by a
-    // AutofillAddressConversionCompleted() notification, simulate the
-    // notification here.
-    AutofillAddressConversionCompleted();
-    return;
-  }
-
-  database_helper_->GetServerDatabase()
-      ->ConvertWalletAddressesAndUpdateWalletCards(
-          app_locale_, GetAccountInfoForPaymentsServer().email);
+  // PDM expects that each call to
+  // ConvertWalletAddressesAndUpdateWalletCards() is followed by a
+  // AutofillAddressConversionCompleted() notification, simulate the
+  // notification here.
+  // TODO(crbug.com/1348294): Simplify this code.
+  AutofillAddressConversionCompleted();
 }
 
 void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,

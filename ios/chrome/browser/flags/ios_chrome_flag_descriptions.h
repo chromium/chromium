@@ -27,10 +27,6 @@ extern const char kAppStoreRatingLoosenedTriggersDescription[];
 extern const char kAutofillAccountProfilesStorageName[];
 extern const char kAutofillAccountProfilesStorageDescription[];
 
-// Title and description for the flag to enable compatibility with GAS profiles.
-extern const char kAutofillAccountProfilesUnionViewName[];
-extern const char kAutofillAccountProfilesUnionViewDescription[];
-
 // Title and description for the flag to enable Chrome branding on form input
 // suggestions.
 extern const char kAutofillBrandingIOSName[];

@@ -143,33 +143,13 @@ id<GREYMatcher> MigrateToAccountButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
-      [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)] ||
-      [self isRunningTest:@selector(testCountrySelection)] ||
-      [self isRunningTest:@selector(testRequiredFields)] ||
-      [self isRunningTest:@selector(testAutoScrollInCountrySelector)] ||
-      [self isRunningTest:@selector(testDoneButtonByRequirementsOfCountries)] ||
-      [self isRunningTest:@selector(testFooterWithMultipleErrors)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAccountProfilesUnionView);
-  }
-
   if ([self isRunningTest:@selector(testMigrateToAccount)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAccountProfilesUnionView);
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfileStorage);
     config.features_enabled.push_back(
         autofill::features::kAutofillRequireNameForProfileImport);
     config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  }
-
-  // Either the test is a duplicate or incompatible with the feature.
-  if ([self isRunningTest:@selector(testAutofillProfileEditing)] ||
-      [self isRunningTest:@selector(testDeletionOfAddressProfile)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillAccountProfilesUnionView);
   }
 
   return config;
@@ -271,42 +251,6 @@ id<GREYMatcher> MigrateToAccountButton() {
   [self exitSettingsMenu];
 }
 
-// Test that editing country names is followed by validating the value and
-// replacing it with a canonical one.
-- (void)testAutofillProfileEditing {
-  [AutofillAppInterface saveExampleProfile];
-  [self openEditProfile:kProfileLabel];
-
-  // Keep editing the Country field and verify that validation works.
-  for (const UserTypedCountryExpectedResultPair& expectation : kCountryTests) {
-    // Switch on edit mode.
-    [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-        performAction:grey_tap()];
-
-    // Replace the text field with the user-version of the country.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                     IDS_IOS_AUTOFILL_COUNTRY)]
-        performAction:grey_replaceText(expectation.user_typed_country)];
-
-    // Switch off edit mode.
-    [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-        performAction:grey_tap()];
-
-    // Verify that the country value was changed to canonical.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                     IDS_IOS_AUTOFILL_COUNTRY)]
-        assertWithMatcher:grey_text(expectation.expected_result)];
-  }
-
-  // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
-      performAction:grey_tap()];
-
-  [self exitSettingsMenu];
-}
-
 // Test that the page for viewing Autofill profile details is accessible.
 - (void)testAccessibilityOnAutofillProfileViewPage {
   [AutofillAppInterface saveExampleProfile];
@@ -383,28 +327,6 @@ id<GREYMatcher> MigrateToAccountButton() {
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
-}
-
-// Checks that the autofill profile is deleted when the deletion is initiated.
-- (void)testDeletionOfAddressProfile {
-  [AutofillAppInterface saveExampleProfile];
-  [self openProfileListInEditMode];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(
-                                   [AutofillAppInterface exampleProfileName])]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      assertWithMatcher:grey_nil()];
-  // If the done button in the nav bar is enabled it is no longer in edit
-  // mode.
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that the confirmation action sheet is shown when an autofill profile

@@ -29,17 +29,6 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
              "AutofillGivePrecedenceToNumericQuantities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if `kAccount` profiles are loaded from AutofillTable and
-// consequently suggested for filling.
-// TODO(crbug.com/1348294): Remove once launched.
-BASE_FEATURE(kAutofillAccountProfilesUnionView,
-             "AutofillAccountProfilesUnionView",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Account profiles are not considered for regular updates on import, but if
-// this parameter is enabled, they are considered for silent updates.
-const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
-    &kAutofillAccountProfilesUnionView, "enable_silent_updates", true};
-
 // When enabled, creating new kAccount profiles becomes possible for eligible
 // users. Moreover, users are prompted to migrate existing kLocalOrSyncable
 // profiles to the kAccount storage.

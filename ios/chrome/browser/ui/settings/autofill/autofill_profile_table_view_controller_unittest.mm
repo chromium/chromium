@@ -125,47 +125,4 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
   EXPECT_EQ(1, NumberOfItemsInSection(1));
 }
 
-// Deleting the only profile results in item deletion and section deletion.
-TEST_F(AutofillProfileTableViewControllerTest, TestOneProfileItemDeleted) {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfilesUnionView)) {
-    // The test is incompatible with the feature as now the user is asked to
-    // confirm the deletion.
-    // TODO(crbug.com/1423319): Cleanup
-    return;
-  }
-
-  AddProfile("John Doe", "1 Main Street");
-  CreateController();
-  CheckController();
-
-  // Expect two sections (header and addresses section).
-  EXPECT_EQ(2, NumberOfSections());
-  // Expect address section to contain one row (the address itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
-
-  AutofillProfileTableViewController* view_controller =
-      base::mac::ObjCCastStrict<AutofillProfileTableViewController>(
-          controller());
-  // Put the tableView in 'edit' mode.
-  [view_controller editButtonPressed];
-
-  AutofillProfileTableViewController* autofill_controller =
-      static_cast<AutofillProfileTableViewController*>(controller());
-  [autofill_controller deleteItems:@[ [NSIndexPath indexPathForRow:0
-                                                         inSection:1] ]];
-
-  // Verify the resulting UI.
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool() {
-        return NumberOfSections() == 1;
-      }));
-
-  // Exit 'edit' mode.
-  [view_controller editButtonPressed];
-
-  // Expect address section to have been removed.
-  EXPECT_EQ(1, NumberOfSections());
-}
-
 }  // namespace

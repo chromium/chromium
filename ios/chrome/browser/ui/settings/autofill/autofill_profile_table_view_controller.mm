@@ -327,20 +327,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Override.
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfilesUnionView)) {
     [self showDeletionConfirmationForIndexPaths:indexPaths];
-  } else {
-    // If there are no index paths, return early. This can happen if the user
-    // presses the Delete button twice in quick succession.
-    if (![indexPaths count]) {
-      return;
-    }
-    [self willDeleteItemsAtIndexPaths:indexPaths];
-    // TODO(crbug.com/650390) Generalize removing empty sections
-    [self
-        removeSectionIfEmptyForSectionWithIdentifier:SectionIdentifierProfiles];
-  }
 }
 
 #pragma mark - UITableViewDelegate

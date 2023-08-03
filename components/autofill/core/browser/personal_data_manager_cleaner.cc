@@ -155,8 +155,6 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
 
   const std::vector<AutofillProfile*>& profiles =
       base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView) &&
-              base::FeatureList::IsEnabled(
                   features::kAutofillAccountProfileStorage)
           ? personal_data_manager_->GetProfiles()
           : personal_data_manager_->GetProfilesFromSource(

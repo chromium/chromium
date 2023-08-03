@@ -9,7 +9,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
@@ -121,50 +120,11 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
   EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
 }
 
-// Adding a single address results in an address section.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestOneProfile) {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfilesUnionView)) {
-    // The test is incompatible with the feature as the country is a selection
-    // field.
-    // TODO(crbug.com/1423319): Cleanup
-    return;
-  }
-
-  TableViewModel* model = [controller() tableViewModel];
-
-  autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-  std::vector<std::u16string> expected_values;
-
-  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
-    const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-    if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
-      continue;
-    }
-
-    expected_values.push_back(profile.GetRawInfo(field.autofillType));
-  }
-
-  EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(expected_values.size(), (size_t)[model numberOfItemsInSection:0]);
-
-  for (size_t row = 0; row < expected_values.size(); row++) {
-    TableViewTextEditItem* cell =
-        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
-    EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row]),
-                cell.textFieldValue);
-  }
-}
-
+// TODO(crbug.com/1348294): Merge into main test fixture.
 class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
     : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:
-  AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillAccountProfilesUnionView);
-  }
+  AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {}
 
   ChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
@@ -227,8 +187,6 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
                   cell.textFieldValue);
     }
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Adding an account address results in an address section.
@@ -245,8 +203,7 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
 }
 
 // Tests the footer text of the view controller for the address profiles with
-// source kAccount when
-//`autofill::features::kAutofillAccountProfilesUnionView` / is enabled.
+// source kAccount.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
        TestFooterTextWithEmail) {
   CreateAccountProfile();
