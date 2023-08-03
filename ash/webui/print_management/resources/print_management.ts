@@ -122,7 +122,6 @@ export class PrintManagementElement extends PrintManagementElementBase
         value: (): boolean => {
           return loadTimeData.getBoolean('isSetupAssistanceEnabled');
         },
-        reflectToAttribute: true,
       },
 
       deletePrintJobHistoryAllowedByPolicy: {
