@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Setting critical client hints after Clear-Site-Data for client hints shouldn't allow the client hints to take. assert_equals: expected "MissingDeviceMemory" but got "HadDeviceMemory"
-Harness: the test ran to completion.
-

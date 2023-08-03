@@ -372,6 +372,6 @@ BASE_FEATURE(kVisibilityAwareResourceScheduler,
 
 BASE_FEATURE(kClearSiteDataClientHintsSupport,
              "ClearSiteDataClientHintsSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace network::features
