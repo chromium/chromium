@@ -45,7 +45,6 @@ class NoStatePrefetchHandle;
 }
 
 namespace predictors {
-
 // This class is responsible for determining the correct predictive network
 // action to take given for a given AutocompleteMatch and entered text. It can
 // be instantiated for both normal and incognito profiles.  For normal profiles,
@@ -140,6 +139,8 @@ class AutocompleteActionPredictor
                              bool* is_in_db) const;
 
   bool initialized() { return initialized_; }
+
+  static Action DecideActionByConfidence(double confidence);
 
  private:
   friend class AutocompleteActionPredictorTest;
