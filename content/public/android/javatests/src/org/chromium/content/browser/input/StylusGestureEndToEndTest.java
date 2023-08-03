@@ -5,7 +5,6 @@
 package org.chromium.content.browser.input;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
@@ -17,8 +16,16 @@ import static org.chromium.content.browser.input.StylusTestHelper.toScreenRectF;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Build;
+import android.view.inputmethod.DeleteGesture;
+import android.view.inputmethod.DeleteRangeGesture;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InsertGesture;
+import android.view.inputmethod.JoinOrSplitGesture;
+import android.view.inputmethod.RemoveSpaceGesture;
+import android.view.inputmethod.SelectGesture;
+import android.view.inputmethod.SelectRangeGesture;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
@@ -37,12 +44,8 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -50,8 +53,6 @@ import java.util.concurrent.TimeoutException;
  * area of text, simulates a handwriting gesture object over that area and asserts that the correct
  * change has been made to the page.
  */
-// TODO(crbug.com/1463982): This test continues to use reflection as using the U APIs directly
-//  causes a NoClassDefFoundError on some builders.
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({"enable-features=StylusRichGestures"})
@@ -61,10 +62,8 @@ public class StylusGestureEndToEndTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
 
-    private static final int GRANULARITY_WORD = 1;
-    private static final String TARGET_PACKAGE = "android.view.inputmethod.";
-
     private InputConnection mWrappedInputConnection;
+    private HandwritingGesture mHandwritingGesture;
 
     @Before
     public void setUp() throws Exception {
@@ -80,34 +79,20 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @LargeTest
-    public void testSelectGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testSelectGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
         RectF gestureRect = bounds.get(0);
         gestureRect.union(bounds.get(bounds.size() - 1));
 
-        // The following reflection creates a new SelectGesture over the text in the
-        // contenteditable1 element. It has word granularity and the fallback text defined in
-        // FALLBACK_TEXT.
-        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
-        builderMethods.get("setSelectionArea").invoke(builder, gestureRect);
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new SelectGesture.Builder()
+                                      .setGranularity(HandwritingGesture.GRANULARITY_WORD)
+                                      .setSelectionArea(gestureRect)
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it is the same.
@@ -119,32 +104,19 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
-    public void testInsertGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testInsertGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
         PointF insertionPoint = new PointF(bounds.get(7).right, bounds.get(7).centerY());
 
-        // The following reflection creates a new InsertGesture at the point in contenteditable1
-        // between o and r in "world". It should insert the word "inserted" at that point.
-        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "InsertGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setInsertionPoint").invoke(builder, insertionPoint);
-        builderMethods.get("setTextToInsert").invoke(builder, "inserted");
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new InsertGesture.Builder()
+                                      .setInsertionPoint(insertionPoint)
+                                      .setTextToInsert("inserted")
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it contains the inserted text.
@@ -154,34 +126,20 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @LargeTest
-    public void testDeleteGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testDeleteGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
         RectF gestureRect = bounds.get(0);
         gestureRect.union(bounds.get(6));
 
-        // The following reflection creates a new DeleteGesture over the area of contenteditable1
-        // between the 1st and 7th characters. It has word granularity and the fallback text
-        // defined in FALLBACK_TEXT.
-        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
-        builderMethods.get("setDeletionArea").invoke(builder, gestureRect);
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new DeleteGesture.Builder()
+                                      .setGranularity(HandwritingGesture.GRANULARITY_WORD)
+                                      .setDeletionArea(gestureRect)
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it has been deleted.
@@ -191,9 +149,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
-    public void testRemoveSpaceGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testRemoveSpaceGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
         RectF removalRect = bounds.get(2);
@@ -201,25 +157,14 @@ public class StylusGestureEndToEndTest {
 
         // The following reflection creates a new RemoveSpaceGesture for the space between "hello"
         // and "world" in contenteditable1.
-        Class builderClass =
-                getBuilderForClass(Class.forName(TARGET_PACKAGE + "RemoveSpaceGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setPoints")
-                .invoke(builder, new PointF(removalRect.left, removalRect.bottom),
-                        new PointF(removalRect.right, removalRect.top));
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new RemoveSpaceGesture.Builder()
+                                      .setPoints(new PointF(removalRect.left, removalRect.bottom),
+                                              new PointF(removalRect.right, removalRect.top))
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it contains the inserted text.
@@ -229,55 +174,32 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
-    public void testJoinOrSplitGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testJoinOrSplitGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
         PointF joinOrSplitPoint = new PointF(bounds.get(5).centerX(), bounds.get(5).centerY());
 
-        // The following reflection creates a new JoinOrSplitGesture for the space between "hello"
-        // and "world" in contenteditable1.
-        Class builderClass =
-                getBuilderForClass(Class.forName(TARGET_PACKAGE + "JoinOrSplitGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setJoinOrSplitPoint").invoke(builder, joinOrSplitPoint);
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new JoinOrSplitGesture.Builder()
+                                      .setJoinOrSplitPoint(joinOrSplitPoint)
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it contains the inserted text.
         assertEquals("\"helloworld\"",
                 runJavaScript("document.getElementById(\"contenteditable1\").innerText;"));
 
-        // The following reflection creates a new JoinOrSplitGesture after the e in "helloworld" in
-        // contenteditable1.
         joinOrSplitPoint = new PointF(bounds.get(1).right, bounds.get(2).centerY());
-        builder = builderClass.newInstance();
-        builderMethods.get("setJoinOrSplitPoint").invoke(builder, joinOrSplitPoint);
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture2 = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new JoinOrSplitGesture.Builder()
+                                      .setJoinOrSplitPoint(joinOrSplitPoint)
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture2, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it contains the inserted text.
@@ -287,9 +209,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
-    public void testSelectRangeGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testSelectRangeGesture() throws TimeoutException {
         List<RectF> bounds = initialiseElementAndGetCharacterBounds(
                 "contenteditable1", "hello world\\ngoodbye world");
         // "orld"
@@ -299,28 +219,15 @@ public class StylusGestureEndToEndTest {
         RectF endRect = bounds.get(11);
         endRect.union(bounds.get(15));
 
-        // The following reflection creates a new SelectRangeGesture over the area of the
-        // contenteditable1 element containing the words "world" and "goodbye". These crosses a
-        // line boundary. It has word granularity and the fallback text defined in FALLBACK_TEXT.
-        Class builderClass =
-                getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectRangeGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
-        builderMethods.get("setSelectionStartArea").invoke(builder, startRect);
-        builderMethods.get("setSelectionEndArea").invoke(builder, endRect);
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new SelectRangeGesture.Builder()
+                                      .setGranularity(HandwritingGesture.GRANULARITY_WORD)
+                                      .setSelectionStartArea(startRect)
+                                      .setSelectionEndArea(endRect)
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // Get the text inside contenteditable1 and assert that it is the same.
@@ -332,9 +239,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
-    public void testDeleteRangeGesture()
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-                   InvocationTargetException, TimeoutException {
+    public void testDeleteRangeGesture() throws TimeoutException {
         List<RectF> bounds = initialiseElementAndGetCharacterBounds(
                 "contenteditable1", "hello world\\ngoodbye world");
         // "llo world"
@@ -344,29 +249,15 @@ public class StylusGestureEndToEndTest {
         RectF endRect = bounds.get(11);
         endRect.union(bounds.get(14));
 
-        // The following reflection creates a new DeleteRangeGesture over the area of the
-        // contenteditable1 element containing "hello world\ngoodbye". This should remove the first
-        // line entirely leaving only the word "world" on a single line. It has word granularity
-        // and the fallback text defined in FALLBACK_TEXT.
-        Class builderClass =
-                getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteRangeGesture"));
-        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
-        Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
-        builderMethods.get("setDeletionStartArea").invoke(builder, startRect);
-        builderMethods.get("setDeletionEndArea").invoke(builder, endRect);
-        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
-        Object gesture = builderMethods.get("build").invoke(builder);
+        mHandwritingGesture = new DeleteRangeGesture.Builder()
+                                      .setGranularity(HandwritingGesture.GRANULARITY_WORD)
+                                      .setDeletionStartArea(startRect)
+                                      .setDeletionEndArea(endRect)
+                                      .setFallbackText(FALLBACK_TEXT)
+                                      .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Method performHandwritingGesture =
-                    getMethodsForClass(mWrappedInputConnection.getClass())
-                            .get("performHandwritingGesture");
-            try {
-                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                fail("Failed to call performHandwritingGesture");
-            }
+            mWrappedInputConnection.performHandwritingGesture(mHandwritingGesture, null, null);
         });
 
         // We have to remove the 0 width line break character that JavaScript leaves in the string.
@@ -432,27 +323,5 @@ public class StylusGestureEndToEndTest {
      */
     private String runJavaScript(String code) throws TimeoutException {
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code);
-    }
-
-    private static Map<String, Method> getMethodsForClass(Class<?> className) {
-        Map<String, Method> methodMap = new HashMap<>();
-        for (Method method : className.getDeclaredMethods()) {
-            methodMap.put(method.getName(), method);
-        }
-        return methodMap;
-    }
-
-    private static Class<?> getBuilderForClass(Class<?> className) throws ClassNotFoundException {
-        Class builderClass = null;
-        for (Class innerClass : className.getDeclaredClasses()) {
-            if (innerClass.getName().endsWith("Builder")) {
-                builderClass = innerClass;
-            }
-        }
-        if (builderClass == null) {
-            throw new ClassNotFoundException(
-                    String.format("Could not find inner builder class for %s", className));
-        }
-        return builderClass;
     }
 }
