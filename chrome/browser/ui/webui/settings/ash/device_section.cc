@@ -1795,8 +1795,8 @@ void DeviceSection::AddDevicePointersStrings(
        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_LABEL},
       {"touchpadSimulateRightClickOptionAlt",
        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT},
-      {"touchpadSimulateRightClickOptionOff",
-       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_OFF},
+      {"touchpadSimulateRightClickOptionDisabled",
+       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_DISABLED},
       {"touchpadSimulateRightClickOptionSearch",
        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH},
       {"learnMoreLabel", IDS_SETTINGS_LEARN_MORE_LABEL},
@@ -1819,7 +1819,7 @@ void DeviceSection::AddDevicePointersStrings(
       {"sixPackKeyPageDownAlt", IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT},
       {"sixPackKeyPageDownSearch", IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH},
       {"sixPackKeyInsertSearch", IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH},
-      {"sixPackKeyOff", IDS_SETTINGS_SIX_PACK_KEY_OPTION_OFF},
+      {"sixPackKeyDisabled", IDS_SETTINGS_SIX_PACK_KEY_OPTION_DISABLED},
   };
   html_source->AddLocalizedStrings(kPointersStrings);
 

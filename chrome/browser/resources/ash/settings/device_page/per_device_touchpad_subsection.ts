@@ -145,8 +145,8 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
           return [
             {
               value: SimulateRightClickModifier.kNone,
-              name:
-                  loadTimeData.getString('touchpadSimulateRightClickOptionOff'),
+              name: loadTimeData.getString(
+                  'touchpadSimulateRightClickOptionDisabled'),
             },
             {
               value: SimulateRightClickModifier.kSearch,
