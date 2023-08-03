@@ -79,6 +79,11 @@ html:has(body.jelly-enabled) .description-empty-notification {
   font: var(--cros-annotation-2-font);
 }
 
+html:has(body.jelly-enabled) textarea[aria-invalid="true"] {
+  color: var(--cros-sys-error);
+  outline: 2px solid var(--cros-sys-error);
+}
+
 html:has(body.jelly-enabled) #free-form-text,
 html:has(body.jelly-enabled) #additional-info-label {
   font: var(--cros-headline-1-font);
