@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -21,6 +22,11 @@ void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorAppMenuExpandedForegroundDefault] = {
       kColorTabForegroundInactiveFrameActive};
+
+  if (key.custom_theme && key.custom_theme->HasCustomImage(IDR_THEME_TOOLBAR)) {
+    mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
+  }
+
   mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
