@@ -61,6 +61,7 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
   }
 
   void TearDown() override {
+    personal_data_manager_cleaner_.reset();
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_.reset();
