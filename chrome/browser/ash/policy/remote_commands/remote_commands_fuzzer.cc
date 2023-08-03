@@ -79,11 +79,10 @@ class StubDeviceCommandStartCrdSessionJobDelegate
  public:
   bool HasActiveSession() const override { return false; }
   void TerminateSession(base::OnceClosure) override {}
-  void StartCrdHostAndGetCode(
-      const SessionParameters&,
-      DeviceCommandStartCrdSessionJob::AccessCodeCallback,
-      DeviceCommandStartCrdSessionJob::ErrorCallback,
-      DeviceCommandStartCrdSessionJob::SessionEndCallback) override {}
+  void StartCrdHostAndGetCode(const SessionParameters&,
+                              AccessCodeCallback,
+                              ErrorCallback,
+                              SessionEndCallback) override {}
   void TryToReconnect(base::OnceClosure done_callback) override {}
 };
 
@@ -100,7 +99,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DeviceCommandSetVolumeJob set_volume_job;
   StubDeviceCommandStartCrdSessionJobDelegate start_crd_session_job_delegate;
   DeviceCommandStartCrdSessionJob start_crd_session_job(
-      &start_crd_session_job_delegate);
+      start_crd_session_job_delegate);
   DeviceCommandRunRoutineJob run_routine_job;
   DeviceCommandGetRoutineUpdateJob get_routine_update_job;
   std::initializer_list<RemoteCommandJob* const> jobs = {
