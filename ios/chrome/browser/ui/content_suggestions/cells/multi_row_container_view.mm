@@ -23,7 +23,7 @@ const CGFloat kSeparatorHeight = 0.5;
     rowsStackView.spacing = AlignValueToPixel(8.5);
     rowsStackView.axis = UILayoutConstraintAxisVertical;
     rowsStackView.translatesAutoresizingMaskIntoConstraints = NO;
-    rowsStackView.alignment = UIStackViewAlignmentLeading;
+    rowsStackView.alignment = UIStackViewAlignmentFill;
     [rowsStackView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisVertical];
     // Ensures that rows have similar height.
