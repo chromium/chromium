@@ -44,7 +44,8 @@ class VirtualFidoDeviceDiscovery
       ProtocolVersion supported_protocol,
       const VirtualCtap2Device::Config& ctap2_config,
       std::unique_ptr<EventStream<bool>> disconnect_events,
-      std::unique_ptr<EventStream<size_t>> contact_device_stream = nullptr);
+      std::unique_ptr<EventStream<std::unique_ptr<cablev2::Pairing>>>
+          contact_device_stream = nullptr);
   ~VirtualFidoDeviceDiscovery() override;
   VirtualFidoDeviceDiscovery(const VirtualFidoDeviceDiscovery& other) = delete;
   VirtualFidoDeviceDiscovery& operator=(
@@ -55,7 +56,7 @@ class VirtualFidoDeviceDiscovery
   void Stop() override;
 
  private:
-  void AddVirtualDeviceAsync(size_t _);
+  void AddVirtualDeviceAsync(std::unique_ptr<cablev2::Pairing> _);
   void AddVirtualDevice();
   void Disconnect(bool _);
 
@@ -65,7 +66,8 @@ class VirtualFidoDeviceDiscovery
   const ProtocolVersion supported_protocol_;
   const VirtualCtap2Device::Config ctap2_config_;
   std::unique_ptr<EventStream<bool>> disconnect_events_;
-  std::unique_ptr<EventStream<size_t>> contact_device_stream_;
+  std::unique_ptr<EventStream<std::unique_ptr<cablev2::Pairing>>>
+      contact_device_stream_;
   std::string id_;
 };
 

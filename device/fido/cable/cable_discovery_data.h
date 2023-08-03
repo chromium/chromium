@@ -132,8 +132,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
 
   Pairing();
   ~Pairing();
-  Pairing(const Pairing&) = delete;
-  Pairing& operator=(const Pairing&) = delete;
+  Pairing(const Pairing&);
+  Pairing& operator=(const Pairing&);
 
   // Parse builds a `Pairing` from an authenticator message. The signature
   // within the structure is validated by using `local_identity_seed` and
@@ -168,7 +168,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // authenticator.
   std::vector<uint8_t> secret;
   // peer_public_key_x962 is the authenticator's public key.
-  std::array<uint8_t, kP256X962Length> peer_public_key_x962;
+  std::array<uint8_t, kP256X962Length> peer_public_key_x962{};
   // name is a human-friendly name for the authenticator, specified by that
   // authenticator. (For example "Pixel 3".)
   std::string name;

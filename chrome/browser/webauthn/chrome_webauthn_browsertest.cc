@@ -749,77 +749,72 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
         device::FidoRequestType request_type,
         std::vector<device::CableDiscoveryData> cable_data,
         const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
-            qr_generator_key,
-        std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings)
-        override {
-      for (const auto& pairing : v2_pairings) {
-        parent_->trace() << "PAIRING: " << pairing->name << " "
-                         << base::HexEncode(base::span<const uint8_t>(
-                                                pairing->peer_public_key_x962)
-                                                .subspan(0, 4))
-                         << " " << base::HexEncode(pairing->id) << std::endl;
-      }
+            qr_generator_key) override {
+      parent_->trace() << "SET_CABLE_DATA" << std::endl;
     }
 
     void set_cable_invalidated_pairing_callback(
-        base::RepeatingCallback<void(size_t)> callback) override {
+        base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
+            callback) override {
       invalid_pairing_callback_ = std::move(callback);
     }
 
-    base::RepeatingCallback<void(size_t)> get_cable_contact_callback()
-        override {
-      return base::BindLambdaForTesting([this](size_t n) {
-        parent_->trace() << "CONTACT: phone_instance=" << n
-                         << " step=" << contact_step_number_ << std::endl;
+    base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
+    get_cable_contact_callback() override {
+      return base::BindLambdaForTesting(
+          [this](std::unique_ptr<device::cablev2::Pairing> pairing) {
+            parent_->trace()
+                << "CONTACT: phone_name=" << pairing->name << " public_key="
+                << static_cast<int>(pairing->peer_public_key_x962[0])
+                << " step=" << contact_step_number_ << std::endl;
+            switch (contact_step_number_) {
+              case 0:
+                // Simiulate the first tunnel failing with a Gone status. This
+                // should trigger a fallback to the second-priority phone with
+                // the same name.
+                base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE, base::BindOnce(invalid_pairing_callback_,
+                                              std::move(pairing)));
+                break;
 
-        switch (contact_step_number_) {
-          case 0:
-            // Simiulate the first tunnel failing with a Gone status. This
-            // should trigger a fallback to the second-priority phone with the
-            // same name.
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindLambdaForTesting([this, n]() {
-                  invalid_pairing_callback_.Run(n);
-                }));
-            break;
+              case 1:
+                // Simulate the user clicking back and trying the phone again.
+                // This should fallback to the lower-priority phone with the
+                // same name.
+                base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE, base::BindLambdaForTesting([this]() {
+                      parent_->model()->ContactPhoneForTesting("name2");
+                    }));
+                break;
 
-          case 1:
-            // Simulate the user clicking back and trying the phone again. This
-            // should fallback to the lower-priority phone with the same name.
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindLambdaForTesting([this]() {
-                  parent_->model()->ContactPhoneForTesting("name2");
-                }));
-            break;
+              case 2:
+                // Try some other phones.
+                base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE, base::BindLambdaForTesting([this]() {
+                      parent_->model()->ContactPhoneForTesting("zzz");
+                    }));
+                break;
 
-          case 2:
-            // Try some other phones.
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindLambdaForTesting([this]() {
-                  parent_->model()->ContactPhoneForTesting("zzz");
-                }));
-            break;
+              case 3:
+                // Try some other phones.
+                base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE, base::BindLambdaForTesting([this]() {
+                      parent_->model()->ContactPhoneForTesting("aaa");
+                    }));
+                break;
 
-          case 3:
-            // Try some other phones.
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindLambdaForTesting([this]() {
-                  parent_->model()->ContactPhoneForTesting("aaa");
-                }));
-            break;
+              case 4:
+                // All done. Discover a virtual authenticator in order to
+                // resolve the request.
+                add_authenticator_callback_.Run();
+                break;
 
-          case 4:
-            // All done. Discover a virtual authenticator in order to resolve
-            // the request.
-            add_authenticator_callback_.Run();
-            break;
+              default:
+                CHECK(false);
+            }
 
-          default:
-            CHECK(false);
-        }
-
-        contact_step_number_++;
-      });
+            contact_step_number_++;
+          });
     }
 
 #if BUILDFLAG(IS_WIN)
@@ -866,7 +861,8 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     };
 
     const raw_ptr<WebAuthnCableSecondFactor> parent_;
-    base::RepeatingCallback<void(size_t)> invalid_pairing_callback_;
+    base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
+        invalid_pairing_callback_;
     base::RepeatingClosure add_authenticator_callback_;
     int contact_step_number_ = 0;
   };
@@ -992,19 +988,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, MAYBE_Test) {
 
   constexpr char kExpectedTrace[] = R"(
 TYPE: ga
-PAIRING: aaa 03030303 040506
-PAIRING: name2 02020202 040506
-PAIRING: name2 01010101 040506
-PAIRING: name2 00000000 040506
-PAIRING: zzz 04040404 040506
+SET_CABLE_DATA
 UINAME: aaa
 UINAME: name2
 UINAME: zzz
-CONTACT: phone_instance=1 step=0
-CONTACT: phone_instance=2 step=1
-CONTACT: phone_instance=3 step=2
-CONTACT: phone_instance=4 step=3
-CONTACT: phone_instance=0 step=4
+CONTACT: phone_name=name2 public_key=2 step=0
+CONTACT: phone_name=name2 public_key=1 step=1
+CONTACT: phone_name=name2 public_key=0 step=2
+CONTACT: phone_name=zzz public_key=4 step=3
+CONTACT: phone_name=aaa public_key=3 step=4
 )";
   EXPECT_EQ(kExpectedTrace, trace_.str());
 }
