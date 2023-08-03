@@ -321,16 +321,30 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 #if BUILDFLAG(IS_CHROMEOS)
   DefaultChromeAppsMigrator chrome_apps_migrator;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Merge precedence metapolicies into the bundle first.
+  // Because their value affects policy overriding.
+  for (auto* provider : providers_) {
+    if (!provider->is_active()) {
+      continue;
+    }
+    PolicyMap provider_map = provider->policies().Get(chrome_namespace).Clone();
+    IgnoreUserCloudPrecedencePolicies(&provider_map);
+    bundle.Get(chrome_namespace)
+        .MergeFrom(provider_map, /*merge_precedence_metapolicies=*/true);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   for (auto* provider : providers_) {
     if (!provider->is_active()) {
       continue;
     }
 
     PolicyBundle provided_bundle = provider->policies().Clone();
-    IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
 #if BUILDFLAG(IS_CHROMEOS)
+    IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     chrome_apps_migrator.Migrate(&provided_bundle.Get(chrome_namespace));
 #endif  // BUILDFLAG(IS_CHROMEOS)
     bundle.MergeFrom(provided_bundle);
