@@ -25,6 +25,18 @@
     --cr-menu-border-radius: 8px;
     --cr-primary-text-color: var(--color-side-panel-menu-foreground);
   }
+  .floating-button {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-size: 20px;
+    margin: 0px 6px;
+    background-color: var(--color-button-background-tonal,
+            var(--cr-fallback-color-secondary-container));
+    color: var(--color-button-foreground-tonal,
+            var(--cr-fallback-color-on-tonal-container));
+  }
+  .floating-button:hover {
+    background-color: var(--google-grey-400);
+  }
   .back, .section {
     font-weight: bold;
   }
@@ -44,13 +56,18 @@
     <span class="dropdown-item section">
       $i18n{displaySectionTitle}
     </span>
-    <button class="dropdown-item">
+    <!-- TODO(crbug.com/1465029): Improve formatting of the increase/decrease buttons once UX design is finalized -->
+    <span class="dropdown-item">
       <iron-icon class="button-image" icon="read-anything:font-size">
       </iron-icon>
       $i18n{fontSizeTitle}
-      <iron-icon class="button-image end-image" icon="cr:arrow-right">
-      </iron-icon>
-    </button>
+      <span class="end-image">
+        <cr-icon-button class="floating-button button-image" iron-icon="read-anything:font-size-increase">
+        </cr-icon-button>
+        <cr-icon-button class="floating-button button-image" iron-icon="read-anything:font-size-decrease">
+        </cr-icon-button>
+      </span>
+    </span>
     <button class="dropdown-item" on-click="onShowFontSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:font">
       </iron-icon>
