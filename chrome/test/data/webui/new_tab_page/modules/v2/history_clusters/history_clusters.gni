@@ -2,5 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-history_clusters_v2_test_files =
-    [ "modules/v2/history_clusters/module_test.ts" ]
+history_clusters_v2_test_files = [
+  "modules/v2/history_clusters/module_test.ts",
+  "modules/v2/history_clusters/cart/cart_tile_test.ts",
+]

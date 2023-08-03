@@ -53,6 +53,7 @@ export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2Modul
 export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.js';
 // </if>
+export {CartTileModuleElementV2} from './modules/v2/history_clusters/cart/cart_tile.js';
 export {HistoryClustersProxyImpl as HistoryClustersProxyImplV2} from './modules/v2/history_clusters/history_clusters_proxy.js';
 export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
 export {DismissModuleInstanceEvent, MAX_COLUMN_COUNT, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
