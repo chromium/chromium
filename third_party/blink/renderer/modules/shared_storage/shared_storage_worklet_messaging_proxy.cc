@@ -27,7 +27,6 @@ SharedStorageWorkletMessagingProxy::SharedStorageWorkletMessagingProxy(
     : ThreadedWorkletMessagingProxy(
           /*execution_context=*/nullptr,
           /*parent_agent_group_task_runner=*/main_thread_runner),
-      main_thread_runner_(main_thread_runner),
       worklet_terminated_callback_(std::move(worklet_terminated_callback)) {
   DCHECK(IsMainThread());
 
@@ -38,12 +37,15 @@ SharedStorageWorkletMessagingProxy::SharedStorageWorkletMessagingProxy(
       CrossThreadBindOnce(
           &SharedStorageWorkletMessagingProxy::
               InitializeSharedStorageWorkletServiceOnWorkletThread,
-          WrapCrossThreadPersistent(this),
+          std::move(main_thread_runner), MakeCrossThreadHandle(this),
           CrossThreadUnretained(GetWorkerThread()), std::move(receiver)));
 }
 
 void SharedStorageWorkletMessagingProxy::
     InitializeSharedStorageWorkletServiceOnWorkletThread(
+        scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
+        CrossThreadHandle<SharedStorageWorkletMessagingProxy>
+            cross_thread_handle,
         WorkerThread* worker_thread,
         mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService>
             receiver) {
@@ -52,7 +54,7 @@ void SharedStorageWorkletMessagingProxy::
   auto disconnect_handler = WTF::BindOnce(
       &SharedStorageWorkletMessagingProxy::
           OnSharedStorageWorkletServiceDisconnectedOnWorkletThread,
-      WrapCrossThreadPersistent(this));
+      std::move(main_thread_runner), std::move(cross_thread_handle));
 
   static_cast<SharedStorageWorkletThread*>(worker_thread)
       ->InitializeSharedStorageWorkletService(std::move(receiver),
@@ -60,13 +62,17 @@ void SharedStorageWorkletMessagingProxy::
 }
 
 void SharedStorageWorkletMessagingProxy::
-    OnSharedStorageWorkletServiceDisconnectedOnWorkletThread() {
+    OnSharedStorageWorkletServiceDisconnectedOnWorkletThread(
+        scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
+        CrossThreadHandle<SharedStorageWorkletMessagingProxy>
+            cross_thread_handle) {
   // Initiate worklet termination from the main thread. This will eventually
   // trigger `WorkerThreadTerminated()`.
   PostCrossThreadTask(
-      *main_thread_runner_, FROM_HERE,
-      CrossThreadBindOnce(&ThreadedMessagingProxyBase::ParentObjectDestroyed,
-                          WrapCrossThreadPersistent(this)));
+      *main_thread_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          &ThreadedMessagingProxyBase::ParentObjectDestroyed,
+          MakeUnwrappingCrossThreadHandle(std::move(cross_thread_handle))));
 }
 
 void SharedStorageWorkletMessagingProxy::WorkerThreadTerminated() {
