@@ -23216,6 +23216,8 @@
           "--xcode-build-version",
           "15a5195m",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -23270,6 +23272,8 @@
           "--xcode-build-version",
           "15a5195m",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -23324,6 +23328,8 @@
           "--xcode-build-version",
           "15a5195m",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -23378,6 +23384,8 @@
           "--xcode-build-version",
           "15a5195m",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -42029,6 +42037,8 @@
           "--xcode-build-version",
           "15a5209g",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -42081,6 +42091,8 @@
           "--xcode-build-version",
           "15a5209g",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -42133,6 +42145,8 @@
           "--xcode-build-version",
           "15a5209g",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -42185,6 +42199,8 @@
           "--xcode-build-version",
           "15a5209g",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -42443,6 +42459,8 @@
           "--xcode-build-version",
           "15a5209g",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -42495,6 +42513,8 @@
           "--xcode-build-version",
           "15a5209g",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",

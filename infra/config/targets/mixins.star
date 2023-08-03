@@ -561,6 +561,14 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ios_parallel_simulators",
+    args = [
+        "--shards",
+        "2",
+    ],
+)
+
+targets.mixin(
     name = "ios_restart_device",
     args = [
         "--restart",

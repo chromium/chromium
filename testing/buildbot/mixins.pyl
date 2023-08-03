@@ -446,6 +446,12 @@
       '--output-disabled-tests',
     ],
   },
+  'ios_parallel_simulators': {
+    'args': [
+      '--shards',
+      '2',
+    ],
+  },
   'ios_restart_device': {
     'args': [
       '--restart',

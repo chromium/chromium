@@ -4268,6 +4268,22 @@
       'ios_web_shell_eg2tests_module': {},
     },
 
+    # Test suites in ios_eg2_cq_tests_parallel should be the same test suites as
+    # ios_eg2_cq_tests. The swarming shards between the versions can differ.
+    # Effectiveness of ios_parallel_simulators is determined by
+    # the number of test classes in the suite and the number of swarming shards.
+    # For ios_parallel_simulators to be most effective there should be twice as
+    # many test classes in the suite as there are swarming shards.
+    'ios_eg2_cq_tests_parallel': {
+      'ios_chrome_integration_eg2tests_module': {
+        'swarming': {
+          'shards': 8,
+        },
+        'mixins': ['ios_parallel_simulators'],
+      },
+      'ios_web_shell_eg2tests_module': {},
+    },
+
     'ios_eg2_tests': {
       'ios_chrome_bookmarks_eg2tests_module': {},
       'ios_chrome_settings_eg2tests_module': {
@@ -4285,6 +4301,40 @@
         'swarming': {
           'shards': 12,
         },
+      },
+      'ios_chrome_web_eg2tests_module': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'ios_showcase_eg2tests_module': {},
+    },
+
+    # Test suites in ios_eg2_tests_parallel should be the same test suites as
+    # ios_eg2_tests. The swarming shards between the versions can differ.
+    # Effectiveness of ios_parallel_simulators is determined by
+    # the number of test classes in the suite and the number of swarming shards.
+    # For ios_parallel_simulators to be most effective there should be twice as
+    # many test classes in the suite as there are swarming shards.
+    'ios_eg2_tests_parallel': {
+      'ios_chrome_bookmarks_eg2tests_module': {},
+      'ios_chrome_settings_eg2tests_module': {
+        'swarming': {
+          'shards': 4,
+        },
+        'mixins': ['ios_parallel_simulators',]
+      },
+      'ios_chrome_signin_eg2tests_module': {
+      'swarming': {
+          'shards': 6,
+        },
+      },
+      'ios_chrome_smoke_eg2tests_module': {},
+      'ios_chrome_ui_eg2tests_module': {
+        'swarming': {
+          'shards': 12,
+        },
+        'mixins': ['ios_parallel_simulators',]
       },
       'ios_chrome_web_eg2tests_module': {
         'swarming': {
@@ -7399,14 +7449,14 @@
           'SIM_IPAD_AIR_5TH_GEN_17_0',
         ],
       },
-      'ios_eg2_tests': {
+      'ios_eg2_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_14_17_0',
           'SIM_IPAD_AIR_5TH_GEN_17_0',
         ]
       },
-      'ios_eg2_cq_tests': {
+      'ios_eg2_cq_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_17_0',
@@ -7473,7 +7523,7 @@
           'SIM_IPHONE_14_17_0',
         ],
       },
-      'ios_eg2_cq_tests': {
+      'ios_eg2_cq_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_13_15_5',
@@ -7486,7 +7536,7 @@
           'SIM_IPAD_PRO_6TH_GEN_17_0',
         ],
       },
-      'ios_eg2_tests': {
+      'ios_eg2_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_13_15_5',
@@ -7574,7 +7624,7 @@
           'SIM_IPHONE_14_PLUS_17_0',
         ]
       },
-      'ios_eg2_tests': {
+      'ios_eg2_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_14_16_4',
@@ -7583,7 +7633,7 @@
           'SIM_IPAD_PRO_6TH_GEN_17_0',
         ]
       },
-      'ios_eg2_cq_tests': {
+      'ios_eg2_cq_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPAD_PRO_6TH_GEN_16_4',
@@ -7686,7 +7736,7 @@
           'SIM_IPHONE_14_17_0',
         ]
       },
-      'ios_eg2_cq_tests': {
+      'ios_eg2_cq_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_14_16_4',
@@ -7712,7 +7762,7 @@
           'SIM_IPAD_AIR_5TH_GEN_17_0',
         ]
       },
-      'ios_eg2_cq_tests': {
+      'ios_eg2_cq_tests_parallel': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_14_16_4',
