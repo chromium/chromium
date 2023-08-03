@@ -33,7 +33,7 @@ skia_support_gpu = use_blink
 # GPU rasterization is enabled.
 skia_use_gl = true
 
-skia_support_pdf = !is_ios && enable_printing
+skia_support_pdf = use_blink && (enable_printing || enable_printing_unittests)
 
 # Skottie is not used on Android. To keep apk size small the skottie library is
 # excluded from the binary. At the time this comment was written, it adds ~200KB
