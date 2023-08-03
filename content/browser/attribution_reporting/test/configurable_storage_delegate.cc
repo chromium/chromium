@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -77,10 +78,11 @@ void ConfigurableStorageDelegate::DetachFromSequence() {
 }
 
 base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
-    const StoredSource& source,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    base::Time source_time,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return source.source_time() + report_delay_;
+  return source_time + report_delay_;
 }
 
 base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
@@ -130,8 +132,9 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
 }
 
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
+    const attribution_reporting::EventReportWindows& event_report_windows,
     attribution_reporting::mojom::SourceType,
-    base::TimeDelta expiry_deadline) const {
+    int max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
 }
@@ -139,10 +142,20 @@ double ConfigurableStorageDelegate::GetRandomizedResponseRate(
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source,
+    const attribution_reporting::EventReportWindows& event_report_windows,
     base::Time source_time,
-    base::Time event_report_window_time) {
+    int max_event_level_reports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_;
+}
+
+double ConfigurableStorageDelegate::ComputeChannelCapacity(
+    const CommonSourceInfo& source,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    base::Time source_time,
+    int max_event_level_reports) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return channel_capacity_;
 }
 
 base::Time ConfigurableStorageDelegate::GetExpiryTime(
@@ -168,6 +181,15 @@ ConfigurableStorageDelegate::GetNullAggregatableReports(
     absl::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return null_aggregatable_reports_;
+}
+
+attribution_reporting::EventReportWindows
+ConfigurableStorageDelegate::GetDefaultEventReportWindows(
+    attribution_reporting::mojom::SourceType source_type,
+    base::TimeDelta last_report_window) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return *attribution_reporting::EventReportWindows::Create(
+      base::Seconds(0), {last_report_window});
 }
 
 void ConfigurableStorageDelegate::set_max_attributions_per_source(int max) {
@@ -267,6 +289,12 @@ void ConfigurableStorageDelegate::set_randomized_response(
     RandomizedResponse randomized_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   randomized_response_ = std::move(randomized_response);
+}
+
+void ConfigurableStorageDelegate::set_channel_capacity(
+    double channel_capacity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  channel_capacity_ = channel_capacity;
 }
 
 void ConfigurableStorageDelegate::set_trigger_data_cardinality(

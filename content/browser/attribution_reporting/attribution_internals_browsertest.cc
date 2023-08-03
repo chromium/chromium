@@ -336,24 +336,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
           table.children[1].children[3]?.innerText === 'https://conversion.test' &&
           table.children[0].children[0]?.innerText === $1 &&
-          table.children[0].children[9]?.innerText === 'Navigation' &&
-          table.children[1].children[9]?.innerText === 'Event' &&
-          table.children[0].children[10]?.innerText === '0' &&
-          table.children[1].children[10]?.innerText === $2 &&
+          table.children[0].children[8]?.innerText === 'Navigation' &&
+          table.children[1].children[8]?.innerText === 'Event' &&
+          table.children[0].children[9]?.innerText === '0' &&
+          table.children[1].children[9]?.innerText === $2 &&
+          table.children[0].children[10]?.innerText === '{}' &&
+          table.children[1].children[10]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
           table.children[0].children[11]?.innerText === '{}' &&
-          table.children[1].children[11]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.children[0].children[12]?.innerText === '{}' &&
-          table.children[1].children[12]?.innerText === '{\n "a": "0x1"\n}' &&
-          table.children[0].children[13]?.innerText === '0 / 65536' &&
-          table.children[1].children[13]?.innerText === '1300 / 65536' &&
-          table.children[0].children[14]?.innerText === '19' &&
-          table.children[1].children[14]?.innerText === '' &&
+          table.children[1].children[11]?.innerText === '{\n "a": "0x1"\n}' &&
+          table.children[0].children[12]?.innerText === '0 / 65536' &&
+          table.children[1].children[12]?.innerText === '1300 / 65536' &&
+          table.children[0].children[13]?.innerText === '19' &&
+          table.children[1].children[13]?.innerText === '' &&
+          table.children[0].children[14]?.innerText === '' &&
+          table.children[1].children[14]?.children[0]?.children[0]?.innerText === '13' &&
+          table.children[1].children[14]?.children[0]?.children[1]?.innerText === '17' &&
           table.children[0].children[15]?.innerText === '' &&
-          table.children[1].children[15]?.children[0]?.children[0]?.innerText === '13' &&
-          table.children[1].children[15]?.children[0]?.children[1]?.innerText === '17' &&
-          table.children[0].children[16]?.innerText === '' &&
-          table.children[1].children[16]?.children[0]?.children[0]?.innerText === '14' &&
-          table.children[1].children[16]?.children[0]?.children[1]?.innerText === '18' &&
+          table.children[1].children[15]?.children[0]?.children[0]?.innerText === '14' &&
+          table.children[1].children[15]?.children[0]?.children[1]?.innerText === '18' &&
           table.children[0].children[1]?.innerText === 'Unattributable: noised with no reports' &&
           table.children[1].children[1]?.innerText === 'Attributable' &&
           table.children[2].children[1]?.innerText === 'Attributable: reached event-level attribution limit' &&

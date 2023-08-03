@@ -1698,6 +1698,9 @@ ToSourceRegistrationResult(StoreSourceResult result) {
     case StoreSourceResult::kReportingOriginsPerSiteLimitReached:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           ReportingOriginsPerSiteLimitReached;
+    case StoreSourceResult::kExceedsMaxChannelCapacity:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          ExceedsMaxChannelCapacity;
   }
 }
 

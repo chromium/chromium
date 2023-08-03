@@ -170,6 +170,12 @@ SourceRegistration::Parse(base::Value::Dict registration) {
 
   result.debug_reporting = ParseDebugReporting(registration);
 
+  // TODO(crbug.com/1462699): Parse event report windows from registration.
+  result.event_report_windows = absl::nullopt;
+
+  // TODO(crbug.com/1462699): Parse max event level reports from registration.
+  result.max_event_level_reports = absl::nullopt;
+
   return result;
 }
 

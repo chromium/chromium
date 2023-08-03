@@ -18,6 +18,10 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace attribution_reporting {
+class EventReportWindows;
+}  // namespace attribution_reporting
+
 namespace base {
 class Uuid;
 }  // namespace base
@@ -75,8 +79,10 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.
-  virtual base::Time GetEventLevelReportTime(const StoredSource& source,
-                                             base::Time trigger_time) const = 0;
+  virtual base::Time GetEventLevelReportTime(
+      const attribution_reporting::EventReportWindows& event_report_windows,
+      base::Time source_time,
+      base::Time trigger_time) const = 0;
 
   // Returns the time an aggregatable report should be sent for a given trigger
   // time.
@@ -88,7 +94,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // marked inactive and no new reports will be created for it.
   // Sources will be checked against this limit after they schedule a new
   // report.
-  int GetMaxAttributionsPerSource(
+  int GetDefaultAttributionsPerSource(
       attribution_reporting::mojom::SourceType) const;
 
   // These limits are designed solely to avoid excessive disk / memory usage.
@@ -113,6 +119,10 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Returns the rate limits for capping contributions per window.
   const AttributionConfig::RateLimitConfig& GetRateLimits() const;
+
+  // Returns the max number of info gain in bits for a source given its
+  // SourceType.
+  double GetMaxChannelCapacity(attribution_reporting::mojom::SourceType) const;
 
   // Returns the maximum frequency at which to delete expired sources.
   // Must be positive.
@@ -145,20 +155,29 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       std::vector<network::TriggerVerification>& verifications) = 0;
 
   // Returns the rate used to determine whether to randomize the response to a
-  // source with the given source type and expiry deadline, as implemented by
-  // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
+  // source with the given source type and reporting windows, as implemented
+  // by`GetRandomizedResponse()`.Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate for calls with identical inputs.
   virtual double GetRandomizedResponseRate(
+      const attribution_reporting::EventReportWindows& event_report_windows,
       attribution_reporting::mojom::SourceType,
-      base::TimeDelta expiry_deadline) const = 0;
+      int max_event_level_reports) const = 0;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns `absl::nullopt` to indicate that the response
   // should not be randomized.
   virtual RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source,
+      const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
-      base::Time event_report_window_time) = 0;
+      int max_event_level_reports) = 0;
+
+  // Computes the capacity of the q-ary symmetric channel.
+  virtual double ComputeChannelCapacity(
+      const CommonSourceInfo& source,
+      const attribution_reporting::EventReportWindows& event_report_windows,
+      base::Time source_time,
+      int max_event_level_reports) = 0;
 
   virtual base::Time GetExpiryTime(
       absl::optional<base::TimeDelta> declared_expiry,
@@ -168,6 +187,11 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual absl::optional<base::Time> GetReportWindowTime(
       absl::optional<base::TimeDelta> declared_window,
       base::Time source_time) = 0;
+
+  virtual attribution_reporting::EventReportWindows
+  GetDefaultEventReportWindows(
+      attribution_reporting::mojom::SourceType source_type,
+      base::TimeDelta last_report_window) const = 0;
 
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.

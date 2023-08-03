@@ -69,8 +69,8 @@
       // Should result in an event-level report and an aggregatable report
       // as the event report window was clamped to one hour.
       {
-        // 3,600,000 ms = 1 hour = clamped event_report_window value
-        "timestamp": "3600000",
+        // 3,599,000 ms = 1 hour - 1 second < clamped event_report_window value
+        "timestamp": "3599000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -98,10 +98,11 @@
         }]
       },
       // Should result in an aggregatable report, but not event-level report as
-      // event report window has passed.
+      // event report window has passed (event report window is an exclusive
+      // bound).
       {
-        // 3,600,001 ms = 1 hour + 1 ms
-        "timestamp": "3600001",
+        // 3,600,000 ms = 1 hour = clamped event_report_window value
+        "timestamp": "3600000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -133,9 +134,9 @@
       // Should result in an event-level report as the event report window was
       // not rounded.
       {
-        // 88,401,000 ms = 1,000 ms (source 456 timestamp) + 88,400 s (source
-        // 456 non-rounded event_report_window)
-        "timestamp": "88401000",
+        // 88,400,000 ms = 88,400 s (source 456 non-rounded event_report
+        // window).
+        "timestamp": "88400000",
         "registration_request": {
           "attribution_src_url": "https://reporter2.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -156,7 +157,7 @@
       // Should result in an event-level report and report time was based on
       // event report window.
       {
-        // We use a timestamp that is before  the end of the clamped timestamp.
+        // We use a timestamp that is before the end of the clamped timestamp.
         // The report would be created even if the event_report_window would not
         // be clamped. However, we can assert that it was by ensuring that the
         // report's report_time is based on the clamped event_report_window.
@@ -240,7 +241,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "7200000"
+        "report_time": "7199000"
       },
       {
         "payload": {
@@ -250,7 +251,7 @@
               "value": 456
            } ]
         },
-        "report_time": "7200001",
+        "report_time": "7200000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ],
@@ -264,7 +265,7 @@
           },
           "type": "trigger-event-report-window-passed"
        } ],
-       "report_time": "3600001",
+       "report_time": "3600000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]

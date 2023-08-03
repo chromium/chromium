@@ -76,7 +76,6 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.source_event_id(), common_info.source_origin(),
       source.destination_sites(), common_info.reporting_origin(),
       source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
-      source.event_report_window_time().ToJsTime(),
       source.aggregatable_report_window_time().ToJsTime(),
       common_info.source_type(), source.priority(), source.debug_key(),
       source.dedup_keys(), source.filter_data().filter_values(),
@@ -457,6 +456,8 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
       return WebUITriggerStatus::kNoMatchingConfigurations;
     case EventLevelStatus::kExcessiveReports:
       return WebUITriggerStatus::kExcessiveReports;
+    case EventLevelStatus::kReportWindowNotStarted:
+      return WebUITriggerStatus::kReportWindowNotStarted;
     case EventLevelStatus::kReportWindowPassed:
       return WebUITriggerStatus::kReportWindowPassed;
     case EventLevelStatus::kNotRegistered:

@@ -9722,6 +9722,7 @@ experimental domain Storage
       destinationGlobalLimitReached
       destinationBothLimitsReached
       reportingOriginsPerSiteLimitReached
+      exceedsMaxChannelCapacity
 
   # TODO(crbug.com/1458532): Add other Attribution Reporting events, e.g.
   # trigger registration.

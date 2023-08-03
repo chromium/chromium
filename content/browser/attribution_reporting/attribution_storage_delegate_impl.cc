@@ -9,17 +9,19 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
+#include <iterator>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -27,6 +29,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -35,29 +38,12 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
-
 namespace content {
 
 namespace {
 
+using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::mojom::SourceType;
-
-const base::FeatureParam<bool> kVTCEarlyReportingWindows(
-    &blink::features::kConversionMeasurement,
-    "vtc_early_reporting_windows",
-    false);
-
-std::vector<base::TimeDelta> GetVtcEarlyDeadlines(
-    const AttributionConfig& config) {
-  if (!kVTCEarlyReportingWindows.Get()) {
-    return std::vector<base::TimeDelta>();
-  }
-
-  return std::vector<base::TimeDelta>{
-      config.event_level_limit.first_event_report_window_deadline,
-      config.event_level_limit.second_event_report_window_deadline};
-}
 
 bool GenerateWithRate(double r) {
   DCHECK_GE(r, 0);
@@ -88,6 +74,14 @@ GetNullAggregatableReportsForLookback(
     }
   }
   return reports;
+}
+
+double binary_entropy(double p) {
+  if (p == 0 || p == 1) {
+    return 0;
+  }
+
+  return -p * log2(p) - (1 - p) * log2(1 - p);
 }
 
 }  // namespace
@@ -134,19 +128,14 @@ AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
-    const StoredSource& source,
+    const EventReportWindows& event_report_windows,
+    base::Time source_time,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const CommonSourceInfo& common_info = source.common_info();
-
-  base::TimeDelta expiry_deadline =
-      ExpiryDeadline(source.source_time(), source.event_report_window_time());
   switch (delay_mode_) {
     case AttributionDelayMode::kDefault:
-      return ComputeReportTime(
-          source.source_time(), trigger_time,
-          EffectiveDeadlines(common_info.source_type(), expiry_deadline));
+      return event_report_windows.ComputeReportTime(source_time, trigger_time);
     case AttributionDelayMode::kNone:
       return trigger_time;
   }
@@ -225,14 +214,15 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
 }
 
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
+    const EventReportWindows& event_report_windows,
     SourceType source_type,
-    base::TimeDelta expiry_deadline) const {
+    int max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int num_combinations = GetNumberOfStarsAndBarsSequences(
-      /*num_stars=*/GetMaxAttributionsPerSource(source_type),
+      /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source_type) *
-          EffectiveDeadlines(source_type, expiry_deadline).size());
+          event_report_windows.end_times().size());
 
   double exp_epsilon =
       std::exp(config_.event_level_limit.randomized_response_epsilon);
@@ -242,18 +232,19 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
 AttributionStorageDelegate::RandomizedResponse
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     const CommonSourceInfo& source,
+    const EventReportWindows& event_report_windows,
     base::Time source_time,
-    base::Time event_report_window_time) {
+    int max_event_level_reports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault: {
       double randomized_trigger_rate = GetRandomizedResponseRate(
-          source.source_type(),
-          ExpiryDeadline(source_time, event_report_window_time));
+          event_report_windows, source.source_type(), max_event_level_reports);
       return GenerateWithRate(randomized_trigger_rate)
                  ? absl::make_optional(GetRandomFakeReports(
-                       source, source_time, event_report_window_time))
+                       source, event_report_windows, source_time,
+                       max_event_level_reports))
                  : absl::nullopt;
     }
     case AttributionNoiseMode::kNone:
@@ -264,32 +255,31 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetRandomFakeReports(
     const CommonSourceInfo& source,
+    const EventReportWindows& event_report_windows,
     base::Time source_time,
-    base::Time event_report_window_time) {
+    int max_event_level_reports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
-  std::vector<base::TimeDelta> deadlines =
-      EffectiveDeadlines(source.source_type(),
-                         ExpiryDeadline(source_time, event_report_window_time));
-
   const int num_combinations = GetNumberOfStarsAndBarsSequences(
-      /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
+      /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source.source_type()) *
-          deadlines.size());
+          event_report_windows.end_times().size());
 
   // Subtract 1 because `AttributionRandomGenerator::RandInt()` is inclusive.
   const int sequence_index = base::RandInt(0, num_combinations - 1);
 
-  return GetFakeReportsForSequenceIndex(source, source_time, deadlines,
-                                        sequence_index);
+  return GetFakeReportsForSequenceIndex(
+      source, source_time, event_report_windows, max_event_level_reports,
+      sequence_index);
 }
 
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     const CommonSourceInfo& source,
     base::Time source_time,
-    const std::vector<base::TimeDelta>& deadlines,
+    const EventReportWindows& event_report_windows,
+    int max_event_level_reports,
     int random_stars_and_bars_sequence_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
@@ -299,8 +289,9 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
 
   const std::vector<int> bars_preceding_each_star =
       GetBarsPrecedingEachStar(GetStarIndices(
-          /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
-          /*num_bars=*/trigger_data_cardinality * deadlines.size(),
+          /*num_stars=*/max_event_level_reports,
+          /*num_bars=*/trigger_data_cardinality *
+              event_report_windows.end_times().size(),
           /*sequence_index=*/random_stars_and_bars_sequence_index));
 
   std::vector<FakeReport> fake_reports;
@@ -321,11 +312,13 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     DCHECK_GE(trigger_data, 0);
     DCHECK_LT(trigger_data, trigger_data_cardinality);
 
-    base::Time report_time = ReportTimeAtWindow(source_time, deadlines,
-                                                /*window_index=*/result.quot);
+    base::Time report_time = event_report_windows.ReportTimeAtWindow(
+        source_time, /*window_index=*/result.quot);
+    // The last trigger time will always fall within a report window, no matter
+    // the report window's start time.
     base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
 
-    DCHECK_EQ(ComputeReportTime(source_time, trigger_time, deadlines),
+    DCHECK_EQ(event_report_windows.ComputeReportTime(source_time, trigger_time),
               report_time);
 
     fake_reports.push_back({
@@ -334,7 +327,27 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
         .report_time = report_time,
     });
   }
+  DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_event_level_reports));
   return fake_reports;
+}
+
+double AttributionStorageDelegateImpl::ComputeChannelCapacity(
+    const CommonSourceInfo& source,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    base::Time source_time,
+    int max_event_level_reports) {
+  double randomized_trigger_rate = GetRandomizedResponseRate(
+      event_report_windows, source.source_type(), max_event_level_reports);
+  const int num_states = GetNumberOfStarsAndBarsSequences(
+      /*num_stars=*/max_event_level_reports,
+      /*num_bars=*/TriggerDataCardinality(source.source_type()) *
+          event_report_windows.end_times().size());
+
+  // This computes the channel capacity of a qary-symmetric channel with error
+  // probability p. See more info at
+  // https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
+  double p = randomized_trigger_rate * (num_states - 1) / num_states;
+  return log2(num_states) - binary_entropy(p) - p * log2(num_states - 1);
 }
 
 base::Time AttributionStorageDelegateImpl::GetExpiryTime(
@@ -361,39 +374,6 @@ absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
 
   return source_time + std::clamp(*declared_window, base::Hours(1),
                                   kDefaultAttributionSourceExpiry);
-}
-
-std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EffectiveDeadlines(
-    SourceType source_type,
-    base::TimeDelta expiry_deadline) const {
-  std::vector<base::TimeDelta> deadlines = EarlyDeadlines(source_type);
-  while (deadlines.size() > 0 && deadlines.back() >= expiry_deadline) {
-    deadlines.pop_back();
-  }
-  deadlines.push_back(expiry_deadline);
-  return deadlines;
-}
-
-std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EarlyDeadlines(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return std::vector<base::TimeDelta>{
-          config_.event_level_limit.first_navigation_report_window_deadline,
-          config_.event_level_limit.second_navigation_report_window_deadline};
-    case SourceType::kEvent:
-      return GetVtcEarlyDeadlines(config_);
-  }
-}
-
-base::Time AttributionStorageDelegateImpl::ReportTimeAtWindow(
-    base::Time source_time,
-    const std::vector<base::TimeDelta>& deadlines,
-    int window_index) const {
-  DCHECK_GE(window_index, 0);
-  DCHECK_LT(static_cast<size_t>(window_index), deadlines.size());
-  return ReportTimeFromDeadline(source_time, deadlines[window_index]);
 }
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
@@ -459,6 +439,34 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
               .null_reports_rate_exclude_source_registration_time);
     }
   }
+}
+
+EventReportWindows AttributionStorageDelegateImpl::GetDefaultEventReportWindows(
+    SourceType source_type,
+    base::TimeDelta last_report_window) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<base::TimeDelta> end_times;
+  switch (source_type) {
+    case SourceType::kNavigation:
+      end_times = {
+          config_.event_level_limit.first_navigation_report_window_deadline,
+          config_.event_level_limit.second_navigation_report_window_deadline};
+      break;
+    case SourceType::kEvent:
+      if (kVTCEarlyReportingWindows.Get()) {
+        end_times = {
+            config_.event_level_limit.first_event_report_window_deadline,
+            config_.event_level_limit.second_event_report_window_deadline};
+      }
+      break;
+  }
+
+  absl::optional<EventReportWindows> event_report_windows =
+      EventReportWindows::CreateAndTruncate(
+          /*start_time=*/base::Days(0), std::move(end_times),
+          /*expiry=*/last_report_window);
+  DCHECK(event_report_windows.has_value());
+  return event_report_windows.value();
 }
 
 }  // namespace content

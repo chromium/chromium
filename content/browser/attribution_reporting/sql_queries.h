@@ -110,7 +110,6 @@ inline constexpr const char kSetReportTimeSql[] =
   prefix "reporting_origin,"                   \
   prefix "source_time,"                        \
   prefix "expiry_time,"                        \
-  prefix "event_report_window_time,"           \
   prefix "aggregatable_report_window_time,"    \
   prefix "source_type,"                        \
   prefix "attribution_logic,"                  \
@@ -122,7 +121,8 @@ inline constexpr const char kSetReportTimeSql[] =
   prefix "aggregatable_source,"                \
   prefix "filter_data,"                        \
   prefix "event_level_active,"                 \
-  prefix "aggregatable_active"
+  prefix "aggregatable_active,"                \
+  prefix "read_only_source_data"
 
 inline constexpr const char kReadSourceToAttributeSql[] =
     "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")

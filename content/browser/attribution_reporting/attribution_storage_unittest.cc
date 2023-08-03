@@ -32,6 +32,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -346,8 +347,11 @@ TEST_F(AttributionStorageTest, ImpressionExpired_NoConversionsStored) {
 
 TEST_F(AttributionStorageTest, ImpressionReportWindowPassed_NoReportGenerated) {
   storage()->StoreSource(
-      SourceBuilder().SetEventReportWindow(base::Milliseconds(2)).Build());
-  task_environment_.FastForwardBy(base::Milliseconds(3));
+      SourceBuilder()
+          .SetEventReportWindow(kReportDelay + base::Milliseconds(1))
+          .Build());
+
+  task_environment_.FastForwardBy(kReportDelay + base::Milliseconds(1));
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowPassed,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -403,6 +407,65 @@ TEST_F(AttributionStorageTest,
                     ReplacedEventLevelReportIs(absl::nullopt),
                     DroppedEventLevelReportIs(
                         Optional(EventLevelDataIs(TriggerDataIs(20u))))));
+}
+
+TEST_F(AttributionStorageTest,
+       ImpressionWithSetMaxConversions_ConversionReportStored) {
+  storage()->StoreSource(
+      SourceBuilder().SetMaxEventLevelReports(kMaxConversions + 1).Build());
+
+  for (int i = 0; i < kMaxConversions; i++) {
+    EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+              MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+  }
+  // An additional conversion report should be created.
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  // No additional conversion reports should be created.
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetTriggerData(20).Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    DroppedEventLevelReportIs(
+                        Optional(EventLevelDataIs(TriggerDataIs(20u))))));
+}
+
+TEST_F(AttributionStorageTest,
+       ImpressionWithMaxConversionsSetToZero_NoReportGenerated) {
+  storage()->StoreSource(SourceBuilder().SetMaxEventLevelReports(0).Build());
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveReports,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+}
+
+TEST_F(AttributionStorageTest,
+       ImpressionReportWindowNotStarted_NoReportGenerated) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Milliseconds(1), {base::Days(30)}))
+          .Build());
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowNotStarted,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+}
+
+TEST_F(AttributionStorageTest,
+       ImpressionWithNonDefaultReportWindows_NoReportGenerated) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Milliseconds(0), {base::Milliseconds(1)}))
+          .Build());
+
+  task_environment_.FastForwardBy(base::Milliseconds(2));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowPassed,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -635,6 +698,14 @@ TEST_F(AttributionStorageTest, GetAttributionReportsMultipleTimes_SameResult) {
 
   // Expect that |GetAttributionReports()| did not delete any conversions.
   EXPECT_EQ(first_call_reports, second_call_reports);
+}
+
+TEST_F(AttributionStorageTest, ExceedsChannelCapacity) {
+  delegate()->set_channel_capacity(2);
+
+  auto source = SourceBuilder().SetSourceType(SourceType::kEvent).Build();
+  EXPECT_EQ(storage()->StoreSource(source).status,
+            StorableSource::Result::kExceedsMaxChannelCapacity);
 }
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
@@ -1428,7 +1499,7 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
   delegate()->set_delete_expired_sources_frequency(base::Milliseconds(10));
 
-  const base::TimeDelta expiry = base::Milliseconds(5);
+  const base::TimeDelta expiry = kReportDelay + base::Milliseconds(1);
 
   const auto store_source = [&](const char* source_origin,
                                 const char* reporting_origin,
@@ -1523,7 +1594,7 @@ TEST_F(AttributionStorageTest,
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
   delegate()->set_delete_expired_rate_limits_frequency(base::Milliseconds(10));
 
-  const base::TimeDelta expiry = base::Milliseconds(5);
+  const base::TimeDelta expiry = kReportDelay + base::Milliseconds(1);
 
   storage()->StoreSource(
       SourceBuilder()

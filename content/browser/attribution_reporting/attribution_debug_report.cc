@@ -69,7 +69,8 @@ enum class DebugDataType {
   kTriggerUnknownError = 23,
   kOsSourceDelegated = 24,
   kOsTriggerDelegated = 25,
-  kMaxValue = kOsTriggerDelegated,
+  kTriggerEventReportWindowNotStarted = 26,
+  kMaxValue = kTriggerEventReportWindowNotStarted,
 };
 
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
@@ -81,6 +82,7 @@ absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
                                                 bool is_debug_cookie_set) {
   switch (result) {
     case StorableSource::Result::kProhibitedByBrowserPolicy:
+    case StorableSource::Result::kExceedsMaxChannelCapacity:
       return absl::nullopt;
     case StorableSource::Result::kSuccess:
     // `kSourceSuccess` is sent for a few errors as well to mitigate the
@@ -153,6 +155,10 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kExcessiveReports:
       return DataTypeIfCookieSet(DebugDataType::kTriggerEventExcessiveReports,
                                  is_debug_cookie_set);
+    case EventLevelResult::kReportWindowNotStarted:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerEventReportWindowNotStarted,
+          is_debug_cookie_set);
     case EventLevelResult::kReportWindowPassed:
       return DataTypeIfCookieSet(DebugDataType::kTriggerEventReportWindowPassed,
                                  is_debug_cookie_set);
@@ -240,6 +246,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-event-excessive-reports";
     case DebugDataType::kTriggerEventStorageLimit:
       return "trigger-event-storage-limit";
+    case DebugDataType::kTriggerEventReportWindowNotStarted:
+      return "trigger-event-report-window-not-started";
     case DebugDataType::kTriggerEventReportWindowPassed:
       return "trigger-event-report-window-passed";
     case DebugDataType::kTriggerAggregateDeduplicated:
@@ -319,6 +327,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
     case DebugDataType::kTriggerEventStorageLimit:
+    case DebugDataType::kTriggerEventReportWindowNotStarted:
     case DebugDataType::kTriggerEventReportWindowPassed:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
@@ -362,6 +371,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventDeduplicated:
     case DebugDataType::kTriggerEventNoMatchingConfigurations:
     case DebugDataType::kTriggerEventNoise:
+    case DebugDataType::kTriggerEventReportWindowNotStarted:
     case DebugDataType::kTriggerEventReportWindowPassed:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
@@ -420,9 +430,10 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 
 void RecordVerboseDebugReportType(DebugDataType type) {
   static_assert(
-      DebugDataType::kMaxValue == DebugDataType::kOsTriggerDelegated,
-      "Bump version of Conversions.SentVerboseDebugReportType2 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType2",
+      DebugDataType::kMaxValue ==
+          DebugDataType::kTriggerEventReportWindowNotStarted,
+      "Bump version of Conversions.SentVerboseDebugReportType3 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType3",
                                 type);
 }
 

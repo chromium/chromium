@@ -683,6 +683,20 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-noise"
        }])json"},
+      {EventLevelResult::kReportWindowNotStarted,
+       /*replaced_event_level_report=*/absl::nullopt,
+       /*new_event_level_report=*/absl::nullopt,
+       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
+       /*dropped_event_level_report=*/absl::nullopt,
+       /*trigger_debug_key=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-report-window-not-started"
+       }])json"},
       {EventLevelResult::kReportWindowPassed,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,

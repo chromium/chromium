@@ -130,7 +130,7 @@ constexpr char kPendingAndBrowserWentOfflineTimeUntilReportTime[] =
     "TimeUntilReportTime";
 
 constexpr char kSentVerboseDebugReportTypeMetric[] =
-    "Conversions.SentVerboseDebugReportType2";
+    "Conversions.SentVerboseDebugReportType3";
 
 auto InvokeReportSentCallback(SendResult::Status status) {
   return [=](AttributionReport report, bool is_debug_report,
@@ -1434,7 +1434,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus7",
+      "Conversions.CreateReportStatus8",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus4",
@@ -1445,7 +1445,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   task_environment_.RunUntilIdle();
-  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus4",
+  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus5",
                                 StorableSource::Result::kSuccess, 1);
 }
 
@@ -1641,7 +1641,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), IsEmpty());
 
   histograms.ExpectUniqueSample(
-      "Conversions.SourceStoredStatus4",
+      "Conversions.SourceStoredStatus5",
       StorableSource::Result::kProhibitedByBrowserPolicy, 1);
 }
 
@@ -1696,7 +1696,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus7",
+      "Conversions.CreateReportStatus8",
       AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus4",
@@ -2326,10 +2326,10 @@ TEST_F(AttributionManagerImplTest,
   // Should fail due to limit
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(max_per_reporting_source_site));
-  histograms.ExpectBucketCount("Conversions.SourceStoredStatus4",
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus5",
                                StorableSource::Result::kSuccess, 50);
   histograms.ExpectBucketCount(
-      "Conversions.SourceStoredStatus4",
+      "Conversions.SourceStoredStatus5",
       StorableSource::Result::kDestinationReportingLimitReached, 1);
 }
 
@@ -2354,10 +2354,10 @@ TEST_F(AttributionManagerImplTest,
   // Should fail due to limit
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
-  histograms.ExpectBucketCount("Conversions.SourceStoredStatus4",
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus5",
                                StorableSource::Result::kSuccess, 200);
   histograms.ExpectBucketCount(
-      "Conversions.SourceStoredStatus4",
+      "Conversions.SourceStoredStatus5",
       StorableSource::Result::kDestinationGlobalLimitReached, 1);
 }
 
@@ -2405,10 +2405,10 @@ TEST_F(AttributionManagerImplTest,
           .Build(),
       kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
-  histograms.ExpectBucketCount("Conversions.SourceStoredStatus4",
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus5",
                                StorableSource::Result::kSuccess, 200);
   histograms.ExpectBucketCount(
-      "Conversions.SourceStoredStatus4",
+      "Conversions.SourceStoredStatus5",
       StorableSource::Result::kDestinationBothLimitsReached, 1);
 }
 

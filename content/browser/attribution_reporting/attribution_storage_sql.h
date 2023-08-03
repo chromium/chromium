@@ -46,11 +46,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 55;
+  static constexpr int kCurrentVersionNumber = 56;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 55;
+  static constexpr int kCompatibleVersionNumber = 56;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -185,6 +185,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       int num_conversions,
+      int max_event_level_reports,
       int64_t conversion_priority,
       absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

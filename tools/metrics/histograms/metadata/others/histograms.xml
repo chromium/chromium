@@ -3647,10 +3647,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.CreateReportStatus7"
+<histogram name="Conversions.CreateReportStatus8"
     enum="ConversionStorageCreateReportStatus" expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often event-level triggers are stored successfully or rejected
@@ -4125,10 +4125,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SentVerboseDebugReportType2"
+<histogram name="Conversions.SentVerboseDebugReportType3"
     enum="ConversionVerboseDebugReportType" expires_after="2023-11-30">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often verbose debug reports are sent and the corresponding
@@ -4149,7 +4149,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus4"
+<histogram name="Conversions.SourceStoredStatus5"
     enum="ConversionStorageSourceStatus" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>

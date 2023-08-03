@@ -16,6 +16,7 @@ class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
 class DestinationSet;
+class EventReportWindows;
 class SuitableOrigin;
 
 struct AggregatableDedupKey;
@@ -41,6 +42,10 @@ std::ostream& operator<<(std::ostream&, const FilterPair&);
 bool operator==(const DestinationSet&, const DestinationSet&);
 
 std::ostream& operator<<(std::ostream&, const DestinationSet&);
+
+bool operator==(const EventReportWindows&, const EventReportWindows&);
+
+std::ostream& operator<<(std::ostream&, const EventReportWindows&);
 
 bool operator==(const SourceRegistration&, const SourceRegistration&);
 

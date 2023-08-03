@@ -34,6 +34,7 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
@@ -1541,14 +1542,16 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
     absl::optional<base::TimeDelta> event_report_window;
     absl::optional<base::TimeDelta> aggregatable_report_window;
     base::Time expected_expiry_time;
-    base::Time expected_event_report_window_time;
+    attribution_reporting::EventReportWindows expected_event_report_windows;
     base::Time expected_aggregatable_report_window_time;
   } kTestCases[] = {
       {
           .desc = "expiry",
           .expiry = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(4),
-          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_event_report_windows =
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
       },
@@ -1556,7 +1559,9 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .desc = "event-report-window",
           .event_report_window = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(30),
-          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_event_report_windows =
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(30),
       },
@@ -1565,7 +1570,9 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .expiry = base::Days(4),
           .event_report_window = base::Days(30),
           .expected_expiry_time = kSourceTime + base::Days(4),
-          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_event_report_windows =
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
       },
@@ -1573,7 +1580,9 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .desc = "aggregatable-report-window",
           .aggregatable_report_window = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(30),
-          .expected_event_report_window_time = kSourceTime + base::Days(30),
+          .expected_event_report_windows =
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Days(0), {base::Days(30)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
       },
@@ -1582,7 +1591,9 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .expiry = base::Days(4),
           .aggregatable_report_window = base::Days(30),
           .expected_expiry_time = kSourceTime + base::Days(4),
-          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_event_report_windows =
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
       },
@@ -1592,7 +1603,9 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .event_report_window = base::Days(7),
           .aggregatable_report_window = base::Days(5),
           .expected_expiry_time = kSourceTime + base::Days(9),
-          .expected_event_report_window_time = kSourceTime + base::Days(7),
+          .expected_event_report_windows =
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Days(0), {base::Days(7)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(5),
       },
@@ -1617,8 +1630,8 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
     EXPECT_EQ(actual.expiry_time(), test_case.expected_expiry_time)
         << test_case.desc;
 
-    EXPECT_EQ(actual.event_report_window_time(),
-              test_case.expected_event_report_window_time)
+    EXPECT_EQ(actual.event_report_windows(),
+              test_case.expected_event_report_windows)
         << test_case.desc;
 
     EXPECT_EQ(actual.aggregatable_report_window_time(),
@@ -1637,7 +1650,6 @@ TEST_P(AttributionStorageSqlTest,
        InvalidExpiryOrReportTime_FailsDeserialization) {
   static constexpr const char* kUpdateSqls[] = {
       "UPDATE sources SET expiry_time=?",
-      "UPDATE sources SET event_report_window_time=?",
       "UPDATE sources SET aggregatable_report_window_time=?",
   };
 

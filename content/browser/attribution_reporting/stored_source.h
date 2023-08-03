@@ -13,6 +13,7 @@
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
@@ -52,8 +53,9 @@ class CONTENT_EXPORT StoredSource {
                attribution_reporting::DestinationSet,
                base::Time source_time,
                base::Time expiry_time,
-               base::Time event_report_window_time,
+               attribution_reporting::EventReportWindows,
                base::Time aggregatable_report_window_time,
+               int max_event_level_reports,
                int64_t priority,
                attribution_reporting::FilterData,
                absl::optional<uint64_t> debug_key,
@@ -83,13 +85,16 @@ class CONTENT_EXPORT StoredSource {
 
   base::Time expiry_time() const { return expiry_time_; }
 
-  base::Time event_report_window_time() const {
-    return event_report_window_time_;
-  }
-
   base::Time aggregatable_report_window_time() const {
     return aggregatable_report_window_time_;
   }
+
+  const attribution_reporting::EventReportWindows& event_report_windows()
+      const {
+    return event_report_windows_;
+  }
+
+  int max_event_level_reports() const { return max_event_level_reports_; }
 
   int64_t priority() const { return priority_; }
 
@@ -134,8 +139,9 @@ class CONTENT_EXPORT StoredSource {
   attribution_reporting::DestinationSet destination_sites_;
   base::Time source_time_;
   base::Time expiry_time_;
-  base::Time event_report_window_time_;
+  attribution_reporting::EventReportWindows event_report_windows_;
   base::Time aggregatable_report_window_time_;
+  int max_event_level_reports_;
   int64_t priority_;
   attribution_reporting::FilterData filter_data_;
   absl::optional<uint64_t> debug_key_;

@@ -19907,6 +19907,7 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Falsely attributed source"/>
   <int value="15" label="Report window has passed"/>
   <int value="16" label="Not registered"/>
+  <int value="17" label="Report window has not started"/>
 </enum>
 
 <enum name="ConversionStorageSourceStatus">
@@ -19921,6 +19922,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Excessive destinations (global rate-limit)"/>
   <int value="9" label="Excessive destinations (both rate-limits)"/>
   <int value="10" label="Excessive reporting origins per site limit"/>
+  <int value="11" label="Excessive channel capacity"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">
@@ -20029,6 +20031,7 @@ Called by update_net_error_codes.py.-->
   <int value="23" label="trigger-unknown-error"/>
   <int value="24" label="os-source-delegated"/>
   <int value="25" label="os-trigger-delegated"/>
+  <int value="26" label="trigger-event-report-window-not-started"/>
 </enum>
 
 <enum name="CookieAccessType">

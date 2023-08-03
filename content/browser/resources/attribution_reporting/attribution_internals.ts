@@ -233,7 +233,6 @@ class Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
-  eventReportWindowTime: Date;
   aggregatableReportWindowTime: Date;
   sourceType: string;
   filterData: string;
@@ -253,7 +252,6 @@ class Source {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
-    this.eventReportWindowTime = new Date(mojo.eventReportWindowTime);
     this.aggregatableReportWindowTime =
         new Date(mojo.aggregatableReportWindowTime);
     this.sourceType = sourceTypeToText(mojo.sourceType);
@@ -287,8 +285,6 @@ class SourceTableModel extends TableModel<Source> {
           new DateColumn<Source>(
               'Source Registration Time', (e) => e.sourceTime),
           new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
-          new DateColumn<Source>(
-              'Event Report Window Time', (e) => e.eventReportWindowTime),
           new DateColumn<Source>(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
@@ -940,8 +936,8 @@ function sourceRegistrationStatusToText(status: StoreSourceResult): string {
       return 'Rejected: destination global limit reached';
     case StoreSourceResult.kDestinationBothLimitsReached:
       return 'Rejected: destination both limits reached';
-    case StoreSourceResult.kReportingOriginsPerSiteLimitReached:
-      return 'Rejected: excessive reporting origins per source and reporting site';
+    case StoreSourceResult.kExceedsMaxChannelCapacity:
+      return 'Rejected: channel capacity exceeds max allowed';
     default:
       assertNotReached();
   }
@@ -965,6 +961,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: Excessive reporting origins';
     case WebUITrigger_Status.kDeduplicated:
       return 'Failure: Deduplicated against an earlier report';
+    case WebUITrigger_Status.kReportWindowNotStarted:
+      return 'Failure: Report window has not started';
     case WebUITrigger_Status.kReportWindowPassed:
       return 'Failure: Report window has passed';
     case WebUITrigger_Status.kLowPriority:

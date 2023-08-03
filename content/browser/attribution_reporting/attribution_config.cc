@@ -51,6 +51,14 @@ const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
     &blink::features::kConversionMeasurement, "aggregate_report_delay_span",
     AttributionConfig::AggregateLimit::kDefaultDelaySpan};
 
+const base::FeatureParam<double> kNavigationMaxInfoGain{
+    &blink::features::kConversionMeasurement, "navigation_max_info_gain",
+    AttributionConfig::EventLevelLimit::kDefaultMaxNavigationInfoGain};
+
+const base::FeatureParam<double> kEventMaxInfoGain{
+    &blink::features::kConversionMeasurement, "event_max_info_gain",
+    AttributionConfig::EventLevelLimit::kDefaultMaxEventInfoGain};
+
 bool AreReportWindowDeadlinesValid(
     base::TimeDelta first_report_window_deadline,
     base::TimeDelta second_report_window_deadline) {
@@ -219,7 +227,9 @@ AttributionConfig::EventLevelLimit::EventLevelLimit()
           kSecondNavigationReportWindowDeadline.Get()),
       first_event_report_window_deadline(kFirstEventReportWindowDeadline.Get()),
       second_event_report_window_deadline(
-          kSecondEventReportWindowDeadline.Get()) {
+          kSecondEventReportWindowDeadline.Get()),
+      max_navigation_info_gain(kNavigationMaxInfoGain.Get()),
+      max_event_info_gain(kEventMaxInfoGain.Get()) {
   if (max_attributions_per_event_source <= 0) {
     max_attributions_per_event_source = kDefaultMaxAttributionsPerEventSource;
   }

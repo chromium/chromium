@@ -26,7 +26,7 @@ AttributionStorageDelegate::AttributionStorageDelegate(
 
 AttributionStorageDelegate::~AttributionStorageDelegate() = default;
 
-int AttributionStorageDelegate::GetMaxAttributionsPerSource(
+int AttributionStorageDelegate::GetDefaultAttributionsPerSource(
     SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
@@ -66,6 +66,17 @@ const AttributionConfig::RateLimitConfig&
 AttributionStorageDelegate::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.rate_limit;
+}
+
+double AttributionStorageDelegate::GetMaxChannelCapacity(
+    SourceType source_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (source_type) {
+    case SourceType::kNavigation:
+      return config_.event_level_limit.max_navigation_info_gain;
+    case SourceType::kEvent:
+      return config_.event_level_limit.max_event_info_gain;
+  }
 }
 
 int64_t AttributionStorageDelegate::GetAggregatableBudgetPerSource() const {

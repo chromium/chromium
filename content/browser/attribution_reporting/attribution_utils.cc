@@ -4,11 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
-#include <vector>
-
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -26,31 +23,6 @@ base::TimeDelta ExpiryDeadline(base::Time source_time,
                                base::Time event_report_window_time) {
   DCHECK_GT(event_report_window_time, source_time);
   return event_report_window_time - source_time;
-}
-
-base::Time ReportTimeFromDeadline(base::Time source_time,
-                                  base::TimeDelta deadline) {
-  // Valid conversion reports should always have a valid reporting deadline.
-  DCHECK(!deadline.is_zero());
-  return source_time + deadline + kWindowDeadlineOffset;
-}
-
-base::Time ComputeReportTime(base::Time source_time,
-                             base::Time trigger_time,
-                             base::span<const base::TimeDelta> deadlines) {
-  // Follows the steps detailed in
-  // https://wicg.github.io/attribution-reporting-api/#obtain-an-event-level-report-delivery-time
-  // Starting from step 2.
-  DCHECK(!deadlines.empty());
-  base::TimeDelta deadline_to_use = deadlines.back();
-  for (base::TimeDelta deadline : deadlines) {
-    if (source_time + deadline < trigger_time) {
-      continue;
-    }
-    deadline_to_use = deadline;
-    break;
-  }
-  return ReportTimeFromDeadline(source_time, deadline_to_use);
 }
 
 base::Time LastTriggerTimeForReportTime(base::Time report_time) {
