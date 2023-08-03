@@ -49,6 +49,7 @@
 #include "components/app_constants/constants.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "components/prefs/pref_service.h"
@@ -241,6 +242,7 @@ class AppPlatformMetricsServiceTest
     AppPlatformMetricsServiceTestBase::TearDown();
     browser_window1_.reset();
     browser_window2_.reset();
+    metrics::structured::StructuredMetricsClient::Get()->UnsetDelegate();
   }
 
   AppTypeName GetWebAppTypeName() {

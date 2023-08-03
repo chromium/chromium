@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "components/sync/test/test_sync_service.h"
@@ -92,6 +93,10 @@ class AppDiscoveryMetricsManagerTest : public testing::Test {
 
     app_discovery_metrics_ =
         std::make_unique<AppDiscoveryMetricsManager>(testing_profile_.get());
+  }
+
+  void TearDown() override {
+    metrics::structured::StructuredMetricsClient::Get()->UnsetDelegate();
   }
 
   metrics::structured::TestStructuredMetricsProvider*

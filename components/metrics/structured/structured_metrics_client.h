@@ -56,7 +56,7 @@ class StructuredMetricsClient {
   ~StructuredMetricsClient();
 
   // Not owned. Assumes that the delegate's lifetime will exceed |this|.
-  raw_ptr<RecordingDelegate, LeakedDanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<RecordingDelegate> delegate_ = nullptr;
 };
 
 }  // namespace metrics::structured
