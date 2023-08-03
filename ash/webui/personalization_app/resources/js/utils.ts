@@ -6,7 +6,7 @@
  * @fileoverview Utility functions to be used throughout personalization app.
  */
 
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 

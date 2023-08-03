@@ -9,7 +9,7 @@
  * Export them as functions so they reload the values when overridden in test.
  */
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 export function isGooglePhotosIntegrationEnabled() {
   return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
