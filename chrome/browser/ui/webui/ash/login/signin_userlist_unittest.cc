@@ -74,6 +74,7 @@ class SigninPrepareUserListTest : public testing::Test {
   }
 
   void TearDown() override {
+    fake_user_manager_->set_multi_profile_user_controller(nullptr);
     controller_.reset();
     profile_manager_.reset();
     testing::Test::TearDown();
