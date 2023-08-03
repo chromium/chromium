@@ -16,7 +16,7 @@
               "destination": "https://destination.test",
               "source_event_id": "123",
               // Clamped to one hour (3600 seconds).
-              "aggregatable_report_window": "3590",
+              "aggregatable_report_window": 3590,
               "aggregation_keys": {
                 "a": "0x1"
               }

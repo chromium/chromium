@@ -105,8 +105,15 @@ TEST(SourceRegistrationTest, Parse) {
               [](SourceRegistration& r) { r.expiry = base::Seconds(172801); }),
       },
       {
-          "expiry_wrong_type",
+          "expiry_valid_int",
           R"json({"expiry":172800,"destination":"https://d.example"})json",
+          SourceRegistrationWith(
+              destination,
+              [](SourceRegistration& r) { r.expiry = base::Seconds(172800); }),
+      },
+      {
+          "expiry_wrong_type",
+          R"json({"expiry":1728000.1,"destination":"https://d.example"})json",
           base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
       },
       {
@@ -120,6 +127,11 @@ TEST(SourceRegistrationTest, Parse) {
           base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
       },
       {
+          "expiry_negative_int",
+          R"json({"expiry":-172801,"destination":"https://d.example"})json",
+          base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
+      },
+      {
           "event_report_window_valid",
           R"json({"event_report_window":"86401",
           "destination":"https://d.example"})json",
@@ -129,8 +141,17 @@ TEST(SourceRegistrationTest, Parse) {
                                  }),
       },
       {
-          "event_report_window_wrong_type",
+          "event_report_window_valid_int",
           R"json({"event_report_window":86401,
+          "destination":"https://d.example"})json",
+          SourceRegistrationWith(destination,
+                                 [](SourceRegistration& r) {
+                                   r.event_report_window = base::Seconds(86401);
+                                 }),
+      },
+      {
+          "event_report_window_wrong_type",
+          R"json({"event_report_window":86401.1,
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kEventReportWindowValueInvalid),
@@ -150,6 +171,13 @@ TEST(SourceRegistrationTest, Parse) {
               SourceRegistrationError::kEventReportWindowValueInvalid),
       },
       {
+          "event_report_window_negative_int",
+          R"json({"event_report_window":-86401,
+          "destination":"https://d.example"})json",
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowValueInvalid),
+      },
+      {
           "aggregatable_report_window_valid",
           R"json({"aggregatable_report_window":"86401",
           "destination":"https://d.example"})json",
@@ -160,8 +188,18 @@ TEST(SourceRegistrationTest, Parse) {
                                  }),
       },
       {
-          "aggregatable_report_window_wrong_type",
+          "aggregatable_report_window_valid_int",
           R"json({"aggregatable_report_window":86401,
+          "destination":"https://d.example"})json",
+          SourceRegistrationWith(destination,
+                                 [](SourceRegistration& r) {
+                                   r.aggregatable_report_window =
+                                       base::Seconds(86401);
+                                 }),
+      },
+      {
+          "aggregatable_report_window_wrong_type",
+          R"json({"aggregatable_report_window":86401.1,
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kAggregatableReportWindowValueInvalid),
@@ -176,6 +214,13 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "aggregatable_report_window_negative",
           R"json({"aggregatable_report_window":"-86401",
+          "destination":"https://d.example"})json",
+          base::unexpected(
+              SourceRegistrationError::kAggregatableReportWindowValueInvalid),
+      },
+      {
+          "aggregatable_report_window_negative_int",
+          R"json({"aggregatable_report_window":-86401,
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kAggregatableReportWindowValueInvalid),
@@ -289,13 +334,13 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.source_event_id = 7;
               }),
           R"json({
-            "aggregatable_report_window": "1",
+            "aggregatable_report_window": 1,
             "aggregation_keys": {"a": "0x2"},
             "debug_key": "3",
             "debug_reporting": true,
             "destination":"https://d.example",
-            "event_report_window": "4",
-            "expiry": "5",
+            "event_report_window": 4,
+            "expiry": 5,
             "filter_data": {"b": []},
             "priority": "-6",
             "source_event_id": "7",

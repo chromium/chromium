@@ -44,26 +44,49 @@ constexpr char kSourceEventId[] = "source_event_id";
     const base::Value::Dict& registration,
     base::StringPiece key,
     absl::optional<base::TimeDelta>& out) {
-  absl::optional<uint64_t> value;
+  out = absl::nullopt;
+
+  const base::Value* value = registration.Find(key);
+  if (!value) {
+    return true;
+  }
+
   // Note: The full range of uint64 seconds cannot be represented in the
   // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
   // properly clamps out-of-bound values and because the Attribution
   // Reporting API itself clamps values to 30 days:
   // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
-  if (ParseUint64(registration, key, value)) {
-    out = value ? absl::make_optional(base::Seconds(*value)) : absl::nullopt;
+
+  if (absl::optional<int> int_value = value->GetIfInt()) {
+    if (*int_value < 0) {
+      return false;
+    }
+    out = base::Seconds(*int_value);
     return true;
-  } else {
-    out = absl::nullopt;
-    return false;
   }
+
+  if (const std::string* str = value->GetIfString()) {
+    uint64_t seconds;
+    if (!base::StringToUint64(*str, &seconds)) {
+      return false;
+    }
+    out = base::Seconds(seconds);
+    return true;
+  }
+
+  return false;
 }
 
 void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  base::StringPiece key,
                                  absl::optional<base::TimeDelta> value) {
   if (value) {
-    SerializeInt64(dict, key, value->InSeconds());
+    int64_t seconds = value->InSeconds();
+    if (base::IsValueInRangeForNumericType<int>(seconds)) {
+      dict.Set(key, static_cast<int>(seconds));
+    } else {
+      SerializeInt64(dict, key, seconds);
+    }
   }
 }
 

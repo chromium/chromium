@@ -16,7 +16,7 @@
               "destination": "https://destination.test",
               "source_event_id": "123",
               // Clamped to one day (86400 seconds).
-              "expiry": "86390"
+              "expiry": 86390
             }
           }
         }]
