@@ -13,6 +13,7 @@
 namespace ash::language_packs {
 
 using ::ash::language::mojom::BasePackInfo;
+using ::ash::language::mojom::ErrorCode;
 using ::ash::language::mojom::FeatureId;
 using ::ash::language::mojom::LanguagePackInfo;
 using ::ash::language::mojom::LanguagePacks;
@@ -44,7 +45,25 @@ PackState GetPackStateFromStatusCode(const PackResult::StatusCode status_code) {
       return PackState::INSTALLED;
     // Catch all remaining cases as error.
     default:
+      // TODO: b/294162606 - Deprecate this value and use UNKNOWN instead.
       return PackState::ERROR;
+  }
+}
+
+ErrorCode GetMojoErrorFromPackError(const PackResult::ErrorCode pack_error) {
+  // This conversion is exhaustive. We don't use a default: case so that we can
+  // catch missing values at compile time.
+  switch (pack_error) {
+    case PackResult::kErrorNone:
+      return ErrorCode::kNone;
+    case PackResult::kErrorOther:
+      return ErrorCode::kOther;
+    case PackResult::kErrorWrongId:
+      return ErrorCode::kWrongId;
+    case PackResult::kErrorNeedReboot:
+      return ErrorCode::kNeedReboot;
+    case PackResult::kErrorAllocation:
+      return ErrorCode::kAllocation;
   }
 }
 
@@ -54,6 +73,7 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
                          const PackResult& pack_result) {
   auto info = LanguagePackInfo::New();
   info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
+  info->error = GetMojoErrorFromPackError(pack_result.operation_error);
   if (pack_result.pack_state == PackResult::INSTALLED) {
     info->path = pack_result.path;
   }
@@ -70,6 +90,7 @@ void OnInstallBasePackComplete(
     const PackResult& pack_result) {
   auto info = BasePackInfo::New();
   info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
+  info->error = GetMojoErrorFromPackError(pack_result.operation_error);
   if (pack_result.pack_state == PackResult::INSTALLED) {
     info->path = pack_result.path;
   }

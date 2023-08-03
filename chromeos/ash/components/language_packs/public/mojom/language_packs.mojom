@@ -8,6 +8,8 @@
 
 module ash.language.mojom;
 
+// Next MinVersion: 3
+
 // ID of the Feature using LanguagePacks.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When adding new enumerations to this
@@ -30,22 +32,36 @@ enum FeatureId {
 // enum, you must add those to the LanguagePackMojoPackState definition in
 // tools/metrics/histograms/enums.xml to keep them in sync.
 enum PackState {
+  // TODO: b/294162606 - Deprecate this value and use UNKNOWN instead.
   ERROR = 0,
   NOT_INSTALLED = 1,
   INSTALLING = 2,
   INSTALLED = 3
 };
 
+// The error that is encountered when performing an IPC operation.
+[Extensible]
+enum ErrorCode {
+  [Default] kUnknown = 0,
+  kNone = 1,
+  kOther = 2,
+  kWrongId = 3,
+  kNeedReboot = 4,
+  kAllocation = 5
+};
+
 // This struct holds information that allows clients to use a Language Pack.
 struct LanguagePackInfo {
   PackState pack_state;
   string path;
+  [MinVersion=2] ErrorCode error;
 };
 
 // This struct holds information that allows clients to use a Base Pack.
 struct BasePackInfo {
   PackState pack_state;
   string path;
+  [MinVersion=2] ErrorCode error;
 };
 
 // Interface for managing Language Packs.
