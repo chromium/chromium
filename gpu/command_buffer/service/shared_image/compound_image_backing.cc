@@ -342,7 +342,8 @@ class WrappedOverlayCompoundImageRepresentation
 bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  if (!viz::HasEquivalentBufferFormat(format)) {
+  if (format.PrefersExternalSampler() ||
+      !viz::HasEquivalentBufferFormat(format)) {
     DVLOG(1) << "Not a valid format: " << format.ToString();
     return false;
   }

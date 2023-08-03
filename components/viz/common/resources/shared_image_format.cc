@@ -148,6 +148,10 @@ const char* ChannelFormatToString(SharedImageFormat::ChannelFormat channel) {
   }
 }
 
+const char* PrefersExternalSamplerToString(SharedImageFormat format) {
+  return format.PrefersExternalSampler() ? "ExtSamplerOn" : "ExtSamplerOff";
+}
+
 SharedImageFormat GetEquivalentMultiplanarFormat(SharedImageFormat format) {
   if (format == LegacyMultiPlaneFormat::kYV12) {
     return MultiPlaneFormat::kYV12;
@@ -325,10 +329,11 @@ std::string SharedImageFormat::ToString() const {
     case PlaneType::kSinglePlane:
       return SinglePlaneFormatToString(*this);
     case PlaneType::kMultiPlane:
-      return base::StringPrintf("(%s, %s, %s)",
+      return base::StringPrintf("(%s, %s, %s, %s)",
                                 PlaneConfigToString(plane_config()),
                                 SubsamplingToString(subsampling()),
-                                ChannelFormatToString(channel_format()));
+                                ChannelFormatToString(channel_format()),
+                                PrefersExternalSamplerToString(*this));
   }
 }
 
@@ -339,9 +344,11 @@ std::string SharedImageFormat::ToTestParamString() const {
     case PlaneType::kSinglePlane:
       return SinglePlaneFormatToString(*this);
     case PlaneType::kMultiPlane:
-      return base::StringPrintf("%s_%s_%s", PlaneConfigToString(plane_config()),
+      return base::StringPrintf("%s_%s_%s_%s",
+                                PlaneConfigToString(plane_config()),
                                 SubsamplingToString(subsampling()),
-                                ChannelFormatToString(channel_format()));
+                                ChannelFormatToString(channel_format()),
+                                PrefersExternalSamplerToString(*this));
   }
 }
 
