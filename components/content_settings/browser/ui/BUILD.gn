@@ -26,3 +26,14 @@ source_set("ui") {
     "//ui/gfx",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cookie_controls_util_unittest.cc" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

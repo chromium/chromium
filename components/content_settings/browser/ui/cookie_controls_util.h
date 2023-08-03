@@ -13,6 +13,11 @@ namespace content_settings {
 
 class CookieControlsUtil {
  public:
+  // A return value of:
+  //   0  represents expiration today
+  //   1  represents expiration tomorrow
+  //   2  represents expiration in 2 days
+  //  -1  represents expiration yesterday
   static int GetDaysToExpiration(base::Time expiration);
 
   static const gfx::VectorIcon& GetEnforcedIcon(

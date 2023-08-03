@@ -817,8 +817,8 @@
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" translateable="false" desc="Subtitle shown on the page info bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
     {COUNT, plural,
-              =0 {Chrome will start blocking cookies again tomorrow}
-              =1 {1 day until Chrome starts blocking cookies again}
+              =0 {Chrome will start blocking cookies again today}
+              =1 {Chrome will start blocking cookies again tomorrow}
               other {# days until Chrome starts blocking cookies again}}
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY" translateable="false" desc="Descriptive text in the page info bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
