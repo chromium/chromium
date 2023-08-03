@@ -8,6 +8,7 @@
 
 #include <regstr.h>
 
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -771,9 +772,10 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   // Check for expected installer result API reg values.
   base::win::RegKey updater_key(root, UPDATER_KEY, Wow6432(KEY_QUERY_VALUE));
   ASSERT_TRUE(updater_key.Valid());
-  for (const base::win::RegKey* regkey : {&key, &updater_key}) {
+  for (const base::win::RegKey& regkey :
+       {std::cref(key), std::cref(updater_key)}) {
     std::wstring value;
-    EXPECT_EQ(regkey->ReadValue(kRegValueLastInstallerResultUIString, &value),
+    EXPECT_EQ(regkey.ReadValue(kRegValueLastInstallerResultUIString, &value),
               ERROR_SUCCESS);
     EXPECT_EQ(value, L"CoolApp");
   }
