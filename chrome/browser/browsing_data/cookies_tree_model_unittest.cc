@@ -1660,6 +1660,22 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
   EXPECT_FALSE(callback);
 }
 
+TEST_F(CookiesTreeModelTest, CookieDeletionFilterIncognitoProfile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  auto* incognito_profile = profile_->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(), true);
+  ASSERT_TRUE(incognito_profile->IsOffTheRecord());
+  auto callback =
+      CookiesTreeModel::GetCookieDeletionDisabledCallback(incognito_profile);
+  EXPECT_TRUE(callback);
+  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://example.com")));
+  EXPECT_FALSE(callback.Run(GURL("http://youtube.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://youtube.com")));
+}
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
   base::test::ScopedFeatureList scoped_feature_list;

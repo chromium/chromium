@@ -1706,6 +1706,11 @@ CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
           supervised_user::SupervisedUserService* supervised_user_service =
               SupervisedUserServiceFactory::GetForBrowserContext(
                   browser_context);
+          if (!supervised_user_service) {
+            // For some Profiles (eg. Incognito), SupervisedUserService is not
+            // created.
+            return false;
+          }
           return supervised_user_service->IsCookieDeletionDisabled(url);
         },
         profile);
