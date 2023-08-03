@@ -288,7 +288,11 @@ KioskLaunchController::KioskLaunchController(
           std::make_unique<NetworkUiController>(*this,
                                                 host_,
                                                 splash_screen_view_,
-                                                std::move(network_monitor))) {}
+                                                std::move(network_monitor))) {
+  if (!host_) {
+    CHECK_IS_TEST();
+  }
+}
 
 KioskLaunchController::~KioskLaunchController() = default;
 
@@ -304,6 +308,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 
   if (host_ && host_->GetWebUILoginView()) {
     host_->GetWebUILoginView()->SetKeyboardEventsAndSystemTrayEnabled(true);
+  } else if (!host_) {
+    CHECK_IS_TEST();
   }
 
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {
@@ -499,9 +505,10 @@ void KioskLaunchController::CleanUp() {
   app_launcher_.reset();
   network_ui_controller_.reset();
 
-  // Can be null in tests.
   if (host_) {
     host_->Finalize(base::OnceClosure());
+  } else {
+    CHECK_IS_TEST();
   }
   RecordKioskLaunchDuration(kiosk_app_id_.type,
                             base::Time::Now() - launcher_start_time_);
@@ -700,6 +707,10 @@ void KioskLaunchController::OnOldEncryptionDetected(
     std::unique_ptr<UserContext> user_context) {
   if (kiosk_app_id_.type != KioskAppType::kArcApp) {
     NOTREACHED();
+    return;
+  }
+  if (!host_) {
+    CHECK_IS_TEST();
     return;
   }
   host_->StartWizard(EncryptionMigrationScreenView::kScreenId);

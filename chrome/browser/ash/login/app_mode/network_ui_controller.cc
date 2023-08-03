@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -74,6 +75,9 @@ NetworkUiController::NetworkUiController(
       host_(host),
       splash_screen_view_(splash_screen),
       network_monitor_(std::move(network_monitor)) {
+  if (!host_) {
+    CHECK_IS_TEST();
+  }
   splash_screen_view_->SetDelegate(this);
 }
 
@@ -141,10 +145,12 @@ void NetworkUiController::OnConfigureNetwork() {
     return;
   }
 
-  if (CanConfigureNetworkForConsumerKiosk()) {
+  if (CanConfigureNetworkForConsumerKiosk() && host_) {
     host_->VerifyOwnerForKiosk(
         base::BindOnce(&NetworkUiController::ShowNetworkConfigureUI,
                        weak_ptr_factory_.GetWeakPtr()));
+  } else if (!host_) {
+    CHECK_IS_TEST();
   }
 }
 
