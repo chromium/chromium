@@ -106,8 +106,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      /*has_autofill_suggestions=*/true, form(), form().fields.back());
 
   // Verify that:
   // 1. if the card suggestion shown had metadata,
@@ -150,8 +149,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
   // Show the popup again.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      /*has_autofill_suggestions=*/true, form(), form().fields.back());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -179,8 +177,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   // Simulate selecting the card.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      /*has_autofill_suggestions=*/true, form(), form().fields.back());
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
@@ -457,8 +454,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      /*has_autofill_suggestions=*/true, form(), form().fields.back());
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.front(),

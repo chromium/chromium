@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -30,10 +29,8 @@ class TouchToFillDelegate {
 
   // Checks whether TTF is eligible for the given web form data and, if
   // successful, triggers the corresponding surface and returns |true|.
-  virtual bool TryToShowTouchToFill(
-      const FormData& form,
-      const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+  virtual bool TryToShowTouchToFill(const FormData& form,
+                                    const FormFieldData& field) = 0;
 
   // Returns whether the TTF surface is currently being shown.
   virtual bool IsShowingTouchToFill() = 0;

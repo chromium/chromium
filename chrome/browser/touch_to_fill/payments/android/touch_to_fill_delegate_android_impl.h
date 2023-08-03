@@ -106,10 +106,8 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   // Checks whether TTF is eligible for the given web form data and, if
   // successful, triggers the corresponding surface and returns |true|.
-  bool TryToShowTouchToFill(
-      const FormData& form,
-      const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source) override;
+  bool TryToShowTouchToFill(const FormData& form,
+                            const FormFieldData& field) override;
 
   // Returns whether the TTF surface is currently being shown.
   bool IsShowingTouchToFill() override;

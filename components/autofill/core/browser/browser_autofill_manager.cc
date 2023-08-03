@@ -1308,8 +1308,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     if (touch_to_fill_delegate_ &&
         (touch_to_fill_delegate_->IsShowingTouchToFill() ||
          (form_element_was_clicked &&
-          touch_to_fill_delegate_->TryToShowTouchToFill(form, field,
-                                                        trigger_source)))) {
+          touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
       // Touch To Fill surface is shown, so abort showing regular Autofill UI.
       // Now the flow is controlled by the |touch_to_fill_delegate_| instead
       // of |external_delegate_|.
@@ -1647,11 +1646,9 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
   UpdateInitialInteractionTimestamp(timestamp);
 }
 
-void BrowserAutofillManager::DidShowSuggestions(
-    bool has_autofill_suggestions,
-    const FormData& form,
-    const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source) {
+void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
+                                                const FormData& form,
+                                                const FormFieldData& field) {
   if (test_delegate_)
     test_delegate_->DidShowSuggestions();
 

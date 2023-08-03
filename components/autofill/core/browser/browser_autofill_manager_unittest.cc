@@ -324,9 +324,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               (override));
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
-              (const FormData&,
-               const FormFieldData&,
-               AutofillSuggestionTriggerSource),
+              (const FormData&, const FormFieldData&),
               (override));
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
@@ -760,8 +758,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   void DidShowAutofillSuggestions(const FormData& form,
                                   size_t field_index = 0) {
     browser_autofill_manager_->DidShowSuggestions(
-        /*has_autofill_suggestions=*/true, form, form.fields[field_index],
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        /*has_autofill_suggestions=*/true, form, form.fields[field_index]);
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -9165,8 +9162,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/false, form, field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      /*has_autofill_suggestions=*/false, form, field);
   histogram_tester.ExpectBucketCount(
       "Autocomplete.Events", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       1);

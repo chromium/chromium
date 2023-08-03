@@ -175,8 +175,7 @@ class AutofillMetricsBaseTest {
   void DidShowAutofillSuggestions(const FormData& form,
                                   size_t field_index = 0) {
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/true, form, form.fields[field_index],
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        /*has_autofill_suggestions=*/true, form, form.fields[field_index]);
   }
 
   void FillTestProfile(const FormData& form) {

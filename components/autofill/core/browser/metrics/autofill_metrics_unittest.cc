@@ -2457,8 +2457,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
     // Simulating same popup being refreshed.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/false, form, form.fields[0],
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        /*has_autofill_suggestions=*/false, form, form.fields[0]);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsAre(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
@@ -2549,8 +2548,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/false, form, form.fields.back(),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        /*has_autofill_suggestions=*/false, form, form.fields.back());
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -4828,8 +4826,7 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
     // Simulating same popup being refreshed.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/false, form, form.fields[0],
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        /*has_autofill_suggestions=*/false, form, form.fields[0]);
     EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
                 BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
                                Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
@@ -5923,9 +5920,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
     SCOPED_TRACE("Multiple keystrokes");
     base::HistogramTester histogram_tester;
     DidShowAutofillSuggestions(form);
-    autofill_manager().DidShowSuggestions(
-        false, form, form.fields[0],
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    autofill_manager().DidShowSuggestions(false, form, form.fields[0]);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness"),
         BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 1),
@@ -6059,9 +6054,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
         "(i.e. multiple keystrokes in a single field).");
     base::HistogramTester histogram_tester;
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
-    autofill_manager().DidShowSuggestions(
-        false, form, form.fields.back(),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    autofill_manager().DidShowSuggestions(false, form, form.fields.back());
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness"),
         BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 1),

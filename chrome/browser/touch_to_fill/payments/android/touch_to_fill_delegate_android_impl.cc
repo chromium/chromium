@@ -148,8 +148,7 @@ bool TouchToFillDelegateAndroidImpl::IntendsToShowTouchToFill(
 
 bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     const FormData& form,
-    const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source) {
+    const FormFieldData& field) {
   // TODO(crbug.com/1386143): store only FormGlobalId and FieldGlobalId instead
   // to avoid that FormData and FormFieldData may become obsolete during the
   // bottomsheet being open.
@@ -178,8 +177,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   ttf_credit_card_state_ = TouchToFillState::kIsShowing;
   manager_->client().HideAutofillPopup(
       PopupHidingReason::kOverlappingWithTouchToFillSurface);
-  manager_->DidShowSuggestions(/*has_autofill_suggestions=*/true, form, field,
-                               trigger_source);
+  manager_->DidShowSuggestions(/*has_autofill_suggestions=*/true, form, field);
   return true;
 }
 
