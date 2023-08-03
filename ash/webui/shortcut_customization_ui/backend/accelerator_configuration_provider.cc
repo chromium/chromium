@@ -284,8 +284,17 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
     // |upto|, then add the next replacement to the result matches.
     if (offset_index < offsets.size() && upto == offsets[offset_index]) {
       const auto& replacement_part = replacement_parts[offset_index];
-      result.push_back(mojom::TextAcceleratorPart::New(replacement_part.text,
-                                                       replacement_part.type));
+      if (replacement_part.keycode.has_value()) {
+        // If the replacement is a `keycode`, we get the current key display
+        // string. This can change dynamically based on the current user's
+        // ime.
+        result.push_back(mojom::TextAcceleratorPart::New(
+            GetKeyDisplay(replacement_part.keycode.value()),
+            replacement_part.type));
+      } else {
+        result.push_back(mojom::TextAcceleratorPart::New(
+            replacement_part.text, replacement_part.type));
+      }
       offset_index++;
     } else {
       // Otherwise add the next plain text segment to the result.

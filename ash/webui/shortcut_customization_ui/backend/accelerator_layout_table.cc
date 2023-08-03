@@ -96,8 +96,8 @@ TextAcceleratorPart::TextAcceleratorPart(ui::EventFlags modifier) {
 }
 
 TextAcceleratorPart::TextAcceleratorPart(ui::KeyboardCode key_code) {
-  text = GetKeyDisplay(key_code);
   type = mojom::TextAcceleratorPartType::kKey;
+  keycode = key_code;
 }
 
 TextAcceleratorPart::TextAcceleratorPart(const std::u16string& plain_text) {

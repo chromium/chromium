@@ -193,6 +193,10 @@ class TextAcceleratorPart : public mojom::TextAcceleratorPart {
   TextAcceleratorPart(const TextAcceleratorPart&);
   TextAcceleratorPart& operator=(const TextAcceleratorPart&);
   ~TextAcceleratorPart();
+
+  // If the part is a keycode, we store it so that we will always have a way
+  // to get the accurate localized key string to display.
+  absl::optional<ui::KeyboardCode> keycode;
 };
 
 // Contains info related to a non-configurable accelerator. A non-configurable

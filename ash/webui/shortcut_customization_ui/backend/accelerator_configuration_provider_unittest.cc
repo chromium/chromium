@@ -237,8 +237,14 @@ void ValidateAcceleratorLayouts(
 
 void ValidateTextAccelerators(const TextAcceleratorPart& lhs,
                               const mojom::TextAcceleratorPartPtr& rhs) {
-  EXPECT_EQ(lhs.text, rhs->text);
   EXPECT_EQ(lhs.type, rhs->type);
+
+  if (lhs.type == mojom::TextAcceleratorPartType::kKey &&
+      lhs.keycode.has_value()) {
+    EXPECT_EQ(ash::GetKeyDisplay(lhs.keycode.value()), rhs->text);
+  } else {
+    EXPECT_EQ(lhs.text, rhs->text);
+  }
 }
 
 std::vector<mojom::TextAcceleratorPartPtr> RemovePlainTextParts(
