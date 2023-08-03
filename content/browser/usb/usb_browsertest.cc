@@ -67,6 +67,7 @@ class WebUsbTest : public ContentBrowserTest {
     // All origins can request device permissions.
     EXPECT_CALL(delegate(), CanRequestDevicePermission)
         .WillRepeatedly(Return(true));
+    EXPECT_CALL(delegate(), PageMayUseUsb).WillRepeatedly(Return(true));
 
     // Route calls to the FakeUsbDeviceManager.
     EXPECT_CALL(delegate(), GetDeviceInfo)

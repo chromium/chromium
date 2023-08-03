@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
+#include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/usb_pinned_notification.h"
@@ -101,106 +102,6 @@ const AccountId kManagedUserAccountId =
     AccountId::FromUserEmail("example@example.com");
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
-class FakeChooserView : public permissions::ChooserController::View {
- public:
-  explicit FakeChooserView(
-      std::unique_ptr<permissions::ChooserController> controller)
-      : controller_(std::move(controller)) {
-    controller_->set_view(this);
-  }
-
-  FakeChooserView(const FakeChooserView&) = delete;
-  FakeChooserView& operator=(const FakeChooserView&) = delete;
-
-  ~FakeChooserView() override { controller_->set_view(nullptr); }
-
-  void OnOptionsInitialized() override {
-    if (controller_->NumOptions())
-      controller_->Select({0});
-    else
-      controller_->Cancel();
-    delete this;
-  }
-
-  void OnOptionAdded(size_t index) override { NOTREACHED(); }
-  void OnOptionRemoved(size_t index) override { NOTREACHED(); }
-  void OnOptionUpdated(size_t index) override { NOTREACHED(); }
-  void OnAdapterEnabledChanged(bool enabled) override { NOTREACHED(); }
-  void OnRefreshStateChanged(bool refreshing) override { NOTREACHED(); }
-
- private:
-  std::unique_ptr<permissions::ChooserController> controller_;
-};
-
-class FakeUsbChooser : public WebUsbChooser {
- public:
-  FakeUsbChooser() = default;
-  FakeUsbChooser(const FakeUsbChooser&) = delete;
-  FakeUsbChooser& operator=(const FakeUsbChooser&) = delete;
-  ~FakeUsbChooser() override = default;
-
-  void ShowChooser(content::RenderFrameHost* frame,
-                   std::unique_ptr<UsbChooserController> controller) override {
-    // Device list initialization in UsbChooserController may complete before
-    // having a valid view in which case OnOptionsInitialized() has no chance to
-    // be triggered, so select the first option directly if options are ready.
-    if (controller->NumOptions())
-      controller->Select({0});
-    else
-      new FakeChooserView(std::move(controller));
-  }
-};
-
-class TestUsbDelegate : public ChromeUsbDelegate {
- public:
-  TestUsbDelegate() = default;
-  TestUsbDelegate(const TestUsbDelegate&) = delete;
-  TestUsbDelegate& operator=(const TestUsbDelegate&) = delete;
-  ~TestUsbDelegate() override = default;
-
-  std::unique_ptr<content::UsbChooser> RunChooser(
-      content::RenderFrameHost& frame,
-      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
-      blink::mojom::WebUsbService::GetPermissionCallback callback) override {
-    if (use_fake_chooser_) {
-      auto chooser = std::make_unique<FakeUsbChooser>();
-      chooser->ShowChooser(
-          &frame, std::make_unique<UsbChooserController>(
-                      &frame, std::move(options), std::move(callback)));
-      return chooser;
-    } else {
-      return ChromeUsbDelegate::RunChooser(frame, std::move(options),
-                                           std::move(callback));
-    }
-  }
-
-  void UseFakeChooser() { use_fake_chooser_ = true; }
-
- private:
-  bool use_fake_chooser_ = false;
-};
-
-class TestContentBrowserClient : public ChromeContentBrowserClient {
- public:
-  TestContentBrowserClient()
-      : usb_delegate_(std::make_unique<TestUsbDelegate>()) {}
-  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
-  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
-  ~TestContentBrowserClient() override = default;
-
-  // ChromeContentBrowserClient:
-  content::UsbDelegate* GetUsbDelegate() override {
-    return usb_delegate_.get();
-  }
-
-  TestUsbDelegate& delegate() { return *usb_delegate_; }
-
-  void ResetUsbDelegate() { usb_delegate_.reset(); }
-
- private:
-  std::unique_ptr<TestUsbDelegate> usb_delegate_;
-};
-
 class ChromeWebUsbTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -215,8 +116,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
     UsbChooserContextFactory::GetForProfile(browser()->profile())
         ->SetDeviceManagerForTesting(std::move(device_manager));
 
-    original_content_browser_client_ =
-        content::SetBrowserClientForTesting(&test_content_browser_client_);
+    test_content_browser_client_.SetAsBrowserClient();
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -230,8 +130,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    test_content_browser_client_.ResetUsbDelegate();
-    content::SetBrowserClientForTesting(original_content_browser_client_);
+    test_content_browser_client_.UnsetAsBrowserClient();
   }
 
   void AddFakeDevice(const std::string& serial_number) {
@@ -259,8 +158,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
  private:
   device::FakeUsbDeviceManager device_manager_;
   device::mojom::UsbDeviceInfoPtr fake_device_info_;
-  TestContentBrowserClient test_content_browser_client_;
-  raw_ptr<content::ContentBrowserClient> original_content_browser_client_;
+  TestUsbContentBrowserClient test_content_browser_client_;
   GURL origin_;
 };
 

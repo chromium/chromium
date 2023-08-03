@@ -37,6 +37,7 @@ class ChromeUsbDelegate : public content::UsbDelegate {
       content::RenderFrameHost& frame,
       blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override;
+  bool PageMayUseUsb(content::Page& page) override;
   bool CanRequestDevicePermission(content::BrowserContext* browser_context,
                                   const url::Origin& origin) override;
   void RevokeDevicePermissionWebInitiated(

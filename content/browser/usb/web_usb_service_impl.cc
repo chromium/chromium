@@ -157,7 +157,8 @@ void WebUsbServiceImpl::Create(
 
   // Avoid creating the WebUsbService if there is no USB delegate to provide the
   // implementation.
-  if (!GetContentClient()->browser()->GetUsbDelegate()) {
+  UsbDelegate* delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (!delegate) {
     return;
   }
 
@@ -166,6 +167,10 @@ void WebUsbServiceImpl::Create(
     // a fenced frame. Anything getting past the renderer checks must be marked
     // as a bad request.
     mojo::ReportBadMessage("WebUSB is not allowed in a fenced frame tree.");
+    return;
+  }
+
+  if (!delegate->PageMayUseUsb(render_frame_host.GetPage())) {
     return;
   }
 

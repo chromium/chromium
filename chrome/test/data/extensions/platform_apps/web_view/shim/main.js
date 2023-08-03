@@ -124,6 +124,43 @@ function executeScriptP(webview, details) {
   });
 }
 
+// Executes `fn` in the context of the `webview` with the given `args`. `fn`
+// must be written in a way that it can be serialized as a string. So anything
+// it references from this context must be passed explicitly via `args`.
+// This can be used for cases where `webview.executeScript` is inadequate, such
+// as testing APIs that are async. This is loosely based on RemoteContext's
+// script execution from web-platform-tests.
+async function evalInWebView(webview, fn, args) {
+  // We have this handler run in the context of the webview where it will eval
+  // the function and reply to the embedder with the result.
+  let messageHandlerInWebview = async (event) => {
+    try {
+      let task = event.data;
+      let result = await eval(task.fn).apply(null, task.args);
+      event.source.postMessage({success: true, result: result}, event.origin);
+    } catch (ex) {
+      event.source.postMessage({success: false, result: ex}, event.origin);
+    }
+  };
+  await executeScriptP(webview, {
+    code: 'window.addEventListener(\'message\', ' +
+        messageHandlerInWebview.toString() + ', {once: true});'
+  });
+
+  return new Promise((resolve, reject) => {
+    window.addEventListener('message', (e) => {
+      if (e.data.success) {
+        resolve(e.data.result);
+      } else {
+        reject(e.data.result);
+      }
+    });
+
+    let task = {fn: fn.toString(), args: args};
+    webview.contentWindow.postMessage(task, '*');
+  });
+}
+
 // Tests begin.
 
 // This test verifies that the allowtransparency property is interpreted as true
@@ -3691,6 +3728,73 @@ function testInsertIntoDetachedIframe() {
   document.body.appendChild(iframe);
 }
 
+function testCannotRequestUsb() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    let getUsbDevices = async () => {
+      let devices = await navigator.usb.getDevices();
+      return devices.map(device => device.serialNumber);
+    };
+    let requestUsbDevice = async () => {
+      let device = await navigator.usb.requestDevice({filters: []});
+      return device.serialNumber;
+    };
+
+    try {
+      // Confirm that there are initially no paired devices.
+      let result = await evalInWebView(webview, getUsbDevices, []);
+      embedder.test.assertEq(0, result.length);
+    } catch (ex) {
+      embedder.test.fail();
+    }
+
+    try {
+      // Attempting to pair from a webview should fail. This is expected to
+      // throw.
+      let result = await evalInWebView(webview, requestUsbDevice, []);
+      embedder.test.fail();
+    } catch (ex) {
+    }
+
+    try {
+      // Confirm that there are still no paired devices.
+      let result = await evalInWebView(webview, getUsbDevices, []);
+      embedder.test.assertEq(0, result.length);
+    } catch (ex) {
+      embedder.test.fail();
+    }
+
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
+// Before this test runs, the browser-side test code has a tab pair a USB device
+// for the same origin used in the webview. We confirm that the webview cannot
+// reuse this permission.
+function testCannotReuseUsbPairedInTab() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    let getUsbDevices = async () => {
+      let devices = await navigator.usb.getDevices();
+      return devices.map(device => device.serialNumber);
+    };
+    try {
+      let result = await evalInWebView(webview, getUsbDevices, []);
+      embedder.test.assertEq(0, result.length);
+    } catch (ex) {
+      embedder.test.fail();
+    }
+
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3835,6 +3939,8 @@ embedder.test.testList = {
   'testCreateAndInsertInOtherWindow': testCreateAndInsertInOtherWindow,
   'testInsertFromOtherWindow': testInsertFromOtherWindow,
   'testInsertIntoDetachedIframe': testInsertIntoDetachedIframe,
+  'testCannotRequestUsb': testCannotRequestUsb,
+  'testCannotReuseUsbPairedInTab': testCannotReuseUsbPairedInTab,
 };
 
 onload = function() {

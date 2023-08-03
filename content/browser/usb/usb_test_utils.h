@@ -58,6 +58,7 @@ class MockUsbDelegate : public UsbDelegate {
                     const url::Origin&,
                     RenderFrameHost*,
                     std::vector<uint8_t>&));
+  MOCK_METHOD1(PageMayUseUsb, bool(Page&));
   MOCK_METHOD2(CanRequestDevicePermission,
                bool(BrowserContext*, const url::Origin&));
   MOCK_METHOD3(RevokeDevicePermissionWebInitiated,

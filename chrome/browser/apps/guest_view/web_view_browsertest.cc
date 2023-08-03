@@ -46,6 +46,9 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
+#include "chrome/browser/usb/usb_browser_test_utils.h"
+#include "chrome/browser/usb/usb_chooser_context.h"
+#include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -125,6 +128,7 @@
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
@@ -6798,4 +6802,74 @@ class WebViewPortalTest : public WebViewTest {
 // Creates and activates a <portal> element inside a <webview>.
 IN_PROC_BROWSER_TEST_F(WebViewPortalTest, PortalActivationInGuest) {
   TestHelper("testActivatePortal", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+class WebViewUsbTest : public WebViewTest {
+ public:
+  WebViewUsbTest() = default;
+  ~WebViewUsbTest() override = default;
+
+  void SetUpOnMainThread() override {
+    WebViewTest::SetUpOnMainThread();
+    fake_device_info_ = device_manager_.CreateAndAddDevice(
+        0, 0, "Test Manufacturer", "Test Device", "123456");
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
+    device_manager_.AddReceiver(
+        device_manager.InitWithNewPipeAndPassReceiver());
+    UsbChooserContextFactory::GetForProfile(browser()->profile())
+        ->SetDeviceManagerForTesting(std::move(device_manager));
+
+    test_content_browser_client_.SetAsBrowserClient();
+  }
+
+  void TearDownOnMainThread() override {
+    test_content_browser_client_.UnsetAsBrowserClient();
+    WebViewTest::TearDownOnMainThread();
+  }
+
+  void UseFakeChooser() {
+    test_content_browser_client_.delegate().UseFakeChooser();
+  }
+
+ private:
+  device::FakeUsbDeviceManager device_manager_;
+  device::mojom::UsbDeviceInfoPtr fake_device_info_;
+  TestUsbContentBrowserClient test_content_browser_client_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewUsbTest, Shim_TestCannotRequestUsb) {
+  TestHelper("testCannotRequestUsb", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewUsbTest, Shim_TestCannotReuseUsbPairedInTab) {
+  // We start the test server here, instead of in TestHelper, because we need
+  // to know the origin used in both the tab and webview before running the rest
+  // of the test.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  UseFakeChooser();
+  // Request permission to access the fake device in the tab. The fake chooser
+  // will automatically select the item representing the fake device, granting
+  // the permission.
+  EXPECT_EQ("123456", EvalJs(tab_web_contents,
+                             R"((async () => {
+        let device =
+            await navigator.usb.requestDevice({filters: []});
+        return device.serialNumber;
+      })())"));
+  EXPECT_EQ(content::ListValueOf("123456"), EvalJs(tab_web_contents,
+                                                   R"((async () => {
+        let devices = await navigator.usb.getDevices();
+        return devices.map(device => device.serialNumber);
+      })())"));
+
+  // Have the embedder create a webview which navigates to the same origin and
+  // attempts to use the paired device. The granted permission should not be
+  // available for that context.
+  TestHelper("testCannotReuseUsbPairedInTab", "web_view/shim", NO_TEST_SERVER);
 }

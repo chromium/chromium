@@ -2538,6 +2538,8 @@ if (!is_android) {
       "../browser/ukm_worker_browsertest.cc",
       "../browser/unload_browsertest.cc",
       "../browser/usb/chrome_usb_browsertest.cc",
+      "../browser/usb/usb_browser_test_utils.cc",
+      "../browser/usb/usb_browser_test_utils.h",
       "../browser/user_agent/user_agent_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
       "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
