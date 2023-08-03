@@ -157,6 +157,12 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
                                                          kBubbleBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleBorderRadius, views::HighlightBorder::Type::kHighlightBorder1));
+  // Set shadow
+  if (chromeos::features::IsJellyrollEnabled()) {
+    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+        this, SystemShadow::Type::kElevation12);
+    shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
+  }
   SetVisible(false);
 }
 
@@ -166,24 +172,8 @@ void LoginBaseBubbleView::EnsureLayer() {
   }
   // Layer rendering is needed for animation.
   SetPaintToLayer();
-  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                   kBubbleBorderRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetFillsBoundsOpaquely(false);
-
-  // Set shadow
-  if (chromeos::features::IsJellyrollEnabled() && GetVisible()) {
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-        SystemShadow::Type::kElevation12);
-    shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
-    // TODO(b/286568605): after resolving this issue the next two line
-    // will be not necessary
-    layer()->parent()->Add(shadow_->GetLayer());
-    layer()->parent()->StackAtBottom(shadow_->GetLayer());
-    shadow_->SetContentBounds(bounds());
-  }
 }
 
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;
@@ -206,7 +196,6 @@ void LoginBaseBubbleView::Show() {
 }
 
 void LoginBaseBubbleView::Hide() {
-  shadow_.reset();
   ScheduleAnimation(false /*visible*/);
 }
 
