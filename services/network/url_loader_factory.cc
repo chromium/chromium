@@ -367,13 +367,6 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             resource_request.trusted_params->accept_ch_frame_observer));
   }
 
-  // Check for third party cookies being disabled. This will also be false if
-  // all cookies are disabled.
-  const bool third_party_cookies_enabled =
-      !context_->cookie_manager()
-           ->cookie_settings()
-           .are_third_party_cookies_blocked();
-
   std::unique_ptr<AttributionRequestHelper> attribution_request_helper;
   if (context_->network_service()) {
     attribution_request_helper = AttributionRequestHelper::CreateIfNeeded(
@@ -398,8 +391,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(shared_dictionary_checker), std::move(cookie_observer),
       std::move(trust_token_observer), std::move(url_loader_network_observer),
       std::move(devtools_observer), std::move(accept_ch_frame_observer),
-      third_party_cookies_enabled, params_->cookie_setting_overrides,
-      std::move(attribution_request_helper),
+      params_->cookie_setting_overrides, std::move(attribution_request_helper),
       std::move(shared_storage_request_helper));
 
   if (context_->GetMemoryCache())

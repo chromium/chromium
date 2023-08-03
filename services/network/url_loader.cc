@@ -463,7 +463,6 @@ URLLoader::URLLoader(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    bool third_party_cookies_enabled,
     net::CookieSettingOverrides cookie_setting_overrides,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper)

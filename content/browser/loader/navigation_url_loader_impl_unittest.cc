@@ -127,7 +127,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*url_loader_network_observer=*/mojo::NullRemote(),
         /*devtools_observer=*/mojo::NullRemote(),
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
-        /*third_party_cookies_enabled=*/true, net::CookieSettingOverrides(),
+        net::CookieSettingOverrides(),
         /*attribution_request_helper=*/nullptr,
         std::make_unique<network::SharedStorageRequestHelper>(
             /*shared_storage_writable=*/false,
