@@ -67,3 +67,7 @@ void KeyedServiceBaseFactory::ContextDestroyed(void* context) {
   // only dereferenced, this still must run on the UI thread.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
+
+void KeyedServiceBaseFactory::CreateServiceNowForTesting(void* context) {
+  CreateServiceNow(context);
+}

@@ -51,6 +51,9 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // Returns whether the service is created for the given context.
   virtual bool IsServiceCreated(void* context) const = 0;
 
+  // Enforces the creation of a service, used for testing only.
+  void CreateServiceNowForTesting(void* context);
+
  protected:
   KeyedServiceBaseFactory(const char* service_name,
                           DependencyManager* manager,
