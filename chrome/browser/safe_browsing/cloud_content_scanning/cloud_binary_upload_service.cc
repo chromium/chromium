@@ -70,8 +70,18 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "downloads a file, and the browser is enrolled into the "
             "Advanced Protection Program."
           data:
-            "The downloaded file."
+            "The downloaded file. Also an access token (enterprise only)."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//chrome/browser/safe_browsing/cloud_content_scanning/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: FILE_DATA
+          }
+          last_reviewed: "2023-07-28"
         }
         policy {
           cookies_allowed: YES
@@ -105,8 +115,20 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "Chrome or data printed from Chrome respectively."
           data:
             "The uploaded/downloaded/transfered file, pasted data or printed "
-            "data."
+            "data. Also includes an access token (enterprise only)."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//chrome/browser/safe_browsing/cloud_content_scanning/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: FILE_DATA
+            type: USER_CONTENT
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2023-07-28"
         }
         policy {
           cookies_allowed: YES
