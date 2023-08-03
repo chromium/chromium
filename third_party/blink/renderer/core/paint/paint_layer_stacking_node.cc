@@ -178,25 +178,48 @@ struct PaintLayerStackingNode::HighestLayers {
   }
 };
 
+static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
+    const PaintLayer* layer) {
+  LayoutObject* parent = layer->GetLayoutObject().Parent();
+  if (!parent) {
+    return nullptr;
+  }
+  if (parent->IsLayoutNGFlexibleBox() || parent->IsLayoutNGGrid()) {
+    return &layer->GetLayoutObject();
+  }
+
+  LayoutObject* grandparent = parent->Parent();
+  if (!grandparent) {
+    return nullptr;
+  }
+  if (grandparent->IsLayoutNGFlexibleBox() || grandparent->IsLayoutNGGrid()) {
+    return parent;
+  }
+  return nullptr;
+}
+
 static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
-  LayoutObject* parent = first->GetLayoutObject().Parent();
-  if (!parent ||
-      (!parent->IsLayoutNGFlexibleBox() && !parent->IsLayoutNGGrid())) {
+  // TODO(chrishtr): make this work for arbitrary ancestors, not just parent
+  // and grandparent.
+  LayoutObject* first_ancestor = ChildOfFlexboxOrGridParentOrGrandparent(first);
+  LayoutObject* second_ancestor =
+      ChildOfFlexboxOrGridParentOrGrandparent(second);
+  if (!first_ancestor || !second_ancestor) {
     return false;
   }
-  if (parent != second->GetLayoutObject().Parent()) {
-    return false;
-  }
-  auto& first_style = first->GetLayoutObject().StyleRef();
-  auto& second_style = second->GetLayoutObject().StyleRef();
+
+  auto& first_style = first_ancestor->StyleRef();
+  auto& second_style = second_ancestor->StyleRef();
   int first_order = 0;
   int second_order = 0;
-  // Out of flow children paint as if order was 0:
+  // Out of flow flexbox direct children paint as if order was 0:
   // https://drafts.csswg.org/css-display-4/#order-modified-document-order
-  if (!first->GetLayoutObject().IsOutOfFlowPositioned()) {
+  if (first_ancestor != first->GetLayoutObject() ||
+      !first_ancestor->IsOutOfFlowPositioned()) {
     first_order = first_style.Order();
   }
-  if (!second->GetLayoutObject().IsOutOfFlowPositioned()) {
+  if (second_ancestor != second->GetLayoutObject() ||
+      !second_ancestor->IsOutOfFlowPositioned()) {
     second_order = second_style.Order();
   }
   return first_order < second_order;

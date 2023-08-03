@@ -1181,8 +1181,6 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.h
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
 
-crbug.com/606208 external/wpt/css/css-flexbox/order/order-abs-children-painting-order.html [ Failure ]
-
 # We don't currently support sideways writing-modes.
 crbug.com/680331 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
 
