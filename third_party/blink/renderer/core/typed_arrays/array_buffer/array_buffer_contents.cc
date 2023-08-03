@@ -208,12 +208,13 @@ void* ArrayBufferContents::AllocateMemoryOrNull(size_t size,
 void ArrayBufferContents::FreeMemory(void* data) {
   InstanceCounters::DecrementCounter(
       InstanceCounters::kArrayBufferContentsCounter);
-  unsigned int flags = 0;
 #ifdef V8_ENABLE_SANDBOX
   // See |AllocateMemoryWithFlags|.
-  flags |= partition_alloc::FreeFlags::kNoMemoryToolOverride;
+  WTF::Partitions::ArrayBufferPartition()
+      ->Free<partition_alloc::FreeFlags::kNoMemoryToolOverride>(data);
+#else
+  WTF::Partitions::ArrayBufferPartition()->Free(data);
 #endif
-  WTF::Partitions::ArrayBufferPartition()->FreeWithFlags(flags, data);
 }
 
 }  // namespace blink

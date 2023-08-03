@@ -502,16 +502,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                      void* ptr,
                                      size_t new_size,
                                      const char* type_name) PA_MALLOC_ALIGNED;
-  PA_NOINLINE void Free(void* object) { return FreeWithFlags(0, object); }
-
-  PA_ALWAYS_INLINE void FreeWithFlags(unsigned int flags, void* object);
+  template <unsigned int flags = 0>
+  PA_NOINLINE void Free(void* object);
   PA_ALWAYS_INLINE void FreeNoHooks(void* object);
 
-  PA_NOINLINE static void FreeInUnknownRoot(void* object) {
-    return FreeWithFlagsInUnknownRoot(0, object);
-  }
-  PA_ALWAYS_INLINE static void FreeWithFlagsInUnknownRoot(unsigned int flags,
-                                                          void* object);
+  template <unsigned int flags = 0>
+  PA_NOINLINE static void FreeInUnknownRoot(void* object);
   PA_ALWAYS_INLINE static void FreeNoHooksInUnknownRoot(void* object);
   // Immediately frees the pointer bypassing the quarantine. |slot_start| is the
   // beginning of the slot that contains |object|.
@@ -822,10 +818,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
  private:
   static inline bool sort_active_slot_spans_ = false;
 
-  // Common path of FreeWithFlags() and FreeWithFlagsInUnknownRoot(). Returns
+  // Common path of Free() and FreeInUnknownRoot(). Returns
   // true if the caller should return immediately.
-  PA_ALWAYS_INLINE static bool FreeWithFlagsProlog(unsigned int flags,
-                                                   void* object);
+  template <unsigned int flags>
+  PA_ALWAYS_INLINE static bool FreeProlog(void* object);
 
   // |buckets| has `kNumBuckets` elements, but we sometimes access it at index
   // `kNumBuckets`, which is occupied by the sentinel bucket. The correct layout
@@ -1168,12 +1164,12 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
 }
 
 // static
-PA_ALWAYS_INLINE bool PartitionRoot::FreeWithFlagsProlog(unsigned int flags,
-                                                         void* object) {
+template <unsigned int flags>
+PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object) {
   PA_DCHECK(flags < FreeFlags::kLastFlag << 1);
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if (!(flags & FreeFlags::kNoMemoryToolOverride)) {
+  if constexpr (!(flags & FreeFlags::kNoMemoryToolOverride)) {
     free(object);
     return true;
   }
@@ -1192,9 +1188,9 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeWithFlagsProlog(unsigned int flags,
   return false;
 }
 
-PA_ALWAYS_INLINE void PartitionRoot::FreeWithFlags(unsigned int flags,
-                                                   void* object) {
-  bool early_return = FreeWithFlagsProlog(flags, object);
+template <unsigned int flags>
+PA_ALWAYS_INLINE void PartitionRoot::Free(void* object) {
+  bool early_return = FreeProlog<flags>(object);
   if (early_return) {
     return;
   }
@@ -1203,10 +1199,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeWithFlags(unsigned int flags,
 }
 
 // static
-PA_ALWAYS_INLINE void PartitionRoot::FreeWithFlagsInUnknownRoot(
-    unsigned int flags,
-    void* object) {
-  bool early_return = FreeWithFlagsProlog(flags, object);
+template <unsigned int flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeInUnknownRoot(void* object) {
+  bool early_return = FreeProlog<flags>(object);
   if (early_return) {
     return;
   }

@@ -46,7 +46,7 @@ struct AllocFlags {
   static constexpr unsigned int kLastFlag = kFastPathOrReturnNull;
 };
 
-// Bit flag constants used as `flag` argument of PartitionRoot::FreeWithFlags.
+// Bit flag constants used as `flag` argument of PartitionRoot::Free<flags>.
 struct FreeFlags {
   // See AllocFlags::kNoMemoryToolOverride.
   static constexpr unsigned int kNoMemoryToolOverride = 1 << 0;
