@@ -160,6 +160,8 @@
   E_CPONLY(kColorNewTabButtonFocusRing) \
   E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
+  E_CPONLY(kColorTabStripControlButtonInkDrop) \
+  E_CPONLY(kColorTabStripControlButtonInkDropRipple) \
   /* New tab button colors for ChromeRefresh.*/ \
   /* TODO (crbug.com/1399942) remove when theming works */ \
   E_CPONLY(kColorNewTabButtonCRForegroundFrameActive) \

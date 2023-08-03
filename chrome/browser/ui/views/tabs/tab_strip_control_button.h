@@ -74,13 +74,29 @@ class TabStripControlButton : public views::LabelButton {
     UpdateColors();
   }
 
+  bool GetPaintTransparentForCustomImageTheme() {
+    return paint_transparent_for_custom_image_theme_;
+  }
+
+  void SetPaintTransparentForCustomImageTheme(
+      bool paint_transparent_for_custom_image_theme) {
+    paint_transparent_for_custom_image_theme_ =
+        paint_transparent_for_custom_image_theme;
+  }
+
   virtual int GetCornerRadius();
 
  private:
   void UpdateBackground();
+  void UpdateInkDrop();
 
   // Icon for the label button.
   const raw_ref<const gfx::VectorIcon> icon_;
+
+  bool paint_transparent_for_custom_image_theme_;
+
+  // Tab strip that contains this button.
+  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;
