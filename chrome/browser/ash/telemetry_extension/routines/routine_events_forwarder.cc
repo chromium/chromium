@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ash/telemetry_extension/routines/routine_converters.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +31,12 @@ CrosHealthdRoutineEventsForwarder::~CrosHealthdRoutineEventsForwarder() =
 mojo::Remote<crosapi::TelemetryDiagnosticRoutineObserver>&
 CrosHealthdRoutineEventsForwarder::GetRemote() {
   return remote_;
+}
+
+void CrosHealthdRoutineEventsForwarder::OnRoutineStateChange(
+    healthd::RoutineStatePtr state) {
+  remote_->OnRoutineStateChange(
+      converters::ConvertRoutinePtr(std::move(state)));
 }
 
 }  // namespace ash

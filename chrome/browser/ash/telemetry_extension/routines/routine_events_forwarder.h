@@ -38,6 +38,10 @@ class CrosHealthdRoutineEventsForwarder
       const CrosHealthdRoutineEventsForwarder&) = delete;
   ~CrosHealthdRoutineEventsForwarder() override;
 
+  // `RoutineObserver`:
+  void OnRoutineStateChange(
+      cros_healthd::mojom::RoutineStatePtr state) override;
+
   mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineObserver>& GetRemote();
 
  private:

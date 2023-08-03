@@ -80,6 +80,96 @@ interface RoutineControl {};
 
 // Implemented by clients who desire routine update notifications.
 //
+// NextMinVersion: 2, NextIndex: 1
+[Stable]
+interface RoutineObserver {
+  // Called when the routine state has changed. This is also called as soon
+  // as a routine is initialized (right after calling `CreateRoutine`).
+  // Note that if the routine fails to initialize, the RoutineControl may
+  // disconnect before the first invocation of this observer method.
+  [MinVersion=1] OnRoutineStateChange@0(RoutineState state);
+};
+
+// Used to pass information regarding routine state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct RoutineState {
+  // The percentage of the completion of the routine. 0 to 100.
+  uint8 percentage@0;
+
+  RoutineStateUnion state_union@1;
+};
+
+// Possible routine states.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+union RoutineStateUnion {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Routine has been initialized but not yet started.
+  RoutineStateInitialized initialized@1;
+  // Routine is running.
+  RoutineStateRunning running@2;
+  // Routine is waiting for something.
+  RoutineStateWaiting waiting@3;
+  // Routine has finished.
+  RoutineStateFinished finished@4;
+};
+
+// Routine has been initialized but not yet started.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct RoutineStateInitialized {};
+
+// Routine is currently running.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct RoutineStateRunning {};
+
+// Routine is currently waiting.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct RoutineStateWaiting {
+  // The reason why the routine waits.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum Reason {
+    [Default] kUnmappedEnumField = 0,
+    // Waiting for the job to be scheduled for running.
+    kWaitingToBeScheduled = 1,
+    // Waiting for user input.
+    kWaitingUserInput = 2,
+  };
+  // Reason why the routine waits.
+  Reason reason@0;
+  // Additional information, may be used to pass instruction or explanation.
+  string message@1;
+};
+
+// Information about a finished routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct RoutineStateFinished {
+  // Whether the routine has passed or not.
+  bool has_passed@0;
+  // The details of the routine.
+  RoutineDetail? detail@1;
+};
+
+// Details about a finished routine.
+//
 // NextMinVersion: 1, NextIndex: 1
 [Stable]
-interface RoutineObserver {};
+union RoutineDetail {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument@0;
+};

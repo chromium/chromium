@@ -40,4 +40,105 @@ TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertRoutineArgumentPtr) {
   EXPECT_TRUE(result->get_unrecognizedArgument());
 }
 
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineStateInitializedPtr) {
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateInitialized::New()),
+            crosapi::TelemetryDiagnosticRoutineStateInitialized::New());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineStateRunningPtr) {
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateRunning::New()),
+            crosapi::TelemetryDiagnosticRoutineStateRunning::New());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineStateWaitingPtr) {
+  constexpr char kMessage[] = "TEST";
+
+  auto input = healthd::RoutineStateWaiting::New(
+      healthd::RoutineStateWaiting::Reason::kWaitingToBeScheduled, kMessage);
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->reason, crosapi::TelemetryDiagnosticRoutineStateWaiting::
+                                Reason::kWaitingToBeScheduled);
+  EXPECT_EQ(result->message, kMessage);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineDetailPtr) {
+  EXPECT_EQ(
+      ConvertRoutinePtr(healthd::RoutineDetail::NewUnrecognizedArgument(true)),
+      crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(true));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineStateFinishedPtr) {
+  auto routine_detail = healthd::RoutineDetail::NewUnrecognizedArgument(true);
+
+  auto input = healthd::RoutineStateFinished::New();
+  input->has_passed = false;
+  input->detail = std::move(routine_detail);
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_FALSE(result->has_passed);
+
+  auto detail_result = std::move(result->detail);
+
+  ASSERT_TRUE(detail_result);
+  ASSERT_TRUE(detail_result->is_unrecognizedArgument());
+
+  EXPECT_TRUE(detail_result->get_unrecognizedArgument());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineStateUnionPtr) {
+  EXPECT_EQ(
+      ConvertRoutinePtr(
+          healthd::RoutineStateUnion::NewUnrecognizedArgument(true)),
+      crosapi::TelemetryDiagnosticRoutineStateUnion::NewUnrecognizedArgument(
+          true));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateUnion::NewInitialized(
+                healthd::RoutineStateInitialized::New())),
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewInitialized(
+                crosapi::TelemetryDiagnosticRoutineStateInitialized::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateUnion::NewRunning(
+                healthd::RoutineStateRunning::New())),
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewRunning(
+                crosapi::TelemetryDiagnosticRoutineStateRunning::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateUnion::NewWaiting(
+                healthd::RoutineStateWaiting::New())),
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewWaiting(
+                crosapi::TelemetryDiagnosticRoutineStateWaiting::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateUnion::NewFinished(
+                healthd::RoutineStateFinished::New())),
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+                crosapi::TelemetryDiagnosticRoutineStateFinished::New()));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineStatePtr) {
+  constexpr uint8_t kPercentage = 50;
+
+  auto input = healthd::RoutineState::New();
+  input->percentage = kPercentage;
+  input->state_union = healthd::RoutineStateUnion::NewRunning(
+      healthd::RoutineStateRunning::New());
+
+  auto result = ConvertRoutinePtr(std::move(input));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->percentage, kPercentage);
+  EXPECT_EQ(result->state_union,
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewRunning(
+                crosapi::TelemetryDiagnosticRoutineStateRunning::New()));
+}
+
 }  // namespace ash::converters

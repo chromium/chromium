@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
@@ -32,6 +33,16 @@ class TestRoutineObserver : crosapi::TelemetryDiagnosticRoutineObserver {
   TestRoutineObserver& operator=(const TestRoutineObserver&) = delete;
   ~TestRoutineObserver() override = default;
 
+  // `TelemetryDiagnosticRoutineObserver`:
+  void OnRoutineStateChange(
+      crosapi::TelemetryDiagnosticRoutineStatePtr state) override {
+    future_.AddValue(std::move(state));
+  }
+
+  crosapi::TelemetryDiagnosticRoutineStatePtr WaitForNextValue() {
+    return future_.Take();
+  }
+
   mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineObserver>
   GetPendingRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -44,6 +55,8 @@ class TestRoutineObserver : crosapi::TelemetryDiagnosticRoutineObserver {
   void Reset() { receiver_.reset(); }
 
  private:
+  base::test::RepeatingTestFuture<crosapi::TelemetryDiagnosticRoutineStatePtr>
+      future_;
   mojo::Receiver<crosapi::TelemetryDiagnosticRoutineObserver> receiver_{this};
 };
 
@@ -99,6 +112,42 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
   EXPECT_TRUE(
       cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument));
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, RoutineObserver) {
+  constexpr uint8_t kPercentage = 50;
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+  TestRoutineObserver observer;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    observer.GetPendingRemote());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+  auto* observer_remote = fake_controller->GetObserver();
+  ASSERT_TRUE(observer_remote);
+
+  healthd::RoutineStatePtr routine_state = healthd::RoutineState::New();
+  routine_state->state_union =
+      healthd::RoutineStateUnion::NewUnrecognizedArgument(true);
+  routine_state->percentage = kPercentage;
+
+  observer_remote->get()->OnRoutineStateChange(std::move(routine_state));
+
+  FlushForTesting();
+
+  EXPECT_EQ(observer.WaitForNextValue(),
+            crosapi::TelemetryDiagnosticRoutineState::New(
+                kPercentage, crosapi::TelemetryDiagnosticRoutineStateUnion::
+                                 NewUnrecognizedArgument(true)));
 }
 
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, OnCrosapiDisconnectControl) {

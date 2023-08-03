@@ -16,12 +16,38 @@ namespace ash::converters {
 // TelemetryDiagnosticsRoutineServiceAsh to convert its types to/from
 // cros_healthd routine types.
 
+// Contains conversion functions that skip checking the `mojo::InlinedStructPtr`
+// for null.
 namespace unchecked {
+
+crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr
+UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineStateRunningPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineStateWaitingPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineStateWaitingPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineDetailPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineStateFinishedPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineStateFinishedPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineStateUnionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineStateUnionPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineStatePtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineStatePtr input);
 
 cros_healthd::mojom::RoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr input);
 
 }  // namespace unchecked
+
+crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
+    cros_healthd::mojom::RoutineStateWaiting::Reason input);
 
 template <class InputT>
 auto ConvertRoutinePtr(InputT input) {
