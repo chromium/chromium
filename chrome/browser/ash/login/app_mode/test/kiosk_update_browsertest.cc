@@ -97,17 +97,17 @@ const char kTestSecondaryExt[] = "meaknlbicgahoejcchpnkenkmbekcddf";
 
 // Fake usb stick mount path.
 const char kFakeUsbMountPathUpdatePass[] =
-    "chromeos/app_mode/external_update/update_pass";
+    "chromeos/app_mode/apps_and_extensions/external_update/update_pass";
 const char kFakeUsbMountPathNoManifest[] =
-    "chromeos/app_mode/external_update/no_manifest";
+    "chromeos/app_mode/apps_and_extensions/external_update/no_manifest";
 const char kFakeUsbMountPathBadManifest[] =
-    "chromeos/app_mode/external_update/bad_manifest";
+    "chromeos/app_mode/apps_and_extensions/external_update/bad_manifest";
 const char kFakeUsbMountPathLowerAppVersion[] =
-    "chromeos/app_mode/external_update/lower_app_version";
+    "chromeos/app_mode/apps_and_extensions/external_update/lower_app_version";
 const char kFakeUsbMountPathLowerCrxVersion[] =
-    "chromeos/app_mode/external_update/lower_crx_version";
+    "chromeos/app_mode/apps_and_extensions/external_update/lower_crx_version";
 const char kFakeUsbMountPathBadCrx[] =
-    "chromeos/app_mode/external_update/bad_crx";
+    "chromeos/app_mode/apps_and_extensions/external_update/bad_crx";
 
 // Placeholder for an icon, as the icon is required by the kiosk app manager.
 const char kFakeIconURL[] = "/chromeos/app_mode/red16x16.png";
