@@ -182,6 +182,10 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   return self.mediator;
 }
 
+- (id<GridToolbarsConfigurationProvider>)toolbarsConfigurationProvider {
+  return self.mediator;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

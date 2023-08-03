@@ -14,6 +14,7 @@
 
 class Browser;
 @protocol GridMediatorDelegate;
+@protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
 class WebStateList;
@@ -32,7 +33,9 @@ class WebStateList;
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 // The list from the browser.
 @property(nonatomic, assign) WebStateList* webStateList;
-
+// Contained grid which provides tab grid toolbar configuration.
+@property(nonatomic, weak) id<GridToolbarsConfigurationProvider>
+    containedGridToolbarsProvider;
 // Initializer with `consumer` as the receiver of model layer updates.
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;

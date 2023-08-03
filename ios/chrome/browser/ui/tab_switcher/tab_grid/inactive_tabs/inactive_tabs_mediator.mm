@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/web_state.h"
@@ -480,6 +481,17 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   for (const SessionID sessionID : identifiers) {
     _tabRestoreService->RemoveTabEntryById(sessionID);
   }
+}
+
+#pragma mark - GridToolbarsConfigurationProvider
+
+- (TabGridToolbarsConfiguration*)toolbarsConfiguration {
+  TabGridToolbarsConfiguration* toolbarsConfiguration =
+      [[TabGridToolbarsConfiguration alloc] init];
+  toolbarsConfiguration.closeAllButton = !_webStateList->empty();
+  toolbarsConfiguration.searchButton = YES;
+  toolbarsConfiguration.undoButton = _closedSessionWindow;
+  return toolbarsConfiguration;
 }
 
 @end

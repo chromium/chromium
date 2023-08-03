@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
@@ -121,15 +122,22 @@
 // Creates and send a tab grid toolbar configuration with button that should be
 // displayed when regular grid is selected.
 - (void)configureToolbarsButtons {
+  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
+      [self.containedGridToolbarsProvider toolbarsConfiguration];
+
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-  // TODO(crbug.com/1457146): This should take into account inactive tabs too.
-  toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
+  BOOL onlyPinnedTabs = self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
+                        self.webStateList->count();
+  BOOL tabsInRegularGrid = !self.webStateList->empty() && !onlyPinnedTabs;
+  toolbarsConfiguration.closeAllButton =
+      tabsInRegularGrid || containedGridToolbarsConfiguration.closeAllButton;
   toolbarsConfiguration.doneButton = YES;
   toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
-  // TODO(crbug.com/1457146): This should take into account inactive tabs too.
-  toolbarsConfiguration.undoButton = _closedSessionWindow;
+  toolbarsConfiguration.selectTabsButton = tabsInRegularGrid;
+  toolbarsConfiguration.undoButton =
+      _closedSessionWindow || containedGridToolbarsConfiguration.undoButton;
+
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 

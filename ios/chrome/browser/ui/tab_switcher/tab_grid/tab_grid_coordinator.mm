@@ -813,6 +813,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
     baseViewController.inactiveTabsDelegate =
         self.inactiveTabsCoordinator.gridCommandsHandler;
+    self.regularTabsMediator.containedGridToolbarsProvider =
+        self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
   }
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
