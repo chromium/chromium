@@ -119,4 +119,8 @@ GtkUiPlatformX11::CreateInputMethodContext(
   return std::make_unique<InputMethodContextImplGtk>(delegate);
 }
 
+bool GtkUiPlatformX11::IncludeFontScaleInDeviceScale() const {
+  return true;
+}
+
 }  // namespace gtk

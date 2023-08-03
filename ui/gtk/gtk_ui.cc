@@ -169,6 +169,23 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   }
 }
 
+double FontScale() {
+  double resolution = 0;
+  if (GtkCheckVersion(4)) {
+    auto* settings = gtk_settings_get_default();
+    int dpi = 0;
+    g_object_get(settings, "gtk-xft-dpi", &dpi, nullptr);
+    resolution = dpi / 1024.0;
+  } else {
+    GdkScreen* screen = gdk_screen_get_default();
+    resolution = gdk_screen_get_resolution(screen);
+  }
+  const double font_scale = resolution > 0 ? resolution / kDefaultDPI : 1.0;
+  // Round to the nearest 1/64th so that UI can losslessly multiply and divide
+  // the scale factor.
+  return std::round(font_scale * 64) / 64;
+}
+
 }  // namespace
 
 GtkUi::GtkUi() : window_frame_actions_() {
@@ -838,21 +855,25 @@ void GtkUi::UpdateDefaultFont() {
       base::SplitString(pango_font_description_get_family(desc), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
+  constexpr double kPangoScale = PANGO_SCALE;
+  double size_pixels;
   if (pango_font_description_get_size_is_absolute(desc)) {
     // If the size is absolute, it's specified in Pango units. There are
     // PANGO_SCALE Pango units in a device unit (pixel).
-    const int size_pixels = pango_font_description_get_size(desc) / PANGO_SCALE;
-    default_font_size_pixels_ = size_pixels;
-    query.pixel_size = size_pixels;
+    size_pixels = pango_font_description_get_size(desc) / kPangoScale;
+    query.pixel_size = std::round(size_pixels);
   } else {
     // Non-absolute sizes are in points (again scaled by PANGO_SIZE).
     // Round the value when converting to pixels to match GTK's logic.
-    const double size_points = pango_font_description_get_size(desc) /
-                               static_cast<double>(PANGO_SCALE);
-    default_font_size_pixels_ =
-        static_cast<int>(kDefaultDPI / 72.0 * size_points + 0.5);
-    query.point_size = static_cast<int>(size_points);
+    const double size_points =
+        pango_font_description_get_size(desc) / kPangoScale;
+    size_pixels = kDefaultDPI / 72.0 * size_points;
+    query.point_size = std::round(size_points);
   }
+  if (!platform_->IncludeFontScaleInDeviceScale()) {
+    size_pixels *= FontScale();
+  }
+  default_font_size_pixels_ = std::round(size_pixels);
 
   query.style = gfx::Font::NORMAL;
   query.weight =
@@ -880,20 +901,8 @@ ui::DisplayConfig GtkUi::GetDisplayConfig() const {
     return config;
   }
 
-  double resolution = 0;
-  if (GtkCheckVersion(4)) {
-    auto* settings = gtk_settings_get_default();
-    int dpi = 0;
-    g_object_get(settings, "gtk-xft-dpi", &dpi, nullptr);
-    resolution = dpi / 1024.0;
-  } else {
-    GdkScreen* screen = gdk_screen_get_default();
-    resolution = gdk_screen_get_resolution(screen);
-  }
-  double font_scale = resolution > 0 ? resolution / kDefaultDPI : 1.0;
-  // Round to the nearest 1/64th so that UI can losslessly multiply and divide
-  // the scale factor.
-  font_scale = std::round(font_scale * 64) / 64;
+  const double font_scale =
+      platform_->IncludeFontScaleInDeviceScale() ? FontScale() : 1.0;
 
   GdkDisplay* display = gdk_display_get_default();
   GdkMonitor* primary = gdk_display_get_primary_monitor(display);

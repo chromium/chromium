@@ -60,6 +60,10 @@ class GtkUiPlatform {
   // Creates a new IME context or may return nullptr.
   virtual std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const = 0;
+
+  // If true, the device scale factor should be multiplied by the font scale. If
+  // false, the font size should be multiplied by the font scale.
+  virtual bool IncludeFontScaleInDeviceScale() const = 0;
 };
 
 }  // namespace gtk
