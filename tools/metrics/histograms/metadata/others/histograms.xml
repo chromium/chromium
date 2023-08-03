@@ -13199,6 +13199,16 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="UI.ScreenWin.UpdateDisplaysTime" units="ms"
+    expires_after="2023-12-31">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the time spent in UpdateAllDisplaysAndNotify. Only logged on
+    Windows.
+  </summary>
+</histogram>
+
 <histogram name="UncompressAndParseSkiaVectorAsset" units="microseconds"
     expires_after="M85">
   <owner>malaykeshav@chromium.org</owner>
