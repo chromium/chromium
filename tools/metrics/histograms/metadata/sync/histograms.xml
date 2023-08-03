@@ -432,12 +432,16 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    For users who have *not* selected the &quot;Sync Everything&quot; option,
-    this records all the data types they have selected to sync. Samples are
-    taken every time the Sync data types are (re)configured, which typically
-    happens during startup and when the user changes any Sync settings.
+    For Sync-the-feature users who have *not* selected the &quot;Sync
+    Everything&quot; option, this records all the data types they have selected
+    to sync. Samples are taken every time the Sync data types are
+    (re)configured, which typically happens during startup and when the user
+    changes any Sync settings.
 
-    NOTE: this does NOT include OS datatypes. Use Sync.CustomOSSync for those.
+    NOTE: This does NOT include OS datatypes. Use Sync.CustomOSSync for those.
+
+    See also &quot;Sync.SelectedTypesInTransportMode&quot; which is the
+    corresponding histogram for Sync-transport users.
   </summary>
 </histogram>
 
@@ -1249,6 +1253,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SelectedTypesInTransportMode" enum="SyncModelTypes"
+    expires_after="2024-01-14">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    For users in transport mode (i.e. without Sync-the-feature enabled), this
+    records which data types they have selected. Samples are taken every time
+    the Sync data types are (re)configured, which typically happens during
+    startup and when the user changes any Sync settings.
+
+    See also &quot;Sync.SyncEverything2&quot; and &quot;Sync.CustomSync3&quot;
+    which are the corresponding histograms for Sync-the-feature users.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SharingMessage.CommitResult"
     enum="SyncSharingMessageCommitErrorCode" expires_after="2023-12-31">
   <owner>rushans@google.com</owner>
@@ -1420,9 +1440,9 @@ chromium-metrics-reviews@google.com.
   <component>Services&gt;Sync</component>
   <summary>
     Boolean histogram for whether the &quot;Sync Everything&quot; option was
-    selected by the user. Samples are taken every time the Sync data types are
-    (re)configured, which typically happens during startup and when the user
-    changes any Sync settings.
+    selected by a Sync-the-feature user. Samples are taken every time the Sync
+    data types are (re)configured, which typically happens during startup and
+    when the user changes any Sync settings.
   </summary>
 </histogram>
 

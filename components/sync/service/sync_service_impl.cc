@@ -1526,10 +1526,17 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
                                     ? ConfigureDataTypeManagerOption::kTransport
                                     : ConfigureDataTypeManagerOption::kFeature);
 
-  // Only if it's the full Sync feature, also record the user's choice of data
-  // types.
-  // TODO(crbug.com/1431212): Record the selected types in transport mode too.
-  if (!use_transport_only_mode) {
+  // Record the user's choice of data types - in different ways depending on
+  // whether Sync-the-feature is enabled (which uses "SyncEverything") or not
+  // (which doesn't).
+  if (use_transport_only_mode) {
+    for (UserSelectableType type : user_settings_->GetSelectedTypes()) {
+      ModelTypeForHistograms canonical_model_type =
+          ModelTypeHistogramValue(UserSelectableTypeToCanonicalModelType(type));
+      base::UmaHistogramEnumeration("Sync.SelectedTypesInTransportMode",
+                                    canonical_model_type);
+    }
+  } else {
     bool sync_everything = sync_prefs_.HasKeepEverythingSynced();
     base::UmaHistogramBoolean("Sync.SyncEverything2", sync_everything);
 
