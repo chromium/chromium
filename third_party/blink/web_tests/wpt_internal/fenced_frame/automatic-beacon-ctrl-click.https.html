@@ -13,7 +13,7 @@
 <script>
 promise_test(async(t) => {
   const fencedframe = await attachFencedFrameContext(
-    {generator_api: 'fledge'});
+    {generator_api: 'fledge', automatic_beacon: true});
   const new_url = new URL("resources/dummy.html", location.href);
   const beacon_data = "This is the beacon data!";
 
