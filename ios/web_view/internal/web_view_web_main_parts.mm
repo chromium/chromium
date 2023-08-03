@@ -69,6 +69,7 @@ void WebViewWebMainParts::PreCreateThreads() {
   std::string enable_features = base::JoinString(
       {
           autofill::features::kAutofillUpstream.name,
+          syncer::kSyncPasswordCleanUpAccidentalBatchDeletions.name,
       },
       ",");
   std::string disabled_features = base::JoinString(
