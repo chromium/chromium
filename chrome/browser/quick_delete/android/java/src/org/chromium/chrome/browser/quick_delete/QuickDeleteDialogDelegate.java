@@ -223,11 +223,4 @@ class QuickDeleteDialogDelegate {
         mModalDialogManager.showDialog(
                 mModalDialogPropertyModel, ModalDialogManager.ModalDialogType.APP);
     }
-
-    /**
-     * @return The current time period option set in the dialog.
-     */
-    TimePeriodSpinnerOption getCurrentTimePeriodOption() {
-        return mCurrentTimePeriodOption;
-    }
 }

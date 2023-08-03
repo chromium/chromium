@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -36,7 +37,6 @@ public class QuickDeleteController {
 
     private final @NonNull Context mContext;
     private final @NonNull QuickDeleteDelegate mDelegate;
-    private final @NonNull QuickDeleteDialogDelegate mDialogDelegate;
     private final @NonNull QuickDeleteTabsFilter mDeleteTabsFilter;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
@@ -81,10 +81,10 @@ public class QuickDeleteController {
         mQuickDeleteMediator = new QuickDeleteMediator(
                 mPropertyModel, profile, mQuickDeleteBridge, mDeleteTabsFilter);
 
-        mDialogDelegate = new QuickDeleteDialogDelegate(context, quickDeleteView,
-                modalDialogManager, this::onDialogDismissed, tabModelSelector,
+        QuickDeleteDialogDelegate dialogDelegate = new QuickDeleteDialogDelegate(context,
+                quickDeleteView, modalDialogManager, this::onDialogDismissed, tabModelSelector,
                 mDelegate.getSettingsLauncher(), mQuickDeleteMediator);
-        mDialogDelegate.showDialog();
+        dialogDelegate.showDialog();
     }
 
     void destroy() {
@@ -107,9 +107,9 @@ public class QuickDeleteController {
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
                 @TimePeriod
-                int timePeriod = mDialogDelegate.getCurrentTimePeriodOption().getTimePeriod();
+                int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
                 mDeleteTabsFilter.closeTabsFilteredForQuickDelete(timePeriod);
-                mDelegate.performQuickDelete(this::onQuickDeleteFinished, timePeriod);
+                mDelegate.performQuickDelete(() -> onQuickDeleteFinished(timePeriod), timePeriod);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
@@ -123,10 +123,10 @@ public class QuickDeleteController {
         destroy();
     }
 
-    private void onQuickDeleteFinished() {
+    private void onQuickDeleteFinished(@TimePeriod int timePeriod) {
         navigateToTabSwitcher();
         triggerHapticFeedback();
-        showSnackbar();
+        showSnackbar(timePeriod);
     }
 
     /**
@@ -151,11 +151,16 @@ public class QuickDeleteController {
     /**
      * A method to show the quick delete snack-bar.
      */
-    private void showSnackbar() {
-        Snackbar snackbar = Snackbar.make(
-                mContext.getString(R.string.quick_delete_snackbar_message),
-                /*controller= */ null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
-
+    private void showSnackbar(@TimePeriod int timePeriod) {
+        String snackbarMessage;
+        if (timePeriod == TimePeriod.ALL_TIME) {
+            snackbarMessage = mContext.getString(R.string.quick_delete_snackbar_all_time_message);
+        } else {
+            snackbarMessage = mContext.getString(R.string.quick_delete_snackbar_message,
+                    TimePeriodUtils.getTimePeriodString(mContext, timePeriod));
+        }
+        Snackbar snackbar = Snackbar.make(snackbarMessage, /*controller= */ null,
+                Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
         mSnackbarManager.showSnackbar(snackbar);
     }
 }

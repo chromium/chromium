@@ -5785,6 +5785,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Calculating...
       </message>
       <message name="IDS_QUICK_DELETE_SNACKBAR_MESSAGE" desc="Text inside the snackbar which is shown once the user confirms deletion via the 'Clear browsing data' option present inside the three dots menu.">
+        <ph name="TIME_PERIOD">%1$s<ex>Last 15 minutes</ex></ph> deleted
+      </message>
+      <message name="IDS_QUICK_DELETE_SNACKBAR_ALL_TIME_MESSAGE" desc="Text inside the snackbar which is shown once the user confirms deletion via the 'Clear browsing data' option present inside the three dots menu.">
         Deleted
       </message>
       <message name="IDS_QUICK_DELETE_TIME_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes.">

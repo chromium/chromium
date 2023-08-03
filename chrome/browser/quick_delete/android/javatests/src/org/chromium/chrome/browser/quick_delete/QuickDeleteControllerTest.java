@@ -177,10 +177,37 @@ public class QuickDeleteControllerTest {
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
         onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
-        onView(withText(R.string.quick_delete_snackbar_message)).check(matches(isDisplayed()));
+        onView(withText(mActivityTestRule.getActivity().getString(
+                       R.string.quick_delete_snackbar_message,
+                       TimePeriodUtils.getTimePeriodString(
+                               mActivityTestRule.getActivity(), TimePeriod.LAST_15_MINUTES))))
+                .check(matches(isDisplayed()));
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.snackbar),
                 "quick_delete_snackbar");
+    }
+
+    @Test
+    @MediumTest
+    public void testSnackbarShown_WhenClickingDelete_AllTimeSelected() {
+        openQuickDeleteDialog();
+        onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
+        View dialogView = mActivityTestRule.getActivity()
+                                  .getModalDialogManager()
+                                  .getCurrentDialogForTest()
+                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
+            spinnerView.setSelection(5);
+            var option = (TimePeriodUtils.TimePeriodSpinnerOption) spinnerView.getSelectedItem();
+            assertEquals(TimePeriod.ALL_TIME, option.getTimePeriod());
+        });
+
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
+        onView(withText(R.string.quick_delete_snackbar_all_time_message))
+                .check(matches(isDisplayed()));
     }
 
     @Test
