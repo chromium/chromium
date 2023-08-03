@@ -524,7 +524,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,
-      GrantType type)
+      GrantType type,
+      UserAction user_action)
       : context_(std::move(context)),
         origin_(origin),
         handle_type_(handle_type),
@@ -1037,8 +1038,8 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
 
   if (!existing_grant) {
     new_grant = base::MakeRefCounted<PermissionGrantImpl>(
-        weak_factory_.GetWeakPtr(), origin, path, handle_type,
-        GrantType::kRead);
+        weak_factory_.GetWeakPtr(), origin, path, handle_type, GrantType::kRead,
+        user_action);
     existing_grant = new_grant.get();
   }
 
@@ -1129,7 +1130,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
   if (!existing_grant) {
     new_grant = base::MakeRefCounted<PermissionGrantImpl>(
         weak_factory_.GetWeakPtr(), origin, path, handle_type,
-        GrantType::kWrite);
+        GrantType::kWrite, user_action);
     existing_grant = new_grant.get();
   }
 
