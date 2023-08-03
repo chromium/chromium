@@ -486,6 +486,7 @@
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_DISMISS)
                 action:^() {
+                  [weakSelf.alertCoordinator stop];
                   weakSelf.alertCoordinator = nil;
                 }
                  style:UIAlertActionStyleCancel];
