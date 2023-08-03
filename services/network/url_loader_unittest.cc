@@ -87,7 +87,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/attribution/attribution_test_utils.h"
-#include "services/network/cache_transparency_settings.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -657,7 +656,7 @@ struct URLLoaderOptions {
         std::move(trust_token_observer), std::move(url_loader_network_observer),
         std::move(devtools_observer), std::move(accept_ch_frame_observer),
         third_party_cookies_enabled, cookie_setting_overrides,
-        cache_transparency_settings, std::move(attribution_request_helper),
+        std::move(attribution_request_helper),
         std::move(shared_storage_request_helper));
   }
 
@@ -684,7 +683,6 @@ struct URLLoaderOptions {
       mojo::NullRemote();
   bool third_party_cookies_enabled = true;
   net::CookieSettingOverrides cookie_setting_overrides;
-  raw_ptr<CacheTransparencySettings> cache_transparency_settings = nullptr;
 
  private:
   bool used = false;
@@ -7374,182 +7372,6 @@ TEST_F(URLLoaderTest, CookieSettingOverridesCopiedToURLRequest) {
 
   EXPECT_THAT(Load(url), IsOk());
   EXPECT_TRUE(was_intercepted);
-}
-
-using ExtraHeaders = std::vector<std::pair<std::string, std::string>>;
-
-class URLLoaderCacheTransparencyTest : public URLLoaderTest {
- public:
-  void SetUp() override {
-    // Needed to start test_server().
-    URLLoaderTest::SetUp();
-
-    pervasive_payload_url_ = test_server()->GetURL(kPervasivePayload);
-    const GURL redirect_url = test_server()->GetURL(kRedirect301);
-    base::FieldTrialParams params;
-    params["pervasive-payloads"] = base::StrCat(
-        {"1,", pervasive_payload_url_.spec(),
-         ",3790EEB37E2A761CFD3B274CCF45CE5AB86A34DF11E28FB7ED4D82AFBBC13BEB,",
-         redirect_url.spec(),
-         // This is actually the checksum for /cacheable.js, the target of the
-         // redirect, which shouldn't be considered a candidate for cache
-         // transparency.
-         ",A791EB1175734A7D8AFC7B78ABA52C537D656D6C4885BAC4B9EE7D377EA090F0"});
-    pervasive_payloads_feature_.InitAndEnableFeatureWithParameters(
-        features::kPervasivePayloadsList, params);
-    cache_transparency_feature_.InitAndEnableFeature(
-        features::kCacheTransparency);
-    split_cache_feature_.InitAndEnableFeature(
-        net::features::kSplitCacheByNetworkIsolationKey);
-  }
-
-  void OnServerReceivedRequest(
-      const net::test_server::HttpRequest& request) override {
-    ++network_request_count_;
-  }
-
-  // The main difference from Load() is that this can be called multiple times.
-  std::unique_ptr<TestURLLoaderClient> SendRequest(
-      base::StringPiece path = kPervasivePayload) {
-    auto client = std::make_unique<TestURLLoaderClient>();
-    ResourceRequest request =
-        CreateResourceRequest(method_.c_str(), test_server()->GetURL(path));
-    request.load_flags = load_flags_;
-    for (const auto& [key, value] : headers_) {
-      request.headers.SetHeader(key, value);
-    }
-
-    base::RunLoop delete_run_loop;
-    mojo::Remote<mojom::URLLoader> loader;
-    std::unique_ptr<URLLoader> url_loader;
-    context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
-    context().mutable_factory_params().is_corb_enabled = false;
-    CacheTransparencySettings cache_transparency_settings;
-    URLLoaderOptions url_loader_options;
-    url_loader_options.third_party_cookies_enabled =
-        third_party_cookies_enabled_;
-    url_loader_options.cache_transparency_settings =
-        &cache_transparency_settings;
-    url_loader = url_loader_options.MakeURLLoader(
-        context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-        loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote());
-
-    if (expect_redirect_) {
-      client->RunUntilRedirectReceived();
-      loader->FollowRedirect({}, {}, {}, absl::nullopt);
-    }
-
-    client->RunUntilComplete();
-    delete_run_loop.Run();
-
-    return client;
-  }
-
-  void SetOrigin(base::StringPiece url) {
-    context().mutable_factory_params().isolation_info =
-        net::IsolationInfo::CreateForInternalRequest(
-            url::Origin::Create(GURL(url)));
-  }
-
-  void SendTwoRequestsWithDifferentOrigins(
-      base::StringPiece path = kPervasivePayload) {
-    SetOrigin("https://a.com/");
-    SendRequest(path);
-    SetOrigin("https://b.com/");
-    SendRequest(path);
-  }
-
-  // Causes an expectation failure if the specified reason was not logged.
-  void ExpectNotUsedReason(CacheTransparencyCacheNotUsedReason reason) const {
-    // The count is 2 because each test sends two requests.
-    histogram_tester_.ExpectUniqueSample(kNotUsedHistogram, reason, 2);
-  }
-
-  // Causes an expectation failure if any reason was logged.
-  void ExpectNoSamples() const {
-    histogram_tester_.ExpectTotalCount(kNotUsedHistogram, 0);
-  }
-
-  int network_request_count() { return network_request_count_; }
-
-  void set_third_party_cookies_enabled(bool value) {
-    third_party_cookies_enabled_ = value;
-  }
-
-  void set_method(std::string method) { method_ = std::move(method); }
-
-  void set_load_flags(int flags) { load_flags_ = flags; }
-
-  void set_headers(ExtraHeaders headers) { headers_ = std::move(headers); }
-
-  void set_expect_redirect(bool value) { expect_redirect_ = value; }
-
-  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- protected:
-  static constexpr char kRedirect301[] = "/redirect301-to-cacheable";
-
- private:
-  static constexpr char kPervasivePayload[] = "/pervasive.js";
-  static constexpr char kNotUsedHistogram[] =
-      "Network.CacheTransparency.CacheNotUsed";
-
-  base::test::ScopedFeatureList pervasive_payloads_feature_;
-  base::test::ScopedFeatureList cache_transparency_feature_;
-  base::test::ScopedFeatureList split_cache_feature_;
-  GURL pervasive_payload_url_;
-  int network_request_count_ = 0;
-  bool third_party_cookies_enabled_ = true;
-  bool expect_redirect_ = false;
-  std::string method_ = "GET";
-  int load_flags_ = net::LOAD_NORMAL;
-  ExtraHeaders headers_;
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_F(URLLoaderCacheTransparencyTest, DISABLED_SuccessfulPervasivePayload) {
-  SendTwoRequestsWithDifferentOrigins();
-  EXPECT_EQ(1, network_request_count());
-  ExpectNotUsedReason(
-      CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache);
-}
-
-TEST_F(URLLoaderCacheTransparencyTest, ThirdPartyCookiesDisabled) {
-  set_third_party_cookies_enabled(false);
-  SendTwoRequestsWithDifferentOrigins();
-  EXPECT_EQ(2, network_request_count());
-  ExpectNoSamples();
-}
-
-TEST_F(URLLoaderCacheTransparencyTest, NotAPervasivePayload) {
-  SendTwoRequestsWithDifferentOrigins("/cacheable.js");
-  EXPECT_EQ(2, network_request_count());
-  ExpectNoSamples();
-}
-
-TEST_F(URLLoaderCacheTransparencyTest, NotAGETRequest) {
-  set_method("POST");
-  SendTwoRequestsWithDifferentOrigins();
-  EXPECT_EQ(2, network_request_count());
-  ExpectNotUsedReason(
-      CacheTransparencyCacheNotUsedReason::kIncompatibleRequestType);
-}
-
-TEST_F(URLLoaderCacheTransparencyTest, IncompatibleLoadFlags) {
-  set_load_flags(net::LOAD_SKIP_VARY_CHECK);
-  SendTwoRequestsWithDifferentOrigins();
-  EXPECT_EQ(2, network_request_count());
-  ExpectNotUsedReason(
-      CacheTransparencyCacheNotUsedReason::kIncompatibleRequestLoadFlags);
-}
-
-TEST_F(URLLoaderCacheTransparencyTest, IncompatibleHeaders) {
-  ExtraHeaders headers = {{"Range", "bytes=0-5"}};
-  set_headers(headers);
-  SendTwoRequestsWithDifferentOrigins();
-  EXPECT_EQ(2, network_request_count());
-  ExpectNotUsedReason(
-      CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders);
 }
 
 class SharedStorageRequestHelperURLLoaderTest : public URLLoaderTest {

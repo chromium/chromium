@@ -248,12 +248,10 @@ class TestURLLoaderClient : public URLLoaderClient {
     NOTREACHED();
   }
 
-  void DidFinishLoading(
-      base::TimeTicks finishTime,
-      int64_t totalEncodedDataLength,
-      uint64_t totalEncodedBodyLength,
-      int64_t totalDecodedBodyLength,
-      absl::optional<bool> pervasive_payload_requested) override {
+  void DidFinishLoading(base::TimeTicks finishTime,
+                        int64_t totalEncodedDataLength,
+                        uint64_t totalEncodedBodyLength,
+                        int64_t totalDecodedBodyLength) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);

@@ -633,11 +633,9 @@ void ResourceLoader::DidFinishLoadingBody() {
 
   const ResourceResponse& response = resource_->GetResponse();
   if (deferred_finish_loading_info_) {
-    DidFinishLoading(
-        deferred_finish_loading_info_->response_end_time,
-        response.EncodedDataLength(), response.EncodedBodyLength(),
-        response.DecodedBodyLength(),
-        deferred_finish_loading_info_->pervasive_payload_requested);
+    DidFinishLoading(deferred_finish_loading_info_->response_end_time,
+                     response.EncodedDataLength(), response.EncodedBodyLength(),
+                     response.DecodedBodyLength());
   }
 }
 
@@ -1282,15 +1280,13 @@ void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
 
   fetcher_->HandleLoaderFinish(resource_.Get(), base::TimeTicks(),
                                ResourceFetcher::kDidFinishFirstPartInMultipart,
-                               0, false, 0);
+                               0);
 }
 
-void ResourceLoader::DidFinishLoading(
-    base::TimeTicks response_end_time,
-    int64_t encoded_data_length,
-    uint64_t encoded_body_length,
-    int64_t decoded_body_length,
-    absl::optional<bool> pervasive_payload_requested) {
+void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
+                                      int64_t encoded_data_length,
+                                      uint64_t encoded_body_length,
+                                      int64_t decoded_body_length) {
   if (resource_->response_.WasFetchedViaServiceWorker()) {
     encoded_body_length = received_body_length_from_service_worker_;
     decoded_body_length = received_body_length_from_service_worker_;
@@ -1307,8 +1303,8 @@ void ResourceLoader::DidFinishLoading(
       (is_downloading_to_blob_ && !blob_finished_ && blob_response_started_)) {
     // If the body is still being loaded, we defer the completion until all the
     // body is received.
-    deferred_finish_loading_info_ = DeferredFinishLoadingInfo{
-        response_end_time, pervasive_payload_requested};
+    deferred_finish_loading_info_ =
+        DeferredFinishLoadingInfo{response_end_time};
 
     if (data_pipe_completion_notifier_) {
       data_pipe_completion_notifier_->SignalComplete();
@@ -1331,10 +1327,9 @@ void ResourceLoader::DidFinishLoading(
                           TRACE_ID_LOCAL(resource_->InspectorId())),
       "outcome", RequestOutcomeToString(RequestOutcome::kSuccess));
 
-  fetcher_->HandleLoaderFinish(
-      resource_.Get(), response_end_time, ResourceFetcher::kDidFinishLoading,
-      inflight_keepalive_bytes_, pervasive_payload_requested.value_or(false),
-      encoded_data_length);
+  fetcher_->HandleLoaderFinish(resource_.Get(), response_end_time,
+                               ResourceFetcher::kDidFinishLoading,
+                               inflight_keepalive_bytes_);
 }
 
 void ResourceLoader::DidFail(const WebURLError& error,
@@ -1501,7 +1496,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     FinishedCreatingBlob(std::move(downloaded_blob));
   }
   DidFinishLoading(base::TimeTicks::Now(), encoded_data_length,
-                   encoded_body_length, decoded_body_length, false);
+                   encoded_body_length, decoded_body_length);
 }
 
 void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {

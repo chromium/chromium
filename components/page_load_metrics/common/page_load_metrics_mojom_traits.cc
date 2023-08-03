@@ -14,9 +14,6 @@ bool StructTraits<page_load_metrics::mojom::SubresourceLoadMetricsDataView,
   out->number_of_subresources_loaded = data.number_of_subresources_loaded();
   out->number_of_subresource_loads_handled_by_service_worker =
       data.number_of_subresource_loads_handled_by_service_worker();
-  out->pervasive_payload_requested = data.pervasive_payload_requested();
-  out->total_bytes_fetched = data.total_bytes_fetched();
-  out->pervasive_bytes_fetched = data.pervasive_bytes_fetched();
   return data.ReadServiceWorkerSubresourceLoadMetrics(
       &out->service_worker_subresource_load_metrics);
 }

@@ -448,8 +448,7 @@ void URLLoader::Context::OnCompletedRequest(
                        encoded_body_size, status.decoded_body_length);
     } else {
       client_->DidFinishLoading(status.completion_time, total_transfer_size,
-                                encoded_body_size, status.decoded_body_length,
-                                status.pervasive_payload_requested);
+                                encoded_body_size, status.decoded_body_length);
     }
   }
 }

@@ -64,7 +64,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/attribution/attribution_request_helper.h"
-#include "services/network/cache_transparency_settings.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/network_service_memory_cache_writer.h"
@@ -360,41 +359,6 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
   return remote.is_bound() ? remote.get() : fallback;
 }
 
-bool HasFlagsIncompatibleWithSingleKeyedCache(int load_flags) {
-  return load_flags &
-         (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
-          net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
-          net::LOAD_DISABLE_CACHE | net::LOAD_SKIP_VARY_CHECK);
-}
-
-bool HasHeadersIncompatibleWithSingleKeyedCache(
-    const net::HttpRequestHeaders& headers) {
-  // These are lowercase to permit case-insensitive matching.
-  auto incompatible_headers = base::MakeFixedFlatSet<base::StringPiece>({
-      "accept-charset",
-      "accept-encoding",
-      "authorization",
-      "cache-control",
-      "if-match",
-      "if-modified-since",
-      "if-none-match",
-      "if-range",
-      "if-unmodified-since",
-      "pragma",
-      "range",
-  });
-  // HttpRequestHeaders::FindHeader() would iterate through the headers for each
-  // name in the above list. To reduce the cost of this function, iterate
-  // manually instead
-  net::HttpRequestHeaders::Iterator it(headers);
-  while (it.GetNext()) {
-    if (incompatible_headers.contains(base::ToLowerASCII(it.name()))) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Retrieves the Cookie header from either `cors_exempt_headers` or `headers`.
 std::string GetCookiesFromHeaders(
     const net::HttpRequestHeaders& headers,
@@ -501,7 +465,6 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     bool third_party_cookies_enabled,
     net::CookieSettingOverrides cookie_setting_overrides,
-    const CacheTransparencySettings* cache_transparency_settings,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper)
     : url_request_context_(context.GetUrlRequestContext()),
@@ -561,7 +524,6 @@ URLLoader::URLLoader(
       devtools_observer_remote_(std::move(devtools_observer)),
       devtools_observer_(PtrOrFallback(devtools_observer_remote_,
                                        context.GetDevToolsObserver())),
-      cache_transparency_settings_(cache_transparency_settings),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
           request.request_body &&
@@ -686,45 +648,6 @@ URLLoader::URLLoader(
   }
 
   int request_load_flags = request.load_flags;
-
-  // TODO(ricea): Remove Cache Transparency implementation.
-  if (cache_transparency_settings_ &&
-      cache_transparency_settings_->pervasive_payloads_enabled()) {
-    auto index = cache_transparency_settings_->GetIndexForURL(request.url);
-    if (index.has_value()) {
-      // Remember that a pervasive payload was found so we can annotate the
-      // URLLoaderCompletionStatus with it later.
-      pervasive_payload_requested_ = true;
-      base::UmaHistogramCustomCounts("Network.CacheTransparency2.URLMatched",
-                                     index.value(), 1, 323, 323);
-      DVLOG(2) << "Found pervasive payload: " << request.url.spec();
-    }
-  }
-
-  if (cache_transparency_settings_ &&
-      cache_transparency_settings_->cache_transparency_enabled() &&
-      third_party_cookies_enabled &&
-      !(options_ & (mojom::kURLLoadOptionBlockThirdPartyCookies |
-                    mojom::kURLLoadOptionBlockAllCookies))) {
-    auto checksum =
-        cache_transparency_settings_->GetChecksumForURL(request.url);
-    if (checksum.has_value()) {
-      CacheTransparencyCacheNotUsedReason cache_not_used_reason =
-          CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache;
-      if (request.method != net::HttpRequestHeaders::kGetMethod) {
-        cache_not_used_reason =
-            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestType;
-      } else if (HasFlagsIncompatibleWithSingleKeyedCache(request_load_flags)) {
-        cache_not_used_reason =
-            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestLoadFlags;
-      } else if (HasHeadersIncompatibleWithSingleKeyedCache(request.headers)) {
-        cache_not_used_reason =
-            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders;
-      }
-      base::UmaHistogramEnumeration("Network.CacheTransparency.CacheNotUsed",
-                                    cache_not_used_reason);
-    }
-  }
 
   url_request_->SetLoadFlags(request_load_flags);
   url_request_->SetPriorityIncremental(request.priority_incremental);
@@ -2194,8 +2117,6 @@ void URLLoader::NotifyCompleted(int error_code) {
         net::IsCertStatusError(url_request_->ssl_info().cert_status)) {
       status.ssl_info = url_request_->ssl_info();
     }
-
-    status.pervasive_payload_requested = pervasive_payload_requested_;
 
     if (memory_cache_writer_)
       memory_cache_writer_->OnCompleted(status);

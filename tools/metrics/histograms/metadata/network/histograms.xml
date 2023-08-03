@@ -667,58 +667,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Network.CacheTransparency.CacheNotUsed"
-    enum="CacheTransparencyCacheNotUsedReason" expires_after="2024-01-21">
-  <owner>nidhijaju@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Records why a URL does not use the single-keyed cache due to a reason in
-    //services/network, when a URL request is made. Reasons include different
-    request type (i.e. not GET), incompatible request load flags, incompatible
-    request headers, etc.
-  </summary>
-</histogram>
-
-<histogram name="Network.CacheTransparency.ListVersion" units="version"
-    expires_after="2023-11-01">
-  <obsolete>
-    Removed as of 11/2022, as the CacheTransparency experiment has ended and
-    this is unmonitored now.
-  </obsolete>
-  <owner>nidhijaju@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Records the version number of the pervasive payloads list, when the list is
-    parsed the first time a URL request is made.
-  </summary>
-</histogram>
-
-<histogram name="Network.CacheTransparency.URLMatched" units="list index"
-    expires_after="2023-09-10">
-  <obsolete>
-    Removed as of 03/2023, as it is replaced by
-    Network.CacheTransparency2.URLMatched which has a higher range.
-  </obsolete>
-  <owner>nidhijaju@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Records whether a requested resource's URL matched with any of the URLs in
-    the pervasive payloads list when a URL request is made. The list index is
-    the index of the URL in the pervasive payloads list.
-  </summary>
-</histogram>
-
-<histogram name="Network.CacheTransparency2.URLMatched" units="list index"
-    expires_after="2024-01-21">
-  <owner>nidhijaju@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Records whether a requested resource's URL matched with any of the URLs in
-    the pervasive payloads list when a URL request is made. The list index is
-    the index of the URL in the pervasive payloads list.
-  </summary>
-</histogram>
-
 <histogram name="Network.CaptivePortalResult" enum="CaptivePortalNetworkState"
     expires_after="2024-01-05">
   <owner>stevenjb@chromium.org</owner>

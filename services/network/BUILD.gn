@@ -15,8 +15,6 @@ component("network_service") {
     "brokered_client_socket_factory.h",
     "brokered_udp_client_socket.cc",
     "brokered_udp_client_socket.h",
-    "cache_transparency_settings.cc",
-    "cache_transparency_settings.h",
     "chunked_data_pipe_upload_data_stream.cc",
     "chunked_data_pipe_upload_data_stream.h",
     "conditional_cache_deletion_helper.cc",

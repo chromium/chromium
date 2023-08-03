@@ -15500,6 +15500,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Network.CacheTransparency2">
+  <obsolete>
+    Deprecated in Aug 2023.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -18023,6 +18026,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.CacheTransparencyEnabled" singular="True">
+  <obsolete>
+    Deprecated in Aug 2023.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>

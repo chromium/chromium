@@ -254,9 +254,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void HandleLoaderFinish(Resource*,
                           base::TimeTicks finish_time,
                           LoaderFinishType,
-                          uint32_t inflight_keepalive_bytes,
-                          bool pervasive_payload_requested,
-                          int64_t bytes_fetched);
+                          uint32_t inflight_keepalive_bytes);
   void HandleLoaderError(Resource*,
                          base::TimeTicks finish_time,
                          const ResourceError&,

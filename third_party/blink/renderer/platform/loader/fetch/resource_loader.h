@@ -154,9 +154,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidFinishLoading(base::TimeTicks response_end_time,
                         int64_t encoded_data_length,
                         uint64_t encoded_body_length,
-                        int64_t decoded_body_length,
-                        absl::optional<bool> pervasive_payload_requested =
-                            absl::nullopt) override;
+                        int64_t decoded_body_length) override;
   void DidFail(const WebURLError&,
                base::TimeTicks response_end_time,
                int64_t encoded_data_length,
@@ -282,7 +280,6 @@ class PLATFORM_EXPORT ResourceLoader final
   // when the blob is finished too.
   struct DeferredFinishLoadingInfo {
     base::TimeTicks response_end_time;
-    absl::optional<bool> pervasive_payload_requested;
   };
   absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;

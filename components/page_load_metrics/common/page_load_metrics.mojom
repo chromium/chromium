@@ -247,16 +247,6 @@ struct SubresourceLoadMetrics {
   // i.e. `respondWith` was called.
   uint32 number_of_subresource_loads_handled_by_service_worker;
 
-  // Whether a pervasive payload (aka subresource) was requested.
-  bool pervasive_payload_requested;
-
-  // Number of bytes fetched by the network for pervasive payloads on a page.
-  int64 pervasive_bytes_fetched;
-
-  // Total number of bytes fetched by the network. This value can be -1
-  // when the value is unknown or there is no data.
-  int64 total_bytes_fetched;
-
   // Metrics for service workers.
   ServiceWorkerSubresourceLoadMetrics? service_worker_subresource_load_metrics;
 };

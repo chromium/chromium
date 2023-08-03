@@ -115,9 +115,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // Whether the initiator of this request should be collapsed.
   bool should_collapse_initiator = false;
 
-  // Whether a pervasive payload is requested.
-  bool pervasive_payload_requested = false;
-
   // Write a representation of this struct into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 };

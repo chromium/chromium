@@ -187,9 +187,6 @@ TEST_F(PageTimingMetricsSenderTest, SendSubresourceLoadMetrics) {
   blink::SubresourceLoadMetrics metrics{
       .number_of_subresources_loaded = 5,
       .number_of_subresource_loads_handled_by_service_worker = 2,
-      .pervasive_payload_requested = true,
-      .pervasive_bytes_fetched = 10,
-      .total_bytes_fetched = 15,
       .service_worker_subresource_load_metrics =
           blink::ServiceWorkerSubresourceLoadMetrics{
               .mock_handled = true,

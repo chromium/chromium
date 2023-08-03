@@ -79,24 +79,10 @@ class OriginAccessList;
 
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
-class CacheTransparencySettings;
 class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
 class URLLoaderFactory;
-
-// When a request matches a pervasive payload url and checksum a value from this
-// enum will be logged to the "Network.CacheTransparency.CacheNotUsed"
-// histogram. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused. This is exposed in the
-// header file for use in tests.
-enum class CacheTransparencyCacheNotUsedReason {
-  kTryingSingleKeyedCache = 0,
-  kIncompatibleRequestType = 1,
-  kIncompatibleRequestLoadFlags = 2,
-  kIncompatibleRequestHeaders = 3,
-  kMaxValue = kIncompatibleRequestHeaders,
-};
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,
@@ -191,7 +177,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           accept_ch_frame_observer,
       bool third_party_cookies_enabled,
       net::CookieSettingOverrides cookie_setting_overrides,
-      const CacheTransparencySettings* cache_transparency_settings,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
       std::unique_ptr<SharedStorageRequestHelper>
           shared_storage_request_helper);
@@ -633,9 +618,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Stores any CORS error encountered while processing |url_request_|.
   absl::optional<CorsErrorStatus> cors_error_status_;
 
-  // True if a pervasive payload is found, for logging purposes.
-  bool pervasive_payload_requested_ = false;
-
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
   mojom::URLResponseHeadPtr response_;
@@ -776,8 +758,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
-
-  const raw_ptr<const CacheTransparencySettings> cache_transparency_settings_;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.

@@ -105,12 +105,10 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   // |total_encoded_data_length| may be equal to kUnknownEncodedDataLength.
   // TODO(crbug.com/798625): use different callback for subresources
   // with responses blocked due to document protection.
-  virtual void DidFinishLoading(
-      base::TimeTicks finish_time,
-      int64_t total_encoded_data_length,
-      uint64_t total_encoded_body_length,
-      int64_t total_decoded_body_length,
-      absl::optional<bool> pervasive_payload_requested = absl::nullopt) {}
+  virtual void DidFinishLoading(base::TimeTicks finish_time,
+                                int64_t total_encoded_data_length,
+                                uint64_t total_encoded_body_length,
+                                int64_t total_decoded_body_length) {}
 
   // Called when the load completes with an error.
   // |finish_time| indicating the time in which the response failed.

@@ -42,7 +42,6 @@ bool StructTraits<network::mojom::URLLoaderCompletionStatusDataView,
   out->decoded_body_length = data.decoded_body_length();
   out->should_report_corb_blocking = data.should_report_corb_blocking();
   out->should_collapse_initiator = data.should_collapse_initiator();
-  out->pervasive_payload_requested = data.pervasive_payload_requested();
   return true;
 }
 

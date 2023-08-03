@@ -2197,9 +2197,7 @@ void ResourceFetcher::WarnUnusedPreloads() {
 void ResourceFetcher::HandleLoaderFinish(Resource* resource,
                                          base::TimeTicks response_end,
                                          LoaderFinishType type,
-                                         uint32_t inflight_keepalive_bytes,
-                                         bool pervasive_payload_requested,
-                                         int64_t bytes_fetched) {
+                                         uint32_t inflight_keepalive_bytes) {
   DCHECK(resource);
 
   // kRaw might not be subresource, and we do not need them.
@@ -2223,15 +2221,6 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     UpdateServiceWorkerSubresourceMetrics(
         resource->GetType(),
         resource->GetResponse().WasFetchedViaServiceWorker());
-  }
-
-  subresource_load_metrics_.pervasive_payload_requested |=
-      pervasive_payload_requested;
-  if (bytes_fetched > 0) {
-    subresource_load_metrics_.total_bytes_fetched += bytes_fetched;
-    if (pervasive_payload_requested) {
-      subresource_load_metrics_.pervasive_bytes_fetched += bytes_fetched;
-    }
   }
 
   context_->UpdateSubresourceLoadMetrics(subresource_load_metrics_);
