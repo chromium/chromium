@@ -34,7 +34,7 @@ void Part::PartConnected(ContainerNode& insertion_point) {
     PartRoot* new_root;
     if (auto* document_fragment = DynamicTo<DocumentFragment>(root_container)) {
       new_root = &document_fragment->getPartRoot();
-    } else if (auto* document = To<Document>(root_container)) {
+    } else if (auto* document = DynamicTo<Document>(root_container)) {
       new_root = &document->getPartRoot();
     } else {
       // insertion_point is not located in a Document or DocumentFragment.
