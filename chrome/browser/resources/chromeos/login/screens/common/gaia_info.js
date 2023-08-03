@@ -59,6 +59,14 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     return GaiaInfoStep;
   }
 
+  onBeforeShow() {
+    this.setAnimationPlaying_(true);
+  }
+
+  onBeforeHide() {
+    this.setAnimationPlaying_(false);
+  }
+
   defaultUIStep() {
     return GaiaInfoStep.OVERVIEW;
   }
@@ -79,6 +87,10 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
 
   onBackClicked_() {
     this.userActed(UserAction.BACK);
+  }
+
+  setAnimationPlaying_(enabled) {
+    this.$.gaiaInfoAnimation.playing = enabled;
   }
 }
 

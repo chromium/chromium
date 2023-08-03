@@ -4,6 +4,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <style include="oobe-dialog-host-styles">
+    #gaiaInfoAnimation {
+      width: 100%;
+      height: 100%;
+      overflow-y: hidden;
+    }
 </style>
 
 <oobe-adaptive-dialog id="gaiaInfoDialog" role="dialog"
@@ -17,9 +22,9 @@ found in the LICENSE file.
       slot="subtitle">
   </span>
   <div slot="content" class="flex layout vertical center center-justified">
-    <iron-icon icon="oobe-illos:gaia-info-illo"
-        class="illustration-jelly">
-    </iron-icon>
+    <oobe-cr-lottie id="gaiaInfoAnimation"
+        animation-url="animations/gaia_info.json">
+    </oobe-cr-lottie>
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton" on-click="onBackClicked_"

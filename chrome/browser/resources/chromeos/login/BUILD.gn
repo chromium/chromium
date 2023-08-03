@@ -126,6 +126,7 @@ generate_grd("build_oobe_grd") {
     "animations/all_set.json",
     "animations/checking_for_update.json",
     "animations/downloading_apps.json",
+    "animations/gaia_info.json",
     "animations/gesture_go_back.json",
     "animations/gesture_go_home.json",
     "animations/gesture_hotseat_overview.json",
