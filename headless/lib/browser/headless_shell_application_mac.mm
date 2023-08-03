@@ -9,10 +9,6 @@
 #include "content/public/browser/native_event_processor_mac.h"
 #include "content/public/browser/native_event_processor_observer_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface HeadlessShellCrApplication () <NativeEventProcessor> {
   base::ObserverList<content::NativeEventProcessorObserver>::Unchecked
       _observers;

@@ -15,10 +15,6 @@
 #import "ui/base/cocoa/base_view.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Overrides events and actions for NSPopUpButtonCell.
 @interface FakeNSPopUpButtonCell : NSObject
 @end
