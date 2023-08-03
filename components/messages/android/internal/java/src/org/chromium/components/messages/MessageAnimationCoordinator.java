@@ -163,6 +163,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
      */
     public void updateWithStacking(
             @NonNull List<MessageState> candidates, boolean isSuspended, Runnable onFinished) {
+        if (mMessageQueueDelegate.isDestroyed()) return;
         // Wait until the current animation is done, unless we need to hide them immediately.
         if (mAnimatorSet.isStarted()) {
             if (isSuspended) {

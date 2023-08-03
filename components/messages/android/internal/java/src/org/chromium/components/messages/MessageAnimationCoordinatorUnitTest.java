@@ -78,6 +78,11 @@ public class MessageAnimationCoordinatorUnitTest {
         public boolean isPendingShow() {
             return false;
         }
+
+        @Override
+        public boolean isDestroyed() {
+            return false;
+        }
     });
 
     @Rule
@@ -491,6 +496,11 @@ public class MessageAnimationCoordinatorUnitTest {
             public boolean isPendingShow() {
                 return false;
             }
+
+            @Override
+            public boolean isDestroyed() {
+                return false;
+            }
         });
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
@@ -756,6 +766,17 @@ public class MessageAnimationCoordinatorUnitTest {
         when(mQueueDelegate.isReadyForShowing()).thenReturn(true);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(null, null), false, () -> {});
         verify(mQueueDelegate).onFinishHiding();
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateAfterLifecycleDestroyed() {
+        when(mQueueDelegate.isReadyForShowing()).thenReturn(false);
+        when(mQueueDelegate.isDestroyed()).thenReturn(true);
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
+        verify(mQueueDelegate, never()).onRequestShowing(any());
     }
 
     private void setMessageIdentifier(MessageState message, int messageIdentifier) {

@@ -80,6 +80,11 @@ public class MessageQueueManagerTest {
         public boolean isPendingShow() {
             return false;
         }
+
+        @Override
+        public boolean isDestroyed() {
+            return false;
+        }
     };
 
     private class EmptyMessageStateHandler implements MessageStateHandler {
