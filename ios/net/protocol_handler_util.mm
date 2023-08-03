@@ -53,8 +53,7 @@ NSError* GetIOSError(NSInteger ns_error_code,
   // The nested error has domain:kNSErrorDomain, code:|original_error_code|,
   // and userInfo:nil; this NSError is keyed in the dictionary with
   // NSUnderlyingErrorKey.
-  NSDate* creation_date = [NSDate
-      dateWithTimeIntervalSinceReferenceDate:creation_time.ToCFAbsoluteTime()];
+  NSDate* creation_date = creation_time.ToNSDate();
   DCHECK(creation_date);
   NSError* underlying_error =
       [NSError errorWithDomain:kNSErrorDomain code:net_error_code userInfo:nil];
