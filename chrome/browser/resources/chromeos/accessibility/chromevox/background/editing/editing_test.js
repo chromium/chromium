@@ -26,7 +26,12 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
     await importModule(
         'EditableLine', '/chromevox/background/editing/editable_line.js');
     await importModule(
-        'TextEditHandler', '/chromevox/background/editing/editing.js');
+        [
+          'AutomationEditableText',
+          'AutomationRichEditableText',
+          'TextEditHandler',
+        ],
+        '/chromevox/background/editing/editing.js');
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/event/desktop_automation_interface.js');
@@ -40,6 +45,7 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
         'SettingsManager', '/chromevox/common/settings_manager.js');
 
     globalThis.EventType = chrome.automation.EventType;
+    globalThis.IntentCommandType = chrome.automation.IntentCommandType;
     globalThis.RoleType = chrome.automation.RoleType;
   }
 
@@ -2487,4 +2493,61 @@ like this one.
           'selected');
 
   await mockFeedback.replay();
+});
+
+AX_TEST_F('ChromeVoxEditingTest', 'OnEvent', async function() {
+  const setIntent = {command: IntentCommandType.SET_SELECTION};
+  const clearIntent = {command: IntentCommandType.CLEAR_SELECTION};
+  const otherIntent = {command: 'something else'};
+
+  const root = await this.runWithLoadedTree('<input type=text>');
+  await this.focusFirstTextField(root);
+  const textField = root.find({role: RoleType.TEXT_FIELD});
+
+  const handler = TextEditHandler.createForNode(textField);
+  let receivedIntents;
+  const captureIntents = intents => receivedIntents = intents;
+
+  // If the event target is not focused, onEvent should exit early.
+  handler.editableText_.onUpdate = captureIntents;
+  handler.onEvent({target: {state: {}}});
+  assertUndefined(receivedIntents);
+
+  // If the event target is not the node given to the event handler, onEvent
+  // should exit early.
+  handler.editableText_.onUpdate = captureIntents;
+  handler.onEvent({target: root});
+  assertUndefined(receivedIntents);
+
+  // Check that the intents are set, as expected, and onUpdate is called.
+  textField.state.focused = true;
+  handler.inferredIntents_ = ['b'];
+  handler.editableText_.onUpdate = captureIntents;
+  handler.onEvent({target: textField, intents: [otherIntent]});
+  assertEquals(1, receivedIntents.length);
+  assertEquals(otherIntent, receivedIntents[0]);
+
+  // Check that inferred intents are used if no intents are provided.
+  handler.inferredIntents_ = ['b'];
+  receivedIntents = false;
+  const intents = [];
+  handler.onEvent({target: textField, intents});
+  assertEquals(1, receivedIntents.length);
+  assertEquals('b', receivedIntents[0]);
+
+  // Check that inferred intents override provided intents if event.intents
+  // contains SET_SELECTION.
+  handler.inferredIntents_ = ['b'];
+  receivedIntents = false;
+  handler.onEvent({target: textField, intents: [setIntent, otherIntent]});
+  assertEquals(1, receivedIntents.length);
+  assertEquals('b', receivedIntents[0]);
+
+  // Check that inferred intents override provided intents if event.intents\
+  // contains CLEAR_SELECTION.
+  handler.inferredIntents_ = ['b'];
+  receivedIntents = false;
+  handler.onEvent({target: textField, intents: [otherIntent, clearIntent]});
+  assertEquals(1, receivedIntents.length);
+  assertEquals('b', receivedIntents[0]);
 });
