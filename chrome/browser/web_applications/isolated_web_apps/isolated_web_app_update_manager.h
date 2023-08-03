@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -85,6 +87,8 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   void QueueUpdateDiscoveryTask(const IsolatedWebAppUrlInfo& url_info,
                                 const GURL& update_manifest_url);
 
+  void CreateUpdateApplyWaiter(const IsolatedWebAppUrlInfo& url_info);
+
   // Starts the next update discovery task if (a) no update discovery task is
   // currently running and (b) there is at least one update discovery task in
   // the queue.
@@ -92,6 +96,11 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   void OnUpdateDiscoveryTaskCompleted(
       IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status);
+
+  void OnUpdateApplyWaiterFinished(
+      IsolatedWebAppUrlInfo url_info,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive);
 
   raw_ref<Profile> profile_;
   bool automatic_updates_enabled_;
@@ -108,6 +117,9 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   base::circular_deque<std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask>>
       update_discovery_tasks_;
   base::Value::List update_discovery_results_log_;
+
+  base::flat_map<AppId, std::unique_ptr<IsolatedWebAppUpdateApplyWaiter>>
+      update_apply_waiters_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};

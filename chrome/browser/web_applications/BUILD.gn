@@ -298,6 +298,8 @@ source_set("web_applications") {
       "commands/install_preloaded_verified_app_command.h",
       "isolated_web_apps/isolated_web_app_downloader.cc",
       "isolated_web_apps/isolated_web_app_downloader.h",
+      "isolated_web_apps/isolated_web_app_update_apply_waiter.cc",
+      "isolated_web_apps/isolated_web_app_update_apply_waiter.h",
       "isolated_web_apps/isolated_web_app_update_discovery_task.cc",
       "isolated_web_apps/isolated_web_app_update_discovery_task.h",
       "isolated_web_apps/isolated_web_app_update_manager.cc",
@@ -738,6 +740,7 @@ source_set("web_applications_unit_tests") {
   if (is_chromeos) {
     sources += [
       "isolated_web_apps/isolated_web_app_downloader_unittest.cc",
+      "isolated_web_apps/isolated_web_app_update_apply_waiter_unittest.cc",
       "isolated_web_apps/isolated_web_app_update_discovery_task_unittest.cc",
       "isolated_web_apps/isolated_web_app_update_manager_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_external_install_options_unittest.cc",

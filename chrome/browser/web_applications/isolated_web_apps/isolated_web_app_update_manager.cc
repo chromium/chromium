@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
 #include "base/files/file_error_or.h"
@@ -22,8 +23,11 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -35,6 +39,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,6 +84,19 @@ void IsolatedWebAppUpdateManager::Start() {
     // an IWA is installed.
     return;
   }
+
+  for (WebApp web_app : provider_->registrar_unsafe().GetApps()) {
+    if (!web_app.isolation_data().has_value() ||
+        !web_app.isolation_data()->pending_update_info().has_value()) {
+      continue;
+    }
+    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
+    if (!url_info.has_value()) {
+      continue;
+    }
+    CreateUpdateApplyWaiter(*url_info);
+  }
+
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
@@ -96,6 +115,7 @@ void IsolatedWebAppUpdateManager::Shutdown() {
   install_manager_observation_.Reset();
   update_discovery_timer_.Stop();
   update_discovery_tasks_.clear();
+  update_apply_waiters_.clear();
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
@@ -109,6 +129,11 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
     update_discovery_tasks.Append(task->AsDebugValue());
   }
 
+  base::Value::List update_apply_waiters;
+  for (const auto& [app_id, waiter] : update_apply_waiters_) {
+    update_apply_waiters.Append(waiter->AsDebugValue());
+  }
+
   return base::Value(
       base::Value::Dict()
           .Set("automatic_updates_enabled", automatic_updates_enabled_)
@@ -120,7 +145,8 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
                    .Set("next_update_check_in_minutes",
                         next_update_check_delta_in_minutes))
           .Set("update_discovery_tasks", std::move(update_discovery_tasks))
-          .Set("update_discovery_log", update_discovery_results_log_.Clone()));
+          .Set("update_discovery_log", update_discovery_results_log_.Clone())
+          .Set("update_apply_waiters", std::move(update_apply_waiters)));
 }
 
 void IsolatedWebAppUpdateManager::SetEnableAutomaticUpdatesForTesting(
@@ -140,6 +166,7 @@ void IsolatedWebAppUpdateManager::OnWebAppInstalled(const AppId& app_id) {
 void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
+  update_apply_waiters_.erase(app_id);
   if (update_discovery_timer_.IsRunning() && !IsAnyIWAInstalled()) {
     update_discovery_timer_.Stop();
   }
@@ -241,6 +268,22 @@ void IsolatedWebAppUpdateManager::MaybeStartNextUpdateDiscoveryTask() {
   }
 }
 
+void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
+    const IsolatedWebAppUrlInfo& url_info) {
+  const AppId& app_id = url_info.app_id();
+  if (update_apply_waiters_.contains(app_id)) {
+    return;
+  }
+  auto [it, was_insertion] = update_apply_waiters_.emplace(
+      app_id, std::make_unique<IsolatedWebAppUpdateApplyWaiter>(
+                  url_info, provider_->ui_manager()));
+  CHECK(was_insertion);
+  it->second->Wait(
+      &*profile_,
+      base::BindOnce(&IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished,
+                     weak_factory_.GetWeakPtr(), url_info));
+}
+
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
     IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
   base::Value task_debug_value =
@@ -249,17 +292,31 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
   update_discovery_tasks_.pop_front();
 
   update_discovery_results_log_.Append(std::move(task_debug_value));
-  if (status.has_value()) {
-    VLOG(1) << "Isolated Web App update discovery for "
-            << url_info.web_bundle_id().id()
-            << " succeeded: " << status.value();
-  } else {
+  if (!status.has_value()) {
     LOG(ERROR) << "Isolated Web App update discovery for "
                << url_info.web_bundle_id().id()
                << " failed: " << status.error();
+  } else {
+    VLOG(1) << "Isolated Web App update discovery for "
+            << url_info.web_bundle_id().id()
+            << " succeeded: " << status.value();
+
+    if (*status == IsolatedWebAppUpdateDiscoveryTask::Success::
+                       kUpdateFoundAndSavedInDatabase) {
+      CreateUpdateApplyWaiter(url_info);
+    }
   }
 
   MaybeStartNextUpdateDiscoveryTask();
+}
+
+void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
+    IsolatedWebAppUrlInfo url_info,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {
+  update_apply_waiters_.erase(url_info.app_id());
+
+  // TODO(cmfcmf): Start task to apply the update here.
 }
 
 }  // namespace web_app
