@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_observer.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

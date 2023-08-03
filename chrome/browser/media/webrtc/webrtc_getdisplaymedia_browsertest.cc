@@ -53,8 +53,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
 #endif
 
 namespace {

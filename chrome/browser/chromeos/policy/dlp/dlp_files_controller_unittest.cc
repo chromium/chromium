@@ -12,7 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths_lacros.h"

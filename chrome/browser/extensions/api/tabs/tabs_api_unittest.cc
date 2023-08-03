@@ -42,7 +42,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
 #endif
 
 namespace extensions {
