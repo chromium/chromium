@@ -68,31 +68,35 @@ void WaitOnceForEvents(int device_fd,
 
   const auto events_from_device = pollfds[0].revents;
   const auto other_events = pollfds[1].revents;
-  // "POLLIN There is data to read."
-  //  https://man7.org/linux/man-pages/man2/poll.2.html
-  if (events_from_device & POLLIN) {
-    std::move(dequeue_callback).Run();
-    return;
-  }
-  // "If an event occurred (see ioctl VIDIOC_DQEVENT) then POLLPRI will be set
-  //  in the revents field and poll() will return."
-  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  if (events_from_device & POLLPRI) {
-    VLOGF(2) << "Resolution change event";
-
-    // Dequeue the event otherwise it'll be stuck in the driver forever.
-    struct v4l2_event event;
-    memset(&event, 0, sizeof(event));  // Must do: v4l2_event has a union.
-    if (HandledIoctl(device_fd, VIDIOC_DQEVENT, &event) != kIoctlOk) {
-      PLOG(ERROR) << "Failed dequeing an event";
-      return;
+  // At least Qualcomm Venus likes to bundle events.
+  const auto pollin_or_pollpri_event = events_from_device & (POLLIN | POLLPRI);
+  if (pollin_or_pollpri_event) {
+    // "POLLIN There is data to read."
+    //  https://man7.org/linux/man-pages/man2/poll.2.html
+    if (events_from_device & POLLIN) {
+      std::move(dequeue_callback).Run();
     }
-    // If we get an event, it must be an V4L2_EVENT_SOURCE_CHANGE since it's the
-    // only one we're subscribed to.
-    DCHECK_EQ(event.type, static_cast<unsigned int>(V4L2_EVENT_SOURCE_CHANGE));
-    DCHECK(event.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION);
+    // "If an event occurred (see ioctl VIDIOC_DQEVENT) then POLLPRI will be set
+    //  in the revents field and poll() will return."
+    // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
+    if (events_from_device & POLLPRI) {
+      VLOGF(2) << "Resolution change event";
 
-    std::move(resolution_change_callback).Run();
+      // Dequeue the event otherwise it'll be stuck in the driver forever.
+      struct v4l2_event event;
+      memset(&event, 0, sizeof(event));  // Must do: v4l2_event has a union.
+      if (HandledIoctl(device_fd, VIDIOC_DQEVENT, &event) != kIoctlOk) {
+        PLOG(ERROR) << "Failed dequeing an event";
+        return;
+      }
+      // If we get an event, it must be an V4L2_EVENT_SOURCE_CHANGE since it's
+      // the only one we're subscribed to.
+      DCHECK_EQ(event.type,
+                static_cast<unsigned int>(V4L2_EVENT_SOURCE_CHANGE));
+      DCHECK(event.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION);
+
+      std::move(resolution_change_callback).Run();
+    }
     return;
   }
   if (other_events & POLLIN) {
@@ -750,6 +754,21 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
       // allocate conservatively). So, it's common that said frame pool gets
       // exhausted before we run out of |CAPTURE_queue_|s free "buffers" here.
       if (client_->GetVideoFramePool()->IsExhausted()) {
+        // This is a special case: |client_|s frame pool is empty but there
+        // aren't any buffers enqueued in |CAPTURE_queue_|. This means they are
+        // all elsewhere (maybe in flight). We request a callback when some of
+        // them are back.
+        if (CAPTURE_queue_->QueuedBuffersCount() == 0) {
+          // This weird jump is because the video frame pool cannot be called
+          // back (e.g. to query whether IsExhausted()) from the
+          // NotifyWhenFrameAvailable() callback because it would deadlock.
+          client_->GetVideoFramePool()->NotifyWhenFrameAvailable(base::BindOnce(
+              base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+              base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+              base::BindOnce(
+                  &V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers,
+                  weak_this_)));
+        }
         return;
       }
 
