@@ -20,6 +20,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 
 namespace content_settings {
 class PageSpecificContentSettings;
@@ -343,12 +344,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
     is_subscribed_to_permission_change_for_testing = true;
   }
 
+  void PresentSitePermissionsForTesting() { PresentSitePermissions(); }
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
-                           NonFactoryDefaultAndRecentlyChangedPermissionsShown);
-  FRIEND_TEST_ALL_PREFIXES(PageInfoTest, StorageAccessGrantsAreFiltered);
-  FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsEmptyByDefault);
-  FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsDontShowAsk);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            ShowInfoBarWhenAllowingThirdPartyCookies);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
@@ -448,6 +446,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
   int GetThirdPartySitesWithBlockedCookiesAccessCount(const GURL& site_url);
 
   bool IsIsolatedWebApp() const;
+
+  std::set<net::SchemefulSite> GetTwoSitePermissionRequesters(
+      ContentSettingsType type);
 
   // The page info UI displays information and controls for site-
   // specific data (local stored objects like cookies), site-specific

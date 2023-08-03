@@ -391,7 +391,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   GURL kEmbedded1("https://embedded1.com");
   GURL kEmbedded2("https://embedded2.com");
 
-  page_info()->PresentSitePermissions();
+  page_info()->PresentSitePermissionsForTesting();
   std::set<ContentSettingsType> expected_visible_permissions;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -464,9 +464,10 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
                            last_permission_info_list());
 
   // Change the default setting for Javascript away from the factory default.
-  page_info()->GetContentSettings()->SetDefaultContentSetting(
-      ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK);
-  page_info()->PresentSitePermissions();
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                 CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
 
@@ -504,7 +505,7 @@ TEST_F(PageInfoTest, StorageAccessGrantsAreFiltered) {
       content_settings::SessionModel::NonRestorableUserSession);
   map->SetContentSettingDefaultScope(kEmbedded1, url(), type,
                                      CONTENT_SETTING_ALLOW, constraint);
-  page_info()->PresentSitePermissions();
+  page_info()->PresentSitePermissionsForTesting();
 
 #if BUILDFLAG(IS_ANDROID)
   // Geolocation is always allowed to pass through to Android-specific logic to
@@ -517,19 +518,51 @@ TEST_F(PageInfoTest, StorageAccessGrantsAreFiltered) {
 
   map->SetContentSettingDefaultScope(kEmbedded1, url(), type,
                                      CONTENT_SETTING_ALLOW);
-  page_info()->PresentSitePermissions();
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(type);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, StorageAccessGrantsDisplayedWhenDefaultBlocked) {
+  GURL kEmbedded1("https://embedded1.com");
+  ContentSettingsType type = ContentSettingsType::STORAGE_ACCESS;
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  // Nothing is displayed for default permissions.
+  map->SetDefaultContentSetting(type, CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  // Until the permission is accessed and blocked.
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  pscs->OnTwoSitePermissionChanged(ContentSettingsType::STORAGE_ACCESS,
+                                   net::SchemefulSite(kEmbedded1),
+                                   CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
   expected_visible_permissions.insert(type);
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
 }
 
 TEST_F(PageInfoTest, IncognitoPermissionsEmptyByDefault) {
-  incognito_page_info()->PresentSitePermissions();
+  incognito_page_info()->PresentSitePermissionsForTesting();
   EXPECT_EQ(0u, last_permission_info_list().size());
 }
 
 TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
-  page_info()->PresentSitePermissions();
+  page_info()->PresentSitePermissionsForTesting();
   std::set<ContentSettingsType> expected_permissions;
   std::set<ContentSettingsType> expected_incognito_permissions;
 #if BUILDFLAG(IS_ANDROID)
@@ -558,7 +591,7 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
 
   // Only the block permissions should show in incognito mode as ALLOW
   // permissions are inherited as ASK.
-  incognito_page_info()->PresentSitePermissions();
+  incognito_page_info()->PresentSitePermissionsForTesting();
   ExpectPermissionInfoList(expected_incognito_permissions,
                            last_permission_info_list());
 

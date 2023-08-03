@@ -69,6 +69,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/schemeful_site.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
@@ -1335,50 +1336,23 @@ void PageInfo::PresentSitePermissions() {
             permissions::features::kPermissionStorageAccessAPI)) {
       continue;
     }
-    for (auto& setting : content_settings->GetSettingsForOneType(type)) {
-      // Skip default setting.
-      if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
-          setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
-        continue;
-      }
-      // Settings that specify two origins shouldn't have wildcards for either
-      // pattern.
-      DCHECK_NE(setting.primary_pattern, ContentSettingsPattern::Wildcard())
-          << "type: " << static_cast<int>(type);
-      DCHECK_NE(setting.secondary_pattern, ContentSettingsPattern::Wildcard())
-          << "type: " << static_cast<int>(type);
 
-      if (!setting.secondary_pattern.Matches(site_url_)) {
-        continue;  // Skip unrelated settings.
-      }
+    for (auto& requester : GetTwoSitePermissionRequesters(type)) {
+      PermissionInfo permission_info;
+      permission_info.type = type;
+      permission_info.requesting_origin =
+          url::Origin::Create(requester.GetURL());
+      content_settings::SettingInfo info;
+      ContentSetting setting = content_settings->GetContentSetting(
+          requester.GetURL(), site_url_, permission_info.type, &info);
+
       if (type == ContentSettingsType::STORAGE_ACCESS) {
-        if (setting.primary_pattern.Matches(site_url_)) {
-          continue;  // Skip first-party settings.
-        }
-        if (setting.metadata.session_model() ==
+        if (info.metadata.session_model() ==
             content_settings::SessionModel::NonRestorableUserSession) {
           continue;  // Skip auto-granted settings.
         }
       }
-      PermissionInfo permission_info;
-      permission_info.type = type;
-      GURL requesting_url = setting.primary_pattern.ToRepresentativeUrl();
-      if (!requesting_url.is_valid()) {
-        NOTREACHED() << "Invalid pattern for embedded permission: " +
-                            setting.primary_pattern.ToString();
-        continue;
-      }
-      permission_info.requesting_origin = url::Origin::Create(requesting_url);
-      content_settings::SettingInfo setting_info = {
-          .source = HostContentSettingsMap::GetSettingSourceFromProviderName(
-              setting.source),
-          .primary_pattern = setting.primary_pattern,
-          .secondary_pattern = setting.secondary_pattern,
-          .metadata = setting.metadata,
-      };
-      PopulatePermissionInfo(
-          permission_info, content_settings, setting_info,
-          content_settings::ValueToContentSetting(setting.setting_value));
+      PopulatePermissionInfo(permission_info, content_settings, info, setting);
       if (ShouldShowPermission(permission_info)) {
         permission_info_list.push_back(permission_info);
       }
@@ -1402,6 +1376,46 @@ void PageInfo::PresentSitePermissions() {
 
   ui_->SetPermissionInfo(permission_info_list,
                          std::move(chosen_object_info_list));
+}
+
+std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
+    ContentSettingsType type) {
+  auto* pscs = GetPageSpecificContentSettings();
+  auto* map = GetContentSettings();
+  std::set<net::SchemefulSite> requesters;
+  // Collect sites that have tried to request a permission.
+  for (auto& [requester, allowed] : pscs->GetTwoSiteRequests(type)) {
+    requesters.insert(requester);
+  }
+  // Collect sites that were previously granted a permission
+  for (auto& setting : map->GetSettingsForOneType(type)) {
+    if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
+        setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
+      continue;  // Skip default setting.
+    }
+    // Settings that specify two origins shouldn't have wildcards for either
+    // pattern.
+    DCHECK_NE(setting.primary_pattern, ContentSettingsPattern::Wildcard())
+        << "type: " << static_cast<int>(type);
+    DCHECK_NE(setting.secondary_pattern, ContentSettingsPattern::Wildcard())
+        << "type: " << static_cast<int>(type);
+
+    if (!setting.secondary_pattern.Matches(site_url_)) {
+      continue;  // Skip unrelated settings.
+    }
+    if (type == ContentSettingsType::STORAGE_ACCESS) {
+      if (setting.primary_pattern.Matches(site_url_)) {
+        continue;  // Skip first-party settings.
+      }
+      if (setting.metadata.session_model() ==
+          content_settings::SessionModel::NonRestorableUserSession) {
+        continue;  // Skip auto-granted settings.
+      }
+    }
+    GURL requesting_url = setting.primary_pattern.ToRepresentativeUrl();
+    requesters.insert(net::SchemefulSite(requesting_url));
+  }
+  return requesters;
 }
 
 void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
