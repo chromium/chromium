@@ -41,14 +41,7 @@ ArcAppListPrefs::AppInfo MakePlayStoreInfo(bool ready) {
 
 class ArcSystemStateObservationTest : public testing::Test {
  public:
-  ArcSystemStateObservationTest() = default;
-  ArcSystemStateObservationTest(const ArcSystemStateObservationTest&) = delete;
-  ArcSystemStateObservationTest& operator=(
-      const ArcSystemStateObservationTest&) = delete;
-
-  ~ArcSystemStateObservationTest() override = default;
-
-  void SetUp() override {
+  ArcSystemStateObservationTest() {
     arc_test().SetUp(&profile_);
 
     observation_ = std::make_unique<ArcSystemStateObservation>(&profile_);
@@ -60,8 +53,14 @@ class ArcSystemStateObservationTest : public testing::Test {
     arc_window_observer_ =
         observation_->GetObserverByName(kArcWindowObserverName);
   }
+  ArcSystemStateObservationTest(const ArcSystemStateObservationTest&) = delete;
+  ArcSystemStateObservationTest& operator=(
+      const ArcSystemStateObservationTest&) = delete;
 
-  void TearDown() override { observation_.reset(); }
+  ~ArcSystemStateObservationTest() override {
+    observation_.reset();
+    arc_test().TearDown();
+  }
 
   ArcSystemStateObservation* observation() { return observation_.get(); }
   ArcAppTest& arc_test() { return arc_test_; }
