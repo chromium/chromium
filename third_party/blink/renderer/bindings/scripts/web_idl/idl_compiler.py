@@ -645,7 +645,7 @@ class IdlCompiler(object):
                 # [Exposed]
                 if any(not exposure.global_names_and_features
                        for exposure in exposures):
-                    pass  # Unconditionally exposed by default.
+                    pass  # Unconditionally exposed.
                 else:
                     for exposure in exposures:
                         for entry in exposure.global_names_and_features:
@@ -656,7 +656,7 @@ class IdlCompiler(object):
                 # [RuntimeEnabled]
                 if any(not exposure.runtime_enabled_features
                        for exposure in exposures):
-                    pass  # Unconditionally exposed by default.
+                    pass  # Unconditionally exposed.
                 else:
                     for exposure in exposures:
                         for name in exposure.runtime_enabled_features:
@@ -665,7 +665,7 @@ class IdlCompiler(object):
                 # [ContextEnabled]
                 if any(not exposure.context_enabled_features
                        for exposure in exposures):
-                    pass  # Unconditionally exposed by default.
+                    pass  # Unconditionally exposed.
                 else:
                     for exposure in exposures:
                         for name in exposure.context_enabled_features:

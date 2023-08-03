@@ -5438,10 +5438,18 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
         for member in members:
             is_context_dependent = member.exposure.is_context_dependent(
                 global_names)
-            exposure_conditional = expr_from_exposure(
-                member.exposure,
-                global_names=global_names,
-                may_use_feature_selector=True)
+            if isinstance(member, web_idl.OverloadGroup):
+                exposure_conditional = expr_or([
+                    expr_from_exposure(overload.exposure,
+                                       global_names=global_names,
+                                       may_use_feature_selector=True)
+                    for overload in member
+                ])
+            else:
+                exposure_conditional = expr_from_exposure(
+                    member.exposure,
+                    global_names=global_names,
+                    may_use_feature_selector=True)
 
             if "PerWorldBindings" in member.extended_attributes:
                 worlds = (CodeGenContext.MAIN_WORLD,
