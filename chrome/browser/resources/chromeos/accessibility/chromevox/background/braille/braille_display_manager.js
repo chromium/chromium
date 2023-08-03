@@ -9,14 +9,16 @@ import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../com
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 
-import {BrailleCaptionsBackground} from './braille_captions_background.js';
+import {BrailleCaptionsBackground, BrailleCaptionsListener} from './braille_captions_background.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {PanStrategy} from './pan_strategy.js';
 import {ValueSpan} from './spans.js';
 
-export class BrailleDisplayManager {
+export class BrailleDisplayManager extends BrailleCaptionsListener {
   constructor() {
+    super();
+
     /** @private {number|undefined} */
     this.blinkerId_;
 
@@ -60,13 +62,13 @@ export class BrailleDisplayManager {
     SettingsManager.addListenerForKey(
         'brailleWordWrap', wrap => this.updatePanStrategy_(wrap));
     SettingsManager.addListenerForKey(
-        'virtualBrailleRows', () => this.onCaptionsStateChanged_());
+        'virtualBrailleRows', () => this.onBrailleCaptionsStateChanged());
     SettingsManager.addListenerForKey(
-        'virtualBrailleColumns', () => this.onCaptionsStateChanged_());
+        'virtualBrailleColumns', () => this.onBrailleCaptionsStateChanged());
 
     this.updatePanStrategy_(SettingsManager.getBoolean('brailleWordWrap'));
 
-    BrailleCaptionsBackground.init(() => this.onCaptionsStateChanged_());
+    BrailleCaptionsBackground.init(this);
     if (goog.isDef(chrome.brailleDisplayPrivate)) {
       const onDisplayStateChanged = newState =>
           this.refreshDisplayState_(newState);
@@ -78,7 +80,7 @@ export class BrailleDisplayManager {
     } else {
       // Get the initial captions state since we won't refresh the display
       // state in an API callback in this case.
-      this.onCaptionsStateChanged_();
+      this.onBrailleCaptionsStateChanged();
     }
   }
 
@@ -309,9 +311,9 @@ export class BrailleDisplayManager {
 
   /**
    * Called when the state of braille captions changes.
-   * @private
+   * @override
    */
-  onCaptionsStateChanged_() {
+  onBrailleCaptionsStateChanged() {
     // Force reevaluation of the display state based on our stored real
     // hardware display state, meaning that if a real display is connected,
     // that takes precedence over the state from the captions 'virtual' display.
