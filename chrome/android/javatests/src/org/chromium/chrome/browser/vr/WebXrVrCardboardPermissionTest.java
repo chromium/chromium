@@ -11,6 +11,7 @@ import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_V
 
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -132,6 +133,7 @@ public class WebXrVrCardboardPermissionTest {
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
+    @DisabledTest(message = "Flaky - https://crbug.com/1469985")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testPermissionPersistsAfterReload() {
         mWebXrVrPermissionTestFramework.loadFileAndAwaitInitialization(
