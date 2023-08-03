@@ -181,10 +181,6 @@ void PrintViewManager::PrintPreviewForWebNode(content::RenderFrameHost* rfh) {
 
   SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = USER_INITIATED_PREVIEW;
-
-  for (auto& observer : GetTestObservers()) {
-    observer.OnPrintPreview(print_preview_rfh_);
-  }
 }
 
 void PrintViewManager::PrintPreviewAlmostDone() {
@@ -350,11 +346,6 @@ bool PrintViewManager::PrintPreview(
 
   SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = USER_INITIATED_PREVIEW;
-
-  for (auto& observer : GetTestObservers()) {
-    observer.OnPrintPreview(print_preview_rfh_);
-  }
-
   return true;
 }
 
