@@ -1254,12 +1254,6 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& MarginAfter() const { return MarginAfterUsing(*this); }
   const Length& MarginStart() const { return MarginStartUsing(*this); }
   const Length& MarginEnd() const { return MarginEndUsing(*this); }
-  const Length& MarginOver() const {
-    return PhysicalMarginToLogical(*this).Over();
-  }
-  const Length& MarginUnder() const {
-    return PhysicalMarginToLogical(*this).Under();
-  }
   const Length& MarginStartUsing(const ComputedStyle& other) const {
     return PhysicalMarginToLogical(other).Start();
   }
@@ -1290,12 +1284,6 @@ class ComputedStyle : public ComputedStyleBase,
     return PhysicalPaddingToLogical().Start();
   }
   const Length& PaddingEnd() const { return PhysicalPaddingToLogical().End(); }
-  const Length& PaddingOver() const {
-    return PhysicalPaddingToLogical().Over();
-  }
-  const Length& PaddingUnder() const {
-    return PhysicalPaddingToLogical().Under();
-  }
   bool PaddingEqual(const ComputedStyle& other) const {
     return PaddingTop() == other.PaddingTop() &&
            PaddingLeft() == other.PaddingLeft() &&
@@ -1370,12 +1358,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   LayoutUnit BorderStartWidth() const {
     return PhysicalBorderWidthToLogical().Start();
-  }
-  LayoutUnit BorderOverWidth() const {
-    return PhysicalBorderWidthToLogical().Over();
-  }
-  LayoutUnit BorderUnderWidth() const {
-    return PhysicalBorderWidthToLogical().Under();
   }
 
   EBorderStyle BorderAfterStyle() const {
@@ -1656,12 +1638,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   const Length& LogicalInlineEnd() const {
     return PhysicalBoundsToLogical().InlineEnd();
-  }
-  const Length& LogicalLeft() const {
-    return PhysicalBoundsToLogical().LineLeft();
-  }
-  const Length& LogicalRight() const {
-    return PhysicalBoundsToLogical().LineRight();
   }
   const Length& LogicalTop() const {
     return PhysicalBoundsToLogical().Before();

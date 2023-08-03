@@ -151,7 +151,7 @@ static LogicalRect GetShapeImageMarginRect(
     const LayoutBox& layout_box,
     const LogicalSize& reference_box_logical_size) {
   LogicalOffset margin_box_origin(
-      -layout_box.MarginLineLeft() - layout_box.BorderAndPaddingLogicalLeft(),
+      -layout_box.MarginStart() - layout_box.BorderAndPaddingLogicalLeft(),
       -layout_box.MarginBefore() - layout_box.BorderBefore() -
           layout_box.PaddingBefore());
   LogicalSize margin_rect_size = reference_box_logical_size;

@@ -354,10 +354,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     return PhysicalMarginToLogical(other_style).End();
   }
-  LayoutUnit MarginLineLeft(const ComputedStyle* other_style = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).LineLeft();
-  }
 
   DISABLE_CFI_PERF LayoutUnit MarginHeight() const {
     NOT_DESTROYED();

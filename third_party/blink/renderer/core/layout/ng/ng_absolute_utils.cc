@@ -403,8 +403,8 @@ bool ComputeOutOfFlowInlineDimensions(
     Length main_inline_length = style.LogicalWidth();
     Length min_inline_length = style.LogicalMinWidth();
 
-    const bool stretch_inline_size =
-        !style.LogicalLeft().IsAuto() && !style.LogicalRight().IsAuto();
+    const bool stretch_inline_size = !style.LogicalInlineStart().IsAuto() &&
+                                     !style.LogicalInlineEnd().IsAuto();
 
     // Determine how "auto" should resolve.
     if (main_inline_length.IsAuto()) {
