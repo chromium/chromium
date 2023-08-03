@@ -114,11 +114,12 @@ class BookmarkManagerMediator
                 boolean isDoingExtensiveChanges) {
             clearHighlight();
 
+            BookmarkId id = node.getId();
             if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                 // If the folder is removed in folder mode, show the parent folder or falls back to
                 // all bookmarks mode.
-                if (Objects.equals(node.getId(), getCurrentFolderId())) {
-                    if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(node.getId())) {
+                if (Objects.equals(id, getCurrentFolderId())) {
+                    if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(id)) {
                         openFolder(mBookmarkModel.getDefaultFolderViewLocation());
                     } else {
                         openFolder(parent.getId());
@@ -126,7 +127,19 @@ class BookmarkManagerMediator
                 } else {
                     // Needs to remove the current node, and update any transitive parents that may
                     // be showing child counts. Just refresh() for now.
-                    refresh();
+                    // refresh();
+                    int position = getPositionForBookmark(id);
+                    // If the position couldn't be found, then do a full refresh. Otherwise be
+                    // smart and remove only the index of the removed bookmark.
+                    if (position == -1) {
+                        refresh();
+                    } else {
+                        mModelList.removeAt(position);
+                        // If the deleted node was selection, unselect it.
+                        if (mSelectionDelegate.isItemSelected(id)) {
+                            mSelectionDelegate.toggleSelectionForItem(id);
+                        }
+                    }
                 }
             } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 // We cannot rely on removing the specific list item that corresponds to the
