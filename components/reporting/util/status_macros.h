@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/macros/uniquify.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -24,10 +25,6 @@ namespace reporting {
     if (__builtin_expect(!_status.ok(), 0))                                  \
       return _status;                                                        \
   } while (0)
-
-// Internal helper for concatenating macro values.
-#define STATUS_MACROS_CONCAT_NAME_INNER(x, y) x##y
-#define STATUS_MACROS_CONCAT_NAME(x, y) STATUS_MACROS_CONCAT_NAME_INNER(x, y)
 
 #define ASSIGN_OR_RETURN_IMPL(result, lhs, rexpr) \
   auto result = rexpr;                            \
@@ -50,8 +47,7 @@ namespace reporting {
 // WARNING: ASSIGN_OR_RETURN expands into multiple statements; it cannot be used
 //  in a single statement (e.g. as the body of an if statement without {})!
 #define ASSIGN_OR_RETURN(lhs, rexpr) \
-  ASSIGN_OR_RETURN_IMPL(             \
-      STATUS_MACROS_CONCAT_NAME(_status_or_value, __COUNTER__), lhs, rexpr)
+  ASSIGN_OR_RETURN_IMPL(BASE_UNIQUIFY(_status_or_value), lhs, rexpr)
 
 #define ASSIGN_OR_ONCE_CALLBACK_AND_RETURN_IMPL(result, lhs, callback, rexpr) \
   const auto result = (rexpr);                                                \
@@ -73,10 +69,9 @@ namespace reporting {
 //
 // WARNING: ASSIGN_OR_RETURN expands into multiple statements; it cannot be used
 //  in a single statement (e.g. as the body of an if statement without {})!
-#define ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(lhs, callback, rexpr)               \
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN_IMPL(                                     \
-      STATUS_MACROS_CONCAT_NAME(_status_or_value, __COUNTER__), lhs, callback, \
-      rexpr)
+#define ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(lhs, callback, rexpr)           \
+  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN_IMPL(BASE_UNIQUIFY(_status_or_value), \
+                                          lhs, callback, rexpr)
 
 }  // namespace reporting
 

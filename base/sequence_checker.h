@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
+#include "base/macros/uniquify.h"
 #include "base/sequence_checker_impl.h"
 
 // SequenceChecker is a helper class used to help verify that some methods of a
@@ -68,16 +69,10 @@
 //     SEQUENCE_CHECKER(my_sequence_checker_);
 //   }
 
-#define SEQUENCE_CHECKER_INTERNAL_CONCAT2(a, b) a##b
-#define SEQUENCE_CHECKER_INTERNAL_CONCAT(a, b) \
-  SEQUENCE_CHECKER_INTERNAL_CONCAT2(a, b)
-#define SEQUENCE_CHECKER_INTERNAL_UID(prefix) \
-  SEQUENCE_CHECKER_INTERNAL_CONCAT(prefix, __LINE__)
-
 #if DCHECK_IS_ON()
 #define SEQUENCE_CHECKER(name) base::SequenceChecker name
-#define DCHECK_CALLED_ON_VALID_SEQUENCE(name, ...)                   \
-  base::ScopedValidateSequenceChecker SEQUENCE_CHECKER_INTERNAL_UID( \
+#define DCHECK_CALLED_ON_VALID_SEQUENCE(name, ...)   \
+  base::ScopedValidateSequenceChecker BASE_UNIQUIFY( \
       scoped_validate_sequence_checker_)(name, ##__VA_ARGS__)
 #define DETACH_FROM_SEQUENCE(name) (name).DetachFromSequence()
 #else  // DCHECK_IS_ON()

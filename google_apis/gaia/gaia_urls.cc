@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/macros/concat.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -17,9 +18,7 @@
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
-#define CONCAT_HIDDEN(a, b) a##b
-#define CONCAT(a, b) CONCAT_HIDDEN(a, b)
-#define URL_KEY_AND_PTR(name) #name, &CONCAT(name, _)
+#define URL_KEY_AND_PTR(name) #name, &BASE_CONCAT(name, _)
 
 namespace {
 

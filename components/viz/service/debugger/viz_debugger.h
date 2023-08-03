@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
+#include "base/macros/concat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -366,22 +367,12 @@ DrawRectToTraceValue(const gfx::Vector2dF& pos,
 
 #define DBG_DEFAULT_UV 0
 
-#define DBG_CAT(a, b) DBG_PRIMITIVE_CAT(a, b)
-#define DBG_PRIMITIVE_CAT(a, b) a##b
-
-// We are using the function macro DBG_USE_VIZ_DEBUGGER_TRACE() to determine if
-// we should actually produce trace statements at the callsite. In order to do
-// this we need to stamp out different implementations dependent on the value of
-// this controlling trace macro function.
-// How this works is that we concatenate the evaluated
-// DBG_USE_VIZ_DEBUGGER_TRACE() together with a prefix. We then use this
-// concatenation as the implementation function. The real trick here is if this
-// DBG_USE_VIZ_DEBUGGER_TRACE() is not defined it will in fact simply evaluate
-// to itself as a string.
-#define DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)            \
-  DBG_CAT(DBG_VIZ_DEBUGGER_TRACE_IMPL_, DBG_USE_VIZ_DEBUGGER_TRACE()) \
+#define DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)                \
+  BASE_CONCAT(DBG_VIZ_DEBUGGER_TRACE_IMPL_, DBG_USE_VIZ_DEBUGGER_TRACE()) \
   (anno, pos, size, text)
 
+// Allow definition of DBG_USE_VIZ_DEBUGGER_TRACE() just before callsite
+// (instead of before inclusion of this header).
 #define DBG_VIZ_DEBUGGER_TRACE_IMPL_DBG_USE_VIZ_DEBUGGER_TRACE() \
   DBG_VIZ_DEBUGGER_TRACE_IMPL_0
 
@@ -411,23 +402,23 @@ DrawRectToTraceValue(const gfx::Vector2dF& pos,
   std::ignore = option;                        \
   std::ignore = format;
 
-#define DBG_VIZ_CATEGORY_ENABLE_IMPL(enabled)                          \
-  DBG_CAT(DBG_VIZ_CATEGORY_ENABLE_IMPL_, DBG_USE_VIZ_DEBUGGER_TRACE()) \
+#define DBG_CONNECTED_OR_TRACING(enabled)                             \
+  BASE_CONCAT(DBG_VIZ_CATEGORY_ENABLE_, DBG_USE_VIZ_DEBUGGER_TRACE()) \
   (enabled)
 
-#define DBG_VIZ_CATEGORY_ENABLE_IMPL_DBG_USE_VIZ_DEBUGGER_TRACE() \
-  DBG_VIZ_CATEGORY_ENABLE_IMPL_0
+// Allow definition of DBG_USE_VIZ_DEBUGGER_TRACE() just before callsite
+// (instead of before inclusion of this header).
+#define DBG_VIZ_CATEGORY_ENABLE_DBG_USE_VIZ_DEBUGGER_TRACE() \
+  DBG_VIZ_CATEGORY_ENABLE_0
 
-#define DBG_VIZ_CATEGORY_ENABLE_IMPL_0(enabled) \
-  do {                                          \
-    enabled = false;                            \
+#define DBG_VIZ_CATEGORY_ENABLE_0(enabled) \
+  do {                                     \
+    enabled = false;                       \
   } while (0)
 
-#define DBG_VIZ_CATEGORY_ENABLE_IMPL_1(enabled) \
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(           \
+#define DBG_VIZ_CATEGORY_ENABLE_1(enabled) \
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(      \
       TRACE_DISABLED_BY_DEFAULT(VIZ_DEBUGGER_TRACING_CATEGORY), (&enabled))
-
-#define DBG_CONNECTED_OR_TRACING(enabled) DBG_VIZ_CATEGORY_ENABLE_IMPL(enabled)
 
 #define DBG_FLAG_FBOOL(anno, fun_name) \
   namespace {                          \

@@ -39,7 +39,7 @@ static_library("status") {
 
 source_set("status_macros") {
   sources = [ "status_macros.h" ]
-
+  public_deps = [ "//base" ]
   deps = [ ":status" ]
 }
 

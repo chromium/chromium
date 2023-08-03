@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_TYPED_MACROS_INTERNAL_H_
 
 #include "base/base_export.h"
+#include "base/macros/uniquify.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros_embedder_support.h"
@@ -22,10 +23,6 @@
 // library, these macros are either implemented by Perfetto or unneeded.
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-#define TRACING_INTERNAL_CONCAT2(a, b) a##b
-#define TRACING_INTERNAL_CONCAT(a, b) TRACING_INTERNAL_CONCAT2(a, b)
-#define TRACING_INTERNAL_UID(prefix) TRACING_INTERNAL_CONCAT(prefix, __LINE__)
-
 #define TRACING_INTERNAL_ADD_TRACE_EVENT(phase, category, name, ...)     \
   do {                                                                   \
     INTERNAL_TRACE_EVENT_GET_CATEGORY_INFO(category);                    \
@@ -54,7 +51,7 @@
                                          [](perfetto::EventContext) {});      \
       }                                                                       \
     } event;                                                                  \
-  } TRACING_INTERNAL_UID(scoped_event){[&]() {                                \
+  } BASE_UNIQUIFY(scoped_event){[&]() {                                       \
     TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_BEGIN, category, name, \
                                      ##__VA_ARGS__);                          \
     return 0;                                                                 \

@@ -152,6 +152,7 @@ source_set("app_share_target") {
 
 source_set("macros") {
   sources = [ "macros.h" ]
+  public_deps = [ "//base" ]
 
   # Not exported through //components/services/app_service, and only exposed to
   # App Service code.

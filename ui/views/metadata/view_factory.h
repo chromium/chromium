@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/macros/concat.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
@@ -300,9 +301,6 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define NUM_ARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
 #define NUM_ARGS(...) NUM_ARGS_IMPL(__VA_ARGS__, _10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
-#define BUILD_MACRO_NAME_IMPL(a, b) a##b
-#define BUILD_MACRO_NAME(a, b) BUILD_MACRO_NAME_IMPL(a, b)
-
 // This will expand the list of types into a parameter declaration list.
 // eg: DECL_PARAMS(int, char, float, double) will expand to:
 // int param4, char param3, float param2, double param1
@@ -317,7 +315,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define DECL_PARAM9(type, ...) type param9, DECL_PARAM8(__VA_ARGS__)
 #define DECL_PARAM10(type, ...) type param10, DECL_PARAM9(__VA_ARGS__)
 #define DECL_PARAMS(...) \
-  BUILD_MACRO_NAME(DECL_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+  BASE_CONCAT(DECL_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 // This will expand into list of parameters suitable for calling a function
 // using the same param names from the above expansion.
@@ -334,7 +332,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define PASS_PARAM9(type, ...) param9, PASS_PARAM8(__VA_ARGS__)
 #define PASS_PARAM10(type, ...) param10, PASS_PARAM9(__VA_ARGS__)
 #define PASS_PARAMS(...) \
-  BUILD_MACRO_NAME(PASS_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+  BASE_CONCAT(PASS_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 // BEGIN_VIEW_BUILDER, END_VIEW_BUILDER and VIEW_BUILDER_XXXX macros should
 // be placed into the same namespace as the 'view_class' parameter.

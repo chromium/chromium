@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,16 +19,6 @@ namespace base {
 
 class Location;
 enum class ThreadType : int;
-
-// INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(name) produces an identifier by
-// appending the current line number to |name|. This is used to avoid name
-// collisions from variables defined inside a macro.
-#define INTERNAL_SCOPED_THREAD_PRIORITY_CONCAT(a, b) a##b
-// CONCAT1 provides extra level of indirection so that __LINE__ macro expands.
-#define INTERNAL_SCOPED_THREAD_PRIORITY_CONCAT1(a, b) \
-  INTERNAL_SCOPED_THREAD_PRIORITY_CONCAT(a, b)
-#define INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(name) \
-  INTERNAL_SCOPED_THREAD_PRIORITY_CONCAT1(name, __LINE__)
 
 // All code that may load a DLL on a background thread must be surrounded by a
 // scope that starts with this macro.
@@ -45,23 +36,19 @@ enum class ThreadType : int;
 // begin the initialization and will all be boosted for it). On Windows, loading
 // a DLL on a background thread can lead to a priority inversion on the loader
 // lock and cause huge janks.
-#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY()               \
-  static std::atomic_bool INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE( \
-      already_loaded){false};                                          \
-  base::internal::ScopedMayLoadLibraryAtBackgroundPriority             \
-      INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                     \
-          scoped_may_load_library_at_background_priority)(             \
-          FROM_HERE,                                                   \
-          &INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(already_loaded));
+#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY()                  \
+  static std::atomic_bool BASE_UNIQUIFY(already_loaded){false};           \
+  base::internal::ScopedMayLoadLibraryAtBackgroundPriority BASE_UNIQUIFY( \
+      scoped_may_load_library_at_background_priority)(                    \
+      FROM_HERE, &BASE_UNIQUIFY(already_loaded));
 
 // Like SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY, but raises the thread
 // priority every time the scope is entered. Use this around code that may
 // conditionally load a DLL each time it is executed, or which repeatedly loads
 // and unloads DLLs.
-#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY() \
-  base::internal::ScopedMayLoadLibraryAtBackgroundPriority          \
-      INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                  \
-          scoped_may_load_library_at_background_priority)(FROM_HERE, nullptr);
+#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY()       \
+  base::internal::ScopedMayLoadLibraryAtBackgroundPriority BASE_UNIQUIFY( \
+      scoped_may_load_library_at_background_priority)(FROM_HERE, nullptr);
 
 // Boosts the current thread's priority to match the priority of threads of
 // |target_thread_type| in this scope.
