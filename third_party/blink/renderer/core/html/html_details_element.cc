@@ -65,6 +65,10 @@ void HTMLDetailsElement::DispatchPendingEvent(
 
 LayoutObject* HTMLDetailsElement::CreateLayoutObject(
     const ComputedStyle& style) {
+  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+    return HTMLElement::CreateLayoutObject(style);
+  }
+
   return LayoutObject::CreateBlockFlowOrListItem(this, style);
 }
 

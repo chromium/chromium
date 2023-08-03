@@ -35,6 +35,10 @@ HTMLSummaryElement::HTMLSummaryElement(Document& document)
 
 LayoutObject* HTMLSummaryElement::CreateLayoutObject(
     const ComputedStyle& style) {
+  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+    return HTMLElement::CreateLayoutObject(style);
+  }
+
   // See: crbug.com/603928 - We manually check for other display types, then
   // fallback to a regular LayoutBlockFlow as "display: inline;" should behave
   // as an "inline-block".

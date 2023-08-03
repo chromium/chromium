@@ -1072,6 +1072,18 @@
     "expires": "Feb 1, 2024"
   },
   {
+    "prefix": "details-styling-disabled",
+    "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/rendering/the-details-element",
+      "fast/multicol/span/summary-split.html",
+      "html/details_summary/details-inline.html"
+    ],
+    "args": ["--disable-blink-features=DetailsStyling"],
+    "expires": "Apr 1, 2024"
+  },
+  {
     "prefix": "backface-visibility-interop",
     "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],

@@ -1281,6 +1281,10 @@
       status: "test",
     },
     {
+      name: "DetailsStyling",
+      status: "experimental",
+    },
+    {
       name: "DeviceAttributes",
       origin_trial_feature_name: "DeviceAttributes",
       origin_trial_os: ["chromeos"],
