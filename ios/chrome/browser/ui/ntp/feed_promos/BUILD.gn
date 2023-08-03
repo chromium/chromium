@@ -6,6 +6,7 @@ source_set("feed_promos") {
   sources = [
     "feed_sign_in_promo_coordinator.h",
     "feed_sign_in_promo_coordinator.mm",
+    "feed_sign_in_promo_coordinator_delegate.h",
   ]
   deps = [
     ":feed_promos_ui",

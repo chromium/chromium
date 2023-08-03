@@ -9,9 +9,14 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol FeedSignInPromoCoordinatorDelegate;
+
 // Coordinator for feed Sign-in promo feature. This feature informs the user
 // that they need to sign in to get personalized content.
 @interface FeedSignInPromoCoordinator : ChromeCoordinator
+
+// Delegate that is in charge of stopping the coordinator.
+@property(nonatomic, weak) id<FeedSignInPromoCoordinatorDelegate> delegate;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser;

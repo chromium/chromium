@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_sign_in_promo_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
@@ -124,6 +125,7 @@
                                      FeedDelegate,
                                      FeedMenuCoordinatorDelegate,
                                      FeedSignInPromoDelegate,
+                                     FeedSignInPromoCoordinatorDelegate,
                                      FeedWrapperViewControllerDelegate,
                                      IdentityManagerObserverBridgeDelegate,
                                      NewTabPageContentDelegate,
@@ -377,10 +379,7 @@
 
   self.NTPMetricsRecorder = nil;
 
-  if (self.feedSignInPromoCoordinator) {
-    [self.feedSignInPromoCoordinator stop];
-    self.feedSignInPromoCoordinator = nil;
-  }
+  [self stopFeedSignInPromoCoordinator];
 
   [self.linkPreviewCoordinator stop];
   self.linkPreviewCoordinator = nil;
@@ -1013,6 +1012,7 @@
     self.feedSignInPromoCoordinator = [[FeedSignInPromoCoordinator alloc]
         initWithBaseViewController:self.NTPViewController
                            browser:self.browser];
+    self.feedSignInPromoCoordinator.delegate = self;
     [self.feedSignInPromoCoordinator start];
     [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
                                   feed::FeedSignInUI::kShowSyncHalfSheet];
@@ -1347,6 +1347,12 @@
 }
 
 #pragma mark - Private
+
+- (void)stopFeedSignInPromoCoordinator {
+  [self.feedSignInPromoCoordinator stop];
+  self.feedSignInPromoCoordinator.delegate = nil;
+  self.feedSignInPromoCoordinator = nil;
+}
 
 // Updates the feed visibility or content based on the supervision state
 // of the account defined in `value`.
@@ -1711,6 +1717,14 @@
     self.discoverFeedService->RefreshFeed(
         FeedRefreshTrigger::kForegroundFeedVisibleOther);
   }
+}
+
+#pragma mark - FeedSignInPromoCoordinatorDelegate
+
+- (void)feedSignInPromoCoordinatorWantsToBeStopped:
+    (FeedSignInPromoCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.feedSignInPromoCoordinator);
+  [self stopFeedSignInPromoCoordinator];
 }
 
 @end
