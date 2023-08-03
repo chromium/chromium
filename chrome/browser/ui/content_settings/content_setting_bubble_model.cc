@@ -1386,19 +1386,22 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
 #if BUILDFLAG(IS_MAC)
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
-  if (!content_settings)
-    return;
-
-  bool is_allowed =
-      content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
-
-  device::GeolocationManager* geolocation_manager =
-      device::GeolocationManager::GetInstance();
-  LocationSystemPermissionStatus permission =
-      geolocation_manager->GetSystemPermission();
-  if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
+  // Get the stored geolocation content setting and the system permission state
+  // to determine whether geolocation is blocked by a system permission.
+  //
+  // The content setting must be read from HostContentSettingsMap.
+  // PageSpecificContentSettings cannot be used because it combines the
+  // site-level and system-level permissions, indicating the feature is blocked
+  // if either the site-level or system-level permission is not granted. We need
+  // to distinguish these cases to ensure the bubble that launches the system
+  // dialog is not shown if the site-level permission was not granted.
+  const GURL& url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
+  ContentSetting content_setting =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile())
+          ->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION);
+  if (content_setting == CONTENT_SETTING_ALLOW &&
+      device::GeolocationManager::GetInstance()->GetSystemPermission() !=
+          LocationSystemPermissionStatus::kAllowed) {
     // If the permission is turned off in MacOS system preferences, overwrite
     // the bubble to enable the user to trigger the system dialog.
     InitializeSystemGeolocationPermissionBubble();
