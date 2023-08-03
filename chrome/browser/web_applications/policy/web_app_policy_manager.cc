@@ -98,7 +98,7 @@ bool AreForceInstalledAppsAllowed(Profile* profile) {
   bool allowed = web_app::AreWebAppsUserInstallable(profile);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   allowed = allowed || user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-            user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+            user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 #endif
   return allowed;
 }

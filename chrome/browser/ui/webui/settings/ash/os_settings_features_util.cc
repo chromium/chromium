@@ -16,7 +16,7 @@ namespace ash::settings {
 
 bool IsGuestModeActive() {
   return user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-         user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+         user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 }
 
 bool ShouldShowParentalControlSettings(const Profile* profile) {

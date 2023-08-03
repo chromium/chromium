@@ -82,7 +82,7 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   policy::DeviceLocalAccountPolicyService* local_account_service =
-      user_manager->IsLoggedInAsPublicAccount()
+      user_manager->IsLoggedInAsManagedGuestSession()
           ? connector->GetDeviceLocalAccountPolicyService()
           : nullptr;
   policy::UserCloudPolicyManagerAsh* user_cloud_policy =

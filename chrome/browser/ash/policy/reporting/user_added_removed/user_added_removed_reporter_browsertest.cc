@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterPublicSessionBrowserTest,
 
   const user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
-  ASSERT_TRUE(user_manager->IsLoggedInAsPublicAccount());
+  ASSERT_TRUE(user_manager->IsLoggedInAsManagedGuestSession());
 
   const absl::optional<Record> record =
       MaybeGetEnqueuedUserAddedRemovedRecord();

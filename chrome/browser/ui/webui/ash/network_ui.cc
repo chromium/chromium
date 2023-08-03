@@ -130,7 +130,7 @@ void SetDeviceProperties(base::Value::Dict* dictionary) {
 
 bool IsGuestModeActive() {
   return user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-         user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+         user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 }
 
 // Get the euicc path for reset euicc operation. Return absl::nullopt if the

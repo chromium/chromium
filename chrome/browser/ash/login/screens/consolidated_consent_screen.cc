@@ -160,7 +160,7 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
     return false;
 
   if (!context.is_branded_build ||
-      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+      user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

@@ -73,7 +73,7 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
       "isGuest",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
                       chromeos::BrowserParamsProxy::Get()->SessionType() ==
                               crosapi::mojom::SessionType::kPublicSession ||

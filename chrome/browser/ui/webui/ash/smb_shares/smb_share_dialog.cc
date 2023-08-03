@@ -89,8 +89,9 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
       smb_service && smb_service->IsKerberosEnabledViaPolicy();
   source->AddBoolean("isKerberosEnabled", is_kerberos_enabled);
 
-  bool is_guest = user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-                  user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+  bool is_guest =
+      user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+      user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
   source->AddBoolean("isGuest", is_guest);
 
   bool is_jelly_enabled = chromeos::features::IsJellyEnabled();

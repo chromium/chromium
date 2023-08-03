@@ -88,8 +88,8 @@ bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
     return false;
   }
 
-  // Switch language if logging into a public account.
-  if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+  // Switch language if logging into a managed guest session.
+  if (user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()) {
     return false;
   }
 

@@ -286,7 +286,7 @@ bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
   return true;
 }
 
-bool FakeUserManager::IsLoggedInAsPublicAccount() const {
+bool FakeUserManager::IsLoggedInAsManagedGuestSession() const {
   const User* active_user = GetActiveUser();
   return active_user && active_user->GetType() == USER_TYPE_PUBLIC_ACCOUNT;
 }

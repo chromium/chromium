@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterPublicSessionBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  ASSERT_TRUE(user_manager->IsLoggedInAsPublicAccount());
+  ASSERT_TRUE(user_manager->IsLoggedInAsManagedGuestSession());
 
   Record login_record = GetNextLoginLogoutRecord(&observer);
   ASSERT_TRUE(login_record.has_source_info());

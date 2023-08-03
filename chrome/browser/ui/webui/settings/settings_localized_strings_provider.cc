@@ -240,7 +240,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
       "isGuest",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
       chromeos::BrowserParamsProxy::Get()->SessionType() ==
               crosapi::mojom::SessionType::kPublicSession ||
@@ -1368,8 +1368,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   bool is_guest_mode = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_guest_mode = user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-                  user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+  is_guest_mode =
+      user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+      user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   is_guest_mode = profile->IsOffTheRecord();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

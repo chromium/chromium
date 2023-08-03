@@ -135,7 +135,7 @@ UserSessionType GetCurrentUserSessionType() {
     }
   }
 
-  if (user_manager.IsLoggedInAsPublicAccount()) {
+  if (user_manager.IsLoggedInAsManagedGuestSession()) {
     return UserSessionType::MANAGED_GUEST_SESSION;
   }
 

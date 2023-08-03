@@ -255,7 +255,7 @@ bool IsArcKioskMode() {
 bool IsRobotOrOfflineDemoAccountMode() {
   return user_manager::UserManager::IsInitialized() &&
          (user_manager::UserManager::Get()->IsLoggedInAsArcKioskApp() ||
-          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
 }
 
 bool IsArcAllowedForUser(const user_manager::User* user) {

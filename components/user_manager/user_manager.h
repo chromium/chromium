@@ -366,8 +366,8 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a child user.
   virtual bool IsLoggedInAsChildUser() const = 0;
 
-  // Returns true if we're logged in as a public account.
-  virtual bool IsLoggedInAsPublicAccount() const = 0;
+  // Returns true if we're logged in as a managed guest session.
+  virtual bool IsLoggedInAsManagedGuestSession() const = 0;
 
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
