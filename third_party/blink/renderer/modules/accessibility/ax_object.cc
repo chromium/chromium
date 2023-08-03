@@ -3763,6 +3763,28 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     }
   }
 
+  Element* element = GetElement();
+
+  // Custom elements and their children are included in the tree.
+  if (element && element->IsCustomElement()) {
+    return true;
+  }
+
+  // <slot>s and their children are included in the tree.
+  // Detailed explanation:
+  // <slot> elements are placeholders marking locations in a shadow tree where
+  // users of a web component can insert their own custom nodes. Inserted nodes
+  // (also known as distributed nodes) become children of their respective slots
+  // in the accessibility tree. In other words, the accessibility tree mirrors
+  // the flattened DOM tree or the layout tree, not the original DOM tree.
+  // Distributed nodes still maintain their parent relations and computed style
+  // information with their original location in the DOM. Therefore, we need to
+  // ensure that in the accessibility tree no remnant information from the
+  // unflattened DOM tree remains, such as the cached parent.
+  if (ToHTMLSlotElementIfSupportsAssignmentOrNull(element)) {
+    return true;
+  }
+
   if (IsExcludedByFormControlsFilter()) {
     return false;
   }
@@ -3808,27 +3830,8 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal())
     return true;
 
-  Element* element = GetElement();
   if (!element)
     return false;
-
-  // Custom elements and their children are included in the tree.
-  if (element->IsCustomElement())
-    return true;
-
-  // <slot>s and their children are included in the tree.
-  // Detailed explanation:
-  // <slot> elements are placeholders marking locations in a shadow tree where
-  // users of a web component can insert their own custom nodes. Inserted nodes
-  // (also known as distributed nodes) become children of their respective slots
-  // in the accessibility tree. In other words, the accessibility tree mirrors
-  // the flattened DOM tree or the layout tree, not the original DOM tree.
-  // Distributed nodes still maintain their parent relations and computed style
-  // information with their original location in the DOM. Therefore, we need to
-  // ensure that in the accessibility tree no remnant information from the
-  // unflattened DOM tree remains, such as the cached parent.
-  if (ToHTMLSlotElementIfSupportsAssignmentOrNull(element))
-    return true;
 
   // Include all pseudo element content. Any anonymous subtree is included
   // from above, in the condition where there is no node.
