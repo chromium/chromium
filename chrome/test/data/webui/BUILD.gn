@@ -274,7 +274,6 @@ if (include_js2gtest_tests) {
       "location_internals/location_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
       "media/media_history_webui_browsertest.js",
-      "metrics_reporter/metrics_reporter_browsertest.js",
       "usb_internals/usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {
@@ -477,7 +476,6 @@ generate_grd("build_grd") {
     "js:build_grdp",
     "location_internals:build_grdp",
     "metrics_internals:build_grdp",
-    "metrics_reporter:build_grdp",
     "mojo:build_grdp",
     "net_internals:build_grdp",
     "new_tab_page:build_grdp",
@@ -506,7 +504,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/location_internals/resources.grdp",
     "$target_gen_dir/metrics_internals/resources.grdp",
-    "$target_gen_dir/metrics_reporter/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
     "$target_gen_dir/mojo/resources.grdp",
     "$target_gen_dir/net_internals/resources.grdp",

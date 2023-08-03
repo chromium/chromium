@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -49,6 +50,14 @@ IN_PROC_BROWSER_TEST_F(WebUiJsTest, CustomElement) {
 
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, Static) {
   RunTest("js/static_types_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiJsTest, MetricsReporter) {
+  // MetricsReporter needs a host that enables BINDINGS_POLICY_MOJO_WEB_UI.
+  // Any WebUI host should work, except chrome://webui-test since it is just a
+  // WebUIDataSource.
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("js/metrics_reporter/metrics_reporter_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, MockTimer) {

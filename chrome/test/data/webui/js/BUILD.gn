@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "custom_element_test.ts",
     "icon_test.ts",
     "load_time_data_test.ts",
+    "metrics_reporter/metrics_reporter_test.ts",
     "parse_html_subset_test.ts",
     "parse_html_subset_trusted_types_test.ts",
     "promise_resolver_test.ts",
@@ -20,7 +21,10 @@ build_webui_tests("build") {
     "test_suite_self_test.ts",
     "util_test.ts",
   ]
-  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/chrome_timeticks.d.ts",
+  ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
