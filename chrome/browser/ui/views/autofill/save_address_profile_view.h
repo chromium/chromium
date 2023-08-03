@@ -49,7 +49,6 @@ class SaveAddressProfileView : public AutofillBubbleBase,
 
   // View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
  private:
   // Sets the proper margins for icons (and other views) in the UI to make sure
