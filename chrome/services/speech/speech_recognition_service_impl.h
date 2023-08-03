@@ -10,6 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +27,14 @@ class SpeechRecognitionServiceImpl
       public media::mojom::AudioSourceSpeechRecognitionContext,
       public media::mojom::SpeechRecognitionContext {
  public:
+  // Observer of the speech recognition service.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a new language pack is installed.
+    virtual void OnLanguagePackInstalled(
+        base::flat_map<std::string, base::FilePath> config_paths) = 0;
+  };
+
   explicit SpeechRecognitionServiceImpl(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver);
 
@@ -46,6 +56,8 @@ class SpeechRecognitionServiceImpl
       const base::flat_map<std::string, base::FilePath>& config_paths,
       const std::string& primary_language_name) override;
   void SetSodaParams(const bool mask_offensive_words) override;
+  void SetSodaConfigPaths(
+      const base::flat_map<std::string, base::FilePath>& config_paths) override;
 
   // media::mojom::SpeechRecognitionContext:
   void BindRecognizer(
@@ -63,6 +75,12 @@ class SpeechRecognitionServiceImpl
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindAudioSourceFetcherCallback callback) override;
 
+  // Adds an observer to the observer list.
+  void AddObserver(Observer* observer);
+
+  // Removes an observer from the observer list.
+  void RemoveObserver(Observer* observer);
+
  protected:
   // Returns whether the binary and config paths exist.
   bool FilePathsExist();
@@ -79,6 +97,8 @@ class SpeechRecognitionServiceImpl
   base::flat_map<std::string, base::FilePath> config_paths_;
   std::string primary_language_name_;
   bool mask_offensive_words_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<SpeechRecognitionServiceImpl> weak_factory_{this};
 };

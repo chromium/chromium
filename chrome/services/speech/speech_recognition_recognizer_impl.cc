@@ -130,6 +130,16 @@ SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
       session_contains_speech_);
   RecordDuration();
   soda_client_.reset();
+
+  if (speech_recognition_service_) {
+    speech_recognition_service_->RemoveObserver(this);
+  }
+}
+
+void SpeechRecognitionRecognizerImpl::OnLanguagePackInstalled(
+    base::flat_map<std::string, base::FilePath> config_paths) {
+  config_paths_ = config_paths;
+  ResetSoda();
 }
 
 void SpeechRecognitionRecognizerImpl::Create(
@@ -139,11 +149,13 @@ void SpeechRecognitionRecognizerImpl::Create(
     const base::FilePath& binary_path,
     const base::flat_map<std::string, base::FilePath>& config_paths,
     const std::string& primary_language_name,
-    const bool mask_offensive_words) {
+    const bool mask_offensive_words,
+    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(remote), std::move(options), binary_path, config_paths,
-          primary_language_name, mask_offensive_words),
+          primary_language_name, mask_offensive_words,
+          speech_recognition_service),
       std::move(receiver));
 }
 
@@ -195,12 +207,14 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     const base::FilePath& binary_path,
     const base::flat_map<std::string, base::FilePath>& config_paths,
     const std::string& primary_language_name,
-    const bool mask_offensive_words)
+    const bool mask_offensive_words,
+    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service)
     : options_(std::move(options)),
       client_remote_(std::move(remote)),
       config_paths_(config_paths),
       primary_language_name_(primary_language_name),
-      mask_offensive_words_(mask_offensive_words) {
+      mask_offensive_words_(mask_offensive_words),
+      speech_recognition_service_(speech_recognition_service) {
   recognition_event_callback_ = base::BindPostTaskToCurrentDefault(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));
@@ -216,6 +230,10 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   client_remote_.set_disconnect_handler(
       base::BindOnce(&SpeechRecognitionRecognizerImpl::OnClientHostDisconnected,
                      weak_factory_.GetWeakPtr()));
+
+  if (speech_recognition_service_) {
+    speech_recognition_service_->AddObserver(this);
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS Ash, soda_client_ is not used, so don't try to create it

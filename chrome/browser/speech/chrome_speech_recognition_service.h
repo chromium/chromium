@@ -10,7 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
+#include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,7 +26,8 @@ namespace speech {
 // Provides a mojo endpoint in the browser that allows the renderer process to
 // launch and initialize the sandboxed speech recognition service
 // process.
-class ChromeSpeechRecognitionService : public SpeechRecognitionService {
+class ChromeSpeechRecognitionService : public SpeechRecognitionService,
+                                       public speech::SodaInstaller::Observer {
  public:
   explicit ChromeSpeechRecognitionService(content::BrowserContext* context);
   ChromeSpeechRecognitionService(const ChromeSpeechRecognitionService&) =
@@ -40,6 +43,13 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
   void BindAudioSourceSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
           receiver) override;
+
+  // SodaInstaller::Observer:
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int progress) override;
 
  protected:
   content::BrowserContext* context() { return context_; }
@@ -58,6 +68,10 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
   // new speech recognition service process if this remote is already bound.
   mojo::Remote<media::mojom::SpeechRecognitionService>
       speech_recognition_service_;
+
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_installer_observer_{this};
 };
 
 }  // namespace speech
