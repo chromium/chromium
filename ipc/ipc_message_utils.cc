@@ -25,6 +25,7 @@
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_mojo_param_traits.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "ipc/mach_port_mac.h"
@@ -67,11 +68,12 @@ void LogBytes(const std::vector<CharType>& data, std::string* out) {
   // On POSIX, we log to stdout, which we assume can display ASCII.
   static const size_t kMaxBytesToLog = 100;
   for (size_t i = 0; i < std::min(data.size(), kMaxBytesToLog); ++i) {
-    if (isprint(data[i]))
+    if (absl::ascii_isprint(static_cast<unsigned char>(data[i]))) {
       out->push_back(data[i]);
-    else
+    } else {
       out->append(
           base::StringPrintf("[%02X]", static_cast<unsigned char>(data[i])));
+    }
   }
   if (data.size() > kMaxBytesToLog) {
     out->append(base::StringPrintf(
@@ -471,7 +473,7 @@ bool ParamTraits<std::vector<char>>::Read(const base::Pickle* m,
   return ReadCharVector(m, iter, r);
 }
 
-void ParamTraits<std::vector<char> >::Log(const param_type& p, std::string* l) {
+void ParamTraits<std::vector<char>>::Log(const param_type& p, std::string* l) {
   LogBytes(p, l);
 }
 
