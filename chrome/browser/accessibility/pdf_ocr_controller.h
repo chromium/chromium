@@ -8,14 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/values.h"
-#endif
 
 class Profile;
 
@@ -58,13 +53,6 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   explicit PdfOcrController(Profile* profile);
 
   void OnPdfOcrAlwaysActiveChanged();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when 'PdfOcrAlwaysActive' pref is received from Ash. The pref
-  // value is requested from Ash in the constructor and this function is called
-  // async when results have arrived.
-  void OnPdfOcrAlwaysActiveReceivedFromAsh(absl::optional<base::Value> value);
-#endif
 
   // Sends Pdf Ocr Always Active state to all relevant WebContents.
   void SendPdfOcrAlwaysActiveToAll(bool is_always_active);
