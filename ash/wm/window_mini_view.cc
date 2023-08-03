@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -34,6 +37,52 @@ namespace {
 constexpr int kBackdropBorderRoundingDp = 4;
 
 constexpr int kFocusRingCornerRadius = 20;
+
+// Returns the rounded corners of the preview view scaled by the given value of
+// `scale` for the preview view with given source `window` if allowed to `show`.
+// Rounded corner is applied to the previw view only if `is_back_drop_visible`
+// is false when feature flag `kJellyroll` is enabled.
+gfx::RoundedCornersF GetRoundedCornerForPreviewView(aura::Window* window,
+                                                    float scale,
+                                                    bool show,
+                                                    bool is_back_drop_visible) {
+  if (!show) {
+    return gfx::RoundedCornersF();
+  }
+
+  if (!chromeos::features::IsJellyrollEnabled()) {
+    const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+        views::Emphasis::kLow);
+    return gfx::RoundedCornersF(rounding / scale);
+  }
+
+  if (is_back_drop_visible) {
+    return gfx::RoundedCornersF();
+  }
+
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  const float scaled_corner_radius =
+      WindowMiniView::kWindowMiniViewCornerRadius / scale;
+  if (snap_group_controller) {
+    SnapGroup* snap_group =
+        snap_group_controller->GetSnapGroupForGivenWindow(window);
+    if (snap_group) {
+      aura::Window* window1 = snap_group->window1();
+      aura::Window* window2 = snap_group->window2();
+      CHECK(window == window1 || window == window2);
+      // `window1` is guaranteed to be the primary snapped window in a snap
+      // group and `window2` is guaranteed to be the secondary snapped window in
+      // a snap group.
+      // TODO(b/294294344): Return a different set of rounded corners if it is
+      // for vertical split view.
+      return window == window1
+                 ? gfx::RoundedCornersF(0, 0, 0, scaled_corner_radius)
+                 : gfx::RoundedCornersF(0, 0, scaled_corner_radius, 0);
+    }
+  }
+
+  return gfx::RoundedCornersF(0, 0, scaled_corner_radius, scaled_corner_radius);
+}
 
 }  // namespace
 
@@ -130,35 +179,18 @@ void WindowMiniView::SetShowPreview(bool show) {
 }
 
 void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
-  if (!preview_view()) {
+  if (!preview_view_) {
     return;
   }
 
-  ui::Layer* layer = preview_view()->layer();
-  DCHECK(layer);
+  ui::Layer* layer = preview_view_->layer();
+  CHECK(layer);
   const float scale = layer->transform().To2dScale().x();
-  const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kLow);
-  gfx::RoundedCornersF radii;
 
-  if (!show) {
-    radii = gfx::RoundedCornersF();
-  } else {
-    if (chromeos::features::IsJellyrollEnabled()) {
-      // Corner radius is applied to the previw view only if the
-      // `backdrop_view_` is not visible.
-      if (backdrop_view_ && backdrop_view_->GetVisible()) {
-        radii = gfx::RoundedCornersF();
-      } else {
-        radii = gfx::RoundedCornersF(0, 0, kWindowMiniViewCornerRadius / scale,
-                                     kWindowMiniViewCornerRadius / scale);
-      }
-    } else {
-      radii = gfx::RoundedCornersF(rounding / scale);
-    }
-  }
-
-  layer->SetRoundedCornerRadius(radii);
+  const bool is_back_drop_visible =
+      backdrop_view_ && backdrop_view_->GetVisible();
+  layer->SetRoundedCornerRadius(GetRoundedCornerForPreviewView(
+      source_window_, scale, show, is_back_drop_visible));
   layer->SetIsFastRoundedCorner(true);
 }
 
