@@ -58,7 +58,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     public static class PageInfoCookiesViewParams {
         // Called when the toggle controlling third-party cookie blocking changes.
         public boolean thirdPartyCookieBlockingEnabled;
-        public Callback<Boolean> onCheckedChangedCallback;
+        public Callback<Boolean> onThirdPartyCookieToggleChanged;
         public Runnable onClearCallback;
         public Runnable onCookieSettingsLinkClicked;
         public Callback<Activity> onFeedbackLinkClicked;
@@ -106,12 +106,17 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         // TODO(crbug.com/1077766): Set a ManagedPreferenceDelegate?
         mCookieSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
         mCookieSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            params.onCheckedChangedCallback.onResult((Boolean) newValue);
+            boolean boolValue = (Boolean) newValue;
+            // Invert when the flag is on, since the switch is inverted.
+            if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+                boolValue = !boolValue;
+            }
+            params.onThirdPartyCookieToggleChanged.onResult(boolValue);
             return true;
         });
         boolean areAllCookiesBlocked = !WebsitePreferenceBridge.isCategoryEnabled(
                 getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES);
-        if (areAllCookiesBlocked) {
+        if (areAllCookiesBlocked && !PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
             mCookieSwitch.setTitle(R.string.page_info_all_cookies_block);
         }
 
@@ -152,6 +157,9 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
     // Only used when UserBypassUI flag is off.
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {
+        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
+            : "This should only be invoked when UserBypassUI is enabled.";
+
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean enabled = status == CookieControlsStatus.ENABLED;
         mCookieSwitch.setVisible(visible);
@@ -166,6 +174,9 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     // Only used when UserBypassUI flag is on.
     public void setCookieStatus(
             @CookieControlsStatus int status, boolean isEnforced, long expiration) {
+        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
+            : "This should only be invoked when UserBypassUI is enabled.";
+
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
 
@@ -175,8 +186,10 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
         if (!visible) return;
 
-        mCookieSwitch.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_eye_crossed));
-        mCookieSwitch.setChecked(blockingEnabled);
+        mCookieSwitch.setIcon(SettingsUtils.getTintedIcon(getContext(),
+                blockingEnabled ? R.drawable.ic_visibility_off_black
+                                : R.drawable.ic_visibility_black));
+        mCookieSwitch.setChecked(!blockingEnabled);
         mCookieSwitch.setEnabled(!isEnforced);
 
         boolean permanentException = (expiration == 0);
@@ -298,10 +311,12 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                         : R.color.default_icon_color_disabled);
     }
 
-    // TODO(crbug.com/1446230): Invert the cookie switch.
+    // Only invoked when UserBypassUI is on.
     private void updateCookieSwitch() {
+        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
+            : "This should only be invoked when UserBypassUI is enabled.";
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
-        if (mCookieSwitch.isChecked()) {
+        if (!mCookieSwitch.isChecked()) {
             mCookieSwitch.setSummary(mBlockedSites > 0
                             ? getContext().getResources().getQuantityString(
                                     R.plurals.page_info_sites_blocked, mBlockedSites, mBlockedSites)

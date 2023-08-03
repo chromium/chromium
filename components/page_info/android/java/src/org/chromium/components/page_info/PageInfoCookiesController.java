@@ -92,7 +92,7 @@ public class PageInfoCookiesController
         PageInfoCookiesPreference.PageInfoCookiesViewParams params =
                 new PageInfoCookiesPreference.PageInfoCookiesViewParams();
         params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
-        params.onCheckedChangedCallback = this::onCheckedChangedCallback;
+        params.onThirdPartyCookieToggleChanged = this::onThirdPartyCookieToggleChanged;
         params.onClearCallback = this::onClearCookiesClicked;
         params.onCookieSettingsLinkClicked = getDelegate()::showCookieSettings;
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
@@ -133,11 +133,11 @@ public class PageInfoCookiesController
         }
     }
 
-    private void onCheckedChangedCallback(boolean state) {
+    private void onThirdPartyCookieToggleChanged(boolean block) {
         if (mBridge != null) {
-            mMainController.recordAction(state ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
+            mMainController.recordAction(block ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
                                                : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
-            mBridge.setThirdPartyCookieBlockingEnabledForSite(state);
+            mBridge.setThirdPartyCookieBlockingEnabledForSite(block);
         }
     }
 

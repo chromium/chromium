@@ -617,6 +617,9 @@
       <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED" desc="" translateable="false">
         Third-party cookies blocked
       </message>
+      <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="" translateable="false">
+        Third-party cookies
+      </message>
       <message name="IDS_PAGE_INFO_ANDROID_LOCATION_BLOCKED" desc="The label used in the Page Info dialog to indicate that location has been been disabled for the device in Android settings">
         Turned off for this device
       </message>

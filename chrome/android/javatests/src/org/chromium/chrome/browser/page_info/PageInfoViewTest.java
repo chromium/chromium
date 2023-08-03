@@ -654,8 +654,8 @@ public class PageInfoViewTest {
         // Check that cookies usage is displayed.
         onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
         // Check that the cookie toggle is displayed and try clicking it.
-        onViewWaiting(allOf(withText(containsString("Block third-party cookies")), isDisplayed()));
-        onView(withText(containsString("Block third-party cookies"))).perform(click());
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
         // Clear cookies in page info.
         onView(withText(containsString("stored data"))).perform(click());
         onViewWaiting(allOf(withText("Delete"), isDisplayed()));

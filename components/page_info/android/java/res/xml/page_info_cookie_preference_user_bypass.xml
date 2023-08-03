@@ -31,6 +31,6 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="cookie_switch"
         android:persistent="false"
-        android:title="@string/page_info_cookies_block" />
+        android:title="@string/page_info_cookies_third_party_cookies_label" />
 
 </PreferenceScreen>
