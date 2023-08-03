@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -19,8 +19,9 @@ ScopedPackState::ScopedPackState(int pack_row_length, int pack_alignment)
     // glTexImage2D to mean "no pixels" (as opposed to offset 0 in the
     // buffer).
     api_->glGetIntegervFn(GL_PIXEL_PACK_BUFFER_BINDING, &pack_buffer_);
-    if (pack_buffer_)
+    if (pack_buffer_) {
       api_->glBindBufferFn(GL_PIXEL_PACK_BUFFER, 0);
+    }
   }
 
   pack_alignment_.emplace(GL_PACK_ALIGNMENT, pack_alignment);
@@ -35,8 +36,9 @@ ScopedPackState::ScopedPackState(int pack_row_length, int pack_alignment)
 }
 
 ScopedPackState::~ScopedPackState() {
-  if (pack_buffer_)
+  if (pack_buffer_) {
     api_->glBindBufferFn(GL_PIXEL_PACK_BUFFER, pack_buffer_);
+  }
 }
 
 ScopedUnpackState::ScopedUnpackState(bool uploading_data,
@@ -51,8 +53,9 @@ ScopedUnpackState::ScopedUnpackState(bool uploading_data,
     // glTexImage2D to mean "no pixels" (as opposed to offset 0 in the
     // buffer).
     api_->glGetIntegervFn(GL_PIXEL_UNPACK_BUFFER_BINDING, &unpack_buffer_);
-    if (unpack_buffer_)
+    if (unpack_buffer_) {
       api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, 0);
+    }
   }
   if (uploading_data) {
     unpack_alignment_.emplace(GL_UNPACK_ALIGNMENT, unpack_alignment);
@@ -79,8 +82,9 @@ ScopedUnpackState::ScopedUnpackState(bool uploading_data,
 }
 
 ScopedUnpackState::~ScopedUnpackState() {
-  if (unpack_buffer_)
+  if (unpack_buffer_) {
     api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, unpack_buffer_);
+  }
 }
 
 ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api,
@@ -105,8 +109,9 @@ ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api,
   GLint old_texture_binding = 0;
   api->glGetIntegervFn(get_target, &old_texture_binding);
   old_binding_ = old_texture_binding;
-  if (new_binding)
+  if (new_binding) {
     api_->glBindTextureFn(target_, new_binding);
+  }
 }
 
 ScopedRestoreTexture::~ScopedRestoreTexture() {
