@@ -111,7 +111,7 @@ void PressureObserver::unobserve(V8PressureSource source) {
   manager_->RemoveObserver(source.AsEnum(), this);
   last_record_map_[ToSourceIndex(source.AsEnum())].Clear();
   // Reject all pending promises for `source`.
-  RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kNotSupportedError,
+  RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                          "Called unobserve method.");
   records_.erase(base::ranges::remove_if(records_,
                                          [source](const auto& record) {
@@ -131,8 +131,7 @@ void PressureObserver::disconnect() {
     last_record.Clear();
   // Reject all pending promises.
   for (const auto& source : supportedSources()) {
-    RejectPendingResolvers(source.AsEnum(),
-                           DOMExceptionCode::kNotSupportedError,
+    RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                            "Called disconnect method.");
   }
   records_.clear();
