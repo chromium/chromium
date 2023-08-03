@@ -480,7 +480,6 @@ crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ F
 crbug.com/1230781 [ amd-0x679e angle-opengl mac ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 
-crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
