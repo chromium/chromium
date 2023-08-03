@@ -566,11 +566,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
 
-    // If the folder is unnamed, set the name to a default string for unnamed
-    // folders; otherwise set the name to the user-supplied folder name.
-    SetAccessibleName(GetText().empty() ? l10n_util::GetStringUTF16(
-                                              IDS_UNNAMED_BOOKMARK_FOLDER)
-                                        : GetText());
+    SetAccessibleName(GetAccessibleText());
   }
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
@@ -590,9 +586,17 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     return BookmarkMenuButtonBase::OnMousePressed(event);
   }
 
+  const std::u16string GetAccessibleText() {
+    // If the folder is unnamed, set the name to a default string for unnamed
+    // folders; otherwise set the name to the user-supplied folder name.
+    return GetText().empty()
+               ? l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER)
+               : GetText();
+  }
+
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     BookmarkMenuButtonBase::GetAccessibleNodeData(node_data);
-    node_data->SetNameChecked(GetAccessibleName());
+    node_data->SetNameChecked(GetAccessibleText());
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
         l10n_util::GetStringUTF8(
