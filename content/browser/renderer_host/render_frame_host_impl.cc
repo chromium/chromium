@@ -4919,8 +4919,8 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
               ChromeTrackEvent::kRenderFrameHost, this, "url",
               params->url.possibly_invalid_spec());
 
-  // TODO(peilinwang): remove after the
-  // kReduceToolbarUpdatesForSameDocNavigations experiment is complete.
+  // TODO(peilinwang): remove after the kScrollToTLDOptimization experiment is
+  // complete.
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Navigation.DidCommitSameDocumentNavigation.Duration");
 

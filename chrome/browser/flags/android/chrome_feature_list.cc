@@ -266,7 +266,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloud,
     &kReaderModeInCCT,
     &kRecordSuppressionMetrics,
-    &kReduceToolbarUpdatesForSameDocNavigations,
     &kReengagementNotification,
     &kRelatedSearches,
     &kReportParentalControlSitesChild,
@@ -860,10 +859,6 @@ BASE_FEATURE(kReaderModeInCCT,
 
 BASE_FEATURE(kRecordSuppressionMetrics,
              "RecordSuppressionMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReduceToolbarUpdatesForSameDocNavigations,
-             "ReduceToolbarUpdatesForSameDocNavigations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReengagementNotification,
