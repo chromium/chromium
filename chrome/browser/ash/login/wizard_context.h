@@ -10,6 +10,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -124,6 +126,9 @@ class WizardContext {
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.
   std::unique_ptr<UserContext> extra_factors_auth_session;
+  // Same as above, but the actual context is stored in AuthSessionStorage,
+  // and the token can be used to retrieve it.
+  absl::optional<AuthProofToken> extra_factors_token;
 
   // If the onboarding flow wasn't completed by the user we will try to show
   // TermsOfServiceScreen to them first and then continue the flow with this

@@ -37,12 +37,12 @@ class PinFactorEditor : public mojom::PinFactorEditor {
 
  private:
   void OnPinConfigured(
-      std::unique_ptr<UserContext> context,
+      const std::string& auth_token,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       bool success);
   void OnIsPinConfiguredForRemove(
+      const AccountId account_id,
       const std::string& auth_token,
-      std::unique_ptr<UserContext> context,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       bool is_pin_configured);
 

@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
 
   // Test-related setters:
   void SetAuthHub(std::unique_ptr<AuthHub> auth_hub);
+  void SetAuthSessionStorage(std::unique_ptr<AuthSessionStorage> storage);
 
  private:
   friend class AuthParts;

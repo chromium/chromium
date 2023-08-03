@@ -38,6 +38,7 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
  private:
   void OnPasswordConfigured(
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      const std::string& auth_token,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
 

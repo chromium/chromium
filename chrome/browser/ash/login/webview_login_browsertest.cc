@@ -73,6 +73,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -951,9 +952,23 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
   test::OobeJS().ClickOnPath(kPrimaryButton);
   OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
 
-  UserContext* user_context = LoginDisplayHost::default_host()
-                                  ->GetWizardContext()
-                                  ->extra_factors_auth_session.get();
+  UserContext* user_context = nullptr;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    CHECK(LoginDisplayHost::default_host()
+              ->GetWizardContext()
+              ->extra_factors_token.has_value());
+    auto* storage = ash::AuthSessionStorage::Get();
+    auto& token = LoginDisplayHost::default_host()
+                      ->GetWizardContext()
+                      ->extra_factors_token.value();
+    CHECK(storage->IsValid(token));
+    user_context = storage->Peek(token);
+  } else {
+    user_context = LoginDisplayHost::default_host()
+                       ->GetWizardContext()
+                       ->extra_factors_auth_session.get();
+  }
+
   EXPECT_EQ(user_context->GetReauthProofToken(), "fake-reauth-proof-token");
 }
 
@@ -972,9 +987,23 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
   OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
-  UserContext* user_context = LoginDisplayHost::default_host()
-                                  ->GetWizardContext()
-                                  ->extra_factors_auth_session.get();
+
+  UserContext* user_context = nullptr;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    CHECK(LoginDisplayHost::default_host()
+              ->GetWizardContext()
+              ->extra_factors_token.has_value());
+    auto* storage = ash::AuthSessionStorage::Get();
+    auto& token = LoginDisplayHost::default_host()
+                      ->GetWizardContext()
+                      ->extra_factors_token.value();
+    CHECK(storage->IsValid(token));
+    user_context = storage->Peek(token);
+  } else {
+    user_context = LoginDisplayHost::default_host()
+                       ->GetWizardContext()
+                       ->extra_factors_auth_session.get();
+  }
   EXPECT_TRUE(user_context->GetReauthProofToken().empty());
 }
 

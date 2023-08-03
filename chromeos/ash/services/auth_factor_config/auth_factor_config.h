@@ -59,6 +59,7 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   // session
   void NotifyFactorObserversAfterSuccess(
       AuthFactorSet changed_factor,
+      const std::string& auth_token,
       std::unique_ptr<UserContext> context,
       base::OnceCallback<void(mojom::ConfigureResult)> callback);
 
@@ -73,13 +74,15 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   // auth factor without our knowledge, the update call will fail. By
   // refreshing our information on what auth factors are configured, we can
   // recover so that the user can try again.
-  void NotifyFactorObserversAfterFailure(std::unique_ptr<UserContext> context,
+  void NotifyFactorObserversAfterFailure(const std::string& auth_token,
+                                         std::unique_ptr<UserContext> context,
                                          base::OnceCallback<void()> callback);
 
  private:
   void OnGetAuthFactorsConfiguration(
       AuthFactorSet changed_factors,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      const std::string& auth_token,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
 

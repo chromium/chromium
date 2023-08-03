@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -44,6 +45,8 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
+#include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
@@ -202,6 +205,10 @@ class QuickUnlockPrivateUnitTest
     fake_user_manager_ = fake_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
+    auth_parts_ = ash::AuthPartsImpl::CreateTestInstance();
+    auth_parts_->SetAuthSessionStorage(
+        std::make_unique<ash::AuthSessionStorageImpl>(
+            ash::UserDataAuthClient::Get()));
 
     ExtensionApiUnittest::SetUp();
 
@@ -262,8 +269,14 @@ class QuickUnlockPrivateUnitTest
           ash::AuthFactorsConfiguration());
     }
 
-    token_ = ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile)
-                 ->CreateAuthToken(auth_token_user_context_);
+    if (ash::features::ShouldUseAuthSessionStorage()) {
+      token_ = ash::AuthSessionStorage::Get()->Store(
+          std::make_unique<ash::UserContext>(auth_token_user_context_));
+    } else {
+      token_ = ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile)
+                   ->CreateAuthToken(auth_token_user_context_);
+    }
+
     base::RunLoop().RunUntilIdle();
 
     return profile;
@@ -677,6 +690,7 @@ class QuickUnlockPrivateUnitTest
     expect_modes_changed_ = false;
   }
 
+  std::unique_ptr<ash::AuthPartsImpl> auth_parts_;
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
       nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
@@ -695,8 +709,12 @@ TEST_P(QuickUnlockPrivateUnitTest, GetAuthTokenValid) {
 
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile());
-  EXPECT_EQ(token_info->token,
-            quick_unlock_storage->GetAuthToken()->Identifier());
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    EXPECT_TRUE(ash::AuthSessionStorage::Get()->IsValid(token_info->token));
+  } else {
+    EXPECT_EQ(token_info->token,
+              quick_unlock_storage->GetAuthToken()->Identifier());
+  }
   EXPECT_EQ(token_info->lifetime_seconds,
             ash::quick_unlock::AuthToken::kTokenExpiration.InSeconds());
 }

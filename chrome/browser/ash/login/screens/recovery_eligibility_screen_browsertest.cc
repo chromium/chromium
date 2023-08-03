@@ -24,9 +24,11 @@
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -68,8 +70,16 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
     }
     WizardControllerExitWaiter(UserCreationView::kScreenId).Wait();
     WaitForScreenExit();
-    auto user_context =
-        std::make_unique<UserContext>(*context->extra_factors_auth_session);
+
+    std::unique_ptr<UserContext> user_context;
+    if (ash::features::ShouldUseAuthSessionStorage()) {
+      user_context = ash::AuthSessionStorage::Get()->Borrow(
+          FROM_HERE, context->extra_factors_token.value());
+      context->extra_factors_token = absl::nullopt;
+    } else {
+      user_context =
+          std::make_unique<UserContext>(*context->extra_factors_auth_session);
+    }
     cryptohome_.MarkUserAsExisting(user_context->GetAccountId());
     ContinueScreenExit();
     // Wait until the OOBE flow finishes before we set new values on the wizard
@@ -82,7 +92,12 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
     user_context->ResetAuthSessionId();
     user_context->SetAuthSessionId(cryptohome_.AddSession(
         user_context->GetAccountId(), /*authenticated=*/true));
-    context->extra_factors_auth_session = std::move(user_context);
+    if (ash::features::ShouldUseAuthSessionStorage()) {
+      context->extra_factors_token =
+          ash::AuthSessionStorage::Get()->Store(std::move(user_context));
+    } else {
+      context->extra_factors_auth_session = std::move(user_context);
+    }
     context->skip_post_login_screens_for_tests = false;
     result_ = absl::nullopt;
   }

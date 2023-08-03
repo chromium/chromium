@@ -65,6 +65,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -593,13 +594,25 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
       RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy()) {
     return;
   }
-
-  wizard_context_->extra_factors_auth_session =
-      std::make_unique<UserContext>(user_context);
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    wizard_context_->extra_factors_token = AuthSessionStorage::Get()->Store(
+        std::make_unique<UserContext>(user_context));
+  } else {
+    wizard_context_->extra_factors_auth_session =
+        std::make_unique<UserContext>(user_context);
+  }
 }
 
 void LoginDisplayHostCommon::ClearOnboardingAuthSession() {
-  wizard_context_->extra_factors_auth_session.reset();
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    if (wizard_context_->extra_factors_token.has_value()) {
+      AuthSessionStorage::Get()->Invalidate(
+          wizard_context_->extra_factors_token.value(), base::DoNothing());
+      wizard_context_->extra_factors_token = absl::nullopt;
+    }
+  } else {
+    wizard_context_->extra_factors_auth_session.reset();
+  }
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(

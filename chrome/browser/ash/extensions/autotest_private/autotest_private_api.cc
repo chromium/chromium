@@ -163,6 +163,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
@@ -2248,8 +2249,21 @@ AutotestPrivateGetCryptohomeRecoveryDataFunction::Run() {
   if (!context) {
     return RespondNow(Error("WizardContext is not available"));
   }
+  ash::UserContext* user_context;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    if (!context->extra_factors_token.has_value()) {
+      return RespondNow(Error("UserContext is not available"));
+    }
+    auto* storage = ash::AuthSessionStorage::Get();
+    auto& token = context->extra_factors_token.value();
+    if (!storage->IsValid(token)) {
+      return RespondNow(Error("UserContext is not available"));
+    }
+    user_context = storage->Peek(token);
+  } else {
+    user_context = context->extra_factors_auth_session.get();
+  }
 
-  ash::UserContext* user_context = context->extra_factors_auth_session.get();
   if (!user_context) {
     return RespondNow(Error("UserContext is not available"));
   }

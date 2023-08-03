@@ -62,6 +62,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // be borrowed.
   virtual std::unique_ptr<UserContext> Borrow(const base::Location& location,
                                               const AuthProofToken& token) = 0;
+  // Allows to inspect stored UserContext. The reference is only valid within
+  // same UI event, and should not be stored by caller.
+  virtual UserContext* Peek(const AuthProofToken& token) = 0;
   // Return context back to Storage.
   virtual void Return(const AuthProofToken& token,
                       std::unique_ptr<UserContext> context) = 0;

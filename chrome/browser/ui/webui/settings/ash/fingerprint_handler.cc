@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -301,13 +303,19 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
 }
 
 bool FingerprintHandler::CheckAuthTokenValidity(const std::string& auth_token) {
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
-  if (!quick_unlock_storage->GetAuthToken())
-    return false;
-  if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier())
-    return false;
-  return true;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    return ash::AuthSessionStorage::Get()->IsValid(auth_token);
+  } else {
+    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+        quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
+    if (!quick_unlock_storage->GetAuthToken()) {
+      return false;
+    }
+    if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier()) {
+      return false;
+    }
+    return true;
+  }
 }
 
 }  // namespace ash::settings

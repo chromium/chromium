@@ -2446,6 +2446,12 @@ BASE_FEATURE(kUseAuthFactors,
              "UseAuthFactors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Uses AuthSessionStorage signleton class instead of Profile-keyed
+// QuickUnlockStorage to store authenticated UserContext.
+BASE_FEATURE(kUseAuthSessionStorage,
+             "UseAuthSessionStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the login shelf view is placed in its own widget instead of
 // sharing the shelf widget with other components.
 BASE_FEATURE(kUseLoginShelfWidget,
@@ -3869,6 +3875,10 @@ bool ShouldUseAndroidStagingSmds() {
 
 bool ShouldUseStorkSmds() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
+}
+
+bool ShouldUseAuthSessionStorage() {
+  return base::FeatureList::IsEnabled(kUseAuthSessionStorage);
 }
 
 bool IsUserEducationEnabled() {

@@ -28,7 +28,8 @@ bool IsOsReauthAllowedAsh(Profile* profile,
           ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
   if (user_cannot_manually_enter_password)
     return true;
-
+  // TODO (b/238606050): This code branch does not seem to be used now.
+  //  Clean up the code, or add token as a parameter to this method.
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
   const ash::quick_unlock::AuthToken* auth_token =
