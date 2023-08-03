@@ -107,8 +107,9 @@ scoped_refptr<media::VideoFrame> GetVideoFrameFromGpuMemoryBuffer(
   }
 
   gfx::Rect visible_rect(size);
-  auto layout = media::VideoFrameLayout::CreateWithPlanes(format, size,
-                                                          std::move(planes));
+  auto layout = media::VideoFrameLayout::CreateWithPlanes(
+      format, size, std::move(planes),
+      media::VideoFrameLayout::kBufferAddressAlignment, buffer_handle.modifier);
   return media::VideoFrame::WrapExternalDmabufs(
       *layout, visible_rect, size, std::move(fds), base::TimeDelta());
 }

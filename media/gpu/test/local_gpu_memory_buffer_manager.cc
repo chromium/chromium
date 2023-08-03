@@ -114,6 +114,8 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
           gbm_bo_get_plane_size(buffer_object, i),
           base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
     }
+
+    handle_.native_pixmap_handle.modifier = gbm_bo_get_modifier(buffer_object);
   }
 
   GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
