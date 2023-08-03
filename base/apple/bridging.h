@@ -22,10 +22,6 @@
 #import <AppKit/AppKit.h>
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "base/apple/bridging.h requires ARC."
-#endif
-
 // These functions convert pointers of bridged CFTypes to NSTypes and
 // vice-versa. They come in two flavors: those that transfer ownership
 // (`OwnershipCast`) and those that just convert the pointer (`PtrCast`).
