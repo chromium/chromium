@@ -259,8 +259,8 @@ export class PowerBookmarkRowElement extends PolymerElement {
   private onInputChange_(event: Event) {
     event.preventDefault();
     event.stopPropagation();
-    const inputElement: CrInputElement =
-        this.shadowRoot!.querySelector('#input')!;
+    const inputElement =
+        this.shadowRoot!.querySelector<CrInputElement>('#input')!;
     this.dispatchEvent(new CustomEvent('input-change', {
       bubbles: true,
       composed: true,
