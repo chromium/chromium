@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 3.  Rendering for 1 page of document of content.
   // 4.  Completes with document done.
   // 5.  Wait for the one print job to be destroyed, to ensure printing
-  //    finished cleanly before completing the test.
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/5);
   PrintAfterPreviewIsReadyAndLoaded();
 
@@ -2718,21 +2718,46 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   auto* print_view_manager =
       SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
 
-  // The expected events for this are:
-  // 1.  The document is composited for content analysis.
-  // 2.  The print job used for scanning is destroyed.
-  SetNumExpectedMessages(/*num=*/2);
-  test::StartPrint(web_contents);
-  WaitUntilCallbackReceived();
+  if (ContentAnalysisAllowsPrint()) {
+    if (UseService()) {
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Update print settings.
+      // 4.  A print job is started.
+      // 5.  Rendering for 1 page of document of content.
+      // 6.  Completes with document done.
+      // 7.  Wait for the one print job to be destroyed, to ensure printing
+      //     finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/7);
+    } else {
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/3);
+    }
+    PrintAfterPreviewIsReadyAndLoaded();
+  } else {
+    // The expected events for this are:
+    // 1.  The document is composited for content analysis.
+    // 2.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/2);
+    test::StartPrint(web_contents);
+    WaitUntilCallbackReceived();
+  }
 
   ASSERT_EQ(print_view_manager->preview_allowed(),
             ContentAnalysisAllowsPrint());
   EXPECT_EQ(composited_for_content_analysis_count(), 1);
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);
   EXPECT_EQ(scanning_responses_count(), 1);
-  // Validate that `NewDocument` was never call as that can needlessly
-  // prompt the user.
-  ASSERT_EQ(new_document_called_count(), 0);
+  // Validate that `NewDocument` is only called for actual printing, not as
+  // part of content analysis, since that can needlessly prompt the user.
+  // When printing OOP, an extra call for a new document will occur since it
+  // gets called in both the browser process and in the Print Backend service.
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
