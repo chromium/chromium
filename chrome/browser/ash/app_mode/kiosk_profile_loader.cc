@@ -207,10 +207,7 @@ KioskAppLaunchError::Error SigninErrorToKioskLaunchError(
     case SigninPerformer::LoginError::kPolicyLoadFailed:
       return KioskAppLaunchError::Error::kPolicyLoadFailed;
     case SigninPerformer::LoginError::kAllowlistCheckFailed:
-      // TODO(b/291198824) kNone causes this result to be ignore, which matches
-      // the historical behavior of this class. Introduce a new enum value.
-      NOTREACHED();
-      return KioskAppLaunchError::Error::kNone;
+      return KioskAppLaunchError::Error::kUserNotAllowlisted;
   }
 }
 
@@ -326,6 +323,8 @@ void KioskProfileLoader::ReportLaunchResult(KioskAppLaunchError::Error error) {
     SYSLOG(ERROR) << "Cryptohome not available when loading Kiosk profile.";
   } else if (error == KioskAppLaunchError::Error::kAlreadyMounted) {
     SYSLOG(ERROR) << "Cryptohome already mounted when loading Kiosk profile.";
+  } else if (error == KioskAppLaunchError::Error::kUserNotAllowlisted) {
+    SYSLOG(ERROR) << "LoginPerformer disallowed Kiosk user sign in.";
   }
 
   if (error != KioskAppLaunchError::Error::kNone) {

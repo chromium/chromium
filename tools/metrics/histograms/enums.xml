@@ -57002,6 +57002,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="13" label="Failed to authorise ARC session"/>
   <int value="14" label="Timeout loading force-installed extensions"/>
   <int value="15" label="Invalid ExtensionInstallForcelist policy"/>
+  <int value="16" label="Failed to login because the user is not allowlisted"/>
 </enum>
 
 <enum name="KioskLaunchType">
