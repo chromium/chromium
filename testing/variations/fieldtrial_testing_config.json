@@ -7907,7 +7907,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "overflow_param": "true"
+                        "overflow_param": "false"
                     },
                     "enable_features": [
                         "EnablePinnedTabs"
