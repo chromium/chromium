@@ -225,6 +225,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_barcode_detector_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_before_install_prompt_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_before_install_prompt_event_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_blob_event_init.cc",

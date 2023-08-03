@@ -443,7 +443,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
   for (auto filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
     absl::optional<String> name =
-        filter_dict.Get<IDLString>("filter", exception_state);
+        filter_dict.Get<IDLString>("name", exception_state);
     if (name == "gaussianBlur") {
       if (auto* blur_operation = ResolveBlur(filter_dict, exception_state)) {
         operations.Operations().push_back(blur_operation);
@@ -498,9 +498,9 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       {
         const String& message =
             (!name.has_value())
-                ? "CanvasFilters require key 'filter' to specify filter type."
+                ? "Canvas filter require key 'name' to specify filter type."
                 : String::Format(
-                      "\"%s\" is not among supported CanvasFilter types.",
+                      "\"%s\" is not among supported canvas filter types.",
                       name->Utf8().c_str());
         execution_context.AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
@@ -509,8 +509,8 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       }
       if (num_canvas_filter_errors_to_console_allowed_ == 0) {
         const String& message =
-            "CanvasFilter: too many errors, no more errors will be reported to "
-            "the console for this process.";
+            "Canvas filter: too many errors, no more errors will be reported "
+            "to the console for this process.";
         execution_context.AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kRendering,

@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -173,7 +174,7 @@ void BaseRenderingContext2D::restore(ExceptionState& exception_state) {
 }
 
 void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
-                                        const V8CanvasFilterInput* filter_init,
+                                        const BeginLayerOptions* options,
                                         ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
@@ -193,7 +194,8 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   ++layer_count_;
 
   CanvasRenderingContext2DState& state = GetState();
-  if (filter_init != nullptr) {
+  if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
+      filter_input != nullptr) {
     FilterEffectBuilder filter_effect_builder(
         gfx::RectF(Width(), Height()),
         1.0f);  // Deliberately ignore zoom on the canvas element.
@@ -206,7 +208,7 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
     state.SetLayerFilter(paint_filter_builder::Build(
         filter_effect_builder.BuildFilterEffect(
             CanvasFilterOperationResolver::CreateFilterOperations(
-                CHECK_DEREF(filter_init),
+                *filter_input,
                 CHECK_DEREF(ExecutionContext::From(script_state)),
                 exception_state),
             !OriginClean()),

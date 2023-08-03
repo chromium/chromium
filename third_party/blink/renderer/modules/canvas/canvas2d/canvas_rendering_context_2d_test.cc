@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
@@ -1452,7 +1453,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
       nullptr, std::move(fake_accelerate_surface), size);
   NonThrowableExceptionState exception_state;
   Context2D()->beginLayer(ToScriptStateForMainWorld(GetDocument().GetFrame()),
-                          /*filter_init=*/nullptr, exception_state);
+                          BeginLayerOptions::Create(), exception_state);
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
   while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
