@@ -32,8 +32,13 @@ TEST(HashRealTimeUtilsTest, TestIsThreatTypeRelevant) {
       V5::ThreatType::SOCIAL_ENGINEERING));
   EXPECT_TRUE(hash_realtime_utils::IsThreatTypeRelevant(
       V5::ThreatType::UNWANTED_SOFTWARE));
+#if BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(
+      hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::SUSPICIOUS));
+#else
   EXPECT_TRUE(
       hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::SUSPICIOUS));
+#endif
   EXPECT_TRUE(
       hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::TRICK_TO_BILL));
   EXPECT_FALSE(hash_realtime_utils::IsThreatTypeRelevant(

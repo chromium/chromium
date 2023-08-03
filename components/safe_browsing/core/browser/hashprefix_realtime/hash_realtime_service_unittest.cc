@@ -718,14 +718,19 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash) {
     SBThreatType expected_threat_type;
     int expected_threat_info_size;
   } test_cases[] = {
-      {absl::nullopt, SB_THREAT_TYPE_SAFE, 0},
-      {V5::ThreatType::SOCIAL_ENGINEERING, SB_THREAT_TYPE_URL_PHISHING, 1},
-      {V5::ThreatType::MALWARE, SB_THREAT_TYPE_URL_MALWARE, 1},
-      {V5::ThreatType::UNWANTED_SOFTWARE, SB_THREAT_TYPE_URL_UNWANTED, 1},
-      {V5::ThreatType::SUSPICIOUS, SB_THREAT_TYPE_SUSPICIOUS_SITE, 1},
-      {V5::ThreatType::TRICK_TO_BILL, SB_THREAT_TYPE_BILLING, 1},
-      // Irrelevant threat type should return safe.
-      {V5::ThreatType::API_ABUSE, SB_THREAT_TYPE_SAFE, 0},
+    {absl::nullopt, SB_THREAT_TYPE_SAFE, 0},
+    {V5::ThreatType::SOCIAL_ENGINEERING, SB_THREAT_TYPE_URL_PHISHING, 1},
+    {V5::ThreatType::MALWARE, SB_THREAT_TYPE_URL_MALWARE, 1},
+    {V5::ThreatType::UNWANTED_SOFTWARE, SB_THREAT_TYPE_URL_UNWANTED, 1},
+#if !BUILDFLAG(IS_IOS)
+    {V5::ThreatType::SUSPICIOUS, SB_THREAT_TYPE_SUSPICIOUS_SITE, 1},
+#endif
+    {V5::ThreatType::TRICK_TO_BILL, SB_THREAT_TYPE_BILLING, 1},
+    // Irrelevant threat types should return safe.
+    {V5::ThreatType::API_ABUSE, SB_THREAT_TYPE_SAFE, 0},
+#if BUILDFLAG(IS_IOS)
+    {V5::ThreatType::SUSPICIOUS, SB_THREAT_TYPE_SAFE, 0},
+#endif
   };
 
   GURL url = GURL("https://example.test");

@@ -32,7 +32,9 @@ bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
     case V5::ThreatType::MALWARE:
     case V5::ThreatType::SOCIAL_ENGINEERING:
     case V5::ThreatType::UNWANTED_SOFTWARE:
+#if !BUILDFLAG(IS_IOS)
     case V5::ThreatType::SUSPICIOUS:
+#endif
     case V5::ThreatType::TRICK_TO_BILL:
       return true;
     default:
