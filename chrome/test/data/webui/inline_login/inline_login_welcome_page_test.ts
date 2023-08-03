@@ -15,21 +15,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
-const inline_login_welcome_page_test = {
-  suiteName: 'InlineLoginWelcomePageTest',
-  TestNames: {
-    Reauthentication: 'Reauthentication',
-    OkButton: 'OkButton',
-    Checkbox: 'Checkbox',
-    GoBack: 'GoBack',
-    IsAvailableInArc: 'IsAvailableInArc',
-    ToggleHidden: 'ToggleHidden',
-    LinkClick: 'LinkClick',
-  },
-};
-Object.assign(window, {inline_login_welcome_page_test});
-
-suite(inline_login_welcome_page_test.suiteName, () => {
+suite('InlineLoginWelcomePageTest', () => {
   let inlineLoginComponent: InlineLoginAppElement;
   let testBrowserProxy: TestInlineLoginBrowserProxy;
   let testAuthenticator: TestAuthenticator;
@@ -57,18 +43,16 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     loadTimeData.overrideValues({shouldSkipWelcomePage: false});
   });
 
-  test(
-      inline_login_welcome_page_test.TestNames.Reauthentication, () => {
-        testSetup(/*dialogArgs=*/ null);
-        webUIListenerCallback(
-            'load-auth-extension', fakeAuthExtensionDataWithEmail);
-        // Welcome screen should be skipped for reauth.
-        assertEquals(
-            View.ADD_ACCOUNT, getActiveViewId(),
-            'Welcome screen should be active');
-      });
+  test('Reauthentication', () => {
+    testSetup(/*dialogArgs=*/ null);
+    webUIListenerCallback(
+        'load-auth-extension', fakeAuthExtensionDataWithEmail);
+    // Welcome screen should be skipped for reauth.
+    assertEquals(
+        View.ADD_ACCOUNT, getActiveViewId(), 'Welcome screen should be active');
+  });
 
-  test(inline_login_welcome_page_test.TestNames.OkButton, () => {
+  test('OkButton', () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     const okButton =
@@ -95,7 +79,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     });
   });
 
-  test(inline_login_welcome_page_test.TestNames.Checkbox, () => {
+  test('Checkbox', () => {
     testSetup(/*dialogArgs=*/ null);
 
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
@@ -118,7 +102,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     });
   });
 
-  test(inline_login_welcome_page_test.TestNames.GoBack, () => {
+  test('GoBack', () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     const backButton =
@@ -149,32 +133,30 @@ suite(inline_login_welcome_page_test.suiteName, () => {
         View.WELCOME, getActiveViewId(), 'Welcome screen should be active');
   });
 
-  test(
-      inline_login_welcome_page_test.TestNames.IsAvailableInArc, () => {
-        const dialogArgs = {
-          isAvailableInArc: true,
-          showArcAvailabilityPicker: false,
-        };
-        testSetup(dialogArgs);
-        const welcomePageApp =
-            inlineLoginComponent.shadowRoot!.querySelector('welcome-page-app');
-        assertTrue(!!welcomePageApp);
-        const toggle = welcomePageApp.shadowRoot!.querySelector<HTMLElement>(
-            '.arc-toggle-container');
-        assertTrue(!!toggle);
-        assertFalse(toggle.hidden, 'ARC toggle should be visible');
-        const toggleButton =
-            welcomePageApp.shadowRoot!.querySelector('cr-toggle');
-        assertTrue(!!toggleButton);
-        assertTrue(toggleButton.checked);
-        toggleButton.click();
-        flush();
-        return waitAfterNextRender(toggleButton).then(() => {
-          assertFalse(toggleButton.checked);
-        });
-      });
+  test('IsAvailableInArc', () => {
+    const dialogArgs = {
+      isAvailableInArc: true,
+      showArcAvailabilityPicker: false,
+    };
+    testSetup(dialogArgs);
+    const welcomePageApp =
+        inlineLoginComponent.shadowRoot!.querySelector('welcome-page-app');
+    assertTrue(!!welcomePageApp);
+    const toggle = welcomePageApp.shadowRoot!.querySelector<HTMLElement>(
+        '.arc-toggle-container');
+    assertTrue(!!toggle);
+    assertFalse(toggle.hidden, 'ARC toggle should be visible');
+    const toggleButton = welcomePageApp.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!toggleButton);
+    assertTrue(toggleButton.checked);
+    toggleButton.click();
+    flush();
+    return waitAfterNextRender(toggleButton).then(() => {
+      assertFalse(toggleButton.checked);
+    });
+  });
 
-  test(inline_login_welcome_page_test.TestNames.ToggleHidden, () => {
+  test('ToggleHidden', () => {
     const dialogArgs = {
       isAvailableInArc: true,
       showArcAvailabilityPicker: true,
@@ -189,7 +171,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     assertTrue(toggle.hidden, 'ARC toggle should be hidden');
   });
 
-  test(inline_login_welcome_page_test.TestNames.LinkClick, async () => {
+  test('LinkClick', async () => {
     const dialogArgs = {
       isAvailableInArc: true,
       showArcAvailabilityPicker: false,

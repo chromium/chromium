@@ -16,19 +16,7 @@ import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProx
 
 import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
-const arc_account_picker_page_test = {
-  suiteName: 'InlineLoginArcPickerPageTest',
-  TestNames: {
-    ArcPickerActive: 'ArcPickerActive',
-    ArcPickerHiddenForReauth: 'ArcPickerHiddenForReauth',
-    ArcPickerHiddenNoAccounts: 'ArcPickerHiddenNoAccounts',
-    AddAccount: 'AddAccount',
-    MakeAvailableInArc: 'MakeAvailableInArc',
-  },
-};
-Object.assign(window, {arc_account_picker_page_test});
-
-suite(arc_account_picker_page_test.suiteName, () => {
+suite('InlineLoginArcPickerPageTest', () => {
   let arcAccountPickerComponent: ArcAccountPickerAppElement;
   let inlineLoginComponent: InlineLoginAppElement;
   let testBrowserProxy: TestInlineLoginBrowserProxy;
@@ -69,56 +57,51 @@ suite(arc_account_picker_page_test.suiteName, () => {
     flush();
   }
 
-  test(
-      arc_account_picker_page_test.TestNames.ArcPickerActive, async () => {
-        await testSetup(
-            {isAvailableInArc: true, showArcAvailabilityPicker: true},
-            getFakeAccountsNotAvailableInArcList(),
-            // Send auth extension data without email -> it's account addition
-            // flow.
-            fakeAuthExtensionData);
-        assertEquals(
-            View.ARC_ACCOUNT_PICKER, getActiveViewId(),
-            'ARC account picker screen should be active');
+  test('ArcPickerActive', async () => {
+    await testSetup(
+        {isAvailableInArc: true, showArcAvailabilityPicker: true},
+        getFakeAccountsNotAvailableInArcList(),
+        // Send auth extension data without email -> it's account addition
+        // flow.
+        fakeAuthExtensionData);
+    assertEquals(
+        View.ARC_ACCOUNT_PICKER, getActiveViewId(),
+        'ARC account picker screen should be active');
 
-        const uiAccounts = [
-          ...arcAccountPickerComponent.shadowRoot!.querySelectorAll(
-              '.account-item'),
-        ].filter(item => item.id !== 'addAccountButton');
-        assertEquals(
-            getFakeAccountsNotAvailableInArcList().length, uiAccounts.length);
-      });
+    const uiAccounts = [
+      ...arcAccountPickerComponent.shadowRoot!.querySelectorAll(
+          '.account-item'),
+    ].filter(item => item.id !== 'addAccountButton');
+    assertEquals(
+        getFakeAccountsNotAvailableInArcList().length, uiAccounts.length);
+  });
 
-  test(
-      arc_account_picker_page_test.TestNames.ArcPickerHiddenForReauth,
-      async () => {
-        await testSetup(
-            {isAvailableInArc: true, showArcAvailabilityPicker: true},
-            /*accountsNotAvailableInArc=*/[],
-            // Send auth extension data with email -> it's reauthentication
-            // flow.
-            fakeAuthExtensionDataWithEmail);
-        assertEquals(
-            View.ADD_ACCOUNT, getActiveViewId(),
-            'Add account view should be active for reauthentication');
-      });
+  test('ArcPickerHiddenForReauth', async () => {
+    await testSetup(
+        {isAvailableInArc: true, showArcAvailabilityPicker: true},
+        /*accountsNotAvailableInArc=*/[],
+        // Send auth extension data with email -> it's reauthentication
+        // flow.
+        fakeAuthExtensionDataWithEmail);
+    assertEquals(
+        View.ADD_ACCOUNT, getActiveViewId(),
+        'Add account view should be active for reauthentication');
+  });
 
-  test(
-      arc_account_picker_page_test.TestNames.ArcPickerHiddenNoAccounts,
-      async () => {
-        await testSetup(
-            {isAvailableInArc: true, showArcAvailabilityPicker: true},
-            /*accountsNotAvailableInArc=*/[],
-            // Send auth extension data without email -> it's account addition
-            // flow.
-            fakeAuthExtensionData);
-        assertEquals(
-            View.WELCOME, getActiveViewId(),
-            'Welcome view should be active when there are 0 accounts' +
-                ' not available in ARC');
-      });
+  test('ArcPickerHiddenNoAccounts', async () => {
+    await testSetup(
+        {isAvailableInArc: true, showArcAvailabilityPicker: true},
+        /*accountsNotAvailableInArc=*/[],
+        // Send auth extension data without email -> it's account addition
+        // flow.
+        fakeAuthExtensionData);
+    assertEquals(
+        View.WELCOME, getActiveViewId(),
+        'Welcome view should be active when there are 0 accounts' +
+            ' not available in ARC');
+  });
 
-  test(arc_account_picker_page_test.TestNames.AddAccount, async () => {
+  test('AddAccount', async () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         getFakeAccountsNotAvailableInArcList(),
@@ -138,26 +121,24 @@ suite(arc_account_picker_page_test.suiteName, () => {
         'Welcome screen should be active after Add account button click');
   });
 
-  test(
-      arc_account_picker_page_test.TestNames.MakeAvailableInArc, async () => {
-        await testSetup(
-            {isAvailableInArc: true, showArcAvailabilityPicker: true},
-            getFakeAccountsNotAvailableInArcList(),
-            // Send auth extension data without email -> it's account addition
-            // flow.
-            fakeAuthExtensionData);
-        assertEquals(
-            View.ARC_ACCOUNT_PICKER, getActiveViewId(),
-            'ARC account picker screen should be active');
+  test('MakeAvailableInArc', async () => {
+    await testSetup(
+        {isAvailableInArc: true, showArcAvailabilityPicker: true},
+        getFakeAccountsNotAvailableInArcList(),
+        // Send auth extension data without email -> it's account addition
+        // flow.
+        fakeAuthExtensionData);
+    assertEquals(
+        View.ARC_ACCOUNT_PICKER, getActiveViewId(),
+        'ARC account picker screen should be active');
 
-        const expectedAccount = getFakeAccountsNotAvailableInArcList()[0];
-        const accountItem =
-            arcAccountPickerComponent.shadowRoot!.querySelector<HTMLElement>(
-                '.account-item');
-        assertTrue(!!accountItem);
-        accountItem.click();
-        const account =
-            await testArcBrowserProxy.whenCalled('makeAvailableInArc');
-        assertDeepEquals(expectedAccount, account);
-      });
+    const expectedAccount = getFakeAccountsNotAvailableInArcList()[0];
+    const accountItem =
+        arcAccountPickerComponent.shadowRoot!.querySelector<HTMLElement>(
+            '.account-item');
+    assertTrue(!!accountItem);
+    accountItem.click();
+    const account = await testArcBrowserProxy.whenCalled('makeAvailableInArc');
+    assertDeepEquals(expectedAccount, account);
+  });
 });
