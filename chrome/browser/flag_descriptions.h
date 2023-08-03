@@ -1870,9 +1870,6 @@ extern const char kTabHoverCardImagesDescription[];
 extern const char kTabSearchFuzzySearchName[];
 extern const char kTabSearchFuzzySearchDescription[];
 
-extern const char kDiscoverFeedMultiColumnAndroidName[];
-extern const char kDiscoverFeedMultiColumnAndroidDescription[];
-
 extern const char kTabStripRedesignAndroidName[];
 extern const char kTabStripRedesignAndroidDescription[];
 

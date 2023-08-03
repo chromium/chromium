@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
-import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
@@ -489,7 +488,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
-                mIsNtpAsHomeSurfaceEnabled, FeedFeatures.isMultiColumnFeedEnabled(mContext),
+                mIsNtpAsHomeSurfaceEnabled,
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext),
                 mIsSurfacePolishEnabled,
                 StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue());
 

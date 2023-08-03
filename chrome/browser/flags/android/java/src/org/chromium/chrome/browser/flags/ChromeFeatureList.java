@@ -262,7 +262,6 @@ public abstract class ChromeFeatureList {
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
             "FeedImageMemoryCacheSizePercentage";
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";
-    public static final String FEED_MULTI_COLUMN = "DiscoverFeedMultiColumn";
     public static final String FEED_POSITION_ANDROID = "FeedPositionAndroid";
     public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";
     public static final String FEED_BOC_SIGN_IN_INTERSTITIAL = "FeedBoCSigninInterstitial";
@@ -542,7 +541,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
     public static final CachedFlag sDelayTempStripRemoval =
             new CachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
-    public static final CachedFlag sDiscoverMultiColumn = new CachedFlag(FEED_MULTI_COLUMN, true);
     public static final CachedFlag sDragDropIntoOmnibox =
             new CachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
     public static final CachedFlag sEarlyLibraryLoad = new CachedFlag(EARLY_LIBRARY_LOAD, true);
@@ -646,7 +644,6 @@ public abstract class ChromeFeatureList {
         sCommandLineOnNonRooted,
         sCriticalPersistedTabData,
         sDelayTempStripRemoval,
-        sDiscoverMultiColumn,
         sDragDropIntoOmnibox,
         sEarlyLibraryLoad,
         sEmptyStates,

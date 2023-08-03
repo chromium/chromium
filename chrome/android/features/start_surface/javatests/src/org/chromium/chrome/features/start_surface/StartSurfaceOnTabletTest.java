@@ -282,9 +282,9 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.FEED_MULTI_COLUMN, ChromeFeatureList.START_SURFACE_ON_TABLET})
+            ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
-    public void testFakeSearchBoxWidthShortenedWith1RowMvTitlesAndMultiColumnFeeds() {
+    public void testFakeSearchBoxWidthShortenedWith1RowMvTitles() {
         // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -316,9 +316,8 @@ public class StartSurfaceOnTabletTest {
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.START_SURFACE_ON_TABLET})
-    @DisableFeatures({ChromeFeatureList.FEED_MULTI_COLUMN})
     // clang-format off
-    public void testFakeSearchBoxWidthNotChangeWith1RowMvTitlesAndMultiColumnFeedsDisabled() {
+    public void testFakeSearchBoxWidthNotChangeWith1RowMvTitles() {
         // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -330,24 +329,15 @@ public class StartSurfaceOnTabletTest {
                 ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
         // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
-
-        Resources res = cta.getResources();
-        int expectedMargin =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed);
-
-        // Verifies there isn't additional margin added for the fake search box in bot landscape and
-        // portrait mode when multiple Column Feeds is disabled.
-        verifyFakeSearchBoxWidth(expectedMargin, expectedMargin, ntp);
     }
 
     @Test
     @MediumTest
     @Feature({"StartSurface"})
     @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
-    @EnableFeatures(
-            {ChromeFeatureList.START_SURFACE_ON_TABLET, ChromeFeatureList.FEED_MULTI_COLUMN})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
-    public void testFakeSearchBoxWidthShortenedWith2RowMvTitlesAndMultiColumnFeeds() {
+    public void testFakeSearchBoxWidthShortenedWith2RowMvTitles() {
         // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -374,11 +364,10 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.FEED_MULTI_COLUMN})
+    @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
-    public void testFakeSearchBoxWidthNotChangeWith2RowMvTitlesAndMultiColumnFeedsDisabled() {
+    public void testFakeSearchBoxWidthNotChangeWith2RowMvTitles() {
         // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -390,14 +379,6 @@ public class StartSurfaceOnTabletTest {
                 ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
         // Verifies that 2 row MV tiles are shown when "Start surface on tablet" flag is disabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesGridLayout);
-
-        Resources res = cta.getResources();
-        int expectedMargin =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed);
-
-        // Verifies there isn't additional margin added for the fake search box in bot landscape and
-        // portrait mode when multiple Column Feeds is disabled.
-        verifyFakeSearchBoxWidth(expectedMargin, expectedMargin, ntp);
     }
 
     @Test
@@ -459,8 +440,8 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    @DisableFeatures({ChromeFeatureList.FEED_MULTI_COLUMN})
     // clang-format off
     public void testDefaultSingleTabViewMargin() throws IOException {
         // clang-format on
@@ -479,7 +460,7 @@ public class StartSurfaceOnTabletTest {
 
         Resources res = cta.getResources();
         int defaultLateralMargin =
-                res.getDimensionPixelSize(R.dimen.single_tab_card_lateral_margin);
+                res.getDimensionPixelSize(R.dimen.single_tab_card_lateral_margin_landscape_tablet);
 
         // Verifies that the single Tab card has its original margins.
         MarginLayoutParams marginLayoutParams =
@@ -493,9 +474,9 @@ public class StartSurfaceOnTabletTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.FEED_MULTI_COLUMN, ChromeFeatureList.START_SURFACE_ON_TABLET})
+            ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
-    public void test1RowMvtMarginWithMultiColumnFeedsOnNtpHomePage() throws IOException{
+    public void test1RowMvtMarginOnNtpHomePage() throws IOException{
         // clang-format on
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -542,9 +523,9 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.FEED_MULTI_COLUMN, ChromeFeatureList.START_SURFACE_ON_TABLET})
+            ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
-    public void test1RowMvtMarginWithMultiColumnFeedsOnEmptyNtp() {
+    public void test1RowMvtMarginOnEmptyNtp() {
         // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -565,11 +546,10 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    @EnableFeatures(
-            {ChromeFeatureList.FEED_MULTI_COLUMN, ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
     // clang-format off
-    public void test2RowMvtMarginWithMultiColumnFeedsOnNtpHomePage() throws IOException {
+    public void test2RowMvtMarginOnNtpHomePage() throws IOException {
         // clang-format on
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);

@@ -58,6 +58,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -288,7 +289,7 @@ public class FeedSurfaceMediator
     private void updateLayout(boolean isSmallLayoutWidth) {
         ListLayoutHelper listLayoutHelper =
                 mCoordinator.getHybridListRenderer().getListLayoutHelper();
-        if (!FeedFeatures.isMultiColumnFeedEnabled(mContext) || listLayoutHelper == null
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext) || listLayoutHelper == null
                 || mCurrentStream == null) {
             return;
         }

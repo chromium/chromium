@@ -64,6 +64,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -716,7 +717,8 @@ public class FeedSurfaceCoordinator
         RecyclerView view;
         if (mHybridListRenderer != null) {
             // XSurface returns a View, but it should be a RecyclerView.
-            boolean useStaggeredLayout = FeedFeatures.isMultiColumnFeedEnabled(mActivity);
+            boolean useStaggeredLayout =
+                    DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mActivity);
             view = (RecyclerView) mHybridListRenderer.bind(
                     mContentManager, mViewportView, useStaggeredLayout);
             view.setId(R.id.feed_stream_recycler_view);

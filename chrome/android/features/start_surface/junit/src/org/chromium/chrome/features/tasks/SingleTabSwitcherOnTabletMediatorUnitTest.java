@@ -119,7 +119,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testSingleTabSwitcherOnTablet() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
-                mTabListFaviconProvider, mTab, false, false, null, null);
+                mTabListFaviconProvider, mTab, false, null, null);
         assertNull(mPropertyModel.get(FAVICON));
         assertNull(mPropertyModel.get(TITLE));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
@@ -148,7 +148,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testSingleTabSwitcherOnTablet_SurfacePolish() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
-                mTabListFaviconProvider, mTab, false, false, null, mTabContentManager);
+                mTabListFaviconProvider, mTab, false, null, mTabContentManager);
         doNothing()
                 .when(mTabContentManager)
                 .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
@@ -196,7 +196,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testWhenMostRecentTabIsNull() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
-                mTabListFaviconProvider, null, false, false, null, null);
+                mTabListFaviconProvider, null, false, null, null);
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
 
         mediator.setVisibility(true);
@@ -211,7 +211,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testUpdateMostRecentTabInfo() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
-                mTabListFaviconProvider, mTab, false, false, null, null);
+                mTabListFaviconProvider, mTab, false, null, null);
         assertFalse(mediator.getInitialized());
 
         mediator.setVisibility(true);
@@ -238,7 +238,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         doReturn(mUrl).when(mTab3).getUrl();
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
-                mTabListFaviconProvider, mTab3, false, false, null, null);
+                mTabListFaviconProvider, mTab3, false, null, null);
         mediator.updateTitle();
         verify(mTab3).addObserver(mTabObserverCaptor.capture());
         doReturn(mTitle).when(mTab3).getTitle();
@@ -248,11 +248,11 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     }
 
     @Test
-    public void testStartMarginWith1RowMvTilesAndMultiColumnFeedEnabled() {
+    public void testStartMarginWith1RowMvTiles() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 ContextUtils.getApplicationContext(), null, mPropertyModel,
                 mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
-                true /* isMultiColumnFeedEnabled */, true /* isScrollableMvtEnabled */, null, null);
+                true /* isScrollableMvtEnabled */, null, null);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         Resources resources = ContextUtils.getApplicationContext().getResources();
@@ -281,12 +281,11 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     }
 
     @Test
-    public void testStartMarginWith2RowMvTilesAndMultiColumnFeedEnabled() {
-        SingleTabSwitcherOnTabletMediator mediator =
-                new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
-                        mPropertyModel, mActivityLifecycleDispatcher, mTabModelSelector,
-                        mTabListFaviconProvider, mTab3, true /* isMultiColumnFeedEnabled */,
-                        false /* isScrollableMvtEnabled */, null, null);
+    public void testStartMarginWith2RowMvTiles() {
+        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
+                ContextUtils.getApplicationContext(), null, mPropertyModel,
+                mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
+                false /* isScrollableMvtEnabled */, null, null);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         int lateralMargin =
@@ -314,29 +313,12 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     }
 
     @Test
-    public void testStartMarginWithMultiColumnFeedDisabled() {
-        SingleTabSwitcherOnTabletMediator mediator =
-                new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
-                        mPropertyModel, mActivityLifecycleDispatcher, mTabModelSelector,
-                        mTabListFaviconProvider, mTab3, false /* isMultiColumnFeedEnabled */,
-                        false /* isScrollableMvtEnabled */, null, null);
-        verify(mActivityLifecycleDispatcher, never())
-                .register(mConfigurationChangedObserver.capture());
-
-        // Verifies the start margins are initialized.
-        assertEquals(0, mediator.getMarginDefaultForTesting());
-        assertEquals(0, mediator.getMarginSmallPortraitForTesting());
-        assertEquals(0, mPropertyModel.get(LATERAL_MARGIN));
-    }
-
-    @Test
-    public void testNoLateralMarginWithMultiColumnFeed_SurfacePolish() {
+    public void testNoLateralMargin_SurfacePolish() {
         TabContentManager tabContentManager = Mockito.mock(TabContentManager.class);
-        SingleTabSwitcherOnTabletMediator mediator =
-                new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
-                        mPropertyModel, mActivityLifecycleDispatcher, mTabModelSelector,
-                        mTabListFaviconProvider, mTab3, true /* isMultiColumnFeedEnabled */,
-                        false /* isScrollableMvtEnabled */, null, tabContentManager);
+        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
+                ContextUtils.getApplicationContext(), null, mPropertyModel,
+                mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
+                false /* isScrollableMvtEnabled */, null, tabContentManager);
         verify(mActivityLifecycleDispatcher, never())
                 .register(mConfigurationChangedObserver.capture());
 
@@ -351,8 +333,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         Runnable callback = Mockito.mock(Runnable.class);
         new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
                 mPropertyModel, mActivityLifecycleDispatcher, mTabModelSelector,
-                mTabListFaviconProvider, mTab3, false /* isMultiColumnFeedEnabled */,
-                false /* isScrollableMvtEnabled */, callback, null);
+                mTabListFaviconProvider, mTab3, false /* isScrollableMvtEnabled */, callback, null);
         verify(callback, never()).run();
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);

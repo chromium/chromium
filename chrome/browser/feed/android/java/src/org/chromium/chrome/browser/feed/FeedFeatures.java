@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import android.content.Context;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -16,7 +14,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -105,11 +102,6 @@ public final class FeedFeatures {
      */
     public static void updateFollowingFeedSeen() {
         getPrefService().setBoolean(Pref.HAS_SEEN_WEB_FEED, true);
-    }
-
-    public static boolean isMultiColumnFeedEnabled(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_MULTI_COLUMN);
     }
 
     /**

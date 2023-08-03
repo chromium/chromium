@@ -178,7 +178,6 @@ BASE_DECLARE_FEATURE(kTabGroupsContinuationAndroid);
 BASE_DECLARE_FEATURE(kTabGroupsUiImprovementsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupsForTablets);
 BASE_DECLARE_FEATURE(kTabGridLayoutAndroid);
-BASE_DECLARE_FEATURE(kDiscoverFeedMultiColumn);
 BASE_DECLARE_FEATURE(kTabStripRedesign);
 BASE_DECLARE_FEATURE(kTabletToolbarReordering);
 BASE_DECLARE_FEATURE(kTabStripStartupRefactoring);

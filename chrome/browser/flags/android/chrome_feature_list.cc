@@ -307,7 +307,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupsAndroid,
     &kTabGroupsContinuationAndroid,
     &kTabGroupsForTablets,
-    &kDiscoverFeedMultiColumn,
     &kTabStripRedesign,
     &kTabletToolbarReordering,
     &kTabStripStartupRefactoring,
@@ -1021,10 +1020,6 @@ BASE_FEATURE(kTabGroupsForTablets,
 
 BASE_FEATURE(kTabGridLayoutAndroid,
              "TabGridLayoutAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDiscoverFeedMultiColumn,
-             "DiscoverFeedMultiColumn",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripRedesign,

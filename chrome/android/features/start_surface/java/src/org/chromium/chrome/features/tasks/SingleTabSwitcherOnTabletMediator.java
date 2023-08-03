@@ -52,7 +52,6 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private Tab mMostRecentTab;
     private boolean mInitialized;
     private boolean mIsScrollableMvtEnabled;
-    private boolean mIsMultiFeedEnabled;
 
     private Runnable mSingleTabCardClickedCallback;
     private boolean mIsSurfacePolishEnabled;
@@ -63,19 +62,18 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             BrowserControlsStateProvider browserControlsStateProvider, PropertyModel propertyModel,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
-            Tab mostRecentTab, boolean isMultiColumnFeedEnabled, boolean isScrollableMvtEnabled,
+            Tab mostRecentTab, boolean isScrollableMvtEnabled,
             Runnable singleTabCardClickedCallback, @Nullable TabContentManager tabContentManager) {
         mContext = context;
         mPropertyModel = propertyModel;
         mResources = mContext.getResources();
         mTabListFaviconProvider = tabListFaviconProvider;
         mMostRecentTab = mostRecentTab;
-        mIsMultiFeedEnabled = isMultiColumnFeedEnabled;
         mIsScrollableMvtEnabled = isScrollableMvtEnabled;
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
         mIsSurfacePolishEnabled = tabContentManager != null;
 
-        if (mIsMultiFeedEnabled && !mIsSurfacePolishEnabled) {
+        if (!mIsSurfacePolishEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mMarginDefaut = mResources.getDimensionPixelSize(
                     R.dimen.single_tab_card_lateral_margin_landscape_tablet);
@@ -112,14 +110,12 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // The margin doesn't change when 2 row MV tiles are shown.
-        if (mIsScrollableMvtEnabled && mIsMultiFeedEnabled) {
+        if (mIsScrollableMvtEnabled) {
             updateMargins(newConfig.orientation);
         }
     }
 
     void updateMargins(int orientation) {
-        if (!mIsMultiFeedEnabled) return;
-
         int lateralMargin =
                 mIsScrollableMvtEnabled && orientation == Configuration.ORIENTATION_PORTRAIT
                 ? mMarginSmallPortrait

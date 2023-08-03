@@ -4347,12 +4347,6 @@ const char kThumbnailPlaceholderName[] = "Thumbnail placeholder";
 const char kThumbnailPlaceholderDescription[] =
     "Display a placeholder image for missing thumbnails.";
 
-const char kDiscoverFeedMultiColumnAndroidName[] =
-    "Multi-column Discover feed Android.";
-const char kDiscoverFeedMultiColumnAndroidDescription[] =
-    "Enables single or multi-column Discover feed based on screen width on "
-    "Android.";
-
 const char kTabStripRedesignAndroidName[] = "Tab Strip Redesign Android.";
 const char kTabStripRedesignAndroidDescription[] =
     "Enabled Tab Strip Redesign on Android - A visual redesign of Clank Tab "

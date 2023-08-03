@@ -20,7 +20,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -85,8 +84,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(activity,
                     browserControlsStateProvider, propertyModel, activityLifecycleDispatcher,
                     tabModelSelector, mTabListFaviconProvider, mostRecentTab,
-                    FeedFeatures.isMultiColumnFeedEnabled(activity), isScrollableMvtEnabled,
-                    singleTabCardClickedCallback,
+                    isScrollableMvtEnabled, singleTabCardClickedCallback,
                     isSurfacePolishEnabled ? tabContentManager : null);
             mMediator = null;
         }
