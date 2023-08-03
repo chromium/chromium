@@ -113,7 +113,6 @@ source_set("policy_util") {
     "//base",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 

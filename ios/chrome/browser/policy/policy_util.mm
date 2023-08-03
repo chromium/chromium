@@ -7,6 +7,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
@@ -34,4 +35,19 @@ bool IsIncognitoModeForced(PrefService* pref_service) {
 bool IsApplicationManagedByPlatform() {
   return [[[NSUserDefaults standardUserDefaults]
              dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
+}
+
+bool IsAddNewTabAllowedByPolicy(PrefService* prefs, bool is_incognito) {
+  if (!prefs) {
+    // Return true to just ignore policy check if this is null.
+    return true;
+  }
+
+  if (IsIncognitoModeDisabled(prefs)) {
+    return !is_incognito;
+  } else if (IsIncognitoModeForced(prefs)) {
+    return is_incognito;
+  }
+
+  return true;
 }

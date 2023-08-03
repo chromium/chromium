@@ -1605,6 +1605,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Tells the appropriate delegate to create a new item, and then tells the
 // presentation delegate to show the new item.
 - (void)openNewTabInPage:(TabGridPage)page focusOmnibox:(BOOL)focusOmnibox {
+  // Guard against opening new tabs in a page that is disabled. It is the job
+  // of the caller to make sure to not open a new tab in a page that can't
+  // perform the action. For example, it is an error to attempt to open a new
+  // tab in the icognito page when incognito is disabled by policy.
+  CHECK([self canPerformOpenNewTabActionForDestinationPage:page]);
+
   switch (page) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsViewController prepareForDismissal];
@@ -1615,7 +1621,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.regularTabsDelegate addNewItem];
       break;
     case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to have an active tab in remote tabs.";
+      NOTREACHED() << "It is invalid to open a new tab in remote tabs.";
       break;
   }
   self.activePage = page;
@@ -1789,6 +1795,28 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpentOpeningExistingTab",
                               duration);
   self.tabGridEnterTime = base::TimeTicks();
+}
+
+// Returns YES if the switcher page is enabled. For example, the page may be
+// disabled by policy, in which case NO is returned.
+- (BOOL)isPageEnabled:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return _pageConfiguration !=
+             TabGridPageConfiguration::kIncognitoPageDisabled;
+    case TabGridPageRegularTabs:
+      return _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly;
+    case TabGridPageRemoteTabs:
+      return _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly;
+  }
+}
+
+// Returns YES if a new tab action that tagets the `destinationPage` can be
+// performed. The _currentPage can be the same page as the `destinationPage`.
+- (BOOL)canPerformOpenNewTabActionForDestinationPage:
+    (TabGridPage)destinationPage {
+  return [self isPageEnabled:destinationPage] &&
+         self.currentPage != TabGridPageRemoteTabs;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -2294,6 +2322,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
+  // Ignore the tap if the current page is disabled for some reason, by policy
+  // for instance. This is to avoid situations where the tap action from an
+  // enabled page can make it to a disabled page by releasing the
+  // button press after switching to the disabled page (b/273416844 is an
+  // example).
+  if (![self isPageEnabled:self.currentPage]) {
+    return;
+  }
+
   [self setCurrentIdlePageStatus:NO];
   base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   [self openNewTabInPage:self.currentPage focusOmnibox:NO];
@@ -2514,10 +2551,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (sel_isEqual(action, @selector(keyCommand_openNewTab)) ||
-      sel_isEqual(action, @selector(keyCommand_openNewRegularTab)) ||
-      sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
-    return self.currentPage != TabGridPageRemoteTabs;
+  if (sel_isEqual(action, @selector(keyCommand_openNewTab))) {
+    return [self canPerformOpenNewTabActionForDestinationPage:self.currentPage];
+  }
+  if (sel_isEqual(action, @selector(keyCommand_openNewRegularTab))) {
+    return [self
+        canPerformOpenNewTabActionForDestinationPage:TabGridPageRegularTabs];
+  }
+  if (sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
+    return [self
+        canPerformOpenNewTabActionForDestinationPage:TabGridPageIncognitoTabs];
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
     return self.viewVisible;

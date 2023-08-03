@@ -10,11 +10,13 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/prefs/pref_service.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -202,6 +204,15 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_reportAnIssue))) {
     return ios::provider::IsUserFeedbackSupported();
   }
+  if (sel_isEqual(action, @selector(keyCommand_openNewRegularTab))) {
+    // Don't open regular tab if incognito is forced by policy.
+    return !IsIncognitoModeForced(_browser->GetBrowserState()->GetPrefs());
+  }
+  if (sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
+    // Don't open incognito tab if incognito is disabled by policy.
+    return !IsIncognitoModeDisabled(_browser->GetBrowserState()->GetPrefs());
+  }
+
   return [super canPerformAction:action withSender:sender];
 }
 

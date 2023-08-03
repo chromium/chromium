@@ -43,4 +43,7 @@ bool IsIncognitoModeForced(PrefService* pref_service);
 // in the App Configuration from the platform.
 bool IsApplicationManagedByPlatform();
 
+// Returns true if adding a new tab item is allowed by policy.
+bool IsAddNewTabAllowedByPolicy(PrefService* prefs, bool is_incognito);
+
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_UTIL_H_

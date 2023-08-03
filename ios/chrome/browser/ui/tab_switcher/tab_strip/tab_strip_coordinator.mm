@@ -35,17 +35,19 @@
   if (self.tabStripViewController)
     return;
 
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  CHECK(browserState);
+
   self.tabStripViewController = [[TabStripViewController alloc] init];
   self.tabStripViewController.overrideUserInterfaceStyle =
-      self.browser->GetBrowserState()->IsOffTheRecord()
-          ? UIUserInterfaceStyleDark
-          : UIUserInterfaceStyleUnspecified;
-  self.tabStripViewController.isOffTheRecord =
-      self.browser->GetBrowserState()->IsOffTheRecord();
+      browserState->IsOffTheRecord() ? UIUserInterfaceStyleDark
+                                     : UIUserInterfaceStyleUnspecified;
+  self.tabStripViewController.isOffTheRecord = browserState->IsOffTheRecord();
 
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];
   self.mediator.webStateList = self.browser->GetWebStateList();
+  self.mediator.browserState = browserState;
 
   self.tabStripViewController.delegate = self.mediator;
 }

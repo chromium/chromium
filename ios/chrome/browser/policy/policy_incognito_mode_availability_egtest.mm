@@ -6,6 +6,7 @@
 
 #import "base/json/json_string_value_serializer.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_matchers.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 
 using chrome_test_util::ToolsMenuView;
 using policy::AssertButtonInCollectionDisabled;
@@ -139,6 +141,52 @@ id<GREYMatcher> TabGridButton() {
 
   AssertButtonInCollectionDisabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+}
+
+// Tests that when the IncognitoModeAvailability policy is set to forced, the
+// "New Tab" keyboard shortcut action is disabled and can't open a new regular
+// tab. This doesn't verify the tab grid UI.
+- (void)testOpenNewTab_FromPhysicalKeyboard_ForcedIncognito {
+  // Restart the app with the incognito policy.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  // Configure the policy to force sign-in.
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(
+      "<dict><key>IncognitoModeAvailability</key><integer>2</integer></dict>");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Use the `CMD + n` keyboard shorcut to try opening a regular tab.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"n"
+                                          flags:UIKeyModifierCommand];
+
+  // Verify that the browser view is still in incognito mode.
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"should stay in incognito mode");
+}
+
+// Tests that when the IncognitoModeAvailability policy is set to disabled, the
+// "New Incognito Tab" keyboard shortcut action is disabled and can't open a new
+// incognito tab. This doesn't verify the tab grid UI.
+- (void)testOpenNewTab_FromPhysicalKeyboard__DisabledIncognito {
+  // Restart the app to take into consideration the policy value.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  // Configure the policy to force sign-in.
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(
+      "<dict><key>IncognitoModeAvailability</key><integer>1</integer></dict>");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Use the `CMD + SHIFT + n` keyboard shorcut to try opening an incognito tab.
+  [ChromeEarlGrey
+      simulatePhysicalKeyboardEvent:@"n"
+                              flags:UIKeyModifierCommand | UIKeyModifierShift];
+
+  GREYAssertFalse([ChromeEarlGrey isIncognitoMode],
+                  @"should stay in regular mode");
 }
 
 // TODO(crbug.com/1165655): Add test to new tab long-press menu.

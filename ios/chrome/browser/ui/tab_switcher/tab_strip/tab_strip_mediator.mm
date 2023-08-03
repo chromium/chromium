@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -160,8 +161,13 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   if (!self.webStateList)
     return;
 
-  web::WebState::CreateParams params(
-      self.webStateList->GetActiveWebState()->GetBrowserState());
+  if (self.browserState) {
+    // Make sure that adding a new item is allowed by policy.
+    CHECK(IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
+                                     self.browserState->IsOffTheRecord()));
+  }
+
+  web::WebState::CreateParams params(self.browserState);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   GURL url(kChromeUINewTabURL);

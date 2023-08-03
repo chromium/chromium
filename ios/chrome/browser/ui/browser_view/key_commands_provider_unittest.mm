@@ -10,6 +10,8 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -495,6 +498,39 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ReportAnIssue) {
             ios::provider::IsUserFeedbackSupported());
 }
 
+// Checks that openNewRegularTab doesn't open a tab when regular tabs are
+// disabled by policy.
+TEST_F(KeyCommandsProviderTest,
+       CanPerform_OpenNewIncognitoTab_DisabledByPolicy) {
+  // Disable regular tabs with policy.
+  browser_state_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+
+  // Verify that the regular tabs can't be opened.
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewRegularTab"));
+
+  // Verify that incognito tab can still be opened as a sanity check.
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoTab"));
+}
+
+// Checks that openNewIncognitoTab doesn't open a tab when incognito tabs are
+// disabled by policy.
+TEST_F(KeyCommandsProviderTest, CanPerform_OpenNewRegularTab_DisabledByPolicy) {
+  // Disable regular tabs with policy.
+  browser_state_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kDisabled)));
+
+  // Verify that incognito tabs can't be opened.
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewIncognitoTab"));
+
+  // Verify that regular tabs can still be opened as a sanity check.
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewRegularTab"));
+}
+
 #pragma mark - Metrics Tests
 
 // Checks that metrics are correctly reported.
@@ -598,6 +634,8 @@ TEST_F(KeyCommandsProviderTest, OpenNewTab_RegularBrowserState) {
   OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
 
   [provider_ keyCommand_openNewTab];
+
+  EXPECT_OCMOCK_VERIFY(provider_.dispatcher);
 }
 
 // Checks the openNewTab logic based on an incognito browser state.
@@ -614,6 +652,8 @@ TEST_F(KeyCommandsProviderTest, OpenNewTab_IncognitoBrowserState) {
   OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
 
   [provider_ keyCommand_openNewTab];
+
+  EXPECT_OCMOCK_VERIFY(provider_.dispatcher);
 }
 
 // Checks that openNewRegularTab opens a tab in the regular browser state.
@@ -626,6 +666,8 @@ TEST_F(KeyCommandsProviderTest, OpenNewRegularTab) {
   OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
 
   [provider_ keyCommand_openNewTab];
+
+  EXPECT_OCMOCK_VERIFY(provider_.dispatcher);
 }
 
 // Checks that openNewIncognitoTab opens a tab in the Incognito browser state.
@@ -638,6 +680,8 @@ TEST_F(KeyCommandsProviderTest, OpenNewIncognitoTab) {
   OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
 
   [provider_ keyCommand_openNewIncognitoTab];
+
+  EXPECT_OCMOCK_VERIFY(provider_.dispatcher);
 }
 
 // Checks the next/previous tab actions work OK.

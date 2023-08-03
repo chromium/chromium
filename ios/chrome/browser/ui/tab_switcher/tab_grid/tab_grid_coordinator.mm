@@ -703,10 +703,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _mediator = [[TabGridMediator alloc]
       initWithPrefService:self.regularBrowser->GetBrowserState()->GetPrefs()];
 
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+
   TabGridViewController* baseViewController = [[TabGridViewController alloc]
       initWithPageConfiguration:_pageConfiguration];
-  baseViewController.handler =
-      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  baseViewController.handler = applicationCommandsHandler;
   baseViewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
   baseViewController.reauthAgent = reauthAgent;
@@ -753,7 +755,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
   }
 
-  if (IsInactiveTabsAvailable()) {
+  // Offer to manage inactive regular tabs iff the regular tabs grid is
+  // available. The regular tabs can be disabled by policy, making the grid
+  // unavailable.
+  if (IsInactiveTabsAvailable() &&
+      _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly) {
+    CHECK(baseViewController.regularTabsConsumer);
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
         initWithConsumer:baseViewController.regularTabsConsumer
             webStateList:_inactiveBrowser->GetWebStateList()
@@ -846,7 +853,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.remoteTabsViewController.delegate =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.handler =
-      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+      applicationCommandsHandler;
   baseViewController.remoteTabsViewController.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   baseViewController.remoteTabsViewController.restoredTabDisposition =

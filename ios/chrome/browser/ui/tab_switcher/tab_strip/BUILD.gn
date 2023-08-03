@@ -33,6 +33,7 @@ source_set("tab_strip_ui") {
   ]
   deps = [
     "//components/favicon/ios",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
