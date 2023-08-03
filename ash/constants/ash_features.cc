@@ -503,11 +503,6 @@ BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
 // Enables or disables support for third party VMs.
 BASE_FEATURE(kBruschetta, "Bruschetta", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables migration for third party VMs installed during alpha.
-BASE_FEATURE(kBruschettaAlphaMigrate,
-             "BruschettaAlphaMigrate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Captive Portal Error Page changes, which shows a suggestion in
 // the Chrome error page on ChromeOS when behind a captive portal.
 BASE_FEATURE(kCaptivePortalErrorPage,

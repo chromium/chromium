@@ -980,11 +980,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "bruschetta-alpha-migrate",
-    "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 120

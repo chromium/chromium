@@ -45,8 +45,6 @@ const char kUefiDlc[] = "edk2-ovmf-dlc";
 
 const char kBruschettaVmName[] = "bru";
 
-const char kBruschettaPolicyId[] = "glinux-latest";
-
 const char* BruschettaResultString(const BruschettaResult res) {
 #define ENTRY(name)            \
   case BruschettaResult::name: \

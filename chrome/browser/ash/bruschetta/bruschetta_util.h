@@ -20,8 +20,6 @@ extern const char kUefiDlc[];
 
 extern const char kBruschettaVmName[];
 
-extern const char kBruschettaPolicyId[];
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class BruschettaResult {

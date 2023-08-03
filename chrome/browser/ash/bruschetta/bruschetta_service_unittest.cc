@@ -42,9 +42,7 @@ class BruschettaServiceTest : public testing::Test,
 
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kBruschetta, ash::features::kBruschettaAlphaMigrate},
-        {});
+    feature_list_.InitWithFeatures({ash::features::kBruschetta}, {});
 
     SetupPrefs();
 
@@ -108,48 +106,6 @@ class BruschettaServiceTest : public testing::Test,
   TestingProfile profile_;
   std::unique_ptr<BruschettaService> service_;
 };
-
-TEST_F(BruschettaServiceTest, StartUpMigration) {
-  service_.reset();
-
-  guest_os::AddContainerToPrefs(&profile_, MakeBruschettaId("first-vm"), {});
-  guest_os::AddContainerToPrefs(&profile_, MakeBruschettaId("second-vm"), {});
-  guest_os::UpdateContainerPref(&profile_, MakeBruschettaId("second-vm"),
-                                guest_os::prefs::kBruschettaConfigId,
-                                base::Value(kTestVmConfig));
-
-  service_ = std::make_unique<BruschettaService>(&profile_);
-
-  ASSERT_TRUE(IsInstalled(&profile_, GetBruschettaAlphaId()));
-  ASSERT_TRUE(IsInstalled(&profile_, MakeBruschettaId("first-vm")));
-  ASSERT_TRUE(IsInstalled(&profile_, MakeBruschettaId("second-vm")));
-
-  ASSERT_EQ(
-      guest_os::GetContainerPrefValue(&profile_, GetBruschettaAlphaId(),
-                                      guest_os::prefs::kBruschettaConfigId)
-          ->GetString(),
-      "glinux-latest");
-  ASSERT_EQ(
-      guest_os::GetContainerPrefValue(&profile_, MakeBruschettaId("first-vm"),
-                                      guest_os::prefs::kBruschettaConfigId)
-          ->GetString(),
-      "glinux-latest");
-  ASSERT_EQ(
-      guest_os::GetContainerPrefValue(&profile_, MakeBruschettaId("second-vm"),
-                                      guest_os::prefs::kBruschettaConfigId)
-          ->GetString(),
-      kTestVmConfig);
-
-  ASSERT_TRUE(guest_os::GuestOsService::GetForProfile(&profile_)
-                  ->TerminalProviderRegistry()
-                  ->Get(GetBruschettaAlphaId()));
-  ASSERT_TRUE(guest_os::GuestOsService::GetForProfile(&profile_)
-                  ->TerminalProviderRegistry()
-                  ->Get(MakeBruschettaId("first-vm")));
-  ASSERT_TRUE(guest_os::GuestOsService::GetForProfile(&profile_)
-                  ->TerminalProviderRegistry()
-                  ->Get(MakeBruschettaId("second-vm")));
-}
 
 TEST_F(BruschettaServiceTest, GetLauncherPolicyEnabled) {
   EnableByPolicy();
