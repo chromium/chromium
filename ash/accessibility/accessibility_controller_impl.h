@@ -461,8 +461,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // magnifier, docked magnifier and screen rotation and when requested by the
   // AccessibilityPrivate extension API. The shown dialog is stored as a weak
   // pointer in the variable |confirmation_dialog_| below.
+  // This is also used to show the dialog for Select to Speak's enhanced network
+  // voices.
   void ShowConfirmationDialog(const std::u16string& title,
                               const std::u16string& description,
+                              const std::u16string& cancel_name,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback) override;

@@ -1692,7 +1692,8 @@ export class CommandHandler extends CommandHandlerInterface {
       // If this is the first time, show a confirmation dialog.
       chrome.accessibilityPrivate.showConfirmationDialog(
           Msgs.getMsg('toggle_screen_title'),
-          Msgs.getMsg('toggle_screen_description'), confirmed => {
+          Msgs.getMsg('toggle_screen_description'), /*cancelName=*/ null,
+          confirmed => {
             if (confirmed) {
               ChromeVoxPrefs.darkScreen = true;
               LocalStorage.set('acceptToggleScreen', true);

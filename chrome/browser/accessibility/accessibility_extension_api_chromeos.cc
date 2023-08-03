@@ -49,6 +49,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -58,6 +59,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace {
@@ -784,8 +786,11 @@ AccessibilityPrivateShowConfirmationDialogFunction::Run() {
 
   std::u16string title = base::UTF8ToUTF16(params->title);
   std::u16string description = base::UTF8ToUTF16(params->description);
+  std::u16string cancel_name =
+      params->cancel_name ? base::UTF8ToUTF16(params->cancel_name.value())
+                          : l10n_util::GetStringUTF16(IDS_APP_CANCEL);
   ash::AccessibilityController::Get()->ShowConfirmationDialog(
-      title, description,
+      title, description, cancel_name,
       base::BindOnce(
           &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
           this, /* confirmed */ true),

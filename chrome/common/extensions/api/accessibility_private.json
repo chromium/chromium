@@ -795,6 +795,12 @@
             "name": "description",
             "type": "string",
             "description": "The description to show within the confirmation dialog."
+          },
+          {
+            "name": "cancelName",
+            "type": "string",
+            "description": "The human-readable name of the cancel button.",
+            "optional": true
           }
         ],
         "returns_async": {

@@ -171,11 +171,12 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Enables ChromeVox's volume slide gesture.
   virtual void EnableChromeVoxVolumeSlideGesture() {}
 
-  // Shows a confirmation dialog with the given text and description,
-  // and calls the relevant callback when the dialog is confirmed, canceled
-  // or closed.
+  // Shows a confirmation dialog with the given text, description,
+  // and cancel button name, and calls the relevant callback when the
+  // dialog is confirmed, canceled or closed.
   virtual void ShowConfirmationDialog(const std::u16string& title,
                                       const std::u16string& description,
+                                      const std::u16string& cancel_name,
                                       base::OnceClosure on_accept_callback,
                                       base::OnceClosure on_cancel_callback,
                                       base::OnceClosure on_close_callback) {}

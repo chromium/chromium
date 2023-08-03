@@ -33,4 +33,7 @@
 <message desc="Content of the dialog shown to users the first time they use Select to speak after the natural voices update." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_DESCRIPTION">
   You can use a natural, human-like voice when your device is online. Text will be sent to Google for processing. You can turn this off any time in Settings.
 </message>
+<message desc="Cancel button for the dialog shown to users the first time they use Select to speak. Clicking this button will result in using the system voices rather than natural voices." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_CANCEL">
+  Use system voice
+</message>
 </grit-part>

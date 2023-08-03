@@ -1622,8 +1622,10 @@ export class SelectToSpeak {
           chrome.i18n.getMessage('select_to_speak_natural_voice_dialog_title');
       const description = chrome.i18n.getMessage(
           'select_to_speak_natural_voice_dialog_description');
+      const cancelName =
+          chrome.i18n.getMessage('select_to_speak_natural_voice_dialog_cancel');
       chrome.accessibilityPrivate.showConfirmationDialog(
-          title, description, confirm => {
+          title, description, cancelName, confirm => {
             this.prefsManager_.setEnhancedNetworkVoicesFromDialog(confirm);
             if (callback !== undefined) {
               callback();

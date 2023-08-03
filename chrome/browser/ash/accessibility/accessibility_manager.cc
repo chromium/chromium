@@ -108,6 +108,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
@@ -2397,7 +2398,7 @@ void AccessibilityManager::ShowNetworkDictationDialog() {
   const std::u16string text =
       l10n_util::GetStringUTF16(IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TEXT);
   AccessibilityController::Get()->ShowConfirmationDialog(
-      title, text,
+      title, text, l10n_util::GetStringUTF16(IDS_APP_CANCEL),
       base::BindOnce(&AccessibilityManager::OnNetworkDictationDialogAccepted,
                      base::Unretained(this)),
       base::BindOnce(&AccessibilityManager::OnNetworkDictationDialogDismissed,

@@ -75,6 +75,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/wm/core/cursor_manager.h"
 
 using session_manager::SessionState;
@@ -896,6 +897,7 @@ void AccessibilityControllerImpl::FeatureWithDialog::SetEnabledWithDialog(
     Shell::Get()->accessibility_controller()->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(dialog_.title_resource_id),
         l10n_util::GetStringUTF16(dialog_.body_resource_id),
+        l10n_util::GetStringUTF16(IDS_APP_CANCEL),
         // Callback for if the user accepts the dialog
         base::BindOnce(
             [](base::WeakPtr<AccessibilityControllerImpl> owner,
@@ -1850,7 +1852,7 @@ void AccessibilityControllerImpl::ShowDictationKeyboardDialog() {
                 IDS_ASH_DICTATION_KEYBOARD_DIALOG_DESCRIPTION_SODA_NOT_AVAILABLE,
                 replacements, nullptr);
   ShowConfirmationDialog(
-      title, description,
+      title, description, l10n_util::GetStringUTF16(IDS_APP_CANCEL),
       base::BindOnce(
           &AccessibilityControllerImpl::OnDictationKeyboardDialogAccepted,
           GetWeakPtr()),
@@ -2651,6 +2653,7 @@ void AccessibilityControllerImpl::EnableChromeVoxVolumeSlideGesture() {
 void AccessibilityControllerImpl::ShowConfirmationDialog(
     const std::u16string& title,
     const std::u16string& description,
+    const std::u16string& cancel_name,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback,
     base::OnceClosure on_close_callback) {
@@ -2663,7 +2666,7 @@ void AccessibilityControllerImpl::ShowConfirmationDialog(
     return;
   }
   auto* dialog = new AccessibilityConfirmationDialog(
-      title, description, std::move(on_accept_callback),
+      title, description, cancel_name, std::move(on_accept_callback),
       std::move(on_cancel_callback), std::move(on_close_callback));
   // Save the dialog so it doesn't go out of scope before it is
   // used and closed.

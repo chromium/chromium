@@ -14,7 +14,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
     this.confirmationDialogResponse_ = true;
 
     chrome.accessibilityPrivate.showConfirmationDialog =
-        (title, description, callback) => {
+        (title, description, cancelName, callback) => {
           this.confirmationDialogShowCount_ += 1;
           callback(this.confirmationDialogResponse_);
         };

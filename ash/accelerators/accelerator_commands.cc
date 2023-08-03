@@ -97,6 +97,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_caption_button.h"
 #include "ui/wm/core/window_animations.h"
@@ -1088,6 +1089,7 @@ void RotateScreen() {
     Shell::Get()->accessibility_controller()->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_ROTATE_SCREEN_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_ROTATE_SCREEN_BODY),
+        l10n_util::GetStringUTF16(IDS_APP_CANCEL),
         base::BindOnce(&OnRotationDialogAccepted),
         base::BindOnce(&OnRotationDialogCancelled),
         /*on_close_callback=*/base::DoNothing());
@@ -1346,7 +1348,7 @@ void ToggleDockedMagnifier() {
     accessibility_controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_DOCKED_MAGNIFIER_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_DOCKED_MAGNIFIER_BODY),
-        base::BindOnce([]() {
+        l10n_util::GetStringUTF16(IDS_APP_CANCEL), base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
               ->docked_magnifier()
@@ -1415,7 +1417,7 @@ void ToggleFullscreenMagnifier() {
     accessibility_controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY),
-        base::BindOnce([]() {
+        l10n_util::GetStringUTF16(IDS_APP_CANCEL), base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
               ->fullscreen_magnifier()
@@ -1461,7 +1463,7 @@ void ToggleHighContrast() {
     controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_HIGH_CONTRAST_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_HIGH_CONTRAST_BODY),
-        base::BindOnce([]() {
+        l10n_util::GetStringUTF16(IDS_APP_CANCEL), base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
               ->high_contrast()

@@ -611,10 +611,12 @@ chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, is
  * @param {string} title The title of the confirmation dialog.
  * @param {string} description The description to show within the confirmation
  *     dialog.
+ * @param {?string|undefined} cancelName The human-readable name of the cancel
+ *     button.
  * @param {function(boolean): void} callback Called when the dialog is confirmed
  *     or cancelled.
  */
-chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, callback) {};
+chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, cancelName, callback) {};
 
 /**
  * Gets the DOM key string for the given key code, taking into account the
