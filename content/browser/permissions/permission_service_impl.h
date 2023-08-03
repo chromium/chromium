@@ -50,6 +50,9 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   // blink::mojom::PermissionService.
   void HasPermission(blink::mojom::PermissionDescriptorPtr permission,
                      PermissionStatusCallback callback) override;
+  void RequestPageEmbeddedPermission(
+      blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
+      RequestPageEmbeddedPermissionCallback callback) override;
   void RequestPermission(blink::mojom::PermissionDescriptorPtr permission,
                          bool user_gesture,
                          PermissionStatusCallback callback) override;
@@ -66,6 +69,12 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   void NotifyEventListener(blink::mojom::PermissionDescriptorPtr permission,
                            const std::string& event_type,
                            bool is_added) override;
+
+  void RequestPermissionsInternal(
+      BrowserContext* browser_context,
+      const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
+      bool user_gesture,
+      RequestPermissionsCallback callback);
 
   void OnRequestPermissionsResponse(
       int pending_request_id,

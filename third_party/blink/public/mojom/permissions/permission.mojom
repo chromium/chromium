@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "url/mojom/origin.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum PermissionName {
   GEOLOCATION,
@@ -77,11 +78,46 @@ interface PermissionObserver {
   OnPermissionStatusChange(PermissionStatus status);
 };
 
+// Result code of embedded permission control operations.
+enum EmbeddedPermissionControlResult {
+  // Indicates user clicked on `X` button or closed the permission dialog
+  // explicitly.
+  kDismissed = 0,
+
+  // User interacted with permission: denied or granted.
+  kGranted = 1,
+  kDenied = 2,
+
+  // The request is not supported (for example, without feature enabled)
+  kNotSupported = 3,
+
+  // The permission UI was resolved without user gestures.
+  // Reserved value, which may not be used.
+  kResolvedNoUserGesture = 4,
+};
+
+// Holds information about the embedded permission request
+struct EmbeddedPermissionRequestDescriptor {
+  // Define the list of permissions we will request.
+  array<PermissionDescriptor> permissions;
+
+  // Element position (in screen coordinates), used to calculate position where
+  // the secondary prompt UI is expected to be shown
+  gfx.mojom.Rect element_position;
+};
+
 // The Permission service provides permission handling capabilities by exposing
 // methods to check, request, and revoke permissions. It also allows a client to
 // start listening to permission changes.
 interface PermissionService {
   HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
+  // Calling this method indicates the user has explicitly requested the
+  // permission by clicking on the `HTMLPermissionElement`. Asks for a list of
+  // permissions and returns `EmbeddedPermissionControlResult` defined above
+  RequestPageEmbeddedPermission(EmbeddedPermissionRequestDescriptor descriptor)
+      => (EmbeddedPermissionControlResult status);
+  // Request permission for the given `PermissionDescriptor`, and returns
+  // permission status result.
   RequestPermission(PermissionDescriptor permission, bool user_gesture)
       => (PermissionStatus status);
   RequestPermissions(array<PermissionDescriptor> permission, bool user_gesture)

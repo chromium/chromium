@@ -210,6 +210,12 @@ void MockPermissionService::HasPermission(PermissionDescriptorPtr permission,
       mojom::blink::PermissionStatus::DENIED));
 }
 
+void MockPermissionService::RequestPageEmbeddedPermission(
+    mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
+    RequestPageEmbeddedPermissionCallback) {
+  NOTREACHED();
+}
+
 void MockPermissionService::RequestPermission(
     PermissionDescriptorPtr permission,
     bool user_gesture,
