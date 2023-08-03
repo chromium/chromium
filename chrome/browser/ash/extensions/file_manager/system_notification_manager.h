@@ -89,6 +89,9 @@ inline constexpr char kNotificationShowHistogramName[] =
 inline constexpr char kNotificationUserActionHistogramName[] =
     "FileBrowser.Notification.UserAction";
 
+// Generates a notification id based on `task_id`.
+std::string GetNotificationId(io_task::IOTaskId task_id);
+
 // Returns an instance of an 'ash' Notification with a bound click delegate.
 // The notification will have Files app system notification theme.
 std::unique_ptr<message_center::Notification> CreateSystemNotification(

@@ -188,6 +188,14 @@ TEST_F(IOTaskControllerTest, PauseResume) {
                             base_matcher)));
   io_task_controller_.Pause(task_id, pause_params);
 
+  // ProgressPausedTasks should synchronously send another paused status update.
+  EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
+                            Field(&ProgressStatus::state, State::kPaused),
+                            Field(&ProgressStatus::task_id, task_id),
+                            Field(&ProgressStatus::pause_params, pause_params),
+                            base_matcher)));
+  io_task_controller_.ProgressPausedTasks();
+
   // Resume should synchronously send a progress status.
   EXPECT_CALL(observer,
               OnIOTaskStatus(AllOf(
@@ -201,6 +209,15 @@ TEST_F(IOTaskControllerTest, PauseResume) {
                   Field(&ProgressStatus::state, State::kSuccess),
                   Field(&ProgressStatus::task_id, task_id), base_matcher)));
   base::RunLoop().RunUntilIdle();
+
+  // ProgressPausedTasks shouldn't send any more updates after task completes.
+  EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
+                            Field(&ProgressStatus::state, State::kPaused),
+                            Field(&ProgressStatus::task_id, task_id),
+                            Field(&ProgressStatus::pause_params, pause_params),
+                            base_matcher)))
+      .Times(0);
+  io_task_controller_.ProgressPausedTasks();
 
   io_task_controller_.RemoveObserver(&observer);
 }

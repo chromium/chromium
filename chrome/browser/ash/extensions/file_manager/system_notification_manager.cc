@@ -194,6 +194,10 @@ std::u16string GetIOTaskMessage(Profile* profile,
 }
 }  // namespace
 
+std::string GetNotificationId(io_task::IOTaskId task_id) {
+  return base::StrCat({kSwaFileOperationPrefix, base::NumberToString(task_id)});
+}
+
 NotificationPtr CreateSystemNotification(
     const std::string& notification_id,
     const std::u16string& title,
@@ -772,8 +776,7 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
 
 void SystemNotificationManager::HandleIOTaskProgress(
     const ProgressStatus& status) {
-  std::string id = base::StrCat(
-      {kSwaFileOperationPrefix, base::NumberToString(status.task_id)});
+  std::string id = GetNotificationId(status.task_id);
 
   // If there are any SWA windows open, remove the IOTask progress from system
   // notifications.

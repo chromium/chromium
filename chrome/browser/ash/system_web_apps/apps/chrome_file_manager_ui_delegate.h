@@ -36,6 +36,10 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   // offline states. If already enabled, this will not do anything.
   void ShouldPollDriveHostedPinStates(bool enabled) override;
 
+  // Calls FilesPolicyNotificationManager to show block notifications for any
+  // tasks that have completed with policy errors.
+  void ShowPolicyNotifications() const override;
+
  private:
   void PollHostedPinStates();
 

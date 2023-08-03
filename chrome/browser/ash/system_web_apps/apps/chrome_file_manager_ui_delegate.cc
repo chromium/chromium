@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui.h"
@@ -46,6 +48,15 @@ void ChromeFileManagerUIDelegate::ShouldPollDriveHostedPinStates(bool enabled) {
   poll_hosted_pin_states_ = enabled;
   if (enabled) {
     PollHostedPinStates();
+  }
+}
+
+void ChromeFileManagerUIDelegate::ShowPolicyNotifications() const {
+  policy::FilesPolicyNotificationManager* fpnm =
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui_));
+  if (fpnm) {
+    fpnm->ShowBlockedNotifications();
   }
 }
 
