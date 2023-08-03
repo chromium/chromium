@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -72,7 +73,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private static final String TAG = "SSLayout";
 
     // Duration of the transition animation
-    public static final long ZOOMING_DURATION = 300;
+    public static final long ZOOMING_DURATION = 325;
     private static final int TRANSLATE_DURATION_MS = 300;
     private static final int BACKGROUND_FADING_DURATION_MS = 150;
     private static final int SCRIM_FADE_DURATION_MS = 350;
@@ -154,6 +155,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 // causing janky frames. When animation is off or not used, the thumbnail is already
                 // updated when showing the GTS. Tab-to-GTS animation is not invoked for tablet tab
                 // switcher polish.
+                long delay = (long) (ZOOMING_DURATION
+                        * Settings.Global.getFloat(getContext().getContentResolver(),
+                                Settings.Global.ANIMATOR_DURATION_SCALE, 1f));
                 if (isTabGtsAnimationEnabled(false)) {
                     // Delay thumbnail taking a bit more to make it less likely to happen before the
                     // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for
@@ -164,7 +168,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                         mLayoutTabs = null;
                         mFinishedShowingRunnable = null;
                     };
-                    mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
+                    mHandler.postDelayed(mFinishedShowingRunnable, delay);
                 } else {
                     // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a
                     // post delay handler to avoid creating a new pending surface in native, which
@@ -173,7 +177,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                         mLayoutTabs = null;
                         mFinishedShowingRunnable = null;
                     };
-                    mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
+                    mHandler.postDelayed(mFinishedShowingRunnable, delay);
                 }
             }
 
@@ -550,13 +554,13 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, scaleStartValueSupplier, scaleEndValueSupplier, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.X, xStartValueSupplier, xEndValueSupplier, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.Y, yStartValueSupplier, yEndValueSupplier, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
         // TODO(crbug.com/964406): when shrinking to the bottom row, bottom of the tab goes up and
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
@@ -565,13 +569,13 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                                 / TabUtils.getTabThumbnailAspectRatio(
                                         getContext(), mBrowserControlsStateProvider),
                         sourceLayoutTab.getUnclampedOriginalContentHeight()),
-                ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                ZOOMING_DURATION, Interpolators.EMPHASIZED));
 
         mTabListTopOffset = getLastUsedTabListDelegate().getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
-        backgroundAlpha.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        backgroundAlpha.setInterpolator(Interpolators.EMPHASIZED);
         animationList.add(backgroundAlpha);
 
         mTabToSwitcherAnimation = new AnimatorSet();
@@ -618,13 +622,12 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // Zoom in the source tab
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, source.width() / (getWidth() * mDpToPx), 1, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab, LayoutTab.X,
+                        source.left / mDpToPx, 0f, ZOOMING_DURATION, Interpolators.EMPHASIZED));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.X, source.left / mDpToPx, 0f, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.Y, source.top / mDpToPx, 0f, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                LayoutTab.Y, source.top / mDpToPx, 0f, ZOOMING_DURATION, Interpolators.EMPHASIZED));
         // TODO(crbug.com/964406): when shrinking to the bottom row, bottom of the tab goes up and
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
@@ -634,13 +637,13 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                                         getContext(), mBrowserControlsStateProvider),
                         sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
 
         mTabListTopOffset = getLastUsedTabListDelegate().getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
-        backgroundAlpha.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        backgroundAlpha.setInterpolator(Interpolators.EMPHASIZED);
         animationList.add(backgroundAlpha);
 
         mTabToSwitcherAnimation = new AnimatorSet();
