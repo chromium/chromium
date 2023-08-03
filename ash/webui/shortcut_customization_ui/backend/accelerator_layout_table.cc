@@ -183,10 +183,6 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {TextAcceleratorPart(ui::EF_ALT_DOWN),
                 TextAcceleratorPart(ui::EF_SHIFT_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB)})},
-          {NonConfigurableActions::kBrowserRightClick,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_RIGHT_CLICK,
-               {TextAcceleratorPart(ui::EF_ALT_DOWN)})},
           {NonConfigurableActions::kAmbientLaunchNumberedApp,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_LAUNCH_NUMBERED_APP,
