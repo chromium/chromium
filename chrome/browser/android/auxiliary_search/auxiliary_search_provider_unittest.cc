@@ -80,10 +80,3 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
   }
   EXPECT_EQ(100u, bookmark_titles_int.size());
 }
-
-TEST_F(AuxiliarySearchProviderTest, QueryTabs) {
-  auxiliary_search::AuxiliarySearchTabGroup group = provider->GetTabs();
-
-  // TODO(crbug.com/1462378): Add real test once
-  // AuxiliarySearchProvider::GetTabs is implemented.
-}

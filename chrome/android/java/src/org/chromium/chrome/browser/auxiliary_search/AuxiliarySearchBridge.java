@@ -10,11 +10,17 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java bridge to provide information for the auxiliary search.
@@ -53,19 +59,29 @@ public class AuxiliarySearchBridge {
     }
 
     /**
-     * @return AuxiliarySearchGroup for tabs, which is necessary for the auxiliary search.
+     * @param tabs A list of {@link Tab}s to check if they are sensitive.
+     * @param callback {@link Callback} to pass back the list of non sensitive {@link Tab}s.
      */
-    public @Nullable AuxiliarySearchTabGroup getTabsSearchableData() {
-        if (mNativeBridge != 0) {
-            try {
-                return AuxiliarySearchTabGroup.parseFrom(
-                        AuxiliarySearchBridgeJni.get().getTabsSearchableData(mNativeBridge));
-
-            } catch (InvalidProtocolBufferException e) {
-            }
+    public void getNonSensitiveTabs(List<Tab> tabs, Callback<List<Tab>> callback) {
+        if (mNativeBridge == 0) {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
         }
 
-        return null;
+        AuxiliarySearchBridgeJni.get().getNonSensitiveTabs(
+                mNativeBridge, tabs.toArray(new Tab[0]), new Callback<Object[]>() {
+                    @Override
+                    public void onResult(Object[] tabs) {
+                        ArrayList<Tab> tabList = new ArrayList<>();
+                        for (Object o : tabs) {
+                            assert (o instanceof Tab);
+
+                            tabList.add((Tab) o);
+                        }
+
+                        PostTask.runOrPostTask(
+                                TaskTraits.UI_DEFAULT, () -> { callback.onResult(tabList); });
+                    }
+                });
     }
 
     @NativeMethods
@@ -73,6 +89,7 @@ public class AuxiliarySearchBridge {
     public interface Natives {
         long getForProfile(Profile profile);
         byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
-        byte[] getTabsSearchableData(long nativeAuxiliarySearchProvider);
+        void getNonSensitiveTabs(
+                long nativeAuxiliarySearchProvider, Tab[] tabs, Callback<Object[]> callback);
     }
 }

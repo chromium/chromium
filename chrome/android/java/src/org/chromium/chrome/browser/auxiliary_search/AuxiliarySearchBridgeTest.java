@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -24,7 +25,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
@@ -66,6 +66,7 @@ public final class AuxiliarySearchBridgeTest {
     public void getForProfileTest() {
         doReturn(false).when(mProfile).isOffTheRecord();
         AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
+        assertNotNull(bridge);
 
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
     }
@@ -87,6 +88,7 @@ public final class AuxiliarySearchBridgeTest {
                 .getBookmarksSearchableData(FAKE_NATIVE_PROVIDER);
 
         AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
+        assertNotNull(bridge);
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
 
         AuxiliarySearchBookmarkGroup group = bridge.getBookmarksSearchableData();
@@ -94,28 +96,5 @@ public final class AuxiliarySearchBridgeTest {
         assertEquals(group.getBookmarkCount(), 1);
         assertEquals(group.getBookmark(0).getTitle(), BOOKMARK_TITLE);
         assertEquals(group.getBookmark(0).getUrl(), BOOKMARK_URL);
-    }
-
-    @Test
-    @SmallTest
-    public void getTabsSearchableData() {
-        doReturn(false).when(mProfile).isOffTheRecord();
-
-        var tab = AuxiliarySearchEntry.newBuilder().setTitle(TAB_TITLE).setUrl(TAB_URL).build();
-        var proto = AuxiliarySearchTabGroup.newBuilder().addTab(tab).build();
-
-        doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-        doReturn(proto.toByteArray())
-                .when(mMockAuxiliarySearchBridgeJni)
-                .getTabsSearchableData(FAKE_NATIVE_PROVIDER);
-
-        AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
-        verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-
-        AuxiliarySearchTabGroup group = bridge.getTabsSearchableData();
-
-        assertEquals(group.getTabCount(), 1);
-        assertEquals(group.getTab(0).getTitle(), TAB_TITLE);
-        assertEquals(group.getTab(0).getUrl(), TAB_URL);
     }
 }

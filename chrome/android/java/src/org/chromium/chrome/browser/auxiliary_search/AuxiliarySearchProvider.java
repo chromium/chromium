@@ -6,16 +6,21 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides information for the auxiliary search.
@@ -39,13 +44,9 @@ public class AuxiliarySearchProvider {
     }
 
     /**
-     * @return AuxiliarySearchGroup for tabs.
+     * @return AuxiliarySearchGroup for {@link Tab}s.
      */
     public AuxiliarySearchTabGroup getTabsSearchableDataProto() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_APP_INTEGRATION_SAFE_SEARCH)) {
-            return mAuxiliarySearchBridge.getTabsSearchableData();
-        }
-
         var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
         TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
 
@@ -56,19 +57,52 @@ public class AuxiliarySearchProvider {
         int end = tabList.getCount() - 1;
         for (int i = firstTabIndex; i <= end; i++) {
             Tab tab = tabList.getTabAt(i);
-            String title = tab.getTitle();
-            GURL url = tab.getUrl();
-            if (TextUtils.isEmpty(title) || url == null || !url.isValid()) continue;
-
-            var tabBuilder =
-                    AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
-            final long lastAccessTime = CriticalPersistedTabData.from(tab).getTimestampMillis();
-            if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
-                tabBuilder.setLastAccessTimestamp(lastAccessTime);
+            AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
+            if (entry != null) {
+                tabGroupBuilder.addTab(entry);
             }
-
-            tabGroupBuilder.addTab(tabBuilder.build());
         }
         return tabGroupBuilder.build();
+    }
+
+    /**
+     * @param callback {@link Callback} to pass back the AuxiliarySearchGroup for {@link Tab}s.
+     */
+    public void getTabsSearchableDataProtoAsync(Callback<AuxiliarySearchTabGroup> callback) {
+        TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
+        List<Tab> listTab = new ArrayList<>();
+
+        for (int i = 0; i < tabList.getCount(); i++) {
+            listTab.add(tabList.getTabAt(i));
+        }
+        mAuxiliarySearchBridge.getNonSensitiveTabs(listTab, new Callback<List<Tab>>() {
+            @Override
+            public void onResult(List<Tab> tabs) {
+                var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
+
+                for (Tab tab : tabs) {
+                    AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
+                    if (entry != null) {
+                        tabGroupBuilder.addTab(entry);
+                    }
+                }
+
+                callback.onResult(tabGroupBuilder.build());
+            }
+        });
+    }
+
+    private static @Nullable AuxiliarySearchEntry tabToAuxiliarySearchEntry(Tab tab) {
+        String title = tab.getTitle();
+        GURL url = tab.getUrl();
+        if (TextUtils.isEmpty(title) || url == null || !url.isValid()) return null;
+
+        var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
+        final long lastAccessTime = CriticalPersistedTabData.from(tab).getTimestampMillis();
+        if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
+            tabBuilder.setLastAccessTimestamp(lastAccessTime);
+        }
+
+        return tabBuilder.build();
     }
 }

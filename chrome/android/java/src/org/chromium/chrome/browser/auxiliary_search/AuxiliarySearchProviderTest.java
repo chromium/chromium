@@ -8,6 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import androidx.test.filters.SmallTest;
@@ -22,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
@@ -30,12 +34,14 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.Au
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -245,5 +251,57 @@ public class AuxiliarySearchProviderTest {
         assertEquals(TAB_TITLE + "0", tabGroup.getTab(0).getTitle());
         assertTrue(tabGroup.getTab(0).hasUrl());
         assertEquals(TAB_URL + "0", tabGroup.getTab(0).getUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTabsSearchableDataProtoAsync() {
+        MockTabModel mockTabModel = new MockTabModel(false, null);
+        ArrayList<Tab> tabList = new ArrayList<>();
+        // Create 200 tabs with different timestamps(from 0 to 199), and only the newest 100 tabs
+        // should be returned from 'getTabsSearchableDataProtoAsync'.
+        for (int i = 0; i < 200; i++) {
+            MockTab tab = (MockTab) mockTabModel.addTab(i);
+            tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
+            CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + Integer.toString(i));
+            CriticalPersistedTabData.from(tab).setTimestampMillis(i);
+            if (i >= 100) {
+                tabList.add(tab);
+            }
+        }
+
+        Object[] tabObject = new Object[tabList.size()];
+        tabList.toArray(tabObject);
+        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
+        doAnswer(invocation -> {
+            invocation.<Callback<Object[]>>getArgument(2).onResult(tabObject);
+            return null;
+        })
+                .when(mMockAuxiliarySearchBridgeJni)
+                .getNonSensitiveTabs(eq(FAKE_NATIVE_PROVIDER), any(), any(Callback.class));
+
+        mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
+                new Callback<AuxiliarySearchTabGroup>() {
+                    @Override
+                    public void onResult(AuxiliarySearchTabGroup tabGroup) {
+                        assertEquals(100, tabGroup.getTabCount());
+                        HashSet<Integer> returnedTabsNumbers = new HashSet<Integer>();
+                        for (int i = 0; i < tabGroup.getTabCount(); i++) {
+                            AuxiliarySearchEntry tab = tabGroup.getTab(i);
+                            assertTrue(tab.hasTitle());
+                            assertTrue(tab.hasUrl());
+                            assertTrue(tab.hasLastAccessTimestamp());
+                            assertFalse(tab.hasCreationTimestamp());
+                            assertFalse(tab.hasLastModificationTimestamp());
+
+                            int number = Integer.valueOf(tab.getUrl().substring(TAB_URL.length()));
+                            assertTrue("Only the newest 100 tabs should be received",
+                                    number >= 100 && number <= 199);
+                            assertEquals(number, (int) tab.getLastAccessTimestamp());
+                            returnedTabsNumbers.add(number);
+                        }
+                        assertEquals(returnedTabsNumbers.size(), 100);
+                    }
+                });
     }
 }
