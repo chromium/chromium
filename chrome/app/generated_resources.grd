@@ -10485,7 +10485,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Your administrator recommends a specific value for this setting.
         </message>
         <message name="IDS_CONTROLLED_SETTING_CHILD_RESTRICTION" desc="Text displayed in the controlled settings bubble when a setting's value is pre-set because the user is a child.">
-          This setting can't be changed by a child user.
+          This setting isn't available for your account.
         </message>
         <message name="IDS_CONTROLLED_SETTING_PARENT" desc="Text displayed in the controlled settings bubble when a setting's value is controlled by user's parent.">
           This setting is managed by a parent.
