@@ -112,7 +112,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // search is updated.
 - (void)testChangeSearchEngine {
   // TODO(crbug.com/1469573): Test flaky on iOS 17.
-  if (!base::ios::IsRunningOnIOS17OrLater()) {
+  if (base::ios::IsRunningOnIOS17OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Flaky on iOS 17.");
   }
 
