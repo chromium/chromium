@@ -405,6 +405,20 @@ bool ShouldExcludeItemFromGridLayout(
   return item->animating_to_close() || ignored_items.contains(item);
 }
 
+bool IsUnsupportedWindow(aura::Window* window) {
+  const bool has_restore_id = !wm::GetTransientParent(window) &&
+                              (Shell::Get()
+                                   ->overview_controller()
+                                   ->disable_app_id_check_for_saved_desks() ||
+                               !saved_desk_util::GetAppId(window).empty());
+
+  return !DeskTemplate::IsAppTypeSupported(window) || !has_restore_id;
+}
+
+bool IsIncognitoWindow(aura::Window* window) {
+  return !Shell::Get()->saved_desk_delegate()->IsWindowPersistable(window);
+}
+
 }  // namespace
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,
@@ -2061,6 +2075,21 @@ void OverviewGrid::UpdateSaveDeskButtons() {
                        /*animate=*/!in_desk_animation);
   }
 
+  auto* split_view_controller = SplitViewController::Get(root_window_);
+  int snapped_unsupported_window = 0;
+  int snapped_incognito_window = 0;
+  int snapped_supported_window = 0;
+  if (split_view_controller->InSplitViewMode()) {
+    aura::Window* window = split_view_controller->GetDefaultSnappedWindow();
+    if (IsUnsupportedWindow(window)) {
+      snapped_unsupported_window = 1;
+    } else if (IsIncognitoWindow(window)) {
+      snapped_incognito_window = 1;
+    } else {
+      snapped_supported_window = 1;
+    }
+  }
+
   // Enable/disable button and update tooltip.
   const SavedDeskPresenter* saved_desk_presenter =
       overview_session_->saved_desk_presenter();
@@ -2071,12 +2100,18 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       SavedDeskSaveDeskButton::Type::kSaveAsTemplate,
       saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate),
       saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
-      num_incognito_windows_, num_unsupported_windows_, size());
+      num_incognito_windows_ + snapped_incognito_window,
+      num_unsupported_windows_ + snapped_unsupported_window,
+      size() + snapped_incognito_window + snapped_unsupported_window +
+          snapped_supported_window);
   container->UpdateButtonEnableStateAndTooltip(
       SavedDeskSaveDeskButton::Type::kSaveForLater,
       saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall),
       saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kSaveAndRecall),
-      num_incognito_windows_, num_unsupported_windows_, size());
+      num_incognito_windows_ + snapped_incognito_window,
+      num_unsupported_windows_ + snapped_unsupported_window,
+      size() + snapped_incognito_window + snapped_unsupported_window +
+          snapped_supported_window);
 
   // Set the widget position above the overview item window and default width
   // and height.
@@ -2746,21 +2781,13 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
-  // Count apps without full restore in `num_unsupported_windows_`. This is to
-  // ensure Save Template behavior, which will disable the button if
-  // num_unsupported_windows_ == window_list.size().
-  // TODO(crbug.com/1297710): Separate apps without Full Restore app id from
-  // unsupported apps so that they are not labeled as "Linux" apps in text.
-  const bool has_restore_id = !wm::GetTransientParent(window) &&
-                              (Shell::Get()
-                                   ->overview_controller()
-                                   ->disable_app_id_check_for_saved_desks() ||
-                               !saved_desk_util::GetAppId(window).empty());
   int addend = increment ? 1 : -1;
-  if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id) {
+
+  // Track the number of unsupported and incognito windows. The saved desk
+  // buttons are disabled if there are no supported or non-incognito windows.
+  if (IsUnsupportedWindow(window)) {
     num_unsupported_windows_ += addend;
-  } else if (!Shell::Get()->saved_desk_delegate()->IsWindowPersistable(
-                 window)) {
+  } else if (IsIncognitoWindow(window)) {
     num_incognito_windows_ += addend;
   }
 

@@ -3654,6 +3654,53 @@ TEST_F(SavedDeskTest, SnapWindowTest) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
+// Test that when an unsupported window left in overview grid and a supported
+// window snapped into the split view, the saved desk buttons should be enabled.
+TEST_F(SavedDeskTest, ButtonsEnabledForUnsupportedWindowAndSplitView) {
+  auto* delegate = Shell::Get()->saved_desk_delegate();
+
+  // Create a supported app window.
+  auto app_window = CreateAppWindow();
+  ASSERT_TRUE(delegate->IsWindowSupportedForSavedDesk(app_window.get()));
+
+  // Create an unsupported test window.
+  auto test_window = CreateTestWindow();
+  ASSERT_FALSE(delegate->IsWindowSupportedForSavedDesk(test_window.get()));
+
+  // Start overview mode.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+  ASSERT_TRUE(GetOverviewController()->InOverviewSession());
+
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(1, GetOverviewGridList()[0]->num_unsupported_windows());
+
+  OverviewItem* snappable_overview_item =
+      GetOverviewItemForWindow(app_window.get());
+
+  EXPECT_FALSE(GetCannotSnapWidget(snappable_overview_item));
+
+  // Snap the extra snappable window to enter split view mode.
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(root_window);
+
+  // Snap the app window into the primary position in the split view.
+  split_view_controller->SnapWindow(
+      app_window.get(), SplitViewController::SnapPosition::kPrimary);
+  ASSERT_TRUE(split_view_controller->InSplitViewMode());
+
+  auto* save_as_template_button =
+      GetSaveDeskAsTemplateButtonForRoot(root_window);
+  auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
+
+  // Now only an unsupported window left in overview grid, but the desk has
+  // another supported app window in the split view, so the two buttons should
+  // still be enabled.
+  EXPECT_EQ(views::Button::STATE_NORMAL, save_as_template_button->GetState());
+  EXPECT_EQ(views::Button::STATE_NORMAL, save_for_later_button->GetState());
+}
+
 // Tests that we cap the number of saved desk items shown, even if the backend
 // has more saved.
 TEST_F(SavedDeskTest, CapTemplateItemsShown) {
