@@ -2507,13 +2507,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Mobile.Messages.Passwords.Modal.Present"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MobileDownloadResumptionsCountTypes" separator=".">
-  <suffix name="Automatic" label=""/>
-  <suffix name="Manual" label=""/>
-  <suffix name="Total" label=""/>
-  <affected-histogram name="MobileDownload.ResumptionsCount"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MobileFreEntryType" separator=".">
   <suffix name="MainIntent" label="Icon click"/>
   <suffix name="ViewIntent" label="VIEW intent"/>

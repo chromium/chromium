@@ -1572,16 +1572,10 @@ public class DownloadManagerService implements DownloadController.Observer,
         assert count >= 0;
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.remove(name);
-        if (isAutoRetryOnly) {
-            RecordHistogram.recordSparseHistogram(
-                    "MobileDownload.ResumptionsCount.Automatic", count);
-        } else {
-            RecordHistogram.recordSparseHistogram("MobileDownload.ResumptionsCount.Manual", count);
+        if (!isAutoRetryOnly) {
             name = getDownloadRetryCountSharedPrefName(downloadGuid, false, true);
             count = sharedPrefs.getInt(name, 0);
             assert count >= 0;
-            RecordHistogram.recordSparseHistogram(
-                    "MobileDownload.ResumptionsCount.Total", Math.min(count, 500));
             editor.remove(name);
         }
         editor.apply();

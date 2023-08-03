@@ -761,18 +761,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="MobileDownload.ResumptionsCount" units="units"
-    expires_after="2020-04-05">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the number of resumptions for a download by resumption
-    type. For all resumption types, this is recorded when a download is
-    finished, completed or cancelled. For automatic resumptions, it is also
-    recorded when user manually resumes the download to clear the auto retry
-    count.
-  </summary>
-</histogram>
-
 <histogram name="MobileDownload.StoragePermission"
     enum="MobileDownloadStoragePermission" expires_after="M82">
   <owner>qinmin@chromium.org</owner>
