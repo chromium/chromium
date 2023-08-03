@@ -48,6 +48,33 @@ body {
   padding: 20px;
 }
 
+html:has(body.jelly-enabled),
+html:has(body.jelly-enabled) body,
+html:has(body.jelly-enabled) .text-field-container > select,
+html:has(body.jelly-enabled) .content {
+  background-color: var(--feedback-bg-color);
+  color: var(--cros-sys-on_surface_variant);
+}
+
+html:has(body.jelly-enabled) textarea,
+html:has(body.jelly-enabled) input {
+  background-color: var(--cros-sys-input_field_on_shaded);
+}
+
+html:has(body.jelly-enabled) .checkbox-field-container,
+html:has(body.jelly-enabled) .text-field-container {
+  color: var(--cros-sys-on_surface);
+}
+
+html:has(body.jelly-enabled) a {
+  color: var(--cros-sys-primary);
+}
+
+html:has(body.jelly-enabled) .attach-file-notification,
+html:has(body.jelly-enabled) .description-empty-notification {
+  color: var(--cros-sys-error);
+}
+
 .content {
   color: var(--feedback-primary-color);
   font-size: 12px;
