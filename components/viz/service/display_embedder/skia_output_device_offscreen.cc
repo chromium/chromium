@@ -62,6 +62,7 @@ bool SkiaOutputDeviceOffscreen::Reshape(const SkImageInfo& image_info,
                                         float device_scale_factor,
                                         gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
+  CHECK_EQ(image_info.colorType(), SkColorType::kRGBA_8888_SkColorType);
 
   DiscardBackbuffer();
   size_ = gfx::SkISizeToSize(image_info.dimensions());
@@ -125,7 +126,6 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
     if (!has_alpha_) {
       is_emulated_rgbx_ = true;
     }
-    // TODO(hitawala): Get the right format.
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
         context_state_->gr_context_type(), SinglePlaneFormat::kRGBA_8888);
     graphite_texture_ =
