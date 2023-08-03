@@ -8,6 +8,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -48,6 +49,7 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -1170,6 +1172,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 }
 
+// TODO(crbug.com/1466096): Some changes desired once test confirmed to be
+// deflaked:
+// 1. ShouldRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown does almost
+// the same, but have unique expectation. Consider to dedup them.
+// 2. BeforeSignIn is misleading (SetupClients() *does* sign in), either rename
+// the test to reflect this or change it (likely we need some helper that
+// creates the profile, but doesn't sign in). Same applies to comments in both
+// tests.
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        PRE_ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn) {
   ASSERT_TRUE(SetupClients());
@@ -1186,10 +1196,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
-  // Wait until the page closes, which indicates successful completion.
+  // Wait until the page closes and keys are persisted.
   EXPECT_TRUE(
       TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
           .Wait());
+  base::RunLoop run_loop;
+  static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
+      GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient())
+      ->WaitForFlushForTesting(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
@@ -1228,6 +1243,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
     PRE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
+  // TODO(crbug.com/1466096): TrustedVaultKeysChangedStateChecker may be not
+  // sufficient and redundant in this test, consider rewriting it using
+  // StandaloneTrustedVaultClient::WaitForFlushForTesting().
   ASSERT_TRUE(SetupClients());
 
   // Explicitly add signin cookie (normally it would be done during the keys
@@ -1482,7 +1500,6 @@ IN_PROC_BROWSER_TEST_F(
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
 
-  TrustedVaultKeysChangedStateChecker keys_fetched_checker(GetSyncService(0));
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
   OpenTabForSyncKeyRetrieval(
@@ -1490,11 +1507,15 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
-  // Wait until the page closes, which indicates successful completion.
+  // Wait until the page closes and keys are persisted.
   ASSERT_TRUE(
       TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
           .Wait());
-  ASSERT_TRUE(keys_fetched_checker.Wait());
+  base::RunLoop run_loop;
+  static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
+      GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient())
+      ->WaitForFlushForTesting(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
