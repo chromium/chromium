@@ -24,8 +24,6 @@ class TestFullscreenController : public FullscreenController {
   // FullscreenController:
   ChromeBroadcaster* broadcaster() override;
   void SetWebStateList(WebStateList* web_state_list) override;
-  const WebStateList* GetWebStateList() const override;
-  WebStateList* GetWebStateList() override;
   void AddObserver(FullscreenControllerObserver* observer) override;
   void RemoveObserver(FullscreenControllerObserver* observer) override;
   bool IsEnabled() const override;

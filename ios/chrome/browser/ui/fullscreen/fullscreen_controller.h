@@ -36,8 +36,6 @@ class FullscreenController : public base::SupportsUserData::Data {
   // The WebStateList for the Browser whose fullscreen state is managed by this
   // controller.
   virtual void SetWebStateList(WebStateList* web_state_list) = 0;
-  virtual const WebStateList* GetWebStateList() const = 0;
-  virtual WebStateList* GetWebStateList() = 0;
 
   // Adds and removes FullscreenControllerObservers.
   virtual void AddObserver(FullscreenControllerObserver* observer) = 0;
