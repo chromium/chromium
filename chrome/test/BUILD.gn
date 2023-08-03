@@ -9705,8 +9705,6 @@ if (!is_android) {
       "../browser/password_manager/password_manager_test_base.h",
       "../browser/password_manager/passwords_navigation_observer.cc",
       "../browser/password_manager/passwords_navigation_observer.h",
-      "../browser/scoped_disable_client_side_decorations_for_test.cc",
-      "../browser/scoped_disable_client_side_decorations_for_test.h",
       "../browser/ssl/cert_verifier_browser_test.cc",
       "../browser/ssl/cert_verifier_browser_test.h",
       "../browser/ssl/cert_verifier_platform_browser_test.cc",
