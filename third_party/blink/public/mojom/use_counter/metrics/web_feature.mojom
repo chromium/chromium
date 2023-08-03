@@ -3951,6 +3951,7 @@ enum WebFeature {
   kURLPatternReliantOnLaterComponentFromBaseURL = 4611,
   kV8Navigator_CreateAuctionNonce_Method = 4612,
   kCrossOriginWindowFrameElement = 4613,
+  kQuirksModeAboutBlankDocument = 4614,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

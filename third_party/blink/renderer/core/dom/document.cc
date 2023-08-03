@@ -964,10 +964,14 @@ void Document::SetCompatibilityMode(CompatibilityMode mode) {
   if (compatibility_mode_locked_ || mode == compatibility_mode_)
     return;
 
-  if (compatibility_mode_ == kQuirksMode)
+  if (mode == kQuirksMode) {
     UseCounter::Count(*this, WebFeature::kQuirksModeDocument);
-  else if (compatibility_mode_ == kLimitedQuirksMode)
+    if (urlForBinding().IsAboutBlankURL()) {
+      UseCounter::Count(*this, WebFeature::kQuirksModeAboutBlankDocument);
+    }
+  } else if (mode == kLimitedQuirksMode) {
     UseCounter::Count(*this, WebFeature::kLimitedQuirksModeDocument);
+  }
 
   compatibility_mode_ = mode;
   GetSelectorQueryCache().Invalidate();
