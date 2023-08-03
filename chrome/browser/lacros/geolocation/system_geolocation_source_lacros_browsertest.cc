@@ -4,6 +4,7 @@
 
 #include "base/synchronization/condition_variable.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -40,14 +41,15 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
                  << version << ")";
   }
 
-  absl::optional<::base::Value> out_value;
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
+  auto& prefs =
+      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 
   // By default, the the geolocation is allowed in ash.
-  async_waiter.GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
-                       &out_value);
+  base::test::TestFuture<absl::optional<::base::Value>> future;
+  prefs->GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+                 future.GetCallback());
 
+  auto out_value = future.Take();
   EXPECT_TRUE(out_value.has_value());
   EXPECT_TRUE(out_value.value().GetBool());
 
@@ -63,15 +65,19 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 
   // Change the value in ash.
-  async_waiter.SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
-                       ::base::Value(false));
+  base::test::TestFuture<void> set_future;
+  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+                 ::base::Value(false), set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
+  set_future.Clear();
 
   // Check that the change in pref was registered.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kDenied, status.Take());
 
   // Change the value in ash.
-  async_waiter.SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
-                       ::base::Value(true));
+  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+                 ::base::Value(true), set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
 
   // Check that the change in pref was registered.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
@@ -102,17 +108,18 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::Prefs>());
 
-  absl::optional<::base::Value> out_value;
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
+  base::test::TestFuture<absl::optional<::base::Value>> future;
+  auto& prefs =
+      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 
   // By default, the the geolocation is allowed in ash.
-  async_waiter.GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
-                       &out_value);
+  prefs->GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+                 future.GetCallback());
 
   // As we are adding the crosapi change to ash in the same commit, we may be
   // missing the Pref when run with older versions of ash. Hence we'll skip this
   // test when the preference is not available.
+  auto out_value = future.Take();
   if (!out_value.has_value()) {
     GTEST_SKIP() << "Skipping as the geolocation pref is not available in the "
                     "current version of Ash";
@@ -126,16 +133,19 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
             manager->GetSystemPermission());
 
   // Change the value in ash.
-  async_waiter.SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
-                       ::base::Value(false));
+  base::test::TestFuture<void> set_future;
+  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+                 ::base::Value(false), set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
 
   // Check that the change in pref was registered.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kDenied,
             observer.status_.Take());
 
   // Change the value in ash.
-  async_waiter.SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
-                       ::base::Value(true));
+  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+                 ::base::Value(true), set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
 
   // Check that the change in pref was registered.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed,

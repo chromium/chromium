@@ -5,6 +5,7 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 
 #include "base/check.h"
+#include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/startup/browser_init_params.h"
 
@@ -19,13 +20,11 @@ base::Version GetAshVersion() {
     return base::Version({0, 0, 0, 0});
   }
 
-  std::string ash_version_str;
-  crosapi::mojom::TestControllerAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
-  async_waiter.GetAshVersion(&ash_version_str);
-  return base::Version(ash_version_str);
+  base::test::TestFuture<const std::string&> future;
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->GetAshVersion(future.GetCallback());
+  return base::Version(future.Take());
 }
 }  // namespace
 

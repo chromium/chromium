@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/test_future.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,10 +49,11 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
   ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
 
   // Enter overview mode.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
-  waiter.EnterOverviewMode();
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
+  base::RunLoop run_loop;
+  test_controller->EnterOverviewMode(run_loop.QuitClosure());
+  run_loop.Run();
 
   // Close the window by closing all tabs and wait for it to stop existing in
   // ash.
@@ -85,10 +87,12 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
   ASSERT_TRUE(browser_test_util::WaitForWindowCreation(incognito_id));
 
   // Enter overview mode.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
-  waiter.EnterOverviewMode();
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
+  base::test::TestFuture<void> future;
+  test_controller->EnterOverviewMode(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  future.Clear();
 
   // Close the incognito window by closing all tabs and wait for it to stop
   // existing in ash.
@@ -96,5 +100,6 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
   ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(incognito_id));
 
   // Exit overview mode.
-  waiter.ExitOverviewMode();
+  test_controller->ExitOverviewMode(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
