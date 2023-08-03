@@ -7045,7 +7045,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7138678301420049075">Other</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> is using your microphone</translation>
 <translation id="7141105143012495934">Sign-in failed because your account details could not be retrieved. Please contact your administrator or try again.</translation>
-<translation id="7141844554192012199">Check-up</translation>
+<translation id="7141844554192012199">Checkup</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7148426638542880639">Sites may not work as you would expect. Choose this option if you don't want to leave information on your device about sites that you visit.</translation>
@@ -8162,7 +8162,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8100230553590752325">Use saved passwords on any device</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selected. Press 'Search' plus 'Space' to unselect.</translation>
 <translation id="8100972288595615768">Clear site data and permissions for <ph name="SITE_NAME" />?</translation>
-<translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8101987792947961127">Powerwash required on next reboot</translation>
 <translation id="8102139037507939978">Strip personally identifiable information from system_logs.txt.</translation>

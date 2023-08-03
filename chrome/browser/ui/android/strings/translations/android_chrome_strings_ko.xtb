@@ -1122,7 +1122,7 @@
 <translation id="6978717888677691380">차단한 사이트</translation>
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6987047470128880212">이 기기에서는 시크릿 모드를 사용할 수 없습니다.</translation>
-<translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
+<translation id="6995899638241819463">정보 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="7020741890149022655">읽기 목록에 추가 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
