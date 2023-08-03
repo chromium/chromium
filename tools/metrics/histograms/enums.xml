@@ -78433,6 +78433,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="@tabs starter pack engine"/>
 </enum>
 
+<enum name="OmniboxDeviceSwitcherResult">
+  <int value="1" label="Unavailable"/>
+  <int value="2" label="Top omnibox by default"/>
+  <int value="3" label="Bottom omnibox by default"/>
+  <int value="4" label="Not a new user (user is new for 30 days after FRE)"/>
+</enum>
+
 <enum name="OmniboxDocumentSuggestRequests">
   <int value="1" label="requests sent"/>
   <int value="2" label="requests invalidated"/>

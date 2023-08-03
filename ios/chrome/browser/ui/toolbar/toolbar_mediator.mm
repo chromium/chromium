@@ -340,9 +340,57 @@ BOOL ShouldSwitchOmniboxToBottom(
         self.prefService->SetDefaultPrefValue(prefs::kBottomOmnibox,
                                               base::Value(YES));
         self.prefService->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
+        base::UmaHistogramEnumeration(
+            kOmniboxDeviceSwitcherResultAtFRE,
+            OmniboxDeviceSwitcherResult::kBottomOmnibox);
+      } else {
+        base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtFRE,
+                                      OmniboxDeviceSwitcherResult::kTopOmnibox);
       }
+    } else {
+      base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtFRE,
+                                    OmniboxDeviceSwitcherResult::kUnavailable);
     }
   }
+}
+
+/// Returns whether user is a safari switcher at startup.
+/// Used to set the default omnibox position to bottom for `IsNewUser` that are
+/// not in FRE. If bottom omnibox is already default `bottomOmniboxIsDefault`,
+/// still log the status as bottom as the user was classified as safari switcher
+/// in a previous session.
+- (BOOL)isSafariSwitcherAtStartup:(BOOL)bottomOmniboxIsDefault {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(self.prefService);
+
+  if (!IsNewUser()) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kNotNewUser);
+    return NO;
+  }
+
+  if (bottomOmniboxIsDefault) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kBottomOmnibox);
+    return YES;
+  }
+
+  segmentation_platform::ClassificationResult result =
+      self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kUnavailable);
+    return NO;
+  }
+
+  if (ShouldSwitchOmniboxToBottom(result)) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kBottomOmnibox);
+    return YES;
+  }
+  base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                OmniboxDeviceSwitcherResult::kTopOmnibox);
+  return NO;
 }
 
 /// Updates the default setting for bottom omnibox.
@@ -368,10 +416,7 @@ BOOL ShouldSwitchOmniboxToBottom(
   if (featureParam == kBottomOmniboxDefaultSettingParamBottom) {
     bottomOmniboxEnabledByDefault = YES;
   } else if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
-    segmentation_platform::ClassificationResult result =
-        self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
-    if (result.status == segmentation_platform::PredictionStatus::kSucceeded &&
-        ShouldSwitchOmniboxToBottom(result)) {
+    if ([self isSafariSwitcherAtStartup:bottomOmniboxEnabledByDefault]) {
       bottomOmniboxEnabledByDefault = YES;
     }
   } else if (featureParam == kBottomOmniboxDefaultSettingParamTop) {
