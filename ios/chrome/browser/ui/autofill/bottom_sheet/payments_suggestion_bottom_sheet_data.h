@@ -23,6 +23,9 @@ class CreditCard;
 // Returns the credit card's backend identifier.
 - (NSString*)backendIdentifier;
 
+// Returns an accessible card name.
+- (NSString*)accessibleCardName;
+
 // Returns the icon associated with the "creditCard" above.
 - (UIImage*)icon;
 

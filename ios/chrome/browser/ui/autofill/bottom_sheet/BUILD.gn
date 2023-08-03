@@ -16,6 +16,7 @@ source_set("bottom_sheet") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/default_browser:utils",

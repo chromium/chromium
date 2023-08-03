@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -39,6 +40,7 @@
 @property(nonatomic, strong) NSString* cardNameAndLastFourDigits;
 @property(nonatomic, strong) NSString* cardDetails;
 @property(nonatomic, strong) NSString* backendIdentifier;
+@property(nonatomic, strong) NSString* accessibleCardName;
 @property(nonatomic, strong) UIImage* icon;
 
 @end
@@ -56,10 +58,60 @@
                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
             : creditCard->AbbreviatedExpirationDateForDisplay(
                   /* with_prefix=*/false));
+    self.accessibleCardName = [self accessibleCardName:creditCard];
     self.backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
     self.icon = icon;
   }
   return self;
+}
+
+#pragma mark - Private
+
+- (NSString*)accessibleCardName:(const autofill::CreditCard*)creditCard {
+  // Get the card name. Prepend the card type if the card name doesn't already
+  // start with the card type.
+  NSString* cardType = base::SysUTF16ToNSString(
+      creditCard->GetRawInfo(autofill::CREDIT_CARD_TYPE));
+  NSString* cardAccessibleName =
+      base::SysUTF16ToNSString(creditCard->CardNameForAutofillDisplay());
+  if (![cardAccessibleName hasPrefix:cardType]) {
+    // If the card name doesn't already start with the card type, add the card
+    // type at the beginning of the card name.
+    cardAccessibleName =
+        [@[ cardType, cardAccessibleName ] componentsJoinedByString:@" "];
+  }
+
+  // Split the last 4 digits, so that they are pronounced separately. For
+  // example, "1215" will become "1 2 1 5" and will read "one two one five"
+  // instead of "one thousand two hundred and fifteen".
+  NSString* cardLastDigits =
+      base::SysUTF16ToNSString(creditCard->LastFourDigits());
+  cardLastDigits = [@[
+    [cardLastDigits substringWithRange:NSMakeRange(0, 1)],
+    [cardLastDigits substringWithRange:NSMakeRange(1, 1)],
+    [cardLastDigits substringWithRange:NSMakeRange(2, 1)],
+    [cardLastDigits substringWithRange:NSMakeRange(3, 1)]
+  ] componentsJoinedByString:@" "];
+
+  // Add mention that the credit card ends with the last 4 digits.
+  cardAccessibleName = base::SysUTF16ToNSString(
+      l10n_util::GetStringFUTF16(IDS_IOS_PAYMENT_BOTTOM_SHEET_CARD_DESCRIPTION,
+                                 base::SysNSStringToUTF16(cardAccessibleName),
+                                 base::SysNSStringToUTF16(cardLastDigits)));
+
+  // Either prepend that the card is a virtual card OR append the expiration
+  // date.
+  if (creditCard->record_type() == autofill::CreditCard::VIRTUAL_CARD) {
+    cardAccessibleName = [@[ self.cardDetails, cardAccessibleName ]
+        componentsJoinedByString:@" "];
+  } else {
+    cardAccessibleName = base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
+        base::SysNSStringToUTF16(cardAccessibleName),
+        base::SysNSStringToUTF16(self.cardDetails)));
+  }
+
+  return cardAccessibleName;
 }
 
 @end

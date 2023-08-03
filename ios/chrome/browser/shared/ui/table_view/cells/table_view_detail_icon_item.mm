@@ -425,6 +425,9 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
 }
 
 - (NSString*)accessibilityLabel {
+  if (self.customAccessibilityLabel) {
+    return self.customAccessibilityLabel;
+  }
   if (self.notificationDotUIView) {
     return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
                                       l10n_util::GetNSString(
@@ -434,6 +437,12 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
 }
 
 - (NSString*)accessibilityValue {
+  if (self.customAccessibilityLabel) {
+    // If the cell already has an accessibility label for the whole cell, remove
+    // the one specifically for the detail text, so that information is not
+    // repeated by voice over.
+    return @"";
+  }
   return self.detailTextLabel.text;
 }
 

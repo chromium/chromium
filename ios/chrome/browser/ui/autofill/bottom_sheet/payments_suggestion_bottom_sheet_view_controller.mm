@@ -258,6 +258,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   return [_creditCardData[row] icon];
 }
 
+// Returns an accessible card name at a given row in the table view.
+- (NSString*)accessibleCardNameAtRow:(NSInteger)row {
+  return [_creditCardData[row] accessibleCardName];
+}
+
 // Creates the payments bottom sheet's table view.
 - (UITableView*)createTableView {
   UITableView* tableView = [super createTableView];
@@ -436,6 +441,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
+  cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
   [cell setDetailText:[self descriptionAtRow:indexPath.row]];
