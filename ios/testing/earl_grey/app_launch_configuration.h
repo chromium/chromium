@@ -5,15 +5,15 @@
 #ifndef IOS_TESTING_EARL_GREY_APP_LAUNCH_CONFIGURATION_H_
 #define IOS_TESTING_EARL_GREY_APP_LAUNCH_CONFIGURATION_H_
 
-#import <Foundation/Foundation.h>
-
+#include <string>
 #include <vector>
-#import "base/test/scoped_feature_list.h"
+
+#include "base/test/scoped_feature_list.h"
 #include "components/variations/variations_associated_data.h"
 
 // Enum of relaunch manners. Useful combinations of whether force a relaunch,
 // whether kill app gracefully, whether run resets after a relaunch.
-typedef NS_ENUM(NSInteger, RelaunchPolicy) {
+enum RelaunchPolicy : long {
   // Does not relaunch if app is already running with the same feature list.
   // Kills the app directly. Keeps app state the same as before relaunch.
   NoForceRelaunchAndKeepState,
