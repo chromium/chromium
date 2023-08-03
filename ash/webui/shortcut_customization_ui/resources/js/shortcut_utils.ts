@@ -14,6 +14,8 @@ import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, Accele
 const kF11 = 112;  // Keycode for F11.
 const kF24 = 135;  // Keycode for F24.
 
+const kMeta = 91;  // Keycode for Meta.
+
 const modifiers: Modifier[] = [
   Modifier.SHIFT,
   Modifier.CONTROL,
@@ -198,6 +200,11 @@ function getModifierCount(accelerator: Accelerator): number {
   return count;
 }
 
+function isSearchOnlyAccelerator(accelerator: Accelerator): boolean {
+  return accelerator.keyCode === kMeta &&
+      accelerator.modifiers === Modifier.NONE;
+}
+
 // Comparison function that checks the number of modifiers in an accelerator.
 // Lower number of modifiers get higher priority.
 // @returns a negative number if the first accelerator info should be higher in
@@ -209,6 +216,17 @@ export function compareAcceleratorInfos(
   // a no-opt.
   if (!isStandardAcceleratorInfo(first) || !isStandardAcceleratorInfo(second)) {
     return 0;
+  }
+
+  // Search/meta as the activation key should always be the highest priority.
+  if (isSearchOnlyAccelerator(
+          first.layoutProperties.standardAccelerator.accelerator)) {
+    return -1;
+  }
+
+  if (isSearchOnlyAccelerator(
+          second.layoutProperties.standardAccelerator.accelerator)) {
+    return -1;
   }
 
   const firstModifierCount =

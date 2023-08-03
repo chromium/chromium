@@ -210,34 +210,45 @@ suite('shortcutUtilsTest', function() {
   });
 
   test('sortStandardAcceleratorInfo', () => {
+    // Low modifiers, relatively high priority.
     const standardAcceleratorInfo1 = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*keyCode=*/ 221,
         /*keyDisplay=*/ ']');
 
-    // No modifier, this should get the highest priority.
+    // No modifier, high priority.
     const standardAcceleratorInfo2 = createStandardAcceleratorInfo(
         Modifier.NONE,
         /*keyCode=*/ 221,
         /*keyDisplay=*/ ']');
 
+    // Lots of modifiers, low priority.
     const standardAcceleratorInfo3 = createStandardAcceleratorInfo(
         Modifier.ALT | Modifier.SHIFT | Modifier.COMMAND,
         /*keyCode=*/ 221,
         /*keyDisplay=*/ ']');
 
+    // Medium amount of modifiers, middle priority.
     const standardAcceleratorInfo4 = createStandardAcceleratorInfo(
         Modifier.ALT | Modifier.SHIFT,
         /*keyCode=*/ 221,
         /*keyDisplay=*/ ']');
+
+    // Meta only key, highest priority.
+    const standardAcceleratorInfo5 = createStandardAcceleratorInfo(
+        Modifier.NONE,
+        /*keyCode=*/ 91,
+        /*keyDisplay=*/ 'Meta');
 
     const initialOrder = [
       standardAcceleratorInfo1,
       standardAcceleratorInfo2,
       standardAcceleratorInfo3,
       standardAcceleratorInfo4,
+      standardAcceleratorInfo5,
     ];
     const expectedOrder = [
+      standardAcceleratorInfo5,
       standardAcceleratorInfo2,
       standardAcceleratorInfo1,
       standardAcceleratorInfo4,
