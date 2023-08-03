@@ -126,7 +126,7 @@ void Parcel::CommitData(size_t num_bytes) {
   ABSL_ASSERT(num_bytes <= storage.fragment().size() + sizeof(FragmentHeader));
   auto& header = *reinterpret_cast<FragmentHeader*>(
       storage.fragment().mutable_bytes().data());
-  header.reserved = 0;
+  header.reserved.store(0, std::memory_order_relaxed);
 
   // This store-release is balanced by the load-acquire in AdoptDataFragment()
   // by the eventual consumer of this data.

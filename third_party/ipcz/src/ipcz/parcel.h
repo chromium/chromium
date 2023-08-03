@@ -163,7 +163,7 @@ class Parcel {
     std::atomic<uint32_t> size;
 
     // Reserved padding for 8-byte parcel data alignment.
-    uint32_t reserved;
+    std::atomic<uint32_t> reserved;
   };
 
   // Holds a Fragment and a reference to its backing memory. Used when a
