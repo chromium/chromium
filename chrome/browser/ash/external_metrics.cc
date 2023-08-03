@@ -147,31 +147,36 @@ int ExternalMetrics::CollectEvents() {
   metrics::SerializationUtils::ReadAndTruncateMetricsFromFile(uma_events_file_,
                                                               &samples);
 
+  int cumulative_num_samples = 0;
   for (auto it = samples.begin(); it != samples.end(); ++it) {
     const metrics::MetricSample& sample = **it;
 
-    // Do not use the UMA_HISTOGRAM_... macros here.  They cache the Histogram
-    // instance and thus only work if |sample.name()| is constant.
-    switch (sample.type()) {
-      case metrics::MetricSample::CRASH:
-        RecordCrash(sample.name());
-        break;
-      case metrics::MetricSample::USER_ACTION:
-        RecordAction(sample.name());
-        break;
-      case metrics::MetricSample::HISTOGRAM:
-        RecordHistogram(sample);
-        break;
-      case metrics::MetricSample::LINEAR_HISTOGRAM:
-        RecordLinearHistogram(sample);
-        break;
-      case metrics::MetricSample::SPARSE_HISTOGRAM:
-        RecordSparseHistogram(sample);
-        break;
+    cumulative_num_samples += sample.num_samples();
+
+    for (int i = 0; i < sample.num_samples(); ++i) {
+      // Do not use the UMA_HISTOGRAM_... macros here.  They cache the Histogram
+      // instance and thus only work if |sample.name()| is constant.
+      switch (sample.type()) {
+        case metrics::MetricSample::CRASH:
+          RecordCrash(sample.name());
+          break;
+        case metrics::MetricSample::USER_ACTION:
+          RecordAction(sample.name());
+          break;
+        case metrics::MetricSample::HISTOGRAM:
+          RecordHistogram(sample);
+          break;
+        case metrics::MetricSample::LINEAR_HISTOGRAM:
+          RecordLinearHistogram(sample);
+          break;
+        case metrics::MetricSample::SPARSE_HISTOGRAM:
+          RecordSparseHistogram(sample);
+          break;
+      }
     }
   }
 
-  return samples.size();
+  return cumulative_num_samples;
 }
 
 void ExternalMetrics::CollectEventsAndReschedule() {

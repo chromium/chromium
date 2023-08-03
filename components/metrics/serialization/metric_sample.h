@@ -33,7 +33,8 @@ class MetricSample {
                const int sample,
                const int min,
                const int max,
-               const int bucket_count);
+               const int bucket_count,
+               const int num_samples);
 
   MetricSample(const MetricSample&) = delete;
   MetricSample& operator=(const MetricSample&) = delete;
@@ -45,10 +46,11 @@ class MetricSample {
   // This function should be used to filter bad samples before serializing them.
   bool IsValid() const;
 
-  // Getters for type and name. All types of metrics have these so we do not
-  // need to check the type.
+  // Getters for type, name, and num_samples. All types of metrics have these so
+  // we do not need to check the type.
   SampleType type() const { return type_; }
   const std::string& name() const { return name_; }
+  int num_samples() const { return num_samples_; }
 
   // Getters for sample, min, max, bucket_count.
   // Check the metric type to make sure the request make sense. (ex: a crash
@@ -67,11 +69,18 @@ class MetricSample {
   // histogram: histogram\0|name_| |sample_| |min_| |max_| |bucket_count_|\0
   // sparsehistogram: sparsehistogram\0|name_| |sample_|\0
   // linearhistogram: linearhistogram\0|name_| |sample_| |max_|\0
+  //
+  // Additionally, if num_samples is not 1, each type may have:
+  // ` |num_samples_|` immediately before the final null terminator.
   std::string ToString() const;
 
   // Builds a crash sample.
   static std::unique_ptr<MetricSample> CrashSample(
-      const std::string& crash_name);
+      const std::string& crash_name,
+      int num_samples);
+  // Deserializes a crash sample.
+  static std::unique_ptr<MetricSample> ParseCrash(
+      const std::string& serialized);
 
   // Builds a histogram sample.
   static std::unique_ptr<MetricSample> HistogramSample(
@@ -79,7 +88,8 @@ class MetricSample {
       int sample,
       int min,
       int max,
-      int bucket_count);
+      int bucket_count,
+      int num_samples);
   // Deserializes a histogram sample.
   static std::unique_ptr<MetricSample> ParseHistogram(
       const std::string& serialized);
@@ -87,21 +97,29 @@ class MetricSample {
   // Builds a sparse histogram sample.
   static std::unique_ptr<MetricSample> SparseHistogramSample(
       const std::string& histogram_name,
-      int sample);
+      int sample,
+      int num_samples);
   // Deserializes a sparse histogram sample.
   static std::unique_ptr<MetricSample> ParseSparseHistogram(
       const std::string& serialized);
 
   // Builds a linear histogram sample.
-  static std::unique_ptr<MetricSample>
-  LinearHistogramSample(const std::string& histogram_name, int sample, int max);
+  static std::unique_ptr<MetricSample> LinearHistogramSample(
+      const std::string& histogram_name,
+      int sample,
+      int max,
+      int num_samples);
   // Deserializes a linear histogram sample.
   static std::unique_ptr<MetricSample> ParseLinearHistogram(
       const std::string& serialized);
 
   // Builds a user action sample.
   static std::unique_ptr<MetricSample> UserActionSample(
-      const std::string& action_name);
+      const std::string& action_name,
+      int num_samples);
+  // Deserializes a user action sample.
+  static std::unique_ptr<MetricSample> ParseUserAction(
+      const std::string& serialized);
 
   // Returns true if sample and this object represent the same sample (type,
   // name, sample, min, max, bucket_count match).
@@ -114,6 +132,7 @@ class MetricSample {
   const int min_;
   const int max_;
   const int bucket_count_;
+  const int num_samples_;
 };
 
 }  // namespace metrics

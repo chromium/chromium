@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "components/metrics/serialization/metric_sample.h"
 #include "components/metrics/serialization/serialization_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,16 +55,49 @@ TEST_F(ExternalMetricsTest, HandleMissingFile) {
 TEST_F(ExternalMetricsTest, CanReceiveHistogram) {
   Init();
   base::HistogramTester histogram_tester;
+  base::UserActionTester action_tester;
 
-  std::unique_ptr<metrics::MetricSample> hist =
-      metrics::MetricSample::HistogramSample("foo", 2, 1, 100, 10);
+  int expected_samples = 0;
+  std::vector<std::unique_ptr<metrics::MetricSample>> samples;
 
-  EXPECT_TRUE(metrics::SerializationUtils::WriteMetricToFile(
-      *hist.get(), external_metrics_->uma_events_file_));
+  // We do not test CrashSample here because the underlying class,
+  // ChromeOSMetricsProvider, relies heavily on |g_browser_process|, which is
+  // not set in unit tests.
+  // It is not currently possible to inject a mock for ChromeOSMetricsProvider.
 
-  EXPECT_EQ(1, external_metrics_->CollectEvents());
+  samples.push_back(metrics::MetricSample::UserActionSample(
+      "foo_useraction", /*num_samples=*/100));
+  expected_samples += 100;
 
-  histogram_tester.ExpectTotalCount("foo", 1);
+  samples.push_back(metrics::MetricSample::HistogramSample(
+      "foo_histogram", /*sample=*/2, /*min=*/1,
+      /*max=*/100, /*bucket_count=*/10,
+      /*num_samples=*/2));
+  expected_samples += 2;
+
+  samples.push_back(metrics::MetricSample::LinearHistogramSample(
+      "foo_linear", /*sample=*/1, /*max=*/2, /*num_samples=*/3));
+  expected_samples += 3;
+
+  samples.push_back(metrics::MetricSample::SparseHistogramSample(
+      "foo_sparse", /*sample=*/1, /*num_samples=*/20));
+  expected_samples += 20;
+
+  for (const auto& sample : samples) {
+    EXPECT_TRUE(metrics::SerializationUtils::WriteMetricToFile(
+        *sample, external_metrics_->uma_events_file_));
+  }
+
+  base::RunLoop loop;
+
+  EXPECT_EQ(expected_samples, external_metrics_->CollectEvents());
+
+  loop.RunUntilIdle();
+
+  EXPECT_EQ(action_tester.GetActionCount("foo_useraction"), 100);
+  histogram_tester.ExpectTotalCount("foo_histogram", 2);
+  histogram_tester.ExpectTotalCount("foo_linear", 3);
+  histogram_tester.ExpectTotalCount("foo_sparse", 20);
 }
 
 TEST_F(ExternalMetricsTest, IncorrectHistogramsAreDiscarded) {
@@ -72,7 +106,9 @@ TEST_F(ExternalMetricsTest, IncorrectHistogramsAreDiscarded) {
 
   // Malformed histogram (min > max).
   std::unique_ptr<metrics::MetricSample> hist =
-      metrics::MetricSample::HistogramSample("bar", 30, 200, 20, 10);
+      metrics::MetricSample::HistogramSample("bar", /*sample=*/30, /*min=*/200,
+                                             /*max=*/20, /*bucket_count=*/10,
+                                             /*num_samples=*/1);
 
   EXPECT_TRUE(metrics::SerializationUtils::WriteMetricToFile(
       *hist.get(), external_metrics_->uma_events_file_));
