@@ -408,6 +408,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
+<translation id="1793631236004319016">Se usó por última vez hace <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hay varias acciones disponibles; presiona Tab para elegir una</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalles de la tarjeta virtual</translation>
@@ -938,6 +939,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="299990983510665749">Autos de tres o cinco puertas</translation>
 <translation id="3002501248619246229">Revisar el medio en la bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
+<translation id="300580149047131921">Se usó recientemente</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab para explorar las acciones disponibles y, luego, presiona Intro para ejecutar la acción seleccionada.</translation>
 <translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="3014553260345122294">Noticias de negocios</translation>
@@ -2663,6 +2665,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6671169470640320959">Financiación de automóviles</translation>
 <translation id="6671697161687535275">¿Confirmas que quieres quitar la sugerencia de formulario de Chromium?</translation>
 <translation id="6677351035258626477">Comida rápida</translation>
+<translation id="6681790815630918386">Se guardó el CVC</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6683717648675961851">Publicaciones de empleo</translation>
 <translation id="6687230248707087982">Sobre (liso)</translation>
@@ -3470,6 +3473,7 @@ Detalles adicionales:
 <translation id="830498451218851433">Plegado a la mitad</translation>
 <translation id="8308653357438598313">Transmisión de video en vivo</translation>
 <translation id="8311895354659782580">Listados de bienes raíces</translation>
+<translation id="8316555157357957253">Está en uso</translation>
 <translation id="8317570861267063617">Para confirmar la compra más rápido, guarda el CVC de esta tarjeta en tu dispositivo</translation>
 <translation id="8319269383395457801">Ventas de viviendas</translation>
 <translation id="831997045666694187">Tarde</translation>

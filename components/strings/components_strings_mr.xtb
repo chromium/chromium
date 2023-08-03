@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Google खाते मध्ये तुमची माहिती, गोपनीयता आणि सुरक्षा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
+<translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> पूर्वी शेवटचे वापरले</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकाहून अधिक कृती उपलब्ध आहेत, प्रत्येकावर जाण्यासाठी टॅब प्रेस करा</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">व्हर्च्युअल कार्डचे तपशील</translation>
@@ -938,6 +939,7 @@
 <translation id="299990983510665749">हॅचबॅक</translation>
 <translation id="3002501248619246229">इनपुट ट्रे मीडिया तपासा</translation>
 <translation id="3005723025932146533">सेव्ह केलेली प्रत दर्शवा</translation>
+<translation id="300580149047131921">अलीकडे वापरले आहे</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध असलेल्या कृती ब्राउझ करण्यासाठी टॅब प्रेस करा, त्यानंतर निवडलेली कृती अमलात आणण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="3013291976881901233">MIDI डिव्हाइस</translation>
 <translation id="3014553260345122294">व्यावसायिक बातम्‍या</translation>
@@ -2662,6 +2664,7 @@
 <translation id="6671169470640320959">ऑटो वित्तव्यवस्था</translation>
 <translation id="6671697161687535275">Chromium वरून फॉर्म सूचना काढून टाकायच्या?</translation>
 <translation id="6677351035258626477">फास्ट फूड</translation>
+<translation id="6681790815630918386">CVC सेव्ह केला आहे</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683717648675961851">नोकरीच्या सूची</translation>
 <translation id="6687230248707087982">एन्व्हलप (प्लेन)</translation>
@@ -3469,6 +3472,7 @@
 <translation id="830498451218851433">फोल्ड हाफ</translation>
 <translation id="8308653357438598313">लाइव्ह व्हिडिओ स्ट्रीम करणे</translation>
 <translation id="8311895354659782580">रीअल इस्टेट सूची</translation>
+<translation id="8316555157357957253">आता वापरत आहे</translation>
 <translation id="8317570861267063617">जलद चेकआउटसाठी, तुमच्या डिव्हाइसवर या कार्डकरिता CVC सेव्ह करा</translation>
 <translation id="8319269383395457801">निवासी विक्री</translation>
 <translation id="831997045666694187">संध्याकाळी</translation>

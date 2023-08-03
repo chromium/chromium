@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
+<translation id="1793631236004319016">마지막 사용: <ph name="NUM_HOURS_MINUTES_SECONDS" /> 전</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 여러 작업 이용 가능, Tab을 눌러 작업 둘러보기</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">가상 카드 세부정보</translation>
@@ -938,6 +939,7 @@
 <translation id="299990983510665749">해치백</translation>
 <translation id="3002501248619246229">입력 트레이 미디어 확인</translation>
 <translation id="3005723025932146533">저장된 사본 표시</translation>
+<translation id="300580149047131921">방금 사용</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 눌러 사용 가능한 작업을 둘러보고 Enter를 눌러 선택한 작업을 실행합니다.</translation>
 <translation id="3013291976881901233">MIDI 기기</translation>
 <translation id="3014553260345122294">비즈니스 뉴스</translation>
@@ -2662,6 +2664,7 @@
 <translation id="6671169470640320959">자동차 금융</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
 <translation id="6677351035258626477">패스트푸드</translation>
+<translation id="6681790815630918386">CVC 저장됨</translation>
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6683717648675961851">채용 공고</translation>
 <translation id="6687230248707087982">봉투(일반)</translation>
@@ -3468,6 +3471,7 @@
 <translation id="830498451218851433">폴드 하프</translation>
 <translation id="8308653357438598313">라이브 동영상 스트리밍</translation>
 <translation id="8311895354659782580">부동산 매물</translation>
+<translation id="8316555157357957253">지금 사용 중</translation>
 <translation id="8317570861267063617">더 빠르게 결제하려면 기기에 이 카드의 CVC를 저장하세요.</translation>
 <translation id="8319269383395457801">주택 판매</translation>
 <translation id="831997045666694187">저녁</translation>

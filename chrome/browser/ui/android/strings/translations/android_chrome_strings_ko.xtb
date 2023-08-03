@@ -1056,6 +1056,7 @@
 <translation id="663674369910034433">개인 정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK1" />동기화<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />를 참고하세요.</translation>
 <translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">항상 차단</translation>
+<translation id="664050863900079109">소리 내 읽기</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> 삭제</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6645629752388991326">이 기기를 보안 키로 사용하여 로그인할 수 있는 기기를 제어합니다.</translation>
@@ -1129,7 +1130,7 @@
 <translation id="6978717888677691380">차단한 사이트</translation>
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6987047470128880212">이 기기에서는 시크릿 모드를 사용할 수 없습니다.</translation>
-<translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
+<translation id="6995899638241819463">정보 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="7020741890149022655">읽기 목록에 추가 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7138678301420049075">기타</translation>
 <translation id="7146622961999026732">다음 사이트와 앱은 중요할 수도 있습니다.</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
+<translation id="7152808996372201178">지원되는 페이지를 소리 내 읽습니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="7155317020660659215">QR 코드를 스캔하려면 Chrome에서 카메라를 사용할 수 있도록 설정을 변경하세요.</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="7173114856073700355">설정 열기</translation>

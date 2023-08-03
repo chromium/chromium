@@ -408,6 +408,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le tue informazioni, la privacy e la sicurezza nel tuo Account Google</translation>
+<translation id="1793631236004319016">Ultimo utilizzo: <ph name="NUM_HOURS_MINUTES_SECONDS" /> fa</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sono disponibili diverse azioni; premi Tab per scorrerle</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Dati della carta virtuale</translation>
@@ -939,6 +940,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="299990983510665749">Due volumi</translation>
 <translation id="3002501248619246229">Controlla contenuti multimediali cassetto di input</translation>
 <translation id="3005723025932146533">Mostra copia salvata</translation>
+<translation id="300580149047131921">Utilizzata di recente</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="3013291976881901233">Dispositivi MIDI</translation>
 <translation id="3014553260345122294">Notizie di economia</translation>
@@ -2659,6 +2661,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6671169470640320959">Finanziamenti per l'acquisto di automobili</translation>
 <translation id="6671697161687535275">Rimuovere il suggerimento per i moduli da Chromium?</translation>
 <translation id="6677351035258626477">Fast food</translation>
+<translation id="6681790815630918386">CVC salvato</translation>
 <translation id="6683022854667115063">Cuffie</translation>
 <translation id="6683717648675961851">Annunci di lavoro</translation>
 <translation id="6687230248707087982">Busta (normale)</translation>
@@ -3468,6 +3471,7 @@ Ulteriori dettagli:
 <translation id="830498451218851433">Piegatura a metà</translation>
 <translation id="8308653357438598313">Streaming video in diretta</translation>
 <translation id="8311895354659782580">Inserzioni immobiliari</translation>
+<translation id="8316555157357957253">In uso</translation>
 <translation id="8317570861267063617">Per velocizzare i pagamenti, salva il CVC di questa carta sul tuo dispositivo</translation>
 <translation id="8319269383395457801">Vendite residenziali</translation>
 <translation id="831997045666694187">Sera</translation>

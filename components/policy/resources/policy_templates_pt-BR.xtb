@@ -566,6 +566,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Observação: separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="1488724823347505879">Permitir o compartilhamento de apps Android para apps da Web</translation>
+<translation id="1490962807364514840">O tempo de execução da CPU contabiliza a taxa de coleta da telemetria em milissegundos.</translation>
 <translation id="1492223733885011596">Esta política permite o uso de GIFs no seletor de emojis no <ph name="PRODUCT_OS_NAME" />.
 Se a política for ativada, o seletor de emojis vai oferecer suporte para emojis de GIF.
 Se a política for desativada ou deixada sem definição, o seletor de emojis não vai oferecer suporte para emojis de GIF.
@@ -1393,6 +1394,7 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="2178899310296064282">Aplicar pelo menos o Modo restrito moderado no YouTube</translation>
 <translation id="2180958780733364832">Controlar o uso do modo headless</translation>
 <translation id="2182291258410176649">O usuário decide se quer ativar o backup e a restauração</translation>
+<translation id="2183338188392346527">Não informar contadores de tempo de execução do dispositivo</translation>
 <translation id="219297066914002620">Instrui o <ph name="PRODUCT_OS_NAME" /> para ativar ou desativar as ferramentas do console de administração de máquina virtual.
 
       Se a política for definida como verdadeira ou não for definida, o usuário poderá usar a CLI de administração de VM.
@@ -3087,6 +3089,9 @@ Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solic
 
 Na versão 114 e mais recentes, o <ph name="DOH_SALT_POLICY_NAME" /> é opcional quando a política está definida.</translation>
 <translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
+<translation id="3637063789824963261">Se a política for ativada, os dispositivos registrados vão informar os contadores de tempo de execução do dispositivo (apenas da 14ª geração em diante do Intel vPro).
+
+Se ela for desativada ou deixada sem definição, os dispositivos registrados não vão gravar nem informar os contadores de tempo de execução do dispositivo.</translation>
 <translation id="3642557248926713561">Desativar a proteção de extensões pelo recurso Navegação segura</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
@@ -3656,6 +3661,9 @@ não é aceito para esta política.
 Se a política for deixada sem definição, todas as origens vão exigir um gesto anterior do usuário para chamar
 essa API.</translation>
 <translation id="4115501011761259824">Ativar o First-Party Sets para todos os usuários afetados</translation>
+<translation id="4120401094617902941">Taxa em que os contadores de tempo de execução são amostrados e coletados. O mínimo permitido é de um dia.
+
+Se deixada sem definição, a frequência padrão de um dia será usada.</translation>
 <translation id="4121350739760194865">Evitar que promoções de aplicativos apareçam na página nova guia</translation>
 <translation id="4122473079291425973">A página Nova guia exibirá cards se houver conteúdo disponível, mas os usuários poderão mudar essa configuração</translation>
 <translation id="4122565688998751716">O uso desta política foi suspenso. Use a <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
@@ -5669,6 +5677,7 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="5979376378555121803">App hospedado</translation>
 <translation id="5984099692320899605">Não usar a autenticação do NTLM</translation>
 <translation id="5984237109586500246">Aceitar conteúdos da Web exibidos como Signed HTTP Exchanges</translation>
+<translation id="5987654816293745077">Informar contadores de tempo de execução do dispositivo</translation>
 <translation id="5991707691018985057">Mostrar caixa de diálogo de cancelamento quando event.preventDefault() for chamado para o evento beforeunload. Não mostrar a caixa de diálogo de cancelamento quando event.returnValue for a string vazia para o evento beforeunload.</translation>
 <translation id="5994438001592408007">Os Glanceables estão ativados para os usuários.</translation>
 <translation id="5997543603646547632">Usar relógido de 24 horas por padrão</translation>

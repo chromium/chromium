@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekme grubunu iptal et}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekme grubunu iptal et}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz. Gizli sekmeniz kullanılamaz.}other{Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz. # gizli sekmeniz kullanılamaz.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="6549021453810473782">Mağaza bilgilerini görün</translation>
 <translation id="6562820390860419811">Sekmeyi sola taşı</translation>
 <translation id="6615455863669487791">Göster</translation>
+<translation id="661742612106409204">Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz.</translation>
 <translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
 <translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sekmeyi paylaş}other{Sekmeleri paylaş}}</translation>

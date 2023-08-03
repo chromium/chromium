@@ -1056,6 +1056,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="663674369910034433">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK1" />Sincronizarea<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Serviciile Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Pentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_UMA_LINK" />Gestionează<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blochează tot timpul</translation>
+<translation id="664050863900079109">Citește cu voce tare</translation>
 <translation id="6641780377503683465">Elimină <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6645629752388991326">Controlează ce dispozitive se pot conecta folosind acest dispozitiv drept cheie de securitate.</translation>
@@ -1155,6 +1156,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7138678301420049075">Altele</translation>
 <translation id="7146622961999026732">Următoarele site-uri și aplicații par importante pentru tine:</translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
+<translation id="7152808996372201178">Citește cu voce tare paginile acceptate. Pentru a edita comanda rapidă, atinge-o lung.</translation>
 <translation id="7155317020660659215">Pentru a scana un cod QR, modifică setările astfel încât Chrome să poată folosi camera</translation>
 <translation id="7168323970702333693">Conectat(ă) ca <ph name="USER_NAME" />. Deschide setările.</translation>
 <translation id="7173114856073700355">Deschide Setările</translation>

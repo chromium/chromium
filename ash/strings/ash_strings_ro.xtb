@@ -141,6 +141,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1557622599341396706">Afișează numele desktopului</translation>
 <translation id="1569384531973824928">Astfel, se permite accesul pentru toate aplicațiile și site-urile cu permisiuni pentru camera foto și microfon. Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
+<translation id="1571697193564730395">Activează / dezactivează funcția Nu deranja. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Micșorează când este activată lupa</translation>
 <translation id="1586324912145647027">Accesează un desktop de la 1 la 8</translation>
 <translation id="1589090746204042747">să acceseze toată activitatea din această sesiune;</translation>
@@ -579,6 +580,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3563775809269155755">Activează hotspotul</translation>
 <translation id="3566240529365775567">Deschis adineauri</translation>
 <translation id="3571734092741541777">Configurează</translation>
+<translation id="3572988532398145777">Nu poți extinde notificarea atât timp cât este deschis un panou. Mai întâi închide panoul de mai jos.</translation>
 <translation id="3573179567135747900">Modifică înapoi la „<ph name="FROM_LOCALE" />” (este necesară repornirea)</translation>
 <translation id="3576141592585647168">Modifică fusul orar</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
@@ -687,6 +689,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3990002060657467458">Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setări rapide. Aici poți și să faci capturi de ecran.</translation>
 <translation id="3995138139523574647">Dispozitiv USB-C (portul din dreapta spate)</translation>
 <translation id="40062176907008878">Scriere de mână</translation>
+<translation id="4011112806063830608">Funcția Nu deranja este activată.</translation>
 <translation id="4017989525502048489">Indicator laser</translation>
 <translation id="401993194061514265">Marcatorul este indisponibil. Redeschide Screencast.</translation>
 <translation id="4021716437419160885">Derulează în jos</translation>
@@ -720,6 +723,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4146833061457621061">Redă muzică</translation>
 <translation id="4150201353443180367">Ecran</translation>
 <translation id="4165275524535002941">Cablul poate să nu fie compatibil cu ecranele</translation>
+<translation id="4177415338862979658">Dă clic pentru a vedea detalii</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualizează dispozitivul în cel mult o zi}few{Actualizează dispozitivul în cel mult # zile}other{Actualizează dispozitivul în cel mult # de zile}}</translation>
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4185671786623711291">Mută fereastra activă pe desktopul din dreapta</translation>
@@ -1438,6 +1442,7 @@ Instalare nouă</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratorul îți resetează cardul eSIM Poate dura câteva minute.</translation>
 <translation id="7313193732017069507">Extinde camera</translation>
+<translation id="7316261577130609484">Adaugă o activitate nouă</translation>
 <translation id="7340731148882810149">Meniul de clicuri automate</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7348093485538360975">Tastatură pe ecran</translation>
@@ -1590,6 +1595,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7944023924886109030">Vezi toate evenimentele pentru astăzi</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vrea să folosească <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Redu luminozitatea tastaturii</translation>
+<translation id="7963689218131240420">Funcția Nu deranja este dezactivată.</translation>
 <translation id="7963992254934562106">De la <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selectează dosarul...</translation>
 <translation id="797512352675305461">Activează sau dezactivează lupa de ecran complet</translation>
@@ -1842,6 +1848,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9080073830732419341">Camera foto este aliniată cu colțul din stânga sus</translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>
 <translation id="9080206825613744995">Microfonul este în uz.</translation>
+<translation id="908451241440060346">Notificările sunt dezactivate când se activează funcția Nu deranja</translation>
 <translation id="9084606467167974638">Comută poziția meniului</translation>
 <translation id="9085962983642906571">Bateria este menținută la 80 % în timp ce este conectată, pentru a-i extinde autonomia.</translation>
 <translation id="9089416786594320554">Introducere</translation>

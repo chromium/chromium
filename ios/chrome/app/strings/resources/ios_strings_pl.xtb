@@ -210,6 +210,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2269277877025820298">Zobacz więcej</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
+<translation id="2275480389219976105">Adres znaleziony</translation>
 <translation id="2286505070150039482">Zaznaczony tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
 <translation id="2297822946037605517">Udostępnij tę stronę</translation>
@@ -542,6 +543,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="430793432425771671">Synchronizuj wszystko</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
 <translation id="430967081421617822">Od początku</translation>
+<translation id="4331177082088332784">Tymi informacjami możesz zarządzać w START_LINKUstawieniach treściEND_LINK</translation>
 <translation id="4334428914252001502">Jeden nieprzeczytany artykuł.</translation>
 <translation id="4338650699862464074">Adresy URL odwiedzanych stron będą wysyłane do Google.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia i innych urządzeń, na których się logujesz.}few{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}many{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}other{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}}</translation>
@@ -1068,6 +1070,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7340958967809483333">Opcje kart Discover</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="734758817008927353">Opcje zapisania karty</translation>
+<translation id="7349129508108954623">Zezwalaj Chrome na używanie Map Google do podawania wskazówek i informacji lokalnych o wykrytych adresach.</translation>
 <translation id="7351537303876921605">Kliknij Utwórz link w menu kontekstowym</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7353432112255316844">Potwierdź, że to Ty</translation>
@@ -1124,6 +1127,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7719038820139380048">Zaloguj się, aby otrzymywać treści dostosowane do swoich zainteresowań.</translation>
 <translation id="7720410380936703141">SPRÓBUJ PONOWNIE</translation>
 <translation id="7726702057919861819">Menu → Historia → Wyczyść dane przeglądania</translation>
+<translation id="7729458878441927652">Aby zobaczyć karty z innych urządzeń, zsynchronizuj karty i historię.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tylko na tym urządzeniu.</translation>
 <translation id="7738120385185846461">Zgłoś problem…</translation>
 <translation id="7741325291586284254">Nowa strona karty incognito</translation>

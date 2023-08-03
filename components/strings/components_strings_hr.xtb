@@ -567,6 +567,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2152495481414285304">Aplikacije</translation>
 <translation id="2153609454945889823">Želite li instalirati Google Play usluge za AR?</translation>
+<translation id="2154144347038514978">Automatsko pokretanje na uređaju</translation>
 <translation id="2154484045852737596">Uredite karticu</translation>
 <translation id="2154739667870063220">Ponovo pokreni</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
@@ -2908,6 +2909,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7186833457841277072">Omotnica (inkjet)</translation>
 <translation id="7186840261985974511">Omotnica br. 12</translation>
 <translation id="718872491229180389">Navijanje</translation>
+<translation id="7188840756966467339">Ponovo pokrenite i primijenite pravila</translation>
 <translation id="7192188280913829296">Mora se navesti i atribut "vendor_id".</translation>
 <translation id="7192203810768312527">Oslobodit će se <ph name="SIZE" />. Neke bi se web-lokacije pri sljedećem otvaranju mogle sporije učitavati.</translation>
 <translation id="7192537357091279678">Računalna pohrana i memorija</translation>
@@ -3006,6 +3008,7 @@ Dodatne pojedinosti:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Podijelite ovu karticu dijeljenjem veze, izradom QR koda, emitiranjem i na druge načine</translation>
 <translation id="7403591733719184120">Uređaj <ph name="DEVICE_NAME" /> upravljani je uređaj</translation>
+<translation id="7405878640835614059">Domena <ph name="ENROLLMENT_DOMAIN" /> instalirala je aplikacije za dodatne funkcije. Aplikacije imaju pristup nekim vašim podacima.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ta će se pogreška prikazati ako na Windows računalu imate softver Superfish.&lt;/p&gt;
       &lt;p&gt;Privremeno onemogućite softver prema ovim uputama da biste se povezali s webom. Potrebne su vam administratorske povlastice.&lt;/p&gt;
       &lt;ol&gt;
@@ -3484,6 +3487,7 @@ Dodatne pojedinosti:
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8351131234907093545">Izrada bilješke</translation>
 <translation id="835203957414790336">Sadržaj stranica koje ispisujete i podaci o vašem pisaču šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, mogu se pregledati radi otkrivanja osjetljivih podataka.</translation>
+<translation id="8352849934814541340">Administrator uređaja instalirao je aplikacije za dodatne funkcije. Aplikacije imaju pristup nekim vašim podacima.</translation>
 <translation id="8355270400102541638">Lokalni kontekst rušenja:</translation>
 <translation id="8363502534493474904">isključite način rada u zrakoplovu</translation>
 <translation id="8364627913115013041">Nije postavljeno.</translation>
@@ -3733,6 +3737,7 @@ Dodatne pojedinosti:
 <translation id="8903921497873541725">Povećaj</translation>
 <translation id="890493561996401738">Gumb za uklanjanje prijedloga, pritisnite Enter za uklanjanje <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 in</translation>
+<translation id="8918062451146297192">CVC za virtualnu karticu</translation>
 <translation id="8919740778133505789">Sportski automobili</translation>
 <translation id="8919895429178014996">Sakrij sve stavke</translation>
 <translation id="8922013791253848639">Uvijek dopusti oglase na ovoj web-lokaciji</translation>

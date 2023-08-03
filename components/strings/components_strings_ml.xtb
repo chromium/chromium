@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="1793631236004319016">അവസാനം ഉപയോഗിച്ചത് <ph name="NUM_HOURS_MINUTES_SECONDS" /> മുമ്പ്</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ഒന്നിലധികം പ്രവർത്തനങ്ങൾ ലഭ്യമാണ്, ഒന്നിൽ നിന്ന് മറ്റൊന്നിലേക്ക് മാറാൻ 'Tab' അമർത്തുക</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">വെർച്വൽ കാർഡിന്റെ വിശദാംശങ്ങൾ</translation>
@@ -567,6 +568,7 @@
 <translation id="2149968176347646218">കണക്ഷൻ സുരക്ഷിതമല്ല</translation>
 <translation id="2152495481414285304">അപ്ലിക്കേഷനുകൾ</translation>
 <translation id="2153609454945889823">Google Play Services for AR ഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
+<translation id="2154144347038514978">നിങ്ങളുടെ ഉപകരണത്തിൽ സ്വയമേവ ആരംഭിക്കുക</translation>
 <translation id="2154484045852737596">കാർഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2154739667870063220">റീബൂട്ട് ചെയ്യുക</translation>
 <translation id="2155260325161282517">5 x 7 ഇഞ്ച്</translation>
@@ -938,6 +940,7 @@
 <translation id="299990983510665749">ഹാച്ച്ബാക്കുകൾ</translation>
 <translation id="3002501248619246229">ഇൻപുട്ട് ട്രേ മീഡിയ പരിശോധിക്കുക</translation>
 <translation id="3005723025932146533">സംരക്ഷിച്ച പകർപ്പ് കാണിക്കുക</translation>
+<translation id="300580149047131921">അടുത്തിടെ ഉപയോഗിച്ചത്</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ലഭ്യമായ പ്രവർത്തനങ്ങൾ ബ്രൗസ് ചെയ്യാൻ ടാബ് അമർത്തുക, തുടർന്ന് തിരഞ്ഞെടുത്ത പ്രവർത്തനം നടപ്പിലാക്കാൻ Enter അമർത്തുക.</translation>
 <translation id="3013291976881901233">MIDI ഉപകരണങ്ങൾ</translation>
 <translation id="3014553260345122294">ബിസിനസ് വാർത്തകൾ</translation>
@@ -2661,6 +2664,7 @@
 <translation id="6671169470640320959">ഓട്ടോമൊബൈൽ ഫിനാൻസിംഗ്</translation>
 <translation id="6671697161687535275">Chromium-ത്തിൽ നിന്ന് ഫോം നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6677351035258626477">ഫാസ്റ്റ് ഫുഡ്</translation>
+<translation id="6681790815630918386">CVC സംരക്ഷിച്ചു</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6683717648675961851">ജോലി സംബന്ധമായ വിവരങ്ങൾ</translation>
 <translation id="6687230248707087982">എൻവലപ്പ് (പ്ലെയിൻ)</translation>
@@ -2908,6 +2912,7 @@
 <translation id="7186833457841277072">എൻവലപ്പ് (ഇങ്ക്‌ജെറ്റ്)</translation>
 <translation id="7186840261985974511">Envelope #12</translation>
 <translation id="718872491229180389">ചിയർലീഡിംഗ്</translation>
+<translation id="7188840756966467339">റീസ്റ്റാർട്ട് ചെയ്ത് നയങ്ങൾ ബാധകമാക്കുക</translation>
 <translation id="7192188280913829296">"vendor_id" എന്ന ആട്രിബ്യൂട്ടും വ്യക്തമാക്കിയിരിക്കണം.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> ലാഭിക്കുക. നിങ്ങളുടെ അടുത്ത സന്ദർശനത്തിൽ ചില സൈറ്റുകൾ സാവധാനത്തിൽ ലോഡായേക്കാം.</translation>
 <translation id="7192537357091279678">കമ്പ്യൂട്ടർ ഡ്രൈവുകളും സ്റ്റോറേജും</translation>
@@ -3006,6 +3011,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ലിങ്ക് പങ്കിട്ടും QR കോഡ് സൃഷ്ടിച്ചും കാസ്റ്റ് ചെയ്തും മറ്റും ഈ ടാബ് പങ്കിടുക</translation>
 <translation id="7403591733719184120">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> മാനേജ് ചെയ്യപ്പെട്ടിരിക്കുന്നു</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> അധിക ഫംഗ്ഷനുകൾക്കുള്ള ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. ആപ്പുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="7407424307057130981">&lt;p&gt;നിങ്ങളുടെ Windows കമ്പ്യൂട്ടറിൽ Superfish സോഫ്റ്റ്‌വെയർ ഉണ്ടെങ്കിൽ, നിങ്ങൾ ഈ പിശക് കാണും.&lt;/p&gt;
       &lt;p&gt;നിങ്ങൾക്ക് വെബിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ, സോഫ്‌റ്റ്‌വെയർ താൽക്കാലികമായി പ്രവർത്തനരഹിതമാക്കാൻ ഈ ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക. നിങ്ങൾക്ക് അഡ്‌മിനിസ്ട്രേറ്ററുടെ സവിശേഷാധികാരങ്ങൾ ആവശ്യമായിവരും.&lt;/p&gt;
       &lt;ol&gt;
@@ -3466,6 +3472,7 @@
 <translation id="830498451218851433">പകുതിയായി മടക്കുക</translation>
 <translation id="8308653357438598313">തത്സമയ വീഡിയോ സ്ട്രീമിംഗ്</translation>
 <translation id="8311895354659782580">റിയൽ എസ്‌റ്റേറ്റ് ലിസ്‌റ്റിംഗുകൾ</translation>
+<translation id="8316555157357957253">ഇപ്പോൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="8317570861267063617">വേഗത്തിലുള്ള ചെക്ക്ഔട്ടിന്, ഈ കാർഡിനുള്ള CVC നിങ്ങളുടെ ഉപകരണത്തിൽ സംരക്ഷിക്കുക</translation>
 <translation id="8319269383395457801">പാർപ്പിടങ്ങളുടെ വിൽപ്പനകൾ</translation>
 <translation id="831997045666694187">വൈകുന്നേരം</translation>
@@ -3482,6 +3489,7 @@
 <translation id="8349305172487531364">ബുക്മാര്‍ക്ക് ബാര്‍</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="835203957414790336">പ്രിന്റ് ചെയ്യുന്ന പേജുകളുടെ ഉള്ളടക്കവും നിങ്ങളുടെ പ്രിന്ററിനെ കുറിച്ചുള്ള വിവരങ്ങളും, വിശകലനം ചെയ്യാൻ Google ക്ലൗഡിനോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കും. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റ ഉണ്ടോയെന്നറിയാൻ ഇത് സ്‌കാൻ ചെയ്‌തേക്കാം.</translation>
+<translation id="8352849934814541340">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻ, അധിക ഫംഗ്ഷനുകൾക്കുള്ള ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. ആപ്പുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="8355270400102541638">ലോക്കൽ ക്രാഷ് സന്ദർഭം:</translation>
 <translation id="8363502534493474904">ഫ്ലൈറ്റ് മോഡ് ഓഫാക്കുന്നു</translation>
 <translation id="8364627913115013041">സജ്ജമാക്കിയിട്ടില്ല.</translation>
@@ -3730,6 +3738,7 @@
 <translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>
 <translation id="890493561996401738">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ഇഞ്ച്</translation>
+<translation id="8918062451146297192">വെർച്വൽ കാർഡിനുള്ള CVC</translation>
 <translation id="8919740778133505789">സ്‌പോർട്‌സ് കാറുകൾ</translation>
 <translation id="8919895429178014996">എല്ലാ ഇനങ്ങളും മറയ്ക്കുക</translation>
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>

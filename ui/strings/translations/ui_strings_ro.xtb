@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Setările de afișare ale aplicației vor fi aplicate la următoarea repornire.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Un min. rămas}few{# min. rămase}other{# min. rămase}}</translation>
+<translation id="7363164521834647158">Trimite răspunsul</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Acum un min.}few{Acum # min.}other{Acum # min.}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Un minut rămas}few{# minute rămase}other{# de minute rămase}}</translation>

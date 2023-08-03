@@ -141,6 +141,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1557622599341396706">Prikaži naziv radne površine</translation>
 <translation id="1569384531973824928">Ovo dozvoljava pristup kameri i mikrofonu za sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
+<translation id="1571697193564730395">Prekidač značajke Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Umanjite kada je povećalo uključeno</translation>
 <translation id="1586324912145647027">Idite na 1. radnu površinu od 8</translation>
 <translation id="1589090746204042747">Pristupiti svim aktivnostima u ovoj sesiji</translation>
@@ -579,6 +580,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3563775809269155755">Omogućavanje pristupne tačke</translation>
 <translation id="3566240529365775567">Upravo otvoreno</translation>
 <translation id="3571734092741541777">Postavi</translation>
+<translation id="3572988532398145777">Ne možete proširiti obavijest dok je ploča otvorena. Najprije zatvorite ploču u nastavku.</translation>
 <translation id="3573179567135747900">Vrati na "<ph name="FROM_LOCALE" />" (potrebno je ponovo pokrenuti)</translation>
 <translation id="3576141592585647168">Promjena vremenske zone</translation>
 <translation id="3577473026931028326">Nešto nije uredu. Pokušajte ponovo.</translation>
@@ -687,6 +689,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3990002060657467458">Često korištene kontrole kao što su WiFi, Bluetooth i jačina zvuka su u Brzim postavkama. Ovdje također možete otići da napravite snimke ekrana.</translation>
 <translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
 <translation id="40062176907008878">Rukopis</translation>
+<translation id="4011112806063830608">Uključena je značajka Ne uznemiravaj.</translation>
 <translation id="4017989525502048489">Laserski pokazivač</translation>
 <translation id="401993194061514265">Označivač nije dostupan. Ponovo otvorite Snimanje ekrana.</translation>
 <translation id="4021716437419160885">Klizni prema dolje</translation>
@@ -720,6 +723,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4146833061457621061">Pokreni muziku</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4165275524535002941">Kabl možda neće podržavati ekrane</translation>
+<translation id="4177415338862979658">Kliknite za provjeru podataka</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ažurirajte uređaj u roku od jednog dana}one{Ažurirajte uređaj u roku od # dana}few{Ažurirajte uređaj u roku od # dana}other{Ažurirajte uređaj u roku od # dana}}</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4185671786623711291">Premjesti aktivni prozor na desnu radnu površinu</translation>
@@ -1438,6 +1442,7 @@ Nova instalacija</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Vaš administrator vraća vaš eSIM na zadano. To može potrajati nekoliko minuta.</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
+<translation id="7316261577130609484">Dodaj novi zadatak</translation>
 <translation id="7340731148882810149">Meni automatskih klikova</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
@@ -1590,6 +1595,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7944023924886109030">Prikaz svih događaja za danas</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi koristiti uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Zatamnjivanje tastature</translation>
+<translation id="7963689218131240420">Isključena je značajka Ne uznemiravaj.</translation>
 <translation id="7963992254934562106">S telefona <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Odaberite folder...</translation>
 <translation id="797512352675305461">Uključite ili isključite povećalo preko cijelog ekrana</translation>
@@ -1842,6 +1848,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9080073830732419341">Kamera se uklopila u gornji lijevi ugao</translation>
 <translation id="9080132581049224423">Prevucite prema gore da odete na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon je u upotrebi.</translation>
+<translation id="908451241440060346">Obavijesti su isključene kada je uključena značajka Ne uznemiravaj</translation>
 <translation id="9084606467167974638">Promijenite položaj menija</translation>
 <translation id="9085962983642906571">Vaša baterija će ostati na 80% dok je priključena na napajanje radi produženja vijeka trajanja baterije.</translation>
 <translation id="9089416786594320554">Načini unosa</translation>

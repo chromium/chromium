@@ -256,7 +256,7 @@
 <translation id="2472163211318554013">Chrome പരമാവധി പ്രയോജനപ്പെടുത്താൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="247737702124049222">ചിത്രത്തിന്റെ വിവരണങ്ങൾ ഓണാണ്</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
-<translation id="2496180316473517155">ബ്രൌസിംഗ് ചരിത്രം</translation>
+<translation id="2496180316473517155">ബ്രൗസിംഗ് ചരിത്രം</translation>
 <translation id="2497852260688568942">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ സമന്വയിപ്പിക്കൽ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="250020030759455918">നിങ്ങളുടെ <ph name="SITE_NAME" /> സൈൻ ഇൻ നില, ബ്രൗസിംഗ് ഡാറ്റ, സൈറ്റ് ഡാറ്റ എന്നിവ Chrome-ൽ കാണാം</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുന്നു...</translation>
@@ -1056,6 +1056,7 @@
 <translation id="663674369910034433">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK1" />സമന്വയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google സേവനങ്ങളും<ph name="END_LINK2" /> കാണുക</translation>
 <translation id="6637100877383020115">ആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന് Chrome, ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Google-ന് അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">എല്ലാ സമയത്തും ബ്ലോക്ക് ചെയ്യുക</translation>
+<translation id="664050863900079109">ഉറക്കെ വായിക്കൂ</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> നീക്കം ചെയ്യുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6645629752388991326">ഈ ഉപകരണം സുരക്ഷാ കീയായി ഉപയോഗിച്ച് കൊണ്ട് സൈൻ ഇൻ ചെയ്യാവുന്ന ഉപകരണങ്ങൾ നിയന്ത്രിക്കുക.</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
 <translation id="7146622961999026732">ഈ സൈറ്റുകളും ആപ്പുകളും നിങ്ങൾക്ക് പ്രാധാന്യമുള്ളവയാകാം:</translation>
 <translation id="7149893636342594995">അവസാന 24 മണിക്കൂർ</translation>
+<translation id="7152808996372201178">'ഉറക്കെ വായിക്കൂ' പിന്തുണയ്‌ക്കുന്ന പേജുകൾ. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="7155317020660659215">QR കോഡ് സ്‌കാൻ ചെയ്യുന്നതിന് നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക, ഇങ്ങനെ ചെയ്യുന്നതിലൂടെ Chrome-ന് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാം</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="7173114856073700355">ക്രമീകരണം തുറക്കുക</translation>

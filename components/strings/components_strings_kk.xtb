@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтыңыздағы ақпаратты, құпиялықты және қауіпсіздікті басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
+<translation id="1793631236004319016">Соңғы рет <ph name="NUM_HOURS_MINUTES_SECONDS" /> бұрын пайдаланылған</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бірнеше әрекет қолжетімді, оларды қарап шығу үшін Tab пернесін басыңыз.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуалдық карта мәліметтері</translation>
@@ -937,6 +938,7 @@
 <translation id="299990983510665749">Хэтчбектер</translation>
 <translation id="3002501248619246229">Кіріс науасының деректерін тексеру</translation>
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
+<translation id="300580149047131921">Соңғы қолданылған</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
 <translation id="3013291976881901233">MIDI құрылғылары</translation>
 <translation id="3014553260345122294">Бизнес жаңалықтары</translation>
@@ -2660,6 +2662,7 @@
 <translation id="6671169470640320959">Автокөлік сатып алуды қаржыландыру</translation>
 <translation id="6671697161687535275">Chromium жүйесінен нысан ұсынысын алып тастау керек пе?</translation>
 <translation id="6677351035258626477">Фастфуд</translation>
+<translation id="6681790815630918386">CVC сақталды</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6683717648675961851">Жұмыс тізімдері</translation>
 <translation id="6687230248707087982">Хатқалта (қарапайым)</translation>
@@ -3467,6 +3470,7 @@
 <translation id="830498451218851433">Жартылай бүктеу</translation>
 <translation id="8308653357438598313">Тікелей трансляция</translation>
 <translation id="8311895354659782580">Сатылымға қойылған жылжымайтын мүлік</translation>
+<translation id="8316555157357957253">Қазір пайдаланылып жатыр</translation>
 <translation id="8317570861267063617">Жылдамырақ төлеу үшін осы картаның CVC кодын құрылғыңызға сақтаңыз</translation>
 <translation id="8319269383395457801">Тұрғын үйлерді сату</translation>
 <translation id="831997045666694187">Кеш</translation>

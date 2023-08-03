@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
+<translation id="1793631236004319016">ใช้ล่าสุดเมื่อ <ph name="NUM_HOURS_MINUTES_SECONDS" />ที่ผ่านมา</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> มีการทำงานหลายอย่างที่ทำได้ กด Tab เพื่อวนดูการทำงานดังกล่าว</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">รายละเอียดบัตรเสมือน</translation>
@@ -938,6 +939,7 @@
 <translation id="299990983510665749">รถยนต์ห้าประตู</translation>
 <translation id="3002501248619246229">ตรวจสอบสื่อของถาดกระดาษเข้า</translation>
 <translation id="3005723025932146533">แสดงสำเนาที่บันทึกไว้</translation>
+<translation id="300580149047131921">ใช้ล่าสุด</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab เพื่อเรียกดูการดำเนินการที่ใช้ได้ จากนั้นกด Enter เพื่อเรียกใช้การดำเนินการที่เลือก</translation>
 <translation id="3013291976881901233">อุปกรณ์ MIDI</translation>
 <translation id="3014553260345122294">ข่าวธุรกิจ</translation>
@@ -2661,6 +2663,7 @@
 <translation id="6671169470640320959">สินเชื่อรถยนต์</translation>
 <translation id="6671697161687535275">ต้องการนำคำแนะนำสำหรับแบบฟอร์มออกจาก Chromium ใช่ไหม</translation>
 <translation id="6677351035258626477">ฟาสต์ฟูด</translation>
+<translation id="6681790815630918386">บันทึก CVC แล้ว</translation>
 <translation id="6683022854667115063">หูฟัง</translation>
 <translation id="6683717648675961851">รายการตำแหน่งงาน</translation>
 <translation id="6687230248707087982">ซอง (ธรรมดา)</translation>
@@ -3468,6 +3471,7 @@
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8308653357438598313">สตรีมมิงวิดีโอสด</translation>
 <translation id="8311895354659782580">การซื้อขายอสังหาริมทรัพย์</translation>
+<translation id="8316555157357957253">กําลังใช้อยู่</translation>
 <translation id="8317570861267063617">บันทึก CVC ของบัตรใบนี้ลงในอุปกรณ์เพื่อให้ชำระเงินได้เร็วขึ้น</translation>
 <translation id="8319269383395457801">การซื้อขายที่อยู่อาศัย</translation>
 <translation id="831997045666694187">ตอนเย็น</translation>

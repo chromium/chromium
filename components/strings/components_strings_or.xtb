@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର ସୂଚନା, ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷାକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="1793631236004319016">ଗତଥର <ph name="NUM_HOURS_MINUTES_SECONDS" /> ପୂର୍ବେ ବ୍ୟବହାର କରାଯାଇଛି</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଏକାଧିକ କାର୍ଯ୍ୟ ଉପଲବ୍ଧ ଅଛି, ସେଗୁଡ଼ିକୁ ଗୋଟିଏ ଗୋଟିଏ କରି ଦେଖିବା ପାଇଁ Tab ଦବାନ୍ତୁ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ଭର୍ଚୁଆଲ କାର୍ଡ ବିବରଣୀ</translation>
@@ -937,6 +938,7 @@
 <translation id="299990983510665749">ହାଚବ୍ୟାକ</translation>
 <translation id="3002501248619246229">ଇନପୁଟ୍ ଟ୍ରେ ମିଡିଆ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3005723025932146533">ସେଭ୍ ହୋଇଥିବା କପି ଦେଖାନ୍ତୁ</translation>
+<translation id="300580149047131921">ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଇଛି</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଉପଲବ୍ଧ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ବ୍ରାଉଜ କରିବା ପାଇଁ Tab ଦବାନ୍ତୁ, ତା'ପରେ ଚୟନିତ କାର୍ଯ୍ୟକୁ କାର୍ଯ୍ୟକାରୀ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="3013291976881901233">MIDI ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3014553260345122294">ବିଜିନେସ ନ୍ୟୁଜ</translation>
@@ -2658,6 +2660,7 @@
 <translation id="6671169470640320959">ଅଟୋ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="6671697161687535275">Chromiumରୁ ପରାମର୍ଶରୁ କାଢ଼ି ଦେବେ?</translation>
 <translation id="6677351035258626477">ଫାଷ୍ଟ ଫୁଡ</translation>
+<translation id="6681790815630918386">CVC ସେଭ କରାଯାଇଛି</translation>
 <translation id="6683022854667115063">ହେଡଫୋନଗୁଡ଼ିକ</translation>
 <translation id="6683717648675961851">ଚାକିରିର ତାଲିକାଗୁଡ଼ିକ</translation>
 <translation id="6687230248707087982">ଏନଭେଲପ (ପ୍ଲେନ)</translation>
@@ -3465,6 +3468,7 @@
 <translation id="830498451218851433">ଅଧା ଫୋଲ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8308653357438598313">ଲାଇଭ ଭିଡିଓ ଷ୍ଟ୍ରିମିଂ</translation>
 <translation id="8311895354659782580">ରିଅଲ ଇଷ୍ଟେଟ ତାଲିକାକରଣ</translation>
+<translation id="8316555157357957253">ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8317570861267063617">ଶୀଘ୍ର ଚେକଆଉଟ ପାଇଁ, ଏହି କାର୍ଡ ପାଇଁ CVCକୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8319269383395457801">ରେସିଡେଣ୍ଟ ସେଲ୍ସ</translation>
 <translation id="831997045666694187">ସନ୍ଧ୍ୟା</translation>

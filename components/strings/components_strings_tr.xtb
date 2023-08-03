@@ -408,6 +408,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınızda bilgilerinizi, gizliliğinizi ve güvenliğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="1793631236004319016">En son <ph name="NUM_HOURS_MINUTES_SECONDS" /> önce kullanıldı.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, birden fazla işlem mevcut, işlemler arasında geçiş yapmak için Sekme'ye basın</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Sanal kart ayrıntıları</translation>
@@ -938,6 +939,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="299990983510665749">Hatchback otomobiller</translation>
 <translation id="3002501248619246229">Giriş tepsisi ortam kontrolü</translation>
 <translation id="3005723025932146533">Kaydedilen kopyayı göster</translation>
+<translation id="300580149047131921">Son kullanılan</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, kullanılabilir işlemlere göz atmak için Sekme tuşuna, ardından seçilen işlemi yürütmek için Enter tuşuna basın.</translation>
 <translation id="3013291976881901233">MIDI cihazlar</translation>
 <translation id="3014553260345122294">İş Haberleri</translation>
@@ -2662,6 +2664,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6671169470640320959">Otomobil Finansmanı</translation>
 <translation id="6671697161687535275">Form önerisi Chromium'dan kaldırılsın mı?</translation>
 <translation id="6677351035258626477">Hazır Gıda</translation>
+<translation id="6681790815630918386">CVC kaydedildi</translation>
 <translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6683717648675961851">İş ilanları</translation>
 <translation id="6687230248707087982">Zarf (Düz)</translation>
@@ -3469,6 +3472,7 @@ Ek ayrıntılar:
 <translation id="830498451218851433">Ortadan katlama</translation>
 <translation id="8308653357438598313">Canlı Video Akışı</translation>
 <translation id="8311895354659782580">Gayrimenkul İlanları</translation>
+<translation id="8316555157357957253">Şu anda kullanılıyor</translation>
 <translation id="8317570861267063617">Daha hızlı ödeme yapmak için bu kartın CVC'sini cihazınıza kaydedin</translation>
 <translation id="8319269383395457801">Konut Satışları</translation>
 <translation id="831997045666694187">Akşam</translation>

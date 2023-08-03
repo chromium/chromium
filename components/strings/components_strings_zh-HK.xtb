@@ -567,6 +567,7 @@
 <translation id="2149968176347646218">連線不安全</translation>
 <translation id="2152495481414285304">應用程式</translation>
 <translation id="2153609454945889823">要安裝「Google Play 服務 (AR)」嗎？</translation>
+<translation id="2154144347038514978">在裝置上自動啟動</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2154739667870063220">重新啟動</translation>
 <translation id="2155260325161282517">5 x 7 吋</translation>
@@ -2908,6 +2909,7 @@
 <translation id="7186833457841277072">信封 (噴墨打印)</translation>
 <translation id="7186840261985974511">#12 信封</translation>
 <translation id="718872491229180389">啦啦隊</translation>
+<translation id="7188840756966467339">重新啟動並套用政策</translation>
 <translation id="7192188280913829296">亦必須指定「vendor_id」屬性。</translation>
 <translation id="7192203810768312527">釋出 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="7192537357091279678">電腦硬碟和儲存裝置</translation>
@@ -3006,6 +3008,7 @@
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403392780200267761">透過分享連結、建立 QR 碼、投放及其他功能來分享這個分頁</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 已受管理</translation>
+<translation id="7405878640835614059">「<ph name="ENROLLMENT_DOMAIN" />」已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
 <translation id="7407424307057130981">&lt;p&gt;如果您在 Windows 電腦上安裝了 Superfish 軟件，便會看到此錯誤訊息。&lt;/p&gt;
       &lt;p&gt;請按照以下步驟暫時停用軟件，以便連接至網絡。您需要管理員權限。&lt;/p&gt;
       &lt;ol&gt;
@@ -3484,6 +3487,7 @@
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8351131234907093545">建立筆記</translation>
 <translation id="835203957414790336">您列印的頁面內容和打印機相關資訊料會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄文字，檢查是否含有敏感資料。</translation>
+<translation id="8352849934814541340">這部裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8363502534493474904">關閉飛行模式</translation>
 <translation id="8364627913115013041">未設定。</translation>
@@ -3732,6 +3736,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="890493561996401738">移除建議按鈕，㩒一下 Enter 鍵就可以移除「<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
 <translation id="8910898109640902752">8 x 10 吋</translation>
+<translation id="8918062451146297192">虛擬卡片的信用卡驗證碼</translation>
 <translation id="8919740778133505789">跑車</translation>
 <translation id="8919895429178014996">隱藏所有項目</translation>
 <translation id="8922013791253848639">一律允許在此網站中顯示廣告</translation>

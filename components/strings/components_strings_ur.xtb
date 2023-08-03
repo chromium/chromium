@@ -567,7 +567,9 @@
 <translation id="2148613324460538318">کارڈ شامل کریں</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="2149968176347646218">کنکشن محفوظ نہیں ہے</translation>
+<translation id="2152495481414285304">ایپلیکیشنز</translation>
 <translation id="2153609454945889823">‏Google Play سروسز برائے AR کو انسٹال کریں؟</translation>
+<translation id="2154144347038514978">آپ کے آلے پر خودکار شروعات کی سہولت دستیاب ہے</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
 <translation id="2154739667870063220">ریبوٹ کریں</translation>
 <translation id="2155260325161282517">‏‎5 x 7 انچ</translation>
@@ -2914,6 +2916,7 @@
 <translation id="7186833457841277072">لفافہ (انک جیٹ)</translation>
 <translation id="7186840261985974511">#12 لفافہ</translation>
 <translation id="718872491229180389">چیئر لیڈنگ</translation>
+<translation id="7188840756966467339">ری سٹارٹ کریں اور پالیسیاں لاگو کریں</translation>
 <translation id="7192188280913829296">‏انتساب "vendor_id" کا تعین بھی ضروری ہے۔</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> بچاتا ہے: آپ کے اگلے ملاحظہ پر مزید آہستہ سے کچھ سائٹس لوڈ کر سکتا ہے۔</translation>
 <translation id="7192537357091279678">کمپیوٹر ڈرائیوز اور اسٹوریج</translation>
@@ -3012,6 +3015,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">‏لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کریں</translation>
 <translation id="7403591733719184120">آپ کا <ph name="DEVICE_NAME" /> زیر انتظام ہے</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> نے اضافی فنکشنز کیلئے ایپلیکیشنز انسٹال کی ہیں۔ ایپلیکیشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
 <translation id="7407424307057130981">‏&lt;p&gt;اگر آپ کے Windows کمپیوٹر پر Superfish سافٹ ویئر ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
       &lt;p&gt;سافٹ ویئر کو عارضی طور پر غیر فعال کرنے کیلئے ان مراحل کی پیروی کریں تاکہ آپ ویب پر جا سکیں۔ اس کیلئے آپ کو منتظم کے اختیارات درکار ہوں گے۔&lt;/p&gt;
       &lt;ol&gt;
@@ -3491,6 +3495,7 @@
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
 <translation id="835203957414790336">‏آپ کے پرنٹ کردہ صفحات کا مواد اور آپ کے پرنٹر کے بارے میں معلومات کو تجزیہ کی خاطر Google کلاؤڈ یا فریقین ثالث کو بھیجا جاتا ہے۔ مثال کے طور پر، اسے حساس ڈیٹا کیلئے اسکین کیا جا سکتا ہے۔</translation>
+<translation id="8352849934814541340">اس آلے کے منتظم نے اضافی فنکشنز کیلئے ایپلیکیشنز انسٹال کی ہیں۔ ایپلیکیشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
 <translation id="8355270400102541638">مقامی ناکامی کا سیاق و سباق:</translation>
 <translation id="8363502534493474904">ہوائی جہاز وض‏ع کو آف کیا جا رہا ہے</translation>
 <translation id="8364627913115013041">سیٹ نہیں ہے۔</translation>
@@ -3739,6 +3744,7 @@
 <translation id="8903921497873541725">زوم ان کریں</translation>
 <translation id="890493561996401738">‏تجویز کا بٹن ہٹائیں، ہٹانے کے لیے Enter دبائیں، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‏x 10 ‏8 انچ</translation>
+<translation id="8918062451146297192">‏CVC برائے ورچوئل کارڈ</translation>
 <translation id="8919740778133505789">اسپورٹس کاریں</translation>
 <translation id="8919895429178014996">تمام آئٹمز چھپائیں</translation>
 <translation id="8922013791253848639">ہمیشہ اس سائٹ پر اشتہارات کی اجازت دیں</translation>

@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6333260925957816943">Ulwazi olumayelana nalesi sitolo</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Ithebhu yakho ye-Incognito ngeke itholakale.}one{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Amathebhu akho angu-# e-Incognito ngeke atholakale.}other{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Amathebhu akho angu-# e-Incognito ngeke atholakale.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
+<translation id="661742612106409204">Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome</translation>
 <translation id="6840760312327750441">Ukuze uqoqe amathebhu, thinta futhi ubambe ithebhu. Bese, ihudulele kwenye ithebhu.</translation>
 <translation id="6856809498882026482">Fihla imodi yokukhetha okuningi</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Yabelana ngethebhu}one{Yabelana ngamathebhu}other{Yabelana ngamathebhu}}</translation>

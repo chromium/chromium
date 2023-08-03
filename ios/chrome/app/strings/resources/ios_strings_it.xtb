@@ -445,9 +445,11 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3609785682760573515">Sincronizzazione in corso...</translation>
 <translation id="3631443864840848029">Assicurati di salvare la tua password corrente per questo sito.</translation>
 <translation id="3638472932233958418">Precarica pagine web</translation>
+<translation id="3646736009628185125">Al momento il tuo membro del gruppo Famiglia non può ricevere password. Chiedi di aggiornare Chrome e sincronizzare le sue password. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
+<translation id="3688815115226493214">Suggerimenti di schede</translation>
 <translation id="3700134753671613714">Accedi per visualizzare i tuoi Preferiti su tutti i tuoi dispositivi.</translation>
 <translation id="3709582977625132201">Contrassegna come da leggere</translation>
 <translation id="371230970611282515">Prevede e ti avvisa quando stanno per verificarsi eventi pericolosi.</translation>
@@ -519,6 +521,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="418156467088430727">Visualizza versione offline in una nuova scheda</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4187450337729239226">Incolla e cerca</translation>
+<translation id="4216918546378735658">Annulla</translation>
 <translation id="4223967053752765281">La tua organizzazione ha disattivato l'accesso. Puoi trovare ancora i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
 <translation id="4232900911558558076">Esplora il nuovo menu</translation>
 <translation id="4233831822770018312">Modifica autorizzazioni</translation>
@@ -798,6 +801,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 elemento spostato</translation>
 <translation id="5896576662943111387">Realizzato per iOS</translation>
+<translation id="5897749768294722429">Per tornare rapidamente ai siti che hai visitato, sincronizza le tue schede e la cronologia.</translation>
 <translation id="5897956970858271241">Visita il link copiato</translation>
 <translation id="5899314093904173337">Per condividere i contenuti con le persone qui vicino, chiedi loro di scansionare questo codice QR con la fotocamera o con un'app scanner QR</translation>
 <translation id="5911030830365207728">Google Traduttore</translation>
@@ -863,6 +867,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="6223816392543092032">Trova i tuoi preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="6224759905509595045">Verifica la tua identità…</translation>
 <translation id="6229318421047648685">Richiedi sito desktop</translation>
+<translation id="6229719094394196779">Risparmia tempo e digita meno</translation>
 <translation id="6231782223312638214">Suggerito</translation>
 <translation id="6232329973559504466">Ricerca in incognito</translation>
 <translation id="6236952928980352967">Ripristina avviso</translation>
@@ -877,6 +882,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="629730747756840877">Account</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
 <translation id="6324669097367352121">Impostazioni accesso</translation>
+<translation id="6328337032497818759">Personalizza menu</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="6337234675334993532">Crittografia</translation>
 <translation id="633809752005859102">Si è verificato un problema. Stiamo cercando una soluzione.</translation>
@@ -890,6 +896,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="6348855835728304880">Accedi alle tue password di Chrome e ad altre app su questo dispositivo.</translation>
 <translation id="63519665078626091">Per usare l'inspector web, collegati a Safari sul computer utilizzando un cavo e accedi all'iPad dal menu Sviluppo. Puoi attivare il menu Sviluppo nella sezione Avanzate delle impostazioni di Safari sul tuo computer.</translation>
 <translation id="6355820205320395730">Le password inefficaci sono facili da indovinare. Assicurati di creare password efficaci. <ph name="BEGIN_LINK" />Leggi altri suggerimenti per la sicurezza.<ph name="END_LINK" /></translation>
+<translation id="6361681885917591592">Fine</translation>
 <translation id="6361848730467328243">Segui <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Nessuna scheda in incognito</translation>
 <translation id="6363526231572697780">Nessun nome utente</translation>
@@ -977,6 +984,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="672735642903863329">Trova i preferiti, le password e altri dati su tutti i dispositivi.</translation>
 <translation id="6730682669179532099">Impossibile esportare le password</translation>
 <translation id="6732087373923685049">fotocamera</translation>
+<translation id="6746338529702829275">Rivedi i dati dell'account</translation>
 <translation id="6748108480210050150">Da</translation>
 <translation id="6753469262000681876">Modalità di blocco</translation>
 <translation id="6760509555861141183">Torna alla scheda recente</translation>
@@ -1028,6 +1036,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7029809446516969842">Password</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7062545763355031412">Accetta e cambia account</translation>
+<translation id="7069695992271320873">Rimuovi l'account da questo dispositivo</translation>
 <translation id="7080806333218412752">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
 <translation id="7082853213442715471">Quando è attiva questa modalità, alcune tecnologie web sono bloccate e per questo motivo alcuni siti web potrebbero caricarsi più lentamente o non funzionare correttamente.</translation>
 <translation id="7095110968493193530">Su Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
@@ -1056,6 +1065,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7291368939935408496">Preparazione delle password...</translation>
 <translation id="730958329302570991">Aggiungi facilmente le password dei siti a Gestore delle password di Google in qualsiasi momento.</translation>
 <translation id="7313347584264171202">Qui troverai le tue schede di navigazione in incognito</translation>
+<translation id="7331371412779932885">Ti offre suggerimenti di schede basati sulla tua attività di navigazione su altri dispositivi usando il tuo Account Google. I dispositivi devono avere eseguito l'accesso e deve essere attiva la sincronizzazione con lo stesso Account Google.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% scaricato</translation>
 <translation id="7340958967809483333">Opzioni per Discover</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -1126,6 +1136,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7749790401023484470">Non hai selezionato alcun testo.</translation>
 <translation id="7756478488453921771">Menu → Impostazioni → Metodi di pagamento</translation>
 <translation id="7760127703945531263">Blocco delle schede di navigazione in incognito</translation>
+<translation id="7762768971412105260">Dati presenti nel tuo account</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
 <translation id="777572173400717978">{count,plural, =1{Preferito creato}other{Preferiti creati}}</translation>
@@ -1379,6 +1390,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="952704832371081537">Annulla</translation>
 <translation id="953008885340860025">Chrome è disconnesso</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
+<translation id="96615566463761848">Mostra Suggerimenti di schede da Altri dispositivi</translation>
 <translation id="97300214378190234">Utilizza Chrome ogni volta che tocchi i link in altre app.</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>

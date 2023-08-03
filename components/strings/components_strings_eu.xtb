@@ -408,6 +408,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Google-ko kontuko informazioa, pribatutasuna eta segurtasuna kudeatzeko</translation>
+<translation id="1793631236004319016">Duela <ph name="NUM_HOURS_MINUTES_SECONDS" /> erabili zen azken aldiz</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hainbat ekintza dituzu eskuragarri. Sakatu tabuladorea batetik bestera joateko.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Txartel birtualaren xehetasunak</translation>
@@ -937,6 +938,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="299990983510665749">Hatchback-ak</translation>
 <translation id="3002501248619246229">Egiaztatu sarrerako erretiluaren euskarria</translation>
 <translation id="3005723025932146533">Erakutsi gordetako kopia</translation>
+<translation id="300580149047131921">Duela gutxi erabilia</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea gauza daitezkeen ekintzak arakatzeko. Gero, sakatu Sartu hautatutako ekintza exekutatzeko.</translation>
 <translation id="3013291976881901233">MIDI gailuak</translation>
 <translation id="3014553260345122294">Enpresei buruzko albisteak</translation>
@@ -2656,6 +2658,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6671169470640320959">Auto-finantzaketa</translation>
 <translation id="6671697161687535275">Inprimaki-iradokizuna Chromium-etik kendu nahi duzu?</translation>
 <translation id="6677351035258626477">Janari lasterra</translation>
+<translation id="6681790815630918386">CVCa gorde da</translation>
 <translation id="6683022854667115063">Entzungailuak</translation>
 <translation id="6683717648675961851">Lan-eskaintzak</translation>
 <translation id="6687230248707087982">Gutun-azala (arrunta)</translation>
@@ -3463,6 +3466,7 @@ Xehetasun gehiago:
 <translation id="830498451218851433">Erdibitzeko tolestura</translation>
 <translation id="8308653357438598313">Zuzeneko bideo-igorpenak</translation>
 <translation id="8311895354659782580">Higiezinen eskaintzak</translation>
+<translation id="8316555157357957253">Orain erabiltzen</translation>
 <translation id="8317570861267063617">Ordainketa-prozesua bizkortzeko, gorde txartel honen CVCa gailuan</translation>
 <translation id="8319269383395457801">Bizitegien salmentak</translation>
 <translation id="831997045666694187">Arratsaldea</translation>

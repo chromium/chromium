@@ -408,6 +408,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1778646502362731194">I-JIS B0</translation>
 <translation id="1791429645902722292">I-Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze uphathe ulwazi lwakho, ubumfihlo, nokuvikeleka Kwi-akhawunti yakho ye-Google</translation>
+<translation id="1793631236004319016">Kugcinwe ukusetshenziswa ngo-<ph name="NUM_HOURS_MINUTES_SECONDS" /> odlule.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, izenzo eziningi ziyatholakala, cindezela Ithebhu ukuzibona</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Imininingwane yekhadi le-virtual</translation>
@@ -937,6 +938,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="299990983510665749">Ama-hatchback</translation>
 <translation id="3002501248619246229">Hlola ithileyi lemidiya yokufakwayo</translation>
 <translation id="3005723025932146533">Bonisa ikhophi elondoloziwe</translation>
+<translation id="300580149047131921">Okusetshenziswe kamuva</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab ukuze ubhrawuze izenzo ezitholakalayo, bese u-Enter ukuze wenze isenzo esikhethiwe.</translation>
 <translation id="3013291976881901233">Amadivayisi e-MIDI</translation>
 <translation id="3014553260345122294">Izindaba Zebhizinisi</translation>
@@ -2658,6 +2660,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6671169470640320959">Ukuhlinzekwa Ngezezimali Okuzenzekelayo</translation>
 <translation id="6671697161687535275">Susa ukuphakanyiswa kwefomu kusukela ku-Chromium?</translation>
 <translation id="6677351035258626477">Ukudla Okusheshayo</translation>
+<translation id="6681790815630918386">I-CVC ilondoloziwe</translation>
 <translation id="6683022854667115063">Ama-headphone</translation>
 <translation id="6683717648675961851">Ukufakwa kuhlu komsebenzi</translation>
 <translation id="6687230248707087982">Imvilophu (Engenalutho)</translation>
@@ -3465,6 +3468,7 @@ Imininingwane engeziwe:
 <translation id="830498451218851433">Goqa ngohafu</translation>
 <translation id="8308653357438598313">Ukusakaza Ividiyo Bukhoma</translation>
 <translation id="8311895354659782580">Uhlu Lwezindlu Ezithengiwayo</translation>
+<translation id="8316555157357957253">Iyasebenzisa manje</translation>
 <translation id="8317570861267063617">Ukuze uphume ngokushesha, londoloza i-CVC yaleli khadi kudivayisi yakho</translation>
 <translation id="8319269383395457801">Ukuthengiswa Kwezindawo Zokuhlala</translation>
 <translation id="831997045666694187">Kusihlwa</translation>

@@ -568,6 +568,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2149968176347646218">Połączenie nie jest bezpieczne</translation>
 <translation id="2152495481414285304">Aplikacje</translation>
 <translation id="2153609454945889823">Zainstalować Usługi Google Play dla AR?</translation>
+<translation id="2154144347038514978">Automatycznie uruchamiaj na urządzeniu</translation>
 <translation id="2154484045852737596">Edytowanie karty</translation>
 <translation id="2154739667870063220">Zrestartuj</translation>
 <translation id="2155260325161282517">5 x 7 cali</translation>
@@ -2912,6 +2913,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7186833457841277072">Koperta (drukarka atramentowa)</translation>
 <translation id="7186840261985974511">Koperta nr 12</translation>
 <translation id="718872491229180389">Cheerleading</translation>
+<translation id="7188840756966467339">Uruchom ponownie i zastosuj zasady</translation>
 <translation id="7192188280913829296">Musisz też określić atrybut „vendor_id”.</translation>
 <translation id="7192203810768312527">Zwolni się <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="7192537357091279678">Dyski i urządzenia do przechowywania danych</translation>
@@ -3010,6 +3012,7 @@ Dodatkowe informacje:
 <translation id="7400418766976504921">Adres URL</translation>
 <translation id="7403392780200267761">Udostępnij tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji</translation>
 <translation id="7403591733719184120">Twoje urządzenie <ph name="DEVICE_NAME" /> jest zarządzane</translation>
+<translation id="7405878640835614059">W domenie <ph name="ENROLLMENT_DOMAIN" /> są zainstalowane aplikacje z dodatkowymi funkcjami. Aplikacje mają dostęp do niektórych Twoich danych.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ten błąd występuje, jeśli na komputerze z systemem Windows masz zainstalowane oprogramowanie Superfish.&lt;/p&gt;
       &lt;p&gt;Wykonaj te czynności, by tymczasowo wyłączyć to oprogramowanie i połączyć się z internetem. Będziesz potrzebować uprawnień administratora.&lt;/p&gt;
       &lt;ol&gt;
@@ -3489,6 +3492,7 @@ Dodatkowe informacje:
 <translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="835203957414790336">Zawartość drukowanych stron i informacje o drukarce są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Mogą na przykład zostać przeskanowane w poszukiwaniu danych wrażliwych.</translation>
+<translation id="8352849934814541340">Administrator urządzenia zainstalował aplikacje obsługujące dodatkowe funkcje. Aplikacje mają dostęp do niektórych Twoich danych.</translation>
 <translation id="8355270400102541638">Lokalny kontekst awarii:</translation>
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>
 <translation id="8364627913115013041">Nie ustawiono.</translation>
@@ -3737,6 +3741,7 @@ Dodatkowe informacje:
 <translation id="8903921497873541725">Powiększ</translation>
 <translation id="890493561996401738">Usuń przycisk sugestii. Naciśnij Enter, by usunąć, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 cali</translation>
+<translation id="8918062451146297192">Kod CVC karty wirtualnej</translation>
 <translation id="8919740778133505789">Samochody sportowe</translation>
 <translation id="8919895429178014996">Ukryj wszystkie elementy</translation>
 <translation id="8922013791253848639">Zawsze zezwalaj na wyświetlanie reklam na tej stronie</translation>

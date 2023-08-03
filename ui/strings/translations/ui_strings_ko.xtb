@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">다음번에 애플리케이션이 다시 시작되면 디스플레이 설정이 적용됩니다.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1분 남음}other{#분 남음}}</translation>
+<translation id="7363164521834647158">답장 보내기</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1분 전}other{#분 전}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1분 남음}other{#분 남음}}</translation>

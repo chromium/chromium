@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
+<translation id="1793631236004319016">Ultima utilizare: acum <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sunt disponibile mai multe acțiuni, apasă pe Tab pentru a le răsfoi</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detaliile cardului virtual</translation>
@@ -567,6 +568,7 @@
 <translation id="2149968176347646218">Conexiunea nu este sigură</translation>
 <translation id="2152495481414285304">Aplicații</translation>
 <translation id="2153609454945889823">Instalezi Serviciile Google Play pentru realitate augmentată?</translation>
+<translation id="2154144347038514978">Pornire automată pe dispozitiv</translation>
 <translation id="2154484045852737596">Editează cardul</translation>
 <translation id="2154739667870063220">Repornește</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
@@ -938,6 +940,7 @@
 <translation id="299990983510665749">Hatchbackuri</translation>
 <translation id="3002501248619246229">Verifică suportul din tava de intrare</translation>
 <translation id="3005723025932146533">Afișați o copie salvată</translation>
+<translation id="300580149047131921">Utilizată recent</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab pentru a răsfoi acțiunile disponibile, apoi pe Enter pentru a executa acțiunea selectată.</translation>
 <translation id="3013291976881901233">Dispozitive MIDI</translation>
 <translation id="3014553260345122294">Știri de afaceri</translation>
@@ -2662,6 +2665,7 @@
 <translation id="6671169470640320959">Finanțare pentru automobile</translation>
 <translation id="6671697161687535275">Elimini sugestia pentru formular din Chromium?</translation>
 <translation id="6677351035258626477">Fast food</translation>
+<translation id="6681790815630918386">CVC a fost salvat</translation>
 <translation id="6683022854667115063">Căști</translation>
 <translation id="6683717648675961851">Liste de locuri de muncă</translation>
 <translation id="6687230248707087982">Plic (simplu)</translation>
@@ -2909,6 +2913,7 @@
 <translation id="7186833457841277072">Plic (inkjet)</translation>
 <translation id="7186840261985974511">Plic 12</translation>
 <translation id="718872491229180389">Majorete</translation>
+<translation id="7188840756966467339">Repornește și aplică politicile</translation>
 <translation id="7192188280913829296">Trebuie specificat și atributul vendor_id.</translation>
 <translation id="7192203810768312527">Eliberează <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="7192537357091279678">Unități și stocare pentru computere</translation>
@@ -3007,6 +3012,7 @@ Detalii suplimentare:
 <translation id="7400418766976504921">Adresă URL</translation>
 <translation id="7403392780200267761">Distribuie fila trimițând un link, creând un cod QR, proiectând și multe altele.</translation>
 <translation id="7403591733719184120">Dispozitivul <ph name="DEVICE_NAME" /> este gestionat</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> a instalat aplicații pentru funcții suplimentare. Aplicațiile au acces la unele dintre datele tale.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Această eroare se va afișa dacă ai un software Superfish pe computerul Windows.&lt;/p&gt;
       &lt;p&gt;Urmează acești pași ca să dezactivezi temporar software-ul, astfel încât să poți accesa internetul. Vei avea nevoie de privilegii de administrator.&lt;/p&gt;
       &lt;ol&gt;
@@ -3469,6 +3475,7 @@ Detalii suplimentare:
 <translation id="830498451218851433">Îndoire la jumătate</translation>
 <translation id="8308653357438598313">Streaming video live</translation>
 <translation id="8311895354659782580">Liste de imobiliare</translation>
+<translation id="8316555157357957253">Se folosește acum</translation>
 <translation id="8317570861267063617">Pentru o plată mai rapidă, salvează codul CVC pentru acest card pe dispozitiv</translation>
 <translation id="8319269383395457801">Vânzări de imobile rezidențiale</translation>
 <translation id="831997045666694187">Seara</translation>
@@ -3485,6 +3492,7 @@ Detalii suplimentare:
 <translation id="8349305172487531364">Bara de marcaje</translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="835203957414790336">Conținutul paginilor pe care le printezi și informațiile despre imprimantă sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile.</translation>
+<translation id="8352849934814541340">Administratorul acestui dispozitiv a instalat aplicații pentru funcții suplimentare. Aplicațiile au acces la unele dintre datele tale.</translation>
 <translation id="8355270400102541638">Contextul local al blocării:</translation>
 <translation id="8363502534493474904">să dezactivezi modul Avion;</translation>
 <translation id="8364627913115013041">Nesetată.</translation>
@@ -3734,6 +3742,7 @@ Detalii suplimentare:
 <translation id="8903921497873541725">Mărește</translation>
 <translation id="890493561996401738">Butonul Elimină sugestia, apasă pe Enter pentru a elimina, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8918062451146297192">CVC pentru cardul virtual</translation>
 <translation id="8919740778133505789">Mașini sport</translation>
 <translation id="8919895429178014996">Ascunde toate elementele</translation>
 <translation id="8922013791253848639">Permite întotdeauna anunțurile pe acest site</translation>

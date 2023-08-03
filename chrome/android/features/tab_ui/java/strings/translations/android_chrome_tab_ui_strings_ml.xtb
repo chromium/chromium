@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="6333260925957816943">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം. നിങ്ങളുടെ അദൃശ്യ ടാബ് ലഭ്യമാകില്ല.}other{Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം. നിങ്ങളുടെ # അദൃശ്യ ടാബുകൾ ലഭ്യമാകില്ല.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
 <translation id="6562820390860419811">ടാബ് ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
+<translation id="661742612106409204">Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം.</translation>
 <translation id="6840760312327750441">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ, ഒരു ടാബിൽ സ്‌പർശിച്ച് പിടിക്കുക. തുടർന്ന്, അത് മറ്റൊരു ടാബിലേക്ക് വലിച്ചിടുക.</translation>
 <translation id="6856809498882026482">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ് മറയ്ക്കുക</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ടാബ് പങ്കിടുക}other{ടാബുകൾ പങ്കിടുക}}</translation>
