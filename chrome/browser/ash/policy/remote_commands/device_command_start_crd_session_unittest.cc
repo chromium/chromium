@@ -360,6 +360,10 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
         base::TimeTicks::Now() - base::Seconds(idle_time_in_sec));
   }
 
+  void SetLastDeviceActivityTime(base::TimeTicks value) {
+    user_activity_detector_->set_last_activity_time_for_test(value);
+  }
+
   void SetOAuthToken(std::string value) { oauth_token_ = value; }
 
   void SetRobotAccountUserName(const std::string& user_name) {
@@ -570,6 +574,18 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_SUCCESS(RunJobAndWaitForResult(
       Payload().Set("idlenessCutoffSec", idleness_cutoff_in_sec)));
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSucceedIfThereWasNeverActivityOnTheDevice) {
+  LogInAsKioskUser();
+
+  base::TimeTicks never;
+  ASSERT_TRUE(never.is_null());
+  SetLastDeviceActivityTime(never);
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("idlenessCutoffSec", 100000000)));
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,

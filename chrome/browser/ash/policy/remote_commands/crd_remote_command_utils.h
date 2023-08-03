@@ -59,6 +59,8 @@ enum class ResultCode {
 };
 
 // Returns the time since the last user activity on this device.
+// Returns `TimeDelta::Max()` if there was no user activity since the last
+// reboot.
 base::TimeDelta GetDeviceIdleTime();
 
 // Returns the type of the currently active user session.

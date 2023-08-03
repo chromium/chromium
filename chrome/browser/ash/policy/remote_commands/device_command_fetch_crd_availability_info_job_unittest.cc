@@ -145,6 +145,10 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
         base::TimeTicks::Now() - base::Seconds(idle_time_in_sec));
   }
 
+  void SetLastDeviceActivityTime(base::TimeTicks value) {
+    user_activity_detector_->set_last_activity_time_for_test(value);
+  }
+
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
 
   test::FakeCrosNetworkConfig& fake_cros_network_config() {
@@ -189,6 +193,20 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
   EXPECT_THAT(ParseJsonDict(result.payload),
               DictionaryHasValue("deviceIdleTimeInSeconds",
                                  base::Value(device_idle_time_in_sec)));
+}
+
+TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
+       ShouldReturnMaxIntDeviceIdleTimeIfThereWasNoActivitySinceBoot) {
+  base::TimeTicks never;
+  ASSERT_TRUE(never.is_null());
+  SetLastDeviceActivityTime(never);
+
+  Result result = CreateAndRunJob();
+
+  EXPECT_THAT(
+      ParseJsonDict(result.payload),
+      DictionaryHasValue("deviceIdleTimeInSeconds",
+                         base::Value(std::numeric_limits<int32_t>::max())));
 }
 
 TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
