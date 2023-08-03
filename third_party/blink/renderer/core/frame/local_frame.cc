@@ -1715,21 +1715,21 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
 
-  absl::optional<AdScriptIdentifier> ad_script_on_stack;
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
-      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                     /*out_ad_script=*/&ad_script_on_stack);
+      ad_tracker_->IsAdScriptInStack(
+          AdTracker::StackType::kBottomAndTop,
+          /*out_ad_script=*/&ad_script_from_frame_creation_stack_);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
   // sink from parent if appropriate. See comment above for more details.
   if (!IsLocalRoot() && !IsProvisional()) {
     probe_sink_ = LocalFrameRoot().probe_sink_;
+    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
   }
-  probe::FrameAttachedToParent(this, ad_script_on_stack);
 }
 
 FrameScheduler* LocalFrame::GetFrameScheduler() {
@@ -2729,6 +2729,7 @@ bool LocalFrame::SwapIn() {
     } else {
       probe_sink_ = LocalFrameRoot().probe_sink_;
     }
+    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
   }
 
   // First, check if there's a previous main frame to be used for a main frame
