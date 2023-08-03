@@ -29,13 +29,6 @@ void DidRegisterRouter(ScriptPromiseResolver* resolver) {
   resolver->Resolve();
 }
 
-ScriptPromise ParseErrorPromise(ScriptState* script_state) {
-  return ScriptPromise::Reject(
-      script_state, V8ThrowException::CreateTypeError(
-                        script_state->GetIsolate(),
-                        "Failed to parse a rule. Possibly syntax error."));
-}
-
 }  // namespace
 
 InstallEvent* InstallEvent::Create(const AtomicString& type,
@@ -92,7 +85,8 @@ ScriptPromise InstallEvent::registerRouter(
     auto r = ConvertV8RouterRuleToBlink(
         v8_rules->GetAsRouterRule(), global_scope->BaseURL(), exception_state);
     if (!r) {
-      return ParseErrorPromise(script_state);
+      CHECK(exception_state.HadException());
+      return ScriptPromise::Reject(script_state, exception_state);
     }
     rules.rules.emplace_back(*r);
   } else {
@@ -102,7 +96,7 @@ ScriptPromise InstallEvent::registerRouter(
                                           exception_state);
       if (!r) {
         CHECK(exception_state.HadException());
-        return ParseErrorPromise(script_state);
+        return ScriptPromise::Reject(script_state, exception_state);
       }
       rules.rules.emplace_back(*r);
     }
