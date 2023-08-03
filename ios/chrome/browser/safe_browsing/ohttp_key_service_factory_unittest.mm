@@ -11,9 +11,9 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-class OhttpKeyServiceServiceFactoryTest : public PlatformTest {
+class OhttpKeyServiceFactoryTest : public PlatformTest {
  protected:
-  OhttpKeyServiceServiceFactoryTest() = default;
+  OhttpKeyServiceFactoryTest() = default;
 
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
@@ -24,11 +24,11 @@ class OhttpKeyServiceServiceFactoryTest : public PlatformTest {
       apply_branding_;
 };
 
-// Checks that OhttpKeyServiceServiceFactory returns a null for an
+// Checks that OhttpKeyServiceFactory returns a null for an
 // off-the-record browser state, but returns a non-null instance for a regular
 // browser state, when both hash-prefix real-time lookups and hash-real-time
 // over-Ohttp lookups are enabled.
-TEST_F(OhttpKeyServiceServiceFactoryTest, BothFeaturesEnabled) {
+TEST_F(OhttpKeyServiceFactoryTest, BothFeaturesEnabled) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{safe_browsing::kHashRealTimeOverOhttp,
                             safe_browsing::kHashPrefixRealTimeLookups},
@@ -43,10 +43,10 @@ TEST_F(OhttpKeyServiceServiceFactoryTest, BothFeaturesEnabled) {
   EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
 }
 
-// Checks that OhttpKeyServiceServiceFactory returns a null for an
+// Checks that OhttpKeyServiceFactory returns a null for an
 // off-the-record browser state, but returns a non-null instance for a regular
 // browser state, when hash-prefix real-time lookups are enabled.
-TEST_F(OhttpKeyServiceServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
+TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups},
       /*disabled_features=*/{});
@@ -60,10 +60,10 @@ TEST_F(OhttpKeyServiceServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
   EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
 }
 
-// Checks that OhttpKeyServiceServiceFactory returns a null for an
+// Checks that OhttpKeyServiceFactory returns a null for an
 // off-the-record browser state, but returns a non-null instance for a regular
 // browser state, when hash-real-time-lookups-over-Ohttp are enabled.
-TEST_F(OhttpKeyServiceServiceFactoryTest, HashRealTimeOverOhttpEnabled) {
+TEST_F(OhttpKeyServiceFactoryTest, HashRealTimeOverOhttpEnabled) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{safe_browsing::kHashRealTimeOverOhttp},
       /*disabled_features=*/{});
@@ -77,10 +77,10 @@ TEST_F(OhttpKeyServiceServiceFactoryTest, HashRealTimeOverOhttpEnabled) {
   EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
 }
 
-// Checks that OhttpKeyServiceServiceFactory returns a null for both
+// Checks that OhttpKeyServiceFactory returns a null for both
 // off-the-record and regular browser states, when both hash-prefix real-time
 // lookups and hash-real-time-over-Ohttp lookups are disabled.
-TEST_F(OhttpKeyServiceServiceFactoryTest, BothFeaturesDisabled) {
+TEST_F(OhttpKeyServiceFactoryTest, BothFeaturesDisabled) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{safe_browsing::kHashRealTimeOverOhttp,
