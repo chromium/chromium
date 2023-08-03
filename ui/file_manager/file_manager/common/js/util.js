@@ -1541,18 +1541,7 @@ util.isNullOrUndefined = (value) => value === null || value === undefined;
  * @param {string|undefined} providerId
  * @return {boolean}
  */
-util.isOneDriveId = (providerId) => {
-  if (
-      // App built manually from internal git, used for the early dogfood.
-      providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg' ||
-      // App built manually from internal repo.
-      providerId === 'gcpjnalmmghdoadafjgomdlghfnllceo' ||
-      // App from official internal repo.
-      providerId === constants.ODFS_EXTENSION_ID) {
-    return true;
-  }
-  return false;
-};
+util.isOneDriveId = (providerId) => providerId === constants.ODFS_EXTENSION_ID;
 
 /**
  * @param {?VolumeInfo} volumeInfo
