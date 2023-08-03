@@ -165,7 +165,7 @@ content_settings::PatternPair GetPatternsFromScopingType(
     WebsiteSettingsInfo::ScopingType scoping_type,
     const GURL& primary_url,
     const GURL& secondary_url) {
-  CHECK(!primary_url.is_empty());
+  DCHECK(!primary_url.is_empty());
   content_settings::PatternPair patterns;
 
   switch (scoping_type) {
