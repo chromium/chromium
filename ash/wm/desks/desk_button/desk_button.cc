@@ -19,7 +19,6 @@
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -430,23 +429,15 @@ void DeskButton::CalculateDisplayNames(const Desk* desk) {
   }
 
   desk_name_ = desk->name();
-  base::i18n::BreakIterator iter(desk_name_,
-                                 base::i18n::BreakIterator::BREAK_CHARACTER);
 
-  if (!iter.Init()) {
-    return;
-  }
-
-  iter.Advance();
-  abbreviated_desk_name_ = base::i18n::ToUpper(iter.GetString());
-
-  // If the desk name is default, then in zero state we want to show the
-  // number next to the first character.
-  // TODO(b/272383056): Figure out how we should abbreviate the name when
-  // there are 10 or more desks. (i.e. "D16").
-  if (!desk->is_name_set_by_user()) {
-    abbreviated_desk_name_ += base::NumberToString16(
-        DesksController::Get()->GetActiveDeskIndex() + 1);
+  if (desk->is_name_set_by_user() &&
+      ((desk_name_[0] >= u'a' && desk_name_[0] <= u'z') ||
+       (desk_name_[0] >= u'A' && desk_name_[0] <= u'Z'))) {
+    abbreviated_desk_name_ = base::i18n::ToUpper(desk_name_.substr(0, 1));
+  } else {
+    abbreviated_desk_name_ =
+        u"#" + base::NumberToString16(
+                   DesksController::Get()->GetActiveDeskIndex() + 1);
   }
 
   SetAccessibleName(

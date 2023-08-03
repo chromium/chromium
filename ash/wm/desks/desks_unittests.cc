@@ -10984,7 +10984,7 @@ TEST_P(DeskButtonTest, DeskButtonTextReflectsDeskChange) {
 
   GetEventGenerator()->MoveMouseTo(
       Shell::GetPrimaryRootWindow()->bounds().origin());
-  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Desk 3" : u"D3",
+  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Desk 3" : u"#3",
             desk_button->GetTextForTest());
 }
 
@@ -10998,7 +10998,7 @@ TEST_P(DeskButtonTest, DeskButtonTextWorksWithEmojis) {
   auto* desk_button = GetDeskButton();
   ASSERT_TRUE(desk_button);
   EXPECT_EQ(
-      GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"😃",
+      GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"#1",
       desk_button->GetTextForTest());
 }
 
