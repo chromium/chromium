@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,8 +31,15 @@ using SwapOperation = vm_tools::concierge::SwapOperation;
 // Customized FakeConciergeClient to add more complex logic on SwapVm function.
 class TestConciergeClient : public ash::FakeConciergeClient {
  public:
-  explicit TestConciergeClient(ash::FakeCiceroneClient* fake_cicerone_client)
-      : ash::FakeConciergeClient(fake_cicerone_client) {}
+  static void Initialize() {
+    // Shut down stale ConciergeClient if any. See b/294290463.
+    if (ash::ConciergeClient::Get()) {
+      ash::ConciergeClient::Shutdown();
+    }
+    new TestConciergeClient(ash::FakeCiceroneClient::Get());
+  }
+
+  static void Shutdown() { ash::ConciergeClient::Shutdown(); }
 
   void SwapVm(const vm_tools::concierge::SwapVmRequest& request,
               chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
@@ -94,6 +102,9 @@ class TestConciergeClient : public ash::FakeConciergeClient {
   int force_enable_count() { return force_enable_count_; }
 
  private:
+  explicit TestConciergeClient(ash::FakeCiceroneClient* fake_cicerone_client)
+      : ash::FakeConciergeClient(fake_cicerone_client) {}
+
   absl::optional<base::TimeDelta> aggressive_balloon_latency_;
   vm_tools::concierge::AggressiveBalloonResponse aggressive_balloon_response_;
 
@@ -115,6 +126,7 @@ class ArcVmmManagerTest : public testing::Test {
   ~ArcVmmManagerTest() override = default;
 
   void SetUp() override {
+    TestConciergeClient::Initialize();
     // This is needed for setting up ArcBridge.
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
 
@@ -123,9 +135,6 @@ class ArcVmmManagerTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile("test_name");
 
-    concierge_client_ =
-        std::make_unique<TestConciergeClient>(ash::FakeCiceroneClient::Get());
-
     trim_type_reclaim_counter_ = 0;
     trim_type_drop_pages_counter_ = 0;
   }
@@ -133,6 +142,7 @@ class ArcVmmManagerTest : public testing::Test {
   void TearDown() override {
     profile_manager_.reset();
     arc_service_manager_.reset();
+    TestConciergeClient::Shutdown();
   }
 
   void EnableAndConnectArcVm() {
@@ -185,7 +195,9 @@ class ArcVmmManagerTest : public testing::Test {
   }
 
   ArcVmmManager* manager() { return manager_; }
-  TestConciergeClient* client() { return concierge_client_.get(); }
+  TestConciergeClient* client() {
+    return static_cast<TestConciergeClient*>(ash::ConciergeClient::Get());
+  }
 
   int reclaim_guest_conter() { return trim_type_reclaim_counter_; }
   int drop_pages_counter() { return trim_type_drop_pages_counter_; }
@@ -203,7 +215,6 @@ class ArcVmmManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
-  std::unique_ptr<TestConciergeClient> concierge_client_;
   raw_ptr<ArcVmmManager, ExperimentalAsh> manager_ = nullptr;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
