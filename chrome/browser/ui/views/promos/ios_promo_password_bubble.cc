@@ -58,7 +58,9 @@ views::BubbleDialogDelegate* ios_promo_password_delegate_ = nullptr;
 class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
  public:
   explicit IOSPromoPasswordBubbleDelegate(Browser* browser)
-      : browser_(browser) {}
+      : browser_(browser) {
+    impression_histogram_already_recorded_ = false;
+  }
 
   // Returns a new QR code generator service if one does not yet exist.
   qrcode_generator::QRImageGenerator& GetQRCodeGenerator() {
@@ -88,10 +90,14 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
           feature_engagement::kIPHiOSPasswordPromoDesktopFeature);
     }
 
-    promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
-        browser_->profile()->GetPrefs()->GetInteger(
-            promos_prefs::kiOSPasswordPromoImpressionsCounter),
-        promos_utils::DesktopIOSPasswordPromoAction::kDismissed);
+    // Don't record a histogram if either of the buttons' callbacks have run and
+    // a histogram has already been recorded.
+    if (!impression_histogram_already_recorded_) {
+      promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
+          browser_->profile()->GetPrefs()->GetInteger(
+              promos_prefs::kiOSPasswordPromoImpressionsCounter),
+          promos_utils::DesktopIOSPasswordPromoAction::kDismissed);
+    }
   }
 
   // Callback passed to QR code generation for populating the QR code image in
@@ -121,6 +127,8 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
           browser_->profile()->GetPrefs()->GetInteger(
               promos_prefs::kiOSPasswordPromoImpressionsCounter),
           promos_utils::DesktopIOSPasswordPromoAction::kGetStartedClicked);
+
+      impression_histogram_already_recorded_ = true;
     }
 
     browser_->OpenURL(content::OpenURLParams(
@@ -136,10 +144,13 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
     if (!promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
       browser_->profile()->GetPrefs()->SetBoolean(
           promos_prefs::kiOSPasswordPromoOptOut, true);
+
       promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
           browser_->profile()->GetPrefs()->GetInteger(
               promos_prefs::kiOSPasswordPromoImpressionsCounter),
           promos_utils::DesktopIOSPasswordPromoAction::kExplicitlyClosed);
+
+      impression_histogram_already_recorded_ = true;
     }
 
     ios_promo_password_delegate_->GetWidget()->Close();
@@ -151,6 +162,9 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
 
   // Pointer to the current Browser;
   raw_ptr<Browser> browser_;
+
+  // Flag tracking whether the impression histogram has already been recorded.
+  bool impression_histogram_already_recorded_;
 };
 
 // CreateFooter creates the view that is inserted as footer to the bubble.
