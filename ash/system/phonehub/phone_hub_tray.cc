@@ -126,7 +126,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   }
 
   onboarding_nudge_controller_ =
-      features::IsPhoneHubNudgeEnabled()
+      features::IsPhoneHubOnboardingNotifierRevampEnabled()
           ? std::make_unique<OnboardingNudgeController>(
                 /*phone_hub_tray=*/this,
                 /*animation_stop_callback=*/
@@ -446,7 +446,7 @@ void PhoneHubTray::UpdateVisibility() {
   auto ui_state = ui_controller_->ui_state();
   // If the icon becomes visible for onboarding after 5 minutes of log in, we do
   // not show the icon until next log in/unlock.
-  if (features::IsPhoneHubNudgeEnabled() &&
+  if (features::IsPhoneHubMonochromeNotificationIconsEnabled() &&
       ui_state == PhoneHubUiController::UiState::kOnboardingWithoutPhone &&
       !IsInsideUnlockWindow()) {
     return;
@@ -477,7 +477,7 @@ void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
 }
 
 void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
-  if (features::IsPhoneHubNudgeEnabled()) {
+  if (features::IsPhoneHubOnboardingNotifierRevampEnabled()) {
     onboarding_nudge_controller_->HideNudge();
     onboarding_nudge_controller_->MaybeRecordNudgeAction();
   }
@@ -502,13 +502,7 @@ bool PhoneHubTray::IsInsideUnlockWindow() {
 }
 
 bool PhoneHubTray::IsInPhoneHubNudgeExperimentGroup() {
-  if (!features::IsPhoneHubNudgeEnabled()) {
-    return false;
-  }
-
-  return features::kPhoneHubNotifierParam.Get() ==
-             features::PhoneHubNotifierParam::kNudgeWithTextA ||
-         features::kPhoneHubNotifierParam.Get() ==
-             features::PhoneHubNotifierParam::kNudgeWithTextB;
+  return features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
+         features::kPhoneHubOnboardingNotifierUseNudge.Get();
 }
 }  // namespace ash

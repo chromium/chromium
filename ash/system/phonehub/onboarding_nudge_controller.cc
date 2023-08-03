@@ -66,13 +66,16 @@ void OnboardingNudgeController::ShowNudgeIfNeeded() {
   }
   PA_LOG(INFO)
       << "Phone Hub onboarding nudge is being shown for text experiment group "
-      << (features::kPhoneHubNotifierParam.Get() ==
-                  features::PhoneHubNotifierParam::kNudgeWithTextA
+      << (features::kPhoneHubNotifierTextGroup.Get() ==
+                  features::PhoneHubNotifierTextGroup::kNotifierTextGroupA
               ? "A."
               : "B.");
-  // TODO(b/282057052): update text based on different groups.
+
   std::u16string nudge_text = l10n_util::GetStringUTF16(
-      IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITH_PHONE_HUB);
+      features::kPhoneHubNotifierTextGroup.Get() ==
+              features::PhoneHubNotifierTextGroup::kNotifierTextGroupA
+          ? IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITH_PHONE_HUB
+          : IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITHOUT_PHONE_HUB);
   AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
                                   nudge_text, anchored_view_};
   nudge_data.anchored_to_shelf = true;
@@ -187,14 +190,8 @@ bool OnboardingNudgeController::IsDeviceStoredInPref(
 }
 
 bool OnboardingNudgeController::IsInPhoneHubNudgeExperimentGroup() {
-  if (!features::IsPhoneHubNudgeEnabled()) {
-    return false;
-  }
-
-  return features::kPhoneHubNotifierParam.Get() ==
-             features::PhoneHubNotifierParam::kNudgeWithTextA ||
-         features::kPhoneHubNotifierParam.Get() ==
-             features::PhoneHubNotifierParam::kNudgeWithTextB;
+  return features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
+         features::kPhoneHubOnboardingNotifierUseNudge.Get();
 }
 
 bool OnboardingNudgeController::ShouldShowNudge() {

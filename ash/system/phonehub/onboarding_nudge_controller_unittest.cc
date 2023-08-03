@@ -34,9 +34,9 @@ namespace {
 const char kPhoneBluetoothAddress[] = "23:45:67:89:AB:CD";
 const int64_t kTestTimeMillis = 100000000;
 
-const char kPhoneHubNudgeFeatureParam[] = "notifier_type";
-const char kPhoneHubNotificationExperimentGroup[] = "notification_with_text_A";
-const char kPhoneHubNudgeExperimentGroup[] = "nudge_with_text_A";
+std::string kPhoneHubNudgeFeatureParam = "use_nudge";
+std::string kPhoneHubNudgeFeatureUseNudgeTrue = "true";
+std::string kPhoneHubNudgeFeatureUseNudgeFalse = "false";
 
 }  // namespace
 
@@ -50,7 +50,7 @@ class OnboardingNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    InitFeaturesWithParam(kPhoneHubNudgeExperimentGroup);
+    InitFeaturesWithParam(kPhoneHubNudgeFeatureUseNudgeTrue);
     AshTestBase::SetUp();
     test_clock_ = std::make_unique<base::SimpleTestClock>();
     widget_ = CreateFramelessTestWidget();
@@ -94,10 +94,10 @@ class OnboardingNudgeControllerTest : public AshTestBase {
     return Shell::Get()->session_controller()->GetActivePrefService();
   }
 
-  void InitFeaturesWithParam(const char feature_param[]) {
+  void InitFeaturesWithParam(std::string use_nudge) {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPhoneHubNudge,
-          {{kPhoneHubNudgeFeatureParam, feature_param}}},
+        {{features::kPhoneHubOnboardingNotifierRevamp,
+          {{kPhoneHubNudgeFeatureParam, use_nudge}}},
          {features::kSystemNudgeV2, {}}},
         {});
   }
@@ -117,7 +117,7 @@ TEST_F(OnboardingNudgeControllerTest, OnboardingNudgeControllerExists) {
 
 TEST_F(OnboardingNudgeControllerTest, NotInNudgeExperimentGroup) {
   feature_list_.Reset();
-  InitFeaturesWithParam(kPhoneHubNotificationExperimentGroup);
+  InitFeaturesWithParam(kPhoneHubNudgeFeatureUseNudgeFalse);
   GetController()->ShowNudgeIfNeeded();
   EXPECT_EQ(pref_service()->GetInteger(
                 OnboardingNudgeController::kPhoneHubNudgeTotalAppearances),

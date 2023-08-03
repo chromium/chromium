@@ -573,15 +573,18 @@ BASE_DECLARE_FEATURE(kPhoneHubAppStreamingBetaBadge);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPhoneHubCallNotification);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubMonochromeNotificationIcons);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPhoneHubNudge);
-enum class PhoneHubNotifierParam {
-  kNotificationWithTextA,
-  kNotificationWithTextB,
-  kNudgeWithTextA,
-  kNudgeWithTextB
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kPhoneHubOnboardingNotifierRevamp);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<bool> kPhoneHubOnboardingNotifierUseNudge;
+enum class PhoneHubNotifierTextGroup {
+  // The int values should not be changed as they are referenced on the server.
+  kNotifierTextGroupA = 1,
+  kNotifierTextGroupB = 2
 };
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<PhoneHubNotifierParam> kPhoneHubNotifierParam;
+extern const base::FeatureParam<PhoneHubNotifierTextGroup>
+    kPhoneHubNotifierTextGroup;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kPhoneHubNudgeDelay;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1007,7 +1010,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubFeatureSetupErrorHandlingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubMonochromeNotificationIconsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubNudgeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsPhoneHubOnboardingNotifierRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubPingOnBubbleOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubEnabled();

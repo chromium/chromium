@@ -3737,8 +3737,8 @@ extern const char kPerformantSplitViewResizingDescription[];
 extern const char kPhoneHubCallNotificationName[];
 extern const char kPhoneHubCallNotificationDescription[];
 
-extern const char kPhoneHubNudgeName[];
-extern const char kPhoneHubNudgeDescription[];
+extern const char kPhoneHubOnboardingNotifierRevampName[];
+extern const char kPhoneHubOnboardingNotifierRevampDescription[];
 
 extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenName[];
 extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[];

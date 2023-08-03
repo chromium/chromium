@@ -1926,37 +1926,41 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
              "PhoneHubMonochromeNotificationIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Determine whether system nudge will be shown on user eligible for Phone Hub
-// instead of multidevice notification.
-BASE_FEATURE(kPhoneHubNudge,
-             "PhoneHubNudge",
+// Determine whether we use revamped notifier to notify users to start
+// onboarding to Phone Hub.
+BASE_FEATURE(kPhoneHubOnboardingNotifierRevamp,
+             "PhoneHubOnboardingNotifierRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Should we show nudge or notification to the user.
+const base::FeatureParam<bool> kPhoneHubOnboardingNotifierUseNudge{
+    &kPhoneHubOnboardingNotifierRevamp, "use_nudge", true};
+
 const base::FeatureParam<
-    PhoneHubNotifierParam>::Option phone_hub_notifier_options[] = {
-    {PhoneHubNotifierParam::kNotificationWithTextA, "notification_with_text_A"},
-    {PhoneHubNotifierParam::kNotificationWithTextB, "notification_with_text_B"},
-    {PhoneHubNotifierParam::kNudgeWithTextA, "nudge_with_text_A"},
-    {PhoneHubNotifierParam::kNudgeWithTextB, "nudge_with_text_B"},
+    PhoneHubNotifierTextGroup>::Option phone_hub_notifier_text_groups[] = {
+    {PhoneHubNotifierTextGroup::kNotifierTextGroupA, "notifier_with_text_A"},
+    {PhoneHubNotifierTextGroup::kNotifierTextGroupB, "notifier_with_text_B"},
 };
-const base::FeatureParam<PhoneHubNotifierParam> kPhoneHubNotifierParam{
-    &kPhoneHubNudge, "notifier_type", PhoneHubNotifierParam::kNudgeWithTextA,
-    &phone_hub_notifier_options};
+// What text should we show to the user.
+const base::FeatureParam<PhoneHubNotifierTextGroup> kPhoneHubNotifierTextGroup{
+    &kPhoneHubOnboardingNotifierRevamp, "notifier_text_group",
+    PhoneHubNotifierTextGroup::kNotifierTextGroupA,
+    &phone_hub_notifier_text_groups};
 
 // The length of time passing till we display nudge to users again
 const base::FeatureParam<base::TimeDelta> kPhoneHubNudgeDelay{
-    &kPhoneHubNudge, "nudge_delay", base::Hours(24)};
+    &kPhoneHubOnboardingNotifierRevamp, "nudge_delay", base::Hours(24)};
 
 // Number of times nudge should be shown to user.
 const base::FeatureParam<int> kPhoneHubNudgeTotalAppearancesAllowed{
-    &kPhoneHubNudge, "nudge_total_appearances_allowed", 3};
+    &kPhoneHubOnboardingNotifierRevamp, "nudge_total_appearances_allowed", 3};
 
 // Determines up to how many minutes into user session multdevice setup
 // notification can be shown.
 const base::FeatureParam<base::TimeDelta>
     kMultiDeviceSetupNotificationTimeLimit{
-        &kPhoneHubNudge, "MultiDeviceSetupNotificationTimitLimit",
-        base::Minutes(5)};
+        &kPhoneHubOnboardingNotifierRevamp,
+        "MultiDeviceSetupNotificationTimitLimit", base::Minutes(5)};
 
 BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
              "PhoneHubPingOnBubbleOpen",
@@ -3619,8 +3623,8 @@ bool IsPhoneHubMonochromeNotificationIconsEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubMonochromeNotificationIcons);
 }
 
-bool IsPhoneHubNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubNudge) &&
+bool IsPhoneHubOnboardingNotifierRevampEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubOnboardingNotifierRevamp) &&
          base::FeatureList::IsEnabled(kSystemNudgeV2);
 }
 

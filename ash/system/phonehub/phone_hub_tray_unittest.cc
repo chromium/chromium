@@ -67,7 +67,7 @@ class PhoneHubTrayTest : public AshTestBase {
         /*enabled_features=*/{features::kPhoneHub,
                               features::kPhoneHubCameraRoll,
                               features::kEcheLauncher, features::kEcheSWA,
-                              features::kPhoneHubNudge,
+                              features::kPhoneHubOnboardingNotifierRevamp,
                               features::kEcheNetworkConnectionState,
                               features::kSystemNudgeV2},
         /*disabled_features=*/{});

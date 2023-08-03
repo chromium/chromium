@@ -6520,7 +6520,7 @@
     "expiry_milestone": 130
   },
   {
-    "name": "phone-hub-nudge",
+    "name": "phone-hub-onboarding-notifier-revemp",
     "owners": [
       "jennserrano@google.com",
       "jonmann",

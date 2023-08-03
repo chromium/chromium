@@ -173,7 +173,7 @@ void FeatureStatusProviderImpl::OnReady() {
 }
 
 void FeatureStatusProviderImpl::OnNewDevicesSynced() {
-  if (features::IsPhoneHubNudgeEnabled() &&
+  if (features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
       ComputeStatus() == FeatureStatus::kEligiblePhoneButNotSetUp) {
     CheckEligibleDevicesForNudge();
   }

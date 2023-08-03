@@ -6513,9 +6513,10 @@ const char kPhoneHubCallNotificationName[] =
 const char kPhoneHubCallNotificationDescription[] =
     "Enables the incoming/ongoing call feature in Phone Hub.";
 
-const char kPhoneHubNudgeName[] = "Phone Hub nudge";
-const char kPhoneHubNudgeDescription[] =
-    "Enables a nudge to direct eligible users to open Phone Hub.";
+const char kPhoneHubOnboardingNotifierRevampName[] =
+    "Phone Hub onboarding notifier revamp";
+const char kPhoneHubOnboardingNotifierRevampDescription[] =
+    "Enables the revamp for Phone Hub onboarding notifier when eligible.";
 
 const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenName[] =
     "Policy-provided trust anchors at lock screen";

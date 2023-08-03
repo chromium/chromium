@@ -65611,6 +65611,7 @@ from previous Chrome versions.
   <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
   <int value="813999334" label="HistoryManipulationIntervention:enabled"/>
   <int value="816369907" label="SharingHubDesktopAppMenu:disabled"/>
+  <int value="816596744" label="PhoneHubOnboardingNotifierRevamp:enabled"/>
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
   <int value="817080398" label="PreinstalledWebAppDuplicationFixer:disabled"/>
   <int value="817393533" label="GlobalMediaControlsModernUI:disabled"/>
@@ -67486,6 +67487,7 @@ from previous Chrome versions.
   <int value="1782808560"
       label="OmniboxUseExistingAutocompleteClient:disabled"/>
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
+  <int value="1783679416" label="PhoneHubOnboardingNotifierRevamp:disabled"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>
   <int value="1783967606" label="PageContentAnnotations:enabled"/>
   <int value="1784129660" label="OmniboxDocumentProviderNoSetting:enabled"/>

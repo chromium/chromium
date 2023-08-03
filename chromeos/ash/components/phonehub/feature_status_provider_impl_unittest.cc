@@ -657,7 +657,8 @@ TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
 TEST_F(FeatureStatusProviderImplTest, EligiblePhoneHubHostsFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHubNudge, features::kSystemNudgeV2},
+      /*enabled_features=*/{features::kPhoneHubOnboardingNotifierRevamp,
+                            features::kSystemNudgeV2},
       /*disabled_features=*/{});
   SetMultiDeviceState(
       HostStatus::kEligibleHostExistsButNoHostSet,

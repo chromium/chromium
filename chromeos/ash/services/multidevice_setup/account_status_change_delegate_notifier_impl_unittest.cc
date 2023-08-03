@@ -40,9 +40,9 @@ const char kFakePhoneNameA[] = "Phony Phone A";
 const char kFakePhoneKeyB[] = "fake-phone-key-B";
 const char kFakePhoneNameB[] = "Phony Phone B";
 
-const char kPhoneHubNudgeFeatureParam[] = "notifier_type";
-const char kPhoneHubNotificationExperimentGroup[] = "notification_with_text_A";
-const char kPhoneHubNudgeExperimentGroup[] = "nudge_with_text_A";
+std::string kPhoneHubNudgeFeatureParam = "use_nudge";
+std::string kPhoneHubNudgeFeatureUseNudgeTrue = "true";
+std::string kPhoneHubNudgeFeatureUseNudgeFalse = "false";
 
 const multidevice::RemoteDeviceRef kFakePhone =
     multidevice::RemoteDeviceRefBuilder()
@@ -212,10 +212,10 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     }
   }
 
-  void InitFeaturesWithParam(const char feature_param[]) {
+  void InitFeaturesWithParam(std::string use_nudge) {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPhoneHubNudge,
-          {{kPhoneHubNudgeFeatureParam, feature_param}}},
+        {{features::kPhoneHubOnboardingNotifierRevamp,
+          {{kPhoneHubNudgeFeatureParam, use_nudge}}},
          {features::kSystemNudgeV2, {}}},
         {});
   }
@@ -738,7 +738,7 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 TEST_F(
     MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
     CompletingOobeSetupFlowDoNotBlockNewUserEventIfInPhoneHubNotificationExperiment) {
-  InitFeaturesWithParam(kPhoneHubNotificationExperimentGroup);
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
   BuildAccountStatusChangeDelegateNotifier();
 
   // Complete OOBE MultiDevice setup flow before delegate is set.
@@ -754,7 +754,7 @@ TEST_F(
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        NoNewUserEventIfInPhoneHubNudgeExperimentGroup) {
-  InitFeaturesWithParam(kPhoneHubNudgeExperimentGroup);
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeTrue);
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegateRemote();
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
@@ -767,7 +767,7 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 TEST_F(
     MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
     NoNewUserEventIfFiveMinutesAfterLoginInPhoneHubNotificationExperimentGroup) {
-  InitFeaturesWithParam(kPhoneHubNotificationExperimentGroup);
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegateRemote();
   SetSeeionState(session_manager::SessionState::ACTIVE);
@@ -793,7 +793,7 @@ TEST_F(
 TEST_F(
     MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
     NewUserEventIfWithinFiveMinutesOfLoginInPhoneHubNotificationExperimentGroup) {
-  InitFeaturesWithParam(kPhoneHubNotificationExperimentGroup);
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegateRemote();
   SetSeeionState(session_manager::SessionState::ACTIVE);

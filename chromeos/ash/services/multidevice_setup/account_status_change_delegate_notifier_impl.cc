@@ -183,20 +183,8 @@ void AccountStatusChangeDelegateNotifierImpl::
 
 bool AccountStatusChangeDelegateNotifierImpl::
     IsInPhoneHubNotificationExperimentGroup() {
-  if (!features::IsPhoneHubNudgeEnabled()) {
-    return false;
-  }
-
-  switch (features::kPhoneHubNotifierParam.Get()) {
-    case features::PhoneHubNotifierParam::kNotificationWithTextA:
-      [[fallthrough]];
-    case features::PhoneHubNotifierParam::kNotificationWithTextB:
-      return true;
-    case features::PhoneHubNotifierParam::kNudgeWithTextA:
-      [[fallthrough]];
-    case features::PhoneHubNotifierParam::kNudgeWithTextB:
-      return false;
-  }
+  return features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
+         !features::kPhoneHubOnboardingNotifierUseNudge.Get();
 }
 
 void AccountStatusChangeDelegateNotifierImpl::CheckForMultiDeviceEvents(
@@ -246,7 +234,7 @@ void AccountStatusChangeDelegateNotifierImpl::
     CheckForNewUserPotentialHostExistsEvent(
         const HostStatusProvider::HostStatusWithDevice&
             host_status_with_device) {
-  if (!features::IsPhoneHubNudgeEnabled()) {
+  if (!features::IsPhoneHubOnboardingNotifierRevampEnabled()) {
     // We do not notify the user if they already had a chance to go through
     // setup flow in OOBE.
     if (pref_service_->GetInt64(kOobeSetupFlowTimestampPrefName) !=
