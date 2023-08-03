@@ -149,6 +149,10 @@ void CookieControlsBridge::OnUiClosing(JNIEnv* env) {
   controller_->OnUiClosing();
 }
 
+void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
+  controller_->OnEntryPointAnimated();
+}
+
 CookieControlsBridge::~CookieControlsBridge() = default;
 
 void CookieControlsBridge::Destroy(JNIEnv* env,

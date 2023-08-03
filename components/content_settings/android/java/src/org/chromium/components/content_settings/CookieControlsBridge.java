@@ -53,6 +53,12 @@ public class CookieControlsBridge {
         }
     }
 
+    public void onEntryPointAnimated() {
+        if (mNativeCookieControlsBridge != 0) {
+            CookieControlsBridgeJni.get().onEntryPointAnimated(mNativeCookieControlsBridge);
+        }
+    }
+
     /**
      * Destroys the native counterpart of this class.
      */
@@ -106,6 +112,7 @@ public class CookieControlsBridge {
         void setThirdPartyCookieBlockingEnabledForSite(
                 long nativeCookieControlsBridge, boolean blockCookies);
         void onUiClosing(long nativeCookieControlsBridge);
+        void onEntryPointAnimated(long nativeCookieControlsBridge);
         boolean isCookieControlsEnabled(BrowserContextHandle browserContextHandle);
     }
 }

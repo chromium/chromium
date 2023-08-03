@@ -676,6 +676,11 @@ public class StatusMediator
         PermissionIconResource permissionIconResource =
                 new PermissionIconResource(eyeCrossedIcon, isIncognito, COOKIE_CONTROLS_ICON);
         permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
+        permissionIconResource.setAnimationFinishedCallback(() -> {
+            if (mCookieControlsBridge != null) {
+                mCookieControlsBridge.onEntryPointAnimated();
+            }
+        });
 
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);

@@ -47,6 +47,8 @@ class CookieControlsBridge : public OldCookieControlsObserver,
 
   void OnUiClosing(JNIEnv* env);
 
+  void OnEntryPointAnimated(JNIEnv* env);
+
   // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,

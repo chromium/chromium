@@ -541,6 +541,7 @@ public final class StatusMediatorUnitTest {
     @SmallTest
     public void testCookieControlsIcon_animateOnPageStoppedLoading() {
         mMediator.setUrlHasFocus(true);
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
 
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
@@ -550,6 +551,9 @@ public final class StatusMediatorUnitTest {
 
         mMediator.onPageLoadStopped();
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+
+        mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
+        verify(mCookieControlsBridge, times(1)).onEntryPointAnimated();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
