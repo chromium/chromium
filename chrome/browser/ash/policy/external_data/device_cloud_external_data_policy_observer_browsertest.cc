@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
@@ -42,21 +41,38 @@ const char kExternalDataPathUpdated[] =
 // The name of an External Data Policy in Device Policy.
 const char* const kPolicyName = key::kDevicePrinters;
 
+struct FetchedExternalData {
+  std::string policy_name;
+  std::string policy_data;
+};
+
 class MockDeviceCloudExternalDataPolicyObserverDelegate
     : public DeviceCloudExternalDataPolicyObserver::Delegate {
  public:
-  MockDeviceCloudExternalDataPolicyObserverDelegate() {}
+  MockDeviceCloudExternalDataPolicyObserverDelegate() = default;
 
   void OnDeviceExternalDataFetched(const std::string& policy,
                                    std::unique_ptr<std::string> data,
                                    const base::FilePath& file_path) override {
-    OnDeviceExternalDataFetchedProxy(policy, data.get(), file_path);
+    on_data_fetched_future_.AddValue(policy, std::string(*data));
   }
 
   MOCK_METHOD1(OnDeviceExternalDataSet, void(const std::string&));
   MOCK_METHOD1(OnDeviceExternalDataCleared, void(const std::string&));
-  MOCK_METHOD3(OnDeviceExternalDataFetchedProxy,
-               void(const std::string&, std::string*, const base::FilePath&));
+
+  FetchedExternalData GetNextExternalDataFetched() {
+    const auto [policy_name, policy_data] = on_data_fetched_future_.Take();
+    return FetchedExternalData{.policy_name = std::move(policy_name),
+                               .policy_data = std::move(policy_data)};
+  }
+
+  bool HasNextExternalDataFetched() {
+    return !on_data_fetched_future_.IsEmpty();
+  }
+
+ private:
+  base::test::RepeatingTestFuture<std::string, std::string>
+      on_data_fetched_future_;
 };
 
 }  // namespace
@@ -64,7 +80,7 @@ class MockDeviceCloudExternalDataPolicyObserverDelegate
 class DeviceCloudExternalDataPolicyObserverTest
     : public DevicePolicyCrosBrowserTest {
  public:
-  DeviceCloudExternalDataPolicyObserverTest() {}
+  DeviceCloudExternalDataPolicyObserverTest() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -148,24 +164,15 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
 IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest, PolicyIsSet) {
   EXPECT_CALL(mock_delegate_, OnDeviceExternalDataSet(kPolicyName));
 
-  base::test::TestFuture<std::string, std::string> on_data_fetched_future;
-  std::string expected_data_file = ReadExternalDataFile(kExternalDataPath);
-  EXPECT_CALL(
-      mock_delegate_,
-      OnDeviceExternalDataFetchedProxy(
-          kPolicyName, testing::Pointee(testing::StrEq(expected_data_file)), _))
-      .WillOnce(
-          testing::Invoke([&on_data_fetched_future](
-                              const std::string& policy, std::string* data,
-                              const base::FilePath& file_path) {
-            ASSERT_TRUE(data);
-            on_data_fetched_future.SetValue(policy, std::string(*data));
-          }));
-
   SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
-  EXPECT_EQ(kPolicyName, on_data_fetched_future.Get<0>());
-  EXPECT_EQ(expected_data_file, on_data_fetched_future.Get<1>());
+
+  const FetchedExternalData fetched_external_data =
+      mock_delegate_.GetNextExternalDataFetched();
+  EXPECT_EQ(fetched_external_data.policy_name, kPolicyName);
+  EXPECT_EQ(fetched_external_data.policy_data,
+            ReadExternalDataFile(kExternalDataPath));
+  EXPECT_FALSE(mock_delegate_.HasNextExternalDataFetched());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
@@ -173,48 +180,29 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
   EXPECT_CALL(mock_delegate_, OnDeviceExternalDataSet(kPolicyName));
 
   {
-    base::test::TestFuture<std::string, std::string> on_data_fetched_future;
-    std::string expected_data_file = ReadExternalDataFile(kExternalDataPath);
-    EXPECT_CALL(mock_delegate_,
-                OnDeviceExternalDataFetchedProxy(
-                    kPolicyName,
-                    testing::Pointee(testing::StrEq(expected_data_file)), _))
-        .WillOnce(
-            testing::Invoke([&on_data_fetched_future](const std::string& policy,
-                                                      std::string* data,
-                                                      const base::FilePath&) {
-              ASSERT_TRUE(data);
-              on_data_fetched_future.SetValue(policy, *data);
-            }));
-
     SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
         *embedded_test_server(), kExternalDataPath));
-    EXPECT_EQ(kPolicyName, on_data_fetched_future.Get<0>());
-    EXPECT_EQ(expected_data_file, on_data_fetched_future.Get<1>());
+
+    const FetchedExternalData fetched_external_data =
+        mock_delegate_.GetNextExternalDataFetched();
+    EXPECT_EQ(fetched_external_data.policy_name, kPolicyName);
+    EXPECT_EQ(fetched_external_data.policy_data,
+              ReadExternalDataFile(kExternalDataPath));
+    EXPECT_FALSE(mock_delegate_.HasNextExternalDataFetched());
   }
 
   EXPECT_CALL(mock_delegate_, OnDeviceExternalDataSet(kPolicyName));
 
   {
-    base::test::TestFuture<std::string, std::string> on_data_fetched_future;
-    std::string expected_data_file =
-        ReadExternalDataFile(kExternalDataPathUpdated);
-    EXPECT_CALL(mock_delegate_,
-                OnDeviceExternalDataFetchedProxy(
-                    kPolicyName,
-                    testing::Pointee(testing::StrEq(expected_data_file)), _))
-        .WillOnce(
-            testing::Invoke([&on_data_fetched_future](const std::string& policy,
-                                                      std::string* data,
-                                                      const base::FilePath&) {
-              ASSERT_TRUE(data);
-              on_data_fetched_future.SetValue(policy, *data);
-            }));
-
     SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
         *embedded_test_server(), kExternalDataPathUpdated));
-    EXPECT_EQ(kPolicyName, on_data_fetched_future.Get<0>());
-    EXPECT_EQ(expected_data_file, on_data_fetched_future.Get<1>());
+
+    const FetchedExternalData fetched_external_data =
+        mock_delegate_.GetNextExternalDataFetched();
+    EXPECT_EQ(fetched_external_data.policy_name, kPolicyName);
+    EXPECT_EQ(fetched_external_data.policy_data,
+              ReadExternalDataFile(kExternalDataPathUpdated));
+    EXPECT_FALSE(mock_delegate_.HasNextExternalDataFetched());
   }
 }
 
