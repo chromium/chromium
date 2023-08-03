@@ -71,6 +71,10 @@ luci.bucket(
             groups = [
                 "mdb/chrome-troopers",
             ],
+            users = [
+                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+            ],
         ),
         # Allow ci builders to create invocations in their own builds.
         luci.binding(
