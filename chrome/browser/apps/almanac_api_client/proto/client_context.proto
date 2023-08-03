@@ -21,11 +21,6 @@ message ClientDeviceContext {
     // the proto file updated.
     CHANNEL_UNKNOWN = 0;
 
-    // Channel used for test images, local dev, etc. where a channel is not
-    // explicitly defined.
-    // Note: Confusingly on the client-side ChromeOS calls this "unknown"
-    CHANNEL_INTERNAL = 1;
-
     // Canary channel.
     CHANNEL_CANARY = 2;
 
@@ -37,6 +32,10 @@ message ClientDeviceContext {
 
     // Stable channel.
     CHANNEL_STABLE = 5;
+
+    // No longer used.
+    reserved "CHANNEL_INTERNAL";
+    reserved 1;
   }
 
   // Version info about the OS, Browser and other platforms.

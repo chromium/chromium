@@ -5,19 +5,17 @@
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 
 #include "base/functional/callback.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_mapper.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
-#include "google_apis/google_api_keys.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
 // Endpoint for requesting app duplicate data on the ChromeOS Almanac API.
-constexpr char kAppDeduplicationOnePlatformEndpoint[] =
-    "https://chromeosalmanac-pa.googleapis.com/v1/deduplicate";
+constexpr char kAppDeduplicationAlmanacEndpoint[] = "v1/deduplicate";
 
 // Maximum size of App Deduplication Response is 1MB, current size of file at
 // initial launch (v1 of deduplication endpoint is) ~6KB.
@@ -76,30 +74,13 @@ void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
     const DeviceInfo& device_info,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetDeduplicateAppsCallback callback) {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GetServerUrl();
-  DCHECK(resource_request->url.is_valid());
-
-  // A POST request is sent with an override to GET due to server requirements.
-  resource_request->method = "POST";
-  resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
-
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
   std::unique_ptr<network::SimpleURLLoader> loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       kTrafficAnnotation);
+      GetAlmanacUrlLoader(kTrafficAnnotation, BuildRequestBody(device_info),
+                          kAppDeduplicationAlmanacEndpoint);
+
+  // Retain a pointer while keeping the loader alive by std::moving it into the
+  // callback.
   auto* loader_ptr = loader.get();
-  loader_ptr->AttachStringForUpload(BuildRequestBody(device_info),
-                                    "application/x-protobuf");
-  // Retry requests twice (so, three requests total) if requests fail due to
-  // network issues.
-  constexpr int kMaxRetries = 2;
-  loader_ptr->SetRetryOptions(
-      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
-                       network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
   loader_ptr->DownloadToString(
       url_loader_factory.get(),
       base::BindOnce(
@@ -110,7 +91,7 @@ void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
 }
 
 GURL AppDeduplicationServerConnector::GetServerUrl() {
-  return GURL(kAppDeduplicationOnePlatformEndpoint);
+  return GetAlmanacEndpointUrl(kAppDeduplicationAlmanacEndpoint);
 }
 
 void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(

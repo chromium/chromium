@@ -178,7 +178,7 @@ TEST_F(DeviceInfoManagerTest, ChannelTypeToProto) {
     DeviceInfo info;
     info.version_info.channel = version_info::Channel::UNKNOWN;
     EXPECT_EQ(info.ToDeviceContext().channel(),
-              proto::ClientDeviceContext::CHANNEL_INTERNAL);
+              proto::ClientDeviceContext::CHANNEL_UNKNOWN);
   }
 }
 

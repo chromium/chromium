@@ -5,17 +5,13 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
 
 #include "base/functional/callback.h"
-#include "base/strings/strcat.h"
-#include "base/values.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -87,36 +83,19 @@ void PromiseAppAlmanacConnector::GetPromiseAppInfo(
 
 // static
 GURL PromiseAppAlmanacConnector::GetServerUrl() {
-  return GURL(base::StrCat({GetAlmanacApiUrl(), kPromiseAppAlmanacEndpoint}));
+  return GetAlmanacEndpointUrl(kPromiseAppAlmanacEndpoint);
 }
 
 void PromiseAppAlmanacConnector::GetPromiseAppInfoImpl(
     const PackageId& package_id,
     GetPromiseAppCallback callback) {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GetServerUrl();
-  DCHECK(resource_request->url.is_valid());
+  std::unique_ptr<network::SimpleURLLoader> loader = GetAlmanacUrlLoader(
+      kTrafficAnnotation, BuildGetPromiseAppRequestBody(package_id),
+      kPromiseAppAlmanacEndpoint);
 
-  // A POST request is sent with an override to GET due to server requirements.
-  resource_request->method = "POST";
-  resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       kTrafficAnnotation);
+  // Retain a pointer while keeping the loader alive by std::moving it into the
+  // callback.
   auto* loader_ptr = loader.get();
-  loader_ptr->AttachStringForUpload(BuildGetPromiseAppRequestBody(package_id),
-                                    "application/x-protobuf");
-  // Retry requests twice (so, three requests total) if requests fail due to
-  // network issues.
-  constexpr int kMaxRetries = 2;
-  loader_ptr->SetRetryOptions(
-      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
-                       network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
-
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&PromiseAppAlmanacConnector::OnGetPromiseAppResponse,
