@@ -273,4 +273,38 @@ suite('<settings-per-device-mouse-subsection>', function() {
     const expectedMouseId = subsection.get('mouse.id');
     assertEquals(expectedMouseId, mouseId);
   });
+
+  /**
+   * Test that turn on scroll acceleration will disable scrolling speed slider.
+   */
+  test(
+      'turn on scroll acceleration will disable scrolling speed slider',
+      async () => {
+        await initializePerDeviceMouseSubsection();
+        const mouseScrollAccelerationToggleButton =
+            subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#mouseScrollAcceleration');
+        assert(mouseScrollAccelerationToggleButton);
+        const mouseScrollSpeedSlider =
+            subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+                '#mouseScrollSpeedSlider');
+        assert(mouseScrollSpeedSlider);
+
+        // When scroll acceleration is off, scroll speed slider is enabled.
+        assertFalse(fakeMice[0]!.settings.scrollAcceleration);
+        assertFalse(mouseScrollSpeedSlider.disabled);
+
+        mouseScrollAccelerationToggleButton.click();
+        // Refresh the whole subsection page is necessary since the slider
+        // element has some issue getting updated.
+        await initializePerDeviceMouseSubsection();
+
+        // When scroll acceleration is on, scroll speed slider is disaabled.
+        assertTrue(fakeMice[0]!.settings.scrollAcceleration);
+        const updatedMouseScrollSpeedSlider =
+            subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+                '#mouseScrollSpeedSlider');
+        assert(updatedMouseScrollSpeedSlider);
+        assertTrue(updatedMouseScrollSpeedSlider.disabled);
+      });
 });
