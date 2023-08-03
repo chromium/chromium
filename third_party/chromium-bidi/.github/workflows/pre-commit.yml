@@ -2,6 +2,9 @@
 
 name: Pre-commit
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 

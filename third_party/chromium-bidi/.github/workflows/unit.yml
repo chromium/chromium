@@ -3,6 +3,9 @@
 
 name: Unit tests
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   FORCE_COLOR: 3
 

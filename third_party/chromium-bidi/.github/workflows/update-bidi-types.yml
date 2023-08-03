@@ -2,6 +2,9 @@
 
 name: Update WebdriverBidi types
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   schedule:
     # Run daily at 10AM.

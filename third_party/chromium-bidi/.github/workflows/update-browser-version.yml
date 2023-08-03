@@ -2,6 +2,9 @@
 
 name: 'Update the pinned browser version'
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   schedule:
     # Run hourly at xx:30.

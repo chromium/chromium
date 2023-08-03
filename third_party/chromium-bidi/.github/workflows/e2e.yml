@@ -2,6 +2,9 @@
 
 name: E2E tests
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
   FORCE_COLOR: 3
