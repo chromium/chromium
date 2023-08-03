@@ -25,7 +25,7 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 
@@ -43,7 +43,7 @@ export class Realm {
   readonly #origin: string;
   readonly #type: Script.RealmType;
   readonly #cdpClient: ICdpClient;
-  readonly #eventManager: IEventManager;
+  readonly #eventManager: EventManager;
   readonly sandbox?: string;
   readonly #logger?: LoggerFn;
 
@@ -57,7 +57,7 @@ export class Realm {
     type: Script.RealmType,
     sandbox: string | undefined,
     cdpClient: ICdpClient,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     logger?: LoggerFn
   ) {
     this.#realmId = realmId;

@@ -28,7 +28,7 @@ import {
 import {Deferred} from '../../../utils/deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {Result} from '../../../utils/result.js';
@@ -63,7 +63,7 @@ export class BrowsingContextImpl {
   };
 
   #url = 'about:blank';
-  readonly #eventManager: IEventManager;
+  readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
   #loaderId?: Protocol.Network.LoaderId;
   #cdpTarget: CdpTarget;
@@ -75,7 +75,7 @@ export class BrowsingContextImpl {
     realmStorage: RealmStorage,
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
   ) {
@@ -93,7 +93,7 @@ export class BrowsingContextImpl {
     realmStorage: RealmStorage,
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
   ): BrowsingContextImpl {

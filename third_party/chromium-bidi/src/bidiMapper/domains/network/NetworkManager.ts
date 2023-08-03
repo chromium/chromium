@@ -23,14 +23,14 @@
 import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {Network} from '../../../protocol/protocol.js';
 
 import {NetworkRequest} from './networkRequest.js';
 
 export class NetworkManager {
-  readonly #eventManager: IEventManager;
+  readonly #eventManager: EventManager;
 
   /**
    * Map of request ID to NetworkRequest objects. Needed as long as information
@@ -38,7 +38,7 @@ export class NetworkManager {
    */
   readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
 
-  private constructor(eventManager: IEventManager) {
+  private constructor(eventManager: EventManager) {
     this.#eventManager = eventManager;
 
     this.#requestMap = new DefaultMap(
@@ -48,7 +48,7 @@ export class NetworkManager {
 
   static create(
     cdpClient: ICdpClient,
-    eventManager: IEventManager
+    eventManager: EventManager
   ): NetworkManager {
     const networkProcessor = new NetworkManager(eventManager);
 

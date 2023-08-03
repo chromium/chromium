@@ -23,7 +23,7 @@
 import type Protocol from 'devtools-protocol';
 
 import {Deferred} from '../../../utils/deferred.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import {
   type Network,
   type BrowsingContext,
@@ -46,7 +46,7 @@ export class NetworkRequest {
   #servedFromCache = false;
   #redirectCount = 0;
 
-  #eventManager: IEventManager;
+  #eventManager: EventManager;
 
   #requestWillBeSentEvent?: Protocol.Network.RequestWillBeSentEvent;
   #requestWillBeSentExtraInfoEvent?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
@@ -56,7 +56,7 @@ export class NetworkRequest {
   #beforeRequestSentDeferred = new Deferred<Result<void>>();
   #responseReceivedDeferred = new Deferred<Result<void>>();
 
-  constructor(requestId: Network.Request, eventManager: IEventManager) {
+  constructor(requestId: Network.Request, eventManager: EventManager) {
     this.requestId = requestId;
     this.#eventManager = eventManager;
   }

@@ -33,7 +33,7 @@ import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
-import type {IEventManager} from './domains/events/EventManager.js';
+import type {EventManager} from './domains/events/EventManager.js';
 import {InputProcessor} from './domains/input/InputProcessor.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
@@ -57,7 +57,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
 
   constructor(
     cdpConnection: ICdpConnection,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     selfTargetId: string,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,

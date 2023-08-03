@@ -17,7 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {ChromiumBidi, Log, Script} from '../../../protocol/protocol.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import type {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {CdpTarget} from '../context/cdpTarget.js';
@@ -54,14 +54,14 @@ function getLogLevel(consoleApiType: string): Log.Level {
 }
 
 export class LogManager {
-  readonly #eventManager: IEventManager;
+  readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
   readonly #cdpTarget: CdpTarget;
 
   private constructor(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    eventManager: IEventManager
+    eventManager: EventManager
   ) {
     this.#cdpTarget = cdpTarget;
     this.#realmStorage = realmStorage;
@@ -71,7 +71,7 @@ export class LogManager {
   static create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    eventManager: IEventManager
+    eventManager: EventManager
   ) {
     const logManager = new LogManager(cdpTarget, realmStorage, eventManager);
 

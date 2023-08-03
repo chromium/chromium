@@ -20,12 +20,12 @@ import type {
   EmptyResult,
   Session,
 } from '../../../protocol/protocol.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 
 export class SessionProcessor {
-  #eventManager: IEventManager;
+  #eventManager: EventManager;
 
-  constructor(eventManager: IEventManager) {
+  constructor(eventManager: EventManager) {
     this.#eventManager = eventManager;
   }
 
@@ -33,11 +33,11 @@ export class SessionProcessor {
     return {ready: false, message: 'already connected'};
   }
 
-  async subscribe(
+  subscribe(
     params: Session.SubscriptionRequest,
     channel: string | null = null
-  ): Promise<EmptyResult> {
-    await this.#eventManager.subscribe(
+  ): EmptyResult {
+    this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
       channel
@@ -45,11 +45,11 @@ export class SessionProcessor {
     return {};
   }
 
-  async unsubscribe(
+  unsubscribe(
     params: Session.SubscriptionRequest,
     channel: string | null = null
-  ): Promise<EmptyResult> {
-    await this.#eventManager.unsubscribe(
+  ): EmptyResult {
+    this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
       channel

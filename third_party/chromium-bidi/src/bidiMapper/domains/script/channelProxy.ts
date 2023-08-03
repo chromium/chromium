@@ -19,7 +19,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {ChromiumBidi, Script} from '../../../protocol/protocol.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import {uuidv4} from '../../../utils/uuid';
 
 import type {Realm} from './realm.js';
@@ -58,10 +58,7 @@ export class ChannelProxy {
    * Creates a channel proxy in the given realm, initialises listener and
    * returns a handle to `sendMessage` delegate.
    */
-  async init(
-    realm: Realm,
-    eventManager: IEventManager
-  ): Promise<Script.Handle> {
+  async init(realm: Realm, eventManager: EventManager): Promise<Script.Handle> {
     const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
     const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(
       realm,
@@ -73,7 +70,7 @@ export class ChannelProxy {
   }
 
   /** Gets a ChannelProxy from window and returns its handle. */
-  async startListenerFromWindow(realm: Realm, eventManager: IEventManager) {
+  async startListenerFromWindow(realm: Realm, eventManager: EventManager) {
     const channelHandle = await this.#getHandleFromWindow(realm);
     void this.#startListener(realm, channelHandle, eventManager);
   }
@@ -172,7 +169,7 @@ export class ChannelProxy {
   async #startListener(
     realm: Realm,
     channelHandle: Script.Handle,
-    eventManager: IEventManager
+    eventManager: EventManager
   ) {
     // TODO(#294): Remove this loop after the realm is destroyed.
     // Rely on the CDP throwing exception in such a case.

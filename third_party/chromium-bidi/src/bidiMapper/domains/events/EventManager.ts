@@ -55,31 +55,6 @@ class EventWrapper {
   }
 }
 
-export interface IEventManager {
-  registerEvent(
-    event: ChromiumBidi.Event,
-    contextId: BrowsingContext.BrowsingContext | null
-  ): void;
-
-  registerPromiseEvent(
-    event: Promise<Result<ChromiumBidi.Event>>,
-    contextId: BrowsingContext.BrowsingContext | null,
-    eventName: ChromiumBidi.EventNames
-  ): void;
-
-  subscribe(
-    events: ChromiumBidi.EventNames[],
-    contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: string | null
-  ): Promise<void> | void;
-
-  unsubscribe(
-    events: ChromiumBidi.EventNames[],
-    contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: string | null
-  ): Promise<void> | void;
-}
-
 /**
  * Maps event name to a desired buffer length.
  */
@@ -87,7 +62,7 @@ const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
   [[ChromiumBidi.Log.EventNames.LogEntryAddedEvent, 100]]
 );
 
-export class EventManager implements IEventManager {
+export class EventManager {
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of

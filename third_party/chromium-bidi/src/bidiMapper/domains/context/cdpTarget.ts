@@ -20,7 +20,7 @@ import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {Deferred} from '../../../utils/deferred.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/logManager.js';
 import {NetworkManager} from '../network/NetworkManager.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
@@ -32,7 +32,7 @@ export class CdpTarget {
   readonly #targetId: Protocol.Target.TargetID;
   readonly #cdpClient: ICdpClient;
   readonly #cdpSessionId: Protocol.Target.SessionID;
-  readonly #eventManager: IEventManager;
+  readonly #eventManager: EventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
 
   readonly #targetUnblocked = new Deferred<Result<void>>();
@@ -42,7 +42,7 @@ export class CdpTarget {
     cdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     realmStorage: RealmStorage,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
@@ -69,7 +69,7 @@ export class CdpTarget {
     targetId: Protocol.Target.TargetID,
     cdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#targetId = targetId;

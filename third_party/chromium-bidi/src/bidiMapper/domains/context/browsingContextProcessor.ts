@@ -24,7 +24,7 @@ import {
   type EmptyResult,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 
@@ -35,7 +35,7 @@ import {CdpTarget} from './cdpTarget.js';
 export class BrowsingContextProcessor {
   readonly #cdpConnection: ICdpConnection;
   readonly #selfTargetId: string;
-  readonly #eventManager: IEventManager;
+  readonly #eventManager: EventManager;
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #preloadScriptStorage: PreloadScriptStorage;
@@ -46,7 +46,7 @@ export class BrowsingContextProcessor {
   constructor(
     cdpConnection: ICdpConnection,
     selfTargetId: string,
-    eventManager: IEventManager,
+    eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
