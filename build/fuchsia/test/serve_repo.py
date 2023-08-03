@@ -10,7 +10,8 @@ import sys
 
 from typing import Iterator, Optional
 
-from common import REPO_ALIAS, register_device_args, run_ffx_command
+from common import REPO_ALIAS, catch_sigterm, register_device_args, \
+                   run_ffx_command, wait_for_sigterm
 
 _REPO_NAME = 'chromium-test-package-server'
 
@@ -67,8 +68,13 @@ def run_serve_cmd(cmd: str, args: argparse.Namespace) -> None:
 
     if cmd == 'start':
         _start_serving(args.repo, args.repo_name, args.target_id)
-    else:
+    elif cmd == 'stop':
         _stop_serving(args.repo_name, args.target_id)
+    else:
+        assert cmd == 'run'
+        catch_sigterm()
+        with serve_repository(args):
+            wait_for_sigterm('shutting down the repo server.')
 
 
 @contextlib.contextmanager
@@ -86,14 +92,18 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('cmd',
-                        choices=['start', 'stop'],
-                        help='Choose to start|stop repository serving.')
+                        choices=['start', 'stop', 'run'],
+                        help='Choose to start|stop|run repository serving. ' \
+                             '"start" command will start the repo and exit; ' \
+                             '"run" command will start the repo and wait ' \
+                             'until ctrl-c or sigterm.')
     register_device_args(parser)
     register_serve_args(parser)
     args = parser.parse_args()
-    if args.cmd == 'start' and not args.repo:
+    if (args.cmd == 'start' or args.cmd == 'run') and not args.repo:
         raise ValueError('Directory the repository is serving from needs '
                          'to be specified.')
+
     run_serve_cmd(args.cmd, args)
 
 

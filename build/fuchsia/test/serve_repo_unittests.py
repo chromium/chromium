@@ -68,6 +68,14 @@ class ServeRepoTest(unittest.TestCase):
             mock.call(cmd=['repository', 'server', 'stop'], check=False),
             third_call)
 
+    @mock.patch('serve_repo.serve_repository')
+    def test_run_serve_cmd_run(self, mock_serve) -> None:
+        """Test |run_serve_cmd| function for run."""
+
+        with mock.patch('common.time.sleep', side_effect=KeyboardInterrupt):
+            serve_repo.run_serve_cmd('run', self._namespace)
+        self.assertEqual(mock_serve.call_count, 1)
+
     @mock.patch('serve_repo.run_serve_cmd')
     def test_serve_repository(self, mock_serve) -> None:
         """Tests |serve_repository| context manager."""
@@ -88,6 +96,17 @@ class ServeRepoTest(unittest.TestCase):
         """Tests |main| function."""
 
         with mock.patch('sys.argv', ['serve_repo.py', 'stop']):
+            serve_repo.main()
+            self.assertEqual(mock_serve.call_count, 1)
+
+    @mock.patch('serve_repo.run_serve_cmd')
+    def test_main_run(self, mock_serve) -> None:
+        """Tests |main| function."""
+
+        with mock.patch('sys.argv', [
+                'serve_repo.py', 'run', '--serve-repo', _REPO_NAME
+              ]), \
+             mock.patch('common.time.sleep', side_effect=KeyboardInterrupt):
             serve_repo.main()
             self.assertEqual(mock_serve.call_count, 1)
 
