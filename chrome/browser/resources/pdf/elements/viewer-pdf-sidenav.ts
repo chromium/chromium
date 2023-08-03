@@ -153,7 +153,7 @@ export class ViewerPdfSidenavElement extends PolymerElement {
         break;
 
       case TabId.ATTACHMENT:
-        // TODO(crbug.com/177188): Record the user action.
+        record(UserAction.SELECT_SIDENAV_ATTACHMENT);
         this.selectedTab_ = this.tabs_.length - 1;
         break;
     }
