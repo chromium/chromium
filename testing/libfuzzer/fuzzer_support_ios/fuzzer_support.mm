@@ -6,10 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Springboard/Frontboard will kill any iOS/MacCatalyst app that fails to check
 // in after launch within a given time. Starting a UIApplication before invoking
 // fuzzer prevents this from happening.

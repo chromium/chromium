@@ -13,10 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/googletest/src/googletest/include/gtest/internal/gtest-port.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace testing {
 namespace internal {
 // This function is tested within this file, but it's not part of the public
