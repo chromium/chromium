@@ -1360,6 +1360,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.StorageUsageNonUploading" units="MiB"
+    expires_after="2024-03-01">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The amount of disk storage that the Missive daemon has been using for
+    storing encrypted records on devices that have not uploaded any data for the
+    last 24 hours (could have updated the encryption key). This is reported once
+    every hour and only if the Missive daemon is running.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2024-01-30">
   <owner>xuhong@chromium.org</owner>
@@ -1369,6 +1381,25 @@ chromium-metrics-reviews@google.com.
     Would only be true. Recorded whenever an unusual timestamp is encountered
     when enqueuing a record, which will be rejected.
   </summary>
+</histogram>
+
+<histogram name="Platform.Missive.UploadToStorageRate.{Priority}" units="%"
+    expires_after="2024-03-01">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    {Priority} upload size as a fraction of storage used. Recorded with every
+    upload.
+  </summary>
+  <token key="Priority">
+    <variant name="BACKGROUND_BATCH"/>
+    <variant name="FAST_BATCH"/>
+    <variant name="IMMEDIATE"/>
+    <variant name="MANUAL_BATCH"/>
+    <variant name="MANUAL_BATCH_LACROS"/>
+    <variant name="SECURITY"/>
+    <variant name="SLOW_BATCH"/>
+  </token>
 </histogram>
 
 <histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
