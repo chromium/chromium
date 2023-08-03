@@ -446,6 +446,25 @@ void SetupFragmentBuilderForFragmentation(
   }
 }
 
+bool ShouldIncludeBlockEndBorderPadding(const NGBoxFragmentBuilder& builder) {
+  if (builder.PreviousBreakToken() &&
+      builder.PreviousBreakToken()->IsAtBlockEnd()) {
+    // Past the block-end, and therefore past block-end border+padding.
+    return false;
+  }
+  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer()) {
+    return true;
+  }
+
+  // We're going to break inside.
+  if (builder.ConstraintSpace().IsNewFormattingContext()) {
+    return false;
+  }
+  // Not being a formatting context root, only in-flow child breaks will have an
+  // effect on where the block ends.
+  return !builder.HasInflowChildBreakInside();
+}
+
 NGBreakStatus FinishFragmentation(NGBlockNode node,
                                   const NGConstraintSpace& space,
                                   LayoutUnit trailing_border_padding,

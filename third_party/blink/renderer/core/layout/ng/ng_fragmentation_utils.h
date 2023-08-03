@@ -241,6 +241,10 @@ void SetupFragmentBuilderForFragmentation(
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder*);
 
+// Return whether any block-end border+padding should be included in the
+// fragment being generated. Only one of the fragments should include this.
+bool ShouldIncludeBlockEndBorderPadding(const NGBoxFragmentBuilder&);
+
 // Outcome of considering (and possibly attempting) breaking before or inside a
 // child.
 enum class NGBreakStatus {

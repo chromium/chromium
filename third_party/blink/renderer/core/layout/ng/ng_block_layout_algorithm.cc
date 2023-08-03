@@ -997,9 +997,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
           previous_inflow_position->logical_block_offset + margin_strut_sum);
     }
 
-    if ((BreakToken() && BreakToken()->IsAtBlockEnd()) ||
-        (container_builder_.HasInflowChildBreakInside() &&
-         !container_builder_.IsKnownToFitInFragmentainer())) {
+    if (!ShouldIncludeBlockEndBorderPadding(container_builder_)) {
       // The block-end edge isn't in this fragment. We either haven't got there
       // yet, or we're past it (and are overflowing). So don't add trailing
       // border/padding.
