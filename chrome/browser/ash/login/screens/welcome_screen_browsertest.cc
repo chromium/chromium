@@ -108,13 +108,17 @@ const char kChromeVoxHintLaptopSpokenString[] =
 
 const char kChromeVoxHintLaptopSpokenStringImproved[] =
     "The screen reader on ChromeOS, ChromeVox, is primarily used by "
-    "people with blindness and low vision. Press the space bar to turn on "
+    "people with blindness or low vision to read text displayed on the screen "
+    "with a speech synthesizer or braille display. Press the space bar to turn "
+    "on "
     "ChromeVox. When ChromeVox is activated, you’ll go through a quick "
     "tour.";
 
 const char kChromeVoxHintTabletSpokenStringImproved[] =
     "The screen reader on ChromeOS, ChromeVox, is primarily used by "
-    "people with blindness and low vision. Press and hold both volume keys "
+    "people with blindness or low vision to read text displayed on the screen "
+    "with a speech synthesizer or braille display. Press and hold both volume "
+    "keys "
     "for five seconds to turn on ChromeVox. When ChromeVox is activated, "
     "you’ll go through a quick tour.";
 

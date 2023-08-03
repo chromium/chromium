@@ -5638,7 +5638,7 @@
       Do you want to activate ChromeVox, the built-in screen reader for ChromeOS Flex?
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_TEXT_EXPANDED" desc="Text content in the ChromeVox hint dialog, asking the user if they would like to activate ChromeVox.">
-      The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness and low vision. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
+      The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesizer or braille display. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP" desc="The string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
       Do you want to activate ChromeVox, the built-in screen reader for ChromeOS Flex? If so, press the space bar.
@@ -5647,10 +5647,10 @@
       Do you want to activate ChromeVox, the built-in screen reader for ChromeOS Flex? If so, press and hold both volume keys for five seconds.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP_EXPANDED" desc="The new string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
-      The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness and low vision. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
+      The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesizer or braille display. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET_EXPANDED" desc="The new string spoken when the ChromeVox hint is activated when the device is in tablet mode." is_accessibility_with_no_ui="true">
-      The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness and low vision. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
+      The screen reader on ChromeOS Flex, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesizer or braille display. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
     </message>
   </if>
   <if expr="not reven">
@@ -5658,7 +5658,7 @@
       Do you want to activate ChromeVox, the built-in screen reader for ChromeOS?
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_TEXT_EXPANDED" desc="Text content in the ChromeVox hint dialog, asking the user if they would like to activate ChromeVox.">
-      The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness and low vision. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
+      The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesizer or braille display. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP" desc="The string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
       Do you want to activate ChromeVox, the built-in screen reader for ChromeOS? If so, press the space bar.
@@ -5667,10 +5667,10 @@
       Do you want to activate ChromeVox, the built-in screen reader for ChromeOS? If so, press and hold both volume keys for five seconds.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP_EXPANDED" desc="The new string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
-      The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness and low vision. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
+      The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesizer or braille display. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET_EXPANDED" desc="The new string spoken when the ChromeVox hint is activated when the device is in tablet mode." is_accessibility_with_no_ui="true">
-      The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness and low vision. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
+      The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesizer or braille display. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.
     </message>
   </if>
 
