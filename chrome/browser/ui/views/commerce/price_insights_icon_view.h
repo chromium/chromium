@@ -41,6 +41,8 @@ class PriceInsightsIconView : public PageActionIconView {
 
   const std::u16string& GetIconLabelForTesting();
 
+  bool IsIconHighlightedForTesting();
+
  protected:
   // PageActionIconView:
   const gfx::VectorIcon& GetVectorIcon() const override;
