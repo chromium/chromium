@@ -23,6 +23,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -51,6 +53,11 @@ public class AutofillPaymentMethodsFragment
                                                     FragmentHelpAndFeedbackLauncher {
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
+
+    static final String MANDATORY_REAUTH_OPT_IN_HISTOGRAM =
+            "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptIn";
+    static final String MANDATORY_REAUTH_OPT_OUT_HISTOGRAM =
+            "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptOut";
 
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
@@ -299,6 +306,11 @@ public class AutofillPaymentMethodsFragment
         ChromeSwitchPreference mandatoryReauthSwitch = (ChromeSwitchPreference) preference;
         // If the user preference update is successful, toggle the switch to the success state.
         boolean userIntendedState = !mandatoryReauthSwitch.isChecked();
+        String histogramName = userIntendedState ? MANDATORY_REAUTH_OPT_IN_HISTOGRAM
+                                                 : MANDATORY_REAUTH_OPT_OUT_HISTOGRAM;
+        RecordHistogram.recordEnumeratedHistogram(histogramName,
+                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
         // We require user authentication every time user tries to change this
         // preference. Set useLastValidAuth=false to skip the grace period.
         mReauthenticatorBridge.reauthenticate(success -> {
@@ -310,6 +322,13 @@ public class AutofillPaymentMethodsFragment
                 // When the preference is updated, the page is expected to refresh and show the
                 // updated preference. Fallback if the page does not load.
                 mandatoryReauthSwitch.setChecked(userIntendedState);
+                RecordHistogram.recordEnumeratedHistogram(histogramName,
+                        MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED,
+                        MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(histogramName,
+                        MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
+                        MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
             }
         }, /*useLastValidAuth=*/false);
         // Returning false here holds the toggle to still display the old value while

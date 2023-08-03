@@ -48,6 +48,7 @@ enum class MandatoryReauthOptInConfirmationBubbleMetric {
 // Enum class to include all the possible auth flows that can occur for
 // mandatory reauth. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class MandatoryReauthAuthenticationFlowEvent {
   kUnknown = 0,
   // User authentication flow started.

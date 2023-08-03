@@ -33,6 +33,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -125,6 +127,8 @@ public class AutofillPaymentMethodsFragmentTest {
             /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
             /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
             /* obfuscatedLastFourDigits= */ "");
+    private static final String SETTINGS_MANDATORY_REAUTH_OPT_CHANGE_HISTOGRAM_BASE =
+            "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage";
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -147,7 +151,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
         // Verify that the preferences on the initial screen map to Save and Fill toggle + 2 Cards +
         // Add Card button + Payment Apps.
         Assert.assertEquals(5, getPreferenceScreen(activity).getPreferenceCount());
@@ -371,6 +374,13 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testMandatoryReauthToggle_switchValueOnClicked() throws Exception {
+        var optInHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                AutofillPaymentMethodsFragment.MANDATORY_REAUTH_OPT_IN_HISTOGRAM,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED)
+                        .build();
         // Initial state, Reauth pref is disabled by default.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
@@ -392,12 +402,20 @@ public class AutofillPaymentMethodsFragmentTest {
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         // Verify that the Reauth toggle is now checked.
         Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
+        optInHistogram.assertExpected();
     }
 
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testMandatoryReauthToggle_stayAtOldValueIfBiometricAuthFails() throws Exception {
+        var optOutHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                AutofillPaymentMethodsFragment.MANDATORY_REAUTH_OPT_OUT_HISTOGRAM,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED)
+                        .build();
         // Simulate Reauth pref is enabled previously.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -419,6 +437,7 @@ public class AutofillPaymentMethodsFragmentTest {
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         // Verify that the Reauth toggle is still checked since authentication failed.
         Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
+        optOutHistogram.assertExpected();
     }
 
     @Test
