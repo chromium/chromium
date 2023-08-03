@@ -15,9 +15,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 namespace {
 // The info contains a dictionary with info about the freeze report.
 // See description at `_lastSessionFreezeInfo`.
