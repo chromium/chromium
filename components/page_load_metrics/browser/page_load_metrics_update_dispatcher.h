@@ -224,6 +224,18 @@ class PageLoadMetricsUpdateDispatcher {
     return responsiveness_metrics_normalization_
         .GetNormalizedResponsivenessMetrics();
   }
+
+  const NormalizedResponsivenessMetrics&
+  soft_navigation_interval_normalized_responsiveness_metrics() const {
+    return soft_navigation_interval_responsiveness_metrics_normalization_
+        .GetNormalizedResponsivenessMetrics();
+  }
+
+  void ResetSoftNavigationIntervalNormalizedResponsivenessMetrics() {
+    soft_navigation_interval_responsiveness_metrics_normalization_
+        .ClearAllUserInteractionLatencies();
+  }
+
   const PageRenderData& main_frame_render_data() const {
     return main_frame_render_data_;
   }
@@ -267,6 +279,9 @@ class PageLoadMetricsUpdateDispatcher {
 
   void UpdateSoftNavigation(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics);
+
+  void UpdateSoftNavigationIntervalResponsivenessMetrics(
+      const mojom::InputTiming& input_timing_delta);
 
   void UpdatePageInputTiming(const mojom::InputTiming& input_timing_delta);
 
@@ -370,6 +385,14 @@ class PageLoadMetricsUpdateDispatcher {
   // calculate a few normalized responsiveness metrics. It will be reset every
   // time the page enters bfcache.
   ResponsivenessMetricsNormalization responsiveness_metrics_normalization_;
+
+  // Keeps track of user interaction latencies on main frame for soft
+  // navigation intervals. A soft navigation interval is either the
+  // interval from page load start to 1st soft navigation, or an interval
+  // between 2 soft navigations, or the interval from the last soft navigation
+  // to the page load end.
+  ResponsivenessMetricsNormalization
+      soft_navigation_interval_responsiveness_metrics_normalization_;
 };
 
 }  // namespace page_load_metrics

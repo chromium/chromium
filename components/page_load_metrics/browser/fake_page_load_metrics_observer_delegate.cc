@@ -141,6 +141,11 @@ FakePageLoadMetricsObserverDelegate::GetNormalizedResponsivenessMetrics()
   return normalized_responsiveness_metrics_;
 }
 
+const NormalizedResponsivenessMetrics& FakePageLoadMetricsObserverDelegate::
+    GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const {
+  return normalized_responsiveness_metrics_;
+}
+
 const mojom::InputTiming&
 FakePageLoadMetricsObserverDelegate::GetPageInputTiming() const {
   return page_input_timing_;

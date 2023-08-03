@@ -17076,6 +17076,23 @@ be describing additional metrics about the same event.
       be treated as 0 ms. Each type of interaction has its own budget.
     </summary>
   </metric>
+  <metric name="InteractiveTimingBeforeSoftNavigation.NumInteractions">
+    <summary>
+      The number of distinct user interactions before any soft navigation
+      happens. It includes the user interaction that triggers the 1st soft
+      navigtion. See definition of user interaction:
+      https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTimingBeforeSoftNavigation.UserInteractionLatency.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency of a
+      page load before any soft navigation happens, in ms. For this metric, we
+      measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
+    </summary>
+  </metric>
   <metric name="IsCrossProcessNavigation">
     <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
@@ -23244,6 +23261,24 @@ be describing additional metrics about the same event.
     Soft navigation metrics like LCP are equivalent to their counterpart of the
     PageLoad event.
   </summary>
+  <metric name="InteractiveTiming.NumInteractions">
+    <summary>
+      The number of distinct user interactions from the time when the soft
+      navigation happens to the time when the next soft navigation happens or
+      the page load end. See definition of user interaction:
+      https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency from the
+      time when the soft navigation happens to the time when the next soft
+      navigation happens or the page load end, in ms. For this metric, we
+      measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
+    </summary>
+  </metric>
   <metric name="NavigationId">
     <summary>
       Records the navigation id of a soft navigation. It is used to

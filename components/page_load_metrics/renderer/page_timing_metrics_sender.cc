@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
 #include "components/page_load_metrics/renderer/soft_navigation_metrics_type_converter.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -60,11 +61,7 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_cpu_timing_(mojom::CpuTiming::New()),
       input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
-      soft_navigation_metrics_(mojom::SoftNavigationMetrics::New(
-          blink::kSoftNavigationCountDefaultValue,
-          base::Milliseconds(0),
-          base::EmptyString(),
-          mojom::LargestContentfulPaintTiming::New())),
+      soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
@@ -408,5 +405,4 @@ void PageTimingMetricsSender::DidObserveUserInteraction(
           max_event_duration, UserInteractionTypeForMojom(interaction_type)));
   EnsureSendTimer();
 }
-
 }  // namespace page_load_metrics

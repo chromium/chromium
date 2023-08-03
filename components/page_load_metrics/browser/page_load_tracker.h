@@ -287,6 +287,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       BfcacheStrategy bfcache_strategy) const override;
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const override;
+  const NormalizedResponsivenessMetrics&
+  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const absl::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
@@ -577,12 +579,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   page_load_metrics::LargestContentfulPaintHandler
       experimental_largest_contentful_paint_handler_;
 
-  mojom::SoftNavigationMetricsPtr soft_navigation_metrics_ =
-      mojom::SoftNavigationMetrics::New(
-          blink::kSoftNavigationCountDefaultValue,
-          base::TimeDelta(),
-          base::EmptyString(),
-          mojom::LargestContentfulPaintTiming::New());
+  mojom::SoftNavigationMetricsPtr soft_navigation_metrics_;
 
   GURL potential_soft_navigation_url_;
 

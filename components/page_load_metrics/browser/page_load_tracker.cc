@@ -294,6 +294,7 @@ PageLoadTracker::PageLoadTracker(
       source_id_(source_id),
       web_contents_(navigation_handle->GetWebContents()),
       is_first_navigation_in_web_contents_(is_first_navigation_in_web_contents),
+      soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
   DCHECK(!navigation_handle->HasCommitted());
@@ -1079,6 +1080,13 @@ void PageLoadTracker::OnSoftNavigationChanged(
   largest_contentful_paint_handler_.UpdateSoftNavigationLargestContentfulPaint(
       *new_soft_navigation_metrics.largest_contentful_paint);
 
+  // Reset the soft_navigation_interval_responsiveness_metrics_normalization_
+  // when a new soft nav comes in.
+  if (new_soft_navigation_metrics.count > soft_navigation_metrics_->count) {
+    metrics_update_dispatcher_
+        .ResetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+  }
+
   soft_navigation_metrics_ = new_soft_navigation_metrics.Clone();
 }
 
@@ -1263,6 +1271,13 @@ const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
 const NormalizedResponsivenessMetrics&
 PageLoadTracker::GetNormalizedResponsivenessMetrics() const {
   return metrics_update_dispatcher_.normalized_responsiveness_metrics();
+}
+
+const NormalizedResponsivenessMetrics&
+PageLoadTracker::GetSoftNavigationIntervalNormalizedResponsivenessMetrics()
+    const {
+  return metrics_update_dispatcher_
+      .soft_navigation_interval_normalized_responsiveness_metrics();
 }
 
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {

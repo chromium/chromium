@@ -159,6 +159,8 @@ class UkmPageLoadMetricsObserver
       ukm::SourceId ukm_source_id,
       page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
+  void RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
+
   void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       base::TimeTicks page_end_time,

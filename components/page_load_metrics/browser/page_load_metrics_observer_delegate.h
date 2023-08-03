@@ -184,6 +184,10 @@ class PageLoadMetricsObserverDelegate {
   // ways.
   virtual const NormalizedResponsivenessMetrics&
   GetNormalizedResponsivenessMetrics() const = 0;
+
+  virtual const NormalizedResponsivenessMetrics&
+  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const = 0;
+
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;

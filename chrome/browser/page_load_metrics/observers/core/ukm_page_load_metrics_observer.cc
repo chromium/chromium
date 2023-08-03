@@ -687,6 +687,54 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
       }
     }
   }
+
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      soft_nav_normalized_responsiveness_metrics =
+          GetDelegate()
+              .GetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+
+  const auto& max_event_durations =
+      soft_nav_normalized_responsiveness_metrics.normalized_max_event_durations;
+  if (soft_nav_normalized_responsiveness_metrics.num_user_interactions) {
+    builder
+        .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
+            page_load_metrics::ResponsivenessMetricsNormalization::
+                ApproximateHighPercentile(
+                    soft_nav_normalized_responsiveness_metrics
+                        .num_user_interactions,
+                    max_event_durations.worst_ten_latencies)
+                    .InMilliseconds());
+    builder.SetInteractiveTiming_NumInteractions(
+        ukm::GetExponentialBucketMinForCounts1000(
+            soft_nav_normalized_responsiveness_metrics.num_user_interactions));
+  }
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::
+    RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics_before_soft_nav =
+          GetDelegate()
+              .GetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+  auto& max_event_durations = normalized_responsiveness_metrics_before_soft_nav
+                                  .normalized_max_event_durations;
+  if (normalized_responsiveness_metrics_before_soft_nav.num_user_interactions) {
+    builder
+        .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
+            page_load_metrics::ResponsivenessMetricsNormalization::
+                ApproximateHighPercentile(
+                    normalized_responsiveness_metrics_before_soft_nav
+                        .num_user_interactions,
+                    max_event_durations.worst_ten_latencies)
+                    .InMilliseconds());
+    builder.SetInteractiveTimingBeforeSoftNavigation_NumInteractions(
+        ukm::GetExponentialBucketMinForCounts1000(
+            normalized_responsiveness_metrics_before_soft_nav
+                .num_user_interactions));
+  }
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -695,6 +743,14 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
         new_soft_navigation_metrics) {
   auto current_soft_navigation_metrics =
       GetDelegate().GetSoftNavigationMetrics().Clone();
+
+  // When the 1st soft navigation comes in, we record the
+  // soft_navigation_interval_responsiveness_metrics_normalization_ as INP
+  // before soft nav.
+  if (current_soft_navigation_metrics->count == 0 &&
+      new_soft_navigation_metrics.count == 1) {
+    RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
+  }
 
   // Record current soft navigation metrics into Ukm when a new soft navigation
   // comes in. For example, when 2nd soft navigation with a larger count comes

@@ -4,8 +4,6 @@
 <head>
   <meta name="viewport" content="width=device-width,minimum-scale=1">
   <title>Test soft navigation UKM collection</title>
-  <script src="/resources/testdriver.js"></script>
-  <script src="/resources/testdriver-vendor.js"></script>
 </head>
 
 <body>
@@ -14,6 +12,7 @@
       <a id=link><img src="/images/lcp-256x256.png"></a>
     </div>
   </main>
+  <div id="div">content</div>
   <script>
     const addImage = async (element) => {
       const img = new Image();
@@ -21,6 +20,7 @@
       await img.decode();
       element.appendChild(img);
     };
+
     const addImageToMain = async () => {
       await addImage(document.getElementById('main'));
     };
@@ -46,8 +46,7 @@
       return new Promise(resolve => {
         new PerformanceObserver(resolve).observe(
           {
-            type: 'largest-contentful-paint', buffered: true,
-            includeSoftNavigationObservations: true
+            type: 'largest-contentful-paint', buffered: true
           });
       })
     }
@@ -137,6 +136,29 @@
       await waitOnPaintEntriesPromise();
       await waitForSoftNavigationLcpEntries();
     }
+
+    let eventPromises = [];
+    const registerEventListeners = () => {
+      eventPromises = [];
+      const element = document.getElementById('div');
+      for (const event of ['mouseup', 'pointerup', 'click']) {
+        eventPromises.push(new Promise(resolve => {
+          element.addEventListener(event, resolve, { once: true });
+        }));
+      }
+    }
+
+    const waitForClick = async () => {
+      await Promise.all(eventPromises);
+    }
+
+    const addChangeColorEventListener = () => {
+      const element = document.getElementById('div');
+      element.addEventListener("pointerdown", () => {
+        element.style = "color:red";
+      });
+    }
+
   </script>
 </body>
 
