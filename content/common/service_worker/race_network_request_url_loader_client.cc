@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -41,17 +43,21 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
       body_consumer_watcher_(FROM_HERE,
                              mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                              base::SequencedTaskRunner::GetCurrentDefault()) {
+  // The feature param may override the buffer size.
+  uint32_t data_pipe_size = base::GetFieldTrialParamByFeatureAsInt(
+      features::kServiceWorkerBypassFetchHandler,
+      "data_pipe_capacity_num_bytes", data_pipe_capacity_num_bytes);
   // Create two data pipes. One is for RaceNetworkRequest. The other is for the
   // corresponding request in the fetch handler.
   if (CreateDataPipe(data_pipe_for_race_network_request_.producer,
                      data_pipe_for_race_network_request_.consumer,
-                     data_pipe_capacity_num_bytes) != MOJO_RESULT_OK) {
+                     data_pipe_size) != MOJO_RESULT_OK) {
     TransitionState(State::kAborted);
     return;
   }
   if (CreateDataPipe(data_pipe_for_fetch_handler_.producer,
                      data_pipe_for_fetch_handler_.consumer,
-                     data_pipe_capacity_num_bytes) != MOJO_RESULT_OK) {
+                     data_pipe_size) != MOJO_RESULT_OK) {
     TransitionState(State::kAborted);
     return;
   }

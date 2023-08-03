@@ -5287,7 +5287,8 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
           {{"strategy", "optin"},
-           {"bypass_for", "all_with_race_network_request"}}}},
+           {"bypass_for", "all_with_race_network_request"},
+           {"data_pipe_capacity_num_bytes", "1024"}}}},
         {});
   }
   ~ServiceWorkerRaceNetworkRequestBrowserTest() override = default;
