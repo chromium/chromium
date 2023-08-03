@@ -85,7 +85,7 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
       mojo::PendingReceiver<ReceiverInterface> pending_receiver,
       OnDisconnectCallback on_disconnect_callback)
       : receiver_impl_(std::move(receiver_impl)),
-        receiver_(receiver_impl.get(), std::move(pending_receiver)),
+        receiver_(receiver_impl_.get(), std::move(pending_receiver)),
         on_disconnect_(std::move(on_disconnect_callback)) {
     // SAFETY: We can use base::Unretained here since we own the receiver as
     // well as the impl that holds the remote.
