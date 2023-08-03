@@ -455,10 +455,6 @@ void SavedDeskPresenter::SaveOrUpdateSavedDesk(
         AppendDuplicateNumberToDuplicateName(saved_desk->template_name()));
   }
 
-  // TODO(crbug.com/1442076): Remove after issue is root caused.
-  LOG(ERROR) << "Windows written to file by Ash: \n"
-             << saved_desk->ToDebugString();
-
   // Save or update `desk_template` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
       std::move(saved_desk),
