@@ -348,6 +348,7 @@ src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/execution/shadow.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
+src/webgpu/shader/execution/expression/binary/af_comparison.spec.ts
 src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
 src/webgpu/shader/execution/expression/binary/bitwise_shift.spec.ts
 src/webgpu/shader/execution/expression/binary/bool_logical.spec.ts
