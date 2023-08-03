@@ -58,6 +58,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
   void FetchFamilyMembers(FetchFamilyResultsCallback callback) override;
+  void SharePassword(int id, const ShareRecipients& recipients) override;
   void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
                        ImportResultsCallback results_callback,
                        content::WebContents* web_contents) override;
@@ -109,6 +110,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool FetchFamilyMembersTriggered() const {
     return fetch_family_members_triggered_;
   }
+  bool SharePasswordTriggered() const { return share_password_triggered_; }
   bool StartPasswordCheckTriggered() const {
     return start_password_check_triggered_;
   }
@@ -169,6 +171,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Flags for detecting whether password sharing operations have been invoked.
   bool fetch_family_members_triggered_ = false;
+  bool share_password_triggered_ = false;
 
   // Flags for detecting whether import/export operations have been invoked.
   bool import_passwords_triggered_ = false;

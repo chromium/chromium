@@ -233,6 +233,12 @@ void TestPasswordsPrivateDelegate::FetchFamilyMembers(
   std::move(callback).Run(family_fetch_results_);
 }
 
+void TestPasswordsPrivateDelegate::SharePassword(
+    int id,
+    const ShareRecipients& recipients) {
+  share_password_triggered_ = true;
+}
+
 void TestPasswordsPrivateDelegate::ResetImporter(bool delete_file) {
   reset_importer_triggered_ = true;
 }

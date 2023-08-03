@@ -80,6 +80,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'requestPlaintextPassword',
       'showAddShortcutDialog',
       'showExportedFileInShell',
+      'sharePassword',
       'startBulkPasswordCheck',
       'switchBiometricAuthBeforeFillingState',
       'undoRemoveSavedPasswordOrException',
@@ -323,6 +324,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   fetchFamilyMembers() {
     this.methodCalled('fetchFamilyMembers');
     return Promise.resolve(this.data.familyFetchResults);
+  }
+
+  sharePassword() {
+    this.methodCalled('sharePassword');
   }
 
   /**

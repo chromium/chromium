@@ -41,6 +41,8 @@ class PasswordsPrivateDelegate
   using FetchFamilyResultsCallback = base::OnceCallback<void(
       const api::passwords_private::FamilyFetchResults&)>;
 
+  using ShareRecipients = std::vector<api::passwords_private::RecipientInfo>;
+
   using PlaintextPasswordCallback =
       base::OnceCallback<void(absl::optional<std::u16string>)>;
 
@@ -152,6 +154,10 @@ class PasswordsPrivateDelegate
   // |callback|: Used to communicate the status of a request to fetch family
   //  members, as well as the data returned in the response.
   virtual void FetchFamilyMembers(FetchFamilyResultsCallback callback) = 0;
+
+  // Sends sharing invitations for a credential with given |id| to the
+  // |recipients|.
+  virtual void SharePassword(int id, const ShareRecipients& recipients) = 0;
 
   // Trigger the password import procedure, allowing the user to select a file
   // containing passwords to import.

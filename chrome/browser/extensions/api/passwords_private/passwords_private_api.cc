@@ -274,6 +274,24 @@ ResponseAction PasswordsPrivateFetchFamilyMembersFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
+// PasswordsPrivateSharePasswordFunction
+ResponseAction PasswordsPrivateSharePasswordFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  // TODO(crbug/1445526): Respond with an error if arguments are not valid
+  // (password doesn't exist, auth validity expired, recipient doesn't have
+  // public key or user_id).
+
+  auto parameters =
+      api::passwords_private::SharePassword::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  GetDelegate(browser_context())
+      ->SharePassword(parameters->id, parameters->recipients);
+  return RespondNow(NoArguments());
+}
+
 void PasswordsPrivateFetchFamilyMembersFunction::FamilyFetchCompleted(
     const api::passwords_private::FamilyFetchResults& result) {
   Respond(ArgumentList(

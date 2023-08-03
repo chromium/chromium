@@ -186,6 +186,18 @@ class PasswordsPrivateFetchFamilyMembersFunction : public ExtensionFunction {
       const api::passwords_private::FamilyFetchResults& results);
 };
 
+class PasswordsPrivateSharePasswordFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.sharePassword",
+                             PASSWORDSPRIVATE_SHAREPASSWORD)
+
+ protected:
+  ~PasswordsPrivateSharePasswordFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateImportPasswordsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.importPasswords",

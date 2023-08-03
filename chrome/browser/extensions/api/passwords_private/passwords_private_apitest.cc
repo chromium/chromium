@@ -79,6 +79,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->FetchFamilyMembersTriggered();
   }
 
+  bool share_password_was_triggered() {
+    return test_delegate_->SharePasswordTriggered();
+  }
+
   bool continue_import_was_triggered() {
     return test_delegate_->ContinueImportTriggered();
   }
@@ -235,6 +239,12 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, FetchFamilyMembers) {
   EXPECT_FALSE(fetch_family_members_was_triggered());
   EXPECT_TRUE(RunPasswordsSubtest("fetchFamilyMembers")) << message_;
   EXPECT_TRUE(fetch_family_members_was_triggered());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, SharePassword) {
+  EXPECT_FALSE(share_password_was_triggered());
+  EXPECT_TRUE(RunPasswordsSubtest("sharePassword")) << message_;
+  EXPECT_TRUE(share_password_was_triggered());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ImportPasswords) {

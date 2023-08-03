@@ -82,12 +82,18 @@ declare global {
         SUCCESS = 'SUCCESS',
       }
 
+      export interface PublicKey {
+        value: string;
+        version: number;
+      }
+
       export interface RecipientInfo {
         userId: string;
         email: string;
         displayName: string;
         profileImageUrl: string;
         isEligible: boolean;
+        publicKey?: PublicKey;
       }
 
       export interface FamilyFetchResults {
@@ -196,6 +202,8 @@ declare global {
       export function getPasswordExceptionList(): Promise<ExceptionEntry[]>;
       export function movePasswordsToAccount(ids: number[]): void;
       export function fetchFamilyMembers(): Promise<FamilyFetchResults>;
+      export function sharePassword(id: number, recipients: RecipientInfo[]):
+          Promise<void>;
       export function importPasswords(toStore: PasswordStoreSet):
           Promise<ImportResults>;
       export function continueImport(selectedIds: number[]):

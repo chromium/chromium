@@ -655,6 +655,14 @@ void PasswordsPrivateDelegateImpl::FetchFamilyMembers(
   std::move(callback).Run(results);
 }
 
+void PasswordsPrivateDelegateImpl::SharePassword(
+    int id,
+    const ShareRecipients& recipients) {
+  // TODO(crbug/1445526): Get corresponding password forms for the id.
+  // TODO(crbug/1445526): Call PasswordSenderService.
+  return;
+}
+
 void PasswordsPrivateDelegateImpl::ImportPasswords(
     api::passwords_private::PasswordStoreSet to_store,
     ImportResultsCallback results_callback,

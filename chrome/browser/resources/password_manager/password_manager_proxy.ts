@@ -207,6 +207,14 @@ export interface PasswordManagerProxy {
   fetchFamilyMembers(): Promise<chrome.passwordsPrivate.FamilyFetchResults>;
 
   /**
+   * Sends sharing invitations to the recipients.
+   * @param id The id of the password entry to be shared.
+   * @param recipients The list of selected recipients.
+   */
+  sharePassword(
+      id: number, recipients: chrome.passwordsPrivate.RecipientInfo[]): void;
+
+  /**
    * Updates the given credential. Not all parameters can be updated.
    * @param credential the credential to update.
    * @return A promise that resolves if the credential was found and updated,
@@ -501,6 +509,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   fetchFamilyMembers() {
     return chrome.passwordsPrivate.fetchFamilyMembers();
+  }
+
+  sharePassword(
+      id: number, recipients: chrome.passwordsPrivate.RecipientInfo[]) {
+    chrome.passwordsPrivate.sharePassword(id, recipients);
   }
 
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {

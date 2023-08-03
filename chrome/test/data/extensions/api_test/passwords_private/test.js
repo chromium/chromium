@@ -316,6 +316,25 @@ var availableTests = [
     chrome.passwordsPrivate.fetchFamilyMembers(callback);
   },
 
+  function sharePassword() {
+    chrome.passwordsPrivate.sharePassword(
+        42, [{
+          userId: 'user-id',
+          email: 'user@example.com',
+          displayName: 'New User',
+          profileImageUrl: 'data://image/url',
+          isEligible: true,
+          publicKey: {
+            value: 'test',
+            version: 47,
+          }
+        }],
+        () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+
   function importPasswords() {
     let callback = function(importResults) {
       chrome.test.assertNoLastError();
