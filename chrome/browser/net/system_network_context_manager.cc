@@ -677,7 +677,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
     network_service->SetMaxConnectionsPerProxy(max_connections_per_proxy);
 
   network_service_network_context_.reset();
-  network_service->CreateNetworkContext(
+  content::CreateNetworkContextInNetworkService(
       network_service_network_context_.BindNewPipeAndPassReceiver(),
       CreateNetworkContextParams());
 
