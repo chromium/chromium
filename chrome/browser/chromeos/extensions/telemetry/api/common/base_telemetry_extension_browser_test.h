@@ -34,6 +34,7 @@ class BaseTelemetryExtensionBrowserTest
   virtual std::string matches_origin() const;
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
+  void OpenAppUiAndMakeItSecure();
   virtual std::string GetManifestFile(const std::string& manifest_key,
                                       const std::string& matches_origin);
 

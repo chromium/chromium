@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
@@ -204,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StartListeningToEvents_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   // Emit an event as soon as the subscription is registered with the fake.
   GetFakeService()->SetOnSubscriptionChange(
@@ -257,8 +255,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StopListeningToEvents) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   // Emit an event as soon as the subscription is registered with the fake.
   GetFakeService()->SetOnSubscriptionChange(
@@ -318,8 +315,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        ClosePwaConnection) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   // Emit an event as soon as the subscription is registered with the fake.
   GetFakeService()->SetOnSubscriptionChange(
@@ -372,8 +368,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnKeyboardDiagnosticEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -432,8 +427,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnSdCardEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -465,8 +459,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnPowerEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -499,8 +492,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnStylusGarageEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -534,8 +526,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnTouchpadButtonEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -570,8 +561,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnTouchpadTouchEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -621,8 +611,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnTouchpadConnectedEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -667,8 +656,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnExternalDisplayEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -702,8 +690,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnStylusConnectedEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -737,8 +724,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        OnStylusTouchEvent_Success) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
@@ -796,8 +782,7 @@ class PendingApprovalTelemetryExtensionEventsApiBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
                        MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+  OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {

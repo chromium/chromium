@@ -124,7 +124,9 @@ source_set("test_support") {
     ":common",
     "//base",
     "//chrome/test:test_support",
+    "//content/public/browser",
     "//extensions:test_support",
+    "//net",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
