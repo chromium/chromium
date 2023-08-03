@@ -111,9 +111,14 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     void SetScreenAIAnnotatorForTesting(
         mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
             screen_ai_annotator);
+    void SetPagesPerBatchForTesting(int32_t pages_per_batch) {
+      pages_per_batch_ = pages_per_batch;
+    }
 
    private:
-    static constexpr int32_t kPagesPerBatch = 20u;
+    // TODO(crbug.com/1443341): Increase initial value after batching issue is
+    // fixed.
+    int32_t pages_per_batch_ = 1u;
 
     void OcrNextImage();
     void ReceiveOcrResultsForImage(PdfOcrRequest request,
@@ -209,7 +214,9 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   void OnDestruct() override;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  PdfOcrService* CreateOcrService();
+  void CreateOcrService();
+
+  PdfOcrService* ocr_service_for_testing() { return ocr_service_.get(); }
 
   // After receiving a batch of tree updates containing the results of the OCR
   // Service, this method adds each piece of OCRed text in the correct page,

@@ -109,7 +109,7 @@ bool PdfOcrService::AreAllPagesOcred() const {
 
 bool PdfOcrService::AreAllPagesInBatchOcred() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AreAllPagesOcred() || remaining_page_count_ % kPagesPerBatch == 0u;
+  return AreAllPagesOcred() || remaining_page_count_ % pages_per_batch_ == 0u;
 }
 
 void PdfOcrService::SetScreenAIAnnotatorForTesting(
@@ -2234,13 +2234,12 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   nodes_.clear();
 }
 
-PdfAccessibilityTree::PdfOcrService* PdfAccessibilityTree::CreateOcrService() {
+void PdfAccessibilityTree::CreateOcrService() {
   VLOG(2) << "Creating OCR service.";
   ocr_service_ = std::make_unique<PdfOcrService>(
       *render_frame_, page_count_,
       base::BindRepeating(&PdfAccessibilityTree::OnOcrDataReceived,
                           weak_ptr_factory_.GetWeakPtr()));
-  return ocr_service_.get();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

@@ -233,8 +233,17 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
     tree_updates_.push_back(tree_updates);
   }
 
+  void CreateFakeOCRService() {
+    CreateOcrService();
+    fake_annotator_ = std::make_unique<FakeScreenAIAnnotator>();
+    ocr_service_for_testing()->SetScreenAIAnnotatorForTesting(
+        fake_annotator_->BindNewPipeAndPassRemote());
+    ocr_service_for_testing()->SetPagesPerBatchForTesting(20);
+  }
+
  private:
   std::vector<std::vector<ui::AXTreeUpdate>> tree_updates_;
+  std::unique_ptr<FakeScreenAIAnnotator> fake_annotator_;
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -2444,12 +2453,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
   uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
   ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
 
-  PdfAccessibilityTree::PdfOcrService* ocr_service =
-      pdf_accessibility_tree.CreateOcrService();
-  ASSERT_NE(nullptr, ocr_service);
-  FakeScreenAIAnnotator fake_annotator;
-  ocr_service->SetScreenAIAnnotatorForTesting(
-      fake_annotator.BindNewPipeAndPassRemote());
+  pdf_accessibility_tree.CreateFakeOCRService();
 
   for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
     ui::AXNode* page_node = root_node->children()[i + 1];
@@ -2469,7 +2473,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
 
     base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
     requests.emplace(image_node->id(), image, paragraph_node->id());
-    ocr_service->OcrPage(requests);
+    pdf_accessibility_tree.ocr_service_for_testing()->OcrPage(requests);
     WaitForThreadTasks();
   }
 
@@ -2550,19 +2554,15 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrServicePageBatching) {
   ASSERT_EQ(ax::mojom::Role::kImage, image2_node->GetRole());
   ASSERT_EQ(0u, image2_node->children().size());
 
-  PdfAccessibilityTree::PdfOcrService* ocr_service =
-      pdf_accessibility_tree.CreateOcrService();
-  ASSERT_NE(nullptr, ocr_service);
-  FakeScreenAIAnnotator fake_annotator;
-  ocr_service->SetScreenAIAnnotatorForTesting(
-      fake_annotator.BindNewPipeAndPassRemote());
+  pdf_accessibility_tree.CreateFakeOCRService();
 
   const auto& tree_updates = pdf_accessibility_tree.GetTreeUpdates();
   for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
     base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
     requests.emplace(image1_node->id(), image, paragraph_node->id());
     requests.emplace(image2_node->id(), image, paragraph_node->id());
-    ocr_service->OcrPage(std::move(requests));
+    pdf_accessibility_tree.ocr_service_for_testing()->OcrPage(
+        std::move(requests));
 
     // Each page has two images.
     WaitForThreadTasks();
@@ -2631,13 +2631,8 @@ TEST_P(PdfOcrMetricsTest, TestUMAMetricsWithPdfOcrOnBeforeOrAfterOpeningPDF) {
   TestPdfAccessibilityTree pdf_accessibility_tree(render_frame,
                                                   &action_handler);
 
-  PdfAccessibilityTree::PdfOcrService* ocr_service = nullptr;
-  FakeScreenAIAnnotator fake_annotator;
   if (enable_pdf_ocr_before_opening_pdf) {
-    ocr_service = pdf_accessibility_tree.CreateOcrService();
-    ASSERT_NE(nullptr, ocr_service);
-    ocr_service->SetScreenAIAnnotatorForTesting(
-        fake_annotator.BindNewPipeAndPassRemote());
+    pdf_accessibility_tree.CreateFakeOCRService();
   }
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
@@ -2657,10 +2652,7 @@ TEST_P(PdfOcrMetricsTest, TestUMAMetricsWithPdfOcrOnBeforeOrAfterOpeningPDF) {
   ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
 
   if (!enable_pdf_ocr_before_opening_pdf) {
-    ocr_service = pdf_accessibility_tree.CreateOcrService();
-    ASSERT_NE(nullptr, ocr_service);
-    ocr_service->SetScreenAIAnnotatorForTesting(
-        fake_annotator.BindNewPipeAndPassRemote());
+    pdf_accessibility_tree.CreateFakeOCRService();
   }
 
   for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
@@ -2674,7 +2666,7 @@ TEST_P(PdfOcrMetricsTest, TestUMAMetricsWithPdfOcrOnBeforeOrAfterOpeningPDF) {
       ASSERT_NE(nullptr, image_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image_node->id(), image, paragraph_node->id());
-      ocr_service->OcrPage(requests);
+      pdf_accessibility_tree.ocr_service_for_testing()->OcrPage(requests);
     }
 
     WaitForThreadTasks();
@@ -2702,5 +2694,9 @@ TEST_P(PdfOcrMetricsTest, TestUMAMetricsWithPdfOcrOnBeforeOrAfterOpeningPDF) {
                               /*expected_count=*/10);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+// TODO(crbug.com/1443341): Add test for different batch sizes.
+// TODO(crbug.com/1443341): Add test for end result on a non-synthetic
+// multi-page PDF.
 
 }  // namespace pdf
