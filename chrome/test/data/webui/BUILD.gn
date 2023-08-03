@@ -78,6 +78,10 @@ source_set("browser_tests") {
     sources += [ "inline_login/inline_login_browsertest.cc" ]
   }
 
+  if (enable_dice_support || is_chromeos_ash) {
+    sources += [ "gaia_auth_host/gaia_auth_host_browsertest.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -224,10 +228,6 @@ if (include_js2gtest_tests) {
       ]
     } else {
       sources += [ "signin/signin_browsertest.js" ]
-    }
-
-    if (enable_dice_support || is_chromeos_ash) {
-      sources += [ "gaia_auth_host/gaia_auth_host_browsertest.js" ]
     }
 
     if (enable_webui_certificate_viewer) {
