@@ -35,6 +35,7 @@
 #include "printing/printing_context.h"
 #include "printing/printing_features.h"
 #include "printing/printing_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -1921,9 +1922,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   WaitUntilCallbackReceived();
 
-  const absl::optional<bool>& result = print_view_manager->print_now_result();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(*result);
+  EXPECT_THAT(print_view_manager->print_now_result(), testing::Optional(true));
 
   // Cleanup before test shutdown.
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
@@ -1966,8 +1965,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
   // Concurrent system print is allowed.
-  ASSERT_TRUE(system_print_registration_succeeded().has_value());
-  EXPECT_TRUE(*system_print_registration_succeeded());
+  EXPECT_THAT(system_print_registration_succeeded(), testing::Optional(true));
 
   // Cleanup before test shutdown.
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
@@ -1997,9 +1995,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   StartBasicPrint(web_contents);
 
   // Concurrent system print is not allowed.
-  const absl::optional<bool>& result = print_view_manager->print_now_result();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_FALSE(*result);
+  EXPECT_THAT(print_view_manager->print_now_result(), testing::Optional(false));
   // The denied concurrent print is silent without an error.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
 
@@ -2035,8 +2031,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/false);
 
   // Concurrent system print is not allowed.
-  ASSERT_TRUE(system_print_registration_succeeded().has_value());
-  EXPECT_FALSE(*system_print_registration_succeeded());
+  EXPECT_THAT(system_print_registration_succeeded(), testing::Optional(false));
   // The denied concurrent print is silent without an error.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
 
@@ -2101,7 +2096,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     void OnScriptedPrint() override { scripted_print_called_ = true; }
 
     void OnPrintPreviewDone() override {
-      if (!on_print_preview_done_.is_null()) {
+      if (on_print_preview_done_) {
         std::move(on_print_preview_done_).Run();
       }
     }
@@ -2302,7 +2297,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Indicates whether the preview was allowed after checking against content
-  // analysis and DLP (if on CrOS). This is unpopulated until then.
+  // analysis and DLP (if on CrOS). This is `absl::nullopt` until then.
   absl::optional<bool> preview_allowed_;
 
   base::RunLoop preview_run_loop_;
@@ -2908,7 +2903,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
 
   PrintAfterPreviewIsReadyAndLoaded();
 
-  ASSERT_TRUE(print_view_manager->preview_allowed());
+  EXPECT_THAT(print_view_manager->preview_allowed(), testing::Optional(true));
 
   // Since the scanned document was the one shown in the print preview dialog,
   // no snapshotting should have taken place.
@@ -3021,7 +3016,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   }
 
-  ASSERT_TRUE(print_view_manager->preview_allowed());
+  EXPECT_THAT(print_view_manager->preview_allowed(), testing::Optional(true));
 
   // TODO(crbug.com/1457901): Update these assertions once all cases for this
   // test are re-enabled.
@@ -3296,8 +3291,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
   print_view_manager->WaitOnPreview();
-  ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
-  ASSERT_FALSE(print_view_manager->preview_allowed().value());
+  EXPECT_THAT(print_view_manager->preview_allowed(), testing::Optional(false));
   EXPECT_EQ(scanning_responses_count(), 0);
 
   // This is always 0 because printing is always blocked by the DLP policy.
