@@ -802,6 +802,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2024-08-03">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The result enum received from renderer-side image embedder. This is recorded
+    after every renderer image embedding which is expected to happen when the
+    user is subscribed to ESB, has an image embedding model loaded, and the page
+    is deemed phishy by the phishing classification process.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.PreClassificationCheckResult"
     enum="SBClientDetectionPreClassificationCheckResult"
     expires_after="2024-01-14">
