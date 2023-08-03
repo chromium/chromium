@@ -1133,7 +1133,7 @@ void PopulateChromeWebUIFrameBinders(
       CustomizeChromeUI
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       ,
-      settings::SettingsUI
+      ProfileCustomizationUI, settings::SettingsUI
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       >(map);
 

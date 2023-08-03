@@ -1,5 +1,6 @@
 <style>
   :host {
+    --cr-theme-color-padding: 8px;
     --cr-theme-color-picker-column-width: 1fr;
     --cr-theme-color-picker-grid-gap: 8px;
     --cr-theme-color-picker-grid-padding: 0 16px;
@@ -61,6 +62,7 @@
         --color-theme-color-picker-option-background,
         var(--cr-fallback-color-neutral-container));
     border-radius: 12px;
+    padding: var(--cr-theme-color-padding);
   }
 </style>
 <!-- TODO(crbug.com/1395210): Make grid adaptive. -->

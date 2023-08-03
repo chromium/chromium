@@ -12,7 +12,9 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -89,6 +91,12 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
        IDS_PROFILE_CUSTOMIZATION_THEMES_CONTAINER_LABEL},
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
+      {"colorsContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},
+      {"currentTheme", IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL},
+      {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
+      {"mainColorName", IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL},
+      {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
+      {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -133,6 +141,17 @@ void ProfileCustomizationUI::BindInterface(
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
+void ProfileCustomizationUI::BindInterface(
+    mojo::PendingReceiver<
+        theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
+        pending_receiver) {
+  if (theme_color_picker_handler_factory_receiver_.is_bound()) {
+    theme_color_picker_handler_factory_receiver_.reset();
+  }
+  theme_color_picker_handler_factory_receiver_.Bind(
+      std::move(pending_receiver));
+}
+
 ProfileCustomizationHandler*
 ProfileCustomizationUI::GetProfileCustomizationHandlerForTesting() {
   return profile_customization_handler_;
@@ -146,6 +165,18 @@ void ProfileCustomizationUI::CreateCustomizeThemesHandler(
   customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
       std::move(pending_client), std::move(pending_handler),
       web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
+}
+
+void ProfileCustomizationUI::CreateThemeColorPickerHandler(
+    mojo::PendingReceiver<theme_color_picker::mojom::ThemeColorPickerHandler>
+        handler,
+    mojo::PendingRemote<theme_color_picker::mojom::ThemeColorPickerClient>
+        client) {
+  theme_color_picker_handler_ = std::make_unique<ThemeColorPickerHandler>(
+      std::move(handler), std::move(client),
+      NtpCustomBackgroundServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())),
+      web_ui()->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfileCustomizationUI)

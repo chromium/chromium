@@ -36,11 +36,14 @@ suite('ProfileCustomizationTest', function() {
       welcomeTitle: '',
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
+  });
+
+  async function initializeApp() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('profile-customization-app');
     document.body.append(app);
-    return browserProxy.whenCalled('initialized');
-  });
+    await browserProxy.whenCalled('initialized');
+  }
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
@@ -51,6 +54,7 @@ suite('ProfileCustomizationTest', function() {
   // Checks that clicking Done without interacting with the input does not
   // change the name.
   test('ClickDone', async function() {
+    await initializeApp();
     assertTrue(isChildVisible(app, '#doneButton'));
     const doneButton = app.$.doneButton;
     assertFalse(doneButton.disabled);
@@ -61,6 +65,7 @@ suite('ProfileCustomizationTest', function() {
 
   // Checks that the name can be changed.
   test('ChangeName', async function() {
+    await initializeApp();
     const nameInput = app.$.nameInput;
     // Check the default value for the input.
     assertEquals('TestName', nameInput.value);
@@ -92,7 +97,8 @@ suite('ProfileCustomizationTest', function() {
     assertEquals('Bob', profileName);
   });
 
-  test('ProfileInfo', function() {
+  test('ProfileInfo', async function() {
+    await initializeApp();
     // Check initial info.
     assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
     checkImageUrl('#avatar', AVATAR_URL_1);
@@ -112,19 +118,33 @@ suite('ProfileCustomizationTest', function() {
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
   });
 
-  test('ThemeSelector', function() {
+  test('ThemeSelector', async function() {
+    // cr-customize-themes should not be visible and cr-theme-color-picker
+    // should be visible when ChromeWebuiRefresh2023 is disabled.
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    await initializeApp();
+    assertTrue(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
+    assertFalse(!!app.shadowRoot!.querySelector('#themeSelector'));
+
+    // cr-customize-themes should be visible and cr-theme-color-picker should
+    // not be visible when ChromeWebuiRefresh2023 is disabled.
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+    await initializeApp();
+    assertFalse(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
     assertTrue(!!app.shadowRoot!.querySelector('#themeSelector'));
   });
 
   // Checks that there is no Delete Profile button in the default Profile
   // Customization page.
-  test('DeleteProfileButtonNotVisible', function() {
+  test('DeleteProfileButtonNotVisible', async function() {
+    await initializeApp();
     assertFalse(isChildVisible(app, '#deleteProfileButton'));
   });
 
   // Checks that clicking the Skip button triggers the correct browser proxy
   // method.
-  test('ClickSkip', function() {
+  test('ClickSkip', async function() {
+    await initializeApp();
     assertTrue(isChildVisible(app, '#skipButton'));
     const skipButton =
         app.shadowRoot!.querySelector<CrButtonElement>('#skipButton')!;
