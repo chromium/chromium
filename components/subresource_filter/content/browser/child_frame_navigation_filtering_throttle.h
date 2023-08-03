@@ -25,16 +25,6 @@ namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
 
-// Struct for keeping variables used in recording CNAME alias metrics bundled
-// together.
-struct CnameAliasMetricInfo {
-  int list_length = 0;
-  int was_ad_tagged_based_on_alias_count = 0;
-  int was_blocked_based_on_alias_count = 0;
-  int invalid_count = 0;
-  int redundant_count = 0;
-};
-
 // NavigationThrottle responsible for filtering child frame (subframes and
 // fenced frame main frames) document loads, which are considered subresource
 // loads of their parent frame, hence are subject to subresource filtering using
@@ -103,7 +93,6 @@ class ChildFrameNavigationFilteringThrottle
   base::TimeDelta total_defer_time_;
 
   const bool alias_check_enabled_;
-  CnameAliasMetricInfo alias_info_;
 
   // Set to the least restrictive load policy by default.
   LoadPolicy load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
