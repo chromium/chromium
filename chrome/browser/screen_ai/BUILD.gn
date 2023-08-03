@@ -47,7 +47,7 @@ source_set("screen_ai_service_router_factory") {
 
   deps = [
     ":screen_ai_install_state",
-    "//components/keyed_service/content",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/services/screen_ai/public/mojom",
     "//content/public/browser",

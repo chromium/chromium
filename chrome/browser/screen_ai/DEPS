@@ -1,7 +1,7 @@
 include_rules = [
   "+chrome/browser/browser_process.h",
   "+chromeos/ash/components/dbus/dlcservice",
-  "+components/keyed_service/core",
+  "+chrome/browser/profiles",
   "+components/keyed_service/content",
   "+components/prefs",
   "+components/component_updater",

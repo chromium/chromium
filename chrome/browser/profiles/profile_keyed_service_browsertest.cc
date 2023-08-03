@@ -588,13 +588,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PluginInfoHostImpl",
     "TurnSyncOnHelperShutdownNotifier",
-
-    // in chrome:
-    // TODO(http://crbug.com/1284664): These services should use
-    // `ProfileKeyedServiceFactory` and check the services' need for the System
-    // Profile. They are probably not needed.
-    "MediaDeviceSaltServiceFactory",
-    "ScreenAIService",
   };
   // clang-format on
 
@@ -636,12 +629,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PluginInfoHostImpl",
     "TurnSyncOnHelperShutdownNotifier",
-
-    // in chrome:
-    // TODO(http://crbug.com/1284664): These services should use
-    // `ProfileKeyedServiceFactory` and check the services' need for the OTR
-    // System Profile. They are probably not needed.
-    "ScreenAIService",
   };
   // clang-format on
 

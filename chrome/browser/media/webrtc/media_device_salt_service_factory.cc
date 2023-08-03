@@ -5,7 +5,6 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 
 #include "base/files/file_path.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -23,9 +22,12 @@ MediaDeviceSaltServiceFactory::GetForBrowserContext(
 }
 
 MediaDeviceSaltServiceFactory::MediaDeviceSaltServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "MediaDeviceSaltServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("MediaDeviceSaltServiceFactory",
+                                 ProfileSelections::Builder()
+                                     // TODO(crbug.com/1418376): Check if this
+                                     // service is needed in Guest mode.
+                                     .WithGuest(ProfileSelection::kOriginalOnly)
+                                     .Build()) {}
 
 std::unique_ptr<KeyedService>
 MediaDeviceSaltServiceFactory::BuildServiceInstanceForBrowserContext(
