@@ -1,6 +1,6 @@
 <style include="cr-icons">
   :host {
-    background: var(--color-new-tab-page-module-background);
+    background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: flex;
     flex-direction: column;
@@ -15,8 +15,9 @@
 
   #title {
     color: var(--color-new-tab-page-primary-foreground);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: normal;
+    line-height: 20px;
   }
 
   #headerSpacer {
@@ -28,19 +29,8 @@
     --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
     --cr-icon-button-hover-background-color:
         var(--color-new-tab-page-control-background-hovered);
-    margin-inline-end: -4px;
-    margin-inline-start: 0;
-  }
-
-  #menuButton {
-    background-color: var(--color-new-tab-page-module-scroll-button);
-    height: 18px;
-    margin: 0;
-    width: 18px;
-  }
-
-  #menuButton:hover {
-    background-color: var(--color-new-tab-page-module-scroll-button-hover);
+    margin-inline-end: -10px;
+    margin-inline-start: 0px;
   }
 </style>
 <div id="titleContainer">
