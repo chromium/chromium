@@ -195,6 +195,7 @@ template("webapk_tmpl") {
       "res/drawable-xxxhdpi/shortcut_3_icon.png",
       "res/drawable-xxxhdpi/shortcut_4_icon.png",
       "res/drawable-xxxhdpi/splash_icon.xml",
+      "res/layout-night-v31/splash_screen_view.xml",
       "res/layout-v31/splash_screen_view.xml",
       "res/layout/choose_host_browser_dialog.xml",
       "res/layout/host_browser_list_item.xml",

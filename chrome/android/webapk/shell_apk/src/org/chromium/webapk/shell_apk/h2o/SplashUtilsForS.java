@@ -8,6 +8,7 @@ import static org.chromium.webapk.shell_apk.h2o.SplashUtils.createScaledBitmapAn
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Insets;
 import android.graphics.Paint;
@@ -42,8 +43,10 @@ class SplashUtilsForS {
             WindowInsets insets = window.getDecorView().getRootWindowInsets();
             Insets systemBarInsets = insets.getInsets(WindowInsets.Type.systemBars());
 
-            int backgroundColor = WebApkUtils.getColor(
-                    activity.getResources(), R.color.background_color_non_empty);
+            Resources resources = activity.getResources();
+            int backgroundColor = WebApkUtils.inDarkMode(activity)
+                    ? WebApkUtils.getColor(resources, R.color.dark_background_color_non_empty)
+                    : WebApkUtils.getColor(resources, R.color.background_color_non_empty);
             Bitmap bitmap = screenshotSplashScreenView(splashView, splashView.getIconView(),
                     systemBarInsets, backgroundColor,
                     SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
