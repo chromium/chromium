@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -31,6 +32,11 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // ScriptWrappable implements
   void Trace(Visitor*) const override;
 
+  // Given an input type, return permissions list. This method is for testing
+  // only.
+  static Vector<mojom::blink::PermissionDescriptorPtr>
+  ParsePermissionDescriptorsForTesting(const AtomicString& type);
+
  private:
   // Ensure there is a connection to the permission service and return it.
   mojom::blink::PermissionService* GetPermissionService();
@@ -38,6 +44,13 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   // blink::Element implements
   void AttributeChanged(const AttributeModificationParams& params) override;
+
+  // blink::Node override.
+  void DefaultEventHandler(Event&) override;
+
+  // Trigger permissions requesting in browser side by calling mojo
+  // PermissionService's API
+  void RequestPageEmbededPermissions();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
