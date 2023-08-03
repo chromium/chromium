@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -54,8 +53,7 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
-  Member<DisallowNewWrapper<HeapMojoRemote<mojom::blink::PermissionService>>>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   AtomicString type_;
 };

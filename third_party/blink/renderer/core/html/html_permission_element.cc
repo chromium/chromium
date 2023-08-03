@@ -59,7 +59,8 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
 }  // namespace
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
-    : HTMLElement(html_names::kPermissionTag, document) {
+    : HTMLElement(html_names::kPermissionTag, document),
+      permission_service_(document.GetExecutionContext()) {
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
 }
 
@@ -82,20 +83,19 @@ HTMLPermissionElement::ParsePermissionDescriptorsForTesting(
 }
 
 PermissionService* HTMLPermissionElement::GetPermissionService() {
-  if (!permission_service_->Value().is_bound()) {
+  if (!permission_service_.is_bound()) {
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-        permission_service_->Value().BindNewPipeAndPassReceiver(
-            GetTaskRunner()));
-    permission_service_->Value().set_disconnect_handler(WTF::BindOnce(
+        permission_service_.BindNewPipeAndPassReceiver(GetTaskRunner()));
+    permission_service_.set_disconnect_handler(WTF::BindOnce(
         &HTMLPermissionElement::OnPermissionServiceConnectionFailed,
         WrapWeakPersistent(this)));
   }
 
-  return permission_service_->Value().get();
+  return permission_service_.get();
 }
 
 void HTMLPermissionElement::OnPermissionServiceConnectionFailed() {
-  permission_service_->Value().reset();
+  permission_service_.reset();
 }
 
 void HTMLPermissionElement::AttributeChanged(
