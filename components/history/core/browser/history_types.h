@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/stack_container.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -27,6 +26,7 @@
 #include "components/query_parser/snippet.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -264,7 +264,7 @@ class QueryResults {
   // time an entry with that URL appears. Normally, each URL will have one or
   // very few indices after it, so we optimize this to use statically allocated
   // memory when possible.
-  typedef std::map<GURL, base::StackVector<size_t, 4>> URLToResultIndices;
+  typedef std::map<GURL, absl::InlinedVector<size_t, 4>> URLToResultIndices;
 
   // Inserts an entry into the `url_to_results_` map saying that the given URL
   // is at the given index in the results_.
