@@ -5,10 +5,10 @@
 #include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include <ctype.h>
 #include <fcntl.h>
 #include <inttypes.h>
 #include <unistd.h>
+
 #include "base/android/child_process_binding_types.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"

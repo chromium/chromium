@@ -52,6 +52,7 @@
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
@@ -82,10 +83,10 @@ constexpr gfx::Size kMaxFrameSize = gfx::Size(500, 500);
 std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
   std::string out_str;
   out_str.reserve(in_str.size());
-  for (const char& c : in_str) {
-    if (isupper(c)) {
+  for (char c : in_str) {
+    if (absl::ascii_isupper(static_cast<unsigned char>(c))) {
       out_str.push_back(separator);
-      out_str.push_back(tolower(c));
+      out_str.push_back(absl::ascii_tolower(static_cast<unsigned char>(c)));
     } else {
       out_str.push_back(c);
     }

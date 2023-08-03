@@ -4,8 +4,6 @@
 
 #include "content/child/child_histogram_fetcher_impl.h"
 
-#include <ctype.h>
-
 #include <memory>
 
 #include "base/functional/bind.h"

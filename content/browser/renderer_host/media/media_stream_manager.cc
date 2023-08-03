@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <cctype>
 #include <list>
 #include <memory>
 #include <vector>

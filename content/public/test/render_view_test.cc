@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <cctype>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -43,6 +42,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -147,7 +147,7 @@ class FailingURLLoaderFactory : public network::SharedURLLoaderFactory {
 // Converts |ascii_character| into |key_code| and returns true on success.
 // Handles only the characters needed by tests.
 bool GetWindowsKeyCode(char ascii_character, int* key_code) {
-  if (isalnum(ascii_character)) {
+  if (absl::ascii_isalnum(static_cast<unsigned char>(ascii_character))) {
     *key_code = base::ToUpperASCII(ascii_character);
     return true;
   }
@@ -725,8 +725,8 @@ void RenderViewTest::Resize(gfx::Size new_size, bool is_fullscreen_granted) {
 void RenderViewTest::SimulateUserTypingASCIICharacter(char ascii_character,
                                                       bool flush_message_loop) {
   int modifiers = blink::WebInputEvent::kNoModifiers;
-  if (isupper(ascii_character) || ascii_character == '@' ||
-      ascii_character == '_') {
+  if (absl::ascii_isupper(static_cast<unsigned char>(ascii_character)) ||
+      ascii_character == '@' || ascii_character == '_') {
     modifiers = blink::WebKeyboardEvent::kShiftKey;
   }
 
