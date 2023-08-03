@@ -119,7 +119,6 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
   users_.push_back(user);
-  ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
 
   if (profile) {
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
@@ -180,7 +179,6 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
   users_.push_back(user);
-  ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   return user;
 }
 
@@ -265,7 +263,6 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   if (wallpaper_client) {
     wallpaper_client->RemoveUserWallpaper(account_id, base::DoNothing());
   }
-  ProfileHelper::Get()->RemoveUserFromListForTesting(account_id);
 
   const user_manager::UserList::iterator it =
       base::ranges::find(users_, account_id, &user_manager::User::GetAccountId);

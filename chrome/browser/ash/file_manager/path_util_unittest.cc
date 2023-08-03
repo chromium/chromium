@@ -104,6 +104,8 @@ class FileManagerPathUtilTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -181,8 +183,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                                                  "/media/archive/foo"));
 
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
-  ash::FakeChromeUserManager user_manager;
-  user_manager.AddUser(
+  user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
   PrefService* prefs = profile2.GetPrefs();
   prefs->SetString(drive::prefs::kDriveFsProfileSalt, "a");
@@ -306,8 +307,7 @@ TEST_F(FileManagerPathUtilTest, MigrateToDriveFs) {
 
   // Migrate paths under old drive mount.
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
-  ash::FakeChromeUserManager user_manager;
-  user_manager.AddUser(
+  user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
   PrefService* prefs = profile2.GetPrefs();
   prefs->SetString(drive::prefs::kDriveFsProfileSalt, "a");
@@ -347,9 +347,9 @@ TEST_F(FileManagerPathUtilTest, GetGuestOsMountPointName) {
 TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
+
   // Setup for DriveFS.
-  ash::FakeChromeUserManager user_manager;
-  user_manager.AddUser(
+  user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345"));
   profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 

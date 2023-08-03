@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -608,8 +609,9 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
     DownloadPrefs prefs2(&profile2);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::FakeChromeUserManager user_manager;
-    const auto* user = user_manager.AddUser(account_id);
+    user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+        user_manager{std::make_unique<ash::FakeChromeUserManager>()};
+    const auto* user = user_manager->AddUser(account_id);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  &profile2);
     profile2.GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt,

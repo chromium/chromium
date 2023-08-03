@@ -182,10 +182,6 @@ class ConnectorsServiceProfileBrowserTest
 
   void TearDownOnMainThread() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Remove cached user from ProfileHelper so it does not interfere with other
-    // workflows
-    ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
-        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
     user_manager_enabler_.reset();
 #endif
   }

@@ -54,20 +54,14 @@ class ProfileHelperImpl : public ProfileHelper {
       const Profile* profile) const override;
   user_manager::User* GetUserByProfile(Profile* profile) const override;
 
-  void SetProfileToUserMappingForTesting(user_manager::User* user) override;
   void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                          Profile* profile) override;
-  void RemoveUserFromListForTesting(const AccountId& account_id) override;
 
  private:
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
 
   // Used for testing by unit tests and FakeUserManager.
   std::map<const user_manager::User*, Profile*> user_to_profile_for_testing_;
-
-  // When this list is not empty GetUserByProfile() will find user that has
-  // the same user_id as |profile|->GetProfileName().
-  user_manager::UserList user_list_for_testing_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -235,16 +229,18 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
   }
 
   // This map is non-empty only in tests.
-  if (enable_profile_to_user_testing || !user_list_for_testing_.empty()) {
-    if (always_return_primary_user_for_testing)
-      return user_manager::UserManager::Get()->GetPrimaryUser();
+  if (enable_profile_to_user_testing) {
+    auto* user_manager = user_manager::UserManager::Get();
+    if (always_return_primary_user_for_testing) {
+      return user_manager->GetPrimaryUser();
+    }
 
+    // Walk through all users in UserManager.
     const std::string& user_name = profile->GetProfileUserName();
-    for (user_manager::UserList::const_iterator it =
-             user_list_for_testing_.begin();
-         it != user_list_for_testing_.end(); ++it) {
-      if ((*it)->GetAccountId().GetUserEmail() == user_name)
-        return *it;
+    for (auto* user : user_manager->GetUsers()) {
+      if (user->GetAccountId().GetUserEmail() == user_name) {
+        return user;
+      }
     }
 
     // In case of test setup we should always default to primary user.
@@ -303,24 +299,11 @@ user_manager::User* ProfileHelperImpl::GetUserByProfile(
       GetUserByProfile(static_cast<const Profile*>(profile)));
 }
 
-void ProfileHelperImpl::SetProfileToUserMappingForTesting(
-    user_manager::User* user) {
-  user_list_for_testing_.push_back(user);
-}
-
 void ProfileHelperImpl::SetUserToProfileMappingForTesting(
     const user_manager::User* user,
     Profile* profile) {
   DCHECK(user);
   user_to_profile_for_testing_[user] = profile;
-}
-
-void ProfileHelperImpl::RemoveUserFromListForTesting(
-    const AccountId& account_id) {
-  auto it = base::ranges::find(user_list_for_testing_, account_id,
-                               &user_manager::User::GetAccountId);
-  if (it != user_list_for_testing_.end())
-    user_list_for_testing_.erase(it);
 }
 
 }  // namespace ash

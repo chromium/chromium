@@ -49,6 +49,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -1686,7 +1687,8 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   std::unique_ptr<NearbyNotificationManager> manager_;
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<ash::HoldingSpaceController> holding_space_controller_;
-  std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
 };
 
 TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {

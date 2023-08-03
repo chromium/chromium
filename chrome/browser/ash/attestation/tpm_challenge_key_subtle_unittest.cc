@@ -36,6 +36,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -236,7 +237,8 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
   std::unique_ptr<TpmChallengeKeySubtle> challenge_key_subtle_;
 
   TestingProfileManager testing_profile_manager_;
-  FakeChromeUserManager fake_user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   // A sign-in Profile is always created in SetUp().
   raw_ptr<TestingProfile, ExperimentalAsh> signin_profile_ = nullptr;
   // The profile that will be passed to TpmChallengeKeySubtle - can be nullptr.
@@ -322,7 +324,7 @@ TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
 
   auto test_account =
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-  fake_user_manager_.AddUserWithAffiliation(test_account, is_affiliated);
+  fake_user_manager_->AddUserWithAffiliation(test_account, is_affiliated);
 
   return testing_profile;
 }
