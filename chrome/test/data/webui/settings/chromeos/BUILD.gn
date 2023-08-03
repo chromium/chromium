@@ -66,7 +66,6 @@ build_webui_tests("build") {
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "search_engine_test.js",
-    "settings_traffic_counters_test.js",
     "switch_access_setup_guide_dialog_test.js",
     "switch_access_subpage_tests.js",
     "test_about_page_browser_proxy_chromeos.js",
@@ -138,6 +137,7 @@ build_webui_tests("build") {
     "internet_page/network_summary_test.ts",
     "internet_page/passpoint_subpage_test.ts",
     "internet_page/passpoint_remove_dialog_test.ts",
+    "internet_page/settings_traffic_counters_test.ts",
     "internet_page/test_internet_page_browser_proxy.ts",
     "internet_page/tether_connection_dialog_test.ts",
 

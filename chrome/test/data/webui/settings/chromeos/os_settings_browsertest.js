@@ -363,6 +363,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    }
  ],
  [
+   'InternetPageSettingsTrafficCounters',
+   'internet_page/settings_traffic_counters_test.js'
+ ],
+ [
    'InternetPageTetherConnectionDialog',
    'internet_page/tether_connection_dialog_test.js'
  ],
@@ -760,7 +764,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'SettingsSchedulerSlider',
    'settings_scheduler_slider/settings_scheduler_slider_test.js'
  ],
- ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
 ].forEach(test => registerTest(...test));

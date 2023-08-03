@@ -145,6 +145,7 @@ export {NetworkAlwaysOnVpnElement} from './internet_page/network_always_on_vpn.j
 export {NetworkProxySectionElement} from './internet_page/network_proxy_section.js';
 export {PasspointRemoveDialogElement} from './internet_page/passpoint_remove_dialog.js';
 export {SettingsPasspointSubpageElement} from './internet_page/passpoint_subpage.js';
+export {SettingsTrafficCountersElement} from './internet_page/settings_traffic_counters.js';
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
 export {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_page/kerberos_accounts_browser_proxy.js';
 export {SettingsKerberosAccountsSubpageElement} from './kerberos_page/kerberos_accounts_subpage.js';
