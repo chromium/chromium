@@ -12,6 +12,8 @@ source_set("safe_browsing") {
     "chrome_password_protection_service.mm",
     "chrome_password_protection_service_factory.h",
     "chrome_password_protection_service_factory.mm",
+    "hash_realtime_service_factory.h",
+    "hash_realtime_service_factory.mm",
     "input_event_observer.h",
     "ohttp_key_service_factory.h",
     "ohttp_key_service_factory.mm",
@@ -136,6 +138,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_password_protection_service_unittest.mm",
+    "hash_realtime_service_factory_unittest.mm",
     "ohttp_key_service_factory_unittest.mm",
     "real_time_url_lookup_service_factory_unittest.mm",
     "safe_browsing_blocking_page_unittest.mm",
