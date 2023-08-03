@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_LISTENER_H_
 
+#include "third_party/blink/renderer/modules/webaudio/audio_listener_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/inspector_helper_mixin.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -52,7 +53,9 @@ class AudioListener final : public ScriptWrappable,
 
  public:
   explicit AudioListener(BaseAudioContext&);
-  ~AudioListener() final = default;
+  ~AudioListener() final;
+
+  AudioListenerHandler& Handler() const { return *handler_; }
 
   // https://www.w3.org/TR/webaudio/#AudioListener-attributes
   AudioParam* positionX() const { return position_x_; }
@@ -68,27 +71,12 @@ class AudioListener final : public ScriptWrappable,
   // https://www.w3.org/TR/webaudio/#AudioListener-methods
   void setOrientation(float x, float y, float z,
                       float up_x, float up_y, float up_z,
-                      ExceptionState& exceptionState) {
-    SetOrientation(gfx::Vector3dF(x, y, z), exceptionState);
-    SetUpVector(gfx::Vector3dF(up_x, up_y, up_z), exceptionState);
-  }
-  void setPosition(float x, float y, float z, ExceptionState& exceptionState) {
-    SetPosition(gfx::Point3F(x, y, z), exceptionState);
-  }
+                      ExceptionState& exceptionState);
+  void setPosition(float x, float y, float z, ExceptionState& exceptionState);
 
-  const gfx::Point3F GetPosition() const {
-    return gfx::Point3F(
-        position_x_->value(), position_y_->value(), position_z_->value());
-  }
-
-  const gfx::Vector3dF GetOrientation() const {
-    return gfx::Vector3dF(
-        forward_x_->value(), forward_y_->value(), forward_z_->value());
-  }
-
-  const gfx::Vector3dF GetUpVector() const {
-    return gfx::Vector3dF(up_x_->value(), up_y_->value(), up_z_->value());
-  }
+  const gfx::Point3F GetPosition() const;
+  const gfx::Vector3dF GetOrientation() const;
+  const gfx::Vector3dF GetUpVector() const;
 
   const float* GetPositionXValues(uint32_t frames_to_process);
   const float* GetPositionYValues(uint32_t frames_to_process);
@@ -110,9 +98,9 @@ class AudioListener final : public ScriptWrappable,
   // state of all PannerNodes if necessary.
   void UpdateState();
 
-  bool IsListenerDirty() const { return is_listener_dirty_; }
+  bool IsListenerDirty() const;
 
-  base::Lock& ListenerLock() { return listener_lock_; }
+  base::Lock& ListenerLock();
 
   void AddPannerHandler(PannerHandler&);
   void RemovePannerHandler(PannerHandler&);
@@ -131,12 +119,13 @@ class AudioListener final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  void UpdateValuesIfNeeded(uint32_t frames_to_process);
-  void MarkPannersAsDirty(unsigned) EXCLUSIVE_LOCKS_REQUIRED(listener_lock_);
+  void SetHandler(scoped_refptr<AudioListenerHandler>);
 
   void SetPosition(const gfx::Point3F&, ExceptionState&);
   void SetOrientation(const gfx::Vector3dF&, ExceptionState&);
   void SetUpVector(const gfx::Vector3dF&, ExceptionState&);
+
+  scoped_refptr<AudioListenerHandler> handler_;
 
   Member<AudioParam> position_x_;
   Member<AudioParam> position_y_;
@@ -147,38 +136,6 @@ class AudioListener final : public ScriptWrappable,
   Member<AudioParam> up_x_;
   Member<AudioParam> up_y_;
   Member<AudioParam> up_z_;
-
-  AudioFloatArray position_x_values_;
-  AudioFloatArray position_y_values_;
-  AudioFloatArray position_z_values_;
-  AudioFloatArray forward_x_values_;
-  AudioFloatArray forward_y_values_;
-  AudioFloatArray forward_z_values_;
-  AudioFloatArray up_x_values_;
-  AudioFloatArray up_y_values_;
-  AudioFloatArray up_z_values_;
-
-  // Parameters from the last render quantum.
-  gfx::Point3F last_position_ GUARDED_BY(listener_lock_);
-  gfx::Vector3dF last_forward_ GUARDED_BY(listener_lock_);
-  gfx::Vector3dF last_up_ GUARDED_BY(listener_lock_);
-
-  // Last time that the automations were updated.
-  double last_update_time_ = -1;
-
-  // Set at every render quantum if the listener has changed in any way
-  // (position, forward, or up). This should only be read or written to from
-  // the audio thread.
-  bool is_listener_dirty_ = false;
-
-  // To synchronize settings of the state of the listener during
-  // `PannerHandler::Process()` and related functions.
-  mutable base::Lock listener_lock_;
-
-  // A set of PannerHandlers. This is updated only in the main thread and is
-  // referred in the audio thread. These raw pointers are safe because
-  // `PannerHandler::uninitialize()` unregisters it from this set.
-  HashSet<PannerHandler*> panner_handlers_;
 
   // HRTF database loader used by PannderNodes in the same context.
   scoped_refptr<HRTFDatabaseLoader> hrtf_database_loader_;
