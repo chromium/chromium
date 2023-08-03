@@ -20,9 +20,10 @@ class ComponentLoader;
 
 class Profile;
 
-// Manages extensions in Lacros that support Accessibility features running in
-// Ash. Installs and uninstalls the extensions on every profile (including guest
-// and incognito) depending on which Ash accessibility features are running.
+// Manages extensions and preferences in Lacros that support Accessibility
+// features running in Ash. Installs and uninstalls the extensions on every
+// profile (including guest and incognito) depending on which Ash accessibility
+// features are running and syncs the preferences on all profiles.
 class EmbeddedA11yManagerLacros : public ProfileObserver,
                                   public ProfileManagerObserver {
  public:
@@ -57,12 +58,13 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  void UpdateExtensionsForAllProfiles();
-  void UpdateExtensionsForProfile(Profile* profile);
+  void UpdateAllProfiles();
+  void UpdateProfile(Profile* profile);
 
   void OnChromeVoxEnabledChanged(base::Value value);
   void OnSelectToSpeakEnabledChanged(base::Value value);
   void OnSwitchAccessEnabledChanged(base::Value value);
+  void OnPdfOcrAlwaysActiveChanged(base::Value value);
 
   // Removes the helper extension with `extension_id` from the given `profile`
   // if it is installed.
@@ -86,11 +88,13 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
   std::unique_ptr<CrosapiPrefObserver> chromevox_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> select_to_speak_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> switch_access_enabled_observer_;
+  std::unique_ptr<CrosapiPrefObserver> pdf_ocr_always_active_observer_;
 
   // The current state of Ash features.
   bool chromevox_enabled_ = false;
   bool select_to_speak_enabled_ = false;
   bool switch_access_enabled_ = false;
+  bool pdf_ocr_always_active_enabled_ = false;
 
   base::RepeatingCallback<void()>
       extension_installation_changed_callback_for_test_;

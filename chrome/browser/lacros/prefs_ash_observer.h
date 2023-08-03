@@ -38,7 +38,6 @@ class PrefsAshObserver {
   void OnDnsOverHttpsSaltChanged(base::Value value);
   void OnUserProfileValueChanged(const std::string& target_pref,
                                  base::Value value);
-  void OnPdfOcrAlwaysActiveChanged(base::Value value);
   static void ListChangedHandler(PrefService* pref_service,
                                  const std::string& pref_name,
                                  base::Value value);
@@ -69,7 +68,6 @@ class PrefsAshObserver {
   std::unique_ptr<CrosapiPrefObserver> doh_salt_observer_;
   std::unique_ptr<CrosapiPrefObserver>
       access_to_get_all_screens_media_in_session_allowed_for_urls_observer_;
-  std::unique_ptr<CrosapiPrefObserver> pdf_ocr_always_active_observer_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_PREFS_ASH_OBSERVER_H_

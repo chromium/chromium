@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -83,6 +84,12 @@ void EmbeddedA11yManagerLacros::Init() {
           &EmbeddedA11yManagerLacros::OnSwitchAccessEnabledChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
+  pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
+      base::BindRepeating(
+          &EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   profile_manager_observation_.Observe(profile_manager);
 
@@ -93,7 +100,7 @@ void EmbeddedA11yManagerLacros::Init() {
     observed_profiles_.AddObservation(profile);
   }
 
-  UpdateExtensionsForAllProfiles();
+  UpdateAllProfiles();
 }
 
 void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
@@ -108,33 +115,33 @@ void EmbeddedA11yManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {
 void EmbeddedA11yManagerLacros::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   observed_profiles_.AddObservation(off_the_record);
-  UpdateExtensionsForProfile(off_the_record);
+  UpdateProfile(off_the_record);
 }
 
 void EmbeddedA11yManagerLacros::OnProfileAdded(Profile* profile) {
   observed_profiles_.AddObservation(profile);
-  UpdateExtensionsForProfile(profile);
+  UpdateProfile(profile);
 }
 
 void EmbeddedA11yManagerLacros::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
 }
 
-void EmbeddedA11yManagerLacros::UpdateExtensionsForAllProfiles() {
+void EmbeddedA11yManagerLacros::UpdateAllProfiles() {
   std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles) {
-    UpdateExtensionsForProfile(profile);
+    UpdateProfile(profile);
     if (profile->HasAnyOffTheRecordProfile()) {
       const auto& otr_profiles = profile->GetAllOffTheRecordProfiles();
       for (auto* otr_profile : otr_profiles) {
-        UpdateExtensionsForProfile(otr_profile);
+        UpdateProfile(otr_profile);
       }
     }
   }
 }
 
-void EmbeddedA11yManagerLacros::UpdateExtensionsForProfile(Profile* profile) {
+void EmbeddedA11yManagerLacros::UpdateProfile(Profile* profile) {
   // Switch Access and Select to Speak share a helper extension which has a
   // manifest content script to tell Google Docs to annotate the HTML canvas.
   if (select_to_speak_enabled_ || switch_access_enabled_) {
@@ -155,26 +162,39 @@ void EmbeddedA11yManagerLacros::UpdateExtensionsForProfile(Profile* profile) {
   } else {
     MaybeRemoveExtension(profile, extension_misc::kChromeVoxHelperExtensionId);
   }
+
+  PrefService* const pref_service = profile->GetPrefs();
+  CHECK(pref_service);
+  pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
+                           pdf_ocr_always_active_enabled_);
 }
 
 void EmbeddedA11yManagerLacros::OnChromeVoxEnabledChanged(base::Value value) {
   CHECK(value.is_bool());
   chromevox_enabled_ = value.GetBool();
-  UpdateExtensionsForAllProfiles();
+  UpdateAllProfiles();
 }
 
 void EmbeddedA11yManagerLacros::OnSelectToSpeakEnabledChanged(
     base::Value value) {
   CHECK(value.is_bool());
   select_to_speak_enabled_ = value.GetBool();
-  UpdateExtensionsForAllProfiles();
+  UpdateAllProfiles();
 }
 
 void EmbeddedA11yManagerLacros::OnSwitchAccessEnabledChanged(
     base::Value value) {
   CHECK(value.is_bool());
   switch_access_enabled_ = value.GetBool();
-  UpdateExtensionsForAllProfiles();
+  UpdateAllProfiles();
+}
+
+void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
+  // TODO(b/289009784): Add browser test to ensure the pref is synced on all
+  // profiles.
+  CHECK(value.is_bool());
+  pdf_ocr_always_active_enabled_ = value.GetBool();
+  UpdateAllProfiles();
 }
 
 void EmbeddedA11yManagerLacros::MaybeRemoveExtension(
