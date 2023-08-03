@@ -33,6 +33,9 @@ namespace {
 
 constexpr char kNotifierESimPolicy[] = "policy.esim-policy";
 
+// The timeout is increased as per b/293583300.
+constexpr base::TimeDelta kEuiccCommandExpirationTime = base::Days(180);
+
 }  // namespace
 
 // static
@@ -51,6 +54,10 @@ DeviceCommandResetEuiccJob::~DeviceCommandResetEuiccJob() = default;
 enterprise_management::RemoteCommand_Type DeviceCommandResetEuiccJob::GetType()
     const {
   return enterprise_management::RemoteCommand_Type_DEVICE_RESET_EUICC;
+}
+
+bool DeviceCommandResetEuiccJob::IsExpired(base::TimeTicks now) {
+  return now > issued_time() + kEuiccCommandExpirationTime;
 }
 
 void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult result_callback) {
