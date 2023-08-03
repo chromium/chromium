@@ -52,6 +52,7 @@ BASE_DECLARE_FEATURE(kCCTNewDownloadTab);
 BASE_DECLARE_FEATURE(kCCTPageInsightsHub);
 BASE_DECLARE_FEATURE(kCCTPostMessageAPI);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
+BASE_DECLARE_FEATURE(kCCTPreventTouches);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignals);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignalsAlternativeImpl);
 BASE_DECLARE_FEATURE(kCCTRedirectPreconnect);

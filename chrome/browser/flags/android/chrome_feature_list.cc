@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTPageInsightsHub,
     &kCCTPostMessageAPI,
     &kCCTPrefetchDelayShowOnStart,
+    &kCCTPreventTouches,
     &kCCTRealTimeEngagementSignals,
     &kCCTRealTimeEngagementSignalsAlternativeImpl,
     &kCCTRedirectPreconnect,
@@ -564,6 +565,10 @@ BASE_FEATURE(kCCTPostMessageAPI,
 
 BASE_FEATURE(kCCTPrefetchDelayShowOnStart,
              "CCTPrefetchDelayShowOnStart",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTPreventTouches,
+             "CCTPreventTouches",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTRealTimeEngagementSignals,

@@ -2200,6 +2200,9 @@ extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 extern const char kCCTPageInsightsHubName[];
 extern const char kCCTPageInsightsHubDescription[];
 
+extern const char kCCTPreventTouchesName[];
+extern const char kCCTPreventTouchesDescription[];
+
 extern const char kCCTResizable90MaximumHeightName[];
 extern const char kCCTResizable90MaximumHeightDescription[];
 extern const char kCCTResizableForThirdPartiesName[];

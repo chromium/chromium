@@ -60291,6 +60291,7 @@ from previous Chrome versions.
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
   <int value="-1911153473" label="enable-easy-signin"/>
+  <int value="-1910984835" label="CCTPreventTouches:enabled"/>
   <int value="-1910725149" label="kFastPairHID:enabled"/>
   <int value="-1910427915" label="HttpsOnlyMode:enabled"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
@@ -65611,6 +65612,7 @@ from previous Chrome versions.
   <int value="801865174" label="NetworkServiceInProcess2:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
   <int value="802930463" label="ThrottleForegroundTimers:disabled"/>
+  <int value="803085289" label="CCTPreventTouches:disabled"/>
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
   <int value="803877391" label="NotificationsRefresh:enabled"/>
   <int value="803982925" label="CellularForbidAttachApn:disabled"/>

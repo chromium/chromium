@@ -7149,6 +7149,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTPageInsightsHub)},
 
+    {"cct-prevent-touches", flag_descriptions::kCCTPreventTouchesName,
+     flag_descriptions::kCCTPreventTouchesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTPreventTouches)},
+
     {"cct-resizable-90-maximum-height",
      flag_descriptions::kCCTResizable90MaximumHeightName,
      flag_descriptions::kCCTResizable90MaximumHeightDescription, kOsAndroid,
