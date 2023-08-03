@@ -164,17 +164,17 @@ void DeviceSystemTrayIconTestBase::TestSingleProfile(
   CheckIcon(
       {{profile, {{origin1, 1, origin1_name}, {origin2, 1, origin2_name}}}});
 
-  // Two origins are removed 5 seconds apart.
+  // Two origins are removed 2 seconds apart.
   connection_tracker->DecrementConnectionCount(origin2);
   CheckIcon(
       {{profile, {{origin1, 1, origin1_name}, {origin2, 0, origin2_name}}}});
-  task_environment()->FastForwardBy(base::Seconds(5));
+  task_environment()->FastForwardBy(base::Seconds(2));
   connection_tracker->DecrementConnectionCount(origin1);
   CheckIcon(
       {{profile, {{origin1, 0, origin1_name}, {origin2, 0, origin2_name}}}});
-  task_environment()->FastForwardBy(base::Seconds(5));
+  task_environment()->FastForwardBy(base::Seconds(1));
   CheckIcon({{profile, {{origin1, 0, origin1_name}}}});
-  task_environment()->FastForwardBy(base::Seconds(5));
+  task_environment()->FastForwardBy(base::Seconds(2));
   CheckIconHidden();
 }
 
@@ -274,7 +274,7 @@ void DeviceSystemTrayIconTestBase::TestMultipleProfiles(
               {{profile_origins_pairs[2].second[0].first, 1,
                 profile_origins_pairs[2].second[0].second}}}});
 
-  // The remaining two profiles are removed 5 seconds apart.
+  // The remaining two profiles are removed 2 seconds apart.
   connection_trackers[2]->DecrementConnectionCount(
       profile_origins_pairs[2].second[0].first);
   // Connection count is updated immediately while the profile is scheduled
@@ -288,7 +288,7 @@ void DeviceSystemTrayIconTestBase::TestMultipleProfiles(
               {{profile_origins_pairs[2].second[0].first, 0,
                 profile_origins_pairs[2].second[0].second}}}});
 
-  task_environment()->FastForwardBy(base::Seconds(5));
+  task_environment()->FastForwardBy(base::Seconds(2));
   connection_trackers[1]->DecrementConnectionCount(
       profile_origins_pairs[1].second[0].first);
   connection_trackers[1]->DecrementConnectionCount(
@@ -302,13 +302,13 @@ void DeviceSystemTrayIconTestBase::TestMultipleProfiles(
               {{profile_origins_pairs[2].second[0].first, 0,
                 profile_origins_pairs[2].second[0].second}}}});
 
-  task_environment()->FastForwardBy(base::Seconds(5));
+  task_environment()->FastForwardBy(base::Seconds(1));
   CheckIcon({{profile_origins_pairs[1].first,
               {{profile_origins_pairs[1].second[0].first, 0,
                 profile_origins_pairs[1].second[0].second},
                {profile_origins_pairs[1].second[1].first, 0,
                 profile_origins_pairs[1].second[1].second}}}});
-  task_environment()->FastForwardBy(base::Seconds(5));
+  task_environment()->FastForwardBy(base::Seconds(2));
   CheckIconHidden();
 }
 

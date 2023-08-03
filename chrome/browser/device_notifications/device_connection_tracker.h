@@ -52,7 +52,7 @@ class DeviceConnectionTracker : public KeyedService {
 
   // The time period that an origin remains tracked before it is removed from
   // `origins_`.
-  static constexpr base::TimeDelta kOriginInactiveTime = base::Seconds(10);
+  static constexpr base::TimeDelta kOriginInactiveTime = base::Seconds(3);
 
   // Removes the `origin` from the `origins_` list if it has not had any new
   // connections since `timestamp`.

@@ -87,7 +87,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
                        OriginState(1, t1, origin_name_pairs[1].second))));
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
-  // Two origins are removed 5 seconds apart.
+  // Two origins are removed 1 seconds apart.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 NotifyConnectionCountUpdated(profile()))
@@ -104,8 +104,8 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
                        OriginState(1, t1, origin_name_pairs[1].second))));
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
-  task_environment()->FastForwardBy(base::Seconds(5));
-  auto t6 = TimeTicks::Now();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  auto t2 = TimeTicks::Now();
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 NotifyConnectionCountUpdated(profile()));
@@ -117,24 +117,24 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
                   Pair(origin_name_pairs[0].first,
                        OriginState(0, t1, origin_name_pairs[0].second)),
                   Pair(origin_name_pairs[1].first,
-                       OriginState(0, t6, origin_name_pairs[1].second))));
+                       OriginState(0, t2, origin_name_pairs[1].second))));
 
-  // The first origin is removed at t11.
+  // The first origin is removed at t4.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 NotifyConnectionCountUpdated(profile()));
   }
-  task_environment()->FastForwardBy(base::Seconds(5));
-  auto t11 = TimeTicks::Now();
+  task_environment()->FastForwardBy(base::Seconds(2));
+  auto t4 = TimeTicks::Now();
   EXPECT_EQ(connection_tracker->total_connection_count(), 0);
   EXPECT_THAT(connection_tracker->origins(),
               UnorderedElementsAre(
                   Pair(origin_name_pairs[1].first,
-                       OriginState(0, t6, origin_name_pairs[1].second))));
+                       OriginState(0, t2, origin_name_pairs[1].second))));
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
-  // New connection on the second origin comes in at t11, so it won't be
-  // removed at t16.
+  // New connection on the second origin comes in at t4, so it won't be
+  // removed at t5.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 NotifyConnectionCountUpdated(profile()));
@@ -144,11 +144,11 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   EXPECT_THAT(connection_tracker->origins(),
               UnorderedElementsAre(
                   Pair(origin_name_pairs[1].first,
-                       OriginState(1, t11, origin_name_pairs[1].second))));
+                       OriginState(1, t4, origin_name_pairs[1].second))));
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
-  task_environment()->FastForwardBy(base::Seconds(5));
-  auto t16 = TimeTicks::Now();
-  // Scheduled CleanUpOrigin is no-op at t16.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  auto t5 = TimeTicks::Now();
+  // Scheduled CleanUpOrigin is no-op at t5.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 NotifyConnectionCountUpdated(profile()))
@@ -161,10 +161,10 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   EXPECT_THAT(connection_tracker->origins(),
               UnorderedElementsAre(
                   Pair(origin_name_pairs[1].first,
-                       OriginState(1, t11, origin_name_pairs[1].second))));
+                       OriginState(1, t4, origin_name_pairs[1].second))));
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
-  // The last connection of the second origin is gone at t16.
+  // The last connection of the second origin is gone at t5.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 NotifyConnectionCountUpdated(profile()));
@@ -174,17 +174,17 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   EXPECT_THAT(connection_tracker->origins(),
               UnorderedElementsAre(
                   Pair(origin_name_pairs[1].first,
-                       OriginState(0, t16, origin_name_pairs[1].second))));
+                       OriginState(0, t5, origin_name_pairs[1].second))));
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
-  // The second origin is removed at time t26, and the profile is removed from
+  // The second origin is removed at time t8, and the profile is removed from
   // the system tray icon because there are no active origins on this profile.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
                 UnstageProfile(profile(), /*immediate=*/true))
         .Times(1);
   }
-  task_environment()->FastForwardBy(base::Seconds(10));
+  task_environment()->FastForwardBy(base::Seconds(3));
   EXPECT_EQ(connection_tracker->total_connection_count(), 0);
   EXPECT_TRUE(connection_tracker->origins().empty());
 }
@@ -265,8 +265,8 @@ void DeviceConnectionTrackerTestBase::TestProfileDestroyedExtensionOrigin() {
       UnorderedElementsAre(Pair(origin, OriginState(0, t0, "Test Extension"))));
   testing::Mock::VerifyAndClearExpectations(&device_connection_tracker);
 
-  // The profile is destroyed at t5.
-  task_environment()->FastForwardBy(base::Seconds(5));
+  // The profile is destroyed at t2.
+  task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_CALL(*mock_device_system_tray_icon,
               UnstageProfile(profile_to_be_destroyed, /*immediate=*/true))
       .Times(1);
@@ -274,11 +274,11 @@ void DeviceConnectionTrackerTestBase::TestProfileDestroyedExtensionOrigin() {
   testing::Mock::VerifyAndClearExpectations(&device_connection_tracker);
 
   // The connection tracker is destroyed when the profile is destroyed. No
-  // UnstageProfile is sent to the system tray icon at time t10.
+  // UnstageProfile is sent to the system tray icon at time t3.
   EXPECT_CALL(*mock_device_system_tray_icon,
               UnstageProfile(profile_to_be_destroyed, /*immediate=*/true))
       .Times(0);
-  task_environment()->FastForwardBy(base::Seconds(10));
+  task_environment()->FastForwardBy(base::Seconds(1));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
