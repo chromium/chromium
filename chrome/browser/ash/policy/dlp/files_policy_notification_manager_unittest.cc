@@ -289,7 +289,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params.emplace(Policy::kDlp, /*warning_files_count=*/1,
+  pause_params.policy_params.emplace(GetPolicy(), /*warning_files_count=*/1,
                                      src_file_path.BaseName().value());
 
   // Task is paused.
@@ -425,8 +425,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningCancelled) {
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, /*warning_files_count=*/1,
-      src_file_path.BaseName().value());
+      GetPolicy(), /*warning_files_count=*/1, src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(
@@ -493,8 +492,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningResumed) {
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, /*warning_files_count=*/1,
-      src_file_path.BaseName().value());
+      GetPolicy(), /*warning_files_count=*/1, src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(
@@ -594,8 +592,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, /*warning_files_count=*/1,
-      src_file_path.BaseName().value());
+      GetPolicy(), /*warning_files_count=*/1, src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(
