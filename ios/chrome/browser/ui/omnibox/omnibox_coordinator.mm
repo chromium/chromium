@@ -217,6 +217,12 @@
     }
 
     [self.textField becomeFirstResponder];
+    if (IsBottomOmniboxSteadyStateEnabled()) {
+      // Ensures that the accessibility system focuses the text field instead of
+      // the popup crbug.com/1469173.
+      UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                      self.textField);
+    }
   }
 }
 
