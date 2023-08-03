@@ -585,8 +585,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
     expires_after="2023-12-04">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Latency in milliseconds from the beginning of a launcher search query to
     local file results being returned. Logged once per file search query.
@@ -604,9 +605,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.TimedOut"
-    enum="BooleanTimedOut" expires_after="2023-07-30">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="BooleanTimedOut" expires_after="2024-07-30">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Whether or not local file search was exited early due to a time out. Logged
     once per file search query.
@@ -891,10 +893,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
-    expires_after="2023-09-14">
-  <owner>amandadeacon@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2024-09-14">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Recorded when the user has seen the zero-state launcher. Records the number
     of {Type} results shown.
@@ -934,9 +936,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.DriveContinueResultsShown"
     enum="BooleanShown" expires_after="2023-12-24">
-  <owner>amandadeacon@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Recorded when the user has seen the zero-state launcher. Records whether or
     not the user would have seen any Drive files. This is equivalent to
@@ -946,8 +948,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
     expires_after="2023-12-17">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records errors in processing other Apps.AppList.Search.* metrics. These are
     expected to be rare and bucket proportion is not meaningful.
@@ -1058,9 +1061,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
     expires_after="2024-07-31">
-  <owner>ypitsishin@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Emitted on a usage of launcher search, and records overall impressions,
     launches, abandons, and ignores for the {SearchView} view.
@@ -1085,9 +1088,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
     expires_after="2024-07-31">
-  <owner>ypitsishin@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Emitted when launching a search result. Records the index of the launched
     result in the {SearchView} view. The top-most result is index zero.
@@ -1097,9 +1100,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
     enum="AppListSearchResult" expires_after="2024-07-31">
-  <owner>ypitsishin@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Tracks launches, impressions, abandons, and ignores for search result types
     in the launcher. This histogram is specific to the {SearchView} view. These
@@ -1127,8 +1130,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
     expires_after="2024-01-14">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The length of the query that resulted in an app launch from search box. This
     metric only records non-empty queries.
@@ -1150,9 +1154,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
-    expires_after="2023-07-31">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+    expires_after="2024-07-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The number of app launches from the search box with non-empty queries. This
     was updated in 12/2022 to include more result types that were apps.
@@ -1419,9 +1424,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateFileProvider.Latency" units="ms"
-    expires_after="2023-10-01">
-  <owner>laurencom@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+    expires_after="2024-07-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The time between sending a zero state query and receiving file
     recommendations back from the ZeroStateFileProvider.
@@ -1439,9 +1445,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
-    enum="ZeroStateResultType" expires_after="2023-07-31">
-  <owner>laurencom@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+    enum="ZeroStateResultType" expires_after="2024-07-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The type of item that was launched from a zero state launcher search result.
   </summary>
@@ -1699,7 +1706,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppListPlayStoreQueryState"
     enum="AppListPlayStoreQueryState" expires_after="2023-12-17">
   <owner>tby@chromium.org</owner>
-  <owner>ypitsishin@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>The state of a Play Store app search request.</summary>
 </histogram>
