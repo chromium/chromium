@@ -176,6 +176,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
+  absl::optional<ui::ColorId> button_colors;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsChromeRefresh2023()) {
@@ -191,16 +192,13 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
     if (!app_browser_controller ||
         (app_browser_controller->system_app() &&
          app_browser_controller->system_app()->UseSystemThemeColor())) {
-      UpdateCaptionButtonColors(mode() == MODE_ACTIVE
-                                    ? ui::kColorSysPrimary
-                                    : ui::kColorFrameCaptionButtonUnfocused);
-    } else {
-      UpdateCaptionButtonColors(absl::nullopt);
+      button_colors = mode() == MODE_ACTIVE
+                          ? ui::kColorSysPrimary
+                          : ui::kColorFrameCaptionButtonUnfocused;
     }
   }
-#else
-  UpdateCaptionButtonColors(absl::nullopt);
 #endif
+  UpdateCaptionButtonColors(button_colors);
   view()->SchedulePaint();
 }
 
