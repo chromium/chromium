@@ -48,6 +48,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/page_insights_icon.xml",
     "java/res/layout/page_insights_sheet_toolbar.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

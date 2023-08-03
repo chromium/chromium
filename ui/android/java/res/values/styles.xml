@@ -86,6 +86,10 @@ found in the LICENSE file.
         <item name="android:fontFamily">@font/accent_font</item>
         <item name="android:textSize">@dimen/headline_size</item>
     </style>
+    <style name="TextAppearance.Headline2">
+        <item name="android:fontFamily">@font/accent_font</item>
+        <item name="android:textSize">@dimen/headline2_size</item>
+    </style>
     <style name="TextAppearance.HeadlineThick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/headline_size</item>
     </style>
@@ -267,6 +271,9 @@ found in the LICENSE file.
 
     <!-- Primary text styles -->
     <style name="TextAppearance.Headline.Primary.Baseline" parent="TextAppearance.Headline">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+    <style name="TextAppearance.Headline2.Primary.Baseline" parent="TextAppearance.Headline2">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
     <style name="TextAppearance.HeadlineThick.Primary.Baseline" parent="TextAppearance.HeadlineThick">

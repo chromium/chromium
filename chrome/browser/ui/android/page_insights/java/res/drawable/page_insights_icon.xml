@@ -5,10 +5,10 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
   <path
       android:pathData="M12.8909 10.99H11.2559V17.065H12.8909V10.99Z"
       android:fillColor="#4285F4"/>

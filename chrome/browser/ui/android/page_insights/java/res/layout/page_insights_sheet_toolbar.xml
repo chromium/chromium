@@ -14,50 +14,24 @@ found in the LICENSE file.
     android:layout_height="@dimen/sheet_tab_toolbar_height"
     android:orientation="vertical">
 
-    <View
+    <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingVertical="10dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/drag_handlebar" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/page_insights_header"
         android:layout_width="match_parent"
-        android:layout_height="4dp" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/page_insights_header_text_margin"
+        android:drawableStart="@drawable/page_insights_icon"
+        android:drawablePadding="@dimen/page_insights_title_margin"
+        android:text="@string/page_insights_hub_title_text"
+        android:textAppearance="@style/TextAppearance.Headline2.Primary.Baseline" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/drag_handlebar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_centerHorizontal="true"
-            android:importantForAccessibility="no"
-            android:src="@drawable/drag_handlebar" />
-
-        <LinearLayout
-            android:id="@+id/buttons"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp"
-            android:importantForAccessibility="no"
-            android:orientation="horizontal" >
-
-            <org.chromium.ui.widget.ChromeImageView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:src="@drawable/page_insights_icon"
-                android:contentDescription="@string/close"/>
-        </LinearLayout>
-
-    </RelativeLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp" />
 </LinearLayout>
