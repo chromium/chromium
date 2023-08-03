@@ -37,18 +37,25 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // Returns whether embedder allows to inspect given |rfh|.
   virtual bool AllowInspectingRenderFrameHost(RenderFrameHost* rfh);
 
+  // Chrome Devtools Protocol Target type to use. Before MPArch frame targets
+  // were used, which correspond to the primary outermost frame in the
+  // WebContents. With prerender and other MPArch features, there could be
+  // multiple outermost frames per WebContents. To make debugging them possible,
+  // DevTools protocol introduced a tab target which is a parent of all
+  // outermost frames in the WebContents (not that we refer to it as a tab even
+  // though tabs only exist in //chrome because CDP calls it that way). For
+  // details see
+  // https://docs.google.com/document/d/14aeiC_zga2SS0OXJd6eIFj8N0o5LGwUpuqa4L8NKoR4/
+  enum TargetType { kFrame, kTab };
+
   // Returns all targets embedder would like to report as debuggable
   // remotely.
   virtual DevToolsAgentHost::List RemoteDebuggingTargets();
 
   // Creates new inspectable target given the |url|.
-  // If |for_tab| is true, creates a tab target, otherwise creates a frame
-  // target for the topmost frame. The difference is important in presence of
-  // prerender and other MPArch features, where there could be multiple topmost
-  // frames per tab. For details see
-  // https://docs.google.com/document/d/14aeiC_zga2SS0OXJd6eIFj8N0o5LGwUpuqa4L8NKoR4/
-  virtual scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url,
-                                                           bool for_tab);
+  virtual scoped_refptr<DevToolsAgentHost> CreateNewTarget(
+      const GURL& url,
+      TargetType target_type);
 
   // Get all live browser contexts created by CreateBrowserContext() method.
   virtual std::vector<BrowserContext*> GetBrowserContexts();

@@ -268,7 +268,9 @@ DevToolsManagerDelegateAndroid::RemoteDebuggingTargets() {
 }
 
 scoped_refptr<DevToolsAgentHost>
-DevToolsManagerDelegateAndroid::CreateNewTarget(const GURL& url, bool for_tab) {
+DevToolsManagerDelegateAndroid::CreateNewTarget(
+    const GURL& url,
+    DevToolsManagerDelegate::TargetType target_type) {
   if (TabModelList::models().empty())
     return nullptr;
 
@@ -281,8 +283,9 @@ DevToolsManagerDelegateAndroid::CreateNewTarget(const GURL& url, bool for_tab) {
     return nullptr;
 
   MarkCreatedByDevTools(*web_contents);
-  return for_tab ? DevToolsAgentHost::GetOrCreateForTab(web_contents)
-                 : DevToolsAgentHost::GetOrCreateFor(web_contents);
+  return target_type == DevToolsManagerDelegate::kTab
+             ? DevToolsAgentHost::GetOrCreateForTab(web_contents)
+             : DevToolsAgentHost::GetOrCreateFor(web_contents);
 }
 
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {

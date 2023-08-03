@@ -32,8 +32,9 @@ void HeadlessDevToolsManagerDelegate::HandleCommand(
 }
 
 scoped_refptr<content::DevToolsAgentHost>
-HeadlessDevToolsManagerDelegate::CreateNewTarget(const GURL& url,
-                                                 bool for_tab) {
+HeadlessDevToolsManagerDelegate::CreateNewTarget(
+    const GURL& url,
+    content::DevToolsManagerDelegate::TargetType target_type) {
   if (!browser_)
     return nullptr;
 
@@ -43,10 +44,11 @@ HeadlessDevToolsManagerDelegate::CreateNewTarget(const GURL& url,
           .SetInitialURL(url)
           .SetWindowSize(browser_->options()->window_size)
           .Build());
-  return for_tab ? content::DevToolsAgentHost::GetOrCreateForTab(
-                       web_contents_impl->web_contents())
-                 : content::DevToolsAgentHost::GetOrCreateFor(
-                       web_contents_impl->web_contents());
+  return target_type == content::DevToolsManagerDelegate::kTab
+             ? content::DevToolsAgentHost::GetOrCreateForTab(
+                   web_contents_impl->web_contents())
+             : content::DevToolsAgentHost::GetOrCreateFor(
+                   web_contents_impl->web_contents());
 }
 
 bool HeadlessDevToolsManagerDelegate::HasBundledFrontendResources() {

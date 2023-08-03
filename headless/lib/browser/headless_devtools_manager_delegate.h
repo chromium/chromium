@@ -33,7 +33,7 @@ class HeadlessDevToolsManagerDelegate
                      NotHandledCallback callback) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url,
-      bool for_tab) override;
+      TargetType target_type) override;
   bool HasBundledFrontendResources() override;
   void ClientAttached(
       content::DevToolsAgentHostClientChannel* channel) override;

@@ -32,7 +32,7 @@ class DevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   content::BrowserContext* GetDefaultBrowserContext() override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url,
-      bool for_tab) override;
+      TargetType target_type) override;
   std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
 

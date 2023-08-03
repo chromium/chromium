@@ -1214,10 +1214,13 @@ Response TargetHandler::CreateTarget(const std::string& url,
   if (gurl.is_empty()) {
     gurl = GURL(url::kAboutBlankURL);
   }
+  content::DevToolsManagerDelegate::TargetType target_type =
+      for_tab.value_or(session_mode_ ==
+                       DevToolsSession::Mode::kSupportsTabTarget)
+          ? content::DevToolsManagerDelegate::kTab
+          : content::DevToolsManagerDelegate::kFrame;
   scoped_refptr<content::DevToolsAgentHost> agent_host =
-      delegate->CreateNewTarget(
-          gurl, for_tab.value_or(session_mode_ ==
-                                 DevToolsSession::Mode::kSupportsTabTarget));
+      delegate->CreateNewTarget(gurl, target_type);
   if (!agent_host)
     return Response::ServerError("Not supported");
   *out_target_id = agent_host->GetId();
