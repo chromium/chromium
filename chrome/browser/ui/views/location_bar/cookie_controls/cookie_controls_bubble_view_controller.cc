@@ -88,11 +88,15 @@ void CookieControlsBubbleViewController::OnUserClosedContentView() {
     return;
   }
 
-  if (web_contents_) {
-    web_contents_->GetController().SetNeedsReload();
-    web_contents_->GetController().LoadIfNecessary();
+  if (!web_contents_) {
+    return;
   }
+
+  web_contents_->GetController().SetNeedsReload();
+  web_contents_->GetController().LoadIfNecessary();
+
   bubble_view_->SwitchToReloadingView();
+  bubble_view_->GetReloadingView()->RequestFocus();
 }
 
 void CookieControlsBubbleViewController::OnFaviconFetched(

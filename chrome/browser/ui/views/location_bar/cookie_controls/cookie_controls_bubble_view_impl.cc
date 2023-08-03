@@ -130,9 +130,16 @@ void CookieControlsBubbleViewImpl::CloseBubble() {
 
 bool CookieControlsBubbleViewImpl::OnCloseRequested(
     views::Widget::ClosedReason close_reason) {
-  if (close_reason == views::Widget::ClosedReason::kUnspecified ||
-      !GetContentView()->GetVisible()) {
+  // Always respect an unspecified reason, which is usually the controller
+  // closing the view.
+  if (close_reason == views::Widget::ClosedReason::kUnspecified) {
     return true;
+  }
+
+  // Ignore focus loss while the reloading view is visible. The reloading view
+  // will automatically close when the page has loaded.
+  if (GetReloadingView()->GetVisible()) {
+    return close_reason != views::Widget::ClosedReason::kLostFocus;
   }
 
   on_user_closed_content_view_callback_list_.Notify();
