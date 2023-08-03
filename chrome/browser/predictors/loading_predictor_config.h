@@ -75,6 +75,10 @@ struct LoadingPredictorConfig {
   // Size of LRU caches for the host data.
   size_t max_hosts_to_track;
 
+  // Size of LRU caches for the host data for LCP critical path predictor
+  // (LCPP).
+  size_t max_hosts_to_track_for_lcpp;
+
   // The maximum number of origins to store per entry.
   size_t max_origins_per_entry;
   // The number of consecutive misses after which we stop tracking a resource

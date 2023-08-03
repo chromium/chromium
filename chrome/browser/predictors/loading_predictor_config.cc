@@ -8,6 +8,7 @@
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace predictors {
 
@@ -60,6 +61,10 @@ LoadingPredictorConfig::LoadingPredictorConfig()
       max_hosts_to_track(base::GetFieldTrialParamByFeatureAsInt(
           features::kLoadingPredictorTableConfig,
           "max_hosts_to_track",
+          100)),
+      max_hosts_to_track_for_lcpp(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kLCPCriticalPathPredictor,
+          "lcpp_max_hosts_to_track",
           100)),
       max_origins_per_entry(base::GetFieldTrialParamByFeatureAsInt(
           features::kLoadingPredictorTableConfig,

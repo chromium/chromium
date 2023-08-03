@@ -178,6 +178,7 @@ PreconnectPrediction CreatePreconnectPrediction(
 void PopulateTestConfig(LoadingPredictorConfig* config, bool small_db) {
   if (small_db) {
     config->max_hosts_to_track = 2;
+    config->max_hosts_to_track_for_lcpp = 2;
     config->max_origins_per_entry = 5;
     config->max_consecutive_misses = 2;
     config->max_redirect_consecutive_misses = 2;

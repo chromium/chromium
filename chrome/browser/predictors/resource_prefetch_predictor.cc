@@ -280,7 +280,7 @@ void ResourcePrefetchPredictor::StartInitialization() {
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
       base::Seconds(config_.flush_data_to_disk_delay_seconds));
   auto lcpp_data = std::make_unique<LcppDataMap>(
-      tables_, tables_->lcpp_table(), config_.max_hosts_to_track,
+      tables_, tables_->lcpp_table(), config_.max_hosts_to_track_for_lcpp,
       base::Seconds(config_.flush_data_to_disk_delay_seconds));
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
