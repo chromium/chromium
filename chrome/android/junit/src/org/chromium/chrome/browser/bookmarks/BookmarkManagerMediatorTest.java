@@ -19,6 +19,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1016,6 +1017,42 @@ public class BookmarkManagerMediatorTest {
                                    .getModelForTesting();
         assertEquals(
                 0, coordinatorModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testChildRemoved() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
+
+        assertEquals(3, mModelList.size());
+
+        reset(mBookmarkUiObserver);
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
+                mFolderItem2, 0, mFolderItem2, false);
+        assertEquals(2, mModelList.size());
+        verify(mBookmarkUiObserver, times(0)).onUiModeChanged(BookmarkUiMode.FOLDER);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testChildRemoved_indexNotFound() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
+
+        assertEquals(3, mModelList.size());
+
+        reset(mBookmarkUiObserver);
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
+                mFolderItem2, 0, mBookmarkItem21, false);
+        assertEquals(3, mModelList.size());
+        verify(mBookmarkUiObserver, times(1)).onUiModeChanged(BookmarkUiMode.FOLDER);
     }
 
     @Test
