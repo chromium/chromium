@@ -207,7 +207,7 @@ StackSampler::StackSampler(std::unique_ptr<StackCopier> stack_copier,
       module_cache_(module_cache),
       record_sample_callback_(std::move(record_sample_callback)),
       test_delegate_(test_delegate) {
-  DCHECK(unwinders_factory_);
+  CHECK(unwinders_factory_);
 }
 
 // static
