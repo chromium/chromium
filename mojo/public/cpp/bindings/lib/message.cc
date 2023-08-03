@@ -271,7 +271,7 @@ Message::Message(base::span<const uint8_t> payload,
 
   void* buffer;
   uint32_t buffer_size;
-  DCHECK(base::IsValueInRangeForNumericType<uint32_t>(payload.size()));
+  CHECK(base::IsValueInRangeForNumericType<uint32_t>(payload.size()));
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(handles.size()));
   MojoAppendMessageDataOptions options;
   options.struct_size = sizeof(options);
