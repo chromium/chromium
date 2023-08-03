@@ -152,18 +152,12 @@ void PrintContext::BeginPrintMode(const WebPrintParams& print_params) {
 
   const Settings* settings = frame_->GetSettings();
   DCHECK(settings);
-  // TODO(crbug.com/1296099): It would be better if the actual shrink factor was
-  // stored in settings, rather than something that has to be divided by
-  // 1.3333...
-  static constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
-  float printingMaximumShrinkFactor =
-      settings->GetPrintingMaximumShrinkFactor();
+  float maximum_shink_factor = settings->GetPrintingMaximumShrinkFactor();
 
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
-  frame_->StartPrinting(
-      print_params.default_page_description,
-      printingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
+  frame_->StartPrinting(print_params.default_page_description,
+                        maximum_shink_factor);
 
   ComputePageCount();
 }

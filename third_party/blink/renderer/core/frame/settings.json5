@@ -1100,7 +1100,7 @@
       // page would have to be reduced smaller to make the widest line fit, we
       // just clip instead.
       name: "printingMaximumShrinkFactor",
-      initial: 2,
+      initial: 1.5,
       type: "float",
     },
   ],
