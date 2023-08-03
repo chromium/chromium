@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
@@ -15828,37 +15829,28 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
   bool desire_nv_egl_stream_consumer_external = false;
   if (feature_info_->context_type() == CONTEXT_TYPE_WEBGL1) {
     desire_standard_derivatives =
-        feature_str.find("GL_OES_standard_derivatives ") != std::string::npos;
+        base::Contains(feature_str, "GL_OES_standard_derivatives ");
     desire_fbo_render_mipmap =
-        feature_str.find("GL_OES_fbo_render_mipmap ") != std::string::npos;
-    desire_frag_depth =
-        feature_str.find("GL_EXT_frag_depth ") != std::string::npos;
-    desire_draw_buffers =
-        feature_str.find("GL_EXT_draw_buffers ") != std::string::npos;
+        base::Contains(feature_str, "GL_OES_fbo_render_mipmap ");
+    desire_frag_depth = base::Contains(feature_str, "GL_EXT_frag_depth ");
+    desire_draw_buffers = base::Contains(feature_str, "GL_EXT_draw_buffers ");
     desire_shader_texture_lod =
-        feature_str.find("GL_EXT_shader_texture_lod ") != std::string::npos;
+        base::Contains(feature_str, "GL_EXT_shader_texture_lod ");
   } else if (feature_info_->context_type() == CONTEXT_TYPE_WEBGL2) {
-    desire_draw_instanced_base_vertex_base_instance =
-        feature_str.find(
-            "GL_WEBGL_draw_instanced_base_vertex_base_instance ") !=
-        std::string::npos;
-    ;
-    desire_multi_draw_instanced_base_vertex_base_instance =
-        feature_str.find(
-            "GL_WEBGL_multi_draw_instanced_base_vertex_base_instance ") !=
-        std::string::npos;
-    ;
+    desire_draw_instanced_base_vertex_base_instance = base::Contains(
+        feature_str, "GL_WEBGL_draw_instanced_base_vertex_base_instance ");
+    desire_multi_draw_instanced_base_vertex_base_instance = base::Contains(
+        feature_str,
+        "GL_WEBGL_multi_draw_instanced_base_vertex_base_instance ");
   }
   if (feature_info_->IsWebGLContext()) {
-    desire_multi_draw =
-        feature_str.find("GL_WEBGL_multi_draw ") != std::string::npos;
+    desire_multi_draw = base::Contains(feature_str, "GL_WEBGL_multi_draw ");
     desire_arb_texture_rectangle =
-        feature_str.find("GL_ANGLE_texture_rectangle ") != std::string::npos;
+        base::Contains(feature_str, "GL_ANGLE_texture_rectangle ");
     desire_oes_egl_image_external =
-        feature_str.find("GL_OES_EGL_image_external ") != std::string::npos;
+        base::Contains(feature_str, "GL_OES_EGL_image_external ");
     desire_nv_egl_stream_consumer_external =
-        feature_str.find("GL_NV_EGL_stream_consumer_external ") !=
-        std::string::npos;
+        base::Contains(feature_str, "GL_NV_EGL_stream_consumer_external ");
   }
   if (desire_standard_derivatives != derivatives_explicitly_enabled_ ||
       desire_fbo_render_mipmap != fbo_render_mipmap_explicitly_enabled_ ||
@@ -15891,36 +15883,31 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
     DestroyShaderTranslator();
   }
 
-  if (feature_str.find("GL_CHROMIUM_color_buffer_float_rgba ") !=
-      std::string::npos) {
+  if (base::Contains(feature_str, "GL_CHROMIUM_color_buffer_float_rgba ")) {
     feature_info_->EnableCHROMIUMColorBufferFloatRGBA();
   }
-  if (feature_str.find("GL_CHROMIUM_color_buffer_float_rgb ") !=
-      std::string::npos) {
+  if (base::Contains(feature_str, "GL_CHROMIUM_color_buffer_float_rgb ")) {
     feature_info_->EnableCHROMIUMColorBufferFloatRGB();
   }
-  if (feature_str.find("GL_EXT_color_buffer_float ") != std::string::npos) {
+  if (base::Contains(feature_str, "GL_EXT_color_buffer_float ")) {
     feature_info_->EnableEXTColorBufferFloat();
   }
-  if (feature_str.find("GL_EXT_color_buffer_half_float ") !=
-      std::string::npos) {
+  if (base::Contains(feature_str, "GL_EXT_color_buffer_half_float ")) {
     feature_info_->EnableEXTColorBufferHalfFloat();
   }
-  if (feature_str.find("GL_EXT_texture_filter_anisotropic ") !=
-      std::string::npos) {
+  if (base::Contains(feature_str, "GL_EXT_texture_filter_anisotropic ")) {
     feature_info_->EnableEXTTextureFilterAnisotropic();
   }
-  if (feature_str.find("GL_OES_texture_float_linear ") != std::string::npos) {
+  if (base::Contains(feature_str, "GL_OES_texture_float_linear ")) {
     feature_info_->EnableOESTextureFloatLinear();
   }
-  if (feature_str.find("GL_OES_texture_half_float_linear ") !=
-      std::string::npos) {
+  if (base::Contains(feature_str, "GL_OES_texture_half_float_linear ")) {
     feature_info_->EnableOESTextureHalfFloatLinear();
   }
-  if (feature_str.find("GL_EXT_float_blend ") != std::string::npos) {
+  if (base::Contains(feature_str, "GL_EXT_float_blend ")) {
     feature_info_->EnableEXTFloatBlend();
   }
-  if (feature_str.find("GL_OES_fbo_render_mipmap ") != std::string::npos) {
+  if (base::Contains(feature_str, "GL_OES_fbo_render_mipmap ")) {
     feature_info_->EnableOESFboRenderMipmap();
   }
 
