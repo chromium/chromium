@@ -38,8 +38,10 @@ constexpr uint32_t kSupportedUsage = kDXGISwapChainUsage | kDCompSurfaceUsage;
 
 }  // namespace
 
-DCompImageBackingFactory::DCompImageBackingFactory()
-    : SharedImageBackingFactory(kSupportedUsage) {}
+DCompImageBackingFactory::DCompImageBackingFactory(
+    scoped_refptr<SharedContextState> context_state)
+    : SharedImageBackingFactory(kSupportedUsage),
+      context_state_(std::move(context_state)) {}
 
 DCompImageBackingFactory::~DCompImageBackingFactory() = default;
 
@@ -66,9 +68,9 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
                                             size, color_space, surface_origin,
                                             alpha_type, usage);
   } else {
-    return DXGISwapChainImageBacking::Create(mailbox, format, internal_format,
-                                             size, color_space, surface_origin,
-                                             alpha_type, usage);
+    return DXGISwapChainImageBacking::Create(
+        context_state_->GetD3D11Device(), mailbox, format, internal_format,
+        size, color_space, surface_origin, alpha_type, usage);
   }
 }
 

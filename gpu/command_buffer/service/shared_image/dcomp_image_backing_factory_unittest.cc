@@ -82,7 +82,8 @@ class DCompImageBackingFactoryTest : public testing::Test {
     shared_image_representation_factory_ =
         std::make_unique<SharedImageRepresentationFactory>(
             &shared_image_manager_, nullptr);
-    shared_image_factory_ = std::make_unique<DCompImageBackingFactory>();
+    shared_image_factory_ =
+        std::make_unique<DCompImageBackingFactory>(context_state_);
   }
 
  protected:

@@ -88,6 +88,26 @@ class SkiaGLImageRepresentationDXGISwapChain
       MemoryTypeTracker* tracker);
 };
 
+// Representation of a DXGI swap chain backbuffer as a Dawn texture.
+class DawnRepresentationDXGISwapChain : public DawnImageRepresentation {
+ public:
+  DawnRepresentationDXGISwapChain(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  MemoryTypeTracker* tracker,
+                                  wgpu::Device device,
+                                  wgpu::BackendType backend_type);
+  ~DawnRepresentationDXGISwapChain() override;
+
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            const gfx::Rect& update_rect) override;
+  void EndAccess() override;
+
+ private:
+  const wgpu::Device device_;
+  wgpu::Texture texture_;
+};
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DXGI_SWAP_CHAIN_IMAGE_REPRESENTATION_H_

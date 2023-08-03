@@ -2094,12 +2094,21 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
           GetDidSwapBuffersCompleteCallback());
     }
 #elif BUILDFLAG(IS_WIN)
-    auto output_device = std::make_unique<SkiaOutputDeviceDawn>(
-        context_state_, gfx::SurfaceOrigin::kTopLeft,
-        shared_gpu_deps_->memory_tracker(),
-        GetDidSwapBuffersCompleteCallback());
-    AddChildWindowToBrowser(output_device->GetChildSurfaceHandle());
-    output_device_ = std::move(output_device);
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
+                                              gl::GLSurfaceFormat());
+    if (presenter_) {
+      output_device_ = std::make_unique<SkiaOutputDeviceDCompPresenter>(
+          shared_image_representation_factory_.get(), context_state_.get(),
+          presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
+          GetDidSwapBuffersCompleteCallback());
+    } else {
+      auto output_device = std::make_unique<SkiaOutputDeviceDawn>(
+          context_state_, gfx::SurfaceOrigin::kTopLeft,
+          shared_gpu_deps_->memory_tracker(),
+          GetDidSwapBuffersCompleteCallback());
+      AddChildWindowToBrowser(output_device->GetChildSurfaceHandle());
+      output_device_ = std::move(output_device);
+    }
 #elif BUILDFLAG(IS_APPLE)
     presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
                                               gl::GLSurfaceFormat());

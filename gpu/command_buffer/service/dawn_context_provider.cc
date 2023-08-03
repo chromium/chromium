@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/dawn/include/dawn/native/D3D11Backend.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
@@ -218,6 +219,17 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   device.SetDeviceLostCallback(&LogDeviceLost, nullptr);
   device.SetLoggingCallback(&LogInfo, nullptr);
   device_ = std::move(device);
+
+#if BUILDFLAG(IS_WIN)
+  // DirectComposition is initialized in ui/gl/init/gl_initializer_win.cc while
+  // initializing GL. So we need to shutdown it and re-initialize it here with
+  // the D3D11 device from dawn device.
+  // TODO(crbug.com/1469283): avoid initializing DirectComposition twice.
+  gl::ShutdownDirectComposition();
+  if (auto d3d11_device = GetD3D11Device()) {
+    gl::InitializeDirectComposition(std::move(d3d11_device));
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   return true;
 }

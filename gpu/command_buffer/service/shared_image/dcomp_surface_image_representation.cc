@@ -42,11 +42,12 @@ bool DCompSurfaceOverlayImageRepresentation::BeginReadAccess(
 void DCompSurfaceOverlayImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {}
 
-DCompSurfaceSkiaImageRepresentation::DCompSurfaceSkiaImageRepresentation(
-    scoped_refptr<SharedContextState> context_state,
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker)
+DCompSurfaceSkiaGaneshImageRepresentation::
+    DCompSurfaceSkiaGaneshImageRepresentation(
+        scoped_refptr<SharedContextState> context_state,
+        SharedImageManager* manager,
+        SharedImageBacking* backing,
+        MemoryTypeTracker* tracker)
     : SkiaGaneshImageRepresentation(context_state->gr_context(),
                                     manager,
                                     backing,
@@ -55,20 +56,21 @@ DCompSurfaceSkiaImageRepresentation::DCompSurfaceSkiaImageRepresentation(
   DCHECK(context_state_);
 }
 
-DCompSurfaceSkiaImageRepresentation::~DCompSurfaceSkiaImageRepresentation() =
-    default;
+DCompSurfaceSkiaGaneshImageRepresentation::
+    ~DCompSurfaceSkiaGaneshImageRepresentation() = default;
 
 std::vector<sk_sp<SkSurface>>
-DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
+DCompSurfaceSkiaGaneshImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  sk_sp<SkSurface> surface =
-      static_cast<DCompSurfaceImageBacking*>(backing())->BeginDraw(
-          context_state_.get(), final_msaa_count, surface_props, update_rect);
+  DCompSurfaceImageBacking* dcomp_backing =
+      static_cast<DCompSurfaceImageBacking*>(backing());
+  sk_sp<SkSurface> surface = dcomp_backing->BeginDrawGanesh(
+      context_state_.get(), final_msaa_count, surface_props, update_rect);
   if (!surface) {
     return {};
   }
@@ -76,13 +78,14 @@ DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
   return {std::move(surface)};
 }
 
-void DCompSurfaceSkiaImageRepresentation::EndWriteAccess() {
-  bool success = static_cast<DCompSurfaceImageBacking*>(backing())->EndDraw();
-  DCHECK(success);
+void DCompSurfaceSkiaGaneshImageRepresentation::EndWriteAccess() {
+  DCompSurfaceImageBacking* dcomp_backing =
+      static_cast<DCompSurfaceImageBacking*>(backing());
+  dcomp_backing->EndDrawGanesh();
 }
 
 std::vector<sk_sp<GrPromiseImageTexture>>
-DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
+DCompSurfaceSkiaGaneshImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -91,7 +94,7 @@ DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
 }
 
 std::vector<sk_sp<GrPromiseImageTexture>>
-DCompSurfaceSkiaImageRepresentation::BeginReadAccess(
+DCompSurfaceSkiaGaneshImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -99,8 +102,46 @@ DCompSurfaceSkiaImageRepresentation::BeginReadAccess(
   return {};
 }
 
-void DCompSurfaceSkiaImageRepresentation::EndReadAccess() {
+void DCompSurfaceSkiaGaneshImageRepresentation::EndReadAccess() {
   NOTREACHED();
+}
+
+DCompSurfaceDawnImageRepresentation::DCompSurfaceDawnImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type)
+    : DawnImageRepresentation(manager, backing, tracker), device_(device) {}
+
+DCompSurfaceDawnImageRepresentation::~DCompSurfaceDawnImageRepresentation() {
+  EndAccess();
+}
+
+wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
+    wgpu::TextureUsage usage,
+    const gfx::Rect& update_rect) {
+  DCompSurfaceImageBacking* dcomp_backing =
+      static_cast<DCompSurfaceImageBacking*>(backing());
+  texture_ = dcomp_backing->BeginDrawDawn(device_, usage, update_rect);
+  return texture_;
+}
+
+wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
+    wgpu::TextureUsage usage) {
+  NOTREACHED_NORETURN();
+}
+
+void DCompSurfaceDawnImageRepresentation::EndAccess() {
+  if (!texture_) {
+    return;
+  }
+
+  // Do this before further operations since those could end up destroying the
+  // Dawn device and we want the fence to be duplicated before then.
+  DCompSurfaceImageBacking* dcomp_backing =
+      static_cast<DCompSurfaceImageBacking*>(backing());
+  dcomp_backing->EndDrawDawn(device_, std::move(texture_));
 }
 
 }  // namespace gpu

@@ -8,9 +8,11 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "third_party/angle/include/EGL/eglext_angle.h"
@@ -23,11 +25,14 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
+
+using dawn::native::d3d::ExternalImageDXGI;
+using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
+using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
 
 namespace gpu {
 
@@ -46,8 +51,6 @@ bool ClearDCompSurface(IDCompositionSurface* surface,
     return false;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
   // DX11 protects the DComp surface atlas so this clear only affects pixels in
   // the update rect.
   if (!ClearD3D11TextureToColor(draw_texture, SkColors::kTransparent)) {
@@ -258,15 +261,31 @@ DCompSurfaceImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  return std::make_unique<DCompSurfaceSkiaImageRepresentation>(
+  DCHECK_EQ(context_state->gr_context_type(), GrContextType::kGL);
+  return std::make_unique<DCompSurfaceSkiaGaneshImageRepresentation>(
       std::move(context_state), manager, this, tracker);
 }
 
-sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
-    SharedContextState* context_state,
-    int final_msaa_count,
-    const SkSurfaceProps& surface_props,
-    const gfx::Rect& update_rect) {
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+DCompSurfaceImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  DCHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteDawn);
+
+  auto device = context_state->dawn_context_provider()->GetDevice();
+  auto dawn_representation =
+      std::make_unique<DCompSurfaceDawnImageRepresentation>(
+          manager, this, tracker, device, wgpu::BackendType::D3D11);
+  return SkiaGraphiteDawnImageRepresentation::Create(
+      std::move(dawn_representation), context_state,
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker,
+      /*plane_index=*/0, /*is_yuv_plane=*/false);
+}
+
+Microsoft::WRL::ComPtr<ID3D11Texture2D> DCompSurfaceImageBacking::BeginDraw(
+    const gfx::Rect& update_rect,
+    gfx::Point& update_offset_out) {
   if (update_rect.IsEmpty()) {
     DLOG(ERROR) << "Draw rectangle must be non-empty";
     return nullptr;
@@ -304,9 +323,36 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
     return nullptr;
   }
 
+  update_offset_out = gfx::Point(update_offset.x, update_offset.y);
+  return draw_texture;
+}
+
+void DCompSurfaceImageBacking::EndDraw() {
+  TRACE_EVENT0("gpu", "DCompSurfaceImageBacking::EndDraw");
+
+  HRESULT hr = dcomp_surface_->EndDraw();
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "EndDraw failed: " << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+
+  dcomp_surface_serial_++;
+}
+
+sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDrawGanesh(
+    SharedContextState* context_state,
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    const gfx::Rect& update_rect) {
+  gfx::Point update_offset;
+  auto draw_texture = BeginDraw(update_rect, update_offset);
+  if (!draw_texture) {
+    return nullptr;
+  }
+
   // Offset the BeginDraw offset by the update rect's origin so we don't have to
   // change the coordinate space of our DDL.
-  gfx::Vector2d draw_offset = gfx::Point(update_offset) - update_rect.origin();
+  gfx::Vector2d draw_offset = update_offset - update_rect.origin();
 
   if (!gl_surface_->BindTextureToSurface(draw_texture.Get(), draw_offset)) {
     DLOG(ERROR) << "Could not bind texture to GLSurface";
@@ -359,23 +405,64 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
   return surface;
 }
 
-bool DCompSurfaceImageBacking::EndDraw() {
-  TRACE_EVENT0("gpu", "DCompSurfaceImageBacking::EndDraw");
-
+void DCompSurfaceImageBacking::EndDrawGanesh() {
   DCHECK_EQ(gl::GLSurface::GetCurrent(), gl_surface_);
   gl_surface_->Destroy();
 
   scoped_make_current_.reset();
 
-  HRESULT hr = dcomp_surface_->EndDraw();
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "EndDraw failed: " << logging::SystemErrorCodeToString(hr);
-    return false;
+  EndDraw();
+}
+
+wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
+    const wgpu::Device& device,
+    const wgpu::TextureUsage usage,
+    const gfx::Rect& update_rect) {
+  gfx::Point update_offset;
+  auto draw_texture = BeginDraw(update_rect, update_offset);
+
+  if (!draw_texture) {
+    return nullptr;
   }
 
-  dcomp_surface_serial_++;
+  // TODO(crbug.com/1468842): figure how to use the update_offset.
 
-  return true;
+  // Import the texture into dawn
+  D3D11_TEXTURE2D_DESC d3d11_texture_desc;
+  draw_texture->GetDesc(&d3d11_texture_desc);
+
+  DCHECK(!external_image_);
+  external_image_ =
+      CreateDawnExternalImageDXGI(device, DCompSurfaceImageBacking::usage(),
+                                  d3d11_texture_desc, draw_texture,
+                                  /*view_formats=*/{});
+  if (!external_image_) {
+    LOG(ERROR) << "Failed to create external image.";
+    return nullptr;
+  }
+
+  ExternalImageDXGIBeginAccessDescriptor descriptor;
+  descriptor.isInitialized = true;
+  descriptor.isSwapChainTexture = true;
+  descriptor.usage = static_cast<WGPUTextureUsage>(usage);
+  descriptor.waitFences = {};
+
+  wgpu::Texture texture =
+      wgpu::Texture::Acquire(external_image_->BeginAccess(&descriptor));
+
+  return texture;
+}
+
+void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
+                                           wgpu::Texture texture) {
+  // We don't need any synchronization here because dawn and dcomp are using the
+  // same d3d11 device.
+  ExternalImageDXGIFenceDescriptor descriptor;
+  external_image_->EndAccess(texture.Get(), &descriptor);
+  external_image_ = nullptr;
+  texture.Destroy();
+
+  EndDraw();
 }
 
 }  // namespace gpu

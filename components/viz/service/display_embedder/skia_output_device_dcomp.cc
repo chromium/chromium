@@ -124,7 +124,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.supports_dc_layers = true;
 
   DCHECK(context_state_);
-  DCHECK(context_state_->gr_context());
+  DCHECK(context_state_->gr_context() || context_state_->graphite_context());
   DCHECK(context_state_->context());
 
   // SRGB

@@ -14,15 +14,17 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 #include "gpu/command_buffer/service/shared_image/dxgi_swap_chain_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -30,9 +32,12 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
+
+using dawn::native::d3d::ExternalImageDXGI;
+using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
+using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
 
 namespace gpu {
 namespace {
@@ -41,6 +46,7 @@ const char* kDXGISwapChainImageBackingLabel = "DXGISwapChainImageBacking";
 
 // static
 std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     DXGI_FORMAT internal_format,
@@ -49,9 +55,6 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
-
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   d3d11_device.As(&dxgi_device);
   DCHECK(dxgi_device);
@@ -335,6 +338,68 @@ DXGISwapChainImageBacking::ProduceSkiaGanesh(
       std::make_unique<GLTexturePassthroughDXGISwapChainBufferRepresentation>(
           manager, this, tracker, gl_texture_holder_),
       std::move(context_state), manager, this, tracker);
+}
+
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+DXGISwapChainImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  auto device = context_state->dawn_context_provider()->GetDevice();
+  if (!external_image_) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer_texture;
+    HRESULT hr =
+        dxgi_swap_chain_->GetBuffer(0, IID_PPV_ARGS(&backbuffer_texture));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "GetBuffer(0) failed: "
+                  << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+
+    D3D11_TEXTURE2D_DESC d3d11_texture_desc;
+    backbuffer_texture->GetDesc(&d3d11_texture_desc);
+
+    external_image_ = CreateDawnExternalImageDXGI(
+        device, usage(), d3d11_texture_desc, backbuffer_texture,
+        /*view_formats=*/{});
+    if (!external_image_) {
+      return nullptr;
+    }
+  }
+
+  auto dawn_representation = std::make_unique<DawnRepresentationDXGISwapChain>(
+      manager, this, tracker, device, wgpu::BackendType::D3D11);
+
+  return SkiaGraphiteDawnImageRepresentation::Create(
+      std::move(dawn_representation), context_state,
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker,
+      /*plane_index=*/0, /*is_yuv_plane=*/false);
+}
+
+wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
+    const wgpu::Device& device,
+    wgpu::TextureUsage usage,
+    const gfx::Rect& update_rect) {
+  DidBeginWriteAccess(update_rect);
+
+  CHECK(external_image_);
+  ExternalImageDXGIBeginAccessDescriptor descriptor;
+  descriptor.isInitialized = true;
+  descriptor.isSwapChainTexture = true;
+  descriptor.usage = static_cast<WGPUTextureUsage>(usage);
+  descriptor.waitFences = {};
+
+  wgpu::Texture texture =
+      wgpu::Texture::Acquire(external_image_->BeginAccess(&descriptor));
+
+  return texture;
+}
+
+void DXGISwapChainImageBacking::EndAccessDawn(const wgpu::Device& device,
+                                              wgpu::Texture texture) {
+  ExternalImageDXGIFenceDescriptor descriptor;
+  external_image_->EndAccess(texture.Get(), &descriptor);
+  texture.Destroy();
 }
 
 }  // namespace gpu

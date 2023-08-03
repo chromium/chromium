@@ -163,4 +163,40 @@ void SkiaGLImageRepresentationDXGISwapChain::EndWriteAccess() {
   SkiaGLImageRepresentation::ClearCachedSurfaces();
 }
 
+DawnRepresentationDXGISwapChain::DawnRepresentationDXGISwapChain(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    wgpu::Device device,
+    wgpu::BackendType backend_type)
+    : DawnImageRepresentation(manager, backing, tracker), device_(device) {
+  DCHECK(device_);
+}
+
+DawnRepresentationDXGISwapChain::~DawnRepresentationDXGISwapChain() {
+  EndAccess();
+}
+
+wgpu::Texture DawnRepresentationDXGISwapChain::BeginAccess(
+    wgpu::TextureUsage usage,
+    const gfx::Rect& update_rect) {
+  auto* swapchain_backing = static_cast<DXGISwapChainImageBacking*>(backing());
+  texture_ = swapchain_backing->BeginAccessDawn(device_, usage, update_rect);
+  return texture_;
+}
+
+wgpu::Texture DawnRepresentationDXGISwapChain::BeginAccess(
+    wgpu::TextureUsage usage) {
+  NOTREACHED_NORETURN();
+}
+
+void DawnRepresentationDXGISwapChain::EndAccess() {
+  if (!texture_) {
+    return;
+  }
+
+  auto* swapchain_backing = static_cast<DXGISwapChainImageBacking*>(backing());
+  swapchain_backing->EndAccessDawn(device_, std::move(texture_));
+}
+
 }  // namespace gpu

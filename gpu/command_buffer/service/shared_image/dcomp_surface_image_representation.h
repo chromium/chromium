@@ -26,16 +26,16 @@ class DCompSurfaceOverlayImageRepresentation
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
 };
 
-// See DCompSurfaceImageBacking::ProduceSkia for more information.
-class DCompSurfaceSkiaImageRepresentation
+// See DCompSurfaceImageBacking::ProduceSkiaGanesh for more information.
+class DCompSurfaceSkiaGaneshImageRepresentation
     : public SkiaGaneshImageRepresentation {
  public:
-  DCompSurfaceSkiaImageRepresentation(
+  DCompSurfaceSkiaGaneshImageRepresentation(
       scoped_refptr<SharedContextState> context_state,
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker);
-  ~DCompSurfaceSkiaImageRepresentation() override;
+  ~DCompSurfaceSkiaGaneshImageRepresentation() override;
 
  protected:
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
@@ -60,6 +60,26 @@ class DCompSurfaceSkiaImageRepresentation
 
  private:
   scoped_refptr<SharedContextState> context_state_;
+};
+
+// See DCompSurfaceImageBacking::ProduceSkiaGraphite for more information.
+class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
+ public:
+  DCompSurfaceDawnImageRepresentation(SharedImageManager* manager,
+                                      SharedImageBacking* backing,
+                                      MemoryTypeTracker* tracker,
+                                      const wgpu::Device& device,
+                                      wgpu::BackendType backend_type);
+  ~DCompSurfaceDawnImageRepresentation() override;
+
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            const gfx::Rect& update_rect) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  void EndAccess() override;
+
+ private:
+  const wgpu::Device device_;
+  wgpu::Texture texture_;
 };
 
 }  // namespace gpu

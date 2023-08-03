@@ -270,7 +270,8 @@ SharedImageFactory::SharedImageFactory(
 
 #if BUILDFLAG(IS_WIN)
   if (gl::DirectCompositionSupported()) {
-    factories_.push_back(std::make_unique<DCompImageBackingFactory>());
+    factories_.push_back(std::make_unique<DCompImageBackingFactory>(
+        shared_context_state_.get()));
   }
   if (D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences)) {
     // TODO(sunnyps): Should we get the device from SharedContextState instead?
