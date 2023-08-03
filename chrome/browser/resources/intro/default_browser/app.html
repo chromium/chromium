@@ -4,33 +4,27 @@
     --btn-container-height:
         calc(2 * var(--btn-margin) + var(--cr-button-height));
     --btn-margin: 24px;
-    /* TODO(crbug.com/1465822): Update illustration url. */
-    --illustration-image-url: url(images/product-logo.svg);
-    --illustration-margin-top: 50px;
-    --illustration-size: 90px;
+    --default-browser-frame-image-url: url(images/default_browser_frame.svg);
     --left-background-image-url: url(images/left_illustration.svg);
     --right-background-image-url: url(images/right_illustration.svg);
+    color: var(--cr-primary-text-color);
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
+      --default-browser-frame-image-url:
+          url(images/default_browser_frame_dark.svg);
       --left-background-image-url: url(images/left_illustration_dark.svg);
       --right-background-image-url: url(images/right_illustration_dark.svg);
     }
   }
 
-  @media screen and ((max-width: 780px) or (max-height: 600px)) {
-    :host {
-      --illustration-size: 60px;
-    }
+  .title {
+    margin: 36px 0 12px;
   }
 
-  h1 {
-    color: var(--cr-primary-text-color);
-  }
-
-  p {
-    color: var(--cr-secondary-text-color);
+  .subtitle {
+    margin: 0;
   }
 
   .tangible-sync-style-left-banner {
@@ -46,7 +40,7 @@
     position: fixed;
   }
 
-  #safeZone {
+  #safe-zone {
     box-sizing: border-box;
     display: flex;
     height: calc(100% - var(--btn-container-height));
@@ -56,7 +50,7 @@
     width: 100vw;
   }
 
-  #contentArea {
+  #content-area {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -64,13 +58,45 @@
     text-align: center;
   }
 
-  #illustration {
-    content: var(--illustration-image-url);
+  #illustration-container {
+    --illustration-height: 110px;
+    --illustration-margin-top: 50px;
+    --illustration-width: 185px;
+    --product-logo-size: 52px;
+    --product-logo-top: 26px;
+    height: var(--illustration-height);
     margin-top: var(--illustration-margin-top);
-    width: var(--illustration-size);
+    position: relative;
+    width: var(--illustration-width);
   }
 
-  #buttonRow {
+  @media screen and ((max-width: 780px) or (max-height: 600px)) {
+    #illustration-container {
+      --illustration-height: 73px;
+      --illustration-width: 123px;
+      --product-logo-size: 34px;
+      --product-logo-top: 17px;
+    }
+  }
+
+  #default-browser-frame {
+    content: var(--default-browser-frame-image-url);
+    height: var(--illustration-height);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--illustration-width);
+  }
+
+  #product-logo {
+    height: var(--product-logo-size);
+    position: absolute;
+    top: var(--product-logo-top);
+    left: calc((var(--illustration-width) - var(--product-logo-size)) / 2);
+    width: var(--product-logo-size);
+  }
+
+  #button-row {
     bottom: 0;
     display: flex;
     height: var(--btn-container-height);
@@ -79,7 +105,7 @@
     width: 100vw;
   }
 
-  #buttonContainer {
+  #button-container {
     display: flex;
     flex-direction: row;
     gap: 12px;
@@ -88,12 +114,12 @@
   }
 
   <if expr="is_win">
-  #buttonContainer {
+  #button-container {
     flex-flow: row-reverse;
   }
   </if>
 
-  #buttonContainer > cr-button {
+  #button-container > cr-button {
     margin-top: var(--btn-margin);
   }
 </style>
@@ -101,22 +127,26 @@
 <img class="tangible-sync-style-left-banner" alt="">
 <img class="tangible-sync-style-right-banner" alt="">
 
-<div id="safeZone" class="tangible-sync-style">
-  <div id="contentArea">
-    <img id="illustration" alt="">
-    <h1 class="title">$i18n{setAsDefaultHeader}</h1>
-    <p class="subtitle">$i18n{setAsDefaultSubHeader}</p>
+<div id="safe-zone" class="tangible-sync-style">
+  <div id="content-area">
+    <div id="illustration-container" role="img"
+        aria-label="$i18n{defaultBrowserIllustrationAltText}">
+      <img id="default-browser-frame" alt="">
+      <img id="product-logo" src="images/product-logo.svg" alt="">
+    </div>
+    <h1 class="title">$i18n{defaultBrowserTitle}</h1>
+    <p class="subtitle">$i18n{defaultBrowserSubtitle}</p>
   </div>
 </div>
 
-<div id="buttonRow">
-  <div id="buttonContainer">
-    <cr-button id="setAsDefaultSkip" on-click="onSkipDefaultBrowserClick_">
-      $i18n{skip}
+<div id="button-row" class="tangible-sync-style">
+  <div id="button-container">
+    <cr-button id="default-browser-skip" on-click="onSkipDefaultBrowserClick_">
+      $i18n{defaultBrowserSkip}
     </cr-button>
-    <cr-button id="setAsDefaultConfirm" class="action-button"
+    <cr-button id="default-browser-confirm" class="action-button"
         on-click="onConfirmDefaultBrowserClick_">
-      $i18n{setAsDefaultConfirm}
+      $i18n{defaultBrowserSetAsDefault}
     </cr-button>
   </div>
 </div>

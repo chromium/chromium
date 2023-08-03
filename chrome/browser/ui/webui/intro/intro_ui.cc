@@ -86,10 +86,12 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
     {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
     {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
     // Strings for default browser promo subpage.
-    {"setAsDefaultHeader", IDS_WELCOME_SET_AS_DEFAULT_HEADER},
-    {"setAsDefaultSubHeader", IDS_WELCOME_SET_AS_DEFAULT_SUB_HEADER},
-    {"setAsDefaultConfirm", IDS_WELCOME_SET_AS_DEFAULT_SET_AS_DEFAULT},
-    {"skip", IDS_WELCOME_SKIP},
+    {"defaultBrowserTitle", IDS_FRE_DEFAULT_BROWSER_TITLE},
+    {"defaultBrowserSubtitle", IDS_FRE_DEFAULT_BROWSER_SUBTITLE},
+    {"defaultBrowserIllustrationAltText",
+     IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT},
+    {"defaultBrowserSetAsDefault", IDS_FRE_DEFAULT_BROWSER_SET_AS_DEFAULT},
+    {"defaultBrowserSkip", IDS_FRE_DEFAULT_BROWSER_SKIP},
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},

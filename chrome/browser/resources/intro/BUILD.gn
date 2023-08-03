@@ -14,6 +14,8 @@ build_webui("build") {
   static_files = [
     "default_browser/default_browser.html",
     "intro.html",
+    "images/default_browser_frame.svg",
+    "images/default_browser_frame_dark.svg",
   ]
 
   if (enable_dice_support) {

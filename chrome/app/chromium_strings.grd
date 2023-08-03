@@ -1602,6 +1602,14 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
         </if>
 
+        <!-- Default Browser Promo -->
+        <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chromium as their default browser in the first run experience.">
+          Set Chromium as your default browser
+        </message>
+        <message name="IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT" desc="Alt text for the illustration in the page that prompts user to set Chromium as their default browser.">
+          Chromium logo inside a computer screen.
+        </message>
+
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
           You can switch between Chromium profiles here
