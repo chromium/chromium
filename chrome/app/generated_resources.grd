@@ -8708,6 +8708,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
             <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON" desc="In Title Case: The text inside the button inviting the user to get started.">
               Get Started
             </message>
+            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+              No Thanks
+            </message>
           </if>
           <if expr="not use_titlecase">
             <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS promo bubble letting users know their password is saved.">
@@ -8718,6 +8721,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
             </message>
             <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON" desc="The text inside the button inviting the user to get started.">
               Get started
+            </message>
+            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+              No thanks
             </message>
           </if>
           <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
