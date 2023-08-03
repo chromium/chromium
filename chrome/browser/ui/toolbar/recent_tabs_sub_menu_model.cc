@@ -296,7 +296,8 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     service->RestoreEntryById(context, local_group_items_.at(command_id),
                               disposition);
   } else {
-    CHECK(IsSubMenuModelCommandId(command_id));
+    CHECK(IsSubMenuModelCommandId(command_id) ||
+          IsDeviceSubMenuModelCommandId(command_id));
     return;
   }
 
@@ -906,4 +907,9 @@ bool RecentTabsSubMenuModel::IsGroupModelCommandId(int command_id) const {
 
 bool RecentTabsSubMenuModel::IsSubMenuModelCommandId(int command_id) const {
   return local_sub_menu_items_.count(command_id) > 0;
+}
+
+bool RecentTabsSubMenuModel::IsDeviceSubMenuModelCommandId(
+    int command_id) const {
+  return device_sub_menu_items_.count(command_id) > 0;
 }

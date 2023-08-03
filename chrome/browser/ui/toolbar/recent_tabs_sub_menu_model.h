@@ -221,6 +221,10 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Returns true if the command id identifies a sub menu item.
   bool IsSubMenuModelCommandId(int command_id) const;
 
+  // Returns true if the command id identifies a sub menu item representing
+  // other device tabs.
+  bool IsDeviceSubMenuModelCommandId(int command_id) const;
+
   const raw_ptr<Browser> browser_;  // Weak.
 
   LogMenuMetricsCallback log_menu_metrics_callback_;
