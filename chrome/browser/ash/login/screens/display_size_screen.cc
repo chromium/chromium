@@ -140,7 +140,7 @@ bool DisplaySizeScreen::ShouldBeSkipped(const WizardContext& context) const {
     return true;
   }
 
-  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+  if (chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
     return true;
   }
 

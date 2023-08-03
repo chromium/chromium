@@ -130,7 +130,7 @@ bool FingerprintSetupScreen::ShouldBeSkipped(
       !fp_engine_.IsFingerprintEnabled(
           *ProfileManager::GetActiveUserProfile()->GetPrefs(),
           LegacyFingerprintEngine::Purpose::kAny) ||
-      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+      chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
     return true;
   }
   return false;

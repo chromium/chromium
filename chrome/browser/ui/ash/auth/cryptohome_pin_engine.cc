@@ -99,8 +99,8 @@ bool CryptohomePinEngine::ShouldSkipSetupBecauseOfPolicy(
   absl::optional<bool> is_pin_disabled = IsCryptohomePinDisabledByPolicy(
       account_id, CryptohomePinEngine::Purpose::kAny);
   bool result = is_pin_disabled.has_value() ? is_pin_disabled.value() : false;
-  result =
-      result || chrome_user_manager_util::IsPublicSessionOrEphemeralLogin();
+  result = result ||
+           chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin();
   return result;
 }
 

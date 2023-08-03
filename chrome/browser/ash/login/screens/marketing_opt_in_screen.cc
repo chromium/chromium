@@ -115,7 +115,7 @@ bool MarketingOptInScreen::MaybeSkip(WizardContext& context) {
   }
   Initialize();
 
-  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
+  if (chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() ||
       IsCurrentUserManaged() || !context.is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

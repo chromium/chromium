@@ -26,10 +26,10 @@ bool IsUserAllowed(const user_manager::User& user,
                    bool is_guest_allowed,
                    bool is_user_allowlisted);
 
-// Returns whether the active user is public session user or non-regular
+// Returns whether the active user is a managed guest session or non-regular
 // ephemeral user. Note: it assumes the active user exists (ie. at least one
 // user has logged in).
-bool IsPublicSessionOrEphemeralLogin();
+bool IsManagedGuestSessionOrEphemeralLogin();
 
 }  // namespace ash::chrome_user_manager_util
 

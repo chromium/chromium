@@ -80,7 +80,7 @@ void MultiDeviceSetupScreen::TryInitSetupClient() {
 bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
   // Only attempt the setup flow for non-guest users.
   if (context.skip_post_login_screens_for_tests ||
-      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+      chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     RecordOobeMultideviceScreenSkippedReasonHistogram(
         OobeMultideviceScreenSkippedReason::kPublicSessionOrEphemeralLogin);
