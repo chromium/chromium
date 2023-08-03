@@ -799,6 +799,7 @@
     //
     "break-all",
     "keep-all",
+    "auto-phrase",
 
     //
     // word-wrap

@@ -3474,7 +3474,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
           line_break_type = LineBreakType::kKeepAll;
           break_anywhere_if_overflow_ = false;
           break;
-        case EWordBreak::kAuto:
+        case EWordBreak::kAutoPhrase:
           DCHECK(RuntimeEnabledFeatures::CSSPhraseLineBreakEnabled());
           if (UNLIKELY(disable_phrase_)) {
             line_break_type = LineBreakType::kNormal;

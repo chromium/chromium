@@ -6202,7 +6202,7 @@
       field_group: "*",
       field_template: "keyword",
       // Word Break Values. Matches WinIE and CSS3
-      keywords: ["normal", "break-all", "keep-all", "break-word", "auto"],
+      keywords: ["normal", "break-all", "keep-all", "break-word", "auto-phrase"],
       default_value: "normal",
       typedom_types: ["Keyword"],
       valid_for_marker: true,

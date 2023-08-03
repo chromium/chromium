@@ -1607,7 +1607,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kBreakAll ||
              value_id == CSSValueID::kKeepAll ||
              value_id == CSSValueID::kBreakWord ||
-             value_id == CSSValueID::kAuto;
+             value_id == CSSValueID::kAutoPhrase;
     case CSSPropertyID::kScrollbarWidth:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kThin ||
              value_id == CSSValueID::kNone;
