@@ -48,6 +48,19 @@ std::string GetServerModelCacheKeyHash(
   return client_model_cache_key_hash;
 }
 
+absl::optional<proto::OptimizationTarget> ParseOptimizationTarget(
+    const std::string& optimization_target_str) {
+  int optimization_target_number;
+  if (!base::StringToInt(optimization_target_str,
+                         &optimization_target_number)) {
+    return absl::nullopt;
+  }
+  if (!proto::OptimizationTarget_IsValid(optimization_target_number)) {
+    return absl::nullopt;
+  }
+  return static_cast<proto::OptimizationTarget>(optimization_target_number);
+}
+
 }  // namespace
 
 // static
@@ -173,6 +186,11 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
     if (!optimization_target_entry.second.is_dict()) {
       continue;
     }
+    auto optimization_target =
+        ParseOptimizationTarget(optimization_target_entry.first);
+    if (!optimization_target) {
+      continue;
+    }
     for (auto model_cache_key_hash :
          optimization_target_entry.second.GetDict()) {
       if (!model_cache_key_hash.second.is_dict()) {
@@ -188,6 +206,7 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
           metadata.GetExpiryTime() <= base::Time::Now()) {
         should_remove_model = true;
         RecordPredictionModelStoreModelRemovalVersionHistogram(
+            *optimization_target,
             PredictionModelStoreModelRemovalReason::kModelExpired);
       }
 

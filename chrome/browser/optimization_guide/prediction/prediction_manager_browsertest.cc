@@ -67,7 +67,8 @@ enum class PredictionModelsFetcherRemoteResponseType {
   kSuccessfulWithInvalidModelFile = 1,
   kSuccessfulWithValidModelFileAndInvalidAdditionalFiles = 2,
   kSuccessfulWithValidModelFileAndValidAdditionalFiles = 3,
-  kUnsuccessful = 4,
+  kSuccessfulWithNoModelUpdate = 4,
+  kUnsuccessful = 5,
 };
 
 }  // namespace
@@ -207,6 +208,9 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
                    kSuccessfulWithValidModelFileAndValidAdditionalFiles) {
       get_models_response->mutable_models(0)->mutable_model()->set_download_url(
           model_file_with_good_additional_file_url_.spec());
+    } else if (response_type_ == PredictionModelsFetcherRemoteResponseType::
+                                     kSuccessfulWithNoModelUpdate) {
+      get_models_response->mutable_models(0)->clear_model();
     } else if (response_type_ ==
                PredictionModelsFetcherRemoteResponseType::kUnsuccessful) {
       response->set_code(net::HTTP_NOT_FOUND);
@@ -719,6 +723,85 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
+                       TestModelHasNoUpdateFlow) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  SetResponseType(
+      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
+  model_file_observer()->set_model_file_received_callback(base::BindOnce(
+      [](base::RunLoop* run_loop, proto::OptimizationTarget optimization_target,
+         const ModelInfo& model_info) { run_loop->Quit(); },
+      run_loop.get()));
+
+  // Registering should initiate the fetch and receive a response with a model
+  // containing a download URL and then subsequently downloaded.
+  RegisterModelFileObserverWithKeyedService();
+
+  // Wait until the observer receives the file. We increase the timeout to 60
+  // seconds here since the file is on the larger side.
+  {
+    base::test::ScopedRunLoopTimeout file_download_timeout(
+        FROM_HERE, kModelFileDownloadTimeout);
+    run_loop->Run();
+  }
+
+  // Model will be downloaded and loaded.
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
+
+  // Set up the next periodic model fetch to not send any model updates.
+  histogram_tester = std::make_unique<base::HistogramTester>();
+  SetResponseType(
+      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithNoModelUpdate);
+  model_file_observer()->set_model_file_received_callback(
+      base::BindOnce([](proto::OptimizationTarget optimization_target,
+                        const ModelInfo& model_info) {
+        // Since the model was already downloaded and present in the store, this
+        // callback should never be run.
+        FAIL();
+      }));
+
+  // Trigger the periodic fetch timer.
+  auto* prediction_model_fetch_timer =
+      GetPredictionManager()->GetPredictionModelFetchTimerForTesting();
+  EXPECT_EQ(
+      PredictionModelFetchTimer::PredictionModelFetchTimerState::kPeriodicFetch,
+      prediction_model_fetch_timer->GetStateForTesting());
+  prediction_model_fetch_timer->ScheduleImmediateFetchForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  // The model fetch will happn, but no new model will be downloaded.
+  RetryForHistogramUntilCountReached(
+      histogram_tester.get(),
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 1);
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
+      "PainfulPageLoad",
+      net::HTTP_OK, 1);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", 0);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason."
+      "PainfulPageLoad",
+      0);
 }
 
 IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,

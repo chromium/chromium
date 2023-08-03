@@ -61,8 +61,10 @@ base::FilePath ConvertToRelativePath(const base::FilePath& parent,
 // persistent dict, or can be used as file paths.
 std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key);
 
-// Records the model remove version histogram.
+// Records the model remove version histograms. One general histogram and one
+// histogram broken down by |optimization_target| are recorded.
 void RecordPredictionModelStoreModelRemovalVersionHistogram(
+    proto::OptimizationTarget optimization_target,
     PredictionModelStoreModelRemovalReason model_removal_reason);
 
 }  // namespace optimization_guide

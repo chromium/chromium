@@ -61,6 +61,9 @@ class PredictionModelFetchTimer {
 
   void SetClockForTesting(const base::Clock* clock);
 
+  // Schedules an immediate model fetch.
+  void ScheduleImmediateFetchForTesting();
+
  private:
   friend class PredictionModelFetchTimerTest;
 

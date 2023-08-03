@@ -371,7 +371,8 @@ void PredictionModelStore::RemoveModel(
     return;
   }
 
-  RecordPredictionModelStoreModelRemovalVersionHistogram(model_remove_reason);
+  RecordPredictionModelStoreModelRemovalVersionHistogram(optimization_target,
+                                                         model_remove_reason);
   ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
                                           model_cache_key);
   auto base_model_dir = metadata.GetModelBaseDir();

@@ -249,9 +249,14 @@ std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key) {
 }
 
 void RecordPredictionModelStoreModelRemovalVersionHistogram(
+    proto::OptimizationTarget optimization_target,
     PredictionModelStoreModelRemovalReason model_removal_reason) {
   base::UmaHistogramEnumeration(
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      model_removal_reason);
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason." +
+          GetStringNameForOptimizationTarget(optimization_target),
       model_removal_reason);
 }
 

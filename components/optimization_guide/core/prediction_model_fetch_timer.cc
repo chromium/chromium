@@ -151,4 +151,11 @@ void PredictionModelFetchTimer::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
 }
 
+void PredictionModelFetchTimer::ScheduleImmediateFetchForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  fetch_timer_.Stop();
+  fetch_timer_.Start(FROM_HERE, base::Milliseconds(1), this,
+                     &PredictionModelFetchTimer::OnFetchTimerFired);
+}
+
 }  // namespace optimization_guide

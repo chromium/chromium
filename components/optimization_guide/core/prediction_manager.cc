@@ -617,14 +617,14 @@ void PredictionManager::UpdatePredictionModels(
   bool has_models_to_update = false;
   std::set<proto::OptimizationTarget> received_optimization_targets;
   for (const auto& model : prediction_models) {
+    auto optimization_target = model.model_info().optimization_target();
+    received_optimization_targets.emplace(optimization_target);
     if (!model.has_model()) {
       // We already have this updated model, so don't update in store.
       continue;
     }
     DCHECK(!model.model().download_url().empty());
     UpdateModelMetadata(model);
-    auto optimization_target = model.model_info().optimization_target();
-    received_optimization_targets.emplace(optimization_target);
     if (ShouldDownloadNewModel(model)) {
       StartModelDownload(optimization_target,
                          GURL(model.model().download_url()));
@@ -955,8 +955,11 @@ void PredictionManager::RemoveModelFromStore(
     proto::OptimizationTarget optimization_target,
     PredictionModelStoreModelRemovalReason model_removal_reason) {
   if (features::IsInstallWideModelStoreEnabled()) {
-    prediction_model_store_->RemoveModel(optimization_target, model_cache_key_,
-                                         model_removal_reason);
+    if (prediction_model_store_->HasModel(optimization_target,
+                                          model_cache_key_)) {
+      prediction_model_store_->RemoveModel(
+          optimization_target, model_cache_key_, model_removal_reason);
+    }
     return;
   }
 

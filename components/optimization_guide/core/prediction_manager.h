@@ -148,6 +148,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
   void MaybeInitializeModelDownloads(
       download::BackgroundDownloadService* background_download_service);
 
+  PredictionModelFetchTimer* GetPredictionModelFetchTimerForTesting() {
+    return &prediction_model_fetch_timer_;
+  }
+
  protected:
   // Process `prediction_models` to be stored in the in memory optimization
   // target prediction model map for immediate use and asynchronously write the

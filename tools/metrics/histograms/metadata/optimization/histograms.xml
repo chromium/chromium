@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor"
-    units="counts" expires_after="2023-12-17">
+    units="counts" expires_after="M121">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches"
-    units="counts" expires_after="2023-12-17">
+    units="counts" expires_after="M121">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1206,8 +1206,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
-    enum="OptimizationGuidePredictionModelDownloadStatus"
-    expires_after="2023-12-17">
+    enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M121">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1218,7 +1217,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
-    enum="BooleanSuccess" expires_after="2023-12-17">
+    enum="BooleanSuccess" expires_after="M121">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1353,6 +1352,17 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
+<histogram name="OptimizationGuide.PredictionModelRemoved.{OptimizationTarget}"
+    enum="Boolean" expires_after="M121">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Recorded whenever the prediction model for {OptimizationTarget} was removed
+    from the model store.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
 <histogram
     name="OptimizationGuide.PredictionModelStore.HostModelFeaturesLoadMetadataResult"
     enum="BooleanLoaded" expires_after="2022-01-28">
@@ -1381,13 +1391,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PredictionModelStore.ModelRemovalReason"
     enum="OptimizationGuidePredictionModelStoreModelRemovalReason"
-    expires_after="2023-12-17">
+    expires_after="M121">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the reason the prediction model was removed from the model store.
     Recorded when the model is removed.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelStore.ModelRemovalReason.{OptimizationTarget}"
+    enum="OptimizationGuidePredictionModelStoreModelRemovalReason"
+    expires_after="M121">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the reason the prediction model for {OptimizationTarget} was removed
+    from the model store. Recorded when the model is removed.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram
