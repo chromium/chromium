@@ -159,6 +159,9 @@
 /kotlinc/current
 /leveldatabase/src
 /leveldb
+/libcxx/libc++/src
+/libcxx/libc++abi/src
+/libcxx/libunwind/src
 /libFuzzer/src
 /libaddressinput/src
 /libaom/source/libaom

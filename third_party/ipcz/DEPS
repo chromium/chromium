@@ -60,12 +60,6 @@ deps = {
     ],
   },
 
-  'buildtools/third_party/libc++/trunk':
-      '{chromium_git}/external/github.com/llvm/llvm-project/libcxx.git@{libcxx_revision}',
-
-  'buildtools/third_party/libc++abi/trunk':
-      '{chromium_git}/external/github.com/llvm/llvm-project/libcxxabi.git@{libcxxabi_revision}',
-
   'buildtools/win': {
     'packages': [
       {
@@ -85,6 +79,12 @@ deps = {
       '{chromium_git}/chromium/src/third_party/googletest.git@{chromium_googletest_revision}',
   'third_party/googletest/src':
       '{chromium_git}/external/github.com/google/googletest@{googletest_revision}',
+
+  'third_party/libc++/src':
+      '{chromium_git}/external/github.com/llvm/llvm-project/libcxx.git@{libcxx_revision}',
+
+  'third_party/libc++abi/src':
+      '{chromium_git}/external/github.com/llvm/llvm-project/libcxxabi.git@{libcxxabi_revision}',
 
   'third_party/ninja': {
     'packages': [

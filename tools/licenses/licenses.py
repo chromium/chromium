@@ -426,6 +426,17 @@ SPECIAL_CASES = {
     },
 }
 
+# These buildtools/third_party directories only contain
+# chromium build files. The actual third_party source files and their
+# README.chromium files are under third_party/libc*/.
+# So we do not include licensing metadata for these directories.
+# See crbug.com/1458042 for more details.
+THIRD_PARTY_FOR_BUILD_FILES_ONLY = {
+    os.path.join('buildtools', 'third_party', 'libc++'),
+    os.path.join('buildtools', 'third_party', 'libc++abi'),
+    os.path.join('buildtools', 'third_party', 'libunwind'),
+}
+
 # The delimiter used to separate license files specified in the 'License File'
 # field.
 LICENSE_FILE_DELIMITER = ","
@@ -452,8 +463,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('base', 'third_party', 'symbolize'),
     os.path.join('base', 'third_party', 'xdg_mime'),
     os.path.join('base', 'third_party', 'xdg_user_dirs'),
-    os.path.join('buildtools', 'third_party', 'libc++'),
-    os.path.join('buildtools', 'third_party', 'libc++abi'),
     os.path.join('chrome', 'installer', 'mac', 'third_party', 'bsdiff'),
     os.path.join('chrome', 'installer', 'mac', 'third_party', 'xz'),
     os.path.join('chrome', 'test', 'data', 'third_party', 'kraken'),
@@ -473,6 +482,8 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'isimpledom'),
     os.path.join('third_party', 'jsoncpp'),
     os.path.join('third_party', 'khronos'),
+    os.path.join('third_party', 'libcxx', 'libc++'),
+    os.path.join('third_party', 'libcxx', 'libc++abi'),
     os.path.join('third_party', 'libevent'),
     os.path.join('third_party', 'libjpeg'),
     os.path.join('third_party', 'libusb'),
@@ -529,6 +540,8 @@ def ParseDir(path,
              optional_keys=None,
              enable_warnings=False):
   """Examine a third_party/foo component and extract its metadata."""
+  if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
+    return {}
   # Parse metadata fields out of README.chromium.
   # We examine "LICENSE" for the license file by default.
   metadata = {
@@ -941,6 +954,8 @@ def GenerateCredits(file_template_file,
       metadata = ParseDir(path,
                           _REPOSITORY_ROOT,
                           enable_warnings=enable_warnings)
+      if not metadata:
+        continue
     except LicenseError:
       # TODO(phajdan.jr): Convert to fatal error (http://crbug.com/39240).
       continue
@@ -1027,13 +1042,15 @@ def GenerateLicenseFile(args: argparse.Namespace):
                                         args.target_os, extra_third_party_dirs,
                                         args.extra_allowed_dirs)
 
-  metadatas = {
-      d: ParseDir(d,
-                  _REPOSITORY_ROOT,
-                  require_license_file=True,
-                  enable_warnings=args.enable_warnings)
-      for d in third_party_dirs
-  }
+  metadatas = {}
+  for d in third_party_dirs:
+    md = ParseDir(
+        d,
+        _REPOSITORY_ROOT,
+        require_license_file=True,
+        enable_warnings=args.enable_warnings)
+    if md:
+      metadatas[d] = md
 
   if args.format == 'spdx':
     license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,

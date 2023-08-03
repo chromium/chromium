@@ -1,12 +1,10 @@
-Name: libcxx
-Short Name: libc++
-URL: http://libcxx.llvm.org/
+Name: libcxxabi
+Short Name: libc++abi
+URL: http://libcxxabi.llvm.org/
 Version: 1.0
 License: MIT, University of Illinois/NCSA Open Source License
-License File: trunk/LICENSE.TXT
+License File: src/LICENSE.TXT
 Security Critical: yes
 Shipped: yes
-
 Description:
-
-libc++ for Chromium.
+libc++abi for Chromium.
