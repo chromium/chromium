@@ -105,6 +105,10 @@ class ScalableIph : public KeyedService,
   void OverrideTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  // Called for a user action in the help app. All the logging related to
+  // help app action events will be done here before calling `PerformAction`.
+  void PerformActionForHelpApp(ActionType action_type);
+
   // Perform `action_type` as a result of a user action, e.g. A link click in a
   // help app, etc. This notifies a corresponding IPH event to the feature
   // engagement framework.

@@ -48,6 +48,34 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
   return *event_names_map;
 }
 
+std::string GetHelpAppIphEventName(ActionType action_type) {
+  switch (action_type) {
+    case ActionType::kOpenChrome:
+      return kEventNameHelpAppActionTypeOpenChrome;
+    case ActionType::kOpenLauncher:
+      return kEventNameHelpAppActionTypeOpenLauncher;
+    case ActionType::kOpenPersonalizationApp:
+      return kEventNameHelpAppActionTypeOpenPersonalizationApp;
+    case ActionType::kOpenPlayStore:
+      return kEventNameHelpAppActionTypeOpenPlayStore;
+    case ActionType::kOpenGoogleDocs:
+      return kEventNameHelpAppActionTypeOpenGoogleDocs;
+    case ActionType::kOpenGooglePhotos:
+      return kEventNameHelpAppActionTypeOpenGooglePhotos;
+    case ActionType::kOpenSettingsPrinter:
+      return kEventNameHelpAppActionTypeOpenSettingsPrinter;
+    case ActionType::kOpenPhoneHub:
+      return kEventNameHelpAppActionTypeOpenPhoneHub;
+    case ActionType::kOpenYouTube:
+      return kEventNameHelpAppActionTypeOpenYouTube;
+    case ActionType::kOpenFileManager:
+      return kEventNameHelpAppActionTypeOpenFileManager;
+    case ActionType::kInvalid:
+    default:
+      return "";
+  }
+}
+
 // The list of IPH features `SclableIph` supports. `ScalableIph` checks trigger
 // conditions of all events listed in this list when it receives an `Event`.
 const std::vector<const base::Feature*>& GetFeatureListConstant() {
@@ -365,6 +393,19 @@ void ScalableIph::OverrideTaskRunnerForTesting(
   timer_.Stop();
   timer_.SetTaskRunner(task_runner);
   EnsureTimerStarted();
+}
+
+void ScalableIph::PerformActionForHelpApp(ActionType action_type) {
+  std::string iph_event_name = GetHelpAppIphEventName(action_type);
+
+  // ActionType enum is defined on the client side. We can use CHECK as this is
+  // a client side constraint.
+  CHECK(!iph_event_name.empty()) << "Unable to resolve the IPH event name to "
+                                    "an action type for the help app";
+
+  tracker_->NotifyEvent(iph_event_name);
+
+  PerformAction(action_type);
 }
 
 void ScalableIph::PerformAction(ActionType action_type) {

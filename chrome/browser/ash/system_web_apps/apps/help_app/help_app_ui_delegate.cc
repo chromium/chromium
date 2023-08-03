@@ -99,7 +99,7 @@ void ChromeHelpAppUIDelegate::TriggerWelcomeTipCallToAction(
     return;
   }
 
-  scalable_iph->PerformAction(
+  scalable_iph->PerformActionForHelpApp(
       static_cast<scalable_iph::ActionType>(action_type_id));
 }
 

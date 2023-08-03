@@ -42,6 +42,28 @@ constexpr char kActionTypeOpenFileManager[] = "OpenFileManager";
 // Scalable Iph event names must start with `ScalableIph` as Iph event names
 // live in a global namespace.
 
+// Constants for help app events, has 1 to 1 mapping with the ActionType.
+constexpr char kEventNameHelpAppActionTypeOpenChrome[] =
+    "ScalableIphHelpAppActionOpenChrome";
+constexpr char kEventNameHelpAppActionTypeOpenLauncher[] =
+    "ScalableIphHelpAppActionOpenLauncher";
+constexpr char kEventNameHelpAppActionTypeOpenPersonalizationApp[] =
+    "ScalableIphHelpAppActionOpenPersonalizationApp";
+constexpr char kEventNameHelpAppActionTypeOpenPlayStore[] =
+    "ScalableIphHelpAppActionOpenPlayStore";
+constexpr char kEventNameHelpAppActionTypeOpenGoogleDocs[] =
+    "ScalableIphHelpAppActionOpenGoogleDocs";
+constexpr char kEventNameHelpAppActionTypeOpenGooglePhotos[] =
+    "ScalableIphHelpAppActionOpenGooglePhotos";
+constexpr char kEventNameHelpAppActionTypeOpenSettingsPrinter[] =
+    "ScalableIphHelpAppActionOpenSettingsPrinter";
+constexpr char kEventNameHelpAppActionTypeOpenPhoneHub[] =
+    "ScalableIphHelpAppActionOpenPhoneHub";
+constexpr char kEventNameHelpAppActionTypeOpenYouTube[] =
+    "ScalableIphHelpAppActionOpenYouTube";
+constexpr char kEventNameHelpAppActionTypeOpenFileManager[] =
+    "ScalableIphHelpAppActionOpenFileManager";
+
 // `FiveMinTick` event is recorded every five minutes after OOBE completion.
 constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
 
