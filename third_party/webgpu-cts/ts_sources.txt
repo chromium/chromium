@@ -127,6 +127,8 @@ src/unittests/maths.spec.ts
 src/unittests/params_builder_and_utils.spec.ts
 src/unittests/params_builder_toplevel.spec.ts
 src/unittests/preprocessor.spec.ts
+src/webgpu/util/prng.ts
+src/unittests/prng.spec.ts
 src/unittests/query_compare.spec.ts
 src/unittests/query_string.spec.ts
 src/unittests/serialization.spec.ts
