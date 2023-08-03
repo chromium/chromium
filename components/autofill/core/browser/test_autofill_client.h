@@ -703,16 +703,19 @@ class TestAutofillClientTemplate : public T {
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
-  std::unique_ptr<payments::PaymentsClient> payments_client_;
-  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
-  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
-  std::unique_ptr<FormDataImporter> form_data_importer_;
+  std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<testing::NiceMock<MockIBANManager>> mock_iban_manager_;
+
+  // The below objects must be destroyed before `PaymentsClient` because they
+  // (or their members) keep a reference to it.
+  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
+  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
+  std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_{"https://example.test"};
   ukm::SourceId source_id_ = -1;
