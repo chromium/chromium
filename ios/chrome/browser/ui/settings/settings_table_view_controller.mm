@@ -1627,6 +1627,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (BOOL)shouldReplaceSyncSettingsWithAccountSettings {
+  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
+  // users migrated to kSignin in phase 3. See ConsentLevel::kSync
+  // documentation for details.
   return base::FeatureList::IsEnabled(
              syncer::kReplaceSyncPromosWithSignInPromos) &&
          !SyncServiceFactory::GetForBrowserState(_browserState)
@@ -1635,6 +1638,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)showGoogleSync {
   DCHECK(!_manageSyncSettingsCoordinator);
+  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
+  // users migrated to kSignin in phase 3. See ConsentLevel::kSync
+  // documentation for details.
   SyncSettingsAccountState accountState =
       SyncServiceFactory::GetForBrowserState(_browserState)->HasSyncConsent()
           ? SyncSettingsAccountState::kSyncing
