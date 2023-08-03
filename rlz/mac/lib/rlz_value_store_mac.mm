@@ -18,10 +18,6 @@
 #include "rlz/lib/recursive_cross_process_lock_posix.h"
 #include "rlz/lib/supplementary_branding.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::mac::ObjCCast;
 
 namespace rlz_lib {
