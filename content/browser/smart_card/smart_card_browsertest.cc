@@ -201,7 +201,8 @@ class SmartCardTest : public ContentBrowserTest {
         let context = await navigator.smartCard.establishContext();
 
         let connection =
-          (await context.connect("Fake reader", "shared", ["t1"])).connection;
+          (await context.connect("Fake reader", "shared",
+            {{preferredProtocols: ["t1"]}})).connection;
 
         let transaction = {};
 
@@ -342,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Disconnect) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       await connection.disconnect("eject");
 
@@ -390,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ConcurrentDisconnect) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       // This first disconnect() call will go through but won't be finished
       // before the end of this script.
@@ -439,7 +442,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Transmit) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let apdu = new Uint8Array([0x03, 0x02, 0x01]);
       let response = await connection.transmit(apdu);
@@ -476,7 +480,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Control) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let data = new Uint8Array([0x03, 0x02, 0x01]);
       let response = await connection.control(42, data);
@@ -512,7 +517,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetAttribute) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let response = await connection.getAttribute(42);
 
@@ -548,7 +554,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, SetAttribute) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let data = new Uint8Array([0x03, 0x02, 0x01]);
       await connection.setAttribute(42, data);
@@ -585,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Status) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let status = await connection.status();
 
@@ -861,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Connect) {
     (async () => {
       let context = await navigator.smartCard.establishContext();
       let result = await context.connect("Fake reader", "shared",
-          ["t0", "t1"]);
+          {preferredProtocols: ["t0", "t1"]});
       return `${result.connection}, ${result.activeProtocol}`;
     })())"));
 }
@@ -902,7 +910,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, StartTransaction) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let transaction = async () => {
         let apdu = new Uint8Array([0x03, 0x02, 0x01]);
@@ -958,7 +967,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, StartTransactionAborted) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let transaction = async () => {
         let apdu = new Uint8Array([0x03, 0x02, 0x01]);
@@ -1054,7 +1064,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionFails) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let transaction = async () => {
         return "eject";
@@ -1106,7 +1117,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, DisconnectedOnTransactionReturn) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let transaction = async () => {
         await connection.disconnect();
@@ -1162,7 +1174,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, OngoingTransmitOnTransactionReturn) {
       let context = await navigator.smartCard.establishContext();
 
       let connection =
-        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
 
       let transaction = async () => {
         // Return before the transmit() completes.

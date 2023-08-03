@@ -21,6 +21,7 @@ class ScriptPromiseResolver;
 class SmartCardReaderStateIn;
 
 class SmartCardGetStatusChangeOptions;
+class SmartCardConnectOptions;
 
 class SmartCardContext final : public ScriptWrappable,
                                public ExecutionContextClient {
@@ -43,12 +44,7 @@ class SmartCardContext final : public ScriptWrappable,
   ScriptPromise connect(ScriptState* script_state,
                         const String& reader_name,
                         V8SmartCardAccessMode access_mode,
-                        const Vector<V8SmartCardProtocol>& preferred_protocols,
-                        ExceptionState& exception_state);
-
-  ScriptPromise connect(ScriptState* script_state,
-                        const String& reader_name,
-                        V8SmartCardAccessMode access_mode,
+                        SmartCardConnectOptions* options,
                         ExceptionState& exception_state);
 
   // ScriptWrappable overrides

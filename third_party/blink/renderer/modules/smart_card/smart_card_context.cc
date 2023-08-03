@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_get_status_change_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.h"
@@ -161,12 +162,11 @@ ScriptPromise SmartCardContext::getStatusChange(
   return resolver->Promise();
 }
 
-ScriptPromise SmartCardContext::connect(
-    ScriptState* script_state,
-    const String& reader_name,
-    V8SmartCardAccessMode access_mode,
-    const Vector<V8SmartCardProtocol>& preferred_protocols,
-    ExceptionState& exception_state) {
+ScriptPromise SmartCardContext::connect(ScriptState* script_state,
+                                        const String& reader_name,
+                                        V8SmartCardAccessMode access_mode,
+                                        SmartCardConnectOptions* options,
+                                        ExceptionState& exception_state) {
   if (!EnsureMojoConnection(exception_state) ||
       !EnsureNoOperationInProgress(exception_state)) {
     return ScriptPromise();
@@ -174,6 +174,9 @@ ScriptPromise SmartCardContext::connect(
 
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
+
+  Vector<V8SmartCardProtocol> preferred_protocols =
+      options->getPreferredProtocolsOr(Vector<V8SmartCardProtocol>());
 
   request_ = resolver;
   scard_context_->Connect(
@@ -183,14 +186,6 @@ ScriptPromise SmartCardContext::connect(
                     WrapPersistent(resolver)));
 
   return resolver->Promise();
-}
-
-ScriptPromise SmartCardContext::connect(ScriptState* script_state,
-                                        const String& reader_name,
-                                        V8SmartCardAccessMode access_mode,
-                                        ExceptionState& exception_state) {
-  return connect(script_state, reader_name, access_mode,
-                 Vector<V8SmartCardProtocol>(), exception_state);
 }
 
 void SmartCardContext::Trace(Visitor* visitor) const {

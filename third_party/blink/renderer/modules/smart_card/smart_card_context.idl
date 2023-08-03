@@ -53,6 +53,10 @@ dictionary SmartCardGetStatusChangeOptions {
   AbortSignal signal;
 };
 
+dictionary SmartCardConnectOptions {
+  sequence<SmartCardProtocol> preferredProtocols;
+};
+
 [
   Exposed=Window,
   RuntimeEnabled=SmartCard,
@@ -71,5 +75,5 @@ dictionary SmartCardGetStatusChangeOptions {
   Promise<SmartCardConnectResult> connect(
       DOMString readerName,
       SmartCardAccessMode accessMode,
-      optional sequence<SmartCardProtocol> preferredProtocols);
+      optional SmartCardConnectOptions options = {});
 };
