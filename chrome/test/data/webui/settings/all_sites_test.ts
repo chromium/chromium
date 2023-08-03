@@ -224,21 +224,21 @@ suite('DisableFirstPartySets', function() {
 
     const clearAllButton = testElement.$.clearAllButton;
     assertEquals(
-        loadTimeData.getString('siteSettingsClearAllStorageLabel'),
+        loadTimeData.getString('siteSettingsDeleteAllStorageLabel'),
         clearAllButton.innerText.trim());
 
     // Setting a filter, text should change.
     testElement.filter = 'foo';
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsClearDisplayedStorageLabel'),
+        loadTimeData.getString('siteSettingsDeleteDisplayedStorageLabel'),
         clearAllButton.innerText.trim());
 
     // Removing the filter.
     testElement.filter = '';
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsClearAllStorageLabel'),
+        loadTimeData.getString('siteSettingsDeleteAllStorageLabel'),
         clearAllButton.innerText.trim());
   });
 
@@ -295,48 +295,48 @@ suite('DisableFirstPartySets', function() {
         filter: false,
         appInstalled: false,
         storage: true,
-        title: 'siteSettingsClearAllStorageDialogTitle',
-        description: 'siteSettingsClearAllStorageConfirmation',
+        title: 'siteSettingsDeleteAllStorageDialogTitle',
+        description: 'siteSettingsDeleteAllStorageConfirmation',
         signout: 'siteSettingsClearAllStorageSignOut',
       },
       {
         filter: false,
         appInstalled: true,
         storage: true,
-        title: 'siteSettingsClearAllStorageDialogTitle',
-        description: 'siteSettingsClearAllStorageConfirmationInstalled',
+        title: 'siteSettingsDeleteAllStorageDialogTitle',
+        description: 'siteSettingsDeleteAllStorageConfirmationInstalled',
         signout: 'siteSettingsClearAllStorageSignOut',
       },
       {
         filter: true,
         appInstalled: false,
         storage: true,
-        title: 'siteSettingsClearDisplayedStorageDialogTitle',
-        description: 'siteSettingsClearDisplayedStorageConfirmation',
+        title: 'siteSettingsDeleteDisplayedStorageDialogTitle',
+        description: 'siteSettingsDeleteDisplayedStorageConfirmation',
         signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
       {
         filter: true,
         appInstalled: false,
         storage: false,
-        title: 'siteSettingsClearDisplayedStorageDialogTitle',
-        description: 'siteSettingsClearDisplayedStorageConfirmation',
+        title: 'siteSettingsDeleteDisplayedStorageDialogTitle',
+        description: 'siteSettingsDeleteDisplayedStorageConfirmation',
         signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
       {
         filter: true,
         appInstalled: true,
         storage: false,
-        title: 'siteSettingsClearDisplayedStorageDialogTitle',
-        description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
+        title: 'siteSettingsDeleteDisplayedStorageDialogTitle',
+        description: 'siteSettingsDeleteDisplayedStorageConfirmationInstalled',
         signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
       {
         filter: true,
         appInstalled: true,
         storage: true,
-        title: 'siteSettingsClearDisplayedStorageDialogTitle',
-        description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
+        title: 'siteSettingsDeleteDisplayedStorageDialogTitle',
+        description: 'siteSettingsDeleteDisplayedStorageConfirmationInstalled',
         signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
     ];

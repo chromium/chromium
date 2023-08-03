@@ -258,7 +258,7 @@ class SettingsSiteSettingsListElement extends
     if (state === ContentSetting.ALLOW) {
       label = 'siteSettingsSiteDataAllowedSubLabel';
     } else if (state === ContentSetting.SESSION_ONLY) {
-      label = 'siteSettingsSiteDataClearOnExitSubLabel';
+      label = 'siteSettingsSiteDataDeleteOnExitSubLabel';
     } else if (state === ContentSetting.BLOCK) {
       label = 'siteSettingsSiteDataBlockedSubLabel';
     }

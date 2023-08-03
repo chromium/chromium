@@ -3740,7 +3740,7 @@
     Remove
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SESSION_ONLY_MENU" desc="Label for the menu item to set cookies to be deleted on browser exit.">
-    Clear on exit
+    Delete on exit
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USAGE" desc="The Usage header, used to group disk and battery usage information on the Site Details page.">
     Usage
@@ -3779,19 +3779,16 @@
     Reset permissions
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE" desc="The clear storage button label, used to delete non-cookie storage on the Site Details page.">
-    Clear data
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_GROUP_DELETE" desc="The clear storage button label, used to delete storage data for a group of sites.">
-    Clear data
+    Delete data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIES_EXCEPTION_LABEL" desc="Label for site exceptions that affect third party cookies.">
     Including third-party cookies on this site
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting all site data.">
-    Clear all data?
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_ALL_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting all site data.">
+    Delete all data?
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting displayed site data.">
-    Clear displayed data?
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting displayed site data.">
+    Delete displayed data?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_LEARN_MORE" desc="Label for first-party sets explainer with a learn more link shown when sites are filtered by first-party set owner">
      These sites are in a group defined by <ph name="FPS_OWNER">$1<ex>google.com</ex></ph>. Sites in a group can see your activity in the group.
@@ -3805,11 +3802,11 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_DESCRIPTION" desc="Label describing how much total disk space chrome is using from displayed sites, next to the clear displayed button">
     Total storage used by displayed sites: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_LABEL" desc="Label for button to clear all site data">
-    Clear all data
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_ALL_STORAGE_LABEL" desc="Label for button to delete all site data">
+    Delete all data
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_LABEL" desc="Label for button to clear displayed site data">
-    Clear displayed data
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_LABEL" desc="Label for button to delete displayed site data">
+    Delete displayed data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DETAILS_SUBPAGE_ACCESSIBILITY_LABEL" desc="The (accessibility) label for subpage button that navigates to site details from all sites page.">
     Show site details for <ph name="SITE_GROUP">$1<ex>google.com</ex></ph>
@@ -3825,20 +3822,20 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SHOW_RELATED_SITES_BUTTON" desc="Label for the button on the first-party sets more actions menu to allow users to filter sites by the first-party set owner.">
     Show sites in same group
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SITE_CLEAR_STORAGE_BUTTON" desc="Label for the button on the first-party sets more actions menu to allow users to clear data and permissions for a specific site entry.">
-    Clear data and permissions
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SITE_DELETE_STORAGE_BUTTON" desc="Label for the button on the first-party sets more actions menu to allow users to clear data and permissions for a specific site entry.">
+    Delete data and permissions
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about clearing storage used by all sites.">
-    This will clear <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by sites
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_ALL_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about deleting storage used by all sites.">
+    This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about clearing storage used by displayed sites.">
-    This will clear <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by displayed sites
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about deleting storage used by displayed sites.">
+    This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by displayed sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about clearing storage used by all sites, shown when there are installed apps.">
-    This will clear <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by sites and installed apps
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_ALL_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about deleting storage used by all sites, shown when there are installed apps.">
+    This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by sites and installed apps
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about clearing storage used by displayed sites, shown when there are installed apps.">
-    This will clear <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by displayed sites and installed apps
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about deleting storage used by displayed sites, shown when there are installed apps.">
+    This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by displayed sites and installed apps
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out when clearing storage used by all sites.">
     You'll be signed out of all sites, including in open tabs
@@ -3849,8 +3846,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for a site.">
     Reset site permissions for <ph name="SITE">$1<ex>www.example.com</ex></ph>?
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about clearing storage used by a site.">
-    Clear site data?
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DELETE_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting storage used by a site.">
+    Delete site data?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about clearing storage used by a site.">
     All data stored by <ph name="SITE">$1<ex>www.example.com</ex></ph> will be deleted.
@@ -3861,32 +3858,32 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out of site when clearing storage used by a site.">
     You’ll be signed out of this site, including in open tabs
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_OFFLINE_DATA" desc="Text for the dialog that warns about loss of offline data when clearing all storage data.">
-    Any offline data will be cleared
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DELETE_STORAGE_OFFLINE_DATA" desc="Text for the dialog that warns about loss of offline data when deleting all storage data.">
+    Any offline data will be deleted
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" desc="A bullet in a list of data that gets deleted from the user's device when they choose 'Clear data' for a specific site. 1) Go to chrome://settings/content. 2) From the 'Recent activity' list, choose a site. 3) Click the 'Clear data' button. The 'Clear site data?' dialog appears. This string will appear as a new bullet at the bottom of the dialog.">
     Data that affects ad personalization is deleted
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_OFFLINE_DATA" desc="Text for the dialog that warns about loss of offline data when clearing all storage data.">
-    Any offline data will be cleared
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_OFFLINE_DATA" desc="Text for the dialog that warns about loss of offline data when deleting all storage data.">
+    Any offline data will be deleted
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origin">
-    Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>?
+    Delete site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_APP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origin, and that origin also has an installed web app">
-    Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and its installed app?
+    Delete site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and its installed app?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_PARTITIONED_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origins partitioned data. That data will be partitioned on a specific eTLD +1.">
-    Clear site data for <ph name="SITE_NAME">$1<ex>www.ad-tech.com</ex></ph> partitioned on <ph name="PARTITION_SITE_NAME">$2<ex>www.publisher.com</ex></ph>?
+    Delete site data for <ph name="SITE_NAME">$1<ex>www.ad-tech.com</ex></ph> partitioned on <ph name="PARTITION_SITE_NAME">$2<ex>www.publisher.com</ex></ph>?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_GROUP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a group of sites">
-    Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and all sites under it?
+    Delete site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and all sites under it?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_GROUP_APP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a group of sites, and one of those sites has an installed web app">
-    Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>, all sites under it, and its installed app?
+    Delete site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>, all sites under it, and its installed app?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_GROUP_APP_PLURAL_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a group of sites, and multiple of those sites have installed web apps">
-    Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>, all sites under it, and installed apps?
+    Delete site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>, all sites under it, and installed apps?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_LOGOUT" desc="Bullet point which indicates that the user will be signed out of the site they are remove">
     You'll be signed out of this site, including in open tabs
@@ -3895,13 +3892,13 @@
     You'll be signed out of these sites, including in open tabs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_OFFLINE_DATA" desc="Bullet point which indicates that any offline data will be cleared when the users removes the site">
-    Any offline data will be cleared
+    Any offline data will be deleted
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_PERMISSIONS" desc="Bullet point which indicates that the users chosen permissions will be reset when they remove a site">
-    Your chosen permissions will be reset
+    Your chosen permissions will be removed
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_CONFIRM" desc="Text on the button to confirm removing a site">
-    Clear
+    Delete
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_SITE" desc="Label for the trashcan button to delete all cookies and site data for a specific site (ex: all the cookies set on google.com).">
     Remove <ph name="SITE">$1<ex>google.com</ex></ph>
@@ -3910,7 +3907,7 @@
     Reset
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE" desc="Text for the button that clears the storage used by a site, excluding cookies.">
-    Clear
+    Delete
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLER_IS_DEFAULT" desc="A label showing that a certain handler for a given protocol is the default.">
     Default
@@ -3966,8 +3963,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_BLOCKED_SUB_LABEL" desc="2 of 3 possible states for the On-device site data setting. This text appears beneath the 'On-device site data' label and shows the user the state of the setting. With this status, sites have the least flexibility.">
     Sites aren't allowed to save data on your device
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_CLEAR_ON_EXIT_SUB_LABEL" desc="3 of 3 possible states for the On-device site data setting. This text appears beneath the 'On-device site data' label and shows the user the state of the setting. With this status, data stored on the user's device is deleted each time the user closes all Chrome windows.">
-    Site data is cleared from your device when you close all windows
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_DELETE_ON_EXIT_SUB_LABEL" desc="3 of 3 possible states for the On-device site data setting. This text appears beneath the 'On-device site data' label and shows the user the state of the setting. With this status, data stored on the user's device is deleted each time the user closes all Chrome windows.">
+    Site data is deleted from your device when you close all windows
   </message>
   <message name="IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL" translateable="false" desc="Text after a url (e.g. google.com) that explains that that a website permission is allowed or blocked until a set date in the future.">
     {COUNT, plural,

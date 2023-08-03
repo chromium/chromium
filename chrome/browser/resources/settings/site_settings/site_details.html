@@ -53,7 +53,7 @@
         on-close="onClearStorageDialogClosed_">
       <style include="clear-storage-dialog-shared"></style>
       <div slot="title">
-        $i18n{siteSettingsSiteClearStorageDialogTitle}
+        $i18n{siteSettingsSiteDeleteStorageDialogTitle}
       </div>
       <div slot="body">
         [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle)]]
@@ -66,7 +66,7 @@
           <div class="detail">
             <iron-icon icon="all-sites:offline" aria-hidden="true"
                 role="presentation"></iron-icon>
-            $i18n{siteSettingsSiteClearStorageOfflineData}
+            $i18n{siteSettingsSiteDeleteStorageOfflineData}
           </div>
           <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
             <div class="detail" id="adPersonalization">

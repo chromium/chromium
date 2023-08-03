@@ -192,7 +192,7 @@ suite('SiteSettingsPage', function() {
         ContentSetting.SESSION_ONLY);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsSiteDataClearOnExitSubLabel'),
+        loadTimeData.getString('siteSettingsSiteDataDeleteOnExitSubLabel'),
         siteDataLinkRow.subLabel);
 
     page.set(
