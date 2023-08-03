@@ -814,16 +814,26 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
           web_contents(),
           enterprise_connectors::PrintScanningContext::kBeforeSystemDialog);
   if (scanning_data) {
-    auto scanning_done_callback = base::BindOnce(
-        &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
-        weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
-    set_analyzing_content(/*analyzing=*/true);
-    GetPrintRenderFrame(render_frame_host)
-        ->SnapshotForContentAnalysis(base::BindOnce(
-            &PrintViewManagerBase::OnGotSnapshotCallback,
-            weak_ptr_factory_.GetWeakPtr(), std::move(scanning_done_callback),
-            std::move(*scanning_data), render_frame_host->GetGlobalId()));
-    return;
+    // TODO(b/281087582): Support post-system-dialog scanning for cloud content
+    // analysis.
+    if (!scanning_data->settings.cloud_or_local_settings.is_local_analysis() ||
+        !base::FeatureList::IsEnabled(
+            printing::features::kEnableLocalScanAfterPreview)) {
+      auto scanning_done_callback = base::BindOnce(
+          &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
+          weak_ptr_factory_.GetWeakPtr(), std::move(params),
+          std::move(callback));
+      set_analyzing_content(/*analyzing=*/true);
+      GetPrintRenderFrame(render_frame_host)
+          ->SnapshotForContentAnalysis(base::BindOnce(
+              &PrintViewManagerBase::OnGotSnapshotCallback,
+              weak_ptr_factory_.GetWeakPtr(), std::move(scanning_done_callback),
+              std::move(*scanning_data), render_frame_host->GetGlobalId()));
+      return;
+    }
+    content_analysis_before_printing_document_ = base::BindOnce(
+        &PrintViewManagerBase::ContentAnalysisBeforePrintingDocument,
+        weak_ptr_factory_.GetWeakPtr(), std::move(*scanning_data));
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
