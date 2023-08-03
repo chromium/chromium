@@ -12,8 +12,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_mobile.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #else
@@ -229,13 +231,24 @@ VirtualCardEnrollBubbleControllerImpl::GetPageActionIconType() {
 
 void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #if BUILDFLAG(IS_ANDROID)
+  auto delegate_mobile =
+      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
+          this);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
+    autofill_vcn_enroll_bottom_sheet_bridge_ =
+        std::make_unique<AutofillVCNEnrollBottomSheetBridge>();
+    autofill_vcn_enroll_bottom_sheet_bridge_->RequestShowContent(
+        web_contents(), std::move(delegate_mobile));
+    return;
+  }
+
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents());
   DCHECK(infobar_manager);
   infobar_manager->RemoveAllInfoBars(true);
-  infobar_manager->AddInfoBar(CreateVirtualCardEnrollmentInfoBarMobile(
-      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
-          this)));
+  infobar_manager->AddInfoBar(
+      CreateVirtualCardEnrollmentInfoBarMobile(std::move(delegate_mobile)));
 #else
   // If bubble is already showing for another card, close it.
   if (bubble_view())

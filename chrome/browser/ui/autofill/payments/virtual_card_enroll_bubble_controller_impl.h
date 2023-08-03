@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
+
+#include <memory>
+
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -10,10 +15,11 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
-
 namespace autofill {
+
+#if BUILDFLAG(IS_ANDROID)
+class AutofillVCNEnrollBottomSheetBridge;
+#endif
 
 class VirtualCardEnrollBubbleControllerImpl
     : public AutofillBubbleControllerBase,
@@ -65,7 +71,13 @@ class VirtualCardEnrollBubbleControllerImpl
       base::RepeatingClosure bubble_shown_closure_for_testing) {
     bubble_shown_closure_for_testing_ = bubble_shown_closure_for_testing;
   }
-#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  bool DidShowBottomSheetForTesting() const {
+    return !!autofill_vcn_enroll_bottom_sheet_bridge_;
+  }
+#endif  // IS_ANDROID
+#endif  // UNIT_TEST
 
  protected:
   explicit VirtualCardEnrollBubbleControllerImpl(
@@ -89,7 +101,12 @@ class VirtualCardEnrollBubbleControllerImpl
   // Whether we should re-show the dialog when users return to the tab.
   bool reprompt_required_ = false;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // A Java bridge for the bottom sheet version of the virtual card enrollment
+  // UI.
+  std::unique_ptr<AutofillVCNEnrollBottomSheetBridge>
+      autofill_vcn_enroll_bottom_sheet_bridge_;
+#else
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
 
