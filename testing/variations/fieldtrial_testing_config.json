@@ -1005,7 +1005,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230803",
                     "enable_features": [
                         "AutoDisableAccessibilityV2"
                     ]
