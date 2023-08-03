@@ -11315,6 +11315,30 @@ TEST_P(DeskButtonTest, BarBoundsWithWorkAreaChangeDockedMagnifier) {
   EXPECT_EQ(bounds, expected_bounds);
 }
 
+TEST_P(DeskButtonTest, BarBoundsWithRTL) {
+  UpdateDisplay("800x600");
+
+  // Turn on RTL mode.
+  const bool default_rtl = base::i18n::IsRTL();
+  base::i18n::SetRTLForTesting(true);
+  ASSERT_TRUE(base::i18n::IsRTL());
+
+  OpenDeskBar();
+  gfx::Rect bounds = GetDeskBarView()->bounds();
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_EQ(bounds, gfx::Rect(323, 0, 154, 98));
+  } else if (GetParam().alignment == ShelfAlignment::kLeft) {
+    EXPECT_EQ(bounds, gfx::Rect(590, 0, 154, 98));
+  } else {
+    EXPECT_EQ(bounds, gfx::Rect(0, 0, 154, 98));
+  }
+
+  CloseDeskBar();
+
+  // Recover to default RTL mode.
+  base::i18n::SetRTLForTesting(default_rtl);
+}
+
 // Tests that desk button tab order is correct in the shelf.
 TEST_P(DeskButtonTest, TabOrder) {
   NewDesk();

@@ -34,6 +34,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -748,17 +749,20 @@ void DeskBarViewBase::Layout() {
   // TODO(b/293658108): Move dynamic width update out of `Layout`.
   gfx::Size preferred_size = CalculatePreferredSize();
   gfx::Rect new_bounds = GetAvailableBounds();
-  switch (Shelf::ForWindow(root_)->alignment()) {
+  ShelfAlignment shelf_alignment = Shelf::ForWindow(root_)->alignment();
+  switch (shelf_alignment) {
     case ShelfAlignment::kBottom:
       new_bounds.ClampToCenteredSize(preferred_size);
       break;
     case ShelfAlignment::kLeft:
-      new_bounds.set_size(preferred_size);
-      break;
     case ShelfAlignment::kRight:
-      new_bounds.set_origin({new_bounds.right() - preferred_size.width(),
-                             new_bounds.bottom() - preferred_size.height()});
-      new_bounds.set_size(preferred_size);
+      if ((shelf_alignment == ShelfAlignment::kRight) == base::i18n::IsRTL()) {
+        new_bounds.set_size(preferred_size);
+      } else {
+        new_bounds.set_origin({new_bounds.right() - preferred_size.width(),
+                               new_bounds.bottom() - preferred_size.height()});
+        new_bounds.set_size(preferred_size);
+      }
       break;
     case ShelfAlignment::kBottomLocked:
       return;
