@@ -1071,6 +1071,59 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
   store()->RemoveObserver(&observer);
 }
 
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldSetAccountValueForNotActiveTypesIfAlreadyExists) {
+  account_store()->SetValueSilently(kPrefName, base::Value("account_value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account_value"));
+
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  // `kPrefName` is set to the account store even if PREFERENCES type is not
+  // active since it already exists in the account store.
+  {
+    store()->SetValue(kPrefName, base::Value("new_value1"), 0);
+    EXPECT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "new_value1"));
+  }
+  {
+    store()->SetValueSilently(kPrefName, base::Value("new_value2"), 0);
+    EXPECT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "new_value2"));
+  }
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPrefName, &value));
+    *value = base::Value("new_value3");
+    store()->ReportValueChanged(kPrefName, 0);
+    EXPECT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "new_value3"));
+  }
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotSetAccountValueForNotActiveTypesIfNotAlreadyExists) {
+  ASSERT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  // `kPrefName` is not set to the account store since PREFERENCES type is not
+  // active and the pref does not already exist in the account store.
+  {
+    store()->SetValue(kPrefName, base::Value("new_value1"), 0);
+    EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  }
+  {
+    store()->SetValueSilently(kPrefName, base::Value("new_value2"), 0);
+    EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  }
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPrefName, &value));
+    *value = base::Value("new_value3");
+    store()->ReportValueChanged(kPrefName, 0);
+    EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  }
+}
+
 class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   MergeTestPrefModelAssociatorClient()
