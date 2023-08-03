@@ -74,3 +74,8 @@ to determine the best flag value.
 the CPU inference delegate. Not sure why this is here, but it is not needed in
 Chromium because we conditionally add the XNNPACK delegate when the platform
 supports it.
+
+* remove-resource_util_windows.cc-functionality.patch - Getting resources as
+runfiles or through command line flags is not needed in Chromium, so it's either
+to simply remove all that code than add bazel's runfiles lib and support the
+ABSL_FLAG.

@@ -32,6 +32,7 @@ config("mediapipe_flags") {
     "-Wundefined-var-template",
     "-Wno-range-loop-bind-reference",
     "-Wno-deprecated-declarations",
+    "-Wno-undefined-var-template",
   ]
 
   defines = [
@@ -154,7 +155,8 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "src/mediapipe/util/tflite/tflite_model_loader.h",
   ]
 
-  if (build_tflite_with_xnnpack) {
+  # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite is exposed through a C API and something is not working correctly in linking on Windows.
+  if (build_tflite_with_xnnpack && !is_win) {
     sources +=
         [ "src/mediapipe/calculators/tensor/inference_calculator_xnnpack.cc" ]
   }
@@ -254,8 +256,6 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/canonical_errors.h",
     "src/mediapipe/framework/deps/clock.cc",
     "src/mediapipe/framework/deps/clock.h",
-    "src/mediapipe/framework/deps/file_helpers.cc",
-    "src/mediapipe/framework/deps/file_helpers.h",
     "src/mediapipe/framework/deps/file_path.cc",
     "src/mediapipe/framework/deps/file_path.h",
     "src/mediapipe/framework/deps/map_util.h",
@@ -393,6 +393,17 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/tflite/error_reporter.cc",
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
+
+  if (!is_win) {
+    # TODO(b/283522287): Investigate this farther. The .cc file itself reads
+    # like it should be supported on Windows, but it fails to compile. This may
+    # be unneeded code though, as mediapipe links successfully on Windows
+    # without these files.
+    sources += [
+      "src/mediapipe/framework/deps/file_helpers.cc",
+      "src/mediapipe/framework/deps/file_helpers.h",
+    ]
+  }
 
   if (is_win) {
     sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
