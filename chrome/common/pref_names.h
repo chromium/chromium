@@ -2207,6 +2207,10 @@ inline constexpr char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
 inline constexpr char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.
 inline constexpr char kNtpPromoVisible[] = "ntp.promo_visible";
+// Number of times the seed color has been changed via the Customize Chrome
+// panel across NTP tabs. Incremented at most once per NTP tab.
+inline constexpr char kSeedColorChangeCount[] =
+    "colorpicker.SeedColorChangeCount";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Which page should be visible on the new tab page v4

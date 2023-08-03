@@ -161,6 +161,14 @@ suite('NewTabPageAppTest', () => {
           ],
       );
     });
+
+    test('Webstore toast works correctly', async () => {
+      callbackRouterRemote.showWebstoreToast();
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertTrue(app.$.webstoreToast.open);
+      assertTrue(!!app.$.webstoreToast.firstChild!.textContent);
+    });
   });
 
   [true, false].forEach((removeScrim) => {

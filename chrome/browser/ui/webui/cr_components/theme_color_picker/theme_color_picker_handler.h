@@ -44,6 +44,8 @@ class ThemeColorPickerHandler
 
   ~ThemeColorPickerHandler() override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;
   void SetGreyDefaultColor() override;
@@ -56,6 +58,8 @@ class ThemeColorPickerHandler
   void UpdateTheme() override;
 
  private:
+  void MaybeIncrementSeedColorChangeCount();
+
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
@@ -66,6 +70,7 @@ class ThemeColorPickerHandler
   void OnCustomBackgroundImageUpdated() override;
   void OnNtpCustomBackgroundServiceShuttingDown() override;
 
+  bool seed_color_changed_ = false;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

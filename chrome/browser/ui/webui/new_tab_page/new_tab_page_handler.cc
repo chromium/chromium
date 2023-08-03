@@ -475,6 +475,11 @@ NewTabPageHandler::NewTabPageHandler(
       base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
                           base::Unretained(this)));
 
+  pref_change_registrar_.Add(
+      prefs::kSeedColorChangeCount,
+      base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
+                          base::Unretained(this)));
+
   if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents_);
@@ -1364,4 +1369,10 @@ bool NewTabPageHandler::IsShortcutsVisible() const {
 void NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
     bool is_open) {
   page_->SetCustomizeChromeSidePanelVisibility(is_open);
+}
+
+void NewTabPageHandler::MaybeShowWebstoreToast() {
+  if (profile_->GetPrefs()->GetInteger(prefs::kSeedColorChangeCount) <= 3) {
+    page_->ShowWebstoreToast();
+  }
 }

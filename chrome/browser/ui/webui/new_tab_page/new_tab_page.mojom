@@ -365,4 +365,6 @@ interface Page {
   SetModulesFreVisibility(bool visible);
   // Sets NTP homepage promo.
   SetPromo(Promo? promo);
+  // Shows a toast with information about Chrome Webstore themes.
+  ShowWebstoreToast();
 };

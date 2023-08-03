@@ -358,6 +358,12 @@
     top: 0;
     z-index: 101;
   }
+
+  #webstoreToast {
+    border-radius: 12px;
+    line-height: 20px;
+    padding: 16px;
+  }
 </style>
 <div id="content" style="
         --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
@@ -487,3 +493,10 @@
     </clipPath>
   </defs>
 </svg>
+
+<cr-toast id="webstoreToast" duration="10000">
+  <div>$i18n{webstoreThemesToastMessage}</div>
+  <cr-button on-click="onWebstoreToastButtonClick_">
+    $i18n{webstoreThemesToastButtonText}
+  </cr-button>
+</cr-toast>

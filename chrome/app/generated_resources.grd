@@ -7633,6 +7633,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL" desc="A color scheme mode option for browser system mode, which follows the OS color scheme mode in customize chrome side panel.">
         Device
       </message>
+      <message name="IDS_NTP_WEBSTORE_TOAST_MESSAGE" desc="The message displayed on the New Tab Page toast that directs users to the Chrome webstore themes.">
+        Default Chrome themes have changed. You can still access previous themes from the Chrome Web store.
+      </message>
+      <message name="IDS_NTP_WEBSTORE_TOAST_BUTTON_TEXT" desc="The text displayed in the New Tab Page webstore themes toast button">
+        See previous themes
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">

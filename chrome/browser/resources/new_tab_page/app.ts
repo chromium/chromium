@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {ClickInfo, Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
@@ -106,6 +107,7 @@ export interface AppElement {
     customizeDialogIf: DomIf,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
+    webstoreToast: CrToastElement,
   };
 }
 
@@ -369,6 +371,7 @@ export class AppElement extends AppElementBase {
   private shouldPrintPerformance_: boolean;
   private backgroundImageLoadStartEpoch_: number;
   private backgroundImageLoadStart_: number = 0;
+  private showWebstoreToastListenerId_: number|null = null;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -422,6 +425,12 @@ export class AppElement extends AppElementBase {
             (visible: boolean) => {
               this.showCustomize_ = visible;
             });
+    this.showWebstoreToastListenerId_ =
+        NewTabPageProxy.getInstance()
+            .callbackRouter.showWebstoreToast.addListener(() => {
+              this.$.webstoreToast.show();
+            });
+
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.showCustomize_) {
       this.setCustomizeChromeSidePanelVisible_(this.showCustomize_);
@@ -835,6 +844,10 @@ export class AppElement extends AppElementBase {
       }
       log(entry);
     });
+  }
+
+  private onWebstoreToastButtonClick_() {
+    window.location.assign('https://chromewebstore.google.com');
   }
 
   private onWindowClick_(e: Event) {
