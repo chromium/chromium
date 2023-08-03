@@ -50,7 +50,7 @@ void SnapGroup::OnWindowDestroying(aura::Window* window) {
   }
 
   // `this` will be destroyed after this line.
-  Shell::Get()->snap_group_controller()->RemoveSnapGroup(this);
+  SnapGroupController::Get()->RemoveSnapGroup(this);
 }
 
 void SnapGroup::StartObservingWindows() {

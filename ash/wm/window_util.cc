@@ -55,7 +55,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -337,7 +336,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   auto* split_view_controller =
       SplitViewController::Get(window->GetRootWindow());
 
-  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  auto* snap_group_controller = SnapGroupController::Get();
 
   // A window should be excluded from being shown in overview when we are
   // selecting another window to complete a window layout, which can happen when

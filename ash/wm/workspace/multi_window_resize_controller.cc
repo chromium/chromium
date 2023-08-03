@@ -944,8 +944,7 @@ bool MultiWindowResizeController::IsOverComponent(
 void MultiWindowResizeController::OnLockButtonPressed() {
   aura::Window* window1 = windows_.window1;
   aura::Window* window2 = windows_.window2;
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
   CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
   snap_group_controller->AddSnapGroup(window1, window2);
   ResetResizer();

@@ -44,6 +44,10 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver {
   SnapGroupController& operator=(const SnapGroupController&) = delete;
   ~SnapGroupController() override;
 
+  // Convenience function to get the snap group controller instance, which is
+  // created and owned by Shell.
+  static SnapGroupController* Get();
+
   // Returns true if `window1` and `window2` are in the same snap group.
   bool AreWindowsInSnapGroup(aura::Window* window1,
                              aura::Window* window2) const;

@@ -496,7 +496,7 @@ bool CanLock() {
 
 bool CanGroupOrUngroupWindows() {
   aura::Window::Windows window_pair = GetTargetWindowPairForSnapGroup();
-  if (!Shell::Get()->snap_group_controller() || window_pair.size() != 2) {
+  if (!SnapGroupController::Get() || window_pair.size() != 2) {
     return false;
   }
 
@@ -513,8 +513,7 @@ bool CanGroupOrUngroupWindows() {
 }
 
 void GroupOrUngroupWindowsInSnapGroup() {
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
   CHECK(snap_group_controller);
   aura::Window::Windows window_pair = GetTargetWindowPairForSnapGroup();
   if (window_pair.size() != 2) {
@@ -544,13 +543,12 @@ void GroupOrUngroupWindowsInSnapGroup() {
 }
 
 bool CanMinimizeSnapGroupWindows() {
-  return Shell::Get()->snap_group_controller();
+  return SnapGroupController::Get();
 }
 
 void MinimizeWindowsInSnapGroup() {
   aura::Window* top_window = GetTargetWindow();
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
   if (!top_window || !snap_group_controller) {
     return;
   }

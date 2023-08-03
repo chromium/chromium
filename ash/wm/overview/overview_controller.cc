@@ -497,8 +497,7 @@ bool OverviewController::CanEnterOverview() {
     return false;
   }
 
-  if (SnapGroupController* snap_group_controller =
-          Shell::Get()->snap_group_controller();
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
       snap_group_controller && !snap_group_controller->CanEnterOverview()) {
     return false;
   }

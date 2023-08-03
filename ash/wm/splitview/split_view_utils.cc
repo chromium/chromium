@@ -509,7 +509,7 @@ SplitViewController::SnapPosition GetSnapPosition(
 }
 
 bool IsSnapGroupEnabledInClamshellMode() {
-  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  auto* snap_group_controller = SnapGroupController::Get();
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   const bool in_tablet_mode =
