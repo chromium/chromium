@@ -29,7 +29,8 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/window_preview_view.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -61,6 +62,8 @@ namespace ash {
 namespace {
 
 using ::ui::mojom::CursorType;
+
+using WindowCyclingDirection = WindowCycleController::WindowCyclingDirection;
 
 SplitViewController* split_view_controller() {
   return SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -477,6 +480,21 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
         cached_primary_window, cached_secondary_window));
     EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(cached_primary_window,
                                                  cached_secondary_window));
+  }
+
+  void CompleteWindowCycling() {
+    WindowCycleController* window_cycle_controller =
+        Shell::Get()->window_cycle_controller();
+    window_cycle_controller->CompleteCycling();
+  }
+
+  void CycleWindow(WindowCyclingDirection direction, int steps) {
+    WindowCycleController* window_cycle_controller =
+        Shell::Get()->window_cycle_controller();
+    for (int i = 0; i < steps; i++) {
+      window_cycle_controller->HandleCycleWindow(direction);
+      EXPECT_TRUE(window_cycle_controller->IsCycling());
+    }
   }
 
  private:
@@ -1042,6 +1060,47 @@ TEST_F(SnapGroupEntryPointArm1Test, SnapWithoutShowingOverview) {
       /*can_enter_overview=*/true);
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// Tests that the window list is reordered when there is snap group. The two
+// windows will be adjacent with each other with primary snapped window put
+// before secondary snapped window.
+TEST_F(SnapGroupEntryPointArm1Test, WindowReorderInAltTab) {
+  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  wm::ActivateWindow(window2.get());
+  // Initial window activation order: window2 --> window1--> window0.
+  ASSERT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
+
+  const auto& windows =
+      window_cycle_controller->window_cycle_list()->windows_for_testing();
+
+  // Test that the two windows in a snap group are reordered to be adjacent
+  // with each other to reflect the window layout with the revised order as :
+  // window2 --> window0--> window1.
+  // TODO(b/293365678): `cycle_list` should contain two items, update the test
+  // when the container view is implemented.
+  ASSERT_EQ(windows.size(), 3u);
+  EXPECT_EQ(windows.at(0), window2.get());
+  EXPECT_EQ(windows.at(1), window0.get());
+  EXPECT_EQ(windows.at(2), window1.get());
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
+
+  // With the activation of `window0`, `window1` will be appended right after
+  // `window0`.
+  // The new window cycle list order as : window0 --> window1 -->window2. Cycle
+  // twice to focus on `window2`.
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
 // Tests that the swap window source histogram is recorded correctly.

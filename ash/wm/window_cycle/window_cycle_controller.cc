@@ -22,11 +22,13 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/window_cycle/window_cycle_event_filter.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -95,6 +97,44 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
   base::UmaHistogramExactLinear(kAltTabDesksSwitchDistanceHistogramName,
                                 desks_switch_distance,
                                 desks_util::kDesksUpperLimit);
+}
+
+// Builds the window list for window cycler, `desks_mru_type` determines whether
+// to include or exclude windows from the inactive desks. The list is built
+// based on the mru list and revised so that windows in a snap group are put
+// together with primary window comes before secondary snapped window.
+MruWindowTracker::WindowList BuildWindowList(DesksMruType desks_mru_type) {
+  const auto window_list =
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
+          desks_mru_type);
+
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  if (!snap_group_controller) {
+    return window_list;
+  }
+
+  MruWindowTracker::WindowList adjusted_window_list;
+  for (auto* window : window_list) {
+    // The latter-activated window in a snap group should have been added. Skip
+    // inserting to de-dupe.
+    if (base::Contains(adjusted_window_list, window)) {
+      continue;
+    }
+
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      // Insert the windows if they belong to a group following the order of the
+      // actual window layout, i.e. primary snapped window comes first followed
+      // by the secondary snapped window.
+      adjusted_window_list.push_back(snap_group->window1());
+      adjusted_window_list.push_back(snap_group->window2());
+    } else {
+      adjusted_window_list.push_back(window);
+    }
+  }
+
+  return adjusted_window_list;
 }
 
 }  // namespace
@@ -397,8 +437,7 @@ void WindowCycleController::OnDeskRemoved(const Desk* desk) {
 
 WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
   WindowCycleController::WindowList window_list =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
-          IsAltTabPerActiveDesk() ? kActiveDesk : kAllDesks);
+      BuildWindowList(IsAltTabPerActiveDesk() ? kActiveDesk : kAllDesks);
 
   // Window cycle list windows will handle showing their transient related
   // windows, so if a window in |window_list| has a transient root also in
