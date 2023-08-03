@@ -33,6 +33,9 @@ namespace capture_mode {
 
 namespace {
 
+// The `kGpuMemoryBuffer` type is requested only when running on an actual
+// device. This allows force-requesting them when testing in which case
+// SharedMemory GMBs are used.
 bool g_force_use_gpu_memory_buffer_for_test = false;
 
 // A constant flag that describes which APIs the shared image mailboxes created
@@ -73,6 +76,12 @@ gfx::BufferUsage GetBufferUsage() {
 gfx::BufferFormat GetBufferFormat() {
   return g_force_use_gpu_memory_buffer_for_test ? kGpuMemoryBufferFormatForTest
                                                 : kGpuMemoryBufferFormat;
+}
+
+viz::SharedImageFormat GetSharedImageFormat() {
+  return g_force_use_gpu_memory_buffer_for_test
+             ? viz::SinglePlaneFormat::kBGRA_8888
+             : viz::MultiPlaneFormat::kNV12;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -348,9 +357,11 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(shared_image_interface);
 
     if (CreateNonLegacyMultiPlaneSharedImage()) {
-      auto format = viz::MultiPlaneFormat::kNV12;
+      auto format = GetSharedImageFormat();
 #if BUILDFLAG(IS_OZONE)
-      if (!UsePerPlaneSampling()) {
+      // If format is not multiplanar it must be used for testing.
+      CHECK(format.is_multi_plane() || g_force_use_gpu_memory_buffer_for_test);
+      if (!UsePerPlaneSampling() && format.is_multi_plane()) {
         format.SetPrefersExternalSampler();
       }
 #endif
@@ -419,11 +430,16 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     }
 
     if (CreateNonLegacyMultiPlaneSharedImage()) {
-      frame->set_shared_image_format_type(
-          UsePerPlaneSampling()
-              ? media::SharedImageFormatType::kSharedImageFormat
-              : media::SharedImageFormatType::
-                    kSharedImageFormatExternalSampler);
+      auto format = GetSharedImageFormat();
+      // If format is not multiplanar it must be used for testing.
+      CHECK(format.is_multi_plane() || g_force_use_gpu_memory_buffer_for_test);
+      if (!UsePerPlaneSampling() && format.is_multi_plane()) {
+        frame->set_shared_image_format_type(
+            media::SharedImageFormatType::kSharedImageFormatExternalSampler);
+      } else {
+        frame->set_shared_image_format_type(
+            media::SharedImageFormatType::kSharedImageFormat);
+      }
     }
 
     if (frame_info->color_space.IsValid()) {
