@@ -14,7 +14,7 @@ package metrics;
 import "omnibox_input_type.proto";
 
 // Stores information about an omnibox interaction.
-// Next tag: 27
+// Next tag: 28
 message OmniboxEventProto {
   // The timestamp for the event, in seconds.
   // This value comes from Chromium's TimeTicks::Now(), which is an abstract
@@ -632,4 +632,18 @@ message OmniboxEventProto {
     optional bool is_sync_enabled = 4;
   }
   optional ProfileData profile_data = 23;
+
+  // The position of the omnibox.
+  enum OmniboxPosition {
+    // Unknown position (should not be reported).
+    UNKNOWN_POSITION = 0;
+    // The omnibox is on the top edge of the screen.
+    TOP_POSITION = 1;
+    // The omnibox is on the bottom edge of the screen.
+    BOTTOM_POSITION = 2;
+  }
+  // The position of the steady state (unfocused) omnibox.  Logged on iOS only;
+  // will be set on iOS with the BottomOmniboxSteadyStateIOS experiment.
+  // TODO(christianxu): Update this on experiment cleanup.
+  optional OmniboxPosition steady_state_omnibox_position = 27;
 }
