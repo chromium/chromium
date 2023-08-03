@@ -18,6 +18,8 @@ source_set("start_surface") {
   sources = [
     "start_surface_recent_tab_browser_agent.h",
     "start_surface_recent_tab_browser_agent.mm",
+    "start_surface_recent_tab_observer.h",
+    "start_surface_recent_tab_observer.mm",
     "start_surface_recent_tab_removal_observer_bridge.h",
     "start_surface_recent_tab_removal_observer_bridge.mm",
     "start_surface_scene_agent.h",
