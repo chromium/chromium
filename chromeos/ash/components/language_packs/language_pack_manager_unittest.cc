@@ -430,6 +430,18 @@ TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   for (const auto& locale : handwriting) {
     EXPECT_TRUE(manager_->IsPackAvailable(kHandwritingFeatureId, locale));
   }
+
+  // TTS.
+  const std::vector<std::string> tts({
+      "bn-bd", "cs-cz", "da-dk", "de-de", "el-gr",  "en-au", "en-gb",
+      "en-us", "es-es", "es-us", "fi-fi", "fil-ph", "fr-fr", "hi-in",
+      "hu-hu", "id-id", "it-it", "ja-jp", "km-kh",  "ko-kr", "nb-no",
+      "ne-np", "nl-nl", "pl-pl", "pt-br", "si-lk",  "sk-sk", "sv-se",
+      "th-th", "tr-tr", "uk-ua", "vi-vn", "yue-hk",
+  });
+  for (const auto& locale : tts) {
+    EXPECT_TRUE(manager_->IsPackAvailable(kTtsFeatureId, locale));
+  }
 }
 
 TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
