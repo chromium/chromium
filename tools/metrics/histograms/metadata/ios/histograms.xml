@@ -616,6 +616,8 @@ chromium-metrics-reviews@google.com.
     <variant name="ActiveDayCount"
         summary="Represents number days user has been active within last
                  valid period"/>
+    <variant name="AutofillUseCount"
+        summary="Represents number of times user used autofill suggestions."/>
     <variant name="BookmarkUseCount"
         summary="Represents number of times user used bookmarks or bookmark
                  manager."/>

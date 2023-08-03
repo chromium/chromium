@@ -35,9 +35,11 @@
 // Number of times user used the bookmarks or bookmark manager in the last
 // `kTriggerCriteriaExperimentStatExpiration` days.
 @property(nonatomic, assign) int bookmarkUseCount;
+// Number of times user used the autofill suggestions in the last
+// `kTriggerCriteriaExperimentStatExpiration` days.
+@property(nonatomic, assign) int autofillUseCount;
 
 // TODO(crbug.com/1456438): Implement rest of the metrics:
-// AutofillUseCount
 // SpecialTabsUseCount
 
 @end

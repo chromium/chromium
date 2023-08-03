@@ -524,6 +524,8 @@ using base::UmaHistogramEnumeration;
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
   UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                           ReauthenticationEvent::kAttempt);
+  LogAutofillUseForDefaultBrowserPromo();
+
   __weak __typeof(self) weakSelf = self;
   auto suggestionHandler = ^() {
     __typeof(self) strongSelf = weakSelf;

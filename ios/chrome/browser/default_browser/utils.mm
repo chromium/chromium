@@ -504,6 +504,7 @@ NSString* const kLastSignificantUserEventStaySafe =
     @"lastSignificantUserEventStaySafe";
 NSString* const kOmniboxUseCount = @"OmniboxUseCount";
 NSString* const kBookmarkUseCount = @"BookmarkUseCount";
+NSString* const kAutofillUseCount = @"AutofillUseCount";
 
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
   UpdateStorageWithDictionary(@{key : data});
@@ -745,6 +746,10 @@ void LogCopyPasteInOmniboxForDefaultBrowserPromo() {
 void LogBookmarkUseForDefaultBrowserPromo() {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
   StoreCurrentTimestampForKey(kBookmarkUseCount);
+}
+
+void LogAutofillUseForDefaultBrowserPromo() {
+  StoreCurrentTimestampForKey(kAutofillUseCount);
 }
 
 bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
@@ -1107,6 +1112,9 @@ void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
   base::UmaHistogramCounts100(
       base::StrCat({histogram_prefix, ".BookmarkUseCount"}),
       promo_stats.bookmarkUseCount);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".AutofllUseCount"}),
+      promo_stats.autofillUseCount);
 }
 
 PromoStatistics* CalculatePromoStatistics() {
@@ -1134,6 +1142,8 @@ PromoStatistics* CalculatePromoStatistics() {
       kOmniboxUseCount, kTriggerCriteriaExperimentStatExpiration);
   promo_stats.bookmarkUseCount = NumRecordedEventForKeyLessThanDelay(
       kBookmarkUseCount, kTriggerCriteriaExperimentStatExpiration);
+  promo_stats.autofillUseCount = NumRecordedEventForKeyLessThanDelay(
+      kAutofillUseCount, kTriggerCriteriaExperimentStatExpiration);
 
   return promo_stats;
 }

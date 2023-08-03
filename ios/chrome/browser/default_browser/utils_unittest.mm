@@ -623,4 +623,42 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_BookmarkUseCount) {
     EXPECT_EQ(2, promo_stats.bookmarkUseCount);
   }
 }
+
+// Test `CalculatePromoStatistics` for autofill use count.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_AutofillUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.autofillUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kAutofillUseCount, @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAutofillUseCount, @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.autofillUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kAutofillUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.autofillUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogAutofillUseForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.autofillUseCount);
+  }
+}
 }  // namespace

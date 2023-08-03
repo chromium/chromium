@@ -97,6 +97,11 @@ extern NSString* const kOmniboxUseCount;
 // events.
 extern NSString* const kBookmarkUseCount;
 
+// Key in storage containing an array of dates. Each date correspond to
+// a autofill suggestion use event up to allowed maximum number of past
+// events.
+extern NSString* const kAutofillUseCount;
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
@@ -202,6 +207,9 @@ void LogCopyPasteInOmniboxForDefaultBrowserPromo();
 
 // Logs in NSUserDefaults that user used bookmarks or bookmark manager.
 void LogBookmarkUseForDefaultBrowserPromo();
+
+// Logs in NSUserDefaults that user used autofill suggestions
+void LogAutofillUseForDefaultBrowserPromo();
 
 // Returns YES if the user has opened the app through first-party intent 2
 // times in the last 7 days, but across 2 user sessions (default 6 hours). Also
