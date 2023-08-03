@@ -93,8 +93,6 @@ void UpdateRenderText(const Rect& rect,
   render_text->SetStyle(TEXT_STYLE_ITALIC, (font_style & Font::ITALIC) != 0);
   render_text->SetStyle(TEXT_STYLE_UNDERLINE,
                         (font_style & Font::UNDERLINE) != 0);
-  render_text->SetStyle(TEXT_STYLE_STRIKE,
-                        (font_style & Font::STRIKE_THROUGH) != 0);
   render_text->SetWeight(font_list.GetFontWeight());
 }
 

@@ -10,20 +10,19 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/time/date_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/font.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 
 namespace {
 
@@ -102,14 +101,18 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_details_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
-  tasks_details_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  tasks_details_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  tasks_label_ = SetupLabel(tasks_title_view_);
-  tasks_label_->SetText(base::UTF8ToUTF16(task->title));
-  tasks_label_->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
+  views::Label* tasks_label = SetupLabel(tasks_title_view_);
+  tasks_label->SetText(base::UTF8ToUTF16(task->title));
+  tasks_label->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosButton2));
-  SetupTasksLabel(/*completed=*/true);
+  tasks_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
+      TypographyToken::kCrosButton2));
+  if (chromeos::features::IsJellyEnabled()) {
+    tasks_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  } else {
+    tasks_label->SetEnabledColorId(kColorAshTextColorPrimary);
+  }
 
   if (task->due.has_value()) {
     views::ImageView* time_icon_view =
@@ -120,7 +123,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation1));
-    due_date_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
+    tasks_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosAnnotation1));
 
     if (chromeos::features::IsJellyEnabled()) {
@@ -159,7 +162,6 @@ GlanceablesTaskView::~GlanceablesTaskView() = default;
 void GlanceablesTaskView::ButtonPressed() {
   // Visually mark the task as completed.
   SetupButtonContents(button_, /*checked=*/true);
-  SetupTasksLabel(/*completed=*/true);
 
   ash::Shell::Get()
       ->glanceables_v2_controller()
@@ -173,33 +175,8 @@ void GlanceablesTaskView::MarkedAsCompleted(bool success) {
   if (!success) {
     // Uncheck button if the tasks is not successfully marked as completed.
     SetupButtonContents(button_, /*checked=*/false);
-    SetupTasksLabel(/*completed=*/false);
   }
   completed_ = true;
-}
-
-void GlanceablesTaskView::SetupTasksLabel(bool completed) {
-  if (completed) {
-    tasks_label_->SetFontList(
-        TypographyProvider::Get()
-            ->ResolveTypographyToken(TypographyToken::kCrosButton2)
-            .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
-    if (chromeos::features::IsJellyEnabled()) {
-      tasks_label_->SetEnabledColorId(
-          static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary));
-    } else {
-      tasks_label_->SetEnabledColorId(kColorAshTextColorSecondary);
-    }
-  } else {
-    tasks_label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-        TypographyToken::kCrosButton2));
-    if (chromeos::features::IsJellyEnabled()) {
-      tasks_label_->SetEnabledColorId(
-          static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
-    } else {
-      tasks_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-    }
-  }
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)
