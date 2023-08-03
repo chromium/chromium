@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("smart_card") {
   sources = [
+    "smart_card_cancel_algorithm.cc",
+    "smart_card_cancel_algorithm.h",
     "smart_card_connection.cc",
     "smart_card_connection.h",
     "smart_card_context.cc",

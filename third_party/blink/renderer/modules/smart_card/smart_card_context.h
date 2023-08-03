@@ -54,9 +54,10 @@ class SmartCardContext final : public ScriptWrappable,
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
 
- private:
-  class GetStatusChangeAbortAlgorithm;
+  // Called by SmartCardCancelAlgorithm
+  void Cancel();
 
+ private:
   void CloseMojoConnection();
   bool EnsureNoOperationInProgress(ExceptionState& exception_state) const;
   bool EnsureMojoConnection(ExceptionState& exception_state) const;
@@ -64,19 +65,16 @@ class SmartCardContext final : public ScriptWrappable,
                          device::mojom::blink::SmartCardListReadersResultPtr);
   void OnGetStatusChangeDone(
       ScriptPromiseResolver* resolver,
+      AbortSignal* signal,
+      AbortSignal::AlgorithmHandle* abort_handle,
       device::mojom::blink::SmartCardStatusChangeResultPtr result);
   void OnCancelDone(device::mojom::blink::SmartCardResultPtr result);
   void OnConnectDone(ScriptPromiseResolver* resolver,
                      device::mojom::blink::SmartCardConnectResultPtr result);
-  void AbortGetStatusChange();
-  void ResetAbortSignal();
 
   HeapMojoRemote<device::mojom::blink::SmartCardContext> scard_context_;
   // The currently ongoing request, if any.
   Member<ScriptPromiseResolver> request_;
-
-  Member<AbortSignal> get_status_change_abort_signal_;
-  Member<AbortSignal::AlgorithmHandle> get_status_change_abort_handle_;
 };
 }  // namespace blink
 

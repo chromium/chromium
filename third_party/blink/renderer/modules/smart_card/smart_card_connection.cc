@@ -11,8 +11,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/smart_card/smart_card_cancel_algorithm.h"
+#include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_error.h"
+#include "third_party/blink/renderer/modules/smart_card/smart_card_util.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
@@ -256,10 +260,12 @@ SmartCardConnection::SmartCardConnection(
     mojo::PendingRemote<device::mojom::blink::SmartCardConnection>
         pending_connection,
     device::mojom::blink::SmartCardProtocol active_protocol,
+    SmartCardContext* smart_card_context,
     ExecutionContext* execution_context)
     : ExecutionContextClient(execution_context),
       connection_(execution_context),
-      active_protocol_(active_protocol) {
+      active_protocol_(active_protocol),
+      smart_card_context_(smart_card_context) {
   connection_.Bind(
       std::move(pending_connection),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
@@ -424,6 +430,7 @@ ScriptPromise SmartCardConnection::setAttribute(
 ScriptPromise SmartCardConnection::startTransaction(
     ScriptState* script_state,
     V8SmartCardTransactionCallback* transaction_callback,
+    SmartCardTransactionOptions* options,
     ExceptionState& exception_state) {
   if (!EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
@@ -436,13 +443,25 @@ ScriptPromise SmartCardConnection::startTransaction(
     return ScriptPromise();
   }
 
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    return ScriptPromise::Reject(script_state, signal->reason(script_state));
+  }
+
   ongoing_request_ = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
+
+  AbortSignal::AlgorithmHandle* abort_handle = nullptr;
+  if (signal) {
+    abort_handle = signal->AddAlgorithm(
+        MakeGarbageCollected<SmartCardCancelAlgorithm>(smart_card_context_));
+  }
 
   connection_->BeginTransaction(WTF::BindOnce(
       &SmartCardConnection::OnBeginTransactionDone, WrapPersistent(this),
       WrapPersistent(ongoing_request_.Get()),
-      WrapPersistent(transaction_callback)));
+      WrapPersistent(transaction_callback), WrapPersistent(signal),
+      WrapPersistent(abort_handle)));
 
   return ongoing_request_->Promise();
 }
@@ -477,6 +496,7 @@ void SmartCardConnection::OnTransactionCallbackFailed(
 void SmartCardConnection::Trace(Visitor* visitor) const {
   visitor->Trace(connection_);
   visitor->Trace(ongoing_request_);
+  visitor->Trace(smart_card_context_);
   visitor->Trace(transaction_state_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -596,13 +616,25 @@ void SmartCardConnection::OnStatusDone(
 void SmartCardConnection::OnBeginTransactionDone(
     ScriptPromiseResolver* resolver,
     V8SmartCardTransactionCallback* transaction_callback,
+    AbortSignal* signal,
+    AbortSignal::AlgorithmHandle* abort_handle,
     device::mojom::blink::SmartCardTransactionResultPtr result) {
   CHECK(!transaction_state_);
   CHECK_EQ(ongoing_request_, resolver);
   ongoing_request_ = nullptr;
 
+  if (signal && abort_handle) {
+    signal->RemoveAlgorithm(abort_handle);
+  }
+
   if (result->is_error()) {
-    resolver->Reject(SmartCardError::Create(result->get_error()));
+    if (signal && signal->aborted() &&
+        result->get_error() ==
+            device::mojom::blink::SmartCardError::kCancelled) {
+      RejectWithAbortionReason(resolver, signal);
+    } else {
+      resolver->Reject(SmartCardError::Create(result->get_error()));
+    }
     return;
   }
 

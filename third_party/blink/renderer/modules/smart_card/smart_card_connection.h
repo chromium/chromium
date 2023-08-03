@@ -8,6 +8,7 @@
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
@@ -16,6 +17,8 @@
 
 namespace blink {
 
+class SmartCardContext;
+class SmartCardTransactionOptions;
 class V8SmartCardDisposition;
 class V8SmartCardTransactionCallback;
 
@@ -27,6 +30,7 @@ class SmartCardConnection final : public ScriptWrappable,
   explicit SmartCardConnection(
       mojo::PendingRemote<device::mojom::blink::SmartCardConnection>,
       device::mojom::blink::SmartCardProtocol active_protocol,
+      SmartCardContext* smart_card_context,
       ExecutionContext*);
 
   // SmartCardConnection idl
@@ -53,6 +57,7 @@ class SmartCardConnection final : public ScriptWrappable,
                              ExceptionState& exception_state);
   ScriptPromise startTransaction(ScriptState* script_state,
                                  V8SmartCardTransactionCallback* transaction,
+                                 SmartCardTransactionOptions* options,
                                  ExceptionState& exception_state);
 
   void OnTransactionCallbackDone(
@@ -76,6 +81,8 @@ class SmartCardConnection final : public ScriptWrappable,
   void OnBeginTransactionDone(
       ScriptPromiseResolver* resolver,
       V8SmartCardTransactionCallback* transaction_callback,
+      AbortSignal* signal,
+      AbortSignal::AlgorithmHandle* abort_handle,
       device::mojom::blink::SmartCardTransactionResultPtr result);
   void OnEndTransactionDone(device::mojom::blink::SmartCardResultPtr result);
   void CloseMojoConnection();
@@ -85,6 +92,7 @@ class SmartCardConnection final : public ScriptWrappable,
   Member<ScriptPromiseResolver> ongoing_request_;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;
   device::mojom::blink::SmartCardProtocol active_protocol_;
+  Member<SmartCardContext> smart_card_context_;
 
   class TransactionState;
   Member<TransactionState> transaction_state_;

@@ -916,6 +916,73 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, StartTransaction) {
     })())"));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardTest, StartTransactionAborted) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  StrictMock<MockSmartCardConnection> mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  base::test::TestFuture<SmartCardConnection::BeginTransactionCallback>
+      begin_transaction_callback;
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_connection, BeginTransaction(_))
+        .WillOnce([&begin_transaction_callback](
+                      SmartCardConnection::BeginTransactionCallback callback) {
+          // Don't respond immediately.
+          begin_transaction_callback.SetValue(std::move(callback));
+        });
+
+    // Aborting a blink connection.startTransaction() call means sending a
+    // Cancel() request down to device.mojom.SmartCardContext
+    EXPECT_CALL(mock_context_factory, Cancel(_))
+        .WillOnce([&begin_transaction_callback](
+                      SmartCardContext::CancelCallback callback) {
+          begin_transaction_callback.Take().Run(
+              device::mojom::SmartCardTransactionResult::NewError(
+                  SmartCardError::kCancelled));
+
+          std::move(callback).Run(
+              SmartCardResult::NewSuccess(SmartCardSuccess::kOk));
+        });
+  }
+
+  EXPECT_EQ("Exception: Error, Something", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "shared", ["t1"])).connection;
+
+      let transaction = async () => {
+        let apdu = new Uint8Array([0x03, 0x02, 0x01]);
+        await connection.transmit(apdu);
+        return "reset";
+      }
+
+      let abortController = new AbortController();
+
+      let promise =
+          connection.startTransaction(transaction,
+              {signal: abortController.signal});
+
+      abortController.abort(Error("Something"));
+
+      try {
+        await promise;
+        return "Success";
+      } catch (e) {
+        return `Exception: ${e.name}, ${e.message}`;
+      }
+    })())"));
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardTest, TransactionCallbackRejects) {
   TestEmptyTransaction("startTransaction: Error, Oops!", R"(
       async () => { throw new Error('Oops!'); }

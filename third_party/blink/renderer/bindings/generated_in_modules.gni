@@ -3074,6 +3074,8 @@ if (target_os != "android") {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_in.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_out.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_out.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_options.h",
   ]
   generated_enumeration_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.cc",

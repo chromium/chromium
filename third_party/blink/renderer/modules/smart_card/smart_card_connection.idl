@@ -11,6 +11,10 @@ enum SmartCardDisposition {
   "eject"
 };
 
+dictionary SmartCardTransactionOptions {
+  AbortSignal signal;
+};
+
 callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
 
 [
@@ -40,5 +44,6 @@ callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
       BufferSource value);
 
   [CallWith=ScriptState, RaisesException]
-  Promise<undefined> startTransaction(SmartCardTransactionCallback transaction);
+  Promise<undefined> startTransaction(SmartCardTransactionCallback transaction,
+      optional SmartCardTransactionOptions options = {});
 };
