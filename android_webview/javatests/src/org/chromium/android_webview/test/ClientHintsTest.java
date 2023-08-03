@@ -99,15 +99,41 @@ public class ClientHintsTest {
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         // Please keep these here (and below) in the same order as web_client_hints_types.mojom.
+        // clang-format off
+        final String[] activeClientHints = {
+                "device-memory",
+                "dpr",
+                "width",
+                "viewport-width",
+                "rtt",
+                "downlink",
+                "ect",
+                // "sec-ch-lang" was removed in M96
+                "sec-ch-ua",
+                "sec-ch-ua-arch",
+                "sec-ch-ua-platform",
+                "sec-ch-ua-model",
+                "sec-ch-ua-mobile",
+                "sec-ch-ua-full-version",
+                "sec-ch-ua-platform-version",
+                "sec-ch-prefers-color-scheme",
+                "sec-ch-ua-bitness",
+                "sec-ch-viewport-height",
+                "sec-ch-device-memory",
+                "sec-ch-dpr",
+                "sec-ch-width",
+                "sec-ch-viewport-width",
+                "sec-ch-ua-full-version-list",
+                "sec-ch-ua-wow64",
+                "save-data",
+                "sec-ch-prefers-reduced-motion",
+                "sec-ch-ua-form-factor",
+                // Add client hints above. The final row should have a trailing comma for cleaner
+                // diffs.
+        };
+        // clang-format on
         final String url = server.getURL(
-                "/client-hints-header?accept-ch=device-memory,dpr,width,viewport-width,"
-                + "rtt,downlink,ect,sec-ch-lang,sec-ch-ua,sec-ch-ua-arch,sec-ch-ua-platform,"
-                + "sec-ch-ua-model,sec-ch-ua-mobile,sec-ch-ua-full-version,"
-                + "sec-ch-ua-platform-version,sec-ch-prefers-color-scheme,"
-                + "sec-ch-ua-bitness,sec-ch-viewport-height,"
-                + "sec-ch-device-memory,sec-ch-dpr,sec-ch-width,sec-ch-viewport-width,"
-                + "sec-ch-ua-full-version-list,sec-ch-ua-wow64,save-data,"
-                + "sec-ch-prefers-reduced-motion,sec-ch-ua-form-factor");
+                "/client-hints-header?accept-ch=" + String.join(",", activeClientHints));
 
         // Load twice to be sure hints are returned, then parse the results.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
@@ -117,8 +143,10 @@ public class ClientHintsTest {
                         .replaceAll("\\\\\"", "\"");
         JSONObject jsonObject = new JSONObject(textContent);
         // If you're here because this line broke, please update this test to verify whichever
-        // client hints were added or removed and don't just modify the number below.
-        Assert.assertEquals(26, jsonObject.length());
+        // client hints were added or removed by changing `activeClientHints` above.
+        Assert.assertEquals("The number of client hints is unexpected. If you intentionally added "
+                        + "or removed a client hint, please update this test.",
+                activeClientHints.length, jsonObject.length());
 
         // All client hints must be verified for default behavior.
         Assert.assertTrue(jsonObject.getInt("device-memory") > 0);
