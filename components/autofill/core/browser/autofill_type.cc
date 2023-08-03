@@ -110,6 +110,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NOT_PASSWORD:
     case SINGLE_USERNAME:
     case NOT_USERNAME:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
       return FieldTypeGroup::kPasswordField;
 
     case NO_SERVER_DATA:

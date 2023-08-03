@@ -116,7 +116,8 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       ADDRESS_HOME_BETWEEN_STREETS_1,
       ADDRESS_HOME_BETWEEN_STREETS_2,
       ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-      ADDRESS_HOME_OVERFLOW_AND_LANDMARK};
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      SINGLE_USERNAME_FORGOT_PASSWORD};
   ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {

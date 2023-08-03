@@ -340,6 +340,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case IBAN_VALUE:
         case MAX_VALID_FIELD_TYPE:
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+        case SINGLE_USERNAME_FORGOT_PASSWORD:
           NOTREACHED() << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;
           break;

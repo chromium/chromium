@@ -122,7 +122,8 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_OVERFLOW_AND_LANDMARK",
           ADDRESS_HOME_OVERFLOW_AND_LANDMARK},
          {"ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK",
-          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK}});
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK},
+         {"SINGLE_USERNAME_FORGOT_PASSWORD", SINGLE_USERNAME_FORGOT_PASSWORD}});
 
 ServerFieldType ToSafeServerFieldType(
     std::underlying_type_t<ServerFieldType> raw_value,
@@ -147,7 +148,7 @@ ServerFieldType ToSafeServerFieldType(
            !(20 <= t && t <= 24) &&
            // Reserved for server-side only use.
            t != 127 && !(130 <= t && t <= 132) && t != 134 &&
-           !(137 <= t && t <= 139) && !(145 <= t && t <= 150);
+           !(137 <= t && t <= 139) && !(145 <= t && t <= 150) && t != 153;
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -243,6 +244,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ACCOUNT_CREATION_PASSWORD:
     case CONFIRMATION_PASSWORD:
     case SINGLE_USERNAME:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
       return true;
 
     // Not fillable credential fields.
@@ -341,6 +343,7 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Account creation password";
     case USERNAME:
     case SINGLE_USERNAME:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
       return "Username";
     case USERNAME_AND_EMAIL_ADDRESS:
       return "Username and email";

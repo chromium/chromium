@@ -674,4 +674,11 @@ bool IsSpecialSymbol(char16_t c) {
   return base::Contains(kSpecialSymbols, c);
 }
 
+bool IsSingleUsernameType(autofill::ServerFieldType type) {
+  return type == autofill::SINGLE_USERNAME ||
+         (type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD &&
+          base::FeatureList::IsEnabled(
+              password_manager::features::kForgotPasswordFormSupport));
+}
+
 }  // namespace password_manager_util

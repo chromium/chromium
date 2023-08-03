@@ -109,6 +109,7 @@ declare global {
         ADDRESS_HOME_LANDMARK,
         ADDRESS_HOME_BETWEEN_STREETS,
         ADDRESS_HOME_ADMIN_LEVEL2,
+        SINGLE_USERNAME_FORGOT_PASSWORD,
       }
 
       export enum AddressSource {

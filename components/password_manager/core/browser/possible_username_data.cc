@@ -8,7 +8,7 @@
 
 #include "base/strings/string_piece.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
-
+#include "components/password_manager/core/browser/password_manager_util.h"
 
 namespace password_manager {
 
@@ -58,7 +58,7 @@ bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
   const PasswordFieldPrediction* field_prediction =
       FindFieldPrediction(*form_predictions, renderer_id);
   return field_prediction &&
-         field_prediction->type == autofill::SINGLE_USERNAME;
+         password_manager_util::IsSingleUsernameType(field_prediction->type);
 }
 
 bool PossibleUsernameData::HasServerPrediction() const {

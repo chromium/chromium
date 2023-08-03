@@ -58,7 +58,7 @@ struct PossibleUsernameData {
   bool IsStale() const;
 
   // Returns whether the field identified by |renderer_id| has a
-  // SINGLE_USERNAME prediction stored in |form_predictions|.
+  // single username prediction stored in |form_predictions|.
   bool HasSingleUsernameServerPrediction() const;
 
   // Returns whether the field identified by |renderer_id| has

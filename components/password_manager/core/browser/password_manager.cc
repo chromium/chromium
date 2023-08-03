@@ -64,8 +64,6 @@ using autofill::FormData;
 using autofill::FormRendererId;
 using autofill::FormStructure;
 using autofill::NEW_PASSWORD;
-using autofill::NOT_USERNAME;
-using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;
 using autofill::mojom::SubmissionIndicatorEvent;
@@ -169,7 +167,9 @@ PasswordFormManager* FindMatchedManagerByRendererId(
 bool HasSingleUsernameVote(const FormPredictions& form) {
   return base::ranges::any_of(
       form.fields,
-      [](const auto& type) { return type == autofill::SINGLE_USERNAME; },
+      [](const auto& type) {
+        return password_manager_util::IsSingleUsernameType(type);
+      },
       &PasswordFieldPrediction::type);
 }
 

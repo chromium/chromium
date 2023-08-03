@@ -242,6 +242,9 @@ bool IsUppercaseLetter(char16_t c);
 // Special symbols are defined by the string |kSpecialSymbols|.
 bool IsSpecialSymbol(char16_t c);
 
+// Returns true if 'type' is a username in a password-less form.
+bool IsSingleUsernameType(autofill::ServerFieldType type);
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_

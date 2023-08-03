@@ -57,8 +57,6 @@ using autofill::FormFieldData;
 using autofill::FormRendererId;
 using autofill::FormSignature;
 using autofill::FormStructure;
-using autofill::NOT_USERNAME;
-using autofill::SINGLE_USERNAME;
 using autofill::password_generation::PasswordGenerationType;
 using base::TimeTicks;
 using signin::GaiaIdHash;
