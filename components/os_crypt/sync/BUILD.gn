@@ -130,6 +130,7 @@ source_set("unit_tests") {
     "//crypto",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
   ]
 
   if (is_apple) {
