@@ -3802,7 +3802,6 @@ source_set("ash") {
     ":add_remove_user_event_proto",
     ":attestation_proto",
     ":device_policy_remover_generated",
-    ":key_permissions_proto",
     "//apps",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:arc_metrics_constants",
@@ -3986,6 +3985,7 @@ source_set("ash") {
     "//chromeos/components/cdm_factory_daemon/mojom",
     "//chromeos/components/certificate_provider",
     "//chromeos/components/disks:prefs",
+    "//chromeos/components/kcer:key_permissions_proto",
     "//chromeos/components/kiosk",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/quick_answers/public/cpp:prefs",
@@ -6440,13 +6440,6 @@ proto_library("attestation_proto") {
 proto_library("device_configuration_proto") {
   sources = [ "login/screens/recommend_apps/device_configuration.proto" ]
   generate_python = false
-}
-
-proto_library("key_permissions_proto") {
-  sources = [ "//third_party/cros_system_api/dbus/chaps/key_permissions.proto" ]
-  generate_python = false
-
-  proto_out_dir = "chrome/browser/ash/platform_keys/key_permissions"
 }
 
 proto_library("login_logout_event_proto") {
