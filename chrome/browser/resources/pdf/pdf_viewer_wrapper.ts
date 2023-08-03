@@ -9,7 +9,7 @@ export {AnnotationTool} from './annotation_tool.js';
 // </if>
 export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
-export {FittingType, Point, Rect, SaveRequestType} from './constants.js';
+export {Attachment, FittingType, Point, Rect, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
 export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer-bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';

@@ -161,6 +161,9 @@
     <message name="IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE" desc="Button tooltip for the button which selects the PDF document outline view in the sidenav">
       Document outline
     </message>
+    <message name="IDS_PDF_TOOLTIP_ATTACHMENTS" desc="Button tooltip for the button which selects the PDF document attachment view in the sidenav">
+      Attachments
+    </message>
     <message name="IDS_PDF_LABEL_PAGE_NUMBER" desc="Label for the input field containing the current page number">
       Page number
     </message>
