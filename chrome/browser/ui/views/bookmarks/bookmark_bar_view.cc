@@ -572,7 +572,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return GetAccessibleName();
+    return GetAccessibleText();
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -586,7 +586,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     return BookmarkMenuButtonBase::OnMousePressed(event);
   }
 
-  const std::u16string GetAccessibleText() {
+  const std::u16string GetAccessibleText() const {
     // If the folder is unnamed, set the name to a default string for unnamed
     // folders; otherwise set the name to the user-supplied folder name.
     return GetText().empty()
@@ -884,7 +884,7 @@ void BookmarkBarView::GetAnchorPositionForButton(
 
 int BookmarkBarView::GetLeadingMargin() const {
   static constexpr int kBookmarksBarLeadingMarginPreRefresh = 8;
-  static constexpr int kBookmarksBarLeadingMarginWithoutSavedTabGroups = 6;
+  static constexpr int kBookmarksBarLeadingMarginWithoutSavedTabGroups = 5;
   static constexpr int kBookmarksBarLeadingMarginWithSavedTabGroups = 12;
 
   if (!features::IsChromeRefresh2023()) {
