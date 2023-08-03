@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
@@ -345,6 +347,53 @@ TEST_F(PrivacyHubNotificationTest, NotificationMessageForLongAppNames) {
   EXPECT_LE(notification_ptr->message().size(), 150u);
   // It shouldn't be identical to the old message even with the same length.
   EXPECT_NE(first_message, notification_ptr->message());
+}
+
+TEST_F(PrivacyHubNotificationTest, NotificationForScreenCaptureWithMicrophone) {
+  // Launch an app.
+  const std::u16string app_1 = u"App1";
+  sensor_delegate().LaunchApp(app_1);
+  notification().Show();
+
+  // Shall be a notification with 1 app name.
+  message_center::Notification* privacy_hub_notification = GetNotification();
+  ASSERT_TRUE(privacy_hub_notification);
+  EXPECT_EQ(
+      privacy_hub_notification->message(),
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+          app_1));
+
+  // Start screen capture with audio from microphone.
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  controller->SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
+  controller->StartVideoRecordingImmediatelyForTesting();
+  notification().Update();
+
+  // Shall be a notification with 2 app names.
+  const std::u16string screenCaptureTitle =
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE);
+  privacy_hub_notification = GetNotification();
+  ASSERT_TRUE(privacy_hub_notification);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+          app_1, screenCaptureTitle),
+      privacy_hub_notification->message());
+
+  // Stop screen capture.
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  notification().Update();
+
+  // Shall be a notification with 1 app name.
+  privacy_hub_notification = GetNotification();
+  ASSERT_TRUE(privacy_hub_notification);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+          app_1),
+      privacy_hub_notification->message());
 }
 
 }  // namespace ash

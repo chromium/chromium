@@ -7,7 +7,11 @@
 #include <iterator>
 #include <string>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
@@ -283,6 +287,50 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors(
     // Copy app names for the given sensor.
     std::copy(std::begin(sensor_apps), std::end(sensor_apps),
               std::back_inserter(app_names));
+  }
+
+  // For the  microphone sensor, check Assist, Screen cast & capture, and
+  // Dictation and add to apps names.
+  if (sensors_.Has(SensorDisabledNotificationDelegate::Sensor::kMicrophone)) {
+    // Add dictation if it's enabled.
+    bool is_dictation_enabled =
+        Shell::Get()->accessibility_controller()->dictation_active();
+    if (is_dictation_enabled) {
+      app_names.push_back(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
+    }
+
+    // Add Screencast (i.e. ProjectorSession) if it's active.
+    ProjectorSession* projector_session = ProjectorSession::Get();
+    bool is_projector_session_active =
+        projector_session != nullptr && projector_session->is_active();
+    if (is_projector_session_active) {
+      app_names.push_back(
+          l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_DISPLAY_SOURCE));
+    } else {
+      // Checking the Screen capture (triggered via keyboard) only if the
+      // Screencast is not active.
+      CaptureModeController* capture_mode_controller =
+          CaptureModeController::Get();
+      bool is_capture_mode_active =
+          capture_mode_controller != nullptr &&
+          capture_mode_controller->IsAudioRecordingInProgress();
+      if (is_capture_mode_active) {
+        app_names.push_back(
+            l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE));
+      }
+    }
+
+    // Consider assistant only if no other apps were added to the list of app
+    // names.
+    if (app_names.size() == 0) {
+      bool is_assist_enabled =
+          Shell::Get()->app_list_controller()->IsAssistantAllowedAndEnabled();
+      if (is_assist_enabled) {
+        app_names.push_back(
+            l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
+      }
+    }
   }
 
   // De-duplicate app names.
