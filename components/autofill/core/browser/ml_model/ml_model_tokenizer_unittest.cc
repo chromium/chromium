@@ -7,9 +7,13 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+using TokenId = AutofillMLModelTokenizer::TokenId;
+using testing::ElementsAre;
 
 class AutofillMLModelTokenizerTest : public testing::Test {
  public:
@@ -44,24 +48,52 @@ TEST_F(AutofillMLModelTokenizerTest, TokensMappedCorrectly) {
   auto model_tokenizer =
       AutofillMLModelTokenizer::CreateTokenizer(dictionary_path_);
   EXPECT_EQ(model_tokenizer->GetDictionarySize(), 11u);
-  EXPECT_EQ(model_tokenizer->TokenToId(u"first"),
-            AutofillMLModelTokenizer::TokenId(5));
+  EXPECT_EQ(model_tokenizer->TokenToId(u"first"), TokenId(5));
 }
 
 // Tests that words out of vocabulary return 1.
 TEST_F(AutofillMLModelTokenizerTest, WordOutOfVocab) {
   auto model_tokenizer =
       AutofillMLModelTokenizer::CreateTokenizer(dictionary_path_);
-  EXPECT_EQ(model_tokenizer->TokenToId(u"address"),
-            AutofillMLModelTokenizer::TokenId(1));
+  EXPECT_EQ(model_tokenizer->TokenToId(u"address"), TokenId(1));
 }
 
 // Tests that empty strings return 0 for padding.
 TEST_F(AutofillMLModelTokenizerTest, EmptyToken) {
   auto model_tokenizer =
       AutofillMLModelTokenizer::CreateTokenizer(dictionary_path_);
-  EXPECT_EQ(model_tokenizer->TokenToId(u""),
-            AutofillMLModelTokenizer::TokenId(0));
+  EXPECT_EQ(model_tokenizer->TokenToId(u""), TokenId(0));
+}
+
+TEST_F(AutofillMLModelTokenizerTest, InputVectorizedCorrectly) {
+  auto model_tokenizer =
+      AutofillMLModelTokenizer::CreateTokenizer(dictionary_path_);
+  EXPECT_THAT(model_tokenizer->Vectorize(u"Phone 'number"),
+              testing::ElementsAre(TokenId(8), TokenId(2), TokenId(0),
+                                   TokenId(0), TokenId(0)));
+}
+
+// If a field label has more than one consecutive whitespace, they
+// should all be removed without any empty strings.
+TEST_F(AutofillMLModelTokenizerTest, InputHasMoreThanOneWhitespace) {
+  auto model_tokenizer =
+      AutofillMLModelTokenizer::CreateTokenizer(dictionary_path_);
+  EXPECT_THAT(model_tokenizer->Vectorize(u"Phone   &number  "),
+              testing::ElementsAre(TokenId(8), TokenId(2), TokenId(0),
+                                   TokenId(0), TokenId(0)));
+}
+
+// If a field label has more words than the kOutputSequenceLength,
+// only the first kOutputSequenceLength many words should be used and the
+// rest are ignored.
+TEST_F(AutofillMLModelTokenizerTest,
+       InputHasMoreWordsThanOutputSequenceLength) {
+  auto model_tokenizer =
+      AutofillMLModelTokenizer::CreateTokenizer(dictionary_path_);
+  EXPECT_THAT(
+      model_tokenizer->Vectorize(u"City Number Phone Address Card Last Zip "),
+      testing::ElementsAre(TokenId(3), TokenId(2), TokenId(8), TokenId(1),
+                           TokenId(7)));
 }
 
 }  // namespace autofill

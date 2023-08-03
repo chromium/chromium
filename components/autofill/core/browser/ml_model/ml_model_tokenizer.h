@@ -17,11 +17,17 @@ namespace autofill {
 
 // The tokenizer performs tokenization for on device autofill field type
 // prediction ML model. It maps raw strings to tokens, and tokens to
-// IDs accepted by the ML model or vice versa based on the given dictionary
-// file. Empty strings map to value 0 and unknown words map to value 1.
+// IDs accepted by the ML model based on the given dictionary file.
+// Empty strings map to value 0 and unknown words map to value 1.
 class AutofillMLModelTokenizer {
  public:
   using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
+
+  // The number of entries in the output array which will be used in padding.
+  static constexpr size_t kOutputSequenceLength = 5;
+  // Special characters to remove from the field label input.
+  static constexpr char16_t kSpecialChars[] =
+      uR"(!"#$%&()\*\+,-\./:;<=>?@\[\\\]^_`{|}~\')";
 
   // Factory function returns instance of the tokenizer if initialized.
   // If dictionary file path is not found, initialization fails and
@@ -31,6 +37,12 @@ class AutofillMLModelTokenizer {
 
   ~AutofillMLModelTokenizer();
 
+  // Standardize the field label by changing it lower case and stripping
+  // punctuation. Then vectorize by splitting it into substrings split by
+  // whitespaces, tokenizing each string and padding the array to have
+  // size `kOutputSequenceLength`.
+  std::array<TokenId, kOutputSequenceLength> Vectorize(
+      const std::u16string& input) const;
   TokenId TokenToId(const std::u16string& token) const;
 
   size_t GetDictionarySize() const;
