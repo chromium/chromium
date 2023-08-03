@@ -29,7 +29,7 @@ function getRemoteContextURL(origin) {
 async function runSelectRawURL(href, resolve_to_config = false) {
   try {
     await sharedStorage.worklet.addModule(
-      "/wpt_internal/shared_storage/resources/simple-module.js");
+        '/wpt_internal/fenced_frame/resources/simple-shared-storage-module.js');
   } catch (e) {
     // Shared Storage needs to have a module added before we can operate on it.
     // It is generated on the fly with this call, and since there's no way to
