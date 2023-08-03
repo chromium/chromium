@@ -659,6 +659,7 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
   for (size_t i = 0; i < format.size(); ++i) {
     // Check if a control sequence is started by '${'
     if (i + 1 < format.size() && format.substr(i, 2) == u"${") {
+      CHECK(!started_control_sequence) << format;
       started_control_sequence = true;
       // Append the preceding string as a separator of the current control
       // sequence and the previous one.
@@ -667,7 +668,8 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
       // Mark character '{' as the last processed character and skip it.
       first_unprocessed_index = i + 2;
       ++i;
-    } else if (started_control_sequence && format[i] == u'}') {
+    } else if (format[i] == u'}') {
+      CHECK(started_control_sequence);
       // The control sequence came to an end.
       started_control_sequence = false;
       std::u16string placeholder(
@@ -697,6 +699,7 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
       first_unprocessed_index = i + 1;
     }
   }
+  CHECK(!started_control_sequence) << format;
   // Append the rest of the string.
   values_to_join.emplace_back(
       format.substr(first_unprocessed_index, std::u16string::npos));
