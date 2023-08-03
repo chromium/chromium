@@ -47,13 +47,6 @@ class DlpFilesPolicyServiceProvider
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
-  // Called when restricted files sources are obtained.
-  void RespondWithRestrictedFilesTransfer(
-      dbus::MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender,
-      const std::vector<std::pair<policy::DlpFilesControllerAsh::FileDaemonInfo,
-                                  dlp::RestrictionLevel>>& requested_files);
-
   base::WeakPtrFactory<DlpFilesPolicyServiceProvider> weak_ptr_factory_{this};
 };
 

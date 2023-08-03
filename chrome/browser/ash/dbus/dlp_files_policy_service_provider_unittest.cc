@@ -193,4 +193,30 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsFilesTransferRestricted) {
   ASSERT_EQ(response->files_restrictions().size(), 1);
 }
 
+TEST_P(DlpFilesPolicyServiceProviderTest, IsFilesTransferRestrictedSystem) {
+  dlp::IsFilesTransferRestrictedRequest request;
+  request.set_destination_component(::dlp::DlpComponent::SYSTEM);
+  auto* file = request.add_transferred_files();
+  file->set_source_url(kExampleUrl2);
+  file->set_inode(kInode);
+  file->set_path(kFilePath);
+  request.set_file_action(::dlp::FileAction::COPY);
+  request.set_io_task_id(1234);
+
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination).Times(0);
+
+  EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController()).Times(0);
+
+  EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
+      .WillRepeatedly(::testing::Return(nullptr));
+
+  auto response =
+      CallDlpFilesPolicyServiceMethod<dlp::IsFilesTransferRestrictedResponse>(
+          dlp::kDlpFilesPolicyServiceIsFilesTransferRestrictedMethod, request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_EQ(response->files_restrictions().size(), 1);
+  EXPECT_EQ(dlp::RestrictionLevel::LEVEL_ALLOW,
+            response->files_restrictions(0).restriction_level());
+}
+
 }  // namespace ash
