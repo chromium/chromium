@@ -8247,6 +8247,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DemoMode_Highlights_DetailsPage_Clicked">
+  <owner>llin@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when a details page is clicked in the Highlights App. Only recorded
+    for versions of the Highlights App that have the UI concept of a
+    &quot;details&quot; page.
+  </description>
+</action>
+
 <action name="DemoMode_Highlights_HomeButtonClick">
   <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
@@ -39388,9 +39398,44 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="_" ordering="suffix">
+  <suffix name="AppsButton" label="Apps pillar page button"/>
+  <suffix name="ChromeOSButton" label="ChromeOS pillar page button"/>
+  <suffix name="PerformanceButton" label="Performance pillar page button"/>
+  <affected-action name="DemoMode_Highlights_HomePage_Click"/>
+</action-suffix>
+
+<action-suffix separator="_" ordering="suffix">
   <suffix name="NextButton" label="next button in pillar pages"/>
   <suffix name="PreviousButton" label="previous button in pillar pages"/>
   <affected-action name="DemoMode_Highlights_PillarPage_Click"/>
+</action-suffix>
+
+<action-suffix separator="_" ordering="suffix">
+  <suffix name="AdobeButton" label="Adobe details page button"/>
+  <suffix name="BatteryButton" label="Battery details page button"/>
+  <suffix name="ComparisonButton" label="Comparison details page button"/>
+  <suffix name="DisplayEntertainmentButton"
+      label="Display (Entertainment) details page button"/>
+  <suffix name="DisplayPerformanceButton"
+      label="Display (Performance) details page button"/>
+  <suffix name="EntertainmentAppsButton"
+      label="Entertainment Apps details page button"/>
+  <suffix name="GoogleAppsButton" label="Google Apps details page button"/>
+  <suffix name="LumaFusionButton" label="LumaFusion details page button"/>
+  <suffix name="MessagingButton" label="Messaging details page button"/>
+  <suffix name="MobileGamingButton" label="Mobile Gaming details page button"/>
+  <suffix name="MS365AppsButton" label="MS365 Apps details page button"/>
+  <suffix name="MSOneDrive" label="MSOneDrive details page button"/>
+  <suffix name="NearbyShareButton" label="Nearby Share details page button"/>
+  <suffix name="OfflineModeButton" label="Offline Mode details page button"/>
+  <suffix name="PCConsoleGamingButton"
+      label="PC/Console Gaming details page button"/>
+  <suffix name="PhotosButton" label="Photos details page button"/>
+  <suffix name="ProcessorButton" label="Processor details page button"/>
+  <suffix name="StorageButton" label="Storage details page button"/>
+  <suffix name="SwitchingButton" label="Switching details page button"/>
+  <suffix name="VideoCallButton" label="Video Call details page button"/>
+  <affected-action name="DemoMode_Highlights_DetailsPage_Clicked"/>
 </action-suffix>
 
 </actions>

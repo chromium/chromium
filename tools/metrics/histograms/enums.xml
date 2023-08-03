@@ -26601,6 +26601,9 @@ Called by update_debug_scenarios.py.-->
   <int value="7" label="Graphics button click"/>
   <int value="8" label="Game button click"/>
   <int value="9" label="Peripherals button click"/>
+  <int value="10" label="Performance button click"/>
+  <int value="11" label="Apps button click"/>
+  <int value="12" label="ChromeOS button click"/>
 </enum>
 
 <enum name="DemoModeIdleLogoutWarningEvent">

@@ -80,7 +80,45 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="HighlightsDetailsPageName">
+  <variant name="AdobePage" summary="Highlights app Adobe detail page"/>
+  <variant name="BatteryPage" summary="Highlights app Battery detail page"/>
+  <variant name="ComparisonPage"
+      summary="Highlights app Comparison detail page"/>
+  <variant name="DisplayEntertainmentPage"
+      summary="Highlights app Display (Entertainment) detail page"/>
+  <variant name="DisplayPerformancePage"
+      summary="Highlights app Display (Performance) detail page"/>
+  <variant name="EntertainmentAppsPage"
+      summary="Highlights app Entertainment Apps detail page"/>
+  <variant name="GoogleAppsPage"
+      summary="Highlights app Google Apps detail page"/>
+  <variant name="LumaFusionPage"
+      summary="Highlights app LumaFusion detail page"/>
+  <variant name="MessagingPage" summary="Highlights app Messaging detail page"/>
+  <variant name="MobileGamingPage"
+      summary="Highlights app Mobile Gaming detail page"/>
+  <variant name="MS365AppsPage"
+      summary="Highlights app MS365 Apps detail page"/>
+  <variant name="MSOneDrivePage"
+      summary="Highlights app MSOneDrive detail page"/>
+  <variant name="NearbySharePage"
+      summary="Highlights app Nearby Share detail page"/>
+  <variant name="OfflineModePage"
+      summary="Highlights app Offline Mode detail page"/>
+  <variant name="PCConsoleGamingPage"
+      summary="Highlights app PC/Console Gaming detail page"/>
+  <variant name="PhotosPage" summary="Highlights app Photos detail page"/>
+  <variant name="ProcessorPage" summary="Highlights app Processor detail page"/>
+  <variant name="StoragePage" summary="Highlights app Storage detail page"/>
+  <variant name="SwitchingPage" summary="Highlights app Switching detail page"/>
+  <variant name="VideoCallPage"
+      summary="Highlights app Video Call detail page"/>
+</variants>
+
 <variants name="HighlightsPageName">
+  <variant name="AppsPage" summary="Highlights app Apps page"/>
+  <variant name="ChromeOSPage" summary="Highlights app ChromeOS page"/>
   <variant name="DisplayPage" summary="Highlights app Display page"/>
   <variant name="EasyPage" summary="Highlights app Easy page"/>
   <variant name="FastPage" summary="Highlights app Fast page"/>
@@ -88,6 +126,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GraphicsPage" summary="Highlights app Graphics page"/>
   <variant name="HomePage" summary="Highlights app Home page"/>
   <variant name="KeyboardPage" summary="Highlights app Keyboard page"/>
+  <variant name="PerformancePage" summary="Highlights app Performance page"/>
   <variant name="PeripheralsPage" summary="Highlights app Peripherals page"/>
   <variant name="PowerfulPage" summary="Highlights app Powerful page"/>
   <variant name="SecurePage" summary="Highlights app Secure page"/>
@@ -4573,6 +4612,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.AttractLoop.Timestamp" units="ms"
+    expires_after="2024-05-24">
+  <owner>llin@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    The timestamp (i.e. milliseconds from the beginning of the Attract Loop
+    video) at which the user broke the Demo Mode Attract Loop.
+  </summary>
+</histogram>
+
 <histogram name="DemoMode.DwellTime" units="seconds" expires_after="2023-12-10">
   <owner>drcrash@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
@@ -4582,6 +4631,24 @@ chromium-metrics-reviews@google.com.
     duration to the nearest second and uses exponential bucketing capped at 1
     hour.
   </summary>
+</histogram>
+
+<!-- Note: DemoMode.Highlights.* metrics are recorded via runtime-downloaded
+  content that is not checked into Chromium. Please do not delete this code,
+  even if it looks like there's no production references in Chromium, without
+  first consulting the Demo Mode team. -->
+
+<histogram
+    name="DemoMode.Highlights.DetailsPageStayDuration.{HighlightsDetailsPageName}"
+    units="ms" expires_after="2024-05-24">
+  <owner>llin@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    The duration a user spent on a given details page of the Highlights App.
+    Only is recorded for Highlights App versions with the UI concept of a
+    &quot;details&quot; page.
+  </summary>
+  <token key="HighlightsDetailsPageName" variants="HighlightsDetailsPageName"/>
 </histogram>
 
 <histogram name="DemoMode.Highlights.FirstInteraction"
