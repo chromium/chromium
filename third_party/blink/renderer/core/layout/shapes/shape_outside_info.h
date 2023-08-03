@@ -100,11 +100,6 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
                                   LogicalSize margin_size);
   void SetPercentageResolutionInlineSize(LayoutUnit);
 
-  LayoutUnit ShapeLogicalBottom() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().BlockEndOffset() +
-           LogicalTopOffset();
-  }
-
   static ShapeOutsideInfo& EnsureInfo(const LayoutBox& key) {
     InfoMap& info_map = ShapeOutsideInfo::GetInfoMap();
     auto it = info_map.find(&key);
