@@ -78,6 +78,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 #include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
@@ -108,6 +109,7 @@ using testing::SaveArg;
 using testing::StrictMock;
 
 #if BUILDFLAG(IS_ANDROID)
+using base::android::BuildInfo;
 using password_manager::CredentialCache;
 using password_manager::MockPasswordStoreInterface;
 #endif
@@ -560,6 +562,12 @@ TEST_F(ChromePasswordManagerClientTest,
 }
 
 TEST_F(ChromePasswordManagerClientTest, AutoSignInEnabledDeterminedByService) {
+#if BUILDFLAG(IS_ANDROID)
+  if (BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif
+
   // Test that auto sign in being allowed depends on querying the settings
   // service.
   ChromePasswordManagerClient* client = GetClient();
@@ -574,6 +582,11 @@ TEST_F(ChromePasswordManagerClientTest, AutoSignInEnabledDeterminedByService) {
 
 TEST_F(ChromePasswordManagerClientTest,
        AutoSignInDisableddDeterminedByService) {
+#if BUILDFLAG(IS_ANDROID)
+  if (BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif
   // Test that auto sign in being disallowed depends on querying the settings
   // service.
   ChromePasswordManagerClient* client = GetClient();
@@ -585,6 +598,15 @@ TEST_F(ChromePasswordManagerClientTest,
       .WillByDefault(Return(false));
   EXPECT_FALSE(client->IsAutoSignInEnabled());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePasswordManagerClientTest, AutoSignInDisabledOnAutomotive) {
+  if (!BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should only run on automotive.";
+  }
+  EXPECT_FALSE(GetClient()->IsAutoSignInEnabled());
+}
+#endif
 
 class ChromePasswordManagerClientAutomatedTest
     : public ChromePasswordManagerClientTest,

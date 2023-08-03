@@ -110,6 +110,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
@@ -152,6 +153,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+using base::android::BuildInfo;
 using password_manager::CredentialCache;
 #endif
 
@@ -256,6 +258,11 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
 }
 
 bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
+#if BUILDFLAG(IS_ANDROID)
+  if (BuildInfo::GetInstance()->is_automotive()) {
+    return false;
+  }
+#endif
   PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
