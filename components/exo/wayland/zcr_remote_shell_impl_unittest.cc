@@ -428,6 +428,7 @@ TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
   // Move the window to the secandary display.
   const int initial_x = 100;
   const int initial_y = 100;
+  shell_surface->SetScaleFactor(2.f);
   shell_surface->SetBounds(secondary_display_id,
                            gfx::Rect(initial_x, initial_y, kDefaultWindowLength,
                                      kDefaultWindowLength));
@@ -577,6 +578,11 @@ TEST_F(WaylandRemoteShellTest, MoveAcrossDisplaysWithDifferentScaleFactors) {
         gfx::ScaleToRoundedSize(min_size_in_dp, device_scale_factor);
     const auto max_size_in_px =
         gfx::ScaleToRoundedSize(max_size_in_dp, device_scale_factor);
+
+    const uint scale_factor_value =
+        *reinterpret_cast<const uint*>(&device_scale_factor);
+    zcr_remote_shell::remote_surface_set_scale_factor(
+        wl_client(), wl_remote_surface(), scale_factor_value);
 
     // Set bounds, min size, max size, and then commit.
     shell_surface_ptr->SetBounds(display_id, bounds_in_px);

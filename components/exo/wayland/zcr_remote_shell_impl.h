@@ -83,12 +83,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       const std::string& notification_key);
 
   std::unique_ptr<InputMethodSurface> CreateInputMethodSurface(
-      Surface* surface,
-      double default_device_scale_factor);
+      Surface* surface);
 
-  std::unique_ptr<ToastSurface> CreateToastSurface(
-      Surface* surface,
-      double default_device_scale_factor);
+  std::unique_ptr<ToastSurface> CreateToastSurface(Surface* surface);
 
   void SetUseDefaultScaleCancellation(bool use_default_scale);
 

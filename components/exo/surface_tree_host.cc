@@ -626,17 +626,11 @@ void SurfaceTreeHost::HandleContextLost() {
 }
 
 float SurfaceTreeHost::GetScaleFactor() const {
-  if (scale_factor_) {
-    // TODO(crbug.com/1412420): Remove this once the scale factor precision
-    // issue is fixed.
-    if (std::abs(scale_factor_.value() -
-                 host_window_->layer()->device_scale_factor()) <
-        display::kDeviceScaleFactorErrorTolerance) {
-      return host_window_->layer()->device_scale_factor();
-    }
-    return scale_factor_.value();
-  }
-  return host_window_->layer()->device_scale_factor();
+  return CalculateScaleFactor(scale_factor_);
+}
+
+float SurfaceTreeHost::GetPendingScaleFactor() const {
+  return CalculateScaleFactor(pending_scale_factor_);
 }
 
 void SurfaceTreeHost::CleanUpCallbacks() {
@@ -661,6 +655,21 @@ std::unique_ptr<LayerTreeFrameSinkHolder>
 SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
   return std::make_unique<LayerTreeFrameSinkHolder>(this,
                                                     CreateLayerTreeFrameSink());
+}
+
+float SurfaceTreeHost::CalculateScaleFactor(
+    const absl::optional<float>& scale_factor) const {
+  if (scale_factor) {
+    // TODO(crbug.com/1412420): Remove this once the scale factor precision
+    // issue is fixed for ARC.
+    if (std::abs(scale_factor.value() -
+                 host_window_->layer()->device_scale_factor()) <
+        display::kDeviceScaleFactorErrorTolerance) {
+      return host_window_->layer()->device_scale_factor();
+    }
+    return scale_factor.value();
+  }
+  return host_window_->layer()->device_scale_factor();
 }
 
 void SurfaceTreeHost::SetScaleFactorTransform(float scale_factor) {

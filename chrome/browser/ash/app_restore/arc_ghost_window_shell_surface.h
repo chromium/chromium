@@ -52,7 +52,6 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
  private:
   ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
                              int container,
-                             double scale_factor,
                              const std::string& application_id);
 
   void InitContentOverlay(const std::string& app_id,

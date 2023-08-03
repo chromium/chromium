@@ -497,8 +497,7 @@ WaylandRemoteShell::CreateShellSurface(Surface* surface,
                                        int container,
                                        double default_device_scale_factor) {
   return display_->CreateOrGetClientControlledShellSurface(
-      surface, container, default_device_scale_factor,
-      use_default_scale_cancellation_,
+      surface, container, use_default_scale_cancellation_,
       /*supports_floated_state=*/event_mapping_.has_bounds_change_reason_float);
 }
 
@@ -516,18 +515,14 @@ WaylandRemoteShell::CreateNotificationSurface(
 }
 
 std::unique_ptr<InputMethodSurface>
-WaylandRemoteShell::CreateInputMethodSurface(
-    Surface* surface,
-    double default_device_scale_factor) {
-  return display_->CreateInputMethodSurface(
-      surface, default_device_scale_factor, use_default_scale_cancellation_);
+WaylandRemoteShell::CreateInputMethodSurface(Surface* surface) {
+  return display_->CreateInputMethodSurface(surface,
+                                            use_default_scale_cancellation_);
 }
 
 std::unique_ptr<ToastSurface> WaylandRemoteShell::CreateToastSurface(
-    Surface* surface,
-    double default_device_scale_factor) {
-  return display_->CreateToastSurface(surface, default_device_scale_factor,
-                                      use_default_scale_cancellation_);
+    Surface* surface) {
+  return display_->CreateToastSurface(surface, use_default_scale_cancellation_);
 }
 
 void WaylandRemoteShell::SetUseDefaultScaleCancellation(
@@ -1083,8 +1078,7 @@ void remote_surface_set_scale(wl_client* client,
                               wl_resource* resource,
                               wl_fixed_t scale) {
   // DEPRECATED (b/141715728) - The server updates the client's scale.
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetScale(
-      wl_fixed_to_double(scale));
+  NOTREACHED();
 }
 
 void remote_surface_set_rectangular_shadow_DEPRECATED(wl_client* client,
