@@ -151,7 +151,7 @@ class ClassroomBubbleStudentViewTest : public ClassroomBubbleViewTest {
     EXPECT_CALL(classroom_client_,
                 GetStudentAssignmentsWithApproachingDueDate(_))
         .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-          std::move(cb).Run({});
+          std::move(cb).Run(/*success=*/true, {});
         });
     view_ = widget_->SetContentsView(
         std::make_unique<ClassroomBubbleStudentView>(&detailed_view_delegate_));
@@ -167,7 +167,7 @@ class ClassroomBubbleTeacherViewTest : public ClassroomBubbleViewTest {
     EXPECT_CALL(classroom_client_,
                 GetTeacherAssignmentsWithApproachingDueDate(_))
         .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-          std::move(cb).Run({});
+          std::move(cb).Run(/*success=*/true, {});
         });
     view_ = widget_->SetContentsView(
         std::make_unique<ClassroomBubbleTeacherView>(&detailed_view_delegate_));
@@ -210,7 +210,7 @@ TEST_F(ClassroomBubbleStudentViewTest,
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->MenuSelectionAt(1);
   EXPECT_CALL(
@@ -220,7 +220,7 @@ TEST_F(ClassroomBubbleStudentViewTest,
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithMissedDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->MenuSelectionAt(2);
   EXPECT_CALL(classroom_client_,
@@ -229,7 +229,7 @@ TEST_F(ClassroomBubbleStudentViewTest,
 
   EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->MenuSelectionAt(3);
   EXPECT_CALL(
@@ -250,7 +250,7 @@ TEST_F(ClassroomBubbleTeacherViewTest,
 
   EXPECT_CALL(classroom_client_, GetTeacherAssignmentsRecentlyDue(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->MenuSelectionAt(1);
   EXPECT_CALL(
@@ -260,7 +260,7 @@ TEST_F(ClassroomBubbleTeacherViewTest,
 
   EXPECT_CALL(classroom_client_, GetTeacherAssignmentsWithoutDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->MenuSelectionAt(2);
   EXPECT_CALL(
@@ -270,7 +270,7 @@ TEST_F(ClassroomBubbleTeacherViewTest,
 
   EXPECT_CALL(classroom_client_, GetGradedTeacherAssignments(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->MenuSelectionAt(3);
   EXPECT_CALL(
@@ -293,7 +293,7 @@ TEST_F(ClassroomBubbleStudentViewTest, RendersListItems) {
                       "https://classroom.google.com/test-link-%zu", i + 1)),
                   absl::nullopt, base::Time(), absl::nullopt));
         }
-        std::move(cb).Run(std::move(assignments));
+        std::move(cb).Run(/*success=*/true, std::move(assignments));
       });
   ASSERT_TRUE(GetComboBoxView());
   ASSERT_TRUE(GetListContainerView());
@@ -320,7 +320,7 @@ TEST_F(ClassroomBubbleTeacherViewTest, RendersListItems) {
                   absl::nullopt, base::Time(),
                   GlanceablesClassroomAggregatedSubmissionsState(0, 0, 0)));
         }
-        std::move(cb).Run(std::move(assignments));
+        std::move(cb).Run(/*success=*/true, std::move(assignments));
       });
   ASSERT_TRUE(GetComboBoxView());
   ASSERT_TRUE(GetListContainerView());
@@ -341,7 +341,7 @@ TEST_F(ClassroomBubbleStudentViewTest, OpensClassroomUrlForListItem) {
             "Course title", "Course work title",
             GURL("https://classroom.google.com/test-link"), absl::nullopt,
             base::Time(), absl::nullopt));
-        std::move(cb).Run(std::move(assignments));
+        std::move(cb).Run(/*success=*/true, std::move(assignments));
       });
   ASSERT_TRUE(GetComboBoxView());
   GetComboBoxView()->MenuSelectionAt(3);
@@ -367,7 +367,7 @@ TEST_F(ClassroomBubbleTeacherViewTest, OpensClassroomUrlForListItem) {
             GURL("https://classroom.google.com/test-link"), absl::nullopt,
             base::Time(),
             GlanceablesClassroomAggregatedSubmissionsState(0, 0, 0)));
-        std::move(cb).Run(std::move(assignments));
+        std::move(cb).Run(/*success=*/true, std::move(assignments));
       });
   ASSERT_TRUE(GetComboBoxView());
   GetComboBoxView()->MenuSelectionAt(3);
@@ -389,7 +389,7 @@ TEST_F(ClassroomBubbleStudentViewTest, ShowsProgressBar) {
         // Progress bar is visible before replying to pending request.
         EXPECT_TRUE(GetProgressBar()->GetVisible());
 
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
 
         // Progress bar is hidden after replying to pending request.
         EXPECT_FALSE(GetProgressBar()->GetVisible());
@@ -406,7 +406,7 @@ TEST_F(ClassroomBubbleTeacherViewTest, ShowsProgressBar) {
         // Progress bar is visible before replying to pending request.
         EXPECT_TRUE(GetProgressBar()->GetVisible());
 
-        std::move(cb).Run({});
+        std::move(cb).Run(/*success=*/true, {});
 
         // Progress bar is hidden after replying to pending request.
         EXPECT_FALSE(GetProgressBar()->GetVisible());

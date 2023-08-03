@@ -21,7 +21,11 @@ struct GlanceablesClassroomAssignment;
 class ASH_EXPORT GlanceablesClassroomClient {
  public:
   using IsRoleEnabledCallback = base::OnceCallback<void(bool active)>;
+  // `success` indicates whether the requested assignment data was successfully
+  // refreshed. If `success` is false, `assignment` may be non-empty, but the
+  // assignment information may be obsolete, incomplete.
   using GetAssignmentsCallback = base::OnceCallback<void(
+      bool success,
       std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
           assignments)>;
 

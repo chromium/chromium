@@ -152,7 +152,7 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
 
     auto callback = std::move(pending_student_assignments_callbacks_.front());
     pending_student_assignments_callbacks_.pop_front();
-    std::move(callback).Run(std::move(assignments));
+    std::move(callback).Run(/*success=*/true, std::move(assignments));
     return true;
   }
 
@@ -165,7 +165,7 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
 
     auto callback = std::move(pending_teacher_assignments_callbacks_.front());
     pending_teacher_assignments_callbacks_.pop_front();
-    std::move(callback).Run(std::move(assignments));
+    std::move(callback).Run(/*success=*/true, std::move(assignments));
     return true;
   }
 

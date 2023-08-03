@@ -55,6 +55,10 @@ using ::testing::Invoke;
 using ::testing::Not;
 using ::testing::Return;
 
+using AssignmentListFuture =
+    TestFuture<bool,
+               std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>;
+
 // Helper class to simplify mocking `net::EmbeddedTestServer` responses,
 // especially useful for subsequent responses when testing pagination logic.
 class TestRequestHandler {
@@ -220,9 +224,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](const GlanceablesClassroomClientImpl::CourseList& courses) {
+        [&](bool success,
+            const GlanceablesClassroomClientImpl::CourseList& courses) {
           run_loop.Quit();
 
+          EXPECT_TRUE(success);
           ASSERT_EQ(courses.size(), 1u);
 
           EXPECT_EQ(courses.at(0)->id, "course-id-1");
@@ -260,9 +266,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnHttpError) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     fetch_method.Run(base::BindLambdaForTesting(
-        [&](const GlanceablesClassroomClientImpl::CourseList& courses) {
+        [&](bool success,
+            const GlanceablesClassroomClientImpl::CourseList& courses) {
           run_loop.Quit();
 
+          EXPECT_FALSE(success);
           EXPECT_EQ(0u, courses.size());
 
           histogram_tester.ExpectTotalCount(
@@ -335,9 +343,10 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](const GlanceablesClassroomClientImpl::CourseList& courses) {
+        [&](bool success,
+            const GlanceablesClassroomClientImpl::CourseList& courses) {
           run_loop.Quit();
-
+          EXPECT_TRUE(success);
           ASSERT_EQ(courses.size(), 3u);
 
           EXPECT_EQ(courses.at(0)->id, "course-id-from-page-1");
@@ -394,12 +403,16 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWork) {
             })"))));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchCourseWork(
-      /*course_id=*/"course-123", /*fetch_submissions=*/false, courses_map,
+      /*course_id=*/"course-123", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             ASSERT_TRUE(courses_map.contains("course-123"));
             auto& course_work_map = courses_map["course-123"];
@@ -540,12 +553,16 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkAndSubmissions) {
             })"))));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kTeacher;
   client()->FetchCourseWork(
-      /*course_id=*/"course-123", /*fetch_submissions=*/true, courses_map,
+      /*course_id=*/"course-123", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             ASSERT_TRUE(courses_map.contains("course-123"));
             auto& course_work_map = courses_map["course-123"];
@@ -597,12 +614,16 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkOnHttpError) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchCourseWork(
-      /*course_id=*/"course-123", /*fetch_submissions=*/false, courses_map,
+      /*course_id=*/"course-123", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             auto& course_work_map = courses_map["course-123"];
             ASSERT_TRUE(course_work_map.empty());
@@ -728,12 +749,16 @@ TEST_F(GlanceablesClassroomClientImplTest,
             })"))));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kTeacher;
   client()->FetchCourseWork(
-      /*course_id=*/"course-123", /*fetch_submissions=*/true, courses_map,
+      /*course_id=*/"course-123", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             ASSERT_TRUE(courses_map.contains("course-123"));
             auto& course_work_map = courses_map["course-123"];
@@ -806,11 +831,15 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkMultiplePages) {
             })"))));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchCourseWork(
-      /*course_id=*/"course-123", /*fetch_submissions=*/false, courses_map,
+      /*course_id=*/"course-123", course_work_type,
       base::BindLambdaForTesting([&]() {
         run_loop.Quit();
+
+        GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+            client()->GetCourseWork(course_work_type);
 
         ASSERT_TRUE(courses_map.contains("course-123"));
         auto& course_work_map = courses_map["course-123"];
@@ -822,6 +851,7 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkMultiplePages) {
       }));
   run_loop.Run();
 }
+
 // ----------------------------------------------------------------------------
 // Fetch all student submissions:
 
@@ -873,12 +903,16 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissions) {
             })"))));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchStudentSubmissions(
-      /*course_id=*/"course-123", /*course_work_id=*/"-", courses_map,
+      /*course_id=*/"course-123", /*course_work_id=*/"-", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             ASSERT_TRUE(courses_map.contains("course-123"));
             auto& course_work_map = courses_map["course-123"];
@@ -914,12 +948,16 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissionsOnHttpError) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchStudentSubmissions(
-      /*course_id=*/"course-123", /*course_work_id=*/"-", courses_map,
+      /*course_id=*/"course-123", /*course_work_id=*/"-", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             auto& course_work_map = courses_map["course-123"];
             ASSERT_TRUE(course_work_map.empty());
@@ -980,11 +1018,15 @@ TEST_F(GlanceablesClassroomClientImplTest,
             })"))));
 
   base::RunLoop run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchStudentSubmissions(
-      /*course_id=*/"course-123", /*course_work_id=*/"-", courses_map,
+      /*course_id=*/"course-123", /*course_work_id=*/"-", course_work_type,
       base::BindLambdaForTesting([&]() {
         run_loop.Quit();
+
+        GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+            client()->GetCourseWork(course_work_type);
 
         ASSERT_TRUE(courses_map.contains("course-123"));
         auto& course_work_map = courses_map["course-123"];
@@ -1060,12 +1102,16 @@ TEST_F(GlanceablesClassroomClientImplTest,
             })"))));
 
   base::RunLoop student_submissions_run_loop;
-  GlanceablesClassroomClientImpl::CourseWorkPerCourse courses_map;
+  const auto course_work_type =
+      GlanceablesClassroomClientImpl::CourseWorkType::kStudent;
   client()->FetchStudentSubmissions(
-      /*course_id=*/"course-123", /*course_work_id=*/"-", courses_map,
+      /*course_id=*/"course-123", /*course_work_id=*/"-", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             student_submissions_run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             ASSERT_TRUE(courses_map.contains("course-123"));
             auto& course_work_map = courses_map["course-123"];
@@ -1102,10 +1148,13 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   base::RunLoop course_work_run_loop;
   client()->FetchCourseWork(
-      /*course_id=*/"course-123", /*fetch_submissions=*/false, courses_map,
+      /*course_id=*/"course-123", course_work_type,
       base::BindLambdaForTesting(
           [&]() {
             course_work_run_loop.Quit();
+
+            GlanceablesClassroomClientImpl::CourseWorkPerCourse& courses_map =
+                client()->GetCourseWork(course_work_type);
 
             ASSERT_TRUE(courses_map.contains("course-123"));
             auto& course_work_map = courses_map["course-123"];
@@ -1248,11 +1297,11 @@ TEST_F(GlanceablesClassroomClientImplTest, ReturnsCompletedStudentAssignments) {
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetCompletedStudentAssignments(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 2u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -1387,11 +1436,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -1555,11 +1604,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetStudentAssignmentsWithMissedDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -1655,11 +1704,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetStudentAssignmentsWithoutDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 1u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -1708,11 +1757,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_FALSE(success);
   EXPECT_TRUE(assignments.empty());
 }
 
@@ -1772,11 +1821,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
                                   HasSubstr("/studentSubmissions?"))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_FALSE(success);
   EXPECT_TRUE(assignments.empty());
 }
 
@@ -1986,11 +2035,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
               })"))));
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -2173,11 +2222,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
             })"))));
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -2347,11 +2396,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
             })"))));
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -2510,11 +2559,11 @@ TEST_F(GlanceablesClassroomClientImplTest, ReturnsGradedTeacherAssignments) {
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetGradedTeacherAssignments(future.GetCallback());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 1u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -2690,11 +2739,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Fetch student courses with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -2703,11 +2752,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Fetch recently due teacher courses.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -2721,11 +2770,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Fetch student courses with missed due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithMissedDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -2890,11 +2939,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Fetch recently due teacher courses.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -2908,11 +2957,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Fetch student courses with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -2921,11 +2970,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Fetch approaching due teacher courses.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -3051,11 +3100,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // The student has one assignment with missed due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithMissedDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -3064,11 +3113,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Initially, there are no assignments with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 0u);
   }
 
@@ -3078,11 +3127,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // The response from requests sent after the bubble was closed contains an
   // assignment with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -3091,11 +3140,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // No change in assignments with missed due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithMissedDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -3105,11 +3154,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // Simulate another request, to verify that coursework is not refetched if the
   // bubble does not close.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
     EXPECT_EQ(assignments.at(0)->course_work_title,
@@ -3164,11 +3213,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // The student has one assignment with missed due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithMissedDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
   }
@@ -3177,11 +3226,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetCompletedStudentAssignments(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
   }
@@ -3229,15 +3278,15 @@ TEST_F(GlanceablesClassroomClientImplTest,
   TestFuture<bool> is_active_future;
   client()->IsStudentRoleActive(is_active_future.GetCallback());
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      assignments_future;
+  AssignmentListFuture assignments_future;
   client()->GetStudentAssignmentsWithMissedDueDate(
       assignments_future.GetCallback());
 
   const bool active = is_active_future.Get();
   EXPECT_TRUE(active);
 
-  const auto assignments = assignments_future.Take();
+  const auto [success, assignments] = assignments_future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 1u);
   EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
 
@@ -3246,7 +3295,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   client()->GetCompletedStudentAssignments(assignments_future.GetCallback());
 
-  const auto refetched_assignments = assignments_future.Take();
+  const auto [refetch_success, refetched_assignments] =
+      assignments_future.Take();
   ASSERT_EQ(refetched_assignments.size(), 1u);
   EXPECT_EQ(refetched_assignments.at(0)->course_work_title, "Assignment 1");
 }
@@ -3298,11 +3348,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_TRUE(active);
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -3315,11 +3365,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("10 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -3455,11 +3505,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // There should be single assignment with missed due date - and the assignment
   // is initially not turned in.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -3473,11 +3523,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Initially, there are no assignments with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 0u);
   }
 
@@ -3487,11 +3537,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // The response from requests sent after the bubble was closed contains an
   // assignment with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -3505,11 +3555,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // The assignment with passed due date is now turned in.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -3524,11 +3574,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // Repeat the request for approaching due date assignments, to verify the data
   // is not refetched.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Teacher Course");
@@ -3620,11 +3670,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Initially, there are 2 assignments with approaching due date.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -3640,11 +3690,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // The response from requests sent after the bubble was closed removes an
   // assignment.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -3708,8 +3758,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      initial_future;
+  AssignmentListFuture initial_future;
   client()->GetStudentAssignmentsWithMissedDueDate(
       initial_future.GetCallback());
 
@@ -3717,18 +3766,19 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // before the first request completes.
   client()->OnGlanceablesBubbleClosed();
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      second_future;
+  AssignmentListFuture second_future;
   client()->GetStudentAssignmentsWithMissedDueDate(second_future.GetCallback());
 
   // Verify that both requests return the same result.
-  const auto initial_assignments = initial_future.Take();
+  const auto [initial_success, initial_assignments] = initial_future.Take();
+  EXPECT_TRUE(initial_success);
   ASSERT_EQ(initial_assignments.size(), 1u);
   EXPECT_EQ(initial_assignments.at(0)->course_title, "Active Student Course");
   EXPECT_EQ(initial_assignments.at(0)->course_work_title,
             "Math assignment - missed due date");
 
-  const auto second_assignments = second_future.Take();
+  const auto [second_success, second_assignments] = second_future.Take();
+  EXPECT_TRUE(second_success);
   ASSERT_EQ(second_assignments.size(), 1u);
   EXPECT_EQ(second_assignments.at(0)->course_title, "Active Student Course");
   EXPECT_EQ(second_assignments.at(0)->course_work_title,
@@ -3736,11 +3786,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Getting assignments after initial results have been received does not
   // repeat course work data fetch.
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      third_future;
+  AssignmentListFuture third_future;
   client()->GetStudentAssignmentsWithMissedDueDate(third_future.GetCallback());
 
-  const auto third_assignments = third_future.Take();
+  const auto [third_success, third_assignments] = third_future.Take();
+  EXPECT_TRUE(third_success);
   ASSERT_EQ(third_assignments.size(), 1u);
   EXPECT_EQ(third_assignments.at(0)->course_title, "Active Student Course");
   EXPECT_EQ(third_assignments.at(0)->course_work_title,
@@ -3750,12 +3800,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // empty.
   client()->OnGlanceablesBubbleClosed();
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      refetch_future;
+  AssignmentListFuture refetch_future;
   client()->GetStudentAssignmentsWithMissedDueDate(
       refetch_future.GetCallback());
 
-  const auto refetch_assignments = refetch_future.Take();
+  const auto [refetch_success, refetch_assignments] = refetch_future.Take();
+  EXPECT_TRUE(refetch_success);
   EXPECT_EQ(refetch_assignments.size(), 0u);
 }
 
@@ -3816,26 +3866,26 @@ TEST_F(GlanceablesClassroomClientImplTest,
               ]
             })"))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      initial_future;
+  AssignmentListFuture initial_future;
   client()->GetTeacherAssignmentsRecentlyDue(initial_future.GetCallback());
 
   // Simulate glanceables bubble closure, and then another assignments request
   // before the first request completes.
   client()->OnGlanceablesBubbleClosed();
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      second_future;
+  AssignmentListFuture second_future;
   client()->GetTeacherAssignmentsRecentlyDue(second_future.GetCallback());
 
   // Verify that both requests return the same result.
-  const auto initial_assignments = initial_future.Take();
+  const auto [initial_success, initial_assignments] = initial_future.Take();
+  EXPECT_TRUE(initial_success);
   ASSERT_EQ(initial_assignments.size(), 1u);
   EXPECT_EQ(initial_assignments.at(0)->course_title, "Active Teacher Course");
   EXPECT_EQ(initial_assignments.at(0)->course_work_title,
             "Math assignment - missed due date");
 
-  const auto second_assignments = second_future.Take();
+  const auto [second_success, second_assignments] = second_future.Take();
+  EXPECT_TRUE(second_success);
   ASSERT_EQ(second_assignments.size(), 1u);
   EXPECT_EQ(second_assignments.at(0)->course_title, "Active Teacher Course");
   EXPECT_EQ(second_assignments.at(0)->course_work_title,
@@ -3843,11 +3893,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Getting assignments after initial results have been received does not
   // repeat course work data fetch.
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      third_future;
+  AssignmentListFuture third_future;
   client()->GetTeacherAssignmentsRecentlyDue(third_future.GetCallback());
 
-  const auto third_assignments = third_future.Take();
+  const auto [third_success, third_assignments] = third_future.Take();
+  EXPECT_TRUE(third_success);
   ASSERT_EQ(third_assignments.size(), 1u);
   EXPECT_EQ(third_assignments.at(0)->course_title, "Active Teacher Course");
   EXPECT_EQ(third_assignments.at(0)->course_work_title,
@@ -3857,11 +3907,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // empty.
   client()->OnGlanceablesBubbleClosed();
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      refetch_future;
+  AssignmentListFuture refetch_future;
   client()->GetTeacherAssignmentsRecentlyDue(refetch_future.GetCallback());
 
-  const auto refetch_assignments = refetch_future.Take();
+  const auto [refetch_success, refetch_assignments] = refetch_future.Take();
+  EXPECT_TRUE(refetch_success);
   EXPECT_EQ(refetch_assignments.size(), 0u);
 }
 
@@ -3962,12 +4012,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           CreateSubmissionsListResponse("course-work-item-3", 5, 5, 5)))));
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
@@ -3983,12 +4033,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("10 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -4006,12 +4056,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("11 Apr 2023 09:00 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
@@ -4028,12 +4078,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("11 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 3);
@@ -4051,12 +4101,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("18 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 4);
@@ -4185,12 +4235,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           CreateSubmissionsListResponse("course-work-item-4", 5, 1, 0)))));
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 4u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
@@ -4209,12 +4259,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("10 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 4u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -4233,12 +4283,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("11 Apr 2023 09:00 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 2");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
@@ -4257,12 +4307,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("18 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 4");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -4399,12 +4449,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
           CreateSubmissionsListResponse("course-work-item-5", 5, 5, 5)))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
@@ -4415,12 +4465,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   }
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetGradedTeacherAssignments(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 4");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 5);
@@ -4433,12 +4483,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("10 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -4449,12 +4499,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   }
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetGradedTeacherAssignments(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 0u);
   }
 
@@ -4464,12 +4514,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("11 Apr 2023 09:00 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
@@ -4480,12 +4530,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   }
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetGradedTeacherAssignments(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 4");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 5);
@@ -4498,12 +4548,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("18 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 3);
@@ -4512,12 +4562,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   }
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetGradedTeacherAssignments(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 3u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 4");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 5);
@@ -4687,12 +4737,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
           CreateSubmissionsListResponse("course-work-item-6", 5, 1, 0)))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 4u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
@@ -4711,12 +4761,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("10 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 4u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -4733,12 +4783,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // Fetch items with passed due date - there are only 2, so verify each one's
   // information is refreshed.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 5");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
@@ -4836,12 +4886,12 @@ TEST_F(GlanceablesClassroomClientImplTest, DontRefetchTopItemMoreThanOnce) {
           CreateSubmissionsListResponse("course-work-item-3", 5, 0, 1)))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetGradedTeacherAssignments(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     EXPECT_EQ(assignments.size(), 0u);
   }
 
@@ -4857,12 +4907,12 @@ TEST_F(GlanceablesClassroomClientImplTest, DontRefetchTopItemMoreThanOnce) {
   OverrideTime("10 Apr 2023 09:05 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -4876,12 +4926,12 @@ TEST_F(GlanceablesClassroomClientImplTest, DontRefetchTopItemMoreThanOnce) {
 
   // Course Work 3 should be refetched this time.
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
@@ -4980,12 +5030,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
           CreateSubmissionsListResponse("course-work-item-3", 5, 5, 5)))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetGradedTeacherAssignments(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 3");
   }
@@ -4997,17 +5047,14 @@ TEST_F(GlanceablesClassroomClientImplTest,
   // assignment with approaching due day is farther away than a few days).
   OverrideTime("10 Apr 2023 09:05 GMT");
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      initial_graded_future;
+  AssignmentListFuture initial_graded_future;
   client()->GetGradedTeacherAssignments(initial_graded_future.GetCallback());
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      approaching_due_date_future;
+  AssignmentListFuture approaching_due_date_future;
   client()->GetTeacherAssignmentsWithApproachingDueDate(
       approaching_due_date_future.GetCallback());
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      final_graded_future;
+  AssignmentListFuture final_graded_future;
   client()->GetGradedTeacherAssignments(final_graded_future.GetCallback());
 
   // All requests should receive a response.
@@ -5015,20 +5062,25 @@ TEST_F(GlanceablesClassroomClientImplTest,
   ASSERT_TRUE(approaching_due_date_future.Wait());
   ASSERT_TRUE(final_graded_future.Wait());
 
-  const auto initial_graded_assignments = initial_graded_future.Take();
+  const auto [initial_graded_success, initial_graded_assignments] =
+      initial_graded_future.Take();
+  EXPECT_TRUE(initial_graded_success);
   ASSERT_EQ(initial_graded_assignments.size(), 1u);
   EXPECT_EQ(initial_graded_assignments.at(0)->course_work_title,
             "Course Work 3");
 
   // Note: Refreshed state for Course Work 2 has it classified as graded, so it
   // should end up in "graded assignments" list.
-  const auto approaching_due_date_assignments =
+  const auto [approaching_due_date_success, approaching_due_date_assignments] =
       approaching_due_date_future.Take();
+  EXPECT_TRUE(approaching_due_date_success);
   ASSERT_EQ(approaching_due_date_assignments.size(), 1u);
   EXPECT_EQ(approaching_due_date_assignments.at(0)->course_work_title,
             "Course Work 1");
 
-  const auto final_graded_assignments = final_graded_future.Take();
+  const auto [final_graded_success, final_graded_assignments] =
+      final_graded_future.Take();
+  EXPECT_TRUE(final_graded_success);
   ASSERT_EQ(final_graded_assignments.size(), 2u);
   EXPECT_EQ(final_graded_assignments.at(0)->course_work_title, "Course Work 3");
   EXPECT_EQ(final_graded_assignments.at(1)->course_work_title, "Course Work 2");
@@ -5125,12 +5177,12 @@ TEST_F(GlanceablesClassroomClientImplTest, PrefetchTeacherAssignments) {
   prefetch_waiter.Run();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -5139,12 +5191,12 @@ TEST_F(GlanceablesClassroomClientImplTest, PrefetchTeacherAssignments) {
   }
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 3");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
@@ -5153,12 +5205,12 @@ TEST_F(GlanceablesClassroomClientImplTest, PrefetchTeacherAssignments) {
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
     EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
     EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
@@ -5225,15 +5277,15 @@ TEST_F(GlanceablesClassroomClientImplTest,
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           CreateSubmissionsListResponse("course-work-item-2", 5, 0, 0)))));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
   EXPECT_FALSE(client()->FireTeacherDataPrefetchTimerIfRunningForTesting(
       base::OnceClosure()));
 
   ASSERT_TRUE(future.Wait());
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 2u);
   EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
   EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -5306,14 +5358,14 @@ TEST_F(GlanceablesClassroomClientImplTest,
   ASSERT_TRUE(client()->FireTeacherDataPrefetchTimerIfRunningForTesting(
       prefetch_waiter.QuitClosure()));
 
-  TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-      future;
+  AssignmentListFuture future;
   client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
   prefetch_waiter.Run();
   ASSERT_TRUE(future.Wait());
 
-  const auto assignments = future.Take();
+  const auto [success, assignments] = future.Take();
+  EXPECT_TRUE(success);
   ASSERT_EQ(assignments.size(), 2u);
   EXPECT_EQ(assignments.at(0)->course_work_title, "Course Work 1");
   EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
@@ -5335,11 +5387,21 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
             })"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-2",
+                  "name": "Active Course 2",
+                  "courseState": "ACTIVE"
+                }
+              ]
+            })"))));
 
   EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("course-id-1/courseWork?"))))
       .Times(2)
       .WillRepeatedly(Invoke([](const HttpRequest&) {
         return TestRequestHandler::CreateSuccessfulResponse(R"(
@@ -5363,7 +5425,29 @@ TEST_F(GlanceablesClassroomClientImplTest,
       }));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("course-id-2/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Final assignment",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
                                   HasSubstr("/studentSubmissions?"))))
+      .Times(3)
       .WillRepeatedly(Invoke([](const HttpRequest&) {
         return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
@@ -5378,11 +5462,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
       }));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -5393,16 +5477,29 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - approaching due date");
+  }
+
+  // Make sure assignments can be refetched after a failure.
+  {
+    AssignmentListFuture future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 2");
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Final assignment");
   }
 }
 
@@ -5412,7 +5509,6 @@ TEST_F(GlanceablesClassroomClientImplTest,
               HandleRequest(Field(
                   &HttpRequest::relative_url,
                   AllOf(HasSubstr("/courses?"), Not(HasSubstr("pageToken="))))))
-
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courses": [
@@ -5433,6 +5529,16 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ],
               "nextPageToken": "page-2-token"
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-2",
+                  "name": "Active Course 2",
+                  "courseState": "ACTIVE"
+                }
+              ]
             })"))));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
@@ -5441,8 +5547,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("course-id-1/courseWork?"))))
       .Times(2)
       .WillRepeatedly(Invoke([](const HttpRequest&) {
         return TestRequestHandler::CreateSuccessfulResponse(R"(
@@ -5466,8 +5572,29 @@ TEST_F(GlanceablesClassroomClientImplTest,
       }));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
-                                  HasSubstr("/studentSubmissions?"))))
-      .Times(2)
+                                  HasSubstr("course-id-2/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Final assignment",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("studentSubmissions?"))))
+      .Times(3)
       .WillRepeatedly(Invoke([](const HttpRequest&) {
         return TestRequestHandler::CreateSuccessfulResponse(R"(
             {
@@ -5482,11 +5609,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
       }));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -5497,16 +5624,29 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - approaching due date");
+  }
+
+  // Make sure assignments can be refetched after a failure.
+  {
+    AssignmentListFuture future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 2");
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Final assignment");
   }
 }
 
@@ -5547,7 +5687,25 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
             })"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-4",
+                  "title": "Assignment 4",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 16,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
 
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
@@ -5586,14 +5744,24 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "state": "NEW"
                 }
               ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                }
+              ]
             })"))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -5603,14 +5771,26 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+  }
+
+  // Make sure assignments can be refetched after a failure.
+  {
+    AssignmentListFuture future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 4");
   }
 }
 
@@ -5683,7 +5863,26 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ],
               "nextPageToken": "page-2-token"
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-4",
+                  "title": "Assignment 4",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
             })"))));
+
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   AllOf(HasSubstr("/courseWork?"),
@@ -5722,14 +5921,24 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "state": "NEW"
                 }
               ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                }
+              ]
             })"))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -5739,15 +5948,27 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 2");
     EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 3");
+  }
+
+  // Make sure assignments can be refetched after a failure.
+  {
+    AssignmentListFuture future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 4");
   }
 }
 
@@ -5818,6 +6039,24 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   }
                 }
               ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-4",
+                  "title": "Assignment 4",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
             })"))));
 
   EXPECT_CALL(request_handler(),
@@ -5838,14 +6077,24 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
             })"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -5855,14 +6104,26 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+  }
+
+  // Make sure assignments can be refetched after a failure.
+  {
+    AssignmentListFuture future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 4");
   }
 }
 
@@ -5933,6 +6194,37 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   }
                 }
               ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-3",
+                  "title": "Assignment 3",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-4",
+                  "title": "Assignment 4",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 17,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
             })"))));
 
   EXPECT_CALL(request_handler(),
@@ -5969,6 +6261,21 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ],
               "nextPageToken": "page-2-token"
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                }
+              ]
             })"))));
 
   EXPECT_CALL(request_handler(),
@@ -5978,11 +6285,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -5992,15 +6299,28 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
     EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 3");
+  }
+
+  // Make sure assignments can be refetched after a failure.
+  {
+    AssignmentListFuture future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 3");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 4");
   }
 }
 
@@ -6058,11 +6378,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -6075,11 +6395,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   OverrideTime("10 Apr 2023 09:15 GMT");
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 1u);
 
     EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
@@ -6194,11 +6514,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -6213,11 +6533,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   OverrideTime("10 Apr 2023 09:05 GMT");
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -6363,11 +6683,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
 
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
@@ -6382,11 +6702,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   OverrideTime("10 Apr 2023 09:05 GMT");
   {
-    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
-        future;
+    AssignmentListFuture future;
     client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
 
-    const auto assignments = future.Take();
+    const auto [success, assignments] = future.Take();
+    EXPECT_FALSE(success);
     ASSERT_EQ(assignments.size(), 2u);
 
     EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");

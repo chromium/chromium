@@ -113,6 +113,7 @@ void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void ClassroomBubbleBaseView::OnGetAssignments(
+    bool success,
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 

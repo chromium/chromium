@@ -130,7 +130,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Done callback for fetching all courses for student or teacher roles.
   using CourseList = std::vector<std::unique_ptr<GlanceablesClassroomCourse>>;
   using FetchCoursesCallback =
-      base::OnceCallback<void(const CourseList& courses)>;
+      base::OnceCallback<void(bool success, const CourseList& courses)>;
 
   using CourseWorkInfo =
       base::flat_map<std::string, GlanceablesClassroomCourseWorkItem>;
@@ -151,6 +151,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
     // The data has been fetched.
     kFetched
   };
+
+  // Flavours of course work data handled by the client.
+  enum class CourseWorkType { kStudent, kTeacher };
 
   // Tracks a course list state - the latest fetched list, the fetch status, and
   // the list of callbacks waiting for the list to be fetched.
@@ -185,7 +188,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
    private:
     // Runs pending callbacks in `callbacks_` and passes them the latest cached
     // course list.
-    void RunCallbacks();
+    void RunCallbacks(bool success);
 
     CourseList courses_;
     FetchStatus fetch_status_ = FetchStatus::kNotFetched;
@@ -232,27 +235,41 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // requested again.
   static void InvalidateFetchStatus(FetchStatus* fetch_status);
 
+  // Whether student submissions should be fetched per course work item, or per
+  // course.
+  bool ShouldFetchSubmissionsPerCourseWork(
+      CourseWorkType course_work_type) const;
+
+  // Gets a reference to course work data for the provided course work type.
+  CourseWorkPerCourse& GetCourseWork(CourseWorkType type);
+
+  // Called when an API call to get part of course work data for the course work
+  // type fails.
+  void SetCourseWorkFetchHadFailure(CourseWorkType type);
+
   // Fetches all courses for student and teacher roles and invokes `callback`
   // when done.
   void FetchStudentCourses(FetchCoursesCallback callback);
   void FetchTeacherCourses(FetchCoursesCallback callback);
 
   // Fetches all course work items for the specified `course_id` and invokes
-  // `callback` when done. The course work information is saved in
-  // `course_work`.
+  // `callback` when done. The course work information is saved in the course
+  // work map for `course_work_type` (either `student_course_work_` or
+  // `teacher_course_work_`).
   void FetchCourseWork(const std::string& course_id,
-                       bool fetch_submissions,
-                       CourseWorkPerCourse& course_work,
+                       CourseWorkType course_work_type,
                        base::OnceClosure callback);
 
   // Fetches all student submissions for the specified `course_id` and
   // `course_work_id` and invokes `callback` when done.
   // To requests student submissions for all course work item in the course,
   // pass in `course_work_id` value "-".
-  // The fetched student submissions get added to `course_work` map.
+  // The fetched student submissions get added to the course work map for
+  // `course_work_type` (either `student_course_work_` or
+  // `teacher_course_work_`).
   void FetchStudentSubmissions(const std::string& course_id,
                                const std::string& course_work_id,
-                               CourseWorkPerCourse& course_work,
+                               CourseWorkType course_work_type,
                                base::OnceClosure callback);
 
   // Callback called when either student or teacher data fetch completes. The
@@ -305,35 +322,36 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Callback for `FetchStudentCourses()` or `FetchTeacherCourses()`. Triggers
   // fetching course work and student submissions for fetched `courses` and
   // invokes `on_course_work_and_student_submissions_fetched` when done.
-  // `course_work` is the map where course work and student submissions whose
-  // fetch gets requested should be saved.
+  // `course_work_type` indicates the flavour of course work information that's
+  // being fetched, and is used to determine the course work map where the
+  // course work and student submissions whose fetch gets requested should be
+  // saved.
   void OnCoursesFetched(
-      bool fetch_submissions_per_course_work,
-      CourseWorkPerCourse& course_work,
+      CourseWorkType course_work_type,
       base::OnceClosure on_course_work_and_student_submissions_fetched,
+      bool success,
       const CourseList& target_course_list);
 
   // Fetches one page of course work items.
-  // `request_id`  - the ID for the course work request that's being handled.
-  //                 It can be used to get the associated `CourseWorkRequest`
-  //                 from `course_work_requests_`.
-  // `course_id`   - identifier of the course.
-  // `page_token`  - token specifying the result page to return, comes from the
-  //                 previous fetch request. Use an empty string to fetch the
-  //                 first page.
-  // `page_number` - 1-based page number of this fetch request. Used for UMA
-  //                 to track the total number of pages needed to fetch.
-  // `fetch_submissions` - whether student submissions need to be fetched for
-  //                       each course work item. For student glanceables,
-  //                       student submissions will be fetched independently
-  //                       all at once.
-  // `course_work` - The map where fetched course work info is to be saved.
+  // `request_id`       - the ID for the course work request that's being
+  //                      handled. It can be used to get the associated
+  //                      `CourseWorkRequest` from `course_work_requests_`.
+  // `course_id`        - identifier of the course.
+  // `page_token`       - token specifying the result page to return, comes from
+  //                      the previous fetch request. Use an empty string to
+  //                      fetch the first page.
+  // `page_number`      - 1-based page number of this fetch request. Used for
+  //                      UMA to track the total number of pages needed to
+  //                      fetch.
+  // `course_work_type` - The flavour of course work information being fetched.
+  //                      Determines the course work map where course work
+  //                      information gets saved, and whether student
+  //                      submissions need to be fetched per course work item.
   void FetchCourseWorkPage(int request_id,
                            const std::string& course_id,
                            const std::string& page_token,
                            int page_number,
-                           bool fetch_submissions,
-                           CourseWorkPerCourse& course_work);
+                           CourseWorkType course_work_type);
 
   // Callback for `FetchCourseWorkPage()`. If `next_page_token()` in the
   // `result` is not empty - calls another `FetchCourseWorkPage()`, otherwise
@@ -341,34 +359,35 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void OnCourseWorkPageFetched(
       int request_id,
       const std::string& course_id,
-      bool fetch_submissions,
-      CourseWorkPerCourse& course_work,
+      CourseWorkType course_work_type,
       const base::Time& request_start_time,
       int page_number,
       base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
 
   // Fetches one page of student submissions.
-  // `course_id`      - identifier of the course.
-  // `course_work_id` - identifier of the course work item. May be "-" to
-  //                    request student submissions for all course work in the
-  //                    course.
-  // `page_token`     - token specifying the result page to return, comes from
-  //                    the previous fetch request. Use an empty string to fetch
-  //                    the first page.
-  // `page_number`    - 1-based page number of this fetch request. Used for UMA
-  //                    to track the total number of pages needed to fetch.
-  // `course_work`    - the map where fetched student submissions information
-  //                    gets saved.
-  // `callback`       - a callback that runs when all student submissions in a
-  //                    course have been fetched. This may require multiple
-  //                    fetch requests, in this case `callback` gets called when
-  //                    the final request completes.
+  // `course_id`        - identifier of the course.
+  // `course_work_id`   - identifier of the course work item. May be "-" to
+  //                      request student submissions for all course work in the
+  //                      course.
+  // `page_token`       - token specifying the result page to return, comes from
+  //                      the previous fetch request. Use an empty string to
+  //                      fetch the first page.
+  // `page_number`      - 1-based page number of this fetch request. Used for
+  //                      UMA to track the total number of pages needed to
+  //                      fetch.
+  // `course_work_type` - The flavour of course work information being fetched.
+  //                      Determines the course work map where student
+  //                      submissions information gets saved.
+  // `callback`         - a callback that runs when all student submissions in a
+  //                      course have been fetched. This may require multiple
+  //                      fetch requests, in this case `callback` gets called
+  //                      when the final request completes.
   void FetchStudentSubmissionsPage(const std::string& course_id,
                                    const std::string& course_work_id,
                                    const std::string& page_token,
                                    int page_number,
-                                   CourseWorkPerCourse& course_work,
+                                   CourseWorkType course_work_type,
                                    base::OnceClosure callback);
 
   // Callback for `FetchStudentSubmissionsPage()`. If `next_page_token()` in the
@@ -377,7 +396,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void OnStudentSubmissionsPageFetched(
       const std::string& course_id,
       const std::string& course_work_id,
-      CourseWorkPerCourse& course_work,
+      CourseWorkType course_work_type,
       const base::Time& request_start_time,
       int page_number,
       base::OnceClosure callback,
@@ -501,11 +520,19 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Fetch status of all student data.
   FetchStatus student_data_fetch_status_ = FetchStatus::kNotFetched;
 
+  // Whether any of API requests made to fetch student data failed, indicating
+  // that student data may not be fully fresh.
+  bool student_data_fetch_had_failure_ = false;
+
   // Pending callbacks awaiting all student data.
   std::list<DataFetchCallback> callbacks_waiting_for_student_data_;
 
   // Fetch status of all teacher data.
   FetchStatus teacher_data_fetch_status_ = FetchStatus::kNotFetched;
+
+  // Whether any of API requests made to fetch teacher data failed, indicating
+  // that teacher data may not be fully fresh.
+  bool teacher_data_fetch_had_failure_ = false;
 
   // Pending callbacks awaiting all teacher data.
   std::list<DataFetchCallback> callbacks_waiting_for_teacher_data_;
