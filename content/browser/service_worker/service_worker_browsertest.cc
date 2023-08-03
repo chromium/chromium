@@ -5377,6 +5377,16 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
 
           http_response->set_content_type("text/plain");
 
+          if (base::Contains(request.GetURL().query(), "server_large_data")) {
+            // The data pipe buffer size created for the RaceNetworkRequest test
+            // is 1024 byte. Set large data to overflow the buffer.
+            http_response->set_content(std::string(1024 * 3, 'A'));
+            http_response->set_code(net::HTTP_OK);
+            http_response->AddCustomHeader(
+                "X-Response-From", "race-network-request-with-large-data");
+            return http_response;
+          }
+
           if (base::Contains(request.GetURL().query(), "server_notfound")) {
             http_response->set_code(net::HTTP_NOT_FOUND);
             http_response->set_content(
@@ -5504,6 +5514,20 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
   // Request count should be 2 (RaceNetworkRequest + fallback request).
   EXPECT_EQ(2, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
+  SetupAndRegisterServiceWorker();
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_fallback&sw_slow&server_large_data";
+  NavigationHandleObserver observer(
+      web_contents(), embedded_test_server()->GetURL(relative_url));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("race-network-request-with-large-data",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5816,6 +5840,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                    "fetch('/service_worker/mock_response?"
                    "sw_fallback&sw_slow').then(response => "
                    "response.text())"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerRaceNetworkRequestBrowserTest,
+    Subresource_NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
+  SetupAndRegisterServiceWorker();
+  EXPECT_EQ("race-network-request-with-large-data",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('/service_worker/mock_response?"
+                   "sw_fallback&sw_slow&server_large_data').then(response => "
+                   "response.headers.get('X-Response-From'))"));
 }
 
 IN_PROC_BROWSER_TEST_F(

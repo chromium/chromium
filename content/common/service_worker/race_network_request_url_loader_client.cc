@@ -375,6 +375,22 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       return;
   }
 
+  // If the data consuming for the fetch handler is canceled, we process the
+  // consuming only for the race network request.
+  if (!data_pipe_for_fetch_handler_.watcher.IsWatching()) {
+    // Copy data and complete read/write process.
+    memcpy(write_buffer, buffer, num_bytes_to_consume);
+    result = data_pipe_for_race_network_request_.producer->EndWriteData(
+        num_bytes_to_consume);
+    CHECK_EQ(result, MOJO_RESULT_OK);
+    result = body_->EndReadData(num_bytes_to_consume);
+    CHECK_EQ(result, MOJO_RESULT_OK);
+    // Once data is written to the data pipe, start the commit process.
+    MaybeCommitResponse();
+    body_consumer_watcher_.ArmOrNotify();
+    return;
+  }
+
   // Begin the write process for the response of the fetch handler.
   result = data_pipe_for_fetch_handler_.producer->BeginWriteData(
       &write_buffer_for_fetch_handler,
@@ -395,12 +411,15 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       Abort();
       return;
     case MOJO_RESULT_SHOULD_WAIT:
-      // The data pipe is not writable yet. We don't consume data from |body_|
-      // and write any data in this case. And retry it later.
+      // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
+      // not consumed yet but the buffer is full. Stop processing the data pipe
+      // for the fetch handler side, not to make the data transfer process for
+      // the race network request side being stuck.
       body_->EndReadData(0);
       data_pipe_for_race_network_request_.producer->EndWriteData(0);
       data_pipe_for_fetch_handler_.producer->EndWriteData(0);
-      data_pipe_for_fetch_handler_.watcher.ArmOrNotify();
+      data_pipe_for_fetch_handler_.watcher.Cancel();
+      data_pipe_for_race_network_request_.watcher.ArmOrNotify();
       return;
   }
 
@@ -455,6 +474,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
       state_ = new_state;
       break;
   }
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::DrainData(
+    mojo::ScopedDataPipeConsumerHandle source) {
+  data_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(source));
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::MojoResultForUMA

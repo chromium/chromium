@@ -545,7 +545,13 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
       // If the response of RaceNetworkRequest is already handled, discard the
-      // fetch handler result.
+      // fetch handler result but consume data pipes here not to make data for
+      // the fetch handler being stuck.
+      if (!body_as_stream.is_null() && body_as_stream->stream.is_valid() &&
+          race_network_request_url_loader_client_) {
+        race_network_request_url_loader_client_->DrainData(
+            std::move(body_as_stream->stream));
+      }
       return;
   }
 

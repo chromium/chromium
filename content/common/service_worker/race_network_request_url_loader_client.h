@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -25,7 +26,8 @@ namespace content {
 // If the response from the fetch handler is faster, this class doesn't do
 // anything, and discards the response.
 class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
-    : public network::mojom::URLLoaderClient {
+    : public network::mojom::URLLoaderClient,
+      public mojo::DataPipeDrainer::Client {
  public:
   using FetchResponseFrom = ServiceWorkerResourceLoader::FetchResponseFrom;
   enum class State {
@@ -106,6 +108,12 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  // Just drains data from the consumer handle. The data pipe for the fetch
+  // handler may not be consumed by the fetch handler itself if the fetch
+  // handler doesn't dispatch the corresponding fetch request. In that case the
+  // pipe may be stacked. So this method provides a way to just consume data.
+  void DrainData(mojo::ScopedDataPipeConsumerHandle source);
+
  private:
   struct DataPipeInfo {
     mojo::ScopedDataPipeProducerHandle producer;
@@ -116,6 +124,11 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     ~DataPipeInfo();
   };
   MojoResultForUMA ConvertMojoResultForUMA(MojoResult mojo_result);
+
+  // mojo::DataPipeDrainer::Client overrides:
+  // These just do nothing.
+  void OnDataAvailable(const void* data, size_t num_bytes) override {}
+  void OnDataComplete() override {}
 
   // Commits the head and body through |owner_|'s commit methods.
   // This method does not complete the commit process.
@@ -164,6 +177,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   DataPipeInfo data_pipe_for_fetch_handler_;
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   bool redirected_ = false;
+  std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
 
   base::WeakPtrFactory<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       weak_factory_{this};
