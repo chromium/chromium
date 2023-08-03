@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -22,6 +23,7 @@ class CookieControlsIconView : public PageActionIconView,
  public:
   METADATA_HEADER(CookieControlsIconView);
   CookieControlsIconView(
+      Browser* browser,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
   CookieControlsIconView(const CookieControlsIconView&) = delete;
@@ -68,6 +70,8 @@ class CookieControlsIconView : public PageActionIconView,
 
   CookieControlsBreakageConfidenceLevel confidence_ =
       CookieControlsBreakageConfidenceLevel::kUninitialized;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<CookieControlsBubbleCoordinator> bubble_coordinator_ =

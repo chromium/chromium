@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
+#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -53,16 +54,39 @@ void RecordOpenedActionForConfidence(
   }
 }
 
+void RecordOpenedActionForStatus(CookieControlsStatus status) {
+  switch (status) {
+    case CookieControlsStatus::kEnabled:
+      // Cookie blocking is enabled.
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesBlocked.Opened"));
+      break;
+    case CookieControlsStatus::kDisabled:
+    case CookieControlsStatus::kDisabledForSite:
+      // Cookie blocking is disabled.
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesAllowed.Opened"));
+      break;
+    case CookieControlsStatus::kUninitialized:
+      base::RecordAction(
+          base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
+      break;
+  }
+}
+
 }  // namespace
 
 CookieControlsIconView::CookieControlsIconView(
+    Browser* browser,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     PageActionIconView::Delegate* page_action_icon_delegate)
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "CookieControls") {
+                         "CookieControls"),
+      browser_(browser) {
+  CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetPaintLabelOverSolidBackground(true);
   SetAccessibilityProperties(
@@ -119,10 +143,8 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
       if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
         bool promo_shown = false;
         SetVisible(true);
-        content::WebContents* web_contents = GetWebContents();
-        Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-        CHECK(browser != nullptr && browser->window() != nullptr);
-        promo_shown = browser->window()->MaybeShowFeaturePromo(
+        CHECK(browser_->window());
+        promo_shown = browser_->window()->MaybeShowFeaturePromo(
             feature_engagement::kIPHCookieControlsFeature,
             base::BindOnce(&CookieControlsIconView::OnIPHClosed,
                            weak_ptr_factory_.GetWeakPtr()));
@@ -234,36 +256,18 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 void CookieControlsIconView::ShowCookieControlsBubble() {
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
-  switch (status_) {
-    case CookieControlsStatus::kEnabled:
-      // Cookie blocking is enabled.
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesBlocked.Opened"));
-      break;
-    case CookieControlsStatus::kDisabled:
-    case CookieControlsStatus::kDisabledForSite:
-      // Cookie blocking is disabled.
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesAllowed.Opened"));
-      break;
-    case CookieControlsStatus::kUninitialized:
-      base::RecordAction(
-          base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
-      break;
-  }
+  CHECK(browser_->window());
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHCookieControlsFeature);
+  browser_->window()->NotifyFeatureEngagementEvent(
+      feature_engagement::events::kCookieControlsBubbleShown);
+  RecordOpenedActionForStatus(status_);
+  RecordOpenedActionForConfidence(confidence_);
 }
 
 void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
   ShowCookieControlsBubble();
-  Browser* const browser = chrome::FindBrowserWithWebContents(GetWebContents());
-  CHECK(browser != nullptr);
-  CHECK(browser->window() != nullptr);
-  browser->window()->CloseFeaturePromo(
-      feature_engagement::kIPHCookieControlsFeature);
-  browser->window()->NotifyFeatureEngagementEvent(
-      feature_engagement::events::kCookieControlsBubbleShown);
-  RecordOpenedActionForConfidence(confidence_);
 }
 
 views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {

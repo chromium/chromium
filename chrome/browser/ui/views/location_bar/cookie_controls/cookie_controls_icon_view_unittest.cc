@@ -70,8 +70,8 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
 
     delegate_ = browser_view()->GetLocationBarView();
 
-    auto icon_view =
-        std::make_unique<CookieControlsIconView>(delegate_, delegate_);
+    auto icon_view = std::make_unique<CookieControlsIconView>(
+        browser(), delegate_, delegate_);
     auto fake_coordinator =
         std::make_unique<NiceMock<MockCookieControlsBubbleCoordinator>>(
             icon_view.get());

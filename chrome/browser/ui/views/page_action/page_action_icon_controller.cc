@@ -125,9 +125,10 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kCookieControls:
         if (base::FeatureList::IsEnabled(
                 content_settings::features::kUserBypassUI)) {
-          add_page_action_icon(type, std::make_unique<CookieControlsIconView>(
-                                         params.icon_label_bubble_delegate,
-                                         params.page_action_icon_delegate));
+          add_page_action_icon(
+              type, std::make_unique<CookieControlsIconView>(
+                        params.browser, params.icon_label_bubble_delegate,
+                        params.page_action_icon_delegate));
         } else {
           add_page_action_icon(type,
                                std::make_unique<OldCookieControlsIconView>(
