@@ -257,6 +257,8 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
       ukm_entry_builder_;
   bool is_prerendering_page_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 // This test covers the path from starting a omnibox triggered prerendering

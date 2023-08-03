@@ -119,6 +119,8 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 // Tests that Prerender2 cannot be triggered when preload setting is disabled.
