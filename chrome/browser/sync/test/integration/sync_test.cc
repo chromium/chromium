@@ -686,6 +686,9 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
         ASSERT_TRUE(WaitForAsyncChangesToBeCommitted(client_index));
         break;
     }
+
+    LOG(INFO) << "SetupSync for client " << client_index << " finished, "
+              << "cache guid: " << GetCacheGuid(client_index);
   }
 }
 
