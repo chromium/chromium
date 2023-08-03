@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/retry_runner.h"
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 

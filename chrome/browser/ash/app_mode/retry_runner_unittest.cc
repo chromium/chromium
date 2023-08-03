@@ -7,7 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -32,8 +34,8 @@ TEST_F(RetryRunnerTest, JobSucceedsOnFirstAttempt) {
   auto job = [](ResultCallback on_result) { std::move(on_result).Run(42); };
 
   TestFuture<absl::optional<int>> result;
-  auto handle = RunUpToNTimes<int>(
-      /*n=*/1, base::BindRepeating(job),
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/1, base::BindRepeating(job), RetryIfNullopt<int>(),
       /*on_done=*/result.GetCallback());
 
   EXPECT_EQ(42, result.Take());
@@ -48,8 +50,8 @@ TEST_F(RetryRunnerTest, JobSucceedsOnSecondAttempt) {
   };
 
   TestFuture<absl::optional<int>> result;
-  auto handle = RunUpToNTimes<int>(
-      /*n=*/2, base::BindLambdaForTesting(job),
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/2, base::BindLambdaForTesting(job), RetryIfNullopt<int>(),
       /*on_done=*/result.GetCallback());
 
   EXPECT_EQ(42, result.Take());
@@ -61,8 +63,8 @@ TEST_F(RetryRunnerTest, JobThatFailsReturnsNullopt) {
   };
 
   TestFuture<absl::optional<int>> result;
-  auto handle = RunUpToNTimes<int>(
-      /*n=*/5, base::BindRepeating(job),
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/5, base::BindRepeating(job), RetryIfNullopt<int>(),
       /*on_done=*/result.GetCallback());
 
   EXPECT_EQ(absl::nullopt, result.Take());
@@ -77,8 +79,8 @@ TEST_F(RetryRunnerTest, ReturnsOnFirstSuccessfulAttempt) {
   };
 
   TestFuture<absl::optional<int>> result;
-  auto handle = RunUpToNTimes<int>(
-      /*n=*/5, base::BindLambdaForTesting(job),
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/5, base::BindLambdaForTesting(job), RetryIfNullopt<int>(),
       /*on_done=*/result.GetCallback());
 
   EXPECT_EQ(42, result.Take());
@@ -93,8 +95,8 @@ TEST_F(RetryRunnerTest, RetriesNTimes) {
   };
 
   TestFuture<absl::optional<int>> result;
-  auto handle = RunUpToNTimes<int>(
-      /*n=*/5, base::BindLambdaForTesting(job),
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/5, base::BindLambdaForTesting(job), RetryIfNullopt<int>(),
       /*on_done=*/result.GetCallback());
 
   EXPECT_EQ(absl::nullopt, result.Take());
@@ -107,8 +109,8 @@ TEST_F(RetryRunnerTest, DestroyingTaskCancelsIt) {
   };
 
   TestFuture<absl::optional<int>> result;
-  auto handle = RunUpToNTimes<int>(
-      /*n=*/5, base::BindRepeating(job),
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/5, base::BindRepeating(job), RetryIfNullopt<int>(),
       /*on_done=*/result.GetCallback());
 
   handle.reset();
@@ -116,6 +118,78 @@ TEST_F(RetryRunnerTest, DestroyingTaskCancelsIt) {
   base::RunLoop loop;
   loop.RunUntilIdle();
   EXPECT_FALSE(result.IsReady());
+}
+
+TEST_F(RetryRunnerTest, WorksWithCancellableJob) {
+  auto job = [&](ResultCallback on_result) {
+    std::move(on_result).Run(42);
+    return std::unique_ptr<CancellableJob>{};
+  };
+
+  TestFuture<absl::optional<int>> result;
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/8, base::BindLambdaForTesting(job), RetryIfNullopt<int>(),
+      /*on_done=*/result.GetCallback());
+
+  EXPECT_EQ(42, result.Take());
+}
+
+// Helper class that calls the given callback when destroyed.
+class DestructorNotifer : public CancellableJob {
+ public:
+  explicit DestructorNotifer(base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  ~DestructorNotifer() override { std::move(on_destroy_).Run(); }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+
+TEST_F(RetryRunnerTest, DestroysHandleAfterAttempts) {
+  constexpr int successful_attempt = 3;
+  TestFuture<void> all_destroyed;
+  auto on_destroy = base::BarrierClosure(3, all_destroyed.GetCallback());
+  int attempts = 0;
+  auto job = [&](ResultCallback on_result) -> std::unique_ptr<CancellableJob> {
+    attempts++;
+    attempts == successful_attempt ? std::move(on_result).Run(42)
+                                   : std::move(on_result).Run(absl::nullopt);
+    return std::make_unique<DestructorNotifer>(on_destroy);
+  };
+
+  TestFuture<absl::optional<int>> result;
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/4, base::BindLambdaForTesting(job), RetryIfNullopt<int>(),
+      /*on_done=*/result.GetCallback());
+
+  EXPECT_EQ(42, result.Take());
+  EXPECT_EQ(successful_attempt, attempts);
+  EXPECT_TRUE(all_destroyed.IsReady()) << "Handle not destroyed";
+  EXPECT_NE(handle, nullptr);
+}
+
+TEST_F(RetryRunnerTest, KeepsHandleAliveForJobDuration) {
+  ResultCallback job_result;
+  TestFuture<void> destroyed;
+  auto job = [&](ResultCallback on_result) -> std::unique_ptr<CancellableJob> {
+    job_result = std::move(on_result);
+    return std::make_unique<DestructorNotifer>(destroyed.GetCallback());
+  };
+
+  TestFuture<absl::optional<int>> result;
+  auto handle = RunUpToNTimes<absl::optional<int>>(
+      /*n=*/4, base::BindLambdaForTesting(job), RetryIfNullopt<int>(),
+      /*on_done=*/result.GetCallback());
+
+  // The job started and the handle has not been destroyed.
+  ASSERT_FALSE(job_result.is_null()) << "Job not started";
+  EXPECT_FALSE(destroyed.IsReady()) << "Handle already destroyed";
+
+  // Then once the current job finishes, the handle is destroyed.
+  std::move(job_result).Run(absl::nullopt);
+  EXPECT_TRUE(destroyed.Wait()) << "Handle not destroyed";
+
+  EXPECT_NE(handle, nullptr);
 }
 
 }  // namespace ash
