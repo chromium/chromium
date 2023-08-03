@@ -544,20 +544,15 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
   options->relying_party.name =
       relying_party_name ? *relying_party_name : kGooglePaymentsRpName;
 
-  const std::string gaia =
-      autofill_client_->GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-          .gaia;
-  options->user.id = std::vector<uint8_t>(gaia.begin(), gaia.end());
-  options->user.name = autofill_client_->GetIdentityManager()
-                           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                           .email;
-
-  AccountInfo account_info =
-      autofill_client_->GetIdentityManager()->FindExtendedAccountInfo(
-          autofill_client_->GetPersonalDataManager()
-              ->GetAccountInfoForPaymentsServer());
-  options->user.display_name = account_info.given_name;
+  const CoreAccountInfo account_info =
+      autofill_client_->GetPersonalDataManager()
+          ->GetAccountInfoForPaymentsServer();
+  options->user.id =
+      std::vector<uint8_t>(account_info.gaia.begin(), account_info.gaia.end());
+  options->user.name = account_info.email;
+  options->user.display_name = autofill_client_->GetIdentityManager()
+                                   ->FindExtendedAccountInfo(account_info)
+                                   .given_name;
 
   const auto* challenge = creation_options.FindString("challenge");
   DCHECK(challenge);
