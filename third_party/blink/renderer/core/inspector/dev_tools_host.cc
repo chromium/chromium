@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_show_context_menu_item.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -158,6 +159,16 @@ void DevToolsHost::copyText(const String& text) {
   frontend_frame_->GetSystemClipboard()->CommitWrite();
 }
 
+String DevToolsHost::platform() const {
+#if BUILDFLAG(IS_MAC)
+  return "mac";
+#elif BUILDFLAG(IS_WIN)
+  return "windows";
+#else  // Unix-like systems
+  return "linux";
+#endif
+}
+
 void DevToolsHost::sendMessageToEmbedder(const String& message) {
   if (client_) {
     // Strictly convert, as we expect message to be serialized JSON.
@@ -182,13 +193,66 @@ void DevToolsHost::sendMessageToEmbedder(base::Value::Dict message) {
     client_->SendMessageToEmbedder(std::move(message));
 }
 
-void DevToolsHost::ShowContextMenu(LocalFrame* target_frame,
-                                   float x,
-                                   float y,
-                                   WebVector<MenuItemInfo> items) {
+static std::vector<MenuItemInfo> PopulateContextMenuItems(
+    const HeapVector<Member<ShowContextMenuItem>>& item_array) {
+  std::vector<MenuItemInfo> items;
+  for (auto& item : item_array) {
+    MenuItemInfo& item_info = items.emplace_back();
+
+    if (item->type() == "separator") {
+      item_info.type = MenuItemInfo::kSeparator;
+      item_info.enabled = true;
+      item_info.action = DevToolsHost::kMaxContextMenuAction;
+    } else if (item->type() == "subMenu" && item->hasSubItems()) {
+      item_info.type = MenuItemInfo::kSubMenu;
+      item_info.enabled = true;
+      item_info.action = DevToolsHost::kMaxContextMenuAction;
+      item_info.sub_menu_items = PopulateContextMenuItems(item->subItems());
+      String label = item->getLabelOr(String());
+      label.Ensure16Bit();
+      item_info.label = std::u16string(label.Characters16(), label.length());
+    } else {
+      if (!item->hasId() || item->id() >= DevToolsHost::kMaxContextMenuAction) {
+        return std::vector<MenuItemInfo>();
+      }
+
+      if (item->type() == "checkbox") {
+        item_info.type = MenuItemInfo::kCheckableOption;
+      } else {
+        item_info.type = MenuItemInfo::kOption;
+      }
+      String label = item->getLabelOr(String());
+      label.Ensure16Bit();
+      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.enabled = item->enabled();
+      item_info.action = item->id();
+      item_info.checked = item->checked();
+    }
+  }
+  return items;
+}
+
+void DevToolsHost::showContextMenuAtPoint(
+    v8::Isolate* isolate,
+    float x,
+    float y,
+    const HeapVector<Member<ShowContextMenuItem>>& items,
+    Document* document) {
   DCHECK(frontend_frame_);
+
+  LocalFrame* target_frame = nullptr;
+  if (document) {
+    target_frame = document->GetFrame();
+  } else if (LocalDOMWindow* window = EnteredDOMWindow(isolate)) {
+    target_frame = window->GetFrame();
+  }
+  if (!target_frame) {
+    return;
+  }
+
+  std::vector<MenuItemInfo> menu_items = PopulateContextMenuItems(items);
   auto* menu_provider =
-      MakeGarbageCollected<FrontendMenuProvider>(this, std::move(items));
+      MakeGarbageCollected<FrontendMenuProvider>(this, std::move(menu_items));
   menu_provider_ = menu_provider;
   float zoom = target_frame->PageZoomFactor();
   {
