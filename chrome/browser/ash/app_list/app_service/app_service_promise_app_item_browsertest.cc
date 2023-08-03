@@ -70,6 +70,11 @@ class AppServicePromiseAppItemBrowserTest
 
   apps::PromiseAppRegistryCache* cache() { return cache_; }
 
+  apps::AppRegistryCache& app_cache() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->AppRegistryCache();
+  }
+
  private:
   raw_ptr<apps::PromiseAppRegistryCache, ExperimentalAsh> cache_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -171,4 +176,38 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   EXPECT_EQ(reorder_submenu->GetCommandIdAt(1),
             ash::CommandId::REORDER_BY_COLOR);
 }
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       CompleteAppInstallationRemovesPromiseAppItem) {
+  AppType app_type = AppType::kArc;
+  std::string identifier = "test.com.example";
+  PackageId package_id(app_type, identifier);
+
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->name = "Test";
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model.
+  ash::AppListItem* item = GetAppListItem(package_id.ToString());
+  ASSERT_TRUE(item);
+  ASSERT_EQ(item->name(), "Test");
+
+  // Register (i.e. "install") an app with a matching package ID. This should
+  // trigger removal of the promise app.
+  std::string app_id = "qwertyuiopasdfghjkl";
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->publisher_id = identifier;
+  app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache().OnApps(std::move(apps), app_type,
+                     /*should_notify_initialized=*/false);
+
+  // Promise app item should no longer exist in the model.
+  item = GetAppListItem(package_id.ToString());
+  ASSERT_FALSE(item);
+}
+
 }  // namespace apps

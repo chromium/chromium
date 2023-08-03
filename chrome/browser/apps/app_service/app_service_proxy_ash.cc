@@ -157,7 +157,8 @@ void AppServiceProxyAsh::Initialize() {
                                   weak_ptr_factory_.GetWeakPtr()));
   }
   if (ash::features::ArePromiseIconsEnabled()) {
-    promise_app_service_ = std::make_unique<apps::PromiseAppService>(profile_);
+    promise_app_service_ = std::make_unique<apps::PromiseAppService>(
+        profile_, app_registry_cache_);
   }
   if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
     shortcut_registry_cache_ = std::make_unique<apps::ShortcutRegistryCache>();

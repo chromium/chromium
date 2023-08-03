@@ -8,6 +8,8 @@
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
@@ -17,6 +19,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -48,7 +52,9 @@ class PromiseAppServiceTest : public testing::Test,
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
-    service_ = std::make_unique<PromiseAppService>(profile_.get());
+    app_cache_ = &AppServiceProxyFactory::GetForProfile(profile_.get())
+                      ->AppRegistryCache();
+    service_ = std::make_unique<PromiseAppService>(profile_.get(), *app_cache_);
     service_->SetSkipApiKeyCheckForTesting(true);
   }
 
@@ -59,6 +65,8 @@ class PromiseAppServiceTest : public testing::Test,
   PromiseAppRegistryCache* cache() {
     return service_->PromiseAppRegistryCache();
   }
+
+  AppRegistryCache* app_cache() { return app_cache_; }
 
   PromiseAppIconCache* icon_cache() { return service_->PromiseAppIconCache(); }
 
@@ -138,6 +146,7 @@ class PromiseAppServiceTest : public testing::Test,
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  raw_ptr<AppRegistryCache> app_cache_;
 
   // Tracks how many times we should expect OnPromiseAppUpdate to be called
   // before proceeding with a unit test.
@@ -304,32 +313,44 @@ TEST_F(PromiseAppServiceTest, LoadIcon) {
                                    expected_bitmap));
 }
 
-TEST_F(PromiseAppServiceTest, RemovePromiseApp) {
+TEST_F(PromiseAppServiceTest, CompleteAppInstallationRemovesPromiseApp) {
+  AppType app_type = AppType::kArc;
+  std::string identifier = "test.com.example";
+  PackageId package_id(app_type, identifier);
+
   // Register test promise app.
-  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(kTestPackageId);
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
   promise_app->should_show = true;
   promise_app->status = PromiseStatus::kInstalling;
   service()->OnPromiseApp(std::move(promise_app));
 
   // Confirm that the promise app gets registered.
-  const PromiseApp* promise_app_registered =
-      cache()->GetPromiseApp(kTestPackageId);
+  const PromiseApp* promise_app_registered = cache()->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_registered);
   EXPECT_TRUE(promise_app_registered->should_show.has_value());
   EXPECT_TRUE(promise_app_registered->should_show.value());
   EXPECT_EQ(promise_app_registered->status, PromiseStatus::kInstalling);
 
   // Add test icons.
-  icon_cache()->SaveIcon(kTestPackageId, CreatePromiseAppIcon(100));
-  icon_cache()->SaveIcon(kTestPackageId, CreatePromiseAppIcon(200));
-  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  icon_cache()->SaveIcon(package_id, CreatePromiseAppIcon(100));
+  icon_cache()->SaveIcon(package_id, CreatePromiseAppIcon(200));
+  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(package_id));
 
-  // Remove the promise app.
-  service()->RemovePromiseApp(kTestPackageId);
+  // Register (i.e. "install") an app with a matching package ID. This should
+  // trigger removal of the promise app.
+  std::string app_id = "asdfghjkl";
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->publisher_id = identifier;
+  app->readiness = apps::Readiness::kReady;
+
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache()->OnApps(std::move(apps), app_type,
+                      /*should_notify_initialized=*/false);
 
   // Confirm that the promise app is now absent from the Promise App Registry
   // and Promise App Icon Cache.
-  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
-  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_FALSE(cache()->HasPromiseApp(package_id));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(package_id));
 }
 }  // namespace apps
