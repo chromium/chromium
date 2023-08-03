@@ -290,8 +290,9 @@ bool TestPersonalDataManager::IsDataLoaded() const {
   return true;
 }
 
-bool TestPersonalDataManager::IsSyncFeatureEnabled() const {
-  return sync_feature_enabled_;
+bool TestPersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
+    const {
+  return false;
 }
 
 CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()

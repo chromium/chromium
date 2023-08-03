@@ -74,7 +74,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string CountryCodeForCurrentTimezone() const override;
   void ClearAllLocalData() override;
   bool IsDataLoaded() const override;
-  bool IsSyncFeatureEnabled() const override;
+  bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
   const AutofillProfileMigrationStrikeDatabase*
   GetProfileMigrationStrikeDatabase() const override;
@@ -156,8 +156,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     payments_customer_data_ = std::move(customer_data);
   }
 
-  void SetSyncFeatureEnabled(bool enabled) { sync_feature_enabled_ = enabled; }
-
   void SetSyncAndSignInState(AutofillSyncSigninState sync_and_signin_state) {
     sync_and_signin_state_ = sync_and_signin_state;
   }
@@ -178,7 +176,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   absl::optional<bool> autofill_wallet_import_enabled_;
   absl::optional<bool> eligible_for_account_storage_;
   absl::optional<bool> payment_methods_mandatory_reauth_enabled_;
-  bool sync_feature_enabled_ = false;
   AutofillSyncSigninState sync_and_signin_state_ =
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   CoreAccountInfo account_info_;

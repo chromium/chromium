@@ -1222,7 +1222,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
       syncer::AUTOFILL_WALLET_DATA));
 
   // PersonalDataManager should use (ephemeral) account storage.
-  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(GetPersonalDataManager(0)
+                   ->IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
@@ -1259,7 +1260,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
       syncer::AUTOFILL_WALLET_DATA));
 
   // PersonalDataManager should have switched to persistent storage.
-  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(GetPersonalDataManager(0)
+                  ->IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_FALSE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
@@ -1292,7 +1294,8 @@ IN_PROC_BROWSER_TEST_F(
       syncer::AUTOFILL_WALLET_DATA));
 
   // PersonalDataManager should use (ephemeral) account storage.
-  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(GetPersonalDataManager(0)
+                   ->IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
@@ -1343,7 +1346,8 @@ IN_PROC_BROWSER_TEST_F(
       syncer::AUTOFILL_WALLET_DATA));
 
   // PersonalDataManager should have switched to persistent storage.
-  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(GetPersonalDataManager(0)
+                  ->IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_FALSE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 

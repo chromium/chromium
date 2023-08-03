@@ -288,7 +288,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   AutofillTable* GetServerDataTable() {
-    return personal_data_->IsSyncFeatureEnabled()
+    return personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics()
                ? profile_autofill_table_.get()
                : account_autofill_table_.get();
   }
@@ -3535,7 +3535,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  ASSERT_FALSE(personal_data_->IsSyncFeatureEnabled());
+  ASSERT_FALSE(personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics());
 
   // Add a local profile.
   AutofillProfile local_profile;

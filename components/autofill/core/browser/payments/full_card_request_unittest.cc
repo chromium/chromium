@@ -81,7 +81,10 @@ class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() {}
   ~MockPersonalDataManager() override {}
-  MOCK_METHOD(bool, IsSyncFeatureEnabled, (), (const override));
+  MOCK_METHOD(bool,
+              IsSyncFeatureEnabledForPaymentsServerMetrics,
+              (),
+              (const override));
   MOCK_METHOD(void,
               UpdateCreditCard,
               (const CreditCard& credit_card),

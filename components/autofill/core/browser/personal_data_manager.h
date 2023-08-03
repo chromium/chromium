@@ -158,9 +158,8 @@ class PersonalDataManager : public KeyedService,
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // AccountInfoGetter:
-  // TODO(1411720): Make it return absl::optional.
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
-  bool IsSyncFeatureEnabled() const override;
+  bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
 
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;

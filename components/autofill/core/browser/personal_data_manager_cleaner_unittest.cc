@@ -105,10 +105,11 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
   }
 
   void SetServerCards(const std::vector<CreditCard>& server_cards) {
-    test::SetServerCreditCards(personal_data_->IsSyncFeatureEnabled()
-                                   ? profile_autofill_table_.get()
-                                   : account_autofill_table_.get(),
-                               server_cards);
+    test::SetServerCreditCards(
+        personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics()
+            ? profile_autofill_table_.get()
+            : account_autofill_table_.get(),
+        server_cards);
   }
 
   std::unique_ptr<PersonalDataManager> personal_data_;

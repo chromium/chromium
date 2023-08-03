@@ -138,11 +138,12 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
 [[nodiscard]] bool PersonalDataManagerTestBase::TurnOnSyncFeature(
     PersonalDataManager* personal_data) {
   sync_service_.SetHasSyncConsent(true);
-  if (!sync_service_.IsSyncFeatureEnabled())
+  if (!sync_service_.IsSyncFeatureEnabled()) {
     return false;
+  }
   personal_data->OnStateChanged(&sync_service_);
 
-  return personal_data->IsSyncFeatureEnabled();
+  return personal_data->IsSyncFeatureEnabledForPaymentsServerMetrics();
 }
 
 void PersonalDataManagerTestBase::SetServerCards(

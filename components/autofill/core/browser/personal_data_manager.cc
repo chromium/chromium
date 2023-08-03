@@ -682,7 +682,9 @@ CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
       signin::ConsentLevel::kSignin);
 }
 
-bool PersonalDataManager::IsSyncFeatureEnabled() const {
+bool PersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics() const {
+  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_ && sync_service_->IsSyncFeatureEnabled();
 }
 
@@ -2015,6 +2017,9 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
 
 bool PersonalDataManager::IsSyncEnabledFor(
     syncer::UserSelectableType data_type) const {
+  // TODO(crbug.com/1462286): Investigate usage of IsSyncFeatureEnabled() below
+  // and consider if it can be removed, since GetSelectedTypes() deals well
+  // with all sign-in states.
   return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(data_type);
 }

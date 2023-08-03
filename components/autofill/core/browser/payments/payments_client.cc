@@ -250,10 +250,11 @@ void PaymentsClient::GetUnmaskDetails(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             PaymentsClient::UnmaskDetails&)> callback,
     const std::string& app_locale) {
-  IssueRequest(std::make_unique<GetUnmaskDetailsRequest>(
-                   std::move(callback), app_locale,
-                   account_info_getter_->IsSyncFeatureEnabled()),
-               /*authenticate=*/true);
+  IssueRequest(
+      std::make_unique<GetUnmaskDetailsRequest>(
+          std::move(callback), app_locale,
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()),
+      /*authenticate=*/true);
 }
 
 void PaymentsClient::UnmaskCard(
@@ -262,7 +263,8 @@ void PaymentsClient::UnmaskCard(
                             PaymentsClient::UnmaskResponseDetails&)> callback) {
   IssueRequest(
       std::make_unique<UnmaskCardRequest>(
-          request_details, account_info_getter_->IsSyncFeatureEnabled(),
+          request_details,
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
           std::move(callback)),
       /*authenticate=*/true);
 }
@@ -272,10 +274,11 @@ void PaymentsClient::OptChange(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             PaymentsClient::OptChangeResponseDetails&)>
         callback) {
-  IssueRequest(std::make_unique<OptChangeRequest>(
-                   request_details, std::move(callback),
-                   account_info_getter_->IsSyncFeatureEnabled()),
-               /*authenticate=*/true);
+  IssueRequest(
+      std::make_unique<OptChangeRequest>(
+          request_details, std::move(callback),
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()),
+      /*authenticate=*/true);
 }
 
 void PaymentsClient::GetUploadDetails(
@@ -290,13 +293,14 @@ void PaymentsClient::GetUploadDetails(
     const int billable_service_number,
     const int64_t billing_customer_number,
     UploadCardSource upload_card_source) {
-  IssueRequest(std::make_unique<GetUploadDetailsRequest>(
-                   addresses, detected_values, client_behavior_signals,
-                   account_info_getter_->IsSyncFeatureEnabled(), app_locale,
-                   std::move(callback), billable_service_number,
-                   billing_customer_number, upload_card_source),
-               /*authenticate=*/base::FeatureList::IsEnabled(
-                   features::kAutofillUpstreamAuthenticatePreflightCall));
+  IssueRequest(
+      std::make_unique<GetUploadDetailsRequest>(
+          addresses, detected_values, client_behavior_signals,
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+          app_locale, std::move(callback), billable_service_number,
+          billing_customer_number, upload_card_source),
+      /*authenticate=*/base::FeatureList::IsEnabled(
+          features::kAutofillUpstreamAuthenticatePreflightCall));
 }
 
 void PaymentsClient::UploadCard(
@@ -305,7 +309,8 @@ void PaymentsClient::UploadCard(
                             const UploadCardResponseDetails&)> callback) {
   IssueRequest(
       std::make_unique<UploadCardRequest>(
-          request_details, account_info_getter_->IsSyncFeatureEnabled(),
+          request_details,
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
           std::move(callback)),
       /*authenticate=*/true);
 }
@@ -317,7 +322,8 @@ void PaymentsClient::MigrateCards(
   IssueRequest(
       std::make_unique<MigrateCardsRequest>(
           request_details, migratable_credit_cards,
-          account_info_getter_->IsSyncFeatureEnabled(), std::move(callback)),
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+          std::move(callback)),
       /*authenticate=*/true);
 }
 
