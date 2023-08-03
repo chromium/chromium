@@ -152,6 +152,23 @@ bool ShouldConsultOptimizationGuide(const GURL& current_main_frame_url,
          url::Origin::Create(previous_main_frame_url);
 }
 
+// Attach LCP Critical Path Predictor hint to NavigationHandle, so that it
+// would be sent to the renderer process upon navigation commit.
+void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
+                                LoadingPredictor& predictor) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPCriticalPathPredictor)) {
+    std::vector<std::string> lcp_element_locators =
+        predictor.resource_prefetch_predictor()->PredictLcpElementLocators(
+            navigation_handle.GetURL());
+    if (!lcp_element_locators.empty()) {
+      navigation_handle.SetLCPPNavigationHint(
+          blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
+              std::move(lcp_element_locators)));
+    }
+  }
+}
+
 NavigationId GetNextId() {
   static NavigationId::Generator generator;
   return generator.GenerateNextId();
@@ -257,18 +274,7 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   if (!IsHandledNavigation(navigation_handle))
     return;
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kLCPCriticalPathPredictor)) {
-    // Attach LCP Critical Path Predictor hint to NavigationHandle, so that it
-    // would be sent to the renderer process upon navigation commit.
-
-    // TODO(crbug.com/1419756): Replace this with a real hint data. Also,
-    // add a similar code to redirect code path so we update the hint data as we
-    // follow redirects.
-    blink::mojom::LCPCriticalPathPredictorNavigationTimeHint hint;
-
-    navigation_handle->SetLCPPNavigationHint(hint);
-  }
+  MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
 
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
 
@@ -312,6 +318,8 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
 
   if (!IsHandledNavigation(navigation_handle))
     return;
+
+  MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
 
   auto* page_data = PageData::GetForNavigationHandle(*navigation_handle);
   // PageData may not be created in DidStartNavigation if IsHandledNavigation()

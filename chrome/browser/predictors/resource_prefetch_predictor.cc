@@ -400,6 +400,10 @@ std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
     return {};
   }
 
+  if (!url.is_valid() || url.host().empty()) {
+    return {};
+  }
+
   LcppData data;
   if (!lcpp_data_->TryGetData(url.host(), &data)) {
     return {};
