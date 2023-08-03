@@ -1254,7 +1254,7 @@ suite('network-config', function() {
     });
   });
 
-  suite('Certificates', function() {
+  suite('Non-VPN EAP', function() {
     setup(function() {
       mojoApi_.resetForTest();
     });
@@ -1312,6 +1312,18 @@ suite('network-config', function() {
       networkConfig.save();
       await flushAsync();
     }
+
+    test('WiFi EAP Default Outer', async function() {
+      setNetworkType(NetworkType.kWiFi, SecurityType.kWpaEap);
+      setAuthenticated();
+      initNetworkConfig();
+      networkConfig.shareNetwork_ = false;
+      await mojoApi_.whenCalled('getNetworkCertificates');
+      await flushAsync();
+      const outer = networkConfig.$$('#outer');
+      // 'PEAP' should be the default 'Outer' protocol.
+      assertEquals('PEAP', outer.value);
+    });
 
     test('WiFi EAP-TLS No Certs', function() {
       setNetworkType(NetworkType.kWiFi, SecurityType.kWpaEap);

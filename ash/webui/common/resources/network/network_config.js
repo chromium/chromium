@@ -70,6 +70,8 @@ const WireGuardKeyConfigType = {
 /** @type {string}  */ const NO_CERTS_HASH = 'no-certs';
 /** @type {string}  */ const NO_USER_CERT_HASH = 'no-user-cert';
 
+/** @type {string}  */ const DEFAULT_EAP_OUTER_PROTOCOL = 'PEAP';
+
 /** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
 
 /**
@@ -372,12 +374,13 @@ Polymer({
 
     /**
      * Array of values for the EAP Method (Outer) dropdown.
+     * They will be presented in a dropdown in this order.
      * @private {!Array<string>}
      */
     eapOuterItems_: {
       type: Array,
       readOnly: true,
-      value: ['LEAP', 'PEAP', 'EAP-TLS', 'EAP-TTLS'],
+      value: ['PEAP', 'EAP-TLS', 'EAP-TTLS', 'LEAP'],
     },
 
     /**
@@ -938,7 +941,7 @@ Polymer({
       domainSuffixMatch: this.getActiveStringList_(eap.domainSuffixMatch) || [],
       identity: OncMojo.getActiveString(eap.identity),
       inner: OncMojo.getActiveString(eap.inner),
-      outer: OncMojo.getActiveString(eap.outer) || 'LEAP',
+      outer: OncMojo.getActiveString(eap.outer) || DEFAULT_EAP_OUTER_PROTOCOL,
       password: OncMojo.getActiveString(eap.password),
       saveCredentials: this.getActiveBoolean_(eap.saveCredentials),
       serverCaPems: this.getActiveStringList_(eap.serverCaPems),
@@ -1171,7 +1174,7 @@ Polymer({
     let eap;
     if (security === SecurityType.kWpaEap) {
       eap = this.getEap_(this.configProperties_, true);
-      eap.outer = eap.outer || 'LEAP';
+      eap.outer = eap.outer || DEFAULT_EAP_OUTER_PROTOCOL;
     }
     this.setEap_(eap);
   },
