@@ -144,9 +144,11 @@ void NGBoxFragmentBuilder::AddResult(
            inline_container);
   if (margins) {
     if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-      To<NGPhysicalBoxFragment>(fragment)
-          .GetMutableForContainerLayout()
-          .SetMargins((*margins).ConvertToPhysical(GetWritingDirection()));
+      const auto& box_fragment = To<NGPhysicalBoxFragment>(fragment);
+      if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
+        box_fragment.GetMutableForContainerLayout().SetMargins(
+            margins->ConvertToPhysical(GetWritingDirection()));
+      }
     } else {
       To<LayoutBox>(fragment.GetMutableLayoutObject())
           ->SetMargin((*margins).ConvertToPhysical(GetWritingDirection()));
