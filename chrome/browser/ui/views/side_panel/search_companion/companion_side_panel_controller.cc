@@ -54,6 +54,7 @@ void CompanionSidePanelController::CreateAndRegisterEntry() {
           &companion::CompanionSidePanelController::GetOpenInNewTabUrl,
           base::Unretained(this)));
   registry->Register(std::move(entry));
+  AddObserver();
 }
 
 void CompanionSidePanelController::DeregisterEntry() {
@@ -61,7 +62,7 @@ void CompanionSidePanelController::DeregisterEntry() {
   if (!registry) {
     return;
   }
-
+  RemoveObserver();
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
 }
@@ -92,6 +93,40 @@ void CompanionSidePanelController::OnCompanionSidePanelClosed() {
 content::WebContents*
 CompanionSidePanelController::GetCompanionWebContentsForTesting() {
   return web_contents();
+}
+
+void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  if (!browser) {
+    return;
+  }
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
+      browser_view, /*is_open=*/true);
+}
+
+void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  if (!browser) {
+    return;
+  }
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
+      browser_view, /*is_open=*/false);
+}
+
+void CompanionSidePanelController::AddObserver() {
+  auto* entry = SidePanelRegistry::Get(web_contents_)
+                    ->GetEntryForKey(SidePanelEntry::Key(
+                        SidePanelEntry::Id::kSearchCompanion));
+  entry->AddObserver(this);
+}
+
+void CompanionSidePanelController::RemoveObserver() {
+  auto* entry = SidePanelRegistry::Get(web_contents_)
+                    ->GetEntryForKey(SidePanelEntry::Key(
+                        SidePanelEntry::Id::kSearchCompanion));
+  entry->RemoveObserver(this);
 }
 
 std::unique_ptr<views::View>

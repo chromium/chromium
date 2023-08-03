@@ -43,7 +43,10 @@ class SearchCompanionSidePanelCoordinator
   bool Show(SidePanelOpenTrigger side_panel_open_trigger);
   BrowserView* GetBrowserView() const;
   std::u16string GetTooltipForToolbarButton() const;
+  static void SetAccessibleNameForToolbarButton(BrowserView* browser_view,
+                                                bool is_open);
 
+  std::u16string accessible_name() const { return accessible_name_; }
   std::u16string name() const { return name_; }
   const gfx::VectorIcon& icon() { return *icon_; }
   const gfx::VectorIcon& disabled_icon() { return *disabled_icon_; }
@@ -92,6 +95,7 @@ class SearchCompanionSidePanelCoordinator
   void OnExpsPolicyPrefChanged();
 
   raw_ptr<Browser> browser_;
+  std::u16string accessible_name_;
   std::u16string name_;
   const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
   const raw_ref<const gfx::VectorIcon, ExperimentalAsh> disabled_icon_;
