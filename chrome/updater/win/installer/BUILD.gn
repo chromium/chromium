@@ -15,6 +15,7 @@ source_set("msi_custom_action_sources") {
 
   deps = [
     "//base",
+    "//chrome/updater:public_sources",
     "//chrome/updater:tagging",
     "//third_party/abseil-cpp:absl",
   ]

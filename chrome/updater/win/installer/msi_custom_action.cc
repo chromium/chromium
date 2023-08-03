@@ -14,7 +14,10 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
+#include "base/win/registry.h"
 #include "chrome/updater/tag.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -29,6 +32,12 @@ class MsiHandleImpl : public MsiHandleInterface {
                    std::vector<wchar_t>& value,
                    DWORD& value_length) const override;
   UINT SetProperty(const std::string& name, const std::string& value) override;
+  MSIHANDLE CreateRecord(UINT field_count) override;
+  UINT RecordSetString(MSIHANDLE record_handle,
+                       UINT field_index,
+                       const std::wstring& value) override;
+  int ProcessMessage(INSTALLMESSAGE message_type,
+                     MSIHANDLE record_handle) override;
 
  private:
   const MSIHANDLE msi_handle_;
@@ -48,6 +57,21 @@ UINT MsiHandleImpl::SetProperty(const std::string& name,
   return ::MsiSetPropertyA(msi_handle_, name.c_str(), value.c_str());
 }
 
+MSIHANDLE MsiHandleImpl::CreateRecord(UINT field_count) {
+  return ::MsiCreateRecord(field_count);
+}
+
+UINT MsiHandleImpl::RecordSetString(MSIHANDLE record_handle,
+                                    UINT field_index,
+                                    const std::wstring& value) {
+  return ::MsiRecordSetString(record_handle, field_index, value.c_str());
+}
+
+int MsiHandleImpl::ProcessMessage(INSTALLMESSAGE message_type,
+                                  MSIHANDLE record_handle) {
+  return ::MsiProcessMessage(msi_handle_, message_type, record_handle);
+}
+
 // Gets the value of the property `name` from `msi_handle`.
 absl::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
                                             const std::wstring& name) {
@@ -60,6 +84,39 @@ absl::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
   } while (result == ERROR_MORE_DATA && value_length <= 0xFFFF);
   return result == ERROR_SUCCESS
              ? absl::make_optional(std::wstring(value.begin(), value.end()))
+             : absl::nullopt;
+}
+
+// If the app installer failed with a custom error and provided a UI string,
+// returns that string.
+absl::optional<std::wstring> GetLastInstallerResultUIString(
+    const std::wstring& app_id) {
+  auto key = [&app_id]() -> absl::optional<base::win::RegKey> {
+    if (base::win::RegKey client_state_key(HKEY_LOCAL_MACHINE,
+                                           GetAppClientStateKey(app_id).c_str(),
+                                           Wow6432(KEY_READ));
+        client_state_key.Valid()) {
+      return client_state_key;
+    }
+    if (base::win::RegKey updater_key(HKEY_LOCAL_MACHINE, UPDATER_KEY,
+                                      Wow6432(KEY_READ));
+        updater_key.Valid()) {
+      return updater_key;
+    }
+    return {};
+  }();
+
+  DWORD last_installer_result = 0;
+  std::wstring val;
+  return key &&
+                 key->ReadValueDW(kRegValueLastInstallerResult,
+                                  &last_installer_result) == ERROR_SUCCESS &&
+                 last_installer_result ==
+                     static_cast<DWORD>(InstallerResult::kCustomError) &&
+                 key->ReadValue(kRegValueLastInstallerResultUIString, &val) ==
+                     ERROR_SUCCESS &&
+                 !val.empty()
+             ? absl::make_optional(val)
              : absl::nullopt;
 }
 
@@ -83,9 +140,35 @@ UINT MsiSetTags(MsiHandleInterface& msi_handle) {
   return ERROR_SUCCESS;
 }
 
+UINT MsiSetInstallerResult(MsiHandleInterface& msi_handle) {
+  const auto app_id = MsiGetProperty(msi_handle, L"CustomActionData");
+  if (!app_id) {
+    return ERROR_SUCCESS;
+  }
+
+  absl::optional<std::wstring> result_string =
+      GetLastInstallerResultUIString(*app_id);
+  if (!result_string) {
+    return ERROR_SUCCESS;
+  }
+
+  PMSIHANDLE record = msi_handle.CreateRecord(0);
+  if (record &&
+      msi_handle.RecordSetString(record, 0, *result_string) == ERROR_SUCCESS) {
+    msi_handle.ProcessMessage(INSTALLMESSAGE_ERROR, record);
+  }
+
+  return ERROR_SUCCESS;
+}
+
 }  // namespace updater
 
 extern "C" UINT __stdcall ExtractTagInfoFromInstaller(MSIHANDLE msi_handle) {
   updater::MsiHandleImpl msi_handle_impl(msi_handle);
   return updater::MsiSetTags(msi_handle_impl);
+}
+
+extern "C" UINT __stdcall ShowInstallerResultUIString(MSIHANDLE msi_handle) {
+  updater::MsiHandleImpl msi_handle_impl(msi_handle);
+  return updater::MsiSetInstallerResult(msi_handle_impl);
 }

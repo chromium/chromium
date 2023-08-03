@@ -10,6 +10,7 @@
 #include "base/win/registry.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/installer.h"
+#include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -66,25 +67,6 @@ enum class UpdaterScope;
 // `%COMPANY%_USAGE_STATS_ENABLED`: "1" (if the updater sends usage stats), or
 // "0" (if the updater does not send usage stats); %COMPANY% is the uppercase
 // short company name specified in branding.gni (e.g. "GOOGLE").
-
-// These values are defined by the Installer API.
-enum class InstallerResult {
-  // The installer succeeded, unconditionally.
-  kSuccess = 0,
-
-  // The installer returned a specific error using the Installer API mechanism.
-  kCustomError = 1,
-
-  // The MSI installer failed, with a system error.
-  kMsiError = 2,
-
-  // The installer failed with a a system error.
-  kSystemError = 3,
-
-  // The installer failed. The exit code of the installer process contains
-  // the error.
-  kExitCode = 4,
-};
 
 template <>
 struct EnumTraits<InstallerResult> {
