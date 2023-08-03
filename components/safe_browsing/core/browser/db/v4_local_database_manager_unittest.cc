@@ -1050,6 +1050,27 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   EXPECT_TRUE(GetQueuedChecks().empty());
 }
 
+TEST_F(V4LocalDatabaseManagerTest, CancelWhileQueued) {
+  const GURL url("https://www.example.com/");
+  TestClient client(SB_THREAT_TYPE_SAFE, url);
+
+  // The following function waits for the DB to load. Otherwise we may have a
+  // pending attempt to create a V4Store at teardown, which will leak.
+  WaitForTasksOnTaskRunner();
+
+  ResetV4Database();
+
+  v4_local_database_manager_->CheckBrowseUrl(
+      url, usual_threat_types_, &client,
+      MechanismExperimentHashDatabaseCache::kNoExperiment);
+  // The database is unavailable so the check should get queued.
+  EXPECT_EQ(1ul, GetQueuedChecks().size());
+
+  v4_local_database_manager_->CancelCheck(&client);
+
+  EXPECT_TRUE(GetQueuedChecks().empty());
+}
+
 // Verify that a window where checks cannot be cancelled is closed.
 TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
   // Setup to receive full-hash misses.

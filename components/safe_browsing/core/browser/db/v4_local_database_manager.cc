@@ -386,8 +386,11 @@ V4LocalDatabaseManager::~V4LocalDatabaseManager() {
 void V4LocalDatabaseManager::CancelCheck(Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   // If we've stopped responding due to browser shutdown, it's possible that a
-  // client will call CancelCheck even though we're disabled.
-  DCHECK(IsDatabaseReady() || is_shutdown_);
+  // client will call CancelCheck even though we're disabled. Note that we can't
+  // use IsDatabaseReady() here because there's several expected cases where a
+  // client could cancel while the request is still queued (e.g. timeouts, tab
+  // being closed).
+  DCHECK(enabled_ || is_shutdown_);
   auto pending_it =
       base::ranges::find(pending_checks_, client, &PendingCheck::client);
   if (pending_it != pending_checks_.end()) {
