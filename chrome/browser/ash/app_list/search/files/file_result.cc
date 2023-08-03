@@ -12,6 +12,7 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -19,12 +20,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "chromeos/ui/base/file_icon_util.h"
+#include "content/public/browser/browser_thread.h"
+#include "net/base/mime_util.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -63,6 +69,25 @@ constexpr double kMaxPenalty = 0.6;
 constexpr double kPenaltyCoeff = 0.0029;
 
 constexpr int64_t kMillisPerDay = 1000 * 60 * 60 * 24;
+
+// Generates ash::FileMetadata for the result at `file_path`.
+// Performs blocking File IO, so should not be run on UI thread.
+ash::FileMetadata GetFileMetadata(base::FilePath file_path,
+                                  base::FilePath displayable_path) {
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
+      << "FileIO attempted on UI thread.";
+
+  ash::FileMetadata metadata;
+  base::File::Info info;
+  if (base::GetFileInfo(file_path, &info)) {
+    metadata.file_info = info;
+    net::GetMimeTypeFromFile(file_path, &metadata.mime_type);
+  }
+  metadata.file_path = file_path;
+  metadata.virtual_path = displayable_path;
+
+  return metadata;
+}
 
 std::string StripHostedFileExtensions(const std::string& filename) {
   static const base::NoDestructor<std::vector<std::string>> hosted_extensions(
@@ -159,6 +184,15 @@ FileResult::FileResult(const std::string& id,
 
   if (details)
     SetDetails(details.value());
+
+  // Initialize the file metadata.
+  if (result_type == ash::AppListSearchResultType::kImageSearch) {
+    auto displayable_path =
+        file_manager::util::GetDisplayablePath(profile_, filepath_)
+            .value_or(filepath_);
+    SetMetadataLoaderCallback(
+        base::BindRepeating(&GetFileMetadata, filepath_, displayable_path));
+  }
 
   UpdateIcon();
 

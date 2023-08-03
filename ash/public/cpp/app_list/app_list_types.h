@@ -12,6 +12,9 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/task/thread_pool.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -512,6 +515,42 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   absl::optional<std::u16string> extra_details;
 };
 
+// Data required for showing file info.
+struct ASH_PUBLIC_EXPORT FileMetadata {
+  FileMetadata();
+  FileMetadata(const FileMetadata&);
+  FileMetadata& operator=(const FileMetadata&);
+  ~FileMetadata();
+
+  base::File::Info file_info;
+  std::string mime_type;
+  base::FilePath file_path;
+  base::FilePath virtual_path;
+};
+
+class ASH_PUBLIC_EXPORT FileMetadataLoader {
+ public:
+  using MetadataLoaderCallback = base::RepeatingCallback<ash::FileMetadata()>;
+  using OnMetadataLoadedCallback =
+      base::RepeatingCallback<void(ash::FileMetadata)>;
+
+  FileMetadataLoader();
+  FileMetadataLoader(const FileMetadataLoader&);
+  FileMetadataLoader& operator=(const FileMetadataLoader&);
+  ~FileMetadataLoader();
+
+  // Requests the file metadata and triggers `on_loaded_callback` after loaded.
+  // The file requested is the file search result that owns this
+  // FileMetadataLoader instance in its metadata.
+  void RequestFileInfo(OnMetadataLoadedCallback on_loaded_callback);
+
+  void SetLoaderCallback(MetadataLoaderCallback callback);
+
+ private:
+  // Callback that is used to load the file metadata.
+  MetadataLoaderCallback loader_callback_;
+};
+
 // A tagged range in search result text.
 struct ASH_PUBLIC_EXPORT SearchResultTag {
   // Similar to ACMatchClassification::Style, the style values are not
@@ -722,6 +761,9 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // The details for an answer card result with System Information. This field
   // is only set for this specific result type.
   absl::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
+
+  // Details for file type results.
+  FileMetadataLoader file_metadata_loader_;
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.

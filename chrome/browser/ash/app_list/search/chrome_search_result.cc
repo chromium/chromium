@@ -201,6 +201,12 @@ void ChromeSearchResult::SetSystemInfoAnswerCardData(
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetMetadataLoaderCallback(
+    MetadataLoaderCallback callback) {
+  metadata_->file_metadata_loader_.SetLoaderCallback(std::move(callback));
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetSearchResultMetadata() {
   AppListModelUpdater* updater = model_updater();
   if (updater)

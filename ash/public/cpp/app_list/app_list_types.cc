@@ -261,6 +261,40 @@ void SystemInfoAnswerCardData::UpdateBarChartPercentage(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// FileMetadata:
+
+FileMetadata::FileMetadata() = default;
+FileMetadata::FileMetadata(const FileMetadata&) = default;
+FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
+FileMetadata::~FileMetadata() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// FileMetadataLoader:
+
+FileMetadataLoader::FileMetadataLoader() = default;
+FileMetadataLoader::FileMetadataLoader(const FileMetadataLoader&) = default;
+FileMetadataLoader& FileMetadataLoader::operator=(const FileMetadataLoader&) =
+    default;
+FileMetadataLoader::~FileMetadataLoader() = default;
+
+void FileMetadataLoader::RequestFileInfo(
+    OnMetadataLoadedCallback on_loaded_callback) {
+  // Return an empty FileMetadata if the loader callback is not set.
+  if (loader_callback_.is_null()) {
+    on_loaded_callback.Run(FileMetadata());
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      loader_callback_, on_loaded_callback);
+}
+
+void FileMetadataLoader::SetLoaderCallback(MetadataLoaderCallback callback) {
+  loader_callback_ = std::move(callback);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // SearchResultTag:
 
 SearchResultTag::SearchResultTag() = default;

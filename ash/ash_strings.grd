@@ -2166,6 +2166,12 @@ Style notes:
       <message name="IDS_ASH_SEARCH_RESULT_IMAGE_DATE_MODIFIED" desc="The title for the last modified date of the image file search result, where the information is listed beside the launcher image result.">
         Date modified
       </message>
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_LAST_MODIFIED_DATE_AND_TIME" desc="The last modified date and time of the image file displayed in launcher search results. Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
+        <ph name="date">$1<ex>May 23, 2023</ex></ph>, <ph name="time">$2<ex>11:28 AM</ex></ph>
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_LAST_MODIFIED_RELATIVE_DATE_AND_TIME" desc="The last modified date and time of the image file displayed in launcher search results, where the relative date (today, yesterday) is used and the date string is already translated. Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
+        <ph name="relative_date">$1<ex>Today</ex></ph> <ph name="time">$2<ex>4:00 PM</ex></ph>
+      </message>
       <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_TYPE" desc="The title for the file type of the image file search result, where the information is listed beside the launcher image result.">
         Type
       </message>

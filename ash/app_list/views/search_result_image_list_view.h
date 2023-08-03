@@ -49,8 +49,15 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // layout.
   void ConfigureLayoutForAvailableWidth(int width);
 
+  // A callback that is called when the `metadata` is loaded. This updates the
+  // `image_info_container_` if needed.
+  void OnImageMetadataLoaded(ash::FileMetadata metadata);
+
   const views::TableLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
+  }
+  const std::vector<views::Label*>& metadata_content_labels_for_test() const {
+    return metadata_content_labels_;
   }
 
  private:
@@ -71,6 +78,13 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   raw_ptr<views::FlexLayoutView> image_view_container_ = nullptr;
   raw_ptr<views::TableLayoutView> image_info_container_ = nullptr;
   std::vector<SearchResultImageView*> image_views_;
+
+  // Labels that show the file metadata in `image_info_container_`. There should
+  // always be 4 labels, which in the order of {file size, date modified, mime
+  // type, file path}.
+  std::vector<views::Label*> metadata_content_labels_;
+
+  base::WeakPtrFactory<SearchResultImageListView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

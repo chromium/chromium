@@ -15,7 +15,6 @@
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 
@@ -214,6 +213,13 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   void set_system_info_answer_card_data(
       const ash::SystemInfoAnswerCardData& system_info_data) {
     metadata_->system_info_answer_card_data = system_info_data;
+  }
+
+  ash::FileMetadataLoader* file_metadata_loader() {
+    return &metadata_->file_metadata_loader_;
+  }
+  void set_file_metadata_loader_for_test(ash::FileMetadataLoader* loader) {
+    metadata_->file_metadata_loader_ = *loader;
   }
 
   void AddObserver(SearchResultObserver* observer);

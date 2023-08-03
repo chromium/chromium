@@ -25,6 +25,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/file.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
@@ -49,6 +50,21 @@ const int kResultContainersCount =
     static_cast<int>(
         ash::SearchResultListView::SearchResultListType::kMaxValue) +
     1;
+
+// A callback that returns a FileMetadata which will be used by the image search
+// result list.
+ash::FileMetadata MetadataLoaderForTest() {
+  ash::FileMetadata metadata;
+  base::Time last_modified;
+  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00", &last_modified));
+
+  metadata.file_info.last_modified = last_modified;
+  metadata.file_info.size = 20 * 1024.0;  // 20.0 KB
+  metadata.mime_type = "image/jpeg";
+  metadata.file_path = base::FilePath("full file path");
+  metadata.virtual_path = base::FilePath("virtual file path");
+  return metadata;
+}
 
 }  // namespace
 
@@ -99,7 +115,8 @@ class AppListSearchViewTest : public AshTestBase {
   void SetUpImageSearchResults(SearchModel::SearchResults* results,
                                int init_id,
                                int new_result_count,
-                               bool is_icon_loaded = true) {
+                               bool is_icon_loaded = true,
+                               FileMetadataLoader* metadata_loader = nullptr) {
     for (int i = 0; i < new_result_count; ++i) {
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
@@ -116,6 +133,9 @@ class AppListSearchViewTest : public AshTestBase {
       result->SetDetails(u"Detail");
       result->set_best_match(false);
       result->set_category(SearchResult::Category::kFiles);
+      if (metadata_loader) {
+        result->set_file_metadata_loader_for_test(metadata_loader);
+      }
       results->Add(std::move(result));
     }
   }
@@ -317,6 +337,14 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
 
 TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   GetAppListTestHelper()->ShowAppList();
+  FileMetadataLoader loader;
+  base::RunLoop file_metadata_load_waiter;
+  loader.SetLoaderCallback(
+      base::BindLambdaForTesting([&file_metadata_load_waiter]() {
+        FileMetadata metadata = MetadataLoaderForTest();
+        file_metadata_load_waiter.Quit();
+        return metadata;
+      }));
 
   TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
   client->set_search_callback(
@@ -330,7 +358,8 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
         auto* test_helper = GetAppListTestHelper();
         SearchModel::SearchResults* results = test_helper->GetSearchResults();
         // Only shows 1 result.
-        SetUpImageSearchResults(results, 1, 1);
+        SetUpImageSearchResults(results, 1, 1, /*is_icon_loaded=*/true,
+                                &loader);
       }));
 
   // Press a key to start a search.
@@ -349,8 +378,27 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   SearchResultImageListView* image_list_view =
       static_cast<SearchResultImageListView*>(result_containers[2]);
 
-  // Verify that the info container of the search result is visible
-  EXPECT_TRUE(image_list_view->image_info_container_for_test()->GetVisible());
+  // The file metadata, when requested, gets loaded on a worker thread.
+  // Wait for the file metadata request to get handled, and then run main
+  // loop to make sure load response posted on the main thread runs.
+  file_metadata_load_waiter.Run();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the info container of the search result is visible.
+  auto* info_container = image_list_view->image_info_container_for_test();
+  ASSERT_TRUE(info_container);
+  EXPECT_TRUE(info_container->GetVisible());
+
+  // Verify the actual texts shown in the info container are correct. Note that
+  // the narrowed space \x202F is used in formatting the time of the day.
+  const std::vector<views::Label*>& content_labels =
+      image_list_view->metadata_content_labels_for_test();
+  EXPECT_EQ(content_labels[0]->GetText(), u"20.0 KB");
+  EXPECT_EQ(content_labels[1]->GetText(),
+            u"Dec 23, 2021, 9:01\x202F"
+            u"AM");
+  EXPECT_EQ(content_labels[2]->GetText(), u"image/jpeg");
+  EXPECT_EQ(content_labels[3]->GetText(), u"virtual file path");
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
