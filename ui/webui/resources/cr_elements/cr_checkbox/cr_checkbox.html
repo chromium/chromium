@@ -177,6 +177,10 @@
         transform: translate(-50%, -50%);
       }
 
+      :host-context([dir=rtl][chrome-refresh-2023]) paper-ripple {
+        transform: translate(50%, -50%);
+      }
+
       #label-container {
         color: var(--cr-checkbox-label-color, var(--cr-primary-text-color));
         padding-inline-start: var(--cr-checkbox-label-padding-start, 20px);
