@@ -143,6 +143,7 @@
 
 - (void)stop {
   [self.recentTabsTableViewController dismissModals];
+  self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;
   self.recentTabsTableViewController.delegate = nil;
   self.recentTabsTableViewController = nil;
