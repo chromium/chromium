@@ -42,6 +42,8 @@ VpxEncoder::VpxEncoder(
               on_encoded_video_cb,
               bits_per_second),
       use_vp9_(use_vp9) {
+  std::memset(&codec_config_, 0, sizeof(codec_config_));
+  std::memset(&alpha_codec_config_, 0, sizeof(alpha_codec_config_));
   codec_config_.g_timebase.den = 0;        // Not initialized.
   alpha_codec_config_.g_timebase.den = 0;  // Not initialized.
 }
@@ -271,17 +273,14 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
   codec_config->g_timebase.num = 1;
   codec_config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
-  // Let the encoder decide where to place the Keyframes, between min and max.
-  // In VPX_KF_AUTO mode libvpx will sometimes emit keyframes regardless of min/
-  // max distance out of necessity.
+  // The periodical keyframe interval is configured by KeyFrameRequestProcessor.
+  // Aside from the periodical keyframe, let the encoder decide where to place
+  // the Keyframes In VPX_KF_AUTO mode libvpx will sometimes emit keyframes out
+  // of necessity.
   // Note that due to http://crbug.com/440223, it might be necessary to force a
   // key frame after 10,000frames since decoding fails after 30,000 non-key
   // frames.
-  // Forcing a keyframe in regular intervals also allows seeking in the
-  // resulting recording with decent performance.
   codec_config->kf_mode = VPX_KF_AUTO;
-  codec_config->kf_min_dist = 0;
-  codec_config->kf_max_dist = 100;
 
   codec_config->g_threads = GetNumberOfThreadsForEncoding();
 
