@@ -53,10 +53,6 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Forward declare Mac SPIs.
 // Request for public API: rdar://13803570
 @interface NSFont (WebKitSPI)

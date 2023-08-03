@@ -40,10 +40,6 @@
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace blink {
 
 namespace {

@@ -12,10 +12,6 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace blink {
 
 namespace {
