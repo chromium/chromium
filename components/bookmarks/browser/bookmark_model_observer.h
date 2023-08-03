@@ -9,6 +9,8 @@
 
 #include <stddef.h>
 
+#include "base/observer_list_types.h"
+
 class GURL;
 
 namespace bookmarks {
@@ -17,7 +19,7 @@ class BookmarkModel;
 class BookmarkNode;
 
 // Observer for the BookmarkModel.
-class BookmarkModelObserver {
+class BookmarkModelObserver : public base::CheckedObserver {
  public:
   BookmarkModelObserver(const BookmarkModelObserver&) = delete;
   BookmarkModelObserver& operator=(const BookmarkModelObserver&) = delete;
@@ -151,7 +153,7 @@ class BookmarkModelObserver {
 
  protected:
   BookmarkModelObserver() = default;
-  virtual ~BookmarkModelObserver() = default;
+  ~BookmarkModelObserver() override = default;
 };
 
 }  // namespace bookmarks

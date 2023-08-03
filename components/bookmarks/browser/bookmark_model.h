@@ -496,7 +496,7 @@ class BookmarkModel final : public BookmarkUndoProvider,
   int64_t next_node_id_ = 1;
 
   // The observers.
-  base::ObserverList<BookmarkModelObserver>::Unchecked observers_;
+  base::ObserverList<BookmarkModelObserver> observers_;
 
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
