@@ -32,6 +32,9 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
 // Initial height's extra bottom height padding so it does not crop the cell.
 CGFloat const kInitialHeightPadding = 5;
 
+// Custom height for the gradient view of the bottom sheet.
+CGFloat const kCustomGradientViewHeight = 30;
+
 }  // namespace
 
 @interface TableViewBottomSheetViewController () {
@@ -85,7 +88,7 @@ CGFloat const kInitialHeightPadding = 5;
     auto fullHeightBlock = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
       BOOL tooLarge = (fullHeight > context.maximumDetentValue);
-      [weakSelf setTableViewScrollEnabled:tooLarge];
+      [weakSelf setTableViewScrollAndGradientViewEnabled:tooLarge];
       if (tooLarge) {
         // Reset bottom anchor constant value so there is enough space for the
         // gradient view.
@@ -106,7 +109,7 @@ CGFloat const kInitialHeightPadding = 5;
     }];
   } else {
     // Expand to large detent.
-    [self setTableViewScrollEnabled:YES];
+    [self setTableViewScrollAndGradientViewEnabled:YES];
     [presentationController animateChanges:^{
       presentationController.selectedDetentIdentifier =
           UISheetPresentationControllerDetentIdentifierLarge;
@@ -132,12 +135,12 @@ CGFloat const kInitialHeightPadding = 5;
   return _tableView.indexPathForSelectedRow.row;
 }
 
-- (CGFloat)tableViewHeight {
+- (CGFloat)tableViewContentSizeHeight {
   return _tableView.contentSize.height;
 }
 
-- (UITableView*)tableView {
-  return _tableView;
+- (CGFloat)tableViewWidth {
+  return _tableView.frame.size.width;
 }
 
 #pragma mark - UIViewController
@@ -152,12 +155,12 @@ CGFloat const kInitialHeightPadding = 5;
   self.showDismissBarButton = NO;
   self.customSpacingAfterImage = 0;
   self.topAlignedLayout = YES;
-  self.scrollEnabled = NO;
   self.customScrollViewBottomInsets = 0;
-
-  [self updateCustomGradientViewHeight:0];
+  self.customGradientViewHeight = kCustomGradientViewHeight;
 
   [super viewDidLoad];
+
+  [self displayGradientView:NO];
 
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
@@ -209,6 +212,12 @@ CGFloat const kInitialHeightPadding = 5;
       UITableViewCellAccessoryNone;
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self displayGradientView:![self isScrolledToBottom]];
+}
+
 #pragma mark - Public
 
 - (void)selectFirstRow {
@@ -239,14 +248,11 @@ CGFloat const kInitialHeightPadding = 5;
          (kTableViewEstimatedRowHeight * numberOfRows);
 }
 
-- (void)setTableViewScrollEnabled:(BOOL)enabled {
+- (void)setTableViewScrollAndGradientViewEnabled:(BOOL)enabled {
   _tableView.scrollEnabled = enabled;
-  self.scrollEnabled = enabled;
 
-  // Add gradient view to show that the user can scroll.
-  if (enabled) {
-    [self updateCustomGradientViewHeight:16];
-  }
+  // Update gradient view visibility.
+  [self displayGradientView:enabled];
 }
 
 - (CGFloat)initialNumberOfVisibleCells {

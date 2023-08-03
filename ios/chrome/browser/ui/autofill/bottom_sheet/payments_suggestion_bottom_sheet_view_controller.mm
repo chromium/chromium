@@ -29,10 +29,17 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 // Default spacing use for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
 
+// Custom detent identifier for when the bottom sheet is minimized.
+NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
+
+// Default custom detent identifier.
+NSString* const kCustomDetentIdentifier = @"customDetent";
+
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetViewController () <
     ConfirmationAlertActionHandler,
+    UISheetPresentationControllerDelegate,
     UITableViewDataSource> {
   // If YES: the table view is currently showing 2.5 credit card suggestions.
   // If NO: the table view is currently showing all credit card suggestions.
@@ -60,6 +67,9 @@ CGFloat const kSpacing = 10;
 
 // Whether the bottom sheet will be disabled on exit. Default is YES.
 @property(nonatomic, assign) BOOL disableBottomSheetOnExit;
+
+// YES if the expanded bottom sheet size takes the whole screen.
+@property(nonatomic, assign) BOOL expandSizeTooLarge;
 
 @end
 
@@ -195,7 +205,9 @@ CGFloat const kSpacing = 10;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewDetailIconCell* cell =
       [tableView dequeueReusableCellWithIdentifier:@"cell"];
-  return [self layoutCell:cell forTableView:tableView atIndexPath:indexPath];
+  return [self layoutCell:cell
+        forTableViewWidth:tableView.frame.size.width
+              atIndexPath:indexPath];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -298,10 +310,15 @@ CGFloat const kSpacing = 10;
   // showing the table view and the action buttons).
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
+  presentationController.delegate = self;
   // Setup the minimized height (if the user has more than 2 credit cards).
   NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
   if (@available(iOS 16, *)) {
     if (useMinimizedState) {
+      // Show gradient view when the user is in minimized state to show that the
+      // view can be scrolled.
+      [self displayGradientView:YES];
+
       CGFloat bottomSheetHeight = [self initialHeight];
       auto detentBlock = ^CGFloat(
           id<UISheetPresentationControllerDetentResolutionContext> context) {
@@ -309,7 +326,7 @@ CGFloat const kSpacing = 10;
       };
       UISheetPresentationControllerDetent* customDetent =
           [UISheetPresentationControllerDetent
-              customDetentWithIdentifier:@"customDetent"
+              customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
                                 resolver:detentBlock];
       [currentDetents addObject:customDetent];
     }
@@ -324,21 +341,20 @@ CGFloat const kSpacing = 10;
   // constraint disabled.
   if (@available(iOS 16, *)) {
     CGFloat fullHeight = [self fullHeight:_creditCardData.count];
-    __weak __typeof(self) weakSelf = self;
     auto fullHeightBlock = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
-      BOOL tooLarge = (fullHeight > context.maximumDetentValue);
-      [weakSelf setTableViewScrollEnabled:tooLarge];
-      return tooLarge ? context.maximumDetentValue : fullHeight;
+      self.expandSizeTooLarge = (fullHeight > context.maximumDetentValue);
+      return self.expandSizeTooLarge ? context.maximumDetentValue : fullHeight;
     };
     UISheetPresentationControllerDetent* customDetentExpand =
         [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:@"customDetentExpand"
+            customDetentWithIdentifier:kCustomDetentIdentifier
                               resolver:fullHeightBlock];
     [currentDetents addObject:customDetentExpand];
     presentationController.detents = [currentDetents copy];
     presentationController.selectedDetentIdentifier =
-        useMinimizedState ? @"customDetent" : @"customDetentExpand";
+        useMinimizedState ? kCustomMinimizedDetentIdentifier
+                          : kCustomDetentIdentifier;
   }
 }
 
@@ -402,12 +418,10 @@ CGFloat const kSpacing = 10;
     TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
     // Setup UI same as real cell.
     cell = [self layoutCell:cell
-               forTableView:[self tableView]
+          forTableViewWidth:[self tableViewWidth]
                 atIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
     CGFloat cellHeight =
-        [cell systemLayoutSizeFittingSize:CGSizeMake(
-                                              [self tableView].frame.size.width,
-                                              1)]
+        [cell systemLayoutSizeFittingSize:CGSizeMake([self tableViewWidth], 1)]
             .height;
     height += cellHeight;
   }
@@ -417,7 +431,7 @@ CGFloat const kSpacing = 10;
 // Layouts the cell for the table view with the payment info at the specific
 // index path.
 - (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
-                          forTableView:(UITableView*)tableView
+                     forTableViewWidth:(CGFloat)tableViewWidth
                            atIndexPath:(NSIndexPath*)indexPath {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -432,9 +446,8 @@ CGFloat const kSpacing = 10;
   [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
   // Make separator invisible on last cell
-  CGFloat separatorLeftMargin = [self isLastRow:indexPath]
-                                    ? tableView.bounds.size.width
-                                    : kTableViewHorizontalSpacing;
+  CGFloat separatorLeftMargin =
+      [self isLastRow:indexPath] ? tableViewWidth : kTableViewHorizontalSpacing;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
 
   if (_creditCardData.count > 1 && [self selectedRow] == indexPath.row) {
@@ -443,6 +456,23 @@ CGFloat const kSpacing = 10;
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
   return cell;
+}
+
+#pragma mark - UISheetPresentationControllerDelegate
+
+- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
+    (UISheetPresentationController*)sheetPresentationController
+    API_AVAILABLE(ios(16)) {
+  if (sheetPresentationController.selectedDetentIdentifier ==
+      kCustomDetentIdentifier) {
+    // Enable the table view scrolling and show gradient view if needed.
+    [self setTableViewScrollAndGradientViewEnabled:self.expandSizeTooLarge];
+  } else if (sheetPresentationController.selectedDetentIdentifier ==
+             kCustomMinimizedDetentIdentifier) {
+    // Show gradient view when the user is in minimized state to show that the
+    // view can be scrolled.
+    [self displayGradientView:YES];
+  }
 }
 
 @end

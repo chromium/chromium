@@ -78,6 +78,9 @@
 // stackview. Must be set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacing;
 
+// Sets the custom height for the gradient view above the action buttons.
+@property(nonatomic, assign) CGFloat customGradientViewHeight;
+
 // When YES, the content is attached to the top of the view instead of being
 // centered.
 @property(nonatomic) BOOL topAlignedLayout;
@@ -142,15 +145,18 @@
 // nothing.
 - (void)customizeSubtitle:(UITextView*)subtitle;
 
-// Sets the custom height for the gradient view.
-- (void)updateCustomGradientViewHeight:(CGFloat)height;
-
 // Sets the new constant value for the scroll view bottom anchor constraint.
 - (void)changeScrollViewBottomAnchorConstant:(CGFloat)constant;
 
 // Reset the constant value for the scroll view bottom anchor constraint to the
 // default one.
 - (void)resetScrollViewBottomAnchorConstant;
+
+// Show or hide the gradient view depending on the state of the bottom sheet.
+- (void)displayGradientView:(BOOL)shouldShow;
+
+// Returns YES if the scroll view is scrolled to the bottom.
+- (BOOL)isScrolledToBottom;
 
 // Detent that attempts to fit the preferred height of the content. Detent may
 // be inactive in some size classes, so it should be used together with at

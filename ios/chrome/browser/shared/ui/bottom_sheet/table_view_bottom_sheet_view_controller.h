@@ -30,11 +30,11 @@
 // Returns the currently selected row.
 - (NSInteger)selectedRow;
 
-// Returns the height of the table view.
-- (CGFloat)tableViewHeight;
+// Returns the height of the table view content size.
+- (CGFloat)tableViewContentSizeHeight;
 
-// Returns the table view.
-- (UITableView*)tableView;
+// Returns the width of the table view.
+- (CGFloat)tableViewWidth;
 
 // Select the first row in the table view.
 - (void)selectFirstRow;
@@ -46,8 +46,8 @@
 // screen).
 - (CGFloat)fullHeight:(NSInteger)numberOfRows;
 
-// Enables scrolling of the table view.
-- (void)setTableViewScrollEnabled:(BOOL)enabled;
+// Enables scrolling of the table view and updates gradient view accordingly.
+- (void)setTableViewScrollAndGradientViewEnabled:(BOOL)enabled;
 
 // Returns the initial number of cells the user sees.
 - (CGFloat)initialNumberOfVisibleCells;

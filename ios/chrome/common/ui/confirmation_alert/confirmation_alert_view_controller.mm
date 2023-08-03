@@ -52,7 +52,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 }  // namespace
 
-@interface ConfirmationAlertViewController ()
+@interface ConfirmationAlertViewController () <UIScrollViewDelegate>
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
@@ -65,7 +65,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) GradientView* gradientView;
-@property(nonatomic, assign) CGFloat customGradientViewHeight;
 @property(nonatomic, strong) NSLayoutConstraint* gradientViewHeightConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* scrollViewBottomAnchorConstraint;
@@ -397,20 +396,24 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // Do nothing by default. Subclasses can override this.
 }
 
-- (void)updateCustomGradientViewHeight:(CGFloat)height {
-  self.customGradientViewHeight = height;
-  self.gradientViewHeightConstraint.active = NO;
-  self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
-      constraintEqualToConstant:self.customGradientViewHeight];
-  self.gradientViewHeightConstraint.active = YES;
-}
-
 - (void)changeScrollViewBottomAnchorConstant:(CGFloat)constant {
   self.scrollViewBottomAnchorConstraint.constant = constant;
 }
 
 - (void)resetScrollViewBottomAnchorConstant {
   [self changeScrollViewBottomAnchorConstant:-kScrollViewBottomInsets];
+}
+
+- (void)displayGradientView:(BOOL)shouldShow {
+  self.gradientView.hidden = !shouldShow;
+}
+
+- (BOOL)isScrolledToBottom {
+  CGFloat scrollPosition =
+      self.scrollView.contentOffset.y + self.scrollView.frame.size.height;
+  CGFloat scrollLimit =
+      self.scrollView.contentSize.height + self.scrollView.contentInset.bottom;
+  return scrollPosition >= scrollLimit;
 }
 
 #pragma mark - Private
@@ -675,6 +678,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   scrollView.scrollEnabled = self.scrollEnabled;
   [scrollView
       setShowsVerticalScrollIndicator:self.showsVerticalScrollIndicator];
+  scrollView.delegate = self;
   return scrollView;
 }
 

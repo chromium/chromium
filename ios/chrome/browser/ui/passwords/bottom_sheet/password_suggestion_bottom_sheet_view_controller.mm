@@ -103,7 +103,7 @@
   [self.view layoutIfNeeded];
   // When this is called (when the view appears), the table view is minimized,
   // and its height is the (dynamic) height of just one cell.
-  CGFloat effectiveRowHeight = [self tableViewHeight];
+  CGFloat effectiveRowHeight = [self tableViewContentSizeHeight];
   if (effectiveRowHeight > 0 &&
       effectiveRowHeight != [self tableViewEstimatedRowHeight]) {
     // Update height constraints for the table view.
