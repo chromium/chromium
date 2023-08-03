@@ -409,11 +409,15 @@ enum ServerFieldType {
   // Username field in a password-less forgot password form.
   SINGLE_USERNAME_FORGOT_PASSWORD = 154,
 
+  // Autofill fallback type for username fields which accept also email or
+  // phone number.
+  // EMAIL_OR_PHONE_NUMBER = 155 is server-side only.
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // Please update `tools/metrics/histograms/enums.xml` by executing
   // `tools/metrics/histograms/update_autofill_enums.py`.
-  MAX_VALID_FIELD_TYPE = 155,
+  MAX_VALID_FIELD_TYPE = 156,
 };
 
 enum class FieldTypeGroup {

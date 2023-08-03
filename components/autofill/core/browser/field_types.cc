@@ -148,7 +148,8 @@ ServerFieldType ToSafeServerFieldType(
            !(20 <= t && t <= 24) &&
            // Reserved for server-side only use.
            t != 127 && !(130 <= t && t <= 132) && t != 134 &&
-           !(137 <= t && t <= 139) && !(145 <= t && t <= 150) && t != 153;
+           !(137 <= t && t <= 139) && !(145 <= t && t <= 150) && t != 153 &&
+           t != 155;
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
