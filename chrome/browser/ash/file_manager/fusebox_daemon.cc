@@ -11,26 +11,11 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 
 namespace file_manager {
-namespace {
-FuseBoxDaemon* instance = nullptr;
-}  // namespace
 
 // static
-void FuseBoxDaemon::Initialize() {
-  DCHECK(!instance);
-  instance = new FuseBoxDaemon();
-}
-
-// static
-void FuseBoxDaemon::Shutdown() {
-  DCHECK(instance);
-  delete std::exchange(instance, nullptr);
-}
-
-// static
-FuseBoxDaemon* FuseBoxDaemon::GetInstance() {
-  DCHECK(instance);
-  return instance;
+scoped_refptr<FuseBoxDaemon> FuseBoxDaemon::GetInstance() {
+  static auto* fusebox_daemon = new FuseBoxDaemon;
+  return fusebox_daemon;
 }
 
 FuseBoxDaemon::FuseBoxDaemon() {

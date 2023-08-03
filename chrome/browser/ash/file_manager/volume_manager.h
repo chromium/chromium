@@ -351,7 +351,7 @@ class VolumeManager : public KeyedService,
   base::ObserverList<VolumeManagerObserver>::Unchecked observers_;
   GetMtpStorageInfoCallback get_mtp_storage_info_callback_;
   Volumes mounted_volumes_;
-  raw_ptr<file_manager::FuseBoxDaemon> fusebox_daemon_ = nullptr;
+  scoped_refptr<file_manager::FuseBoxDaemon> fusebox_daemon_;
   std::unique_ptr<SnapshotManager> snapshot_manager_;
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
