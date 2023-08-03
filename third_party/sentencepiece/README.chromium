@@ -26,3 +26,7 @@ Patches:
 * rename_version.patch - Renames the src/VERSION file because otherwise C++
 includes of the form `#include <version>` will find that text file instead of
 the header they are meant to find.
+
+* remove-dart-exceptions.patch - Removes all try/catch blocks and changes
+`DART_THROW` to `ABSL_CHECK(false)` to be compatible with chromium which is
+built with exceptions disabled.

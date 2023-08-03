@@ -59,6 +59,7 @@ static_library("sentencepiece") {
     "src/src/util.h",
     "src/src/word_model.cc",
     "src/src/word_model.h",
+    "src/third_party/darts_clone/include/darts.h",
   ]
 
   deps = [
