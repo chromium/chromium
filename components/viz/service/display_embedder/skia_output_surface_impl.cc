@@ -824,7 +824,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
                           kPremul_SkAlphaType, color_space);
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
         dependency_->gr_context_type(), format, /*plane_index=*/0,
-        /*is_yuv_plane=*/false, mipmap);
+        /*is_yuv_plane=*/false, mipmap, scanout_dcomp_surface);
     if (!texture_info.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;

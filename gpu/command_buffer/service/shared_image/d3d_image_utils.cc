@@ -39,48 +39,32 @@ wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
   }
 }
 
-wgpu::TextureUsage GetAllowedDawnUsages(const wgpu::Device& device,
-                                        const wgpu::TextureFormat wgpu_format,
-                                        uint32_t shared_image_usage) {
-  // TODO(crbug.com/2709243): Figure out other SI flags, if any.
-  const wgpu::TextureUsage kBasicUsage =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
-      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
-  switch (wgpu_format) {
-    case wgpu::TextureFormat::R8Unorm:
-    case wgpu::TextureFormat::RG8Unorm:
-      return kBasicUsage;
-    case wgpu::TextureFormat::BGRA8Unorm: {
-      if (shared_image_usage & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
-        if (device.HasFeature(wgpu::FeatureName::BGRA8UnormStorage)) {
-          return kBasicUsage | wgpu::TextureUsage::StorageBinding;
-        } else {
-          // We cannot use BGRA8Unorm textures as storage textures when
-          // the feature BGRA8UnormStorage is not enabled.
-          LOG(ERROR) << "StorageBinding is not supported for "
-                     << static_cast<int>(wgpu::TextureFormat::BGRA8Unorm)
-                     << " when the feature "
-                     << static_cast<int>(wgpu::FeatureName::BGRA8UnormStorage)
-                     << " is not enabled";
-          return wgpu::TextureUsage::None;
-        }
-      } else {
-        return kBasicUsage;
-      }
-    }
-    case wgpu::TextureFormat::RGBA8Unorm:
-    case wgpu::TextureFormat::RGBA16Float: {
-      if (shared_image_usage & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
-        return kBasicUsage | wgpu::TextureUsage::StorageBinding;
-      } else {
-        return kBasicUsage;
-      }
-    }
-    case wgpu::TextureFormat::R8BG8Biplanar420Unorm:
-      return wgpu::TextureUsage::TextureBinding;
-    default:
-      return wgpu::TextureUsage::None;
+wgpu::TextureUsage GetAllowedDawnUsages(
+    const wgpu::Device& device,
+    const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
+    const wgpu::TextureFormat wgpu_format) {
+  DCHECK_EQ(wgpu_format, DXGIToWGPUFormat(d3d11_texture_desc.Format));
+  if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
+    // R8BG8Biplanar420Unorm is only supported as a texture binding.
+    return wgpu::TextureUsage::TextureBinding;
   }
+
+  wgpu::TextureUsage wgpu_usage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
+  if (d3d11_texture_desc.BindFlags & D3D11_BIND_RENDER_TARGET) {
+    wgpu_usage |= wgpu::TextureUsage::RenderAttachment;
+  }
+  if (d3d11_texture_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE) {
+    wgpu_usage |= wgpu::TextureUsage::TextureBinding;
+  }
+  if (d3d11_texture_desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS) {
+    if (wgpu_format != wgpu::TextureFormat::BGRA8Unorm ||
+        device.HasFeature(wgpu::FeatureName::BGRA8UnormStorage)) {
+      wgpu_usage |= wgpu::TextureUsage::StorageBinding;
+    }
+  }
+
+  return wgpu_usage;
 }
 
 }  // namespace
@@ -131,7 +115,7 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
   // validation. Alternatively, add support in Dawn for multiplanar formats to
   // be Renderable.
   wgpu::TextureUsage wgpu_allowed_usage =
-      GetAllowedDawnUsages(device, wgpu_format, shared_image_usage);
+      GetAllowedDawnUsages(device, d3d11_texture_desc, wgpu_format);
   if (wgpu_allowed_usage == wgpu::TextureUsage::None) {
     LOG(ERROR)
         << "Allowed wgpu::TextureUsage is unknown for wgpu::TextureFormat: "
@@ -139,12 +123,12 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
     return nullptr;
   }
 
-  // We need to have an internal usage of CopySrc in order to use
-  // CopyTextureToTextureInternal if texture format allows these usage.
-  wgpu::TextureUsage wgpu_internal_usage =
-      (wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::RenderAttachment |
-       wgpu::TextureUsage::TextureBinding) &
-      wgpu_allowed_usage;
+  if (shared_image_usage & SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE &&
+      !(wgpu_allowed_usage & wgpu::TextureUsage::StorageBinding)) {
+    LOG(ERROR) << "Storage binding is not allowed for wgpu::TextureFormat: "
+               << static_cast<int>(wgpu_format);
+    return nullptr;
+  }
 
   wgpu::TextureDescriptor wgpu_texture_desc;
   wgpu_texture_desc.format = wgpu_format;
@@ -162,7 +146,7 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
   // if texture format allows these usages.
   wgpu::DawnTextureInternalUsageDescriptor wgpu_internal_usage_desc;
-  wgpu_internal_usage_desc.internalUsage = wgpu_internal_usage;
+  wgpu_internal_usage_desc.internalUsage = wgpu_allowed_usage;
   wgpu_texture_desc.nextInChain = &wgpu_internal_usage_desc;
 
   std::unique_ptr<ExternalImageDXGI> external_image;

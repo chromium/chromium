@@ -349,8 +349,17 @@ WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
 }
 
 wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
-                                                bool is_yuv_plane) {
-  wgpu::TextureUsage usage = wgpu::TextureUsage::TextureBinding;
+                                                bool is_yuv_plane,
+                                                bool is_dcomp_surface) {
+  if (is_dcomp_surface) {
+    DCHECK(format.is_single_plane());
+    DCHECK(!is_yuv_plane);
+    DCHECK(!format.IsLegacyMultiplanar());
+    // Textures from DComp surfaces are not samplable.
+    return wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc |
+           wgpu::TextureUsage::CopyDst;
+  }
+
   // The below usages are not supported for multiplanar formats in Dawn.
   // TODO(crbug.com/1451784): Use read/write intent instead of format to get
   // correct usages. This needs support in Skia to loosen TextureUsage
@@ -358,16 +367,12 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
   // be Renderable.
   if (format.is_single_plane() && !format.IsLegacyMultiplanar() &&
       !is_yuv_plane) {
-    usage |= wgpu::TextureUsage::RenderAttachment |
-             wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
+    return wgpu::TextureUsage::RenderAttachment |
+           wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc |
+           wgpu::TextureUsage::CopyDst;
   }
-  return usage;
-}
 
-WGPUTextureUsage GetSupportedWGPUTextureUsage(viz::SharedImageFormat format,
-                                              bool is_yuv_plane) {
-  return static_cast<WGPUTextureUsage>(
-      GetSupportedDawnTextureUsage(format, is_yuv_plane));
+  return wgpu::TextureUsage::TextureBinding;
 }
 
 skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
@@ -375,7 +380,8 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     viz::SharedImageFormat format,
     int plane_index,
     bool is_yuv_plane,
-    bool mipmapped) {
+    bool mipmapped,
+    bool scanout_dcomp_surface) {
   if (gr_context_type == GrContextType::kGraphiteMetal) {
 #if BUILDFLAG(SKIA_USE_METAL)
     return GetGraphiteMetalTextureInfo(format, plane_index, is_yuv_plane,
@@ -385,7 +391,7 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
     return GetGraphiteDawnTextureInfo(format, plane_index, is_yuv_plane,
-                                      mipmapped);
+                                      mipmapped, scanout_dcomp_surface);
 #endif
   }
   NOTREACHED_NORETURN();
@@ -396,14 +402,16 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
     viz::SharedImageFormat format,
     int plane_index,
     bool is_yuv_plane,
-    bool mipmapped) {
+    bool mipmapped,
+    bool scanout_dcomp_surface) {
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
   if (wgpu_format != wgpu::TextureFormat::Undefined) {
+    wgpu::TextureUsage wgpu_usage = GetSupportedDawnTextureUsage(
+        format, is_yuv_plane, scanout_dcomp_surface);
     dawn_texture_info.fSampleCount = 1;
     dawn_texture_info.fFormat = wgpu_format;
-    dawn_texture_info.fUsage =
-        GetSupportedDawnTextureUsage(format, is_yuv_plane);
+    dawn_texture_info.fUsage = wgpu_usage;
     dawn_texture_info.fMipmapped =
         mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
   }

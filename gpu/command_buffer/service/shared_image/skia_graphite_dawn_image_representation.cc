@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -117,9 +118,11 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect) {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
+  bool is_dcomp_surface = usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+  wgpu::TextureUsage wgpu_usage =
+      GetSupportedDawnTextureUsage(format(), is_yuv_plane_, is_dcomp_surface);
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
-      AllowUnclearedAccess::kYes, update_rect);
+      wgpu_usage, AllowUnclearedAccess::kYes, update_rect);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
@@ -159,8 +162,9 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
 
+  bool is_dcomp_surface = usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
+      GetSupportedDawnTextureUsage(format(), is_yuv_plane_, is_dcomp_surface),
       AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
@@ -183,8 +187,9 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
 
+  bool is_dcomp_surface = usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
+      GetSupportedDawnTextureUsage(format(), is_yuv_plane_, is_dcomp_surface),
       AllowUnclearedAccess::kNo);
 
   if (!dawn_scoped_access_) {
