@@ -230,7 +230,7 @@ export class PowerBookmarksListElement extends PolymerElement {
         type: Object,
         computed: 'computeSectionVisibility_(hasLoadedData_,' +
             'activeFolderPath_.length, shownBookmarks_.length,' +
-            'hasSomeActiveFilter_)',
+            'labels_.length, hasSomeActiveFilter_)',
       },
     };
   }
@@ -471,6 +471,22 @@ export class PowerBookmarksListElement extends PolymerElement {
     document.addEventListener('mousedown', () => {
       this.focusOutlineManager_.visible = false;
     }, {once: true});
+  }
+
+  getBookmarkDescriptionForTests(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    return this.getBookmarkDescription_(bookmark);
+  }
+
+  clickBookmarkRowForTests(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    const event = new CustomEvent('row-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: bookmark,
+        event: new MouseEvent('row-clicked'),
+      },
+    });
+    this.onRowClicked_(event);
   }
 
   private computeCanDrag_(): boolean {
@@ -812,7 +828,9 @@ export class PowerBookmarksListElement extends PolymerElement {
     // Workaround for this issue, causing unexpected list scrolling when
     // refocusing the list after changing tabs:
     // https://github.com/PolymerElements/iron-list/issues/270
-    (event.target as HTMLElement).blur();
+    if (event.target) {
+      (event.target as HTMLElement).blur();
+    }
   }
 
   private onRowSelectedChange_(
