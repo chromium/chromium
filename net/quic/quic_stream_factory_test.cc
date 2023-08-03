@@ -8004,15 +8004,12 @@ void QuicStreamFactoryTestBase::TestNoAlternateNetworkBeforeHandshake(
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_NewConnectionBeforeHandshakeAfterIdleTimeout) {
+TEST_P(QuicStreamFactoryTest, NewConnectionBeforeHandshakeAfterIdleTimeout) {
   TestNewConnectionOnAlternateNetworkBeforeHandshake(
       quic::QUIC_NETWORK_IDLE_TIMEOUT);
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest, DISABLED_NewConnectionAfterHandshakeTimeout) {
+TEST_P(QuicStreamFactoryTest, NewConnectionAfterHandshakeTimeout) {
   TestNewConnectionOnAlternateNetworkBeforeHandshake(
       quic::QUIC_HANDSHAKE_TIMEOUT);
 }
@@ -8034,6 +8031,13 @@ void QuicStreamFactoryTestBase::
         quic::QuicErrorCode quic_error) {
   DCHECK(quic_error == quic::QUIC_NETWORK_IDLE_TIMEOUT ||
          quic_error == quic::QUIC_HANDSHAKE_TIMEOUT);
+  FLAGS_quic_enable_chaos_protection = false;
+  // TODO(https://crbug.com/1295460): Make this test work with asynchronous QUIC
+  // session creation. This test only works with synchronous session creation
+  // for now.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
   quic_params_->retry_on_alternate_network_before_handshake = true;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
@@ -9398,9 +9402,14 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnMultipleWriteErrorsAsyncAsync) {
 
 // Verifies that a connection is closed when connection migration is triggered
 // on network being disconnected and the handshake is not confirmed.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_NoMigrationBeforeHandshakeOnNetworkDisconnected) {
+TEST_P(QuicStreamFactoryTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
+  FLAGS_quic_enable_chaos_protection = false;
+  // TODO(https://crbug.com/1295460): Make this test work with asynchronous QUIC
+  // session creation. This test only works with synchronous session creation
+  // for now.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
 
