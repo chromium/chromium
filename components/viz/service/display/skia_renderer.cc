@@ -3556,11 +3556,10 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       const_cast<SharedQuadState*>(quad->shared_quad_state);
 
   absl::optional<gfx::Transform> quad_to_target_transform_inverse;
-  if (shared_quad_state->clip_rect ||
-      !shared_quad_state->mask_filter_info.IsEmpty()) {
-    // We cannot handle rotation with clip rect or mask filter.
-    DCHECK(
-        shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment());
+  // We cannot handle rotation with clip rect or mask filter.
+  if ((shared_quad_state->clip_rect ||
+       !shared_quad_state->mask_filter_info.IsEmpty()) &&
+      shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
     quad_to_target_transform_inverse.emplace();
     // Flatten before inverting, since we're interested in how points
     // with z=0 in local space map to the clip rect, not in how the clip
@@ -3574,19 +3573,26 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   // The |clip_rect| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
-  absl::optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
+  absl::optional<base::AutoReset<absl::optional<gfx::Rect>>>
+      auto_reset_clip_rect;
   if (shared_quad_state->clip_rect) {
-    // TODO(dbaron): This operation is likely not to be valid if
-    // quad_to_target_transform_inverse.HasPerspective().
     gfx::RectF clip_rect(*shared_quad_state->clip_rect);
-    clip_rect = quad_to_target_transform_inverse->MapRect(clip_rect);
-    auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect.value(),
-                                 gfx::ToEnclosedRect(clip_rect));
+    if (quad_to_target_transform_inverse) {
+      clip_rect = quad_to_target_transform_inverse->MapRect(clip_rect);
+      auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
+                                   gfx::ToEnclosedRect(clip_rect));
+    } else {
+      // If we can't position the clip rect into render pass space, we shouldn't
+      // use it when rendering.
+      auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
+                                   absl::nullopt);
+    }
   }
 
   // The |mask_filter_info| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
-  if (!shared_quad_state->mask_filter_info.IsEmpty()) {
+  if (!shared_quad_state->mask_filter_info.IsEmpty() &&
+      shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
     shared_quad_state->mask_filter_info.ApplyTransform(
         *quad_to_target_transform_inverse);
   }
@@ -3767,16 +3773,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // Set |uv_rect| to reflect rounding from |display_rect| to |buffer_size|.
   overlay->uv_rect = gfx::RectF(overlay->display_rect.size());
   overlay->uv_rect.InvScale(buffer_size.width(), buffer_size.height());
-  // TODO(rivr): Handle the case where the overlay has an arbitrary transform
-  // applied.
-  if (absl::holds_alternative<gfx::OverlayTransform>(overlay->transform)) {
-    gfx::Rect apply_clip = gfx::Rect(current_frame()->device_viewport_size);
-    if (overlay->clip_rect.has_value())
-      apply_clip.Intersect(overlay->clip_rect.value());
-
-    OverlayCandidate::ApplyClip(*overlay, gfx::RectF(apply_clip));
-    overlay->clip_rect = absl::nullopt;
-  }
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
   overlay->format = SinglePlaneSharedImageFormatToBufferFormat(buffer_format);

@@ -59,7 +59,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
     kFailPriority,
     kFailNotSharedImage,
     kFailRoundedDisplayMasksNotSupported,
-    kFailMaskFilterNotSupported
+    kFailMaskFilterNotSupported,
+    kFailHasTransformButCantClip,
   };
   using TrackingId = uint32_t;
   static constexpr TrackingId kDefaultTrackingId{0};

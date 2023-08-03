@@ -281,6 +281,16 @@ BASE_FEATURE(kEnableADPFMidFrameBoost,
              "EnableADPFMidFrameBoost",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows delegating transforms over Wayland when it is also supported by Ash.
+BASE_FEATURE(kDelegateTransforms,
+             "DelegateTransforms",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // The deadline for requesting a boost in the middle of a frame production is
 // this multiplier * ADPF target_duration.
 const base::FeatureParam<double> kADPFMidFrameBoostDurationMultiplier{
@@ -311,6 +321,10 @@ BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
+}
+
+bool ShouldDelegateTransforms() {
+  return base::FeatureList::IsEnabled(features::kDelegateTransforms);
 }
 
 #if BUILDFLAG(IS_ANDROID)

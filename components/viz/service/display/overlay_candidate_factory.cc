@@ -330,7 +330,15 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   SetDisplayRect(*quad, candidate);
 
   const SharedQuadState* sqs = quad->shared_quad_state;
-  if (context_.supports_arbitrary_transform) {
+  gfx::OverlayTransform overlay_transform =
+      GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
+  if (overlay_transform != gfx::OVERLAY_TRANSFORM_INVALID) {
+    candidate.transform = overlay_transform;
+
+    candidate.display_rect =
+        sqs->quad_to_target_transform.MapRect(candidate.display_rect);
+  } else if (context_.supports_arbitrary_transform &&
+             !sqs->quad_to_target_transform.HasPerspective()) {
     gfx::Transform transform = sqs->quad_to_target_transform;
     if (y_flipped) {
       transform.PreConcat(gfx::OverlayTransformToTransform(
@@ -338,18 +346,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     }
     candidate.transform = transform;
   } else {
-    gfx::OverlayTransform overlay_transform =
-        GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
-    if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID) {
-      return context_.is_delegated_context
-                 ? GetReasonForTransformNotAxisAligned(
-                       sqs->quad_to_target_transform)
-                 : CandidateStatus::kFailNotAxisAligned;
-    }
-    candidate.transform = overlay_transform;
-
-    candidate.display_rect =
-        sqs->quad_to_target_transform.MapRect(candidate.display_rect);
+    return context_.is_delegated_context ? GetReasonForTransformNotAxisAligned(
+                                               sqs->quad_to_target_transform)
+                                         : CandidateStatus::kFailNotAxisAligned;
   }
 
   candidate.is_opaque =
@@ -364,7 +363,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     // a target space.
     // It is unclear how to support arbitrary transforms in this case, since an
     // e.g. rotation could make the target space bounds non-axis-aligned.
-    DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
     candidate.resource_size_in_pixels =
         gfx::Size(candidate.display_rect.size().width(),
                   candidate.display_rect.size().height());
@@ -414,6 +412,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         return CandidateStatus::kFailVisible;
       }
     } else {
+      // Clipping is applied after transforms, so we can't delegate transforms
+      // if we can't delegate clipping.
+      if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
+        return CandidateStatus::kFailHasTransformButCantClip;
+      }
+
       // Apply clipping to the |display_rect| and |uv_rect| directly.
       auto status = DoGeometricClipping(quad, candidate);
       if (status != CandidateStatus::kSuccess) {
@@ -471,12 +475,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
     return CandidateStatus::kFailVisible;
   }
 
-  // Render passes must be clipped after drawing in 'PrepareRenderPassOverlay'
-  // as filters can expand their display size.
-  if (quad->material != DrawQuad::Material::kAggregatedRenderPass) {
-    OverlayCandidate::ApplyClip(candidate, clip_to_apply);
-    candidate.clip_rect = absl::nullopt;
-  }
+  OverlayCandidate::ApplyClip(candidate, clip_to_apply);
+  candidate.clip_rect = absl::nullopt;
 
   return CandidateStatus::kSuccess;
 }

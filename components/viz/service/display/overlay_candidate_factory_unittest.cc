@@ -270,13 +270,13 @@ class OverlayCandidateFactoryArbitraryTransformTest
   }
 };
 
-// Check that even axis-aligned transforms are stored separately from the
-// display rect.
+// Check that axis-aligned transforms are stored as OverlayTransforms when
+// possible.
 TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
        AxisAlignedNotBakedIntoDisplayRect) {
   AggregatedRenderPass render_pass;
   render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
-                     gfx::Rect(0, 0, 1, 1), gfx::Rect(), gfx::Transform());
+                     gfx::Rect(0, 0, 10, 10), gfx::Rect(), gfx::Transform());
 
   OverlayCandidateFactory factory =
       CreateCandidateFactory(render_pass, gfx::RectF(render_pass.output_rect),
@@ -291,8 +291,9 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
   OverlayCandidate::CandidateStatus result =
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
-  EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
+  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+            gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
+  EXPECT_EQ(candidate.display_rect, gfx::RectF(1, 2, 3, 4));
 }
 
 // Check that even arbitrary transforms are preserved on the overlay
@@ -331,6 +332,9 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
                              kOverlayContextForTesting);
 
   gfx::Transform transform;
+  // Use a non-axis aligned transform so it can't be converted to an
+  // OverlayTransform.
+  transform.SkewX(45.0);
   auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
   quad.y_flipped = true;
 
@@ -340,6 +344,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
 
   gfx::Transform transform_y_flipped;
+  transform_y_flipped.SkewX(45.0);
   transform_y_flipped.Translate(0, 1);
   transform_y_flipped.Scale(1, -1);
   EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform),
@@ -347,7 +352,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   gfx::PointF display_rect_origin =
       absl::get<gfx::Transform>(candidate.transform)
           .MapPoint(candidate.display_rect.origin());
-  EXPECT_EQ(display_rect_origin, gfx::PointF(0, 1));
+  // Flip moves the origin to 0,1. The skew slides it out to 1,1.
+  EXPECT_EQ(display_rect_origin, gfx::PointF(1, 1));
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
 }
 
@@ -372,31 +378,6 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, DeathOnNoClipSupport) {
                    render_pass, gfx::RectF(render_pass.output_rect), context),
                "context_.supports_clip_rect \\|\\| "
                "!context_.supports_arbitrary_transform");
-}
-
-// Resource-less overlays use the overlay quad in target space for damage
-// calculation. This doesn't make sense with arbitrary transforms, so we expect
-// a DCHECK to trip.
-TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
-       DeathOnResourcelessAndArbitraryTransform) {
-  AggregatedRenderPass render_pass;
-  render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
-                     gfx::Rect(0, 0, 2, 2), gfx::Rect(0, 0, 1, 1),
-                     gfx::Transform());
-
-  OverlayCandidateFactory factory =
-      CreateCandidateFactory(render_pass, gfx::RectF(render_pass.output_rect),
-                             kOverlayContextForTesting);
-
-  SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
-  sqs->quad_to_target_transform.Rotate(1);
-
-  SolidColorDrawQuad quad;
-  quad.SetNew(sqs, gfx::Rect(0, 0, 1, 1), gfx::Rect(0, 0, 1, 1), SkColors::kRed,
-              true);
-  OverlayCandidate candidate;
-  EXPECT_DEATH(factory.FromDrawQuad(&quad, candidate),
-               "absl::holds_alternative<gfx::OverlayTransform>");
 }
 #endif
 

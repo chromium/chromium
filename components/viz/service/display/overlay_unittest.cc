@@ -5340,9 +5340,10 @@ TEST_F(DelegatedTest, TestClipAggregateRenderPass) {
       &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, candidate_list.size());
-  EXPECT_RECTF_NEAR(gfx::RectF(kSmallCandidateRect),
-                    candidate_list[0].display_rect, 0.01f);
-  EXPECT_EQ(kTestClip, candidate_list[0].clip_rect.value());
+  // Render pass clip rect gets applied because clip delegation is not enabled.
+  EXPECT_RECTF_NEAR(gfx::RectF(5, 15, 65, 59), candidate_list[0].display_rect,
+                    0.01f);
+  EXPECT_FALSE(candidate_list[0].clip_rect.has_value());
 }
 
 TEST_F(DelegatedTest, TestClipWithPrimary) {

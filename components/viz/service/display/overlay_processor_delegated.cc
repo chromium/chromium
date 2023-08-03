@@ -102,15 +102,14 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
         ->SetContextDelegated();
   }
 
-  supports_clip_rect_ = ui::OzonePlatform::GetInstance()
-                            ->GetPlatformRuntimeProperties()
-                            .supports_clip_rect;
-  supports_out_of_window_clip_rect_ = ui::OzonePlatform::GetInstance()
-                                          ->GetPlatformRuntimeProperties()
-                                          .supports_out_of_window_clip_rect;
-  needs_background_image_ = ui::OzonePlatform::GetInstance()
-                                ->GetPlatformRuntimeProperties()
-                                .needs_background_image;
+  const auto& runtime_props =
+      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
+  supports_clip_rect_ = runtime_props.supports_clip_rect;
+  supports_out_of_window_clip_rect_ =
+      runtime_props.supports_out_of_window_clip_rect;
+  needs_background_image_ = runtime_props.needs_background_image;
+  supports_affine_transform_ = features::ShouldDelegateTransforms() &&
+                               runtime_props.supports_affine_transform;
 }
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
@@ -172,6 +171,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       .is_delegated_context = true,
       .supports_clip_rect = supports_clip_rect_,
       .supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_,
+      .supports_arbitrary_transform = supports_affine_transform_,
       .supports_mask_filter = true};
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
