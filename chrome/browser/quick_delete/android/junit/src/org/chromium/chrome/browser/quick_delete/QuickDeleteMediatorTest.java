@@ -106,6 +106,8 @@ public class QuickDeleteMediatorTest {
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SIGNED_IN));
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
         assertEquals(1, mPropertyModel.get(QuickDeleteProperties.CLOSED_TABS_COUNT));
+        assertEquals(
+                TimePeriod.LAST_15_MINUTES, mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD));
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
         verify(mQuickDeleteBridgeMock)
                 .getLastVisitedDomainAndUniqueDomainCount(eq(TimePeriod.LAST_15_MINUTES), any());

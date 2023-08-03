@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -25,6 +24,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,13 +71,32 @@ public class QuickDeleteViewBinderTest {
 
     @Test
     @SmallTest
-    public void testBrowsingHistory_ZeroDomains_RemovesTheBrowsingHistoryRow() {
+    public void testBrowsingHistory_ZeroDomains() {
         var data = new QuickDeleteDelegate.DomainVisitsData("", 0);
+        mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, TimePeriod.LAST_15_MINUTES);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
+        TextView quickDeleteBrowsingHistoryRowTitle =
+                mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
 
-        assertEquals(View.GONE, quickDeleteBrowsingHistoryRow.getVisibility());
+        String timePeriodString = mActivity.getString(R.string.quick_delete_time_period_15_minutes);
+        String expected = mActivity.getString(
+                R.string.quick_delete_dialog_zero_browsing_history_domain_count_text,
+                timePeriodString);
+        assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testBrowsingHistory_ZeroDomains_AllTime() {
+        var data = new QuickDeleteDelegate.DomainVisitsData("", 0);
+        mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, TimePeriod.ALL_TIME);
+        mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
+        TextView quickDeleteBrowsingHistoryRowTitle =
+                mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
+
+        String expected = mActivity.getString(
+                R.string.quick_delete_dialog_zero_browsing_history_domain_count_all_time_text);
+        assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
     }
 
     @Test
@@ -86,14 +105,11 @@ public class QuickDeleteViewBinderTest {
         var data = new QuickDeleteDelegate.DomainVisitsData("example.com", 1);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
 
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView quickDeleteBrowsingHistoryRowTitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
 
         String expected = "example.com";
         assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
-        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
     }
 
     @Test
@@ -102,14 +118,11 @@ public class QuickDeleteViewBinderTest {
         var data = new QuickDeleteDelegate.DomainVisitsData("example.com", 2);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
 
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView quickDeleteBrowsingHistoryRowTitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
 
         String expected = "example.com + 1 site";
         assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
-        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
     }
 
     @Test
@@ -118,14 +131,11 @@ public class QuickDeleteViewBinderTest {
         var data = new QuickDeleteDelegate.DomainVisitsData("example.com", 5);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
 
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView quickDeleteBrowsingHistoryRowTitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
 
         String expected = "example.com + 4 sites";
         assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
-        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
     }
 
     @Test
@@ -135,12 +145,9 @@ public class QuickDeleteViewBinderTest {
         var data = new QuickDeleteDelegate.DomainVisitsData("example.com", 1);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
 
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView quickDeleteBrowsingHistoryRowSubtitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_subtitle);
 
-        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
         assertEquals(View.GONE, quickDeleteBrowsingHistoryRowSubtitle.getVisibility());
     }
 
@@ -151,12 +158,9 @@ public class QuickDeleteViewBinderTest {
         var data = new QuickDeleteDelegate.DomainVisitsData("example.com", 1);
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA, data);
 
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView quickDeleteBrowsingHistoryRowSubtitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_subtitle);
 
-        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
         assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRowSubtitle.getVisibility());
     }
 
@@ -165,8 +169,6 @@ public class QuickDeleteViewBinderTest {
     public void testBrowsingHistory_Pending() {
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
 
-        ViewGroup quickDeleteBrowsingHistoryRow =
-                mQuickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView quickDeleteBrowsingHistoryRowTitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
         TextView quickDeleteBrowsingHistoryRowSubtitle =
@@ -174,8 +176,36 @@ public class QuickDeleteViewBinderTest {
 
         assertEquals(mActivity.getString(R.string.quick_delete_dialog_data_pending),
                 quickDeleteBrowsingHistoryRowTitle.getText().toString());
-        assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
         assertEquals(View.GONE, quickDeleteBrowsingHistoryRowSubtitle.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabsToBeClosed_ZeroTabs() {
+        final int tabsToBeClosed = 0;
+        mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);
+        mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, TimePeriod.LAST_15_MINUTES);
+        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
+                mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        String timePeriodString = mActivity.getString(R.string.quick_delete_time_period_15_minutes);
+        String expected = mActivity.getString(
+                R.string.quick_delete_dialog_zero_tabs_closed_text, timePeriodString);
+        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabsToBeClosed_ZeroTabs_AllTime() {
+        final int tabsToBeClosed = 0;
+        mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);
+        mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, TimePeriod.ALL_TIME);
+        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
+                mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        String expected =
+                mActivity.getString(R.string.quick_delete_dialog_zero_tabs_closed_all_time_text);
+        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
     }
 
     @Test
@@ -189,7 +219,6 @@ public class QuickDeleteViewBinderTest {
         String expected = mActivity.getResources().getQuantityString(
                 R.plurals.quick_delete_dialog_tabs_closed_text, tabsToBeClosed, tabsToBeClosed);
         assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
-        assertEquals(View.VISIBLE, quickDeleteTabsCloseRowTextView.getVisibility());
     }
 
     @Test
@@ -203,7 +232,6 @@ public class QuickDeleteViewBinderTest {
         String expected = mActivity.getResources().getQuantityString(
                 R.plurals.quick_delete_dialog_tabs_closed_text, tabsToBeClosed, tabsToBeClosed);
         assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
-        assertEquals(View.VISIBLE, quickDeleteTabsCloseRowTextView.getVisibility());
     }
 
     @Test
@@ -222,5 +250,20 @@ public class QuickDeleteViewBinderTest {
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 mQuickDeleteView.findViewById(R.id.search_history_disambiguation);
         assertEquals(searchHistoryDisambiguation.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testQuickDeleteTimePeriodStringBindings() {
+        assertEquals(mActivity.getString(R.string.quick_delete_time_period_15_minutes),
+                QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_15_MINUTES));
+        assertEquals(mActivity.getString(R.string.quick_delete_time_period_hour),
+                QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_HOUR));
+        assertEquals(mActivity.getString(R.string.quick_delete_time_period_24_hours),
+                QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_DAY));
+        assertEquals(mActivity.getString(R.string.quick_delete_time_period_7_days),
+                QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_WEEK));
+        assertEquals(mActivity.getString(R.string.quick_delete_time_period_four_weeks),
+                QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.FOUR_WEEKS));
     }
 }

@@ -178,6 +178,8 @@ public class QuickDeleteDialogDelegateTest {
     @DisabledTest(message = "crbug.com/1459604")
     @Feature({"RenderTest"})
     public void testQuickDeleteDialogView_WithoutTabsOrHistory() throws IOException {
+        String timePeriodString = mActivityTestRule.getActivity().getString(
+                R.string.quick_delete_time_period_15_minutes);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getCurrentTabModel().closeAllTabs(false));
 
@@ -185,8 +187,13 @@ public class QuickDeleteDialogDelegateTest {
 
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        onView(withId(R.id.quick_delete_history_row)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.quick_delete_tabs_close_row)).check(matches(not(isDisplayed())));
+        onView(withText(mActivityTestRule.getActivity().getString(
+                       R.string.quick_delete_dialog_zero_browsing_history_domain_count_text,
+                       timePeriodString)))
+                .check(matches(isDisplayed()));
+        onView(withText(mActivityTestRule.getActivity().getString(
+                       R.string.quick_delete_dialog_zero_tabs_closed_text, timePeriodString)))
+                .check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.search_history_disambiguation)).check(matches(not(isDisplayed())));

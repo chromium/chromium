@@ -25,8 +25,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="20dp"
-        android:gravity="center_vertical"
-        android:visibility="gone">
+        android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/quick_delete_history_row_icon"

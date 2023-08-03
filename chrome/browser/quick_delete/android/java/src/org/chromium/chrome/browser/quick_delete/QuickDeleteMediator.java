@@ -51,6 +51,7 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
                 QuickDeleteDelegate.isSyncingHistory(mProfile));
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT,
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(timePeriod).size());
+        mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, timePeriod);
 
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
         // This is an async call which would update the browsing history row.
