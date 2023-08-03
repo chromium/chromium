@@ -812,8 +812,7 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
 
 // Tests that dragging an overview item with multiple displays and then exiting
 // overview does not result in a u-a-f. Regression test for b/293867778.
-// Disabled due to builder failures. TODO(sammiequon): Re-enable this test
-TEST_P(OverviewSessionTest, DISABLED_DraggingOnMultipleDisplay) {
+TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
   UpdateDisplay("600x400,600x400");
 
   auto window = CreateAppWindow();

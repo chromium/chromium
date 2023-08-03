@@ -248,7 +248,13 @@ OverviewWindowDragController::OverviewWindowDragController(
               ->IsDividerAnimating());
 }
 
-OverviewWindowDragController::~OverviewWindowDragController() = default;
+OverviewWindowDragController::~OverviewWindowDragController() {
+  // This object is deleted using `DeleteSoon()`, so the shell may be destroyed
+  // already during shutdown.
+  if (Shell::HasInstance()) {
+    Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
+  }
+}
 
 void OverviewWindowDragController::InitiateDrag(
     const gfx::PointF& location_in_screen) {
