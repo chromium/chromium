@@ -307,6 +307,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
       return;
     }
+    RearmCAPTUREQueueMonitoring();
     flush_cb_ = std::move(decode_cb);
     return;
   }
