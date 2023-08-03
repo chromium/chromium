@@ -39,7 +39,7 @@ repos:
         # c.f. https://conventionalcommits.org
         args: [feat, fix, build, chore, ci, docs, test]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -64,7 +64,7 @@ repos:
       - id: mypy
         additional_dependencies: [types-requests]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.9.0
+    rev: v3.10.1
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
@@ -118,7 +118,7 @@ repos:
 
   # ESLint is the slowest hook, so keep it last.
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.44.0
+    rev: v8.46.0
     hooks:
       - id: eslint
         files: \.[jt]s$
