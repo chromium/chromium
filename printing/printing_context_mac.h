@@ -15,10 +15,6 @@
 #include "printing/print_job_constants.h"
 #include "printing/printing_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NSPrintInfo;
 
 namespace printing {
