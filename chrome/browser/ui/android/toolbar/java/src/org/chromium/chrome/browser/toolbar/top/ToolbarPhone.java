@@ -2138,6 +2138,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             }
         });
         mUrlFocusLayoutAnimator.start();
+        if (!hasFocus && mLocationBar.shouldShortCircuitUnfocusAnimation()) {
+            TraceEvent.instant("ToolbarPhone.ShortCircuitUnfocusAnimation");
+            mLocationBar.onUnfocusAnimationShortCircuited();
+            mUrlFocusLayoutAnimator.end();
+        }
         TraceEvent.end("ToolbarPhone.triggerUrlFocusAnimation");
     }
 

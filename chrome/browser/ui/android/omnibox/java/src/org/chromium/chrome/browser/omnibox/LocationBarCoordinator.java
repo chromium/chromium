@@ -105,6 +105,7 @@ public class LocationBarCoordinator
     private final int mDropdownIncognitoBackgroundColor;
     private final int mSuggestionStandardBackgroundColor;
     private final int mSuggestionIncognitoBackgroundColor;
+    private boolean mShortCircuitUnfocusAnimation;
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -427,6 +428,8 @@ public class LocationBarCoordinator
 
     @Override
     public void loadUrl(String url, int transition, long inputStart) {
+        mShortCircuitUnfocusAnimation =
+                isUrlBarFocused() && OmniboxFeatures.shouldShortCircuitUnfocusAnimation();
         mLocationBarMediator.loadUrl(url, transition, inputStart);
     }
 
@@ -656,6 +659,19 @@ public class LocationBarCoordinator
     public void setShouldShowButtonsWhenUnfocusedForTablet(boolean shouldShowButtons) {
         assert isTabletWindow();
         mLocationBarMediator.setShouldShowButtonsWhenUnfocusedForTablet(shouldShowButtons);
+    }
+
+    /**
+     * Whether the unfocus animation should be skipped to speed up navigation. If short circuiting
+     * occurs, the caller should immediately call {@link #onUnfocusAnimationShortCircuited()}.
+     */
+    public boolean shouldShortCircuitUnfocusAnimation() {
+        return mShortCircuitUnfocusAnimation;
+    }
+
+    /** Call to report that the focus animation was short circuited. */
+    public void onUnfocusAnimationShortCircuited() {
+        mShortCircuitUnfocusAnimation = false;
     }
 
     // End tablet-specific methods.

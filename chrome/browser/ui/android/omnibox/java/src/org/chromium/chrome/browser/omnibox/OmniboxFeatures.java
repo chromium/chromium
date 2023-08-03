@@ -86,6 +86,10 @@ public class OmniboxFeatures {
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION, false);
 
+    private static final MutableFlagWithSafeDefault sShortCircuitUnfocusAnimation =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.SHORT_CIRCUIT_UNFOCUS_ANIMATION, false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -216,5 +220,13 @@ public class OmniboxFeatures {
 
     public static boolean shouldAvoidRelayoutDuringFocusAnimation() {
         return sAvoidRelayoutDuringFocusAnimation.isEnabled();
+    }
+
+    /**
+     * Whether the omnibox unfocus animation should be short-circuited when navigating to a
+     * suggestion in order to speed up navigation.
+     */
+    public static boolean shouldShortCircuitUnfocusAnimation() {
+        return sShortCircuitUnfocusAnimation.isEnabled();
     }
 }

@@ -253,6 +253,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksRefresh,
     &kOmahaMinSdkVersionAndroid,
     &kAvoidRelayoutDuringFocusAnimation,
+    &kShortCircuitUnfocusAnimation,
     &kOmniboxAdaptNarrowTabletWindows,
     &kOmniboxCacheSuggestionResources,
     &kOmniboxConsumesImeInsets,
@@ -811,6 +812,10 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
 BASE_FEATURE(kAvoidRelayoutDuringFocusAnimation,
              "AvoidRelayoutDuringFocusAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShortCircuitUnfocusAnimation,
+             "ShortCircuitUnfocusAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxAdaptNarrowTabletWindows,
              "OmniboxAdaptNarrowTabletWindows",
