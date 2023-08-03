@@ -80,6 +80,8 @@ js_library("password_page") {
 }
 
 js_library("setup_succeeded_page") {
+  extra_deps =
+      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   deps = [
     ":multidevice_setup_browser_proxy",
     ":ui_page_container_behavior",
