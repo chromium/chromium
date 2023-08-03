@@ -18,6 +18,7 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-async def test_await_close_response(websocket):
+async def test_browser_close_response_received(websocket):
 
+    # Just wait for the command as it will timeout if we don't receive it
     await execute_command(websocket, {"method": "browser.close", "params": {}})

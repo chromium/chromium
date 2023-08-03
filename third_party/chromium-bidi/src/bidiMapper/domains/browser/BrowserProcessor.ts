@@ -28,8 +28,8 @@ export class BrowserProcessor {
   close(): EmptyResult {
     const client = this.#cdpConnection.browserClient();
 
-    // Insure that its put at the last place in the event loop
-    // That way we send back the response before closing in tab
+    // Ensure that it is put at the end of the event loop.
+    // This way we send back the response before closing the tab.
     setTimeout(() => client.sendCommand('Browser.close'), 0);
 
     return {};

@@ -105,6 +105,7 @@ repos:
           .* limitations under the License.
         language: pygrep
         files: \.js$|\.cjs$|\.mjs$|\.ts$|\.py$
+        exclude: __init__\.py$
         args: [--negate, --multiline]
       - id: node-self
         name: check nodejs `self.`
