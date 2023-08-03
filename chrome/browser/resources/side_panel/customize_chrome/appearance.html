@@ -38,13 +38,29 @@
   customize-color-scheme-mode,
   .sp-hr {
     display: none;
-    margin: 0 16px 16px;
     width: calc(100% - 32px);
+  }
+
+  .sp-hr {
+    margin: 0 16px;
+  }
+
+  customize-color-scheme-mode {
+    margin: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-theme-color-picker {
+    display: block;
+    margin-bottom: 16px;
   }
 
   :host-context([chrome-refresh-2023]) customize-color-scheme-mode,
   :host-context([chrome-refresh-2023]) .sp-hr {
     display: block;
+  }
+
+  :host-context([chrome-refresh-2023]):host([third-party-theme-id_]) #editThemeButton {
+    margin: 20px 16px;
   }
 
   :host-context([chrome-refresh-2023]) #editThemeButton {
@@ -65,14 +81,13 @@
   <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
   $i18n{changeTheme}
 </cr-button>
-<hr class="sp-hr" hidden$="[[!showFirstPartyThemeView_]]">
-<customize-color-scheme-mode
-    hidden$="[[!showFirstPartyThemeView_]]">
+<hr class="sp-hr">
+<customize-color-scheme-mode>
 </customize-color-scheme-mode>
 <cr-theme-color-picker id="chromeColors"
     hidden$="[[!showFirstPartyThemeView_]]">
 </cr-theme-color-picker>
-</div>
+<hr class="sp-hr">
 <customize-chrome-hover-button id="setClassicChromeButton"
     hidden$="[[!showClassicChromeButton_]]"
     label="$i18n{resetToClassicChrome}"
