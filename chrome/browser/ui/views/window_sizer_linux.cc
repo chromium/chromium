@@ -46,7 +46,7 @@ void WindowSizerLinux::AdjustWorkAreaForPlatform(gfx::Rect& work_area) {
                          .supports_server_side_window_decorations ||
                     browser()->profile()->GetPrefs()->GetBoolean(
                         prefs::kUseCustomChromeFrame))) {
-    work_area.Inset(
-        gfx::ShadowValue::GetMargin(BrowserFrameViewLinux::GetShadowValues()));
+    work_area.Inset(gfx::ShadowValue::GetMargin(
+        BrowserFrameViewLinux::GetShadowValues(true)));
   }
 }

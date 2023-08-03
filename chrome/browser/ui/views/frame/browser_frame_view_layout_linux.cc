@@ -55,7 +55,7 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
   return GetRestoredFrameBorderInsetsLinux(
       delegate_->ShouldDrawRestoredFrameShadow(),
       OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(),
-      delegate_->GetTiledEdges(), view_->GetShadowValues(), kResizeBorder);
+      delegate_->GetTiledEdges(), view_->GetShadowValues(true), kResizeBorder);
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {
