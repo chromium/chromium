@@ -529,7 +529,7 @@ std::string StructuredAddressesRegExProvider::GetPattern(
       return ParseHouseNumberStreetNameExpression();
     case RegEx::kParseStreetNameHouseNumberSuffixedFloor:
       return ParseStreetNameHouseNumberExpressionSuffixedFloor();
-    case RegEx::kParseStreetNameHouseNumberSuffixedFloorAndAppartmentRe:
+    case RegEx::kParseStreetNameHouseNumberSuffixedFloorAndApartmentRe:
       return ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression();
     case RegEx::kParseStreetNameHouseNumber:
       return ParseStreetNameHouseNumberExpression();

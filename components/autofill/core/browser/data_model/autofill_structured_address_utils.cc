@@ -155,7 +155,7 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name) {
                         RegEx::kMatchMiddleNameInitialsCharacteristics);
 }
 
-bool HasHispanicLatinxNameCharaceristics(const std::string& name) {
+bool HasHispanicLatinxNameCharacteristics(const std::string& name) {
   // Check if the name contains one of the most common Hispanic/Latinx
   // last names.
   if (IsPartialMatch(name, RegEx::kMatchHispanicCommonNameCharacteristics))

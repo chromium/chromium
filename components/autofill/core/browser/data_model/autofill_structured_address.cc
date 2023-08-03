@@ -113,7 +113,7 @@ StreetAddressNode::GetParseRegularExpressionsByRelevance() const {
           pattern_provider->GetRegEx(
               RegEx::kParseStreetNameHouseNumberSuffixedFloor, country_code),
           pattern_provider->GetRegEx(
-              RegEx::kParseStreetNameHouseNumberSuffixedFloorAndAppartmentRe,
+              RegEx::kParseStreetNameHouseNumberSuffixedFloorAndApartmentRe,
               country_code)};
 }
 
