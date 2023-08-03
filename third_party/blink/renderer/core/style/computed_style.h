@@ -319,7 +319,10 @@ class ComputedStyle : public ComputedStyleBase,
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
-  ALWAYS_INLINE ComputedStyle(const ComputedStyle&);
+  ALWAYS_INLINE ComputedStyle(const ComputedStyle& initial_style);
+  ALWAYS_INLINE ComputedStyle(const ComputedStyle& initial_style,
+                              const ComputedStyle& parent_style,
+                              ComputedStyleAccessFlags& access);
 
  public:
   using PassKey = base::PassKey<ComputedStyle>;
@@ -343,7 +346,11 @@ class ComputedStyle : public ComputedStyleBase,
     }
   }
 
-  ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle&);
+  ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle& initial_style);
+  ALWAYS_INLINE ComputedStyle(PassKey,
+                              const ComputedStyle& initial_style,
+                              const ComputedStyle& parent_style,
+                              ComputedStyleAccessFlags& access);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
 
   // Create the per-document/context singleton that is used for shallow-copying
@@ -2874,7 +2881,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // Access to UserModify().
   friend class MatchedPropertiesCache;
 
+  // Creates a new ComputedStyle based on the given initial style.
   CORE_EXPORT explicit ComputedStyleBuilder(const ComputedStyle& style);
+
+  // Creates a new ComputedStyle based on the given initial style,
+  // but with all inheritable properties from the given parent style.
+  CORE_EXPORT ComputedStyleBuilder(
+      const ComputedStyle& initial_style,
+      const ComputedStyle& parent_style,
+      IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary);
+
   ComputedStyleBuilder(const ComputedStyleBuilder& builder) = delete;
   ComputedStyleBuilder(ComputedStyleBuilder&&) = default;
   ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
@@ -2884,36 +2900,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // NOTE: Prefer `TakeStyle()` if possible.
   CORE_EXPORT scoped_refptr<const ComputedStyle> CloneStyle() const;
-
-  CORE_EXPORT void InheritFrom(
-      const ComputedStyle& inherit_parent,
-      IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary) {
-    EUserModify current_user_modify = UserModify();
-    EUserSelect current_user_select = UserSelect();
-    ComputedStyleBuilderBase::InheritFrom(inherit_parent);
-
-    // Even if surrounding content is user-editable, shadow DOM should act as a
-    // single unit, and not necessarily be editable
-    if (is_at_shadow_boundary == kAtShadowBoundary) {
-      SetUserModify(current_user_modify);
-    }
-
-    // TODO(crbug.com/1410068): Once `user-select` isn't inherited, we should
-    // get rid of following if-statement.
-    if (inherit_parent.UserSelect() == EUserSelect::kContain) {
-      SetUserSelect(current_user_select);
-    }
-
-    SetBaseTextDecorationData(inherit_parent.AppliedTextDecorationData());
-  }
-
-  void CopyNonInheritedFromCached(const ComputedStyle& other) {
-#if DCHECK_IS_ON()
-    ComputedStyleBuilder builder(other);
-    DCHECK(MatchedPropertiesCache::IsStyleCacheable(builder));
-#endif
-    ComputedStyleBuilderBase::CopyNonInheritedFromCached(other);
-  }
 
   // Copies the values of any independent inherited properties from the parent
   // that are not explicitly set in this style.

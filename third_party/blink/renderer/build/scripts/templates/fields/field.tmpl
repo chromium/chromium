@@ -197,27 +197,32 @@ const {{field.type_name}}&
   {%- endfor %}
 {%- endmacro %}
 
-{% macro fieldwise_copy(group, fields_to_copy) %}
+{% macro fieldwise_initialize(group) -%}
+{% set comma = joiner(", ") %}
 {% for subgroup in group.subgroups %}
-  {% set group_expression = group_getter_expression(subgroup) %}
-  {% if subgroup.all_fields|rejectattr("reset_on_new_style")|reject("in", fields_to_copy)|list|length == 0 -%}
-style.{{group_setter_expression(subgroup)}} = other.{{group_expression}};
-{{reset_group_access(subgroup)}}
-  {% elif subgroup.all_fields|rejectattr("reset_on_new_style")|select("in", fields_to_copy)|list|length > 0 -%}
-if (style.{{group_expression}}.Get() != other.{{group_expression}}.Get()) {
-{{fieldwise_copy(subgroup, fields_to_copy)|indent(2, true)}}
-}
-  {% else %}
-  // Not copied: style.{{group_expression}} (group)
+  {% set member = subgroup.member_name %}
+  {% set noninherited = "source_for_noninherited." + subgroup.member_name %}
+  {% set parent = "parent_style." + subgroup.member_name %}
+  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
+    {{comma()}}{{member}}({{parent}})
+  {% elif subgroup.all_fields|selectattr("is_inherited")|list|length == 0 -%}
+    {{comma()}}{{member}}({{noninherited}})
+  {% else -%}
+    {{comma()}}{{member}}({{parent}} == {{noninherited}}
+        ? {{parent}}
+        : DataRef(base::AdoptRef(new {{subgroup.type_name}}(*{{noninherited}}, *{{parent}}))))
   {% endif %}
 {% endfor %}
-{% for field in group.fields|rejectattr("reset_on_new_style")|select("in", fields_to_copy) -%}
-  style.{{setter_expression(field)}} = other.{{getter_expression(field)}};
+{% for field in group.fields %}
+  {% if field.reset_on_new_style -%}
+    {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
+  {% elif field.is_inherited -%}
+    {{comma()}}{{field.name}}(parent_style.{{field.name}})
+  {% else -%}
+    {{comma()}}{{field.name}}(source_for_noninherited.{{field.name}})
+  {% endif %}
 {% endfor %}
-  {% for field in group.fields|rejectattr("reset_on_new_style")|reject("in", fields_to_copy) -%}
-  //  - Not copied: {{getter_expression(field)}} (single field)
-  {% endfor %}
-{% endmacro %}
+{%- endmacro %}
 
 {% macro fieldwise_pointer_compare_inherited(group, boolean_and=None) %}
 {% set boolean_and = boolean_and or joiner('&& ') %}

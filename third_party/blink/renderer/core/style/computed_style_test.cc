@@ -59,6 +59,11 @@ class ComputedStyleTest : public testing::Test {
     return ComputedStyleBuilder(*initial_style_);
   }
 
+  ComputedStyleBuilder CreateComputedStyleBuilderFrom(
+      const ComputedStyle& style) {
+    return ComputedStyleBuilder(style);
+  }
+
  private:
   scoped_refptr<const ComputedStyle> initial_style_;
 };
@@ -146,17 +151,16 @@ TEST_F(ComputedStyleTest, IsStackingContextWithoutContainmentAfterClone) {
   EXPECT_FALSE(style3->IsStackingContextWithoutContainment());
 }
 
-TEST_F(ComputedStyleTest, DerivedFlagCopyNonInheritedFromCached) {
+TEST_F(ComputedStyleTest, DerivedFlagCopyNonInherited) {
   {
     ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
     builder1.SetForcesStackingContext(true);
     scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
     EXPECT_TRUE(style1->IsStackingContextWithoutContainment());
 
-    // Calling CopyNonInheritedFromCached should not change whether or not
-    // the style is a stacking context.
-    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
-    builder2.CopyNonInheritedFromCached(*style1);
+    // Whether the style is a stacking context or not should not be copied
+    // from the style we're cloning.
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilderFrom(*style1);
     scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
     EXPECT_TRUE(style2->IsStackingContextWithoutContainment());
   }
@@ -168,23 +172,20 @@ TEST_F(ComputedStyleTest, DerivedFlagCopyNonInheritedFromCached) {
     scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
     EXPECT_FALSE(style1->IsStackingContextWithoutContainment());
 
-    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
-    builder2.CopyNonInheritedFromCached(*style1);
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilderFrom(*style1);
     scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
     EXPECT_FALSE(style2->IsStackingContextWithoutContainment());
   }
 
   // The same as the first case, except builder2 sets
-  // SetForcesStackingContext(false) after calling
-  // CopyNonInheritedFromCached.
+  // SetForcesStackingContext(false) after cloning.
   {
     ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
     builder1.SetForcesStackingContext(true);
     scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
     EXPECT_TRUE(style1->IsStackingContextWithoutContainment());
 
-    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
-    builder2.CopyNonInheritedFromCached(*style1);
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilderFrom(*style1);
     builder2.SetForcesStackingContext(false);
     scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
     // Value copied from 'style1' must not persist.

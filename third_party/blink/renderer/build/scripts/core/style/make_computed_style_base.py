@@ -165,7 +165,7 @@ def _create_groups(properties):
         # The flag field for this property, if any, should not be part of
         # the same group as the property; since it is not inherited
         # (you cannot inherit the inherit flag), that would always preclude
-        # copy-on-write for the group in InheritFrom().
+        # copy-on-write for the group when calling the inheriting constructor.
         if flag_field is not None:
             root_group_dict[None].append(flag_field)
 

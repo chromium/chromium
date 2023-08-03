@@ -100,6 +100,16 @@ class CORE_EXPORT StyleResolverState {
     style_builder_.emplace(style);
     UpdateLengthConversionData();
   }
+  void CreateNewStyle(
+      const ComputedStyle& source_for_noninherited,
+      const ComputedStyle& inherit_parent,
+      ComputedStyleBuilderBase::IsAtShadowBoundary is_at_shadow_boundary =
+          ComputedStyleBuilderBase::kNotAtShadowBoundary) {
+    // FIXME: Improve RAII of StyleResolverState to remove this function.
+    style_builder_.emplace(source_for_noninherited, inherit_parent,
+                           is_at_shadow_boundary);
+    UpdateLengthConversionData();
+  }
   ComputedStyleBuilder& StyleBuilder() { return *style_builder_; }
   const ComputedStyleBuilder& StyleBuilder() const { return *style_builder_; }
   scoped_refptr<const ComputedStyle> TakeStyle();
@@ -286,10 +296,9 @@ class CORE_EXPORT StyleResolverState {
   // Whether this element is inside a link or not. Note that this is different
   // from ElementLinkState() if the element is not a link itself but is inside
   // one. It may also be overridden from non-visited to visited by devtools.
-  // This will eventually get stored on ComputedStyle, but since InsideLink()
-  // on ComputedStyle is so easily overwritten (in particular, every time we
-  // call InheritFrom()), we keep it here until we're done copying things
-  // around from other styles.
+  // This will eventually get stored on ComputedStyle, but since we do not have
+  // a ComputedStyle until pretty late in the process, keep it here until
+  // we have one.
   //
   // This is computed only once, lazily (thus the absl::optional).
   mutable absl::optional<EInsideLink> inside_link_;

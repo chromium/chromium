@@ -87,19 +87,20 @@ class TestCascade {
   STACK_ALLOCATED();
 
  public:
-  TestCascade(Document& document, Element* target = nullptr)
+  explicit TestCascade(Document& document, Element* target = nullptr)
       : state_(document, target ? *target : *document.body()),
-        cascade_(InitState(state_)) {}
+        cascade_(InitState(state_, nullptr)) {}
+
+  TestCascade(Document& document,
+              scoped_refptr<const ComputedStyle> parent_style,
+              Element* target = nullptr)
+      : state_(document, target ? *target : *document.body()),
+        cascade_(InitState(state_, parent_style)) {}
 
   scoped_refptr<const ComputedStyle> TakeStyle() { return state_.TakeStyle(); }
 
   StyleResolverState& State() { return state_; }
   StyleCascade& InnerCascade() { return cascade_; }
-
-  void InheritFrom(scoped_refptr<const ComputedStyle> parent) {
-    state_.SetParentStyle(parent);
-    state_.StyleBuilder().InheritFrom(*parent);
-  }
 
   //  Note that because of how MatchResult works, declarations must be added
   //  in "origin order", i.e. UserAgent first, then User, then Author.
@@ -224,10 +225,17 @@ class TestCascade {
   Document& GetDocument() const { return state_.GetDocument(); }
   Element* Body() const { return GetDocument().body(); }
 
-  static StyleResolverState& InitState(StyleResolverState& state) {
+  static StyleResolverState& InitState(
+      StyleResolverState& state,
+      scoped_refptr<const ComputedStyle> parent_style) {
     state.GetDocument().GetStyleEngine().UpdateViewportSize();
-    state.SetStyle(*InitialStyle(state.GetDocument()));
-    state.SetParentStyle(InitialStyle(state.GetDocument()));
+    if (parent_style) {
+      state.CreateNewStyle(*InitialStyle(state.GetDocument()), *parent_style);
+      state.SetParentStyle(parent_style);
+    } else {
+      state.SetStyle(*InitialStyle(state.GetDocument()));
+      state.SetParentStyle(InitialStyle(state.GetDocument()));
+    }
     state.SetOldStyle(state.GetElement().GetComputedStyle());
     return state;
   }
@@ -1221,8 +1229,7 @@ TEST_F(StyleCascadeTest, EmUnitNonCycle) {
   parent.Add("font-size", "10px");
   parent.Apply();
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   cascade.Add("font-size", "var(--x)");
   cascade.Add("--x", "10em");
   cascade.Apply();
@@ -1327,8 +1334,7 @@ TEST_F(StyleCascadeTest, Initial) {
   parent.Add("--x", "foo");
   parent.Apply();
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   cascade.Add("--y", "foo");
   cascade.Apply();
 
@@ -1349,8 +1355,7 @@ TEST_F(StyleCascadeTest, Inherit) {
   parent.Add("--x", "foo");
   parent.Apply();
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
 
   EXPECT_EQ("foo", cascade.ComputedValue("--x"));
 
@@ -1369,8 +1374,7 @@ TEST_F(StyleCascadeTest, Unset) {
   parent.Add("--x", "foo");
   parent.Apply();
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   EXPECT_EQ("foo", cascade.ComputedValue("--x"));
 
   cascade.Add("--x", "bar");
@@ -1481,8 +1485,7 @@ TEST_F(StyleCascadeTest, RevertInheritedFallback) {
   parent.Add("color", "red");
   parent.Apply();
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("color"));
 
   cascade.Add("color:black", CascadeOrigin::kAuthor);
@@ -1521,8 +1524,7 @@ TEST_F(StyleCascadeTest, RevertRegisteredInheritedFallback) {
   parent.Add("--x", "1px");
   parent.Apply();
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   EXPECT_EQ("1px", cascade.ComputedValue("--x"));
 
   cascade.Add("--x:100px", CascadeOrigin::kAuthor);
@@ -1743,8 +1745,7 @@ TEST_F(StyleCascadeTest, RevertToCustomPropertyInKeyframeUnset) {
   parent.Apply();
   EXPECT_EQ("0px", parent.ComputedValue("--y"));
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   cascade.Add("--x:10000px", CascadeOrigin::kAuthor);
   cascade.Add("--y:10000px", CascadeOrigin::kAuthor);
   cascade.Add("animation:test linear 1000s -500s");
@@ -1961,8 +1962,7 @@ TEST_F(StyleCascadeTest, RegisteredExplicitInherit) {
   parent.Apply();
   EXPECT_EQ("15px", parent.ComputedValue("--x"));
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   cascade.Apply();
   EXPECT_EQ("0px", cascade.ComputedValue("--x"));  // Note: inherit==false
 
@@ -1985,8 +1985,7 @@ TEST_F(StyleCascadeTest, RegisteredExplicitUnset) {
   EXPECT_EQ("15px", parent.ComputedValue("--x"));
   EXPECT_EQ("15px", parent.ComputedValue("--y"));
 
-  TestCascade cascade(GetDocument());
-  cascade.InheritFrom(parent.TakeStyle());
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
   cascade.Add("--x", "2px");
   cascade.Add("--y", "2px");
   cascade.Apply();

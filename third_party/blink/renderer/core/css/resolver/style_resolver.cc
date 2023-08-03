@@ -1089,9 +1089,11 @@ static bool AllowsInheritance(const StyleRequest& style_request,
   return parent_style && style_request.pseudo_id != kPseudoIdBackdrop;
 }
 
-void StyleResolver::ApplyInheritance(Element& element,
-                                     const StyleRequest& style_request,
-                                     StyleResolverState& state) {
+void StyleResolver::InitStyle(Element& element,
+                              const StyleRequest& style_request,
+                              const ComputedStyle& source_for_noninherited,
+                              const ComputedStyle* parent_style,
+                              StyleResolverState& state) {
   if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
     // When resolving highlight styles for children, we need to default all
     // properties (whether or not defined as inherited) to parent values.
@@ -1102,17 +1104,10 @@ void StyleResolver::ApplyInheritance(Element& element,
     // entirely (leaving the scoped_refptr untouched). The bad news is that if
     // the element has rules but no matched properties, we currently clone.
 
-    state.SetStyle(*state.ParentStyle());
+    state.SetStyle(*parent_style);
   } else {
-    // We use a different initial_style for img elements to match the overrides
-    // in html.css. This avoids allocation overhead from copy-on-write when
-    // these properties are set only via UA styles. The overhead shows up on
-    // motionmark which stress tests this code. See crbub.com/1369454 for
-    // details.
-    state.SetStyle(IsA<HTMLImageElement>(element) ? *initial_style_for_img_
-                                                  : *initial_style_);
-    state.StyleBuilder().InheritFrom(
-        *state.ParentStyle(),
+    state.CreateNewStyle(
+        source_for_noninherited, *parent_style,
         (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))
             ? ComputedStyleBuilder::kAtShadowBoundary
             : ComputedStyleBuilder::kNotAtShadowBoundary);
@@ -1126,30 +1121,6 @@ void StyleResolver::ApplyInheritance(Element& element,
           state.StyleBuilder().SetUserModify(shadow_host_style->UserModify());
         }
       }
-    }
-  }
-}
-
-void StyleResolver::InitStyleAndApplyInheritance(
-    Element& element,
-    const StyleRequest& style_request,
-    StyleResolverState& state) {
-  if (AllowsInheritance(style_request, state.ParentStyle())) {
-    ApplyInheritance(element, style_request, state);
-  } else {
-    scoped_refptr<const ComputedStyle> initial_style = InitialStyleForElement();
-    state.SetStyle(*initial_style);
-    state.SetParentStyle(initial_style);
-    state.SetLayoutParentStyle(state.ParentStyle());
-    if (!style_request.IsPseudoStyleRequest() &&
-        element != GetDocument().documentElement()) {
-      // Strictly, we should only allow the root element to inherit from
-      // initial styles, but we allow getComputedStyle() for connected
-      // elements outside the flat tree rooted at an unassigned shadow host
-      // child or a slot fallback element.
-      DCHECK((IsShadowHost(element.parentNode()) ||
-              IsA<HTMLSlotElement>(element.parentNode())) &&
-             !LayoutTreeBuilderTraversal::ParentElement(element));
     }
   }
   state.StyleBuilder().SetStyleType(style_request.pseudo_id);
@@ -1315,20 +1286,32 @@ bool CanApplyInlineStyleIncrementally(Element* element,
 }
 
 // This is the core of computing base style for a given element, ie., the style
-// that does not depend on animations.
+// that does not depend on animations. For our purposes, style consists of three
+// parts:
+//
+//  A. Properties inherited from the parent (parent style).
+//  B. Properties that come from the defaults (initial style).
+//  C. Properties from CSS rules that apply from this element
+//     (matched properties).
 //
 // The typical flow (barring special rules for pseudo-elements and similar) is:
 //
-//   1. Initialize the style object, by cloning the initial style.
-//      (InitStyleAndApplyInheritance() -> ApplyInheritance() ->
-//      CreateComputedStyle()).
-//   2. Copy any inherited properties from the parent element.
-//      (InitStyleAndApplyInheritance() -> ApplyInheritance() ->
-//      ComputedStyleBase::InheritFrom()).
-//   3. Collect all CSS rules that apply to this element
+//   1. Collect all CSS rules that apply to this element
 //      (MatchAllRules(), into ElementRuleCollector).
-//   4. Apply all the found rules in the correct order
-//      (CascadeAndApplyMatchedProperties(), using StyleCascade).
+//   2. Figure out where we should get parent style (A) from, and where we
+//      should get initial style (B) from; typically the parent element and
+//      the global initial style, respectively.
+//   3. Construct a new ComputedStyle, merging the two sources (InitStyle()).
+//   4. Apply all the found properties (C) in the correct order
+//      (ApplyPropertiesFromCascade(), using StyleCascade).
+//
+// However, the MatchedPropertiesCache can often give us A with the correct
+// parts of C pre-applied, or similar for B+C, or simply A+B+C (a full MPC hit).
+// Thus, after step 1, we look up the set of properties we've collected in the
+// MPC, and if we have a full MPC hit, we stop after step 1. (This is the reason
+// why step 1 needs to be first.) If we have a partial hit (we can use A+C
+// but not B+C, or the other way around), we use that as one of our sources
+// in step 3, and can skip the relevant properties in step 4.
 //
 // The base style is cached by the caller if possible (see ResolveStyle() on
 // the “base computed style optimization”).
@@ -1338,8 +1321,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
     const StyleRequest& style_request,
     StyleResolverState& state,
     StyleCascade& cascade) {
-  InitStyleAndApplyInheritance(*element, style_request, state);
-
   // For some very special elements (e.g. <video>): Ensure internal UA style
   // rules that are relevant for the element exist in the stylesheet.
   GetDocument().GetStyleEngine().EnsureUAStyleForElement(*element);
@@ -1383,6 +1364,27 @@ void StyleResolver::ApplyBaseStyleNoCache(
         style_request.pseudo_id);
   }
 
+  if (!AllowsInheritance(style_request, state.ParentStyle())) {
+    // We either have no parent, or we are ::backdrop (which does not
+    // allow inheriting from its parent), so use the initial style
+    // as the parent. Note that we need to do this before MPC lookup,
+    // so that the parent comparison (to determine if we have a hit
+    // on inherited properties) is correctly determined.
+    state.SetParentStyle(InitialStyleForElement());
+    state.SetLayoutParentStyle(state.ParentStyle());
+
+    if (!style_request.IsPseudoStyleRequest() &&
+        *element != GetDocument().documentElement()) {
+      // Strictly, we should only allow the root element to inherit from
+      // initial styles, but we allow getComputedStyle() for connected
+      // elements outside the flat tree rooted at an unassigned shadow host
+      // child or a slot fallback element.
+      DCHECK((IsShadowHost(element->parentNode()) ||
+              IsA<HTMLSlotElement>(element->parentNode())) &&
+             !LayoutTreeBuilderTraversal::ParentElement(*element));
+    }
+  }
+
   // TODO(obrufau): support styling nested pseudo-elements
   if (style_request.rules_to_include == StyleRequest::kUAOnly ||
       (style_request.IsPseudoStyleRequest() && element->IsPseudoElement())) {
@@ -1397,23 +1399,27 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   if (style_request.IsPseudoStyleRequest()) {
     if (!match_result.HasMatchedProperties()) {
+      InitStyle(*element, style_request, *initial_style_, state.ParentStyle(),
+                state);
       StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
       state.SetHadNoMatchedProperties();
       return;
     }
   }
 
+  const MatchResult& result = cascade.GetMatchResult();
+  CacheSuccess cache_success = ApplyMatchedCache(state, style_request, result);
+
   if (style_recalc_context.is_ensuring_style &&
       style_recalc_context.is_outside_flat_tree) {
     state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
   }
 
-  CascadeAndApplyMatchedProperties(state, style_request, cascade);
+  if (!cache_success.IsFullCacheHit()) {
+    ApplyPropertiesFromCascade(state, cascade, cache_success);
+    MaybeAddToMatchedPropertiesCache(state, cache_success, result);
+  }
 
-  // NOTE: The initial value of these flags is indeterminate since
-  // they could get unwanted values from a MPC hit; they are in
-  // a raredata field group, so CopyNonInheritedFromCached will clobber
-  // them despite reset_on_new_style, and we always need to set them.
   // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
   // can remove the cache-busting for ::highlight() in IsStyleCacheable
   state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(
@@ -1652,8 +1658,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial_style.get()));
-  state.SetStyle(*initial_style);
-  state.StyleBuilder().InheritFrom(*document_style);
+  state.CreateNewStyle(*initial_style, *document_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -1683,6 +1688,12 @@ const ComputedStyle& StyleResolver::InitialStyle() const {
 ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilder() const {
   DCHECK(initial_style_);
   return ComputedStyleBuilder(*initial_style_);
+}
+
+ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilderInheritingFrom(
+    const ComputedStyle& parent_style) const {
+  DCHECK(initial_style_);
+  return ComputedStyleBuilder(*initial_style_, parent_style);
 }
 
 float StyleResolver::InitialZoom() const {
@@ -2030,18 +2041,61 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     StyleResolverState& state,
     const StyleRequest& style_request,
     const MatchResult& match_result) {
-  const Element& element = state.GetElement();
+  Element& element = state.GetElement();
 
   MatchedPropertiesCache::Key key(match_result);
+
+  bool can_use_cache = key.IsValid();
+  if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
+    // Some pseudo-elements, like ::highlight, are special in that
+    // they inherit _non-inherited_ properties from their parent.
+    // This is different from what the MPC expects; it checks that
+    // the parents are the same before declaring that we have a
+    // valid hit (the check for InheritedDataShared() below),
+    // but it does not do so for non-inherited properties; it assumes
+    // that the base for non-inherited style (before applying the
+    // matched properties) is always the initial style.
+    // Thus, for simplicity, we simply disable the MPC in these cases.
+    //
+    // TODO(sesse): Why don't we have this problem when we use
+    // a different initial style for <img>?
+    can_use_cache = false;
+  }
 
   bool is_inherited_cache_hit = false;
   bool is_non_inherited_cache_hit = false;
   const CachedMatchedProperties* cached_matched_properties =
-      key.IsValid() ? matched_properties_cache_.Find(key, state) : nullptr;
+      can_use_cache ? matched_properties_cache_.Find(key, state) : nullptr;
+  // We use a different initial_style for <img> elements to match the overrides
+  // in html.css. This avoids allocation overhead from copy-on-write when
+  // these properties are set only via UA styles. The overhead shows up on
+  // MotionMark, which stress-tests this code. See crbug.com/1369454 for
+  // details.
+  const ComputedStyle& initial_style = IsA<HTMLImageElement>(element)
+                                           ? *initial_style_for_img_
+                                           : *initial_style_;
 
   if (cached_matched_properties) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
+
+    is_inherited_cache_hit =
+        state.ParentStyle()->InheritedDataShared(
+            *cached_matched_properties->parent_computed_style) &&
+        !IsAtShadowBoundary(&element);
+    is_non_inherited_cache_hit =
+        !IsForcedColorsModeEnabled() || is_inherited_cache_hit;
+
+    const ComputedStyle* parent_style =
+        is_inherited_cache_hit ? cached_matched_properties->computed_style.get()
+                               : state.ParentStyle();
+    const ComputedStyle& source_for_noninherited =
+        is_non_inherited_cache_hit
+            ? *cached_matched_properties->computed_style.get()
+            : initial_style;
+
+    InitStyle(element, style_request, source_for_noninherited, parent_style,
+              state);
 
     if (cached_matched_properties->computed_style->CanAffectAnimations()) {
       // Need to set this flag from the cached ComputedStyle to make
@@ -2057,24 +2111,16 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // can depend on the element context. This is fast and saves memory by
     // reusing the style data structures. Note that we cannot do this if the
     // direct parent is a ShadowRoot.
-    if (state.ParentStyle()->InheritedDataShared(
-            *cached_matched_properties->parent_computed_style) &&
-        !IsAtShadowBoundary(&element)) {
+    if (is_inherited_cache_hit) {
       INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                     matched_property_cache_inherited_hit, 1);
 
       // If the cache item parent style has identical inherited properties to
       // the current parent style then the resulting style will be identical
-      // too. We copy the inherited properties over from the cache and are done.
-      state.StyleBuilder().InheritFrom(
-          *cached_matched_properties->computed_style);
-
-      is_inherited_cache_hit = true;
+      // too. We copied the inherited properties over from the cache, so we
+      // are done.
     }
-    if (!IsForcedColorsModeEnabled() || is_inherited_cache_hit) {
-      state.StyleBuilder().CopyNonInheritedFromCached(
-          *cached_matched_properties->computed_style);
-
+    if (is_non_inherited_cache_hit) {
       // If the child style is a cache hit, we'll never reach StyleBuilder::
       // ApplyProperty, hence we'll never set the flag on the parent.
       // (We do the same thing for independently inherited properties in
@@ -2082,10 +2128,17 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       if (state.StyleBuilder().HasExplicitInheritance()) {
         state.ParentStyle()->SetChildHasExplicitInheritance();
       }
-      is_non_inherited_cache_hit = true;
     }
     state.UpdateFont();
+  } else {
+    // Initialize a new, plain ComputedStyle with only initial
+    // style and inheritance accounted for. We'll return a cache
+    // miss, which will cause the caller to apply all the matched
+    // properties on top of it.
+    InitStyle(element, style_request, initial_style, state.ParentStyle(),
+              state);
   }
+
   // This is needed because pseudo_argument is copied to the
   // state.StyleBuilder() as part of a raredata field when copying
   // non-inherited values from the cached result. The argument isn't a style
@@ -2276,18 +2329,9 @@ StyleResolver::BeforeChangeStyleForTransitionUpdate(
   return state.TakeStyle();
 }
 
-void StyleResolver::CascadeAndApplyMatchedProperties(
-    StyleResolverState& state,
-    const StyleRequest& style_request,
-    StyleCascade& cascade) {
-  const MatchResult& result = cascade.GetMatchResult();
-
-  CacheSuccess cache_success = ApplyMatchedCache(state, style_request, result);
-
-  if (cache_success.IsFullCacheHit()) {
-    return;
-  }
-
+void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
+                                               StyleCascade& cascade,
+                                               CacheSuccess cache_success) {
   auto apply = [&state, &cascade, &cache_success](CascadeFilter filter) {
     if (cache_success.ShouldApplyInheritedOnly()) {
       cascade.Apply(filter.Add(CSSProperty::kInherited, false));
@@ -2331,8 +2375,6 @@ void StyleResolver::CascadeAndApplyMatchedProperties(
   // cache hits.
   state.StyleBuilder().SetInlineStyleLostCascade(cascade.InlineStyleLost());
   ApplyLengthConversionFlags(state);
-
-  MaybeAddToMatchedPropertiesCache(state, cache_success, result);
 
   DCHECK(!state.GetFontBuilder().FontDirty());
 }
@@ -2447,8 +2489,7 @@ bool StyleResolver::IsForcedColorsModeEnabled() const {
 ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
-  ComputedStyleBuilder builder(*initial_style_);
-  builder.InheritFrom(parent_style);
+  ComputedStyleBuilder builder(*initial_style_, parent_style);
   builder.SetUnicodeBidi(parent_style.GetUnicodeBidi());
   builder.SetDisplay(display);
   return builder;
@@ -2772,11 +2813,11 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
 
   // Set up our initial style properties based on either the `default_font` or
   // `parent_style`.
-  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder =
+      default_font ? CreateComputedStyleBuilder()
+                   : CreateComputedStyleBuilderInheritingFrom(*parent_style);
   if (default_font) {
     builder.SetFontDescription(*default_font);
-  } else {  // parent_style
-    builder.InheritFrom(*parent_style);
   }
   builder.SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
 
@@ -2856,8 +2897,8 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForInitialLetterText(
     const ComputedStyle& paragraph_style) {
   DCHECK(paragraph_style.InitialLetter().IsNormal());
   DCHECK(!initial_letter_box_style.InitialLetter().IsNormal());
-  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.InheritFrom(initial_letter_box_style);
+  ComputedStyleBuilder builder =
+      CreateComputedStyleBuilderInheritingFrom(initial_letter_box_style);
   builder.SetFont(
       ComputeInitialLetterFont(initial_letter_box_style, paragraph_style));
   builder.SetLineHeight(Length::Fixed(builder.FontHeight()));

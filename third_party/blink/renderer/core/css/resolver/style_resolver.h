@@ -77,6 +77,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // Create a new ComputedStyleBuilder based on the initial style singleton.
   ComputedStyleBuilder CreateComputedStyleBuilder() const;
 
+  // Create a new ComputedStyleBuilder inheriting from the given style.
+  ComputedStyleBuilder CreateComputedStyleBuilderInheritingFrom(
+      const ComputedStyle& parent_style) const;
+
   // Create a ComputedStyle for initial styles to be used as the basis for the
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
@@ -84,6 +88,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   scoped_refptr<const ComputedStyle> InitialStyleForElement() const {
     return InitialStyleBuilderForElement().TakeStyle();
   }
+
   float InitialZoom() const;
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
@@ -230,12 +235,14 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void Trace(Visitor*) const;
 
  private:
-  void InitStyleAndApplyInheritance(Element& element,
-                                    const StyleRequest&,
-                                    StyleResolverState& state);
-  void ApplyInheritance(Element& element,
-                        const StyleRequest& style_request,
-                        StyleResolverState& state);
+  // Creates a new ComputedStyle, either cloning an existing one
+  // or combining two different ones (see the comment on
+  // ApplyBaseStyleNoCache() for more details).
+  void InitStyle(Element& element,
+                 const StyleRequest&,
+                 const ComputedStyle& source_for_noninherited,
+                 const ComputedStyle* parent_style,
+                 StyleResolverState& state);
 
   void ApplyBaseStyle(Element* element,
                       const StyleRecalcContext&,
@@ -316,9 +323,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                         const CacheSuccess&,
                                         const MatchResult&);
 
-  void CascadeAndApplyMatchedProperties(StyleResolverState&,
-                                        const StyleRequest&,
-                                        StyleCascade& cascade);
+  void ApplyPropertiesFromCascade(StyleResolverState&,
+                                  StyleCascade& cascade,
+                                  CacheSuccess cache_success);
 
   bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
 

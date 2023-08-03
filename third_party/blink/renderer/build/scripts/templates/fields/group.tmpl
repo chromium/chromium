@@ -1,4 +1,4 @@
-{% from 'templates/fields/field.tmpl' import encode, declare_storage, compare %}
+{% from 'templates/fields/field.tmpl' import encode, declare_storage, compare, fieldwise_initialize %}
 {% from 'templates/macros.tmpl' import print_if %}
 {% macro declare_field_group_class(group): -%}
 {% for subgroup in group.subgroups %}
@@ -13,6 +13,17 @@ class {{group.type_name}} : public RefCounted<{{group.type_name}}> {
   scoped_refptr<{{group.type_name}}> Copy() const {
     return base::AdoptRef(new {{group.type_name}}(*this));
   }
+
+  {% if group.all_fields|selectattr("is_inherited")|list|length > 0 and
+        group.all_fields|rejectattr("is_inherited")|list|length > 0 -%}
+    // Used when constructing ComputedStyleBase, since this group contains
+    // both inherited and non-inherited members.
+    CORE_EXPORT {{group.type_name}}(const {{group.type_name}}& source_for_noninherited,
+                                    const {{group.type_name}}& parent_style) :
+    {{fieldwise_initialize(group)}}
+    {
+    }
+  {% endif %}
 
   // See comments in ComputedStyle.
   void* operator new(size_t size) {

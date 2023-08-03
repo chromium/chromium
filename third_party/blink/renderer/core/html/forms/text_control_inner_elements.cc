@@ -52,8 +52,8 @@ EditingViewPortElement::CustomStyleForLayoutObject(const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
   ComputedStyleBuilder style_builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  style_builder.InheritFrom(OwnerShadowHost()->ComputedStyleRef());
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
+          OwnerShadowHost()->ComputedStyleRef());
 
   style_builder.SetFlexGrow(1);
   style_builder.SetMinWidth(Length::Fixed(0));
@@ -134,8 +134,8 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
   ComputedStyleBuilder style_builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  style_builder.InheritFrom(start_style);
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
+          start_style);
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
   // element.

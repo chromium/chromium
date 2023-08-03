@@ -5,14 +5,11 @@
   parameters: {
     // If true, this field will be reset whenever we create a new ComputedStyle;
     // it will not be (automatically) kept from any previous styles, but will be
-    // set to the initial value. Specifically, neither ComputedStyleBase::InheritFrom
-    // nor ComputedStyleBase::CopyNonInheritedFromCached will touch this field.
+    // set to the initial value.
     //
-    // NOTE: We do not currently do this correctly for fields in subgroups;
-    // they will be copied wholesale together with the subgroup. We could fix it,
-    // but it would make copy-on-write much less efficient for many cases,
-    // so it's probably best to just disallow reset_on_new_style fields that are
-    // not on top-level.
+    // NOTE: If such a field is in a subgroup (e.g. due to being rare),
+    // we will be doing more memory allocation (due to copy-on-write) than expected,
+    // so use this with care.
     reset_on_new_style: {
       default: false,
     },
