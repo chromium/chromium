@@ -104,6 +104,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL =
             "android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL";
     public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
+    private static final int GMSCORE_MIN_VERSION_CREDMAN = 233100000;
 
     private static Boolean sIsCredManEnabled;
 
@@ -171,9 +172,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private boolean isCredManEnabled() {
         if (sIsCredManEnabled == null) {
-            sIsCredManEnabled =
-                    DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
-                    && (BuildCompat.isAtLeastU() || mOverrideVersionCheckForTesting);
+            sIsCredManEnabled = (BuildCompat.isAtLeastU() || mOverrideVersionCheckForTesting)
+                    && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN);
+            int packageVersion = PackageUtils.getPackageVersion("com.google.android.gms");
+
+            if (sIsCredManEnabled && packageVersion != -1) {
+                sIsCredManEnabled = packageVersion >= GMSCORE_MIN_VERSION_CREDMAN
+                        || mOverrideVersionCheckForTesting;
+            }
         }
         return sIsCredManEnabled;
     }
