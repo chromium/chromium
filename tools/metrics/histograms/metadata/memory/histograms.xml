@@ -899,17 +899,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Memory.Experimental.Renderer" units="MB"
-    expires_after="2021-04-18">
-<!-- Name completed by histogram_suffixes name="RendererMemoryAllocator" -->
-
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    The renderer process's memory usage at the specific timing, i.e. after a
-    page load and 5/10/15minutes after backgrounded.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
     units="MB" expires_after="2023-12-24">
   <owner>tasak@google.com</owner>
@@ -926,35 +915,6 @@ chromium-metrics-reviews@google.com.
     does not measure the same thing on each platform. We have not found a good
     way to compare any system level memory metric across platforms due to the
     different nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.Renderer.PeakResidentSet.AtHighestPrivateMemoryFootprint"
-    units="MB" expires_after="2021-08-09">
-  <owner>tasak@google.com</owner>
-  <owner>bartekn@google.com</owner>
-  <summary>
-    The peak RSS size(VmHMW) of a render process when the highest private memory
-    footprint is observed after the first navigation start.
-
-    This resident memory metric cannot be compared across platforms because each
-    platform relies on platform-level APIs for accounting. As such, though this
-    attempts to measure private memory footprint as best as possible, it does
-    not measure the same thing on each platform. We have not found a good way to
-    compare any system level memory metric across platforms due to the different
-    nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.Renderer.WebpageCount.AtHighestPrivateMemoryFootprint"
-    units="counts" expires_after="2020-12-31">
-  <owner>tasak@google.com</owner>
-  <owner>bartekn@google.com</owner>
-  <summary>
-    The number of webpages when the highest private memory footprint of renderer
-    process is observed after the first navigation start.
   </summary>
 </histogram>
 

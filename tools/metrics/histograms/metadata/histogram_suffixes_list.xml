@@ -2432,10 +2432,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="8to16min" label=""/>
   <affected-histogram
       name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.PeakResidentSet.AtHighestPrivateMemoryFootprint"/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.WebpageCount.AtHighestPrivateMemoryFootprint"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="MimeTypeBucket" separator=".">
