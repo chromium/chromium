@@ -979,7 +979,7 @@ void AshNotificationView::AddGroupNotification(
   notification_view->SetGroupedChildExpanded(IsExpanded());
   notification_view->set_parent_message_view(this);
   notification_view->set_scroller(
-      scroller() ? scroller() : grouped_notifications_scroll_view_);
+      scroller() ? scroller() : grouped_notifications_scroll_view_.get());
 
   header_row()->SetTimestamp(notification.timestamp());
 
@@ -1023,7 +1023,7 @@ void AshNotificationView::PopulateGroupNotifications(
 
     notification_view->set_parent_message_view(this);
     notification_view->set_scroller(
-        scroller() ? scroller() : grouped_notifications_scroll_view_);
+        scroller() ? scroller() : grouped_notifications_scroll_view_.get());
 
     grouped_notifications_container_->AddChildView(
         std::move(notification_view));
@@ -2151,8 +2151,8 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
 }
 
 void AshNotificationView::AnimateSingleToGroupFadeIn() {
-  auto* fade_in_view = shown_in_popup_ ? grouped_notifications_scroll_view_
-                                       : grouped_notifications_container_;
+  auto fade_in_view = shown_in_popup_ ? grouped_notifications_scroll_view_
+                                      : grouped_notifications_container_;
   message_center_utils::InitLayerForAnimations(fade_in_view);
   message_center_utils::FadeInView(
       fade_in_view, /*delay_in_ms=*/0,

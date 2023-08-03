@@ -17,7 +17,7 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/env.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,9 +96,7 @@ class SavedDeskDialog : public views::DialogDelegateView {
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::Label* description_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> description_label_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, SavedDeskDialog, views::DialogDelegateView)

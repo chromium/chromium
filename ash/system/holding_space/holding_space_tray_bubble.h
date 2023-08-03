@@ -17,7 +17,6 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
@@ -77,9 +76,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   HoldingSpaceViewDelegate delegate_{this};
 
   // Views owned by view hierarchy.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::View* header_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> header_ = nullptr;
   raw_ptr<ChildBubbleContainer, ExperimentalAsh> child_bubble_container_ =
       nullptr;
   std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;

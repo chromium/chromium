@@ -11,7 +11,6 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
@@ -58,12 +57,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
     void UpdateState();
 
     // Owned by views hierarchy.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of
-    RAW_PTR_EXCLUSION views::ImageView* icon_view_{nullptr};
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of
-    RAW_PTR_EXCLUSION views::Label* title_{nullptr};
+    raw_ptr<views::ImageView, ExperimentalAsh> icon_view_{nullptr};
+    raw_ptr<views::Label, ExperimentalAsh> title_{nullptr};
 
     const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
     bool is_selected_{false};

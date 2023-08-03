@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -64,15 +63,11 @@ class ChromeLabsItemView : public views::View {
   raw_ptr<user_education::NewBadgeLabel> experiment_name_;
 
   // Combobox with selected state of the lab.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::Combobox* lab_state_combobox_;
+  raw_ptr<views::Combobox> lab_state_combobox_;
 
   raw_ptr<const flags_ui::FeatureEntry> feature_entry_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::MdTextButton* feedback_button_;
+  raw_ptr<views::MdTextButton> feedback_button_;
 
   base::RepeatingClosureList combobox_callback_list_;
 };

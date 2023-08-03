@@ -26,6 +26,7 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -159,7 +160,8 @@ class ProgressIndicatorView : public views::View {
 
   // Copies the address of `progress_indicator_` to the specified `ptr`.
   // NOTE: This method should only be invoked after `SetHoldingSpaceItem()`.
-  void CopyProgressIndicatorAddressTo(ProgressIndicator** ptr) {
+  void CopyProgressIndicatorAddressTo(
+      raw_ptr<ProgressIndicator, ExperimentalAsh>* ptr) {
     DCHECK(progress_indicator_);
     *ptr = progress_indicator_.get();
   }
@@ -201,7 +203,8 @@ class ProgressIndicatorView : public views::View {
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, ProgressIndicatorView, views::View)
-VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo, ProgressIndicator**)
+VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo,
+                    raw_ptr<ProgressIndicator, ExperimentalAsh>*)
 VIEW_BUILDER_PROPERTY(const HoldingSpaceItem*, HoldingSpaceItem)
 END_VIEW_BUILDER
 

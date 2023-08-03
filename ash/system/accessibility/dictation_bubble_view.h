@@ -100,7 +100,8 @@ class ASH_EXPORT DictationHintView : public views::View {
 
   // Labels containing hints for users of Dictation. A max of five hints can be
   // shown at any given time.
-  std::vector<views::Label*> labels_{kMaxLabelHints, nullptr};
+  std::vector<raw_ptr<views::Label, ExperimentalAsh>> labels_{kMaxLabelHints,
+                                                              nullptr};
 };
 
 }  // namespace ash

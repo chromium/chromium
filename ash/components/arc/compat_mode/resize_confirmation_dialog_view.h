@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -76,16 +75,10 @@ class ResizeConfirmationDialogView : public views::BubbleDialogDelegateView,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::Checkbox* do_not_ask_checkbox_{nullptr};
+  raw_ptr<views::Checkbox, ExperimentalAsh> do_not_ask_checkbox_{nullptr};
   raw_ptr<ash::Checkbox, ExperimentalAsh> do_not_ask_checkbox_jelly_{nullptr};
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::LabelButton* accept_button_{nullptr};
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::LabelButton* cancel_button_{nullptr};
+  raw_ptr<views::LabelButton, ExperimentalAsh> accept_button_{nullptr};
+  raw_ptr<views::LabelButton, ExperimentalAsh> cancel_button_{nullptr};
 };
 
 }  // namespace arc

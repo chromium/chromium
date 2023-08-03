@@ -9,7 +9,6 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -166,23 +165,16 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   std::unique_ptr<DeskTemplate> saved_desk_;
 
   // Owned by the views hierarchy.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION SavedDeskNameView* name_view_ = nullptr;
+  raw_ptr<SavedDeskNameView, ExperimentalAsh> name_view_ = nullptr;
   // When template is managed by admin, `time_view_` will display management
   // description instead.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::Label* time_view_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION SavedDeskIconContainer* icon_container_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> time_view_ = nullptr;
+  raw_ptr<SavedDeskIconContainer, ExperimentalAsh> icon_container_view_ =
+      nullptr;
   raw_ptr<IconButton, ExperimentalAsh> delete_button_ = nullptr;
   raw_ptr<PillButton, ExperimentalAsh> launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::View* hover_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> hover_container_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 

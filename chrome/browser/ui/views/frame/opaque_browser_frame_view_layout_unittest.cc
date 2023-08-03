@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -375,9 +374,7 @@ class OpaqueBrowserFrameViewLayoutTest
   raw_ptr<views::ImageButton, DanglingUntriaged> restore_button_ = nullptr;
   raw_ptr<views::ImageButton, DanglingUntriaged> close_button_ = nullptr;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION TabIconView* tab_icon_view_ = nullptr;
+  raw_ptr<TabIconView, DanglingUntriaged> tab_icon_view_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> window_title_ = nullptr;
 };
 

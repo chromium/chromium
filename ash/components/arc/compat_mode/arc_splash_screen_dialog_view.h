@@ -8,7 +8,6 @@
 #include "ash/style/ash_color_id.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -86,9 +85,7 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<views::View, ExperimentalAsh> highlight_border_{nullptr};
 
   base::OnceClosure close_callback_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::LabelButton* close_button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> close_button_ = nullptr;
 
   const ui::ColorId background_color_id_;
 

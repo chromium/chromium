@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -72,25 +72,15 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   chrome::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch as a window.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::Checkbox* open_as_window_checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> open_as_window_checkbox_ = nullptr;
 
   // Radio buttons to launch as a tab, window or tabbed window.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::RadioButton* open_as_tab_radio_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::RadioButton* open_as_window_radio_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::RadioButton* open_as_tabbed_window_radio_ = nullptr;
+  raw_ptr<views::RadioButton> open_as_tab_radio_ = nullptr;
+  raw_ptr<views::RadioButton> open_as_window_radio_ = nullptr;
+  raw_ptr<views::RadioButton> open_as_tabbed_window_radio_ = nullptr;
 
   // Textfield showing the title of the app.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::Textfield* title_tf_ = nullptr;
+  raw_ptr<views::Textfield> title_tf_ = nullptr;
 
   base::WeakPtrFactory<WebAppConfirmationView> weak_ptr_factory_{this};
 };

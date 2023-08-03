@@ -20,7 +20,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -138,9 +138,7 @@ class Header : public views::Button {
   }
 
   // Owned by view hierarchy.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::ImageView* chevron_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
 
   // The user can expand and collapse the suggestions section by activating the
   // section header. This registrar is associated with the active user pref

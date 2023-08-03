@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_SWITCH_ACCESS_MENU_BUTTON_H_
 #define ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_SWITCH_ACCESS_MENU_BUTTON_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
@@ -46,12 +46,8 @@ class SwitchAccessMenuButton : public views::Button {
   std::string action_name_;
 
   // Owned by the views hierarchy.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::ImageView* image_view_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::Label* label_;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, SwitchAccessMenuButton, views::Button)

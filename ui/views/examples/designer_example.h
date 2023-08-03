@@ -150,22 +150,12 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION BoxLayoutView* designer_container_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION DesignerSurface* designer_panel_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION View* palette_panel_ = nullptr;
+  raw_ptr<BoxLayoutView> designer_container_ = nullptr;
+  raw_ptr<DesignerSurface> designer_panel_ = nullptr;
+  raw_ptr<View> palette_panel_ = nullptr;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Combobox* view_type_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION TableView* inspector_ = nullptr;
+  raw_ptr<Combobox> view_type_ = nullptr;
+  raw_ptr<TableView> inspector_ = nullptr;
   raw_ptr<ui::TableModelObserver> model_observer_ = nullptr;
 
   raw_ptr<View> selected_ = nullptr;
