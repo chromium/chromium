@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
@@ -813,6 +814,58 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     // string in order to avoid future scheme changes.
     String stack_unused;
     WriteUTF8String(stack_unused);
+    return true;
+  }
+  if (auto* config = dispatcher.ToMostDerived<FencedFrameConfig>()) {
+    if (for_storage_) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "A FencedFrameConfig cannot be serialized for storage.");
+      return false;
+    }
+
+    WriteAndRequireInterfaceTag(kFencedFrameConfigTag);
+
+    WriteUTF8String(
+        config
+            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>());
+    WriteUint32(config->GetValueIgnoringVisibility<
+                FencedFrameConfig::Attribute::kWidth>());
+    WriteUint32(config->GetValueIgnoringVisibility<
+                FencedFrameConfig::Attribute::kHeight>());
+    WriteUint32(static_cast<uint32_t>(
+        config->GetAttributeVisibility<FencedFrameConfig::Attribute::kURL>(
+            PassKey())));
+    WriteUint32(static_cast<uint32_t>(
+        config->GetAttributeVisibility<FencedFrameConfig::Attribute::kWidth>(
+            PassKey())));
+    WriteUint32(config->deprecated_should_freeze_initial_size(PassKey()));
+    absl::optional<KURL> urn_uuid = config->urn_uuid(PassKey());
+    WriteUTF8String(urn_uuid ? urn_uuid->GetString() : g_empty_string);
+
+    // The serialization process does not distinguish between null and empty
+    // strings. Storing whether the current string is null or not allows us to
+    // get this functionality back, which is needed for Shared Storage.
+    WriteUint32(!config->GetSharedStorageContext().IsNull());
+    if (!config->GetSharedStorageContext().IsNull()) {
+      WriteUTF8String(config->GetSharedStorageContext());
+    }
+
+    absl::optional<gfx::Size> container_size =
+        config->container_size(PassKey());
+    WriteUint32(container_size.has_value());
+    if (container_size.has_value()) {
+      WriteUint32(container_size ? container_size->width() : 0);
+      WriteUint32(container_size ? container_size->height() : 0);
+    }
+
+    absl::optional<gfx::Size> content_size = config->content_size(PassKey());
+    WriteUint32(content_size.has_value());
+    if (content_size.has_value()) {
+      WriteUint32(content_size ? content_size->width() : 0);
+      WriteUint32(content_size ? content_size->height() : 0);
+    }
+
     return true;
   }
   return false;

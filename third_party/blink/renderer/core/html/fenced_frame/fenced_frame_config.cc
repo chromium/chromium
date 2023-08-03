@@ -13,6 +13,23 @@ FencedFrameConfig* FencedFrameConfig::Create(const String& url) {
 }
 
 // static
+FencedFrameConfig* FencedFrameConfig::Create(
+    const KURL url,
+    uint32_t width,
+    uint32_t height,
+    const String& shared_storage_context,
+    absl::optional<KURL> urn_uuid,
+    absl::optional<gfx::Size> container_size,
+    absl::optional<gfx::Size> content_size,
+    AttributeVisibility url_visibility,
+    AttributeVisibility size_visibility,
+    bool freeze_initial_size) {
+  return MakeGarbageCollected<FencedFrameConfig>(
+      url, width, height, shared_storage_context, urn_uuid, container_size,
+      content_size, url_visibility, size_visibility, freeze_initial_size);
+}
+
+// static
 FencedFrameConfig* FencedFrameConfig::From(
     const FencedFrame::RedactedFencedFrameConfig& config) {
   return MakeGarbageCollected<FencedFrameConfig>(config);
@@ -20,6 +37,27 @@ FencedFrameConfig* FencedFrameConfig::From(
 
 FencedFrameConfig::FencedFrameConfig(const String& url)
     : url_(url), url_attribute_visibility_(AttributeVisibility::kTransparent) {}
+
+FencedFrameConfig::FencedFrameConfig(const KURL url,
+                                     uint32_t width,
+                                     uint32_t height,
+                                     const String& shared_storage_context,
+                                     absl::optional<KURL> urn_uuid,
+                                     absl::optional<gfx::Size> container_size,
+                                     absl::optional<gfx::Size> content_size,
+                                     AttributeVisibility url_visibility,
+                                     AttributeVisibility size_visibility,
+                                     bool freeze_initial_size)
+    : url_(url),
+      width_(width),
+      height_(height),
+      shared_storage_context_(shared_storage_context),
+      url_attribute_visibility_(url_visibility),
+      size_attribute_visibility_(size_visibility),
+      urn_uuid_(urn_uuid),
+      container_size_(container_size),
+      content_size_(content_size),
+      deprecated_should_freeze_initial_size_(freeze_initial_size) {}
 
 FencedFrameConfig::FencedFrameConfig(
     const FencedFrame::RedactedFencedFrameConfig& config) {

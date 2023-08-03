@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_fenced_frame_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
@@ -2294,6 +2296,61 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerEnforceExposureAssertionDisabled) {
     V8TestingScope scope;
     EXPECT_TRUE(ssv->CanDeserializeIn(scope.GetExecutionContext()));
   }
+}
+
+TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
+  ScopedFencedFramesForTest fenced_frames(true);
+  V8TestingScope scope;
+  FencedFrameConfig* config = FencedFrameConfig::Create(
+      KURL("https://example.com"), 200, 250, "some shared storage context",
+      KURL("urn:uuid:37665e6f-f3fd-4393-8429-719d02843a54"), gfx::Size(64, 48),
+      gfx::Size(32, 16), FencedFrameConfig::AttributeVisibility::kOpaque,
+      FencedFrameConfig::AttributeVisibility::kTransparent, true);
+  v8::Local<v8::Value> wrapper =
+      ToV8(config, scope.GetContext()->Global(), scope.GetIsolate());
+  v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
+  FencedFrameConfig* new_config =
+      V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
+  ASSERT_NE(new_config, nullptr);
+  EXPECT_NE(config, new_config);
+  EXPECT_EQ(config->url_, new_config->url_);
+  EXPECT_EQ(config->width_, new_config->width_);
+  EXPECT_EQ(config->height_, new_config->height_);
+  EXPECT_EQ(config->shared_storage_context_,
+            new_config->shared_storage_context_);
+  EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
+  EXPECT_EQ(config->container_size_, new_config->container_size_);
+  EXPECT_EQ(config->content_size_, new_config->content_size_);
+  EXPECT_EQ(config->url_attribute_visibility_,
+            new_config->url_attribute_visibility_);
+  EXPECT_EQ(config->size_attribute_visibility_,
+            new_config->size_attribute_visibility_);
+  EXPECT_EQ(config->deprecated_should_freeze_initial_size_,
+            new_config->deprecated_should_freeze_initial_size_);
+}
+
+TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
+  ScopedFencedFramesForTest fenced_frames(true);
+  V8TestingScope scope;
+  FencedFrameConfig* config = FencedFrameConfig::Create(g_empty_string);
+  ASSERT_FALSE(config->urn_uuid_.has_value());
+  ASSERT_FALSE(config->container_size_.has_value());
+  ASSERT_FALSE(config->content_size_.has_value());
+  v8::Local<v8::Value> wrapper =
+      ToV8(config, scope.GetContext()->Global(), scope.GetIsolate());
+  v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
+  FencedFrameConfig* new_config =
+      V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
+  ASSERT_NE(new_config, nullptr);
+  EXPECT_NE(config, new_config);
+  EXPECT_EQ(config->shared_storage_context_,
+            new_config->shared_storage_context_);
+  EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
+  EXPECT_FALSE(new_config->urn_uuid_.has_value());
+  EXPECT_EQ(config->container_size_, new_config->container_size_);
+  EXPECT_FALSE(new_config->container_size_.has_value());
+  EXPECT_EQ(config->content_size_, new_config->content_size_);
+  EXPECT_FALSE(new_config->content_size_.has_value());
 }
 
 }  // namespace blink

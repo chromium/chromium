@@ -7,7 +7,7 @@ enum OpaqueProperty {"opaque"};
 typedef (unsigned long or OpaqueProperty) FencedFrameConfigSize;
 typedef (USVString or OpaqueProperty) FencedFrameConfigURL;
 
-[Exposed=Window, RuntimeEnabled=FencedFrames]
+[Exposed=Window, RuntimeEnabled=FencedFrames, Serializable]
 interface FencedFrameConfig {
   // TODO(crbug.com/1374716): Attributes of this class should mirror the fields
   // of `blink::FencedFrame::RedactedFencedFrameConfig`.

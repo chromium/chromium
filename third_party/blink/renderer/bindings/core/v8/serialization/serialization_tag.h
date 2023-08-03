@@ -127,6 +127,8 @@ enum SerializationTag {
   kDeprecatedDetectedFaceTag = 'F',
   kDeprecatedDetectedTextTag = 't',
 
+  kFencedFrameConfigTag = 'C',
+
   kDOMExceptionTag = 'x',  // name:String,message:String,stack:String
   kTrailerOffsetTag =
       0xFE,  // offset:uint64_t (fixed width, network order) from buffer start
