@@ -36,12 +36,12 @@ const user_manager::User* GetUser(content::BrowserContext* browser_context) {
       browser_context);
 }
 
-bool NotSupportedEmailDomain(content::BrowserContext* browser_context) {
+bool IsSupportedEmailDomain(content::BrowserContext* browser_context) {
   const std::string email =
       GetUser(browser_context)->GetAccountId().GetUserEmail();
   DCHECK(!email.empty());
 
-  return !gaia::IsGoogleInternalAccountEmail(email);
+  return gaia::IsGoogleInternalAccountEmail(email);
 }
 
 }  // namespace
@@ -98,12 +98,6 @@ content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged()) {
-    return nullptr;
-  }
-
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile) {
     return nullptr;
@@ -117,8 +111,17 @@ content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  if (profile->GetProfilePolicyConnector()->IsManaged() &&
-      NotSupportedEmailDomain(browser_context)) {
+  if (IsSupportedEmailDomain(browser_context)) {
+    return browser_context;
+  }
+
+  if (g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->IsDeviceEnterpriseManaged()) {
+    return nullptr;
+  }
+
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
     return nullptr;
   }
 
