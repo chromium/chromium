@@ -50,27 +50,6 @@ class ScreenLocker
       public device::mojom::FingerprintObserver,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
-  // Delegate used to send internal state changes back to the UI.
-  class Delegate {
-   public:
-    Delegate();
-
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
-    virtual ~Delegate();
-
-    // Show the given error message.
-    virtual void ShowErrorMessage(int error_msg_id,
-                                  HelpAppLauncher::HelpTopic help_topic_id) = 0;
-
-    // Close any displayed error messages.
-    virtual void ClearErrors() = 0;
-
-    // Called by ScreenLocker to notify that ash lock animation finishes.
-    virtual void OnAshLockAnimationFinished() = 0;
-  };
-
   using AuthenticateCallback = base::OnceCallback<void(bool auth_success)>;
 
   explicit ScreenLocker(const user_manager::UserList& users);
@@ -129,9 +108,6 @@ class ScreenLocker
   void ShowErrorMessage(int error_msg_id,
                         HelpAppLauncher::HelpTopic help_topic_id,
                         bool sign_out_only);
-
-  // Returns delegate that can be used to talk to the view-layer.
-  Delegate* delegate() { return delegate_; }
 
   // Returns the users to authenticate.
   const user_manager::UserList& users() const { return users_; }
@@ -286,9 +262,6 @@ class ScreenLocker
   // session_manager::UnlockType, used by the reporting team to report
   // lock/unlock events.
   session_manager::UnlockType TransformUnlockType();
-
-  // Delegate used to talk to the view.
-  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
 
   // Users that can unlock the device.
   user_manager::UserList users_;

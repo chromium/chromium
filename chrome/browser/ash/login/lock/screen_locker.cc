@@ -171,13 +171,6 @@ chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
 ScreenLocker* ScreenLocker::screen_locker_ = nullptr;
 
 //////////////////////////////////////////////////////////////////////////////
-// ScreenLocker::Delegate, public:
-
-ScreenLocker::Delegate::Delegate() = default;
-
-ScreenLocker::Delegate::~Delegate() = default;
-
-//////////////////////////////////////////////////////////////////////////////
 // ScreenLocker, public:
 
 ScreenLocker::ScreenLocker(const user_manager::UserList& users)
@@ -226,9 +219,9 @@ void ScreenLocker::Init() {
   authenticator_ = UserSessionManager::GetInstance()->CreateAuthenticator(this);
   extended_authenticator_ = ExtendedAuthenticator::Create(this);
 
-  // Create delegate that calls into the views-based lock screen via mojo.
+  // Create ViewScreenLocker that calls into the views-based lock screen via
+  // mojo.
   views_screen_locker_ = std::make_unique<ViewsScreenLocker>(this);
-  delegate_ = views_screen_locker_.get();
 
   // Create and display lock screen.
   CHECK(LoginScreenClientImpl::HasInstance());
@@ -261,10 +254,10 @@ void ScreenLocker::OnAuthFailure(const AuthFailure& error) {
   // Don't enable signout button here as we're showing
   // MessageBubble.
 
-  delegate_->ShowErrorMessage(incorrect_passwords_count_++
-                                  ? IDS_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
-                                  : IDS_LOGIN_ERROR_AUTHENTICATING,
-                              HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+  views_screen_locker_->ShowErrorMessage(
+      incorrect_passwords_count_++ ? IDS_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
+                                   : IDS_LOGIN_ERROR_AUTHENTICATING,
+      HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 
   if (auth_status_consumer_)
     auth_status_consumer_->OnAuthFailure(error);
@@ -531,18 +524,18 @@ void ScreenLocker::OnStartLockCallback(bool locked) {
   if (!locked)
     return;
 
-  delegate_->OnAshLockAnimationFinished();
+  views_screen_locker_->OnAshLockAnimationFinished();
 
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kLock, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
 void ScreenLocker::ClearErrors() {
-  delegate_->ClearErrors();
+  views_screen_locker_->ClearErrors();
 }
 
 void ScreenLocker::Signout() {
-  delegate_->ClearErrors();
+  views_screen_locker_->ClearErrors();
   base::RecordAction(UserMetricsAction("ScreenLocker_Signout"));
   // We expect that this call will not wait for any user input.
   // If it changes at some point, we will need to force exit.
@@ -559,7 +552,7 @@ void ScreenLocker::EnableInput() {
 void ScreenLocker::ShowErrorMessage(int error_msg_id,
                                     HelpAppLauncher::HelpTopic help_topic_id,
                                     bool sign_out_only) {
-  delegate_->ShowErrorMessage(error_msg_id, help_topic_id);
+  views_screen_locker_->ShowErrorMessage(error_msg_id, help_topic_id);
 }
 
 user_manager::UserList ScreenLocker::GetUsersToShow() const {
@@ -959,8 +952,9 @@ void ScreenLocker::OnFingerprintAuthFailure(const user_manager::User& user) {
               << " unlock attempt.";
       LoginScreen::Get()->GetModel()->SetFingerprintState(
           user.GetAccountId(), FingerprintState::DISABLED_FROM_ATTEMPTS);
-      delegate_->ShowErrorMessage(IDS_LOGIN_ERROR_FINGERPRINT_MAX_ATTEMPT,
-                                  HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+      views_screen_locker_->ShowErrorMessage(
+          IDS_LOGIN_ERROR_FINGERPRINT_MAX_ATTEMPT,
+          HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
     }
   }
 
