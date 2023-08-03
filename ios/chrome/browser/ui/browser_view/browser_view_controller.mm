@@ -1040,10 +1040,7 @@ enum HeaderBehaviour {
   // view controller).
   [self.presentedViewController
       traitCollectionDidChange:previousTraitCollection];
-  // Change the height of the secondary toolbar to show/hide it.
-  self.secondaryToolbarHeightConstraint.constant =
-      [self secondaryToolbarHeightWithInset];
-  [self updateFootersForFullscreenProgress:self.footerFullscreenProgress];
+
   if (self.currentWebState) {
     UIEdgeInsets contentPadding =
         self.currentWebState->GetWebViewProxy().contentInset;
@@ -1052,7 +1049,14 @@ enum HeaderBehaviour {
     self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
   }
 
+  // Toolbar state must be updated before `updateFootersForFullscreenProgress`
+  // as the later uses the insets from fullscreen model.
   [self updateToolbarState];
+
+  // Change the height of the secondary toolbar to show/hide it.
+  self.secondaryToolbarHeightConstraint.constant =
+      [self secondaryToolbarHeightWithInset];
+  [self updateFootersForFullscreenProgress:self.footerFullscreenProgress];
 
   // If the device's size class has changed from RegularXRegular to another and
   // vice-versa, the find bar should switch between regular mode and compact
@@ -1975,10 +1979,11 @@ enum HeaderBehaviour {
 - (void)updateFootersForFullscreenProgress:(CGFloat)progress {
   self.footerFullscreenProgress = progress;
 
-  const CGFloat expandedToolbarHeight = [self secondaryToolbarHeightWithInset];
+  const CGFloat expandedToolbarHeight =
+      self.fullscreenController->GetMaxViewportInsets().bottom;
   if (!expandedToolbarHeight) {
-    // If `secondaryToolbarHeightWithInset` returns 0, secondary toolbar is
-    // hidden. In that case don't update it's height on fullscreen progress.
+    // If `expandedToolbarHeight` is 0, secondary toolbar is hidden. In that
+    // case don't update it's height on fullscreen progress.
     return;
   }
 
