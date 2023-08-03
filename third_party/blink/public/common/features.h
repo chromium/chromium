@@ -541,6 +541,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPAnimatedImagesReporting);
 // to websites using performance hints collected in the past page loads.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPCriticalPathPredictor);
 
+// If true, LCP critical path predictor mechanism doesn't change the fetch
+// priority but still the rest will work.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPCriticalPathPredictorDryRun;
+
 // The maximum element locator length for LCPP.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPCriticalPathPredictorMaxElementLocatorLength;

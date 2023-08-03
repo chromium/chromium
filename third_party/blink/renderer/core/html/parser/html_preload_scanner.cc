@@ -1061,11 +1061,14 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
     HTMLParserOptions options,
     TokenPreloadScanner::ScannerType scanner_type) {
   Vector<ElementLocator> locators;
-  if (LocalFrame* frame = document.GetFrame()) {
-    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-      locators = lcpp->lcp_element_locators();
+  if (!features::kLCPCriticalPathPredictorDryRun.Get()) {
+    if (LocalFrame* frame = document.GetFrame()) {
+      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+        locators = lcpp->lcp_element_locators();
+      }
     }
   }
+
   return std::make_unique<HTMLPreloadScanner>(
       std::make_unique<HTMLTokenizer>(options), document.Url(),
       std::make_unique<CachedDocumentParameters>(&document),
@@ -1082,9 +1085,11 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
   auto* document = parser->GetDocument();
 
   Vector<ElementLocator> locators;
-  if (LocalFrame* frame = document->GetFrame()) {
-    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-      locators = lcpp->lcp_element_locators();
+  if (!features::kLCPCriticalPathPredictorDryRun.Get()) {
+    if (LocalFrame* frame = document->GetFrame()) {
+      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+        locators = lcpp->lcp_element_locators();
+      }
     }
   }
 
