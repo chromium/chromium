@@ -42,8 +42,6 @@ using Hardware = metrics::SystemProfileProto::Hardware;
 
 namespace {
 
-constexpr uint64_t kTpmFirmwareVersion = 100;
-
 class FakeMultiDeviceSetupClientImplFactory
     : public ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory {
  public:
@@ -306,11 +304,12 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
   EXPECT_EQ(store_id, expected_store_id);
 }
 
-TEST_F(ChromeOSSystemProfileProviderTest, TpmFirmwareVersion) {
+TEST_F(ChromeOSSystemProfileProviderTest, TpmRwFirmwareVersion) {
+  const std::string expected_rw_firmware_version = "0.5.190";
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_version_info_reply()
-      ->set_firmware_version(kTpmFirmwareVersion);
+      ->set_rw_version(expected_rw_firmware_version);
 
   TestChromeOSSystemProfileProvider provider;
   provider.OnDidCreateMetricsLog();
@@ -318,8 +317,8 @@ TEST_F(ChromeOSSystemProfileProviderTest, TpmFirmwareVersion) {
   provider.ProvideSystemProfileMetrics(&system_profile);
 
   ASSERT_TRUE(system_profile.has_hardware());
-  ASSERT_TRUE(system_profile.hardware().has_tpm_firmware_version());
+  ASSERT_TRUE(system_profile.hardware().has_tpm_rw_firmware_version());
 
-  EXPECT_EQ(system_profile.hardware().tpm_firmware_version(),
-            kTpmFirmwareVersion);
+  EXPECT_EQ(system_profile.hardware().tpm_rw_firmware_version(),
+            expected_rw_firmware_version);
 }

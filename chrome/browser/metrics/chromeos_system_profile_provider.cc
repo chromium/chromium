@@ -89,8 +89,8 @@ void ChromeOSSystemProfileProvider::ProvideSystemProfileMetrics(
   else if (has_touch == display::Display::TouchSupport::UNAVAILABLE)
     hardware->set_internal_display_supports_touch(false);
 
-  if (tpm_firmware_version_.has_value()) {
-    hardware->set_tpm_firmware_version(*tpm_firmware_version_);
+  if (tpm_rw_firmware_version_.has_value()) {
+    hardware->set_tpm_rw_firmware_version(*tpm_rw_firmware_version_);
   }
 
   hardware->set_cellular_device_variant(cellular_device_variant_);
@@ -197,8 +197,9 @@ void ChromeOSSystemProfileProvider::InitTaskGetTpmFirmwareVersion(
     base::OnceClosure callback) {
   chromeos::TpmManagerClient::Get()->GetVersionInfo(
       tpm_manager::GetVersionInfoRequest(),
-      base::BindOnce(&ChromeOSSystemProfileProvider::OnTpmManagerGetVersionInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &ChromeOSSystemProfileProvider::OnTpmManagerGetRwVersionInfo,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ChromeOSSystemProfileProvider::InitTaskGetCellularDeviceVariant(
@@ -236,13 +237,13 @@ void ChromeOSSystemProfileProvider::OnArcFeaturesParsed(
   arc_release_ = features->build_props.at("ro.build.version.release");
 }
 
-void ChromeOSSystemProfileProvider::OnTpmManagerGetVersionInfo(
+void ChromeOSSystemProfileProvider::OnTpmManagerGetRwVersionInfo(
     base::OnceClosure callback,
     const tpm_manager::GetVersionInfoReply& reply) {
   if (reply.status() == tpm_manager::STATUS_SUCCESS) {
-    tpm_firmware_version_ = reply.firmware_version();
+    tpm_rw_firmware_version_ = reply.rw_version();
   } else {
-    LOG(ERROR) << "Failed to get TPM version info.";
+    LOG(ERROR) << "Failed to get TPM RW version info.";
   }
   std::move(callback).Run();
 }
