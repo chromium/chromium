@@ -216,32 +216,19 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       DetectedValue::USER_PROVIDED_EXPIRATION_DATE) {
     upload_decision_metrics_ |=
         autofill_metrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE;
-#if BUILDFLAG(IS_IOS)
-    // iOS should always provide a valid expiration date when attempting to
-    // upload a Saved Card. Calling LogSaveCardRequestExpirationDateReasonMetric
-    // would trigger a DCHECK.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillSaveCardInfobarEditSupport)) {
-      // Remove once both flags are deleted.
-      LogSaveCardRequestExpirationDateReasonMetric();
-    }
-#else
+#if !BUILDFLAG(IS_IOS)
     LogSaveCardRequestExpirationDateReasonMetric();
 #endif
     should_request_expiration_date_from_user_ = true;
   }
 
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    // iOS's new credit card save dialog requires the user to enter both
-    // cardholder name and expiration date before saving.  Regardless of what
-    // Chrome thought it needed to do before, disable both of the previous
-    // standalone fix flows, and let the new save dialog handle their combined
-    // case.
-    should_request_name_from_user_ = false;
-    should_request_expiration_date_from_user_ = false;
-  }
+  // iOS's credit card save dialog requires the user to enter both cardholder
+  // name and expiration date before saving.  Regardless of what Chrome thought
+  // it needed to do before, disable both of the previous standalone fix flows,
+  // and let the save dialog handle their combined case.
+  should_request_name_from_user_ = false;
+  should_request_expiration_date_from_user_ = false;
 #endif  // BUILDFLAG(IS_IOS)
 
   // The cardholder name and expiration date fix flows cannot both be
@@ -258,6 +245,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     pending_upload_request_origin_ = url::Origin();
     return;
   }
+
   // Only send the country of the recently-used addresses. We make a copy here
   // to avoid modifying |upload_request_.profiles|, which should always have
   // full addresses even after this function goes out of scope.
@@ -826,15 +814,11 @@ int CreditCardSaveManager::GetDetectedValues() const {
     detected_values |= DetectedValue::USER_PROVIDED_NAME;
   }
 
-// On iOS if the new Infobar UI is enabled, it won't be possible to save the
-// card unless the user provides both a valid cardholder name and expiration
-// date.
+// On iOS it isn't possible to save the card unless the user provides both a
+// valid cardholder name and expiration date.
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    detected_values |= DetectedValue::USER_PROVIDED_NAME;
-    detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
-  }
+  detected_values |= DetectedValue::USER_PROVIDED_NAME;
+  detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
 #endif  // BUILDFLAG(IS_IOS)
 
   return detected_values;
@@ -900,14 +884,9 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
   // that it is possible a name already existed on the card if conflicting names
   // were found, which this intentionally overwrites.)
   if (!user_provided_card_details.cardholder_name.empty()) {
-#if BUILDFLAG(IS_IOS)
-    // On iOS if the new Infobar UI is enabled, cardholder name was provided by
-    // the user, but not through the fix flow triggered via
-    // |should_request_name_from_user_|.
-    DCHECK(should_request_name_from_user_ ||
-           base::FeatureList::IsEnabled(
-               features::kAutofillSaveCardInfobarEditSupport));
-#else
+    // On iOS, the cardholder name was provided by the user, but not through the
+    // fix flow triggered via |should_request_name_from_user_|.
+#if !BUILDFLAG(IS_IOS)
     DCHECK(should_request_name_from_user_);
 #endif
     upload_request_.card.SetInfo(CREDIT_CARD_NAME_FULL,
@@ -920,14 +899,9 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
   // the expiration date on |upload_request_.card| with the selected date.
   if (!user_provided_card_details.expiration_date_month.empty() &&
       !user_provided_card_details.expiration_date_year.empty()) {
-#if BUILDFLAG(IS_IOS)
-    // On iOS if the new Infobar UI is enabled, expiration date was provided by
-    // the user, but not through the fix flow triggered via
-    // |should_request_expiration_date_from_user_|.
-    DCHECK(should_request_expiration_date_from_user_ ||
-           base::FeatureList::IsEnabled(
-               features::kAutofillSaveCardInfobarEditSupport));
-#else
+    // On iOS the expiration date was provided by the user, but not through the
+    // fix flow triggered via |should_request_expiration_date_from_user_|.
+#if !BUILDFLAG(IS_IOS)
     DCHECK(should_request_expiration_date_from_user_);
 #endif
     upload_request_.card.SetInfo(

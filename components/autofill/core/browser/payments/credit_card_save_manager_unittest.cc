@@ -2999,18 +2999,13 @@ TEST_F(CreditCardSaveManagerTest,
 #endif
 }
 
+// iOS should always provide a valid expiration date when attempting to
+// upload a Saved Card due to the Messages SaveCard modal. The manager
+// shouldn't handle expired dates.
+#if !BUILDFLAG(IS_IOS)
+
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateViaExpDateFixFlow) {
-#if BUILDFLAG(IS_IOS)
-  // iOS should always provide a valid expiration date when attempting to
-  // upload a Saved Card due to the Messages SaveCard modal. The manager
-  // shouldn't handle expired dates.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    return;
-  }
-#endif
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form;
@@ -3052,16 +3047,6 @@ TEST_F(CreditCardSaveManagerTest,
 
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfOnlyMonthMissing) {
-#if BUILDFLAG(IS_IOS)
-  // iOS should always provide a valid expiration date when attempting to
-  // upload a Saved Card due to the Messages SaveCard modal. The manager
-  // shouldn't handle expired dates.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    return;
-  }
-#endif
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form;
@@ -3102,16 +3087,6 @@ TEST_F(CreditCardSaveManagerTest,
 
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfOnlyYearMissing) {
-#if BUILDFLAG(IS_IOS)
-  // iOS should always provide a valid expiration date when attempting to
-  // upload a Saved Card due to the Messages SaveCard modal. The manager
-  // shouldn't handle expired dates.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    return;
-  }
-#endif
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form;
@@ -3152,16 +3127,6 @@ TEST_F(CreditCardSaveManagerTest,
 
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsExpired) {
-#if BUILDFLAG(IS_IOS)
-  // iOS should always provide a valid expiration date when attempting to
-  // upload a Saved Card due to the Messages SaveCard modal. The manager
-  // shouldn't handle expired dates.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    return;
-  }
-#endif
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form;
@@ -3204,16 +3169,6 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsTwoDigitAndExpired) {
-#if BUILDFLAG(IS_IOS)
-  // iOS should always provide a valid expiration date when attempting to
-  // upload a Saved Card due to the Messages SaveCard modal. The manager
-  // shouldn't handle expired dates.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardInfobarEditSupport)) {
-    return;
-  }
-#endif
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form;
@@ -3255,7 +3210,6 @@ TEST_F(
 
 // TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
@@ -3296,7 +3250,8 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
   ExpectCardUploadDecisionUkm(
       autofill_metrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED);
 }
-#endif
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   // Create, fill and submit an address form in order to establish a recent
