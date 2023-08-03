@@ -25,6 +25,7 @@ source_set("browsing_data") {
     "browsing_data_remover_impl.h",
     "browsing_data_remover_impl.mm",
     "browsing_data_remover_observer.h",
+    "browsing_data_remover_observer.mm",
     "browsing_data_remover_observer_bridge.h",
     "browsing_data_remover_observer_bridge.mm",
     "sessions_storage_util.h",

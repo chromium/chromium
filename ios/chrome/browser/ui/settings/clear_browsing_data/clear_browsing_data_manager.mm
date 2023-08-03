@@ -246,8 +246,8 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   _timeRangePref.Destroy();
   _prefObserverBridge.reset();
   _prefChangeRegistrar.RemoveAll();
-  _browsingDataRemoverObserver.reset();
   _scoped_observation.reset();
+  _browsingDataRemoverObserver.reset();
   _countersByMasks.clear();
   _counterWrapperProducer = nil;
 }
