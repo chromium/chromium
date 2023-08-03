@@ -156,7 +156,7 @@ WelcomeTourController::GetTutorialDescriptions() {
   // Step 1: Shelf.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kShelfViewElementId)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomCenter)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourShelf))
@@ -177,7 +177,7 @@ WelcomeTourController::GetTutorialDescriptions() {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(
           kUnifiedSystemTrayElementName)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourStatusArea))
@@ -198,7 +198,7 @@ WelcomeTourController::GetTutorialDescriptions() {
   // Step 3: Home button.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourHomeButton))
@@ -213,7 +213,7 @@ WelcomeTourController::GetTutorialDescriptions() {
   // Step 4: Search box.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSearchBoxViewElementId)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopCenter)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourSearchBox))
@@ -230,7 +230,7 @@ WelcomeTourController::GetTutorialDescriptions() {
   // Step 5: Settings app.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSettingsAppElementId)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourSettingsApp))
@@ -247,7 +247,7 @@ WelcomeTourController::GetTutorialDescriptions() {
   // Step 6: Explore app.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kExploreAppElementId)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourExploreApp))
