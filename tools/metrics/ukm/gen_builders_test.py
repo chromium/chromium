@@ -13,11 +13,13 @@ from decode_template import HEADER as DECODE_HEADER_TEMPLATE
 from decode_template import IMPL as DECODE_IMPL_TEMPLATE
 import ukm_model
 import gen_builders
+import os
 
+_FILE_DIR = os.path.dirname(__file__)
 
 class GenBuildersTest(unittest.TestCase):
   def testFilterObsoleteMetrics(self):
-    data = gen_builders.ReadFilteredData('../../tools/metrics/ukm/ukm.xml')
+    data = gen_builders.ReadFilteredData(_FILE_DIR + '/ukm.xml')
     for event in data[ukm_model._EVENT_TYPE.tag]:
       self.assertTrue(ukm_model.IsNotObsolete(event))
       for metric in event[ukm_model._METRIC_TYPE.tag]:
@@ -25,7 +27,7 @@ class GenBuildersTest(unittest.TestCase):
 
   def testGenerateCode(self):
     relpath = '.'
-    with open('../../tools/metrics/ukm/ukm.xml') as f:
+    with open(_FILE_DIR + '/ukm.xml') as f:
       data = ukm_model.UKM_XML_TYPE.Parse(f.read())
     event = data[ukm_model._EVENT_TYPE.tag][0]
     metric = event[ukm_model._METRIC_TYPE.tag][0]
