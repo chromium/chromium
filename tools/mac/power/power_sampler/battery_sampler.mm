@@ -17,10 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace power_sampler {
 namespace {
 
