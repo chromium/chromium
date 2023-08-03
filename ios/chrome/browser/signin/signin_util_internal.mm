@@ -33,38 +33,43 @@ void RecordSentinelErrorHistogram(SigninIOSDeviceRestoreSentinelError error) {
   base::UmaHistogramEnumeration("Signin.IOSDeviceRestoreSentinelError", error);
 }
 
-// Creates a sentinel file asynchronously, and set ExcludeFromBackupFlag
-// according to `exclude_from_backup`.
-void CreateSentinelFileAsync(const base::FilePath sentinel_path,
-                             bool exclude_from_backup) {
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    NSFileManager* file_manager = [NSFileManager defaultManager];
-    NSString* path_string = base::SysUTF8ToNSString(sentinel_path.value());
-    BOOL create_success = [file_manager createFileAtPath:path_string
-                                                contents:nil
-                                              attributes:nil];
-    if (!create_success) {
-      RecordSentinelErrorHistogram(
-          SigninIOSDeviceRestoreSentinelError::kSentinelFileCreationFailed);
-      return;
-    }
-    if (!exclude_from_backup) {
-      RecordSentinelErrorHistogram(
-          SigninIOSDeviceRestoreSentinelError::kNoError);
-      return;
-    }
-    NSURL* url = [NSURL fileURLWithPath:path_string];
-    NSError* error = nil;
-    [url setResourceValue:@YES
-                   forKey:NSURLIsExcludedFromBackupKey
-                    error:&error];
-    DLOG_IF(ERROR, error != nil) << "Error setting excluded backup key, error: "
-                                 << base::SysNSStringToUTF8(error.description);
+// Creates a sentinel file synchronously, and set ExcludeFromBackupFlag
+// according to `exclude_from_backup`. Returns true if it succeeds.
+bool CreateSentinelFile(const base::FilePath sentinel_path,
+                        bool exclude_from_backup) {
+  NSFileManager* file_manager = [NSFileManager defaultManager];
+  NSString* path_string = base::SysUTF8ToNSString(sentinel_path.value());
+  BOOL create_success = [file_manager createFileAtPath:path_string
+                                              contents:nil
+                                            attributes:nil];
+  if (!create_success) {
     RecordSentinelErrorHistogram(
-        (error == nil) ? SigninIOSDeviceRestoreSentinelError::kNoError
-                       : SigninIOSDeviceRestoreSentinelError::
-                             kExcludedFromBackupFlagFailed);
-  });
+        SigninIOSDeviceRestoreSentinelError::kSentinelFileCreationFailed);
+    return false;
+  }
+  if (!exclude_from_backup) {
+    RecordSentinelErrorHistogram(SigninIOSDeviceRestoreSentinelError::kNoError);
+    return true;
+  }
+  NSURL* url = [NSURL fileURLWithPath:path_string];
+  NSError* error = nil;
+  [url setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:&error];
+
+  if (error == nil) {
+    RecordSentinelErrorHistogram(SigninIOSDeviceRestoreSentinelError::kNoError);
+    return true;
+  }
+
+  RecordSentinelErrorHistogram(
+      SigninIOSDeviceRestoreSentinelError::kExcludedFromBackupFlagFailed);
+
+  DLOG(ERROR) << "Error setting excluded backup key, error: "
+              << base::SysNSStringToUTF8(error.description);
+
+  // Since the exclusion from backups failed, delete the file so the entire
+  // process will be retried next time.
+  [file_manager removeItemAtPath:path_string error:nil];
+  return false;
 }
 
 }  // namespace
@@ -102,14 +107,31 @@ signin::Tribool IsFirstSessionAfterDeviceRestoreInternal() {
       base::PathExists(backed_up_sentinel_path);
   bool does_not_backed_up_sentinel_file_exist =
       base::PathExists(not_backed_up_sentinel_path);
-  if (!does_backed_up_sentinel_file_exist) {
-    CreateSentinelFileAsync(backed_up_sentinel_path,
-                            /* exclude_from_backup */ false);
-  }
-  if (!does_not_backed_up_sentinel_file_exist) {
-    CreateSentinelFileAsync(not_backed_up_sentinel_path,
-                            /* exclude_from_backup */ true);
-  }
+
+  // Create sentinel files, if they don't exist. The order is very specific:
+  // 1) The not-backed-up file is created first (or already exists).
+  // 2) The backed-up file is created second.
+  //
+  // If the process is somehow interrupted in the middle, or the first step
+  // fails, the resulting state can be detected and, upon next invocation
+  // (which in practice means upon next browser startup), it resumes normally
+  // and meanwhile Tribool::kUnknown is returned.
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+    if (does_not_backed_up_sentinel_file_exist ||
+        CreateSentinelFile(not_backed_up_sentinel_path,
+                           /* exclude_from_backup */ true)) {
+      // The not-backed-up file is known to exist, so it is safe to create the
+      // backed-up file. Doing so conditionally avoids returning false positives
+      // in IsFirstSessionAfterDeviceRestoreInternal(), which otherwise could
+      // return true if the first file's creation (the not-backed-up one's)
+      // failed.
+      if (!does_backed_up_sentinel_file_exist) {
+        CreateSentinelFile(backed_up_sentinel_path,
+                           /* exclude_from_backup */ false);
+      }
+    }
+  });
+
   if (does_backed_up_sentinel_file_exist) {
     return does_not_backed_up_sentinel_file_exist ? signin::Tribool::kFalse
                                                   : signin::Tribool::kTrue;

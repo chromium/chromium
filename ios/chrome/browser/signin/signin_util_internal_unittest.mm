@@ -111,6 +111,18 @@ TEST_F(SigninUtilInternalTest,
   WaitAndExpectSentinelThatIsNotBackedUp();
 }
 
+// Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when only the
+// not-backed-up sentinel file exist.
+TEST_F(SigninUtilInternalTest,
+       IsFirstSessionAfterDeviceRestoreInternalAfterUnexpectedSentinel) {
+  NSURL* url = GetSentinelThatIsNotBackedUpURLPath();
+  [[NSFileManager defaultManager] createFileAtPath:[url path]
+                                          contents:nil
+                                        attributes:nil];
+  EXPECT_EQ(signin::Tribool::kUnknown,
+            IsFirstSessionAfterDeviceRestoreInternal());
+}
+
 // Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when all
 // sentinel exists.
 TEST_F(SigninUtilInternalTest,
