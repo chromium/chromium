@@ -62,6 +62,9 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
   // Enable the DocumentPictureInPictureAPI flag.
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
 
+  // Make sure that the document URL is set, since it's required.
+  document.SetURL(opener_url);
+
   // Get past the LocalDOMWindow::isSecureContext() check.
   document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
       nullptr);
@@ -644,6 +647,32 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   // window is closed.
 }
 
+TEST_F(PictureInPictureControllerTestWithWidget,
+       DocumentPiPDoesNotOpenWithBlankUrl) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  auto* pip =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(), BlankURL());
+  EXPECT_FALSE(pip);
+}
+
+TEST_F(PictureInPictureControllerTestWithWidget,
+       DocumentPiPDoesOpenWithFileUrl) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  auto* pip = OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(),
+                                                 KURL("file://my/file.html"));
+  EXPECT_TRUE(pip);
+}
+
 class PictureInPictureControllerChromeClient
     : public RenderingTestChromeClient {
  public:
@@ -778,8 +807,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
       DocumentPictureInPictureOptions::Create(promise.GetIsolate(), v8_object,
                                               exception_state);
 
-  // Set a base URL for the opener window.
-  document.SetBaseURLOverride(opener_url);
+  // Set a URL for the opener window.
+  document.SetURL(opener_url);
   EXPECT_EQ(opener_url.GetString(), document.BaseURL().GetString());
 
   // Create document picture in picture window.

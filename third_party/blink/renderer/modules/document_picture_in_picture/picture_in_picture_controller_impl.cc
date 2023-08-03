@@ -361,6 +361,15 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     return;
   }
 
+  if (!opener.Url().ProtocolIs(WTF::g_https_atom) &&
+      !opener.Url().IsLocalFile()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "Opening a PiP window requires https "
+                                      "or file protocol");
+    resolver->Reject(exception_state);
+    return;
+  }
+
   WebPictureInPictureWindowOptions web_options;
   web_options.width = options->width();
   web_options.height = options->height();
