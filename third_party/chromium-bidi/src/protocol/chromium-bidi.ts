@@ -20,6 +20,7 @@ import type * as Cdp from './cdp.js';
 
 export type EventNames =
   // keep-sorted start
+  | BiDiModule
   | BrowsingContext.EventNames
   | Cdp.EventNames
   | Log.EventNames
@@ -27,10 +28,18 @@ export type EventNames =
   | Script.EventNames;
 // keep-sorted end
 
+export enum BiDiModule {
+  // keep-sorted start
+  BrowsingContext = 'browsingContext',
+  Log = 'log',
+  Network = 'network',
+  Script = 'script',
+  // keep-sorted end
+}
+
 export namespace Script {
   export enum EventNames {
     // keep-sorted start
-    AllScriptEvent = 'script',
     MessageEvent = 'script.message',
     RealmCreated = 'script.realmCreated',
     RealmDestroyed = 'script.realmDestroyed',
@@ -40,7 +49,6 @@ export namespace Script {
 
 export namespace Log {
   export enum EventNames {
-    AllLogEvent = 'log',
     LogEntryAddedEvent = 'log.entryAdded',
   }
 }
@@ -48,7 +56,6 @@ export namespace Log {
 export namespace BrowsingContext {
   export enum EventNames {
     // keep-sorted start
-    AllBrowsingContextEvent = 'browsingContext',
     ContextCreatedEvent = 'browsingContext.contextCreated',
     ContextDestroyedEvent = 'browsingContext.contextDestroyed',
     DomContentLoadedEvent = 'browsingContext.domContentLoaded',
@@ -64,7 +71,6 @@ export namespace BrowsingContext {
 export namespace Network {
   export enum EventNames {
     // keep-sorted start
-    AllNetworkEvent = 'network',
     BeforeRequestSentEvent = 'network.beforeRequestSent',
     FetchErrorEvent = 'network.fetchError',
     ResponseCompletedEvent = 'network.responseCompleted',

@@ -48,35 +48,17 @@ export function unrollEvents(
 
   for (const event of events) {
     switch (event) {
-      case ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent:
-        addEvents(
-          Object.values(ChromiumBidi.BrowsingContext.EventNames).filter(
-            (name) =>
-              name !==
-              ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent
-          )
-        );
+      case ChromiumBidi.BiDiModule.BrowsingContext:
+        addEvents(Object.values(ChromiumBidi.BrowsingContext.EventNames));
         break;
-      case ChromiumBidi.Log.EventNames.AllLogEvent:
-        addEvents(
-          Object.values(ChromiumBidi.Log.EventNames).filter(
-            (name) => name !== ChromiumBidi.Log.EventNames.AllLogEvent
-          )
-        );
+      case ChromiumBidi.BiDiModule.Log:
+        addEvents(Object.values(ChromiumBidi.Log.EventNames));
         break;
-      case ChromiumBidi.Network.EventNames.AllNetworkEvent:
-        addEvents(
-          Object.values(ChromiumBidi.Network.EventNames).filter(
-            (name) => name !== ChromiumBidi.Network.EventNames.AllNetworkEvent
-          )
-        );
+      case ChromiumBidi.BiDiModule.Network:
+        addEvents(Object.values(ChromiumBidi.Network.EventNames));
         break;
-      case ChromiumBidi.Script.EventNames.AllScriptEvent:
-        addEvents(
-          Object.values(ChromiumBidi.Script.EventNames).filter(
-            (name) => name !== ChromiumBidi.Script.EventNames.AllScriptEvent
-          )
-        );
+      case ChromiumBidi.BiDiModule.Script:
+        addEvents(Object.values(ChromiumBidi.Script.EventNames));
         break;
       default:
         allEvents.add(event);
@@ -168,42 +150,27 @@ export class SubscriptionManager {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 
+    // Check if subscribed event is a whole module
     switch (event) {
-      case ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent:
-        Object.values(ChromiumBidi.BrowsingContext.EventNames)
-          .filter(
-            (name) =>
-              name !==
-              ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent
-          )
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
-          );
+      case ChromiumBidi.BiDiModule.BrowsingContext:
+        Object.values(ChromiumBidi.BrowsingContext.EventNames).map(
+          (specificEvent) => this.subscribe(specificEvent, contextId, channel)
+        );
         return;
-      case ChromiumBidi.Log.EventNames.AllLogEvent:
-        Object.values(ChromiumBidi.Log.EventNames)
-          .filter((name) => name !== ChromiumBidi.Log.EventNames.AllLogEvent)
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
-          );
+      case ChromiumBidi.BiDiModule.Log:
+        Object.values(ChromiumBidi.Log.EventNames).map((specificEvent) =>
+          this.subscribe(specificEvent, contextId, channel)
+        );
         return;
-      case ChromiumBidi.Network.EventNames.AllNetworkEvent:
-        Object.values(ChromiumBidi.Network.EventNames)
-          .filter(
-            (name) => name !== ChromiumBidi.Network.EventNames.AllNetworkEvent
-          )
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
-          );
+      case ChromiumBidi.BiDiModule.Network:
+        Object.values(ChromiumBidi.Network.EventNames).map((specificEvent) =>
+          this.subscribe(specificEvent, contextId, channel)
+        );
         return;
-      case ChromiumBidi.Script.EventNames.AllScriptEvent:
-        Object.values(ChromiumBidi.Script.EventNames)
-          .filter(
-            (name) => name !== ChromiumBidi.Script.EventNames.AllScriptEvent
-          )
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
-          );
+      case ChromiumBidi.BiDiModule.Script:
+        Object.values(ChromiumBidi.Script.EventNames).map((specificEvent) =>
+          this.subscribe(specificEvent, contextId, channel)
+        );
         return;
       default:
       // Intentionally left empty.

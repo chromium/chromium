@@ -277,6 +277,7 @@ export class EventManager {
 
 const EVENT_NAMES = new Set([
   // keep-sorted start
+  ...Object.values(ChromiumBidi.BiDiModule),
   ...Object.values(ChromiumBidi.BrowsingContext.EventNames),
   ...Object.values(ChromiumBidi.Log.EventNames),
   ...Object.values(ChromiumBidi.Network.EventNames),

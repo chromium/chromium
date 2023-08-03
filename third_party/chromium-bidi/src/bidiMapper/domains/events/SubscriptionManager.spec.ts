@@ -30,8 +30,7 @@ import {
   unrollEvents,
 } from './SubscriptionManager.js';
 
-const ALL_EVENTS =
-  ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent;
+const ALL_EVENTS = ChromiumBidi.BiDiModule.BrowsingContext;
 const SOME_EVENT = ChromiumBidi.BrowsingContext.EventNames.LoadEvent;
 const ANOTHER_EVENT =
   ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent;
@@ -427,9 +426,7 @@ describe('SubscriptionManager', () => {
   describe('unroll events', () => {
     it('all Browsing Context events', () => {
       expect(
-        unrollEvents([
-          ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent,
-        ])
+        unrollEvents([ChromiumBidi.BiDiModule.BrowsingContext])
       ).to.have.members([
         ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent,
         ChromiumBidi.BrowsingContext.EventNames.ContextDestroyedEvent,
@@ -443,15 +440,13 @@ describe('SubscriptionManager', () => {
     });
 
     it('all Log events', () => {
-      expect(
-        unrollEvents([ChromiumBidi.Log.EventNames.AllLogEvent])
-      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAddedEvent]);
+      expect(unrollEvents([ChromiumBidi.BiDiModule.Log])).to.have.members([
+        ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+      ]);
     });
 
     it('all Network events', () => {
-      expect(
-        unrollEvents([ChromiumBidi.Network.EventNames.AllNetworkEvent])
-      ).to.have.members([
+      expect(unrollEvents([ChromiumBidi.BiDiModule.Network])).to.have.members([
         ChromiumBidi.Network.EventNames.BeforeRequestSentEvent,
         ChromiumBidi.Network.EventNames.FetchErrorEvent,
         ChromiumBidi.Network.EventNames.ResponseCompletedEvent,
@@ -460,9 +455,7 @@ describe('SubscriptionManager', () => {
     });
 
     it('all Script events', () => {
-      expect(
-        unrollEvents([ChromiumBidi.Script.EventNames.AllScriptEvent])
-      ).to.have.members([
+      expect(unrollEvents([ChromiumBidi.BiDiModule.Script])).to.have.members([
         ChromiumBidi.Script.EventNames.MessageEvent,
         ChromiumBidi.Script.EventNames.RealmCreated,
         ChromiumBidi.Script.EventNames.RealmDestroyed,
@@ -484,7 +477,7 @@ describe('SubscriptionManager', () => {
     it('all and discrete events', () => {
       expect(
         unrollEvents([
-          ChromiumBidi.Log.EventNames.AllLogEvent,
+          ChromiumBidi.BiDiModule.Log,
           ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
         ])
       ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAddedEvent]);
