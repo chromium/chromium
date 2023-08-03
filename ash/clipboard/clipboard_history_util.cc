@@ -9,9 +9,11 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/metrics/histogram_macros.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -22,8 +24,10 @@
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -179,6 +183,29 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
                             kFileSystemSourcesType, &sources);
 
   return sources;
+}
+
+const gfx::VectorIcon& GetShortcutKeyIcon() {
+  if (!Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
+    return kClipboardSearchIcon;
+  }
+
+  const auto* const assistant_state = AssistantState::Get();
+  const bool is_assistant_available =
+      assistant_state &&
+      assistant_state->allowed_state() ==
+          assistant::AssistantAllowedState::ALLOWED &&
+      assistant_state->settings_enabled().value_or(false);
+
+  return is_assistant_available ? kClipboardLauncherIcon
+                                : kClipboardLauncherNoAssistantIcon;
+}
+
+std::u16string GetShortcutKeyName() {
+  return l10n_util::GetStringUTF16(
+      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
+          ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
 }
 
 bool IsSupported(const ui::ClipboardData& data) {

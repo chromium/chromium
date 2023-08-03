@@ -75,6 +75,10 @@ constexpr auto kIconMargins = gfx::Insets::TLBR(0, 0, 0, 12);
 // The thickness of the image border.
 constexpr int kImageBorderThickness = 1;
 
+// TODO(http://b/267694412): Demystify this magic constant.
+// The margins for inline icons.
+constexpr auto kInlineIconMargins = gfx::Insets::TLBR(2, 4, 0, 0);
+
 }  // namespace ash::ClipboardHistoryViews
 
 #endif  // ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_VIEW_CONSTANTS_H_

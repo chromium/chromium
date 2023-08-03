@@ -147,6 +147,13 @@ ASH_EXPORT size_t GetCountOfCopiedFiles(const ui::ClipboardData& data);
 // file system sources, an empty string is returned.
 ASH_EXPORT std::u16string GetFileSystemSources(const ui::ClipboardData& data);
 
+// Returns the icon representation of the shortcut modifier key based on
+// keyboard layout and whether the Assistant feature is enabled.
+ASH_EXPORT const gfx::VectorIcon& GetShortcutKeyIcon();
+
+// Returns the name of the shortcut modifier key based on keyboard layout.
+ASH_EXPORT std::u16string GetShortcutKeyName();
+
 // Returns true if `data` is supported by clipboard history.
 ASH_EXPORT bool IsSupported(const ui::ClipboardData& data);
 

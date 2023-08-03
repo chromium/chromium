@@ -7,17 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "base/notreached.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -43,23 +42,6 @@ constexpr int kNudgePadding = 16;
 
 constexpr char kClipboardNudgeName[] = "ClipboardContextualNudge";
 
-bool IsAssistantAvailable() {
-  AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
-         state->settings_enabled().value_or(false);
-}
-
-// Determines the clipboard history keyboard shortcut icon for the user's
-// keyboard layout and Assistant availability.
-const gfx::VectorIcon& GetKeyboardShortcutIcon(bool use_launcher_key) {
-  if (use_launcher_key) {
-    return IsAssistantAvailable() ? kClipboardLauncherIcon
-                                  : kClipboardLauncherNoAssistantIcon;
-  }
-
-  return kClipboardSearchIcon;
-}
-
 }  // namespace
 
 ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type,
@@ -74,11 +56,9 @@ ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type,
 ClipboardNudge::~ClipboardNudge() = default;
 
 std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
-  const bool use_launcher_key =
-      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard();
-  const std::u16string shortcut_key = l10n_util::GetStringUTF16(
-      use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
-                       : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
+  const std::u16string shortcut_key =
+      clipboard_history_util::GetShortcutKeyName();
+
   size_t text_id = 0;
   switch (nudge_type_) {
     case ClipboardNudgeType::kOnboardingNudge:
@@ -101,11 +81,13 @@ std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
   offset = offset + shortcut_key.length();
 
   auto keyboard_shortcut_icon_image_view =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          GetKeyboardShortcutIcon(use_launcher_key), cros_tokens::kColorPrimary,
-          kKeyboardShortcutIconSize));
-  keyboard_shortcut_icon_image_view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, 0)));
+      views::Builder<views::ImageView>()
+          .SetBorder(views::CreateEmptyBorder(
+              ClipboardHistoryViews::kInlineIconMargins))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              clipboard_history_util::GetShortcutKeyIcon(),
+              cros_tokens::kColorPrimary, kKeyboardShortcutIconSize))
+          .Build();
 
   // Transfer shortcut icon ownership to the label.
   label->AddCustomView(std::move(keyboard_shortcut_icon_image_view), offset);
