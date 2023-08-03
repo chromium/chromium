@@ -9728,31 +9728,6 @@
             ]
         }
     ],
-    "OmniboxLoggingMigration": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxReportSearchboxStats"
-                    ],
-                    "disable_features": [
-                        "OmniboxReportAssistedQueryStats"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxMatchToolbarAndStatusBarColor": [
         {
             "platforms": [

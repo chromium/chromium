@@ -493,7 +493,7 @@ const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 // Search Results Page URL.
 BASE_FEATURE(kReportAssistedQueryStats,
              "OmniboxReportAssistedQueryStats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, `OmniboxEditModel` uses a new version of `current_match_` that
 // should be valid, and therefore usable, more often. The previous
@@ -520,7 +520,7 @@ BASE_FEATURE(kUseExistingAutocompleteClient,
 // Search Results Page URL.
 BASE_FEATURE(kReportSearchboxStats,
              "OmniboxReportSearchboxStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
 // training the ML scoring models.
