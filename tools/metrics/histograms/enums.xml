@@ -94411,6 +94411,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="DEEP_SCANNED_SAFE"/>
   <int value="13" label="PROMPT_FOR_SCANNING"/>
   <int value="14" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="15" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
+  <int value="16" label="DEEP_SCANNED_FAILED"/>
 </enum>
 
 <enum name="SBClientDownloadExtensions">

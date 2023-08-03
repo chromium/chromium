@@ -65,6 +65,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     case DownloadCheckResult::UNKNOWN:
     case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
     case DownloadCheckResult::DEEP_SCANNED_SAFE:
+    case DownloadCheckResult::DEEP_SCANNED_FAILED:
     case DownloadCheckResult::SAFE:
     case DownloadCheckResult::PROMPT_FOR_SCANNING:
     case DownloadCheckResult::POTENTIALLY_UNWANTED:

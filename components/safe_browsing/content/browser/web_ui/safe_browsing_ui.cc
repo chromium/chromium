@@ -2891,6 +2891,9 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
     case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
       url_and_result.Set("result", "DANGEROUS_ACCOUNT_COMPROMISE");
       break;
+    case DownloadCheckResult::DEEP_SCANNED_FAILED:
+      url_and_result.Set("result", "DEEP_SCANNED_FAILED");
+      break;
   }
 
   std::string request_serialized;

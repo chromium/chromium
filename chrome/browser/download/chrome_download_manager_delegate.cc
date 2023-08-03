@@ -1382,6 +1382,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         danger_type =
             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
         break;
+      case safe_browsing::DownloadCheckResult::DEEP_SCANNED_FAILED:
+        danger_type = download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
+        break;
     }
     DCHECK_NE(danger_type,
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);

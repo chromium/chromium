@@ -111,6 +111,7 @@ bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
     case Result::DANGEROUS_HOST:
     case Result::POTENTIALLY_UNWANTED:
     case Result::DANGEROUS_ACCOUNT_COMPROMISE:
+    case Result::DEEP_SCANNED_FAILED:
       return true;
     case Result::SAFE:
     case Result::ALLOWLISTED_BY_POLICY:
