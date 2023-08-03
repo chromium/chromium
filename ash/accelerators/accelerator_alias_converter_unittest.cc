@@ -137,19 +137,34 @@ TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckGlobeKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::KeyboardDevice fake_keyboard(
-      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
-      /*name=*/kKbdTopRowLayout1Tag);
-  fake_keyboard.sys_path = base::FilePath("path");
-  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
-
   AcceleratorAliasConverter accelerator_alias_converter_;
+
+  // Globe key is not available in non-wilco/drallion internal devices.
+  ui::KeyboardDevice internal_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  internal_keyboard.sys_path = base::FilePath("internal_path");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout1Tag);
 
   const ui::Accelerator accelerator{ui::VKEY_MODECHANGE, ui::EF_NONE};
   std::vector<ui::Accelerator> accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
+  // Globe key is available in external keyboard.
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(accelerator, accelerator_aliases[0]);
+
+  // Globe key is available in wilco/drallion keyboards.
   ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);

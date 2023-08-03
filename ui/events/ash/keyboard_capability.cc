@@ -822,10 +822,12 @@ bool KeyboardCapability::HasGlobeKey(const KeyboardDevice& keyboard) const {
     return false;
   }
 
-  // TODO(dpad): This is not quite right, some external keyboards have it as
-  // well.
-  // Globe key only exists on drallion or wilco devices.
-  return keyboard_info->top_row_layout ==
+  // TODO(jimmyxgong): VKEY_MODECHANGE (globe key) for now we should assume
+  // can be available for external keyboards or Wilco/Drallion device. Will
+  // need a better way to determine if the key is available in non
+  // Wilco/Drallion keyboards.
+  return !IsInternalKeyboard(keyboard) ||
+         keyboard_info->top_row_layout ==
              KeyboardTopRowLayout::kKbdTopRowLayoutDrallion ||
          keyboard_info->top_row_layout ==
              KeyboardTopRowLayout::kKbdTopRowLayoutWilco;

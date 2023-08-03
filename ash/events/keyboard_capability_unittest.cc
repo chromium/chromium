@@ -486,7 +486,16 @@ TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
   bluetooth_keyboard.sys_path = base::FilePath("path1");
   fake_keyboard_manager_->AddFakeKeyboard(bluetooth_keyboard,
                                           kKbdTopRowLayoutUnspecified);
-  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard));
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard));
+
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::KeyboardDevice internal_keyboard_layout(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard2");
+  internal_keyboard_layout.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(internal_keyboard_layout));
 
   ui::KeyboardDevice bluetooth_keyboard_layout1(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
@@ -494,7 +503,7 @@ TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
   bluetooth_keyboard_layout1.sys_path = base::FilePath("path2");
   fake_keyboard_manager_->AddFakeKeyboard(bluetooth_keyboard_layout1,
                                           kKbdTopRowLayout1Tag);
-  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard_layout1));
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard_layout1));
 
   ui::KeyboardDevice bluetooth_keyboard_layout2(
       /*id=*/3, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
@@ -502,7 +511,7 @@ TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
   bluetooth_keyboard_layout2.sys_path = base::FilePath("path3");
   fake_keyboard_manager_->AddFakeKeyboard(bluetooth_keyboard_layout2,
                                           kKbdTopRowLayout2Tag);
-  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard_layout2));
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard_layout2));
 
   ui::KeyboardDevice bluetooth_keyboard_layout_custom(
       /*id=*/4, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
@@ -511,7 +520,7 @@ TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
   fake_keyboard_manager_->AddFakeKeyboard(bluetooth_keyboard_layout_custom,
                                           kKbdDefaultCustomTopRowLayout,
                                           /*has_custom_top_row=*/true);
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       keyboard_capability_->HasGlobeKey(bluetooth_keyboard_layout_custom));
 
   ui::KeyboardDevice bluetooth_keyboard_wilco(
