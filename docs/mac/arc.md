@@ -80,22 +80,6 @@ technical reason to not use ARC, you may disable it for a target, but this is
 expected to be an exceedingly rare situation and you should have a discussion
 with the relevant platform experts before doing so.
 
-### ARC compile guard {#convention-boilerplate}
-
-While Chromium was undergoing a transition from non-ARC to ARC, to prevent
-leaks, files that were written to build with ARC had a boilerplate compile guard
-after the include block:
-
-```objectivec
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-```
-
-Now that ARC is enabled by default, this boilerplate is not needed, and is
-currently in the [process of being removed](https://crbug.com/1468376). Please
-do not add this boilerplate to new files.
-
 ### Header files {#convention-headers}
 
 Header files can be:
