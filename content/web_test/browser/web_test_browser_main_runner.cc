@@ -220,11 +220,6 @@ void WebTestBrowserMainRunner::Initialize() {
     command_line.AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 
-  if (!command_line.HasSwitch(switches::kEnableThreadedCompositing)) {
-    command_line.AppendSwitch(switches::kDisableThreadedCompositing);
-    command_line.AppendSwitch(cc::switches::kDisableThreadedAnimation);
-  }
-
   // With display compositor pixel dumps, we ensure that we complete all
   // stages of compositing before draw. We also can't have checker imaging,
   // since it's incompatible with single threaded compositor and display
