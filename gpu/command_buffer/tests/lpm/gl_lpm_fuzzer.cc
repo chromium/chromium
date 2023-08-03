@@ -16,6 +16,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -130,8 +131,8 @@ const char* acceptable_errors[] = {
 
 // Filter errors which we don't think interfere with fuzzing everything.
 bool ErrorOk(const base::StringPiece line) {
-  for (base::StringPiece acceptable_error : acceptable_errors) {
-    if (line.find(acceptable_error) != base::StringPiece::npos) {
+  for (const base::StringPiece acceptable_error : acceptable_errors) {
+    if (base::Contains(line, acceptable_error)) {
       return true;
     }
   }

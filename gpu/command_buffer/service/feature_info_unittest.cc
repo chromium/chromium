@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -68,7 +69,7 @@ class FeatureInfoTest
         break;
       case ES2_on_Version3_2Compatibility:
       case ES3_on_Version3_2Compatibility:
-        if (extensions_str.find("GL_ARB_compatibility") == std::string::npos) {
+        if (!base::Contains(extensions_str, "GL_ARB_compatibility")) {
           extensions_str += " GL_ARB_compatibility";
         }
         SetupInitExpectationsWithGLVersion(extensions_str.c_str(), "", "3.2");
