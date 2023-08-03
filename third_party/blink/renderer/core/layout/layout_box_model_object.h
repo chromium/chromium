@@ -421,9 +421,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   LayoutRect LocalCaretRectForEmptyElement(LayoutUnit width,
                                            LayoutUnit text_indent_offset) const;
 
-  LayoutBlock* ContainingBlockForAutoHeightDetection(
-      const Length& logical_height) const;
-
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
                                     OutlineRectCollector&,
                                     const PhysicalOffset& additional_offset,

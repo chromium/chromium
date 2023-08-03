@@ -54,12 +54,6 @@
 namespace blink {
 
 namespace {
-inline bool IsOutOfFlowPositionedWithImplicitHeight(
-    const LayoutBoxModelObject* child) {
-  return child->IsOutOfFlowPositioned() &&
-         !child->StyleRef().LogicalTop().IsAuto() &&
-         !child->StyleRef().LogicalBottom().IsAuto();
-}
 
 void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
   box->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
@@ -481,41 +475,6 @@ PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
   }
   float_rect = Layer()->MapRectForFilter(float_rect);
   return PhysicalRect::EnclosingRect(float_rect);
-}
-
-LayoutBlock* LayoutBoxModelObject::ContainingBlockForAutoHeightDetection(
-    const Length& logical_height) const {
-  NOT_DESTROYED();
-  // For percentage heights: The percentage is calculated with respect to the
-  // height of the generated box's containing block. If the height of the
-  // containing block is not specified explicitly (i.e., it depends on content
-  // height), and this element is not absolutely positioned, the used height is
-  // calculated as if 'auto' was specified.
-  if (!logical_height.IsPercentOrCalc() || IsOutOfFlowPositioned())
-    return nullptr;
-
-  // Anonymous block boxes are ignored when resolving percentage values that
-  // would refer to it: the closest non-anonymous ancestor box is used instead.
-  LayoutBlock* cb = ContainingBlock();
-  while (cb->IsAnonymous())
-    cb = cb->ContainingBlock();
-
-  // Matching LayoutBox::percentageLogicalHeightIsResolvableFromBlock() by
-  // ignoring table cell's attribute value, where it says that table cells
-  // violate what the CSS spec says to do with heights. Basically we don't care
-  // if the cell specified a height or not.
-  if (cb->IsTableCell())
-    return nullptr;
-
-  // Match LayoutBox::availableLogicalHeightUsing by special casing the layout
-  // view. The available height is taken from the frame.
-  if (IsA<LayoutView>(cb))
-    return nullptr;
-
-  if (IsOutOfFlowPositionedWithImplicitHeight(cb))
-    return nullptr;
-
-  return cb;
 }
 
 LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
