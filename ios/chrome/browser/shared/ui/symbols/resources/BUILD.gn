@@ -26,6 +26,20 @@ symbolset("checkermark_shield") {
   ]
 }
 
+symbolset("custom_platter_filled_bottom_and_arrow_down_iphone") {
+  sources = [
+    "custom_platter_filled_bottom_and_arrow_down_iphone.symbolset/Contents.json",
+    "custom_platter_filled_bottom_and_arrow_down_iphone.symbolset/custom.platter.filled.bottom.and.arrow.down.iphone.cr.svg",
+  ]
+}
+
+symbolset("custom_platter_filled_top_and_arrow_up_iphone") {
+  sources = [
+    "custom_platter_filled_top_and_arrow_up_iphone.symbolset/Contents.json",
+    "custom_platter_filled_top_and_arrow_up_iphone.symbolset/custom.platter.filled.top.and.arrow.up.iphone.cr.svg",
+  ]
+}
+
 symbolset("dino") {
   sources = [
     "dino.symbolset/Contents.json",

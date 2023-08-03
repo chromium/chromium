@@ -52,6 +52,13 @@ NSString* const kBottomOmniboxOptionSymbol = @"bottom_omnibox_option";
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 
+// Custom symbols added for compatibility with iOS 15.0. These symbols are
+// available as system symbols on iOS 15.1+.
+NSString* const kCustomMovePlatterToBottomPhoneSymbol =
+    @"custom_platter_filled_bottom_and_arrow_down_iphone";
+NSString* const kCustomMovePlatterToTopPhoneSymbol =
+    @"custom_platter_filled_top_and_arrow_up_iphone";
+
 // Default symbol names.
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
 NSString* const kCircleSymbol = @"circle";

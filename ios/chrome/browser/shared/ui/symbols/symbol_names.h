@@ -60,6 +60,11 @@ extern NSString* const kBottomOmniboxOptionSymbol;
 extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
 
+// Custom symbols added for compatibility with iOS 15.0. These symbols are
+// available as system symbols on iOS 15.1+.
+extern NSString* const kCustomMovePlatterToBottomPhoneSymbol;
+extern NSString* const kCustomMovePlatterToTopPhoneSymbol;
+
 // Custom symbol to replace "palette" symbols on iOS 14. Cannot be used with a
 // palette.
 extern NSString* const kIncognitoCircleFilliOS14Symbol;

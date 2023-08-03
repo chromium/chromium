@@ -599,30 +599,32 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   if (IsBottomOmniboxSteadyStateEnabled() && _prefService &&
       IsSplitToolbarMode(self)) {
     NSString* title = nil;
-    NSString* imageName = nil;
+    UIImage* image = nil;
     ToolbarType targetToolbarType;
     if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
-      // TODO(crbug.com/1466420): Add the symbols so it's available on 15.0.
       if (@available(iOS 15.1, *)) {
-        imageName = kMovePlatterToTopPhoneSymbol;
+        image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
+                                           kSymbolActionPointSize);
       } else {
-        imageName = @"arrow.up.square";
+        image = CustomSymbolWithPointSize(kCustomMovePlatterToTopPhoneSymbol,
+                                          kSymbolActionPointSize);
       }
       targetToolbarType = ToolbarType::kPrimary;
     } else {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX);
       if (@available(iOS 15.1, *)) {
-        imageName = kMovePlatterToBottomPhoneSymbol;
+        image = DefaultSymbolWithPointSize(kMovePlatterToBottomPhoneSymbol,
+                                           kSymbolActionPointSize);
       } else {
-        imageName = @"arrow.down.square";
+        image = CustomSymbolWithPointSize(kCustomMovePlatterToBottomPhoneSymbol,
+                                          kSymbolActionPointSize);
       }
       targetToolbarType = ToolbarType::kSecondary;
     }
     UIAction* moveAddressBarAction = [UIAction
         actionWithTitle:title
-                  image:DefaultSymbolWithPointSize(imageName,
-                                                   kSymbolActionPointSize)
+                  image:image
              identifier:nil
                 handler:^(UIAction* action) {
                   [weakSelf moveOmniboxToToolbarType:targetToolbarType];
