@@ -467,7 +467,7 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   deep_scanning_link_ =
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
   deep_scanning_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  deep_scanning_link_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  deep_scanning_link_->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   // `deep_scanning_link_` is after `paragraphs_`, and we should have the
   // paragraph spacing between them.
   deep_scanning_link_->SetProperty(
@@ -476,7 +476,7 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   learn_more_link_ =
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
   learn_more_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  learn_more_link_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  learn_more_link_->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   // `learn_more_link_` is after `paragraphs_`, and we should have the
   // paragraph spacing between them.
   learn_more_link_->SetProperty(views::kMarginsKey,
