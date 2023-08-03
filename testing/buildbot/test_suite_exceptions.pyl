@@ -3590,11 +3590,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
         ],
       },
-      'android-cronet-x86-rel-kitkat-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_k.net_unittests.filter',
-        ],
-      },
       'android-pie-x86-rel': {
         # crbug.com/1046060
         'args': [

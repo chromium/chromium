@@ -1348,36 +1348,6 @@ ci.builder(
     notifies = ["cronet"],
 )
 
-ci.thin_tester(
-    name = "android-cronet-x86-rel-kitkat-tests",
-    triggered_by = ["ci/android-cronet-x86-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["android"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "cronet_builder",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "x86_builder"),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    sheriff_rotations = args.ignore_default(None),
-    console_view_entry = consoles.console_view_entry(
-        category = "cronet|test",
-        short_name = "k",
-    ),
-    notifies = ["cronet"],
-)
-
 ci.builder(
     name = "android-nougat-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,

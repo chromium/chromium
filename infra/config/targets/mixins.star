@@ -627,27 +627,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "kitkat-x86-emulator",
-    args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android19.textpb",
-    ],
-    swarming = targets.swarming(
-        # soft affinity so that bots with caches will be picked first
-        optional_dimensions = {
-            60: {
-                "caches": "generic_android19",
-            },
-        },
-        named_caches = [
-            swarming.cache(
-                name = "generic_android19",
-                path = ".android_emulator/generic_android19",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "limited_capacity_bot",
     # Some FYI bot configurations have a limited number of bots in the swarming
     # pool. Increase the default expiration_sec time from 1 hour to 6 hours to

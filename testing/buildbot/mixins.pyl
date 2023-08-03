@@ -498,24 +498,6 @@
       },
     },
   },
-  'kitkat-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android19.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'generic_android19',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'generic_android19',
-          'path': '.android_emulator/generic_android19',
-        },
-      ],
-    },
-  },
   'limited_capacity_bot': {
     'swarming': {
       'expiration': 21600,

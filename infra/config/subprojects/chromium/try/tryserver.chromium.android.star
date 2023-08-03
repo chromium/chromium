@@ -394,15 +394,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-x86-rel-kitkat-tests",
-    mirrors = [
-        "ci/android-cronet-x86-rel",
-        "ci/android-cronet-x86-rel-kitkat-tests",
-    ],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
