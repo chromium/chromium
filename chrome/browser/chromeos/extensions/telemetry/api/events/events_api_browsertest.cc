@@ -101,7 +101,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        CheckCorrectEventsAvailable) {
   constexpr char kEnabledEvents[] =
       "['onAudioJackEvent', 'onLidEvent', 'onUsbEvent', "
-      "'onKeyboardDiagnosticEvent', 'onSdCardEvent', 'onPowerEvent']";
+      "'onKeyboardDiagnosticEvent', 'onSdCardEvent', 'onPowerEvent', "
+      "'onStylusGarageEvent', 'onTouchpadButtonEvent', 'onTouchpadTouchEvent', "
+      "'onTouchpadConnectedEvent', 'onExternalDisplayEvent', "
+      "'onStylusConnectedEvent', 'onStylusTouchEvent']";
 
   CreateExtensionAndRunServiceWorker(base::StringPrintf(R"(
     chrome.test.runTests([
@@ -495,88 +498,277 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusGarageApiWithoutFeatureFlagFail) {
+                       OnStylusGarageEvent_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto stylus_garage_info =
+            crosapi::TelemetryStylusGarageEventInfo::New();
+        stylus_garage_info->state =
+            crosapi::TelemetryStylusGarageEventInfo::State::kInserted;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kStylusGarage,
+            crosapi::TelemetryEventInfo::NewStylusGarageEventInfo(
+                std::move(stylus_garage_info)));
+      }));
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function stylusGarageNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onStylusGarageEvent.addListener((event) => {
-            // unreachable.
+      async function startCapturingEvents() {
+        chrome.os.events.onStylusGarageEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'inserted'
           });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
 
-        chrome.test.succeed();
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("stylus_garage");
       }
     ]);
   )");
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckExternalDisplayApiWithoutFeatureFlagFail) {
+                       OnTouchpadButtonEvent_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto button_event = crosapi::TelemetryTouchpadButtonEventInfo::New();
+        button_event->state =
+            crosapi::TelemetryTouchpadButtonEventInfo_State::kPressed;
+        button_event->button = crosapi::TelemetryInputTouchButton::kLeft;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kTouchpadButton,
+            crosapi::TelemetryEventInfo::NewTouchpadButtonEventInfo(
+                std::move(button_event)));
+      }));
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function external_displayNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onExternalDisplayEvent.addListener((event) => {
-            // unreachable.
+      async function startCapturingEvents() {
+        chrome.os.events.onTouchpadButtonEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            button: 'left',
+            state: 'pressed'
           });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
 
-        chrome.test.succeed();
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("touchpad_button");
       }
     ]);
   )");
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusTouchApiWithoutFeatureFlagFail) {
+                       OnTouchpadTouchEvent_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        std::vector<crosapi::TelemetryTouchPointInfoPtr> touch_points;
+        touch_points.push_back(crosapi::TelemetryTouchPointInfo::New(
+            1, 2, 3, crosapi::UInt32Value::New(4), crosapi::UInt32Value::New(5),
+            crosapi::UInt32Value::New(6)));
+        touch_points.push_back(crosapi::TelemetryTouchPointInfo::New(
+            7, 8, 9, nullptr, nullptr, nullptr));
+
+        auto touch_event = crosapi::TelemetryTouchpadTouchEventInfo::New(
+            std::move(touch_points));
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kTouchpadTouch,
+            crosapi::TelemetryEventInfo::NewTouchpadTouchEventInfo(
+                std::move(touch_event)));
+      }));
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function stylusNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onStylusTouchEvent.addListener((event) => {
-            // unreachable.
+      async function startCapturingEvents() {
+        chrome.os.events.onTouchpadTouchEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            touchPoints: [{
+              trackingId: 1,
+              x: 2,
+              y: 3,
+              pressure: 4,
+              touchMajor: 5,
+              touchMinor: 6
+            },{
+              trackingId: 7,
+              x: 8,
+              y: 9,
+            }]
           });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
 
-        chrome.test.succeed();
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("touchpad_touch");
       }
     ]);
   )");
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusConnectedApiWithoutFeatureFlagFail) {
+                       OnTouchpadConnectedEvent_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        std::vector<crosapi::TelemetryInputTouchButton> buttons{
+            crosapi::TelemetryInputTouchButton::kLeft,
+            crosapi::TelemetryInputTouchButton::kMiddle,
+            crosapi::TelemetryInputTouchButton::kRight};
+
+        auto connected_event =
+            crosapi::TelemetryTouchpadConnectedEventInfo::New(
+                1, 2, 3, std::move(buttons));
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kTouchpadConnected,
+            crosapi::TelemetryEventInfo::NewTouchpadConnectedEventInfo(
+                std::move(connected_event)));
+      }));
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function stylusNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onStylusConnectedEvent.addListener((event) => {
-            // unreachable.
+      async function startCapturingEvents() {
+        chrome.os.events.onTouchpadConnectedEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            maxX: 1,
+            maxY: 2,
+            maxPressure: 3,
+            buttons: [
+              'left',
+              'middle',
+              'right'
+            ]
           });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
 
-        chrome.test.succeed();
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("touchpad_connected");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       OnExternalDisplayEvent_Success) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto external_display_info =
+            crosapi::TelemetryExternalDisplayEventInfo::New();
+        external_display_info->state =
+            crosapi::TelemetryExternalDisplayEventInfo::State::kAdd;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kExternalDisplay,
+            crosapi::TelemetryEventInfo::NewExternalDisplayEventInfo(
+                std::move(external_display_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onExternalDisplayEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'connected'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("external_display");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       OnStylusConnectedEvent_Success) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto connected_event =
+            crosapi::TelemetryStylusConnectedEventInfo::New(1, 2, 3);
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kStylusConnected,
+            crosapi::TelemetryEventInfo::NewStylusConnectedEventInfo(
+                std::move(connected_event)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onStylusConnectedEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            max_x: 1,
+            max_y: 2,
+            max_pressure: 3
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("stylus_connected");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       OnStylusTouchEvent_Success) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        crosapi::TelemetryStylusTouchPointInfoPtr touch_point =
+            crosapi::TelemetryStylusTouchPointInfo::New(1, 2, 3);
+
+        auto touch_event =
+            crosapi::TelemetryStylusTouchEventInfo::New(std::move(touch_point));
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kStylusTouch,
+            crosapi::TelemetryEventInfo::NewStylusTouchEventInfo(
+                std::move(touch_event)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onStylusTouchEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "touch_point": {
+              x: 1,
+              y: 2,
+              pressure: 3
+            }
+          });
+
+          chrome.test.succeed();
+        });
+        await chrome.os.events.startCapturingEvents("stylus_touch");
       }
     ]);
   )");
@@ -683,283 +875,6 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
 
   EXPECT_TRUE(is_diagnostic_app_open);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusGarageApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        auto stylus_garage_info =
-            crosapi::TelemetryStylusGarageEventInfo::New();
-        stylus_garage_info->state =
-            crosapi::TelemetryStylusGarageEventInfo::State::kInserted;
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kStylusGarage,
-            crosapi::TelemetryEventInfo::NewStylusGarageEventInfo(
-                std::move(stylus_garage_info)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onStylusGarageEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            event: 'inserted'
-          });
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("stylus_garage");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckTouchpadButtonApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        auto button_event = crosapi::TelemetryTouchpadButtonEventInfo::New();
-        button_event->state =
-            crosapi::TelemetryTouchpadButtonEventInfo_State::kPressed;
-        button_event->button = crosapi::TelemetryInputTouchButton::kLeft;
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kTouchpadButton,
-            crosapi::TelemetryEventInfo::NewTouchpadButtonEventInfo(
-                std::move(button_event)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onTouchpadButtonEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            button: 'left',
-            state: 'pressed'
-          });
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("touchpad_button");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckTouchpadTouchApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        std::vector<crosapi::TelemetryTouchPointInfoPtr> touch_points;
-        touch_points.push_back(crosapi::TelemetryTouchPointInfo::New(
-            1, 2, 3, crosapi::UInt32Value::New(4), crosapi::UInt32Value::New(5),
-            crosapi::UInt32Value::New(6)));
-        touch_points.push_back(crosapi::TelemetryTouchPointInfo::New(
-            7, 8, 9, nullptr, nullptr, nullptr));
-
-        auto touch_event = crosapi::TelemetryTouchpadTouchEventInfo::New(
-            std::move(touch_points));
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kTouchpadTouch,
-            crosapi::TelemetryEventInfo::NewTouchpadTouchEventInfo(
-                std::move(touch_event)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onTouchpadTouchEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            touchPoints: [{
-              trackingId: 1,
-              x: 2,
-              y: 3,
-              pressure: 4,
-              touchMajor: 5,
-              touchMinor: 6
-            },{
-              trackingId: 7,
-              x: 8,
-              y: 9,
-            }]
-          });
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("touchpad_touch");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckTouchpadConnectedApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        std::vector<crosapi::TelemetryInputTouchButton> buttons{
-            crosapi::TelemetryInputTouchButton::kLeft,
-            crosapi::TelemetryInputTouchButton::kMiddle,
-            crosapi::TelemetryInputTouchButton::kRight};
-
-        auto connected_event =
-            crosapi::TelemetryTouchpadConnectedEventInfo::New(
-                1, 2, 3, std::move(buttons));
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kTouchpadConnected,
-            crosapi::TelemetryEventInfo::NewTouchpadConnectedEventInfo(
-                std::move(connected_event)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onTouchpadConnectedEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            maxX: 1,
-            maxY: 2,
-            maxPressure: 3,
-            buttons: [
-              'left',
-              'middle',
-              'right'
-            ]
-          });
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("touchpad_connected");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckExternalDisplayApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        auto external_display_info =
-            crosapi::TelemetryExternalDisplayEventInfo::New();
-        external_display_info->state =
-            crosapi::TelemetryExternalDisplayEventInfo::State::kAdd;
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kExternalDisplay,
-            crosapi::TelemetryEventInfo::NewExternalDisplayEventInfo(
-                std::move(external_display_info)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onExternalDisplayEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            event: 'connected'
-          });
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("external_display");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusConnectedApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        auto connected_event =
-            crosapi::TelemetryStylusConnectedEventInfo::New(1, 2, 3);
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kStylusConnected,
-            crosapi::TelemetryEventInfo::NewStylusConnectedEventInfo(
-                std::move(connected_event)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onStylusConnectedEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            max_x: 1,
-            max_y: 2,
-            max_pressure: 3
-          });
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("stylus_connected");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckStylusTouchApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        crosapi::TelemetryStylusTouchPointInfoPtr touch_point =
-            crosapi::TelemetryStylusTouchPointInfo::New(1, 2, 3);
-
-        auto touch_event =
-            crosapi::TelemetryStylusTouchEventInfo::New(std::move(touch_point));
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kStylusTouch,
-            crosapi::TelemetryEventInfo::NewStylusTouchEventInfo(
-                std::move(touch_event)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onStylusTouchEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            "touch_point": {
-              x: 1,
-              y: 2,
-              pressure: 3
-            }
-          });
-
-          chrome.test.succeed();
-        });
-        await chrome.os.events.startCapturingEvents("stylus_touch");
-      }
-    ]);
-  )");
 }
 
 }  // namespace chromeos

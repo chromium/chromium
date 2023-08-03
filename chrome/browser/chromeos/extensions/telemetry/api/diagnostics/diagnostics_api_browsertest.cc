@@ -477,15 +477,30 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothPowerRoutineWithoutFeatureFlagFail) {
+                       RunBluetoothPowerRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunBluetoothPowerRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kBluetoothPower);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function runBluetoothPowerRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothPowerRoutine();
-        }, [],
-          'chrome.os.diagnostics.runBluetoothPowerRoutine is not a function'
-        );
+      async function runBluetoothPowerRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBluetoothPowerRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
     ]);
@@ -1237,54 +1252,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 }
 
-class PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
+class BlockedTelemetryExtensionDiagnosticsApiBrowserTest
     : public TelemetryExtensionDiagnosticsApiBrowserTest {
  public:
-  PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
-    RunBluetoothPowerRoutineWithFeatureFlagWork) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
-
-    // Set the return value for a call to RunBluetoothPowerRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected called routine.
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBluetoothPower);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function runBluetoothPowerRoutine() {
-        const response =
-          await chrome.os.diagnostics.runBluetoothPowerRoutine();
-        chrome.test.assertEq({id: 0, status: "ready"}, response);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
-    : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
- public:
-  BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest() = default;
+  BlockedTelemetryExtensionDiagnosticsApiBrowserTest() = default;
 
   std::string public_key() const override {
     return "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm6NnMxmC5iaSFAILkuIkGXl"
@@ -1300,9 +1271,8 @@ class BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
-    BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
-    RunBluetoothPowerRoutineWithFeatureFlagFromBlockedExtensionFail) {
+IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunBluetoothPowerRoutineFromBlockedExtensionFail) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       function runBluetoothPowerRoutineNotWorking() {

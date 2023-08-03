@@ -34,8 +34,7 @@
       "chromeos",
       "lacros"
     ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+    "channel": "stable"
   },
   "os.events": {
     "dependencies": [
@@ -50,104 +49,6 @@
     ],
     "channel": "stable"
   },
-  "os.events.onTouchpadButtonEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.events.onTouchpadTouchEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.events.onTouchpadConnectedEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.events.onStylusGarageEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.events.onExternalDisplayEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.events.onStylusTouchEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.events.onStylusConnectedEvent": {
-    "dependencies": [
-      "permission:os.events"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
   "os.telemetry": {
     "dependencies": [
       "permission:os.telemetry"
@@ -160,19 +61,5 @@
       "lacros"
     ],
     "channel": "stable"
-  },
-  "os.telemetry.getDisplayInfo": {
-    "dependencies": [
-      "permission:os.telemetry"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   }
 }
