@@ -246,7 +246,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   BookmarkModelTypeProcessorTest()
       : processor_(std::make_unique<BookmarkModelTypeProcessor>(
             &bookmark_undo_service_,
-            /*wipe_model_on_stopping_sync_with_clear_data=*/false)),
+            WipeModelUponSyncDisabledBehavior::kNever)),
         bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     processor_->SetFaviconService(&favicon_service_);
   }
@@ -309,9 +309,10 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
 
   // Simulate browser restart.
   void ResetModelTypeProcessor(
-      bool wipe_model_on_stopping_sync_with_clear_data = false) {
+      WipeModelUponSyncDisabledBehavior wipe_model_upon_sync_disabled_behavior =
+          WipeModelUponSyncDisabledBehavior::kNever) {
     processor_ = std::make_unique<BookmarkModelTypeProcessor>(
-        &bookmark_undo_service_, wipe_model_on_stopping_sync_with_clear_data);
+        &bookmark_undo_service_, wipe_model_upon_sync_disabled_behavior);
     processor_->SetFaviconService(&favicon_service_);
   }
 
@@ -521,8 +522,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
 
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(
-      bookmark_undo_service(),
-      /*wipe_model_on_stopping_sync_with_clear_data=*/false);
+      bookmark_undo_service(), WipeModelUponSyncDisabledBehavior::kNever);
 
   std::string metadata_str;
   model_metadata.SerializeToString(&metadata_str);
@@ -552,8 +552,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
 
   // Create a new processor and init it with the same metadata str.
   BookmarkModelTypeProcessor new_processor(
-      bookmark_undo_service(),
-      /*wipe_model_on_stopping_sync_with_clear_data=*/false);
+      bookmark_undo_service(), WipeModelUponSyncDisabledBehavior::kNever);
   new_processor.ModelReadyToSync(processor()->EncodeSyncMetadata(),
                                  base::DoNothing(), bookmark_model());
 
@@ -587,8 +586,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(
-      bookmark_undo_service(),
-      /*wipe_model_on_stopping_sync_with_clear_data=*/false);
+      bookmark_undo_service(), WipeModelUponSyncDisabledBehavior::kNever);
 
   // A save should be scheduled.
   NiceMock<base::MockCallback<base::RepeatingClosure>>
@@ -616,8 +614,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(
-      bookmark_undo_service(),
-      /*wipe_model_on_stopping_sync_with_clear_data=*/false);
+      bookmark_undo_service(), WipeModelUponSyncDisabledBehavior::kNever);
 
   // A save should be scheduled.
   NiceMock<base::MockCallback<base::RepeatingClosure>>
@@ -1593,8 +1590,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
-       ShouldWipeBookmarksIfStoppedWithClearMetadata) {
-  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+       ShouldWipeBookmarksRepeatedlyIfStoppedWithClearMetadata) {
+  ResetModelTypeProcessor(WipeModelUponSyncDisabledBehavior::kAlways);
 
   const GURL kUrl("http://www.example.com");
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -1609,11 +1606,102 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
   EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  // If the process is repeated, the result should be the same (bookmarks
+  // deleted once again). This requires doing initial sync again.
+  SimulateOnSyncStarting();
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
+                                CreateUpdateResponseDataListForPermanentNodes(),
+                                /*gc_directive=*/absl::nullopt);
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", kUrl);
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldWipeBookmarksOnceIfStoppedWithClearMetadata) {
+  ResetModelTypeProcessor(
+      WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata);
+
+  const GURL kUrl("http://www.example.com");
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", kUrl);
+  const bookmarks::BookmarkNode* folder = bookmark_model()->AddFolder(
+      bookmark_model()->mobile_node(), /*index=*/0, u"folder");
+  bookmark_model()->AddURL(folder, /*index=*/0, u"bar", kUrl);
+
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  // If the process is repeated, the deletion should not happen.
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", kUrl);
+  SimulateOnSyncStarting();
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  EXPECT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldNotWipeBookmarksIfStoppedWithClearMetadataWithoutInitialSyncDone) {
+  ResetModelTypeProcessor(
+      WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata);
+
+  const GURL kUrl("http://www.example.com");
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", kUrl);
+  const bookmarks::BookmarkNode* folder = bookmark_model()->AddFolder(
+      bookmark_model()->mobile_node(), /*index=*/0, u"folder");
+  bookmark_model()->AddURL(folder, /*index=*/0, u"bar", kUrl);
+
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  EXPECT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldNotWipeBookmarksIfStoppedWithClearMetadataIfInitialSyncDoneLater) {
+  ResetModelTypeProcessor(
+      WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata);
+
+  const GURL kUrl("http://www.example.com");
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"foo", kUrl);
+  const bookmarks::BookmarkNode* folder = bookmark_model()->AddFolder(
+      bookmark_model()->mobile_node(), /*index=*/0, u"folder");
+  bookmark_model()->AddURL(folder, /*index=*/0, u"bar", kUrl);
+
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+
+  // In most cases, because of how SyncServiceImpl behaves, OnSyncStopping()
+  // would be called upon startup. To be extra safe, BookmarkModelTypeProcessor
+  // does not rely on this assumption, so this test verifies that bookmarks
+  // shouldn't be cleared if sync was initially off (upon startup), then turned
+  // on, then turned off again.
+  SimulateOnSyncStarting();
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
+                                CreateUpdateResponseDataListForPermanentNodes(),
+                                /*gc_directive=*/absl::nullopt);
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
+
+  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  EXPECT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldNotWipeBookmarksIfStoppedWithKeepMetadata) {
-  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+  ResetModelTypeProcessor(WipeModelUponSyncDisabledBehavior::kAlways);
 
   const GURL kUrl("http://www.example.com");
   const bookmarks::BookmarkNode* node = bookmark_model()->AddURL(
@@ -1666,7 +1754,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldWipeBookmarksIfMetadataClearedWhileStopped) {
-  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+  ResetModelTypeProcessor(WipeModelUponSyncDisabledBehavior::kAlways);
   SimulateModelReadyToSyncWithInitialSyncDone();
   processor()->OnSyncStopping(syncer::KEEP_METADATA);
 
@@ -1694,7 +1782,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldWipeBookmarksIfMetadataClearedWhileStoppedUponModelReadyToSync) {
-  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+  ResetModelTypeProcessor(WipeModelUponSyncDisabledBehavior::kAlways);
 
   base::HistogramTester histogram_tester;
 
@@ -1743,7 +1831,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
-  ResetModelTypeProcessor(/*wipe_model_on_stopping_sync_with_clear_data=*/true);
+  ResetModelTypeProcessor(WipeModelUponSyncDisabledBehavior::kAlways);
   SimulateModelReadyToSyncWithInitialSyncDone();
   ASSERT_TRUE(processor()->IsTrackingMetadata());
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,

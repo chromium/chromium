@@ -124,10 +124,10 @@ size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
 
 BookmarkModelTypeProcessor::BookmarkModelTypeProcessor(
     BookmarkUndoService* bookmark_undo_service,
-    bool wipe_model_on_stopping_sync_with_clear_data)
+    WipeModelUponSyncDisabledBehavior wipe_model_upon_sync_disabled_behavior)
     : bookmark_undo_service_(bookmark_undo_service),
-      wipe_model_on_stopping_sync_with_clear_data_(
-          wipe_model_on_stopping_sync_with_clear_data),
+      wipe_model_upon_sync_disabled_behavior_(
+          wipe_model_upon_sync_disabled_behavior),
       max_bookmarks_till_sync_enabled_(kDefaultMaxBookmarksTillSyncEnabled) {}
 
 BookmarkModelTypeProcessor::~BookmarkModelTypeProcessor() {
@@ -351,7 +351,7 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
         // `pending_clear_metadata_`. This isn't very different to
         // ClearMetadataWhileStopped(), in the sense that the need to wipe the
         // local model needs to be considered.
-        TriggerWipeModelUponSyncDisabledPolicy();
+        TriggerWipeModelUponSyncDisabledBehavior();
       }
       schedule_save_closure_.Run();
     }
@@ -384,6 +384,18 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
       // properly, e.g. auth error).
       schedule_save_closure_.Run();
     }
+  }
+
+  if (!bookmark_tracker_ &&
+      wipe_model_upon_sync_disabled_behavior_ ==
+          WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata) {
+    // Since the model isn't initially tracking metadata, move away from
+    // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
+    // turned on later and back to off. This should be practically unreachable
+    // because usually ClearMetadataWhileStopped() would be invoked earlier,
+    // but let's be extra safe and avoid relying on this behavior.
+    wipe_model_upon_sync_disabled_behavior_ =
+        WipeModelUponSyncDisabledBehavior::kNever;
   }
 
   ConnectIfReady();
@@ -809,20 +821,25 @@ void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
   bookmark_tracker_.reset();
 
   // Tracked sync metadata has just been thrown away. Depending on the current
-  // policy, bookmarks themselves may need clearing too.
-  TriggerWipeModelUponSyncDisabledPolicy();
+  // selected behavior, bookmarks themselves may need clearing too.
+  TriggerWipeModelUponSyncDisabledBehavior();
 }
 
-void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledPolicy() {
-  if (!wipe_model_on_stopping_sync_with_clear_data_) {
-    // Nothing to do.
-    return;
+void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
+  switch (wipe_model_upon_sync_disabled_behavior_) {
+    case WipeModelUponSyncDisabledBehavior::kNever:
+      // Nothing to do.
+      break;
+    case WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
+      // Do it this time, but switch to kNever so it doesn't trigger next
+      // time.
+      wipe_model_upon_sync_disabled_behavior_ =
+          WipeModelUponSyncDisabledBehavior::kNever;
+      [[fallthrough]];
+    case WipeModelUponSyncDisabledBehavior::kAlways:
+      bookmark_model_->RemoveAllUserBookmarks();
+      break;
   }
-
-  // Since `wipe_model_on_stopping_sync_with_clear_data_` is `true`, the
-  // lifetime of local data (bookmarks) is coupled with sync metadata's, which
-  // means disabling sync requires that bookmarks in local storage are deleted.
-  bookmark_model_->RemoveAllUserBookmarks();
 }
 
 }  // namespace sync_bookmarks

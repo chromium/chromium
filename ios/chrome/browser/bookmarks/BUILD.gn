@@ -16,8 +16,8 @@ source_set("bookmarks") {
     "bookmark_undo_service_factory.h",
     "local_or_syncable_bookmark_model_factory.cc",
     "local_or_syncable_bookmark_model_factory.h",
-    "local_or_syncable_bookmark_sync_service_factory.cc",
     "local_or_syncable_bookmark_sync_service_factory.h",
+    "local_or_syncable_bookmark_sync_service_factory.mm",
     "managed_bookmark_service_factory.h",
     "managed_bookmark_service_factory.mm",
   ]
