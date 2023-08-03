@@ -98,11 +98,9 @@
   CHECK_EQ(controller, self.clearBrowsingDataTableViewController);
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.load_strategy = self.loadStrategy;
-  [self stopWithCompletion:^() {
-    [self.delegate dismissHistoryWithCompletion:^{
-      UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-      [self.presentationDelegate showActiveRegularTabFromHistory];
-    }];
+  [self.delegate dismissHistoryWithCompletion:^{
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+    [self.presentationDelegate showActiveRegularTabFromHistory];
   }];
 }
 
@@ -112,10 +110,15 @@
   [self stopWithCompletion:nil];
 }
 
+- (void)dismissClearBrowsingData {
+  DCHECK(self.historyClearBrowsingDataNavigationController);
+  [self.delegate dismissHistoryWithCompletion:nil];
+}
+
 - (void)clearBrowsingDataTableViewControllerWasRemoved:
     (ClearBrowsingDataTableViewController*)controller {
   DCHECK_EQ(self.clearBrowsingDataTableViewController, controller);
-  [self stopWithCompletion:nil];
+  [self.delegate dismissHistoryWithCompletion:nil];
 }
 
 @end
