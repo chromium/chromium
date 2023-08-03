@@ -116626,6 +116626,24 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="People"/>
 </enum>
 
+<enum name="WinRegistryErrorCode">
+  <int value="0" label="ERROR_OTHER"/>
+  <int value="1" label="ERROR_SUCCESS"/>
+  <int value="2" label="ERROR_FILE_NOT_FOUND"/>
+  <int value="3" label="ERROR_ACCESS_DENIED"/>
+  <int value="4" label="ERROR_INVALID_HANDLE"/>
+  <int value="5" label="ERROR_SHARING_VIOLATION"/>
+  <int value="6" label="ERROR_LOCK_VIOLATION"/>
+  <int value="7" label="ERROR_MORE_DATA"/>
+  <int value="8" label="ERROR_REGISTRY_RECOVERED"/>
+  <int value="9" label="ERROR_REGISTRY_CORRUPT"/>
+  <int value="10" label="ERROR_REGISTRY_IO_FAILED"/>
+  <int value="11" label="ERROR_NOT_REGISTRY_FILE"/>
+  <int value="12" label="ERROR_REGISTRY_QUOTA_LIMIT"/>
+  <int value="13" label="ERROR_REGISTRY_HIVE_RECOVERED"/>
+  <int value="14" label="ERROR_CLUSTER_REGISTRY_INVALID_FUNCTION"/>
+</enum>
+
 <enum name="WmiQueryError">
   <int value="0" label="Failed to create instance"/>
   <int value="1" label="Failed to initialize product list"/>

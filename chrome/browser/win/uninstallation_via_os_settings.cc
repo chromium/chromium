@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 
@@ -18,6 +19,80 @@ namespace {
 // and show its App for App or Remove Settings.
 constexpr wchar_t kUninstallRegistryKey[] =
     L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+
+// List of registry specific LONG error codes obtained from
+// winerror.h in depot_tools/ toolchain as well as
+// base/win/windows_types.h.
+enum class WinRegistryErrorCode {
+  kErrorOther = 0,
+  kErrorSuccess = 1,
+  kErrorFileNotFound = 2,
+  kErrorAccessDenied = 3,
+  kErrorInvalidHandle = 4,
+  kErrorSharingViolation = 5,
+  kErrorLockViolation = 6,
+  kErrorMoreData = 7,
+  kErrorRegistryRecovered = 8,
+  kErrorRegistryCorrupt = 9,
+  kErrorRegistryIOFailed = 10,
+  kErrorNotRegistryFile = 11,
+  kErrorRegistryQuotaLimit = 12,
+  kErrorRegistryHiveRecovered = 13,
+  kErrorRegistryClusterInvalidFunction = 14,
+  kMaxValue = kErrorRegistryClusterInvalidFunction
+};
+
+void RecordUninstallationRegistrationOSResult(LONG result) {
+  WinRegistryErrorCode final_code = WinRegistryErrorCode::kErrorOther;
+  switch (result) {
+    case ERROR_SUCCESS:
+      final_code = WinRegistryErrorCode::kErrorSuccess;
+      break;
+    case ERROR_FILE_NOT_FOUND:
+      final_code = WinRegistryErrorCode::kErrorFileNotFound;
+      break;
+    case ERROR_ACCESS_DENIED:
+      final_code = WinRegistryErrorCode::kErrorAccessDenied;
+      break;
+    case ERROR_INVALID_HANDLE:
+      final_code = WinRegistryErrorCode::kErrorInvalidHandle;
+      break;
+    case ERROR_SHARING_VIOLATION:
+      final_code = WinRegistryErrorCode::kErrorSharingViolation;
+      break;
+    case ERROR_LOCK_VIOLATION:
+      final_code = WinRegistryErrorCode::kErrorLockViolation;
+      break;
+    case ERROR_MORE_DATA:
+      final_code = WinRegistryErrorCode::kErrorMoreData;
+      break;
+    case ERROR_REGISTRY_RECOVERED:
+      final_code = WinRegistryErrorCode::kErrorRegistryRecovered;
+      break;
+    case ERROR_REGISTRY_CORRUPT:
+      final_code = WinRegistryErrorCode::kErrorRegistryCorrupt;
+      break;
+    case ERROR_REGISTRY_IO_FAILED:
+      final_code = WinRegistryErrorCode::kErrorRegistryIOFailed;
+      break;
+    case ERROR_NOT_REGISTRY_FILE:
+      final_code = WinRegistryErrorCode::kErrorNotRegistryFile;
+      break;
+    case ERROR_REGISTRY_QUOTA_LIMIT:
+      final_code = WinRegistryErrorCode::kErrorRegistryQuotaLimit;
+      break;
+    case ERROR_REGISTRY_HIVE_RECOVERED:
+      final_code = WinRegistryErrorCode::kErrorRegistryHiveRecovered;
+      break;
+    case ERROR_CLUSTER_REGISTRY_INVALID_FUNCTION:
+      final_code = WinRegistryErrorCode::kErrorRegistryClusterInvalidFunction;
+      break;
+    default:
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      "WebApp.OsSettingsUninstallUnregistration.WinOSResult", final_code);
+}
 
 }  // namespace
 
@@ -77,8 +152,11 @@ bool UnregisterUninstallationViaOsSettings(const std::wstring& name) {
   LONG result = uninstall_reg_key.Open(HKEY_CURRENT_USER, kUninstallRegistryKey,
                                        KEY_QUERY_VALUE);
   if (result == ERROR_FILE_NOT_FOUND) {
+    RecordUninstallationRegistrationOSResult(result);
     return true;
   }
 
-  return uninstall_reg_key.DeleteKey(name.c_str()) == ERROR_SUCCESS;
+  LONG delete_key_result = uninstall_reg_key.DeleteKey(name.c_str());
+  RecordUninstallationRegistrationOSResult(delete_key_result);
+  return delete_key_result == ERROR_SUCCESS;
 }
