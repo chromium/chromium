@@ -11,10 +11,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -31,16 +29,15 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 // This is used for logs that may not be strictly necessary but are of great use
 // because they will log whether determinations are needed or not, along with
@@ -167,6 +164,34 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
                                 report);
 }
 
+bool IsFinalAutoEnrollmentState(AutoEnrollmentState state) {
+  switch (state) {
+    case AutoEnrollmentState::kIdle:
+    case AutoEnrollmentState::kPending:
+    case AutoEnrollmentState::kConnectionError:
+    case AutoEnrollmentState::kServerError:
+      return false;
+    case AutoEnrollmentState::kEnrollment:
+    case AutoEnrollmentState::kNoEnrollment:
+    case AutoEnrollmentState::kDisabled:
+      return true;
+  }
+}
+
+bool IsInProgressAutoEnrollmentState(AutoEnrollmentState state) {
+  switch (state) {
+    case AutoEnrollmentState::kIdle:
+    case AutoEnrollmentState::kPending:
+      return true;
+    case AutoEnrollmentState::kConnectionError:
+    case AutoEnrollmentState::kServerError:
+    case AutoEnrollmentState::kEnrollment:
+    case AutoEnrollmentState::kNoEnrollment:
+    case AutoEnrollmentState::kDisabled:
+      return false;
+  }
+}
+
 }  // namespace
 
 EnrollmentFwmpHelper::EnrollmentFwmpHelper(
@@ -245,6 +270,15 @@ void AutoEnrollmentController::Start() {
     case AutoEnrollmentState::kServerError:
       // Continue (re-)start.
       break;
+  }
+
+  if (!network_state_observation_.IsObserving()) {
+    DCHECK(ash::NetworkHandler::IsInitialized())
+        << "NetworkHandler must be initialized before being observed.";
+    // The controller could have already subscribed on the start and now we're
+    // restarting after an error.
+    network_state_observation_.Observe(
+        ash::NetworkHandler::Get()->network_state_handler());
   }
 
   if (!AutoEnrollmentTypeChecker::Initialized()) {
@@ -374,6 +408,21 @@ base::CallbackListSubscription
 AutoEnrollmentController::RegisterProgressCallback(
     const ProgressCallbackList::CallbackType& callback) {
   return progress_callbacks_.Add(callback);
+}
+
+void AutoEnrollmentController::PortalStateChanged(
+    const ash::NetworkState* /*default_network*/,
+    const ash::NetworkState::PortalState portal_state) {
+  // It is safe to retry regardless of the current state: if the check is idle
+  // or failed, we will restart the check process. If the check is in progress,
+  // the retry call will be ignored.
+  if (portal_state == ash::NetworkState::PortalState::kOnline) {
+    Retry();
+  }
+}
+
+void AutoEnrollmentController::OnShuttingDown() {
+  network_state_observation_.Reset();
 }
 
 void AutoEnrollmentController::SetRlweClientFactoryForTesting(
@@ -538,22 +587,16 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
                << AutoEnrollmentStateToString(new_state);
   state_ = new_state;
 
-  switch (state_) {
-    case AutoEnrollmentState::kIdle:
-    case AutoEnrollmentState::kPending:
-      break;
-    case AutoEnrollmentState::kConnectionError:
-    case AutoEnrollmentState::kServerError:
-    case AutoEnrollmentState::kEnrollment:
-    case AutoEnrollmentState::kNoEnrollment:
-    case AutoEnrollmentState::kDisabled:
-      // Stop the safeguard timer once a result comes in.
-      safeguard_timer_.Stop();
-      // Reset enrollment state fetcher to allow restarting.
-      enrollment_state_fetcher_.reset();
-      ReportTimeoutUMA(
-          AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
-      break;
+  if (IsFinalAutoEnrollmentState(state_)) {
+    network_state_observation_.Reset();
+  }
+
+  if (!IsInProgressAutoEnrollmentState(state_)) {
+    // Stop the safeguard timer once a result comes in.
+    safeguard_timer_.Stop();
+    // Reset enrollment state fetcher to allow restarting.
+    enrollment_state_fetcher_.reset();
+    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
   }
 
   // Device disabling mode is relying on device state stored in install

@@ -12,18 +12,12 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "base/check.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
@@ -33,7 +27,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
@@ -48,7 +41,7 @@ namespace em = enterprise_management;
 // An enum for PSM execution result values.
 using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
-// A struct reporesents the PSM execution result params.
+// A struct represents the PSM execution result params.
 using PsmResultHolder = policy::psm::RlweDmserverClient::ResultHolder;
 
 namespace policy {
@@ -825,12 +818,6 @@ TEST_F(AutoEnrollmentClientImplTest, ConsumerDevice) {
   EXPECT_EQ(state_, AutoEnrollmentState::kNoEnrollment);
   VerifyCachedResult(/*should_enroll=*/false, kPowerLimit);
   EXPECT_FALSE(HasServerBackedState());
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kNoEnrollment);
 }
 
 TEST_F(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
@@ -858,12 +845,6 @@ TEST_F(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kEnrollment);
 }
 
 TEST_F(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
@@ -955,12 +936,6 @@ TEST_F(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentZeroTouch,
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kEnrollment);
 }
 
 TEST_F(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
@@ -1038,12 +1013,6 @@ TEST_F(AutoEnrollmentClientImplTest, NoReEnrollment) {
   VerifyCachedResult(/*should_enroll=*/true, kPowerLimit);
   VerifyServerBackedState(std::string(), std::string(), std::string(),
                           kNotWithLicense, kNoLicenseType);
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kNoEnrollment);
 }
 
 TEST_F(AutoEnrollmentClientImplTest, NoBitsUploaded) {
@@ -1196,15 +1165,7 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 
-  // The client doesn't retry if no new connection became available.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_NONE);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(state_, AutoEnrollmentState::kServerError);
-  EXPECT_FALSE(HasCachedDecision());
-  EXPECT_FALSE(HasServerBackedState());
-
-  // Retry once the network is back.
+  // Trigger a retry once the network is back.
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
@@ -1212,27 +1173,13 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
       kDisabledMessage, kNotWithLicense,
       em::DeviceInitialEnrollmentStateResponse::NOT_EXIST);
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  client()->Retry();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
-  EXPECT_EQ(state_, AutoEnrollmentState::kEnrollment);
-  EXPECT_TRUE(HasCachedDecision());
-  VerifyServerBackedState("example.com",
-                          kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage, kNotWithLicense, kNoLicenseType);
-
-  // Subsequent network changes don't trigger retries.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_NONE);
-  base::RunLoop().RunUntilIdle();
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(state_, AutoEnrollmentState::kEnrollment);
   EXPECT_TRUE(HasCachedDecision());
   VerifyServerBackedState("example.com",
@@ -1270,9 +1217,8 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
       kDisabledMessage, kNotWithLicense,
       em::DeviceInitialEnrollmentStateResponse::NOT_EXIST);
 
-  // Trigger a network change event.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  // Trigger a retry.
+  client()->Retry();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
                                         /*dm_status_count=*/1);
@@ -1319,7 +1265,7 @@ TEST_F(AutoEnrollmentClientImplTest, RetryIsSameAsStart) {
   // First, the server replies correctly to server state availability and
   // server state retrieval requests.
   {
-    // EXPECT_CALL for state availablility and state retrieval requests are
+    // EXPECT_CALL for state availability and state retrieval requests are
     // indistinguishable for gMock as there is currently no way to check
     // arguments of `MockJobCreationHandler::OnJobCreation`, and that the
     // created job is correct and corresponds with the request. The InSequence
@@ -1350,12 +1296,11 @@ TEST_F(AutoEnrollmentClientImplTest, RetryIsSameAsStart) {
   VerifyServerBackedState(std::string(), std::string(), std::string(),
                           kNotWithLicense, kNoLicenseType);
 
-  // Finally, the client does not request the server on connection change and
+  // Finally, the client does not request the server on retry and
   // uses its cached values.
   EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
 
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  client()->Retry();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(state_, AutoEnrollmentState::kNoEnrollment);
@@ -1499,12 +1444,6 @@ TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   VerifyServerBackedStateForInitialEnrollment(
       std::string(), std::string(), kWithLicense,
       kDeviceStateLicenseTypeEnterprise);
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kNoEnrollment);
 }
 
 TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
@@ -1535,12 +1474,6 @@ TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   VerifyServerBackedStateForInitialEnrollment(
       "example.com", kDeviceStateInitialModeEnrollmentZeroTouch, kWithLicense,
       kDeviceStateLicenseTypeEnterprise);
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kEnrollment);
 }
 
 TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
@@ -1571,12 +1504,6 @@ TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   VerifyServerBackedStateForInitialEnrollment(
       "example.com", kDeviceStateInitialModeEnrollmentEnforced, kWithLicense,
       kDeviceStateLicenseTypeEnterprise);
-
-  // Network changes don't trigger retries after obtaining a response from
-  // the server.
-  client()->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
-  EXPECT_EQ(state_, AutoEnrollmentState::kEnrollment);
 }
 
 class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {

@@ -11,20 +11,17 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state_message_processor.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -34,12 +31,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace policy {
 
@@ -801,8 +796,6 @@ void AutoEnrollmentClientImpl::Start() {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!server_state_retriever_->GetAutoEnrollmentStateIfObtained());
 
-  network_connection_observer_.Observe(content::GetNetworkConnectionTracker());
-
   RequestServerStateAvailability();
 }
 
@@ -835,13 +828,6 @@ void AutoEnrollmentClientImpl::Retry() {
       NOTREACHED() << "kRequestServerStateAvailabilitySuccess supposed to "
                       "immediately resolve to kRequestingStateRetrieval.";
       break;
-  }
-}
-
-void AutoEnrollmentClientImpl::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
-    Retry();
   }
 }
 

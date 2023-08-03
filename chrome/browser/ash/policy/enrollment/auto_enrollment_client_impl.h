@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -31,9 +29,7 @@ class DeviceManagementService;
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
 // OOBE.
-class AutoEnrollmentClientImpl final
-    : public AutoEnrollmentClient,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver {
+class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
  public:
   class FactoryImpl : public Factory {
    public:
@@ -75,9 +71,6 @@ class AutoEnrollmentClientImpl final
   // policy::AutoEnrollmentClient:
   void Start() override;
   void Retry() override;
-
-  // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
  private:
   // Base class to handle server state availability requests.
@@ -182,11 +175,6 @@ class AutoEnrollmentClientImpl final
   void ReportFinished() const;
 
   State state_ = State::kIdle;
-
-  base::ScopedObservation<
-      network::NetworkConnectionTracker,
-      network::NetworkConnectionTracker::NetworkConnectionObserver>
-      network_connection_observer_{this};
 
   // Callback to invoke when the protocol generates a relevant event. This can
   // be either successful completion or an error that requires external action.
