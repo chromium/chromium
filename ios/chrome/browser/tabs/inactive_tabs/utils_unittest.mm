@@ -505,3 +505,52 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
   std::vector<int> expected_active_order = {10, 3};
   CheckOrder(active_web_state_list, expected_active_order);
 }
+
+// Ensure that inactive tabs are moved from the active tab list to the inactive
+// tab list.
+TEST_F(InactiveTabsUtilsTest, LimitsTabsMoves) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  WebStateList* active_web_state_list = browser_active_->GetWebStateList();
+  WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
+
+  EXPECT_EQ(active_web_state_list->count(), 0);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Add 505 inactive tabs (10 days with no activity) in the active browser.
+  for (int insert = 0; insert < 505; insert++) {
+    active_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+                                          WebStateList::INSERT_ACTIVATE,
+                                          WebStateOpener());
+  }
+
+  EXPECT_EQ(active_web_state_list->count(), 505);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Ensures that moves are limited to 500.
+  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
+  EXPECT_EQ(active_web_state_list->count(), 5);
+  EXPECT_EQ(inactive_web_state_list->count(), 500);
+
+  // Add 505 active tabs in inactive browser.
+  for (int insert = 0; insert < 505; insert++) {
+    inactive_web_state_list->InsertWebState(
+        0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  }
+  EXPECT_EQ(active_web_state_list->count(), 5);
+  EXPECT_EQ(inactive_web_state_list->count(), 1005);
+
+  // Ensures that moves are limited to 500.
+  MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
+  EXPECT_EQ(active_web_state_list->count(), 505);
+  EXPECT_EQ(inactive_web_state_list->count(), 505);
+}
