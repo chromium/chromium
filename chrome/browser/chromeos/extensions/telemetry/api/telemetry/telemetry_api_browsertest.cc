@@ -1537,7 +1537,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
           // The dictionary members are ordered lexicographically by the Unicode
           // codepoints that comprise their identifiers.
           {
-            "external_displays": [
+            "externalDisplays": [
               {
                 "displayHeight": 12,
                 "displayName": "display2",
@@ -1557,7 +1557,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
                 "inputType": "unknown"
               }
             ],
-            "embedded_display": {
+            "embeddedDisplay": {
               "displayHeight": 2,
               "displayName": "display1",
               "displayWidth": 1,

@@ -605,8 +605,8 @@ and **events**.
 ### ExternalDisplayInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| embedded_display | EmbeddedDisplayInfo | Embedded display info |
-| external_displays | Array<ExternalDisplayInfo\> | External display info |
+| embeddedDisplay | EmbeddedDisplayInfo | Embedded display info |
+| externalDisplays | Array<ExternalDisplayInfo\> | External display info |
 
 ### Enum NetworkType
 | Property Name |
