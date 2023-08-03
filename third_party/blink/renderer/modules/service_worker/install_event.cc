@@ -86,7 +86,6 @@ ScriptPromise InstallEvent::registerRouter(
                           script_state->GetIsolate(),
                           "registerRouter is called multiple times."));
   }
-  did_register_router_ = true;
 
   blink::ServiceWorkerRouterRules rules;
   if (v8_rules->IsRouterRule()) {
@@ -112,6 +111,7 @@ ScriptPromise InstallEvent::registerRouter(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   global_scope->GetServiceWorkerHost()->RegisterRouter(
       rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
+  did_register_router_ = true;
   return resolver->Promise();
 }
 
