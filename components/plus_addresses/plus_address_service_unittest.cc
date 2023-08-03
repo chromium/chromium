@@ -4,6 +4,8 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/plus_addresses/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,6 +77,39 @@ TEST_F(PlusAddressServiceTest, FeatureExplicitlyDisabled) {
   scoped_feature_list.InitAndDisableFeature(plus_addresses::kFeature);
   PlusAddressService service;
   EXPECT_FALSE(service.SupportsPlusAddresses());
+}
+
+TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {
+  PlusAddressService service;
+  // booleans captured by the lambda to ensure the callbacks are run.
+  // See: docs/callback.md;l=352;drc=cc277f0f9a6227eb6f9ef5ee2e5061079fac08c6.
+  bool first_called = false;
+  bool second_called = false;
+
+  // The dummy plus address generation function arrives at this string with
+  // the eTLD+1 of the origins below. Because that function is temporary, no
+  // additional effort is made to ensure it "works".
+  const std::string expected_dummy_plus_address = "test+1242@test.example";
+  const url::Origin no_subdomain_origin =
+      url::Origin::Create(GURL("https://test.example"));
+  const url::Origin subdomain_origin =
+      url::Origin::Create(GURL("https://subdomain.test.example"));
+
+  service.OfferPlusAddressCreation(
+      no_subdomain_origin,
+      base::BindLambdaForTesting([&](const std::string& plus_address) {
+        first_called = true;
+        EXPECT_EQ(plus_address, expected_dummy_plus_address);
+      }));
+  service.OfferPlusAddressCreation(
+      subdomain_origin,
+      base::BindLambdaForTesting([&](const std::string& plus_address) {
+        second_called = true;
+        EXPECT_EQ(plus_address, expected_dummy_plus_address);
+      }));
+  // Ensure that both calls invoked the lambda immediately.
+  EXPECT_TRUE(first_called);
+  EXPECT_TRUE(second_called);
 }
 
 }  // namespace plus_addresses

@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +19,8 @@ namespace plus_addresses {
 struct PlusProfile {
   std::string address;
 };
+
+typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
@@ -40,6 +43,13 @@ class PlusAddressService : public KeyedService {
   void SavePlusAddress(url::Origin origin, std::string plus_address);
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
+
+  // Eventually, will orchestrate UI elements to inform the user of the plus
+  // address being created on their behalf, calling `PlusAddressCallback` on
+  // confirmation. For now, however, simply generates a fake plus address and
+  // runs `callback` with it immediately.
+  void OfferPlusAddressCreation(url::Origin origin,
+                                PlusAddressCallback callback);
 
  private:
   // The user's existing set of plus addresses, scoped to facets.
