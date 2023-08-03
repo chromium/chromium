@@ -48,6 +48,7 @@ import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectActionMenuHelper.SelectActionMenuDelegate;
+import org.chromium.content.browser.selection.SelectActionMenuHelper.TextProcessingIntentHandler;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
@@ -69,6 +70,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
@@ -200,6 +203,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private MagnifierAnimator mMagnifierAnimator;
 
     /**
+     * A Map of {@link MenuItem}s to {@link android.view.View.OnClickListener} for
+     * menu items with a custom set click listener.
+     */
+    private final Map<MenuItem, View.OnClickListener> mCustomMenuItemClickListeners;
+
+    /**
      * An interface for getting {@link View} for readback.
      */
     public interface ReadbackViewCallback {
@@ -322,6 +331,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         mResultCallback = new SmartSelectionCallback();
         mLastSelectedText = "";
+        mCustomMenuItemClickListeners = new HashMap<>();
         getPopupController().registerPopup(this);
     }
 
@@ -760,55 +770,40 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         SelectActionMenuHelper.removeAllAddedGroupsFromMenu(menu);
-        createSelectionActionMenu(mode, menu);
+        mCustomMenuItemClickListeners.clear();
+        initializeActionMenu(
+                mContext, getSelectionMenuItems(), menu, mCustomMenuItemClickListeners, item -> {
+                    logSelectionAction(item.getGroupId(), item.getItemId());
+                    return false;
+                });
         return true;
     }
 
-    public static void initializeNonSelectionMenu(SelectActionMenuDelegate delegate,
-            Context context,
-            @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider,
-            ActionMode mode, Menu menu) {
-        PriorityQueue<SelectionMenuGroup> nonSelectionMenuItems =
-                SelectActionMenuHelper.getNonSelectionMenuItems(
-                        delegate, nonSelectionAdditionalItemProvider);
-        initializeActionMenu(context, nonSelectionMenuItems, mode, menu, null);
+    private PriorityQueue<SelectionMenuGroup> getSelectionMenuItems() {
+        TextProcessingIntentHandler textProcessingIntentHandler =
+                isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT) ? this::processText : null;
+        return SelectActionMenuHelper.getSelectionMenuItems(this, mContext, mClassificationResult,
+                isSelectionPassword(), !isFocusedNodeEditable(), textProcessingIntentHandler);
     }
 
     /**
-     * Initializes the selection menu.
-     * @param additionalMenuItemClickListener additional actions that need to be executed after a
-     *         menu item is clicked.
+     * Initializes the action menu.
+     * @param customMenuItemClickListeners map to populate any custom click listeners for menu
+     *         items.
+     * @param additionalMenuItemClickListener executes after every menu item is clicked.
      */
-    private static void initializeSelectionMenu(SelectActionMenuDelegate delegate, Context context,
-            @Nullable SelectionClient.Result classificationResult, boolean isSelectionPassword,
-            boolean isSelectionReadOnly,
-            @Nullable SelectActionMenuHelper
-                    .TextProcessingIntentHandler textProcessingIntentHandler,
-            ActionMode mode, Menu menu,
-            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
-        PriorityQueue<SelectionMenuGroup> selectionMenuItems =
-                SelectActionMenuHelper.getSelectionMenuItems(delegate, context,
-                        classificationResult, isSelectionPassword, isSelectionReadOnly,
-                        textProcessingIntentHandler);
-        initializeActionMenu(
-                context, selectionMenuItems, mode, menu, additionalMenuItemClickListener);
-    }
-
-    /**
-     * Initializes a {@link Menu} with items from the {@link SelectionMenuGroup}s.
-     * {@link SelectionMenuItem}s where {@link SelectionMenuItem#isEnabled} returns false
-     * are not added.
-     */
-    private static void initializeActionMenu(Context context,
-            PriorityQueue<SelectionMenuGroup> menuGroups, ActionMode mode, Menu menu,
+    public static void initializeActionMenu(Context context,
+            PriorityQueue<SelectionMenuGroup> menuGroups, Menu menu,
+            Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         for (SelectionMenuGroup group : menuGroups) {
-            addMenuGroupToMenu(context, group, mode, menu, additionalMenuItemClickListener);
+            addMenuGroupToMenu(context, group, menu, customMenuItemClickListeners,
+                    additionalMenuItemClickListener);
         }
     }
 
-    private static void addMenuGroupToMenu(Context context, SelectionMenuGroup group,
-            ActionMode mode, Menu menu,
+    private static void addMenuGroupToMenu(Context context, SelectionMenuGroup group, Menu menu,
+            Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         for (SelectionMenuItem item : group.items) {
             if (!item.isEnabled) {
@@ -837,32 +832,17 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     menuItem.setContentDescription(contentDescription);
                 }
             }
+            if (item.clickListener != null) {
+                customMenuItemClickListeners.put(menuItem, item.clickListener);
+            }
             menuItem.setOnMenuItemClickListener(clickedMenuItem -> {
                 if (additionalMenuItemClickListener != null) {
                     additionalMenuItemClickListener.onMenuItemClick(clickedMenuItem);
-                }
-                View.OnClickListener clickListener = item.clickListener;
-                if (clickListener != null) {
-                    clickListener.onClick(null);
-                    mode.finish();
-                    return true;
                 }
                 return false;
             });
             menuItem.setIntent(item.intent);
         }
-    }
-
-    private void createSelectionActionMenu(ActionMode mode, Menu menu) {
-        SelectActionMenuHelper.TextProcessingIntentHandler textProcessingIntentHandler = null;
-        if (isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
-            textProcessingIntentHandler = this::processText;
-        }
-        initializeSelectionMenu(this, mContext, mClassificationResult, isSelectionPassword(),
-                !isFocusedNodeEditable(), textProcessingIntentHandler, mode, menu, item -> {
-                    logSelectionAction(item.getGroupId(), item.getItemId());
-                    return false;
-                });
     }
 
     /**
@@ -940,7 +920,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         SelectionMenuGroup textProcessingItems = SelectActionMenuHelper.getTextProcessingItems(
                 mContext, false, false, this::processText);
         if (textProcessingItems != null) {
-            addMenuGroupToMenu(mContext, textProcessingItems, mode, menu, null);
+            addMenuGroupToMenu(
+                    mContext, textProcessingItems, menu, mCustomMenuItemClickListeners, null);
         }
     }
 
@@ -950,34 +931,38 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         assert mView != null;
         if (!isActionModeValid()) return true;
 
-        int id = item.getItemId();
+        // Check to see if this menu item has a custom click listener to handle it.
+        View.OnClickListener customMenuItemClickListener = mCustomMenuItemClickListeners.get(item);
+        if (customMenuItemClickListener != null) {
+            customMenuItemClickListener.onClick(mView);
+        } else {
+            handleMenuItemClick(item.getItemId());
+        }
 
+        // We don't dismiss the action menu for select all.
+        if (item.getItemId() != R.id.select_action_menu_select_all) {
+            mode.finish();
+        }
+        return true;
+    }
+
+    private void handleMenuItemClick(@IdRes final int id) {
         if (id == R.id.select_action_menu_select_all) {
             selectAll();
         } else if (id == R.id.select_action_menu_cut) {
             cut();
-            mode.finish();
         } else if (id == R.id.select_action_menu_copy) {
             copy();
-            mode.finish();
         } else if (id == R.id.select_action_menu_paste) {
             paste();
-            mode.finish();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && id == R.id.select_action_menu_paste_as_plain_text) {
             pasteAsPlainText();
-            mode.finish();
         } else if (id == R.id.select_action_menu_share) {
             share();
-            mode.finish();
         } else if (id == R.id.select_action_menu_web_search) {
             search();
-            mode.finish();
-        } else {
-            return false;
         }
-
-        return true;
     }
 
     @Override
