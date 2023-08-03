@@ -216,8 +216,6 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
     absl::optional<base::Value::Dict> context,
     ResponseCallback callback) {
   if (base::FeatureList::IsEnabled(kEnableEncryptedReportingClientForUpload)) {
-    // TODO(b/283187811): remove cloud policy client as a parameter to
-    // `UploadReport` and read device info from `merging_payload` instead.
     encrypted_reporting_client_->UploadReport(std::move(merging_payload),
                                               std::move(context), client_,
                                               std::move(callback));
@@ -272,7 +270,6 @@ void ReportingServerConnector::UploadEncryptedReport(
           Status(error::UNAVAILABLE, "Device DM token not set"));
       return;
     }
-    // TODO(b/283187811): add device info to merging_payload
     context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
   }
 
