@@ -207,6 +207,7 @@ NET_EXPORT_PRIVATE void SetSystemDnsResolutionTaskRunnerForTesting(
 // HostResolverSystemTask. This override will be called instead of posting
 // SystemHostResolverCall() to a worker thread. The override will only be
 // invoked on the main thread.
+// The override should never invoke `results_cb` synchronously.
 NET_EXPORT void SetSystemDnsResolverOverride(
     base::RepeatingCallback<void(const absl::optional<std::string>& host,
                                  AddressFamily address_family,
