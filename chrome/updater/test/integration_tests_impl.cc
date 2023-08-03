@@ -445,6 +445,57 @@ void ExpectNoCrashes(UpdaterScope scope) {
   EXPECT_EQ(count, 0) << ": " << count << " crashes found";
 }
 
+#if BUILDFLAG(IS_WIN)
+void ExpectAppRollbackUpdateSequence(UpdaterScope scope,
+                                     ScopedServer* test_server,
+                                     const std::string& app_id,
+                                     bool rollback_allowed,
+                                     const std::string& target_version_prefix,
+                                     const base::Version& from_version,
+                                     const base::Version& to_version) {
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath crx_path = exe_path.Append(FILE_PATH_LITERAL("test_installer"))
+                                .AppendASCII("TestApp2Setup.crx3");
+  ASSERT_TRUE(base::PathExists(crx_path));
+
+  // First request: update check.
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->update_path()),
+       request::GetContentMatcher({
+           base::StringPrintf(R"("appid":"%s")", app_id.c_str()),
+           rollback_allowed ? "\"rollback_allowed\":true" : "",
+           target_version_prefix.empty()
+               ? ""
+               : base::StringPrintf(R"("targetversionprefix":"%s")",
+                                    target_version_prefix.c_str()),
+       }),
+       request::GetScopeMatcher(scope)},
+      GetUpdateResponse(
+          app_id, "", test_server->update_url().spec(), to_version, crx_path,
+          "TestApp2Setup.exe",
+          base::StringPrintf("%s --appid=%s --company=%s --product_version=%s",
+                             IsSystemInstall(scope) ? "--system" : "",
+                             app_id.c_str(), COMPANY_SHORTNAME_STRING,
+                             to_version.GetString().c_str())));
+
+  // Second request: update download.
+  std::string crx_bytes;
+  base::ReadFileToString(crx_path, &crx_bytes);
+  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+
+  // Third request: event ping.
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->update_path()),
+       request::GetContentMatcher({base::StringPrintf(
+           R"(.*"eventresult":1,"eventtype":3,)"
+           R"("nextversion":"%s","previousversion":"%s".*)",
+           to_version.GetString().c_str(), from_version.GetString().c_str())}),
+       request::GetScopeMatcher(scope)},
+      ")]}'\n");
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void RunWake(UpdaterScope scope, int expected_exit_code) {
   RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeSwitch,
                        expected_exit_code);
