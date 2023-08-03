@@ -16,6 +16,7 @@ import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,7 +28,7 @@ import {Route, Router, routes} from '../router.js';
 import {getTemplate} from './pointers.html.js';
 
 const SettingsPointersElementBase =
-    DeepLinkingMixin(RouteObserverMixin(PrefsMixin(PolymerElement)));
+    DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 class SettingsPointersElement extends SettingsPointersElementBase {
   static get is() {
@@ -177,6 +178,19 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     const subsections =
         this.computeShowHeadings_(hasMouse, hasPointingStick, hasTouchpad);
     return subsections ? 'subsection' : '';
+  }
+
+  private getCursorSpeedString(): TrustedHTML {
+    return this.i18nAdvanced(
+        loadTimeData.getBoolean('allowScrollSettings') ? 'cursorSpeed' :
+                                                         'mouseSpeed');
+  }
+
+  private getCursorAccelerationString(): TrustedHTML {
+    return this.i18nAdvanced(
+        loadTimeData.getBoolean('allowScrollSettings') ?
+            'cursorAccelerationLabel' :
+            'mouseAccelerationLabel');
   }
 
   override currentRouteChanged(route: Route) {
