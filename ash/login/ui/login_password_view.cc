@@ -7,7 +7,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
-#include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_arrow_navigation_delegate.h"
@@ -34,10 +33,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -141,61 +137,6 @@ constexpr base::TimeDelta kClearPasswordAfterDelay = base::Seconds(30);
 
 // Delay after which the password gets back to hidden state, for security.
 constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
-
-struct FrameParams {
-  FrameParams(int duration_in_ms, float opacity_param)
-      : duration(base::Milliseconds(duration_in_ms)), opacity(opacity_param) {}
-
-  base::TimeDelta duration;
-  float opacity;
-};
-
-// Duration i describes the transition from opacity i-1 to i.
-// This means that we have a fade-in and fade-out of 0.5s each and we show the
-// view at 100% opacity during 2s, except the first time where we show it 2.5s
-// as there is no fade-in.
-const FrameParams kAlternateFramesParams[] = {{500, 1.0f},
-                                              {2000, 1.0f},
-                                              {500, 0.0f}};
-
-const FrameParams kSpinnerFramesParams[] = {{500, 1.0f}, {500, 0.5f}};
-
-// An observer that swaps two views' visibilities at each animation repetition.
-class AnimationWillRepeatObserver : public ui::LayerAnimationObserver {
- public:
-  AnimationWillRepeatObserver() {}
-  ~AnimationWillRepeatObserver() override = default;
-  AnimationWillRepeatObserver(const AnimationWillRepeatObserver&) = delete;
-  AnimationWillRepeatObserver& operator=(const AnimationWillRepeatObserver&) =
-      delete;
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {}
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationWillRepeat(
-      ui::LayerAnimationSequence* sequence) override {
-    shown_now_->SetVisible(false);
-    shown_after_->SetVisible(true);
-    std::swap(shown_now_, shown_after_);
-  }
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationScheduled(
-      ui::LayerAnimationSequence* sequence) override {}
-
-  void SetDisplayOrder(views::View* shown_now, views::View* shown_after) {
-    shown_now_ = shown_now;
-    shown_after_ = shown_after;
-  }
-
- private:
-  raw_ptr<views::View, ExperimentalAsh> shown_now_;
-  raw_ptr<views::View, ExperimentalAsh> shown_after_;
-};
 
 }  // namespace
 
