@@ -607,7 +607,9 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
     }
   }
 
-  if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
+  const ComputedStyle* computed_style =
+      node ? node->GetComputedStyle() : nullptr;
+  if (computed_style) {
     // Fix for crbug.com/768261: due to text-autosizing, reading the current
     // computed font size and re-writing it to an element may actually cause the
     // font size to become larger (since the autosizer will run again on the new
