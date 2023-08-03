@@ -38,6 +38,10 @@ class PrefService;
 - (OverflowMenuDestination*)customizationDestinationForDestinationType:
     (overflow_menu::Destination)destinationType;
 
+// Allows destination provider to fire any feature-specific logic for clearing
+// feature-driven badges.
+- (void)destinationCustomizationCompleted;
+
 @end
 
 @protocol OverflowMenuActionProvider <NSObject>

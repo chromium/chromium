@@ -1429,6 +1429,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 }
 
+- (void)destinationCustomizationCompleted {
+  if (_engagementTracker) {
+    _engagementTracker->NotifyEvent(
+        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+  }
+
+  if (!WasWhatsNewUsed()) {
+    SetWhatsNewUsed(self.promosManager);
+  }
+}
+
 #pragma mark - OverflowMenuActionProvider
 
 - (ActionRanking)basePageActions {

@@ -60,11 +60,16 @@ void AddDestinationsToSet(const base::Value::List& from,
 // clear `destination` from the `destinationsToAdd` set.
 void InsertDestination(overflow_menu::Destination destination,
                        std::set<overflow_menu::Destination>& destinationsToAdd,
-                       DestinationRanking& output) {
-  const int insertionIndex = std::min(
-      output.size() - 1, static_cast<size_t>(kNewDestinationsInsertionIndex));
+                       DestinationRanking& output,
+                       bool insertAtEnd) {
+  if (insertAtEnd) {
+    output.push_back(destination);
+  } else {
+    const int insertionIndex = std::min(
+        output.size() - 1, static_cast<size_t>(kNewDestinationsInsertionIndex));
 
-  output.insert(output.begin() + insertionIndex, destination);
+    output.insert(output.begin() + insertionIndex, destination);
+  }
 
   destinationsToAdd.erase(destination);
 }
@@ -86,10 +91,13 @@ struct ActionOrderData {
 
   bool empty() const { return shownActions.empty() && hiddenActions.empty(); }
 };
-}  // namespace
 
-using DestinationLookup =
-    std::map<overflow_menu::Destination, OverflowMenuDestination*>;
+struct BadgeData {
+  int impressionsRemaining;
+  BadgeType badgeType;
+  bool isFeatureDrivenBadge;
+};
+}  // namespace
 
 @interface OverflowMenuOrderer ()
 
@@ -114,6 +122,10 @@ using DestinationLookup =
   ActionOrderData _actionOrderData;
 
   PrefBackedBoolean* _destinationUsageHistoryEnabled;
+
+  // The data for which destinations currently have badges and how many
+  // impressions they have remaining.
+  std::map<overflow_menu::Destination, BadgeData> _destinationBadgeData;
 }
 
 @synthesize actionCustomizationModel = _actionCustomizationModel;
@@ -225,6 +237,11 @@ using DestinationLookup =
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
   _untappedDestinations.erase(destination);
 
+  if (_destinationBadgeData.find(destination) != _destinationBadgeData.end() &&
+      !_destinationBadgeData[destination].isFeatureDrivenBadge) {
+    _destinationBadgeData.erase(destination);
+  }
+
   [self.destinationUsageHistory recordClickForDestination:destination];
 }
 
@@ -272,6 +289,8 @@ using DestinationLookup =
     orderData.hiddenDestinations.push_back(
         static_cast<overflow_menu::Destination>(destination.destination));
   }
+
+  [self eraseBadgesAfterDestinationCustomization];
 
   _destinationOrderData = orderData;
   // If Destination Usage History is being reenabled, add all hidden
@@ -469,155 +488,6 @@ using DestinationLookup =
                             std::move(storedActions));
 }
 
-// Creates a map from overflow_menu::Destination : OverflowMenuDestination*
-// for fast retrieval of a given overflow_menu::Destination's corresponding
-// Objective-C class.
-- (DestinationLookup)destinationLookupMapFromDestinations:
-    (NSArray<OverflowMenuDestination*>*)destinations {
-  std::map<overflow_menu::Destination, OverflowMenuDestination*>
-      destinationLookup;
-
-  for (OverflowMenuDestination* carouselDestination in destinations) {
-    overflow_menu::Destination destination =
-        static_cast<overflow_menu::Destination>(
-            carouselDestination.destination);
-    destinationLookup[destination] = carouselDestination;
-  }
-  return destinationLookup;
-}
-
-// Modifies `_ranking` to re-order it based on the current badge status of the
-// various destinations
-- (void)applyBadgeOrderingToRankingWithAvailableDestinations:
-    (DestinationRanking)availableDestinations {
-  // Detect new destinations added to the carousel by feature teams. New
-  // destinations (`newDestinations`) are those now found in the carousel
-  // (`availableDestinations`), but not found in the ranking
-  // (`_destinationOrderData`).
-  std::set<overflow_menu::Destination> currentDestinations(
-      availableDestinations.begin(), availableDestinations.end());
-
-  std::set<overflow_menu::Destination> existingDestinations(
-      _destinationOrderData.shownDestinations.begin(),
-      _destinationOrderData.shownDestinations.end());
-
-  existingDestinations.insert(_destinationOrderData.hiddenDestinations.begin(),
-                              _destinationOrderData.hiddenDestinations.end());
-
-  std::vector<overflow_menu::Destination> newDestinations;
-
-  std::set_difference(currentDestinations.begin(), currentDestinations.end(),
-                      existingDestinations.begin(), existingDestinations.end(),
-                      std::back_inserter(newDestinations));
-
-  for (overflow_menu::Destination newDestination : newDestinations) {
-    _untappedDestinations.insert(newDestination);
-  }
-
-  // Make sure that all destinations that should end up in the final ranking do.
-  std::set<overflow_menu::Destination> remainingDestinations =
-      currentDestinations;
-
-  for (overflow_menu::Destination hiddenDestination :
-       _destinationOrderData.hiddenDestinations) {
-    remainingDestinations.erase(hiddenDestination);
-  }
-
-  DestinationRanking sortedDestinations;
-
-  // Reconstruct carousel based on current ranking.
-  //
-  // Add all ranked destinations that don't need be re-sorted back-to-back
-  // following their ranking.
-  //
-  // Destinations that need to be re-sorted for highlight are not added here
-  // where they are re-inserted later. These destinations have a badge and a
-  // position of kNewDestinationsInsertionIndex or worst.
-  for (overflow_menu::Destination rankedDestination :
-       _destinationOrderData.shownDestinations) {
-    if (remainingDestinations.contains(rankedDestination) &&
-        !_untappedDestinations.contains(rankedDestination)) {
-      OverflowMenuDestination* overflowMenuDestination =
-          [self.destinationProvider
-              destinationForDestinationType:rankedDestination];
-      const bool dontSort =
-          overflowMenuDestination.badge == BadgeTypeNone ||
-          sortedDestinations.size() < kNewDestinationsInsertionIndex;
-
-      if (dontSort) {
-        sortedDestinations.push_back(rankedDestination);
-
-        remainingDestinations.erase(rankedDestination);
-      }
-    }
-  }
-
-  // `-calculateNewRanking` excludes any
-  // destinations in `_untappedDestinations` from its result, so new, untapped
-  // destinations must be added to `sortedDestinations` as a separate step. New,
-  // untapped destinations are inserted into the carousel starting at position
-  // `kNewDestinationsInsertionIndex`. Destinations that already have a badge
-  // are inserted in another step where they are inserted before the untapped
-  // destinations that don't have badges.
-  if (!_untappedDestinations.empty()) {
-    for (overflow_menu::Destination untappedDestination :
-         _untappedDestinations) {
-      if (remainingDestinations.contains(untappedDestination)) {
-        OverflowMenuDestination* overflowMenuDestination =
-            [self.destinationProvider
-                destinationForDestinationType:untappedDestination];
-        if (overflowMenuDestination.badge != BadgeTypeNone) {
-          continue;
-        }
-        overflowMenuDestination.badge = BadgeTypeNew;
-
-        InsertDestination(untappedDestination, remainingDestinations,
-                          sortedDestinations);
-      }
-    }
-  }
-
-  std::vector<overflow_menu::Destination> allDestinations;
-
-  // Merge all destinations by prioritizing untapped destinations over ranked
-  // destinations in their order of insertion.
-  std::merge(_destinationOrderData.shownDestinations.begin(),
-             _destinationOrderData.shownDestinations.end(),
-             _untappedDestinations.begin(), _untappedDestinations.end(),
-             std::back_inserter(allDestinations));
-
-  // Insert the destinations with a badge that is not for an error at
-  // kNewDestinationsInsertionIndex before the untapped destinations.
-  for (overflow_menu::Destination destination : allDestinations) {
-    if (remainingDestinations.contains(destination)) {
-      OverflowMenuDestination* overflowMenuDestination =
-          [self.destinationProvider destinationForDestinationType:destination];
-      if (overflowMenuDestination.badge == BadgeTypeError) {
-        continue;
-      }
-      InsertDestination(destination, remainingDestinations, sortedDestinations);
-    }
-  }
-
-  // Insert the destinations with an error badge before the destinations with
-  // other types of badges.
-  for (overflow_menu::Destination destination : allDestinations) {
-    if (remainingDestinations.contains(destination) &&
-        [self.destinationProvider destinationForDestinationType:destination]) {
-      InsertDestination(destination, remainingDestinations, sortedDestinations);
-    }
-  }
-
-  // Check that all the destinations to show in the carousel were added to the
-  // sorted destinations output at this point.
-  DCHECK(remainingDestinations.empty());
-
-  // Set the new ranking.
-  _destinationOrderData.shownDestinations = sortedDestinations;
-
-  [self flushDestinationsToPrefs];
-}
-
 // Uses the current `actionProvider` to add any new actions to the shown list.
 // This handles new users with no stored data and new actions added.
 - (void)updateActionOrderData {
@@ -653,7 +523,28 @@ using DestinationLookup =
   DestinationRanking availableDestinations =
       [self.destinationProvider baseDestinations];
 
-  if (_destinationUsageHistoryEnabled.value && self.destinationUsageHistory) {
+  if (IsOverflowMenuCustomizationEnabled()) {
+    DestinationRanking badgedRanking =
+        [self customizationRankingAfterBadgingWithAvailableDestinations:
+                  availableDestinations];
+    _destinationOrderData.shownDestinations = badgedRanking;
+    [self flushDestinationsToPrefs];
+  }
+
+  // If customization is enabled, then skip destination usage history if there
+  // are current badges, as those have more important positions.
+  BOOL hasBadgeWithImpressions = NO;
+  for (const auto& [key, value] : _destinationBadgeData) {
+    if (value.impressionsRemaining > 0) {
+      hasBadgeWithImpressions = YES;
+      break;
+    }
+  }
+  BOOL skipDestinationUsageHistory =
+      IsOverflowMenuCustomizationEnabled() &&
+      (hasBadgeWithImpressions || !_destinationUsageHistoryEnabled.value);
+
+  if (!skipDestinationUsageHistory && self.destinationUsageHistory) {
     _destinationOrderData.shownDestinations = [self.destinationUsageHistory
         sortedDestinationsFromCurrentRanking:_destinationOrderData
                                                  .shownDestinations
@@ -662,10 +553,49 @@ using DestinationLookup =
     [self flushDestinationsToPrefs];
   }
 
-  [self applyBadgeOrderingToRankingWithAvailableDestinations:
-            availableDestinations];
+  if (!IsOverflowMenuCustomizationEnabled()) {
+    DestinationRanking badgedRanking = [self
+        rankingAfterBadgingWithAvailableDestinations:availableDestinations];
 
-  return [self destinationsFromCurrentRanking];
+    _destinationOrderData.shownDestinations = badgedRanking;
+    [self flushDestinationsToPrefs];
+  }
+
+  NSArray<OverflowMenuDestination*>* finalDestinations =
+      [self destinationsFromCurrentRanking];
+
+  // With Overflow Menu Customization, badge impressions need to be tracked.
+  if (IsOverflowMenuCustomizationEnabled()) {
+    // If spotlight debugging is enabled, an extra destination is auto-inserted
+    // at the beginning.
+    int badgeImpressionLastIndex =
+        (experimental_flags::IsSpotlightDebuggingEnabled())
+            ? kNewDestinationsInsertionIndex + 1
+            : kNewDestinationsInsertionIndex;
+
+    for (OverflowMenuDestination* menuDestination : [finalDestinations
+             subarrayWithRange:NSMakeRange(0, badgeImpressionLastIndex + 1)]) {
+      overflow_menu::Destination destination =
+          static_cast<overflow_menu::Destination>(menuDestination.destination);
+      auto it = _destinationBadgeData.find(destination);
+      if (it == _destinationBadgeData.end()) {
+        continue;
+      }
+      // If the badge is feature-driven, just decrease its impression count
+      // until it hits 0. Otherwise, remove it when it hits 0.
+      if (it->second.isFeatureDrivenBadge) {
+        it->second.impressionsRemaining =
+            std::max(0, it->second.impressionsRemaining - 1);
+      } else {
+        it->second.impressionsRemaining = it->second.impressionsRemaining - 1;
+        if (it->second.impressionsRemaining <= 0) {
+          _destinationBadgeData.erase(destination);
+        }
+      }
+    }
+  }
+
+  return finalDestinations;
 }
 
 // Returns the current pageActions in order.
@@ -724,11 +654,314 @@ using DestinationLookup =
     if (OverflowMenuDestination* overflowMenuDestination =
             [self.destinationProvider
                 destinationForDestinationType:destination]) {
+      if (IsOverflowMenuCustomizationEnabled()) {
+        auto it = _destinationBadgeData.find(destination);
+        if (it != _destinationBadgeData.end() &&
+            !it->second.isFeatureDrivenBadge) {
+          overflowMenuDestination.badge = it->second.badgeType;
+        }
+      }
       [sortedDestinations addObject:overflowMenuDestination];
     }
   }
 
   return sortedDestinations;
+}
+
+#pragma mark - Badging Helpers
+
+// Rerank the destinations, handling any badges and new items, using the new
+// rules introduced during the customization project.
+- (DestinationRanking)customizationRankingAfterBadgingWithAvailableDestinations:
+    (DestinationRanking)availableDestinations {
+  // First, update the stored badge data.
+  [self updateBadgeDataWithAvailableDestinations:availableDestinations];
+
+  // Make sure all destinations that should end up in the final ranking do.
+  std::set<overflow_menu::Destination> remainingDestinations =
+      [self shownDestinationsFromAvailableDestinations:availableDestinations];
+
+  DestinationRanking newDestinationRanking;
+
+  // Start by adding all items that don't have new positions. This is items with
+  // no badge and items that appear in the first few spots already.
+  for (overflow_menu::Destination destination :
+       _destinationOrderData.shownDestinations) {
+    if (!remainingDestinations.contains(destination)) {
+      continue;
+    }
+
+    // Initial items are always added to the ranking, regardless of badge state.
+    if (newDestinationRanking.size() < kNewDestinationsInsertionIndex) {
+      InsertDestination(destination, remainingDestinations,
+                        newDestinationRanking, true);
+      continue;
+    }
+
+    // If item is badged with impressions remaining, it should be reordered to
+    // a specific position and will be added later.
+    if (_destinationBadgeData.find(destination) !=
+            _destinationBadgeData.end() &&
+        _destinationBadgeData[destination].impressionsRemaining > 0) {
+      continue;
+    }
+
+    InsertDestination(destination, remainingDestinations, newDestinationRanking,
+                      true);
+  }
+
+  // Iterate over the list of destinations with badges twice, inserting them
+  // into the ranking. First, add items with new badges, then add items with
+  // error badges, so items with error badges appear first.
+  for (auto& pair : _destinationBadgeData) {
+    if (!remainingDestinations.contains(pair.first)) {
+      continue;
+    }
+
+    if (pair.second.badgeType == BadgeTypeNew ||
+        pair.second.badgeType == BadgeTypePromo) {
+      InsertDestination(pair.first, remainingDestinations,
+                        newDestinationRanking, false);
+    }
+  }
+  for (auto& pair : _destinationBadgeData) {
+    if (!remainingDestinations.contains(pair.first)) {
+      continue;
+    }
+
+    InsertDestination(pair.first, remainingDestinations, newDestinationRanking,
+                      false);
+  }
+
+  // Check that all the destinations that were supposed to appear have been
+  // added to the output at this point.
+  DCHECK(remainingDestinations.empty());
+
+  return newDestinationRanking;
+}
+
+// Modifies an updated ranking after re-ordering it based on the current badge
+// status of the various destinations.
+- (DestinationRanking)rankingAfterBadgingWithAvailableDestinations:
+    (DestinationRanking)availableDestinations {
+  DestinationRanking newDestinations =
+      [self newDestinationsFromAvailableDestinations:availableDestinations];
+
+  for (overflow_menu::Destination newDestination : newDestinations) {
+    _untappedDestinations.insert(newDestination);
+  }
+
+  // Make sure that all destinations that should end up in the final ranking do.
+  std::set<overflow_menu::Destination> remainingDestinations =
+      [self shownDestinationsFromAvailableDestinations:availableDestinations];
+
+  DestinationRanking sortedDestinations;
+
+  // Reconstruct carousel based on current ranking.
+  //
+  // Add all ranked destinations that don't need be re-sorted back-to-back
+  // following their ranking.
+  //
+  // Destinations that need to be re-sorted for highlight are not added here
+  // where they are re-inserted later. These destinations have a badge and a
+  // position of kNewDestinationsInsertionIndex or worst.
+  for (overflow_menu::Destination rankedDestination :
+       _destinationOrderData.shownDestinations) {
+    if (remainingDestinations.contains(rankedDestination) &&
+        !_untappedDestinations.contains(rankedDestination)) {
+      OverflowMenuDestination* overflowMenuDestination =
+          [self.destinationProvider
+              destinationForDestinationType:rankedDestination];
+      const bool dontSort =
+          overflowMenuDestination.badge == BadgeTypeNone ||
+          sortedDestinations.size() < kNewDestinationsInsertionIndex;
+
+      if (dontSort) {
+        InsertDestination(rankedDestination, remainingDestinations,
+                          sortedDestinations, true);
+      }
+    }
+  }
+
+  // `-calculateNewRanking` excludes any
+  // destinations in `_untappedDestinations` from its result, so new, untapped
+  // destinations must be added to `sortedDestinations` as a separate step. New,
+  // untapped destinations are inserted into the carousel starting at position
+  // `kNewDestinationsInsertionIndex`. Destinations that already have a badge
+  // are inserted in another step where they are inserted before the untapped
+  // destinations that don't have badges.
+  if (!_untappedDestinations.empty()) {
+    for (overflow_menu::Destination untappedDestination :
+         _untappedDestinations) {
+      if (remainingDestinations.contains(untappedDestination)) {
+        OverflowMenuDestination* overflowMenuDestination =
+            [self.destinationProvider
+                destinationForDestinationType:untappedDestination];
+        if (overflowMenuDestination.badge != BadgeTypeNone) {
+          continue;
+        }
+        overflowMenuDestination.badge = BadgeTypeNew;
+
+        InsertDestination(untappedDestination, remainingDestinations,
+                          sortedDestinations, false);
+      }
+    }
+  }
+
+  std::vector<overflow_menu::Destination> allDestinations;
+
+  // Merge all destinations by prioritizing untapped destinations over ranked
+  // destinations in their order of insertion.
+  std::merge(_destinationOrderData.shownDestinations.begin(),
+             _destinationOrderData.shownDestinations.end(),
+             _untappedDestinations.begin(), _untappedDestinations.end(),
+             std::back_inserter(allDestinations));
+
+  // Insert the destinations with a badge that is not for an error at
+  // kNewDestinationsInsertionIndex before the untapped destinations.
+  for (overflow_menu::Destination destination : allDestinations) {
+    if (remainingDestinations.contains(destination)) {
+      OverflowMenuDestination* overflowMenuDestination =
+          [self.destinationProvider destinationForDestinationType:destination];
+      if (overflowMenuDestination.badge == BadgeTypeError) {
+        continue;
+      }
+      InsertDestination(destination, remainingDestinations, sortedDestinations,
+                        false);
+    }
+  }
+
+  // Insert the destinations with an error badge before the destinations with
+  // other types of badges.
+  for (overflow_menu::Destination destination : allDestinations) {
+    if (remainingDestinations.contains(destination) &&
+        [self.destinationProvider destinationForDestinationType:destination]) {
+      InsertDestination(destination, remainingDestinations, sortedDestinations,
+                        false);
+    }
+  }
+
+  // Check that all the destinations to show in the carousel were added to the
+  // sorted destinations output at this point.
+  DCHECK(remainingDestinations.empty());
+
+  return sortedDestinations;
+}
+
+// Erases any necessary badges after the user customizes their destination list.
+// This completely removes all non-feature driven badges and removes all
+// impressions from feature driven ones.
+- (void)eraseBadgesAfterDestinationCustomization {
+  _untappedDestinations.clear();
+
+  for (auto it = _destinationBadgeData.begin();
+       it != _destinationBadgeData.end();) {
+    if (it->second.isFeatureDrivenBadge) {
+      it->second.impressionsRemaining = 0;
+      it++;
+    } else {
+      it = _destinationBadgeData.erase(it);
+    }
+  }
+
+  [self.destinationProvider destinationCustomizationCompleted];
+}
+
+// Detects new destinations added to the carousel by feature teams. New
+// destinations (`newDestinations`) are those now found in the carousel
+// (`availableDestinations`), but not found in the ranking
+// (`_destinationOrderData`).
+- (DestinationRanking)newDestinationsFromAvailableDestinations:
+    (DestinationRanking)availableDestinations {
+  std::set<overflow_menu::Destination> currentDestinations(
+      availableDestinations.begin(), availableDestinations.end());
+
+  std::set<overflow_menu::Destination> existingDestinations(
+      _destinationOrderData.shownDestinations.begin(),
+      _destinationOrderData.shownDestinations.end());
+  existingDestinations.insert(_destinationOrderData.hiddenDestinations.begin(),
+                              _destinationOrderData.hiddenDestinations.end());
+
+  DestinationRanking newDestinations;
+
+  std::set_difference(currentDestinations.begin(), currentDestinations.end(),
+                      existingDestinations.begin(), existingDestinations.end(),
+                      std::back_inserter(newDestinations));
+  return newDestinations;
+}
+
+// Returns the set of destinations that should be shown, given the current
+// available ones. This is different from the stored
+// `_destinationOrderData.shownDestinations` because it can include new
+// destinations added in code and not stored in the ranking yet.
+- (std::set<overflow_menu::Destination>)
+    shownDestinationsFromAvailableDestinations:
+        (DestinationRanking)availableDestinations {
+  std::set<overflow_menu::Destination> shownDestinations(
+      availableDestinations.begin(), availableDestinations.end());
+
+  for (overflow_menu::Destination hiddenDestination :
+       _destinationOrderData.hiddenDestinations) {
+    shownDestinations.erase(hiddenDestination);
+  }
+  return shownDestinations;
+}
+
+// Updates the stored `_destinationBadgeData`, adding any new badges due to new
+// destinations or new feature-driven badges, and removing any feature-driven
+// badges that are no longer present.
+- (void)updateBadgeDataWithAvailableDestinations:
+    (DestinationRanking)availableDestinations {
+  DestinationRanking newDestinations =
+      [self newDestinationsFromAvailableDestinations:availableDestinations];
+
+  for (overflow_menu::Destination newDestination : newDestinations) {
+    _untappedDestinations.insert(newDestination);
+
+    if (_destinationBadgeData.find(newDestination) ==
+        _destinationBadgeData.end()) {
+      _destinationBadgeData[newDestination].badgeType = BadgeTypeNew;
+      _destinationBadgeData[newDestination].impressionsRemaining = 3;
+    }
+  }
+
+  // Check if any destinations have badges from the destination provider.
+  for (overflow_menu::Destination destination : availableDestinations) {
+    OverflowMenuDestination* menuDestination =
+        [self.destinationProvider destinationForDestinationType:destination];
+    if (menuDestination.badge != BadgeTypeNone) {
+      // If this is a new badge, the current badge is not feature driven, or the
+      // badge from the provider is different than the current, then update the
+      // data. Otherwise, the badge is already known about.
+      if (_destinationBadgeData.find(destination) ==
+              _destinationBadgeData.end() ||
+          !_destinationBadgeData[destination].isFeatureDrivenBadge ||
+          menuDestination.badge !=
+              _destinationBadgeData[destination].badgeType) {
+        _destinationBadgeData[destination].badgeType = menuDestination.badge;
+        _destinationBadgeData[destination].impressionsRemaining = 3;
+        _destinationBadgeData[destination].isFeatureDrivenBadge = true;
+      }
+    }
+  }
+
+  // Clear any orderer-driven badges that have finished all impressions or
+  // feature-driven badges that no longer have a badge from the destination
+  // provider.
+  for (auto it = _destinationBadgeData.begin();
+       it != _destinationBadgeData.end();) {
+    OverflowMenuDestination* menuDestination =
+        [self.destinationProvider destinationForDestinationType:it->first];
+    if (it->second.isFeatureDrivenBadge &&
+        menuDestination.badge == BadgeTypeNone) {
+      it = _destinationBadgeData.erase(it);
+    } else if (!it->second.isFeatureDrivenBadge &&
+               it->second.impressionsRemaining <= 0) {
+      it = _destinationBadgeData.erase(it);
+    } else {
+      it++;
+    }
+  }
 }
 
 @end
