@@ -88,7 +88,7 @@ INSTANTIATE_TEST_SUITE_P(
          .filter = "({'name': 'dropShadow'})",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{2, 2},
+                 /*offset=*/{2, 2},
                  /*blur=*/{2, 2},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -106,7 +106,7 @@ INSTANTIATE_TEST_SUITE_P(
                     }))js",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{15, 10},
+                 /*offset=*/{15, 10},
                  /*blur=*/{5, 5},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -120,7 +120,7 @@ INSTANTIATE_TEST_SUITE_P(
                     }))js",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{2, 2},
+                 /*offset=*/{2, 2},
                  /*blur=*/{5, 10},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -134,7 +134,7 @@ INSTANTIATE_TEST_SUITE_P(
                     }))js",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{2, 2},
+                 /*offset=*/{2, 2},
                  /*blur=*/{0, 0},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
