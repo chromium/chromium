@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
@@ -62,9 +61,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
-        boolean isUrlSuggestion = suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL;
-
-        model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, !isUrlSuggestion);
+        model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, suggestion.isSearchSuggestion());
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT,
                 new SuggestionSpannable(suggestion.getDescription()));
 
@@ -103,12 +100,8 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     private void updateSuggestionIcon(@NonNull AutocompleteMatch suggestion,
             @NonNull PropertyModel model, boolean showContent) {
-        boolean isUrlSuggestion = suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL;
-        final @DrawableRes int icon =
-                isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
-        setOmniboxDrawableState(model, OmniboxDrawableState.forDefaultIcon(mContext, icon, true));
-
         if (!showContent) {
+            setOmniboxDrawableState(model, getFallbackIcon(suggestion));
             return;
         }
 
@@ -132,13 +125,9 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 (int) Math.round(scale * height), true);
                     }
                     setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
-                    return;
                 }
             }
-        }
-
-        if (isUrlSuggestion) {
-            // Update favicon for URL if it is available.
+        } else if (!suggestion.isSearchSuggestion()) {
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
     }

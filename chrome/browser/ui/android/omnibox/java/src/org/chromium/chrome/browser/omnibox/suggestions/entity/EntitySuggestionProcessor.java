@@ -10,7 +10,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -19,12 +18,9 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 /** A class that handles model and view creation for the Entity suggestions. */
 public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
-    private final OmniboxImageSupplier mImageSupplier;
-
     /**
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
@@ -32,8 +28,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public EntitySuggestionProcessor(
             Context context, SuggestionHost suggestionHost, OmniboxImageSupplier imageSupplier) {
-        super(context, suggestionHost, null);
-        mImageSupplier = imageSupplier;
+        super(context, suggestionHost, imageSupplier);
     }
 
     @Override
@@ -51,41 +46,23 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
         return new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
     }
 
-    private void fetchEntityImage(GURL imageUrl, PropertyModel model) {
-        mImageSupplier.fetchImage(imageUrl, bitmap -> {
-            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
-        });
-    }
-
     @VisibleForTesting
-    public void applyImageDominantColor(String colorSpec, PropertyModel model) {
-        if (TextUtils.isEmpty(colorSpec)) {
-            return;
-        }
+    @Override
+    public OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
+        var colorSpec = match.getImageDominantColor();
+        if (TextUtils.isEmpty(colorSpec)) return super.getFallbackIcon(match);
 
-        int color;
         try {
-            color = Color.parseColor(colorSpec);
+            int color = Color.parseColor(colorSpec);
+            return OmniboxDrawableState.forColor(color);
         } catch (IllegalArgumentException e) {
-            // The supplied color information could not be parsed.
-            return;
+            return super.getFallbackIcon(match);
         }
-
-        setOmniboxDrawableState(model, OmniboxDrawableState.forColor(color));
     }
 
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
-        setOmniboxDrawableState(model,
-                OmniboxDrawableState.forDefaultIcon(
-                        mContext, R.drawable.ic_suggestion_magnifier, true));
-
-        if (mImageSupplier != null) {
-            applyImageDominantColor(suggestion.getImageDominantColor(), model);
-            fetchEntityImage(suggestion.getImageUrl(), model);
-        }
-
         model.set(EntitySuggestionViewProperties.SUBJECT_TEXT, suggestion.getDisplayText());
         model.set(EntitySuggestionViewProperties.DESCRIPTION_TEXT, suggestion.getDescription());
         setTabSwitchOrRefineAction(model, suggestion, position);

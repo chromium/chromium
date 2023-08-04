@@ -8,8 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
@@ -60,9 +58,6 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyHighlightToMatchRegions(text, suggestion.getDisplayTextClassifications());
         model.set(TailSuggestionViewProperties.TEXT, text);
 
-        setOmniboxDrawableState(model,
-                OmniboxDrawableState.forDefaultIcon(
-                        mContext, R.drawable.ic_suggestion_magnifier, true));
         setTabSwitchOrRefineAction(model, suggestion, position);
     }
 

@@ -72,7 +72,6 @@ public class BaseSuggestionProcessorUnitTest {
         @Override
         public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
             super.populateModel(suggestion, model, position);
-            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, mDefaultBitmap));
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
     }
@@ -84,7 +83,6 @@ public class BaseSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Bitmap mBitmap;
-    private @Mock Bitmap mDefaultBitmap;
 
     private TestBaseSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -99,8 +97,8 @@ public class BaseSuggestionProcessorUnitTest {
     /**
      * Create Suggestion for test.
      */
-    private void createSuggestion(int type, GURL url) {
-        mSuggestion = AutocompleteMatchBuilder.searchWithType(type).setUrl(url).build();
+    private void createSuggestion(int type, boolean isSearch, GURL url) {
+        mSuggestion = new AutocompleteMatchBuilder(type).setIsSearch(isSearch).setUrl(url).build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, mModel, 0);
     }
@@ -109,7 +107,7 @@ public class BaseSuggestionProcessorUnitTest {
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, TEST_URL);
+        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
@@ -126,7 +124,7 @@ public class BaseSuggestionProcessorUnitTest {
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, TEST_URL);
+        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 

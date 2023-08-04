@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.basic;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -73,36 +72,33 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
     }
 
-    /**
-     * Returns suggestion icon to be presented for specified omnibox suggestion.
-     *
-     * This method returns the stock icon type to be attached to the Suggestion.
-     * Note that the stock icons do not include Favicon - Favicon is only declared
-     * when we know we have a valid and large enough site favicon to present.
-     */
-    private @DrawableRes int getSuggestionIcon(AutocompleteMatch suggestion) {
+    @Override
+    protected OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
+        int icon = 0;
+
         if (suggestion.isSearchSuggestion()) {
             switch (suggestion.getType()) {
                 case OmniboxSuggestionType.VOICE_SUGGEST:
-                    return R.drawable.btn_mic;
+                    icon = R.drawable.btn_mic;
+                    break;
 
                 case OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED:
                 case OmniboxSuggestionType.SEARCH_HISTORY:
-                    return R.drawable.ic_history_googblue_24dp;
+                    icon = R.drawable.ic_history_googblue_24dp;
+                    break;
 
                 default:
                     if (suggestion.getSubtypes().contains(/* SUBTYPE_TRENDS = */ 143)) {
-                        return R.drawable.trending_up_black_24dp;
+                        icon = R.drawable.trending_up_black_24dp;
                     }
-                    return R.drawable.ic_suggestion_magnifier;
+                    break;
             }
-        } else {
-            if (mBookmarkState.isBookmarked(suggestion.getUrl())) {
-                return R.drawable.btn_star;
-            } else {
-                return R.drawable.ic_globe_24dp;
-            }
+        } else if (/* !isSearchSuggestion && */ mBookmarkState.isBookmarked(suggestion.getUrl())) {
+            icon = R.drawable.btn_star;
         }
+
+        return icon == 0 ? super.getFallbackIcon(suggestion)
+                         : OmniboxDrawableState.forDefaultIcon(mContext, icon, true);
     }
 
     @Override
@@ -127,9 +123,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         final SuggestionSpannable textLine1 =
                 getSuggestedQuery(suggestion, !isSearchSuggestion, !urlHighlighted);
-
-        setOmniboxDrawableState(model,
-                OmniboxDrawableState.forDefaultIcon(mContext, getSuggestionIcon(suggestion), true));
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, isSearchSuggestion);
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);

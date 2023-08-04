@@ -81,11 +81,26 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     /**
+     * Retrieve fallback icon for a given suggestion.
+     * Must be completed synchromously.
+     *
+     * @param suggestion AutocompleteMatch instance to retrieve fallback icon for
+     * @return OmniboxDrawableState that can be immediately applied to suggestion view
+     */
+    protected @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch match) {
+        int icon = match.isSearchSuggestion() ? R.drawable.ic_suggestion_magnifier
+                                              : R.drawable.ic_globe_24dp;
+        return OmniboxDrawableState.forDefaultIcon(mContext, icon, true);
+    }
+
+    /**
      * Specify OmniboxDrawableState for suggestion decoration.
      *
-     * @param decoration OmniboxDrawableState object defining decoration for the suggestion.
+     * @param model the PropertyModel to apply the decoration to
+     * @param decoration the OmniboxDrawableState to apply
      */
-    protected void setOmniboxDrawableState(PropertyModel model, OmniboxDrawableState decoration) {
+    protected void setOmniboxDrawableState(
+            PropertyModel model, @NonNull OmniboxDrawableState decoration) {
         model.set(BaseSuggestionViewProperties.ICON, decoration);
     }
 
@@ -161,6 +176,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         if (allowOmniboxActions()) {
             mActionChipsProcessor.populateModel(suggestion, model, position);
         }
+
+        var icon = getFallbackIcon(suggestion);
+        assert icon != null;
+        setOmniboxDrawableState(model, icon);
+        if (suggestion.isSearchSuggestion()) {
+            fetchImage(model, suggestion.getImageUrl());
+        }
     }
 
     @Override
@@ -225,6 +247,21 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             if (icon != null) {
                 setOmniboxDrawableState(model, OmniboxDrawableState.forFavIcon(mContext, icon));
             }
+        });
+    }
+
+    /**
+     * Fetch suggestion image.
+     * Updates icon decoration in supplied |model| if |imageUrl| is valid, points to an image, and
+     * was successfully retrieved and decompressed.
+     *
+     * @param model the PropertyModel to update with retrieved image
+     * @param imageUrl the URL of the image to retrieve and decode
+     */
+    protected void fetchImage(PropertyModel model, GURL imageUrl) {
+        if (mImageSupplier == null) return;
+        mImageSupplier.fetchImage(imageUrl, bitmap -> {
+            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
         });
     }
 }

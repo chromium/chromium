@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -85,25 +86,31 @@ public class BaseSuggestionViewProperties {
     }
 
     /** OmniboxDrawableState to show as a suggestion icon. */
+    @VisibleForTesting
     public static final WritableObjectPropertyKey<OmniboxDrawableState> ICON =
             new WritableObjectPropertyKey<>();
 
     /** Action Button descriptors. */
+    @VisibleForTesting
     public static final WritableObjectPropertyKey<List<Action>> ACTION_BUTTONS =
-            new WritableObjectPropertyKey();
+            new WritableObjectPropertyKey<>();
 
     /** Callback invoked when the Suggestion view is highlighted. */
+    @VisibleForTesting
     public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
             new WritableObjectPropertyKey<>();
 
     /** Specifies how densely suggestions should be packed. */
+    @VisibleForTesting
     public static final WritableIntPropertyKey DENSITY = new WritableIntPropertyKey();
 
     /** Callback invoked when user clicks the suggestion. */
+    @VisibleForTesting
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
             new WritableObjectPropertyKey<>();
 
     /** Callback invoked when user long-clicks the suggestion. */
+    @VisibleForTesting
     public static final WritableObjectPropertyKey<Runnable> ON_LONG_CLICK =
             new WritableObjectPropertyKey<>();
 

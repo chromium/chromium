@@ -74,19 +74,22 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     }
 
     @Override
+    protected OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
+        var action = getHistoryClustersAction(match);
+        return OmniboxDrawableState.forDefaultIcon(mContext, action.icon.iconRes, false);
+    }
+
+    @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
-        HistoryClustersAction pedal = getHistoryClustersAction(suggestion);
-        if (pedal == null) return;
+        HistoryClustersAction action = getHistoryClustersAction(suggestion);
+        if (action == null) return;
 
         super.populateModel(suggestion, model, position);
-        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(pedal.hint));
+        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(action.hint));
         model.set(BaseSuggestionViewProperties.ON_CLICK,
-                () -> onJourneysSuggestionClicked(pedal, position));
+                () -> onJourneysSuggestionClicked(action, position));
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
-                () -> onJourneysSuggestionClicked(pedal, position));
-        OmniboxDrawableState sds =
-                OmniboxDrawableState.forDefaultIcon(mContext, pedal.icon.iconRes, false);
-        model.set(BaseSuggestionViewProperties.ICON, sds);
+                () -> onJourneysSuggestionClicked(action, position));
         // We want to behave like a search suggestion w.r.t. secondary text coloring.
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, true);
         setActionButtons(model, null);

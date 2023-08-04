@@ -109,9 +109,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT,
                 new SuggestionSpannable(suggestion.getDisplayText()));
 
-        setOmniboxDrawableState(model,
-                OmniboxDrawableState.forDefaultIcon(mContext, R.drawable.ic_globe_24dp, true));
-
         setActionButtons(model,
                 Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(
                                                  mContext, R.drawable.ic_share_white_24dp, true),
