@@ -26,6 +26,7 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
 
@@ -211,8 +212,9 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
            i = host.begin() + pos + kClientLength,
            end = host.end() - (kGoogleComLength + 1);
        i != end; ++i) {
-    if (!isdigit(*i))
+    if (!absl::ascii_isdigit(static_cast<unsigned char>(*i))) {
       return false;
+    }
   }
 
   return true;

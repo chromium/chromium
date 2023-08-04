@@ -286,7 +286,7 @@ v8::Local<v8::Object> CreateFullBinding(
 
   // Look for any bindings that would be on the same object. Any of these would
   // start with the same base name (e.g. 'app') + '.' (since '.' is < x for any
-  // isalpha(x)).
+  // absl::ascii_isalpha(x)).
   std::string upper = root_name + static_cast<char>('.' + 1);
   base::StringPiece last_binding_name;
   // The following loop is a little painful because we have crazy binding names
