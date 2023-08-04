@@ -113,6 +113,8 @@ std::string GetStringNameForOptimizationTarget(
       return "AutofillFieldTypeClassification";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER:
       return "SegmentationIosModuleRanker";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE:
+      return "SegmentationDesktopNtpModule";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

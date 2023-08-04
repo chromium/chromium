@@ -103,6 +103,11 @@ const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
 const char kIosModuleRankerKey[] = "ios_module_ranker";
 const char kIosModuleRankerUmaName[] = "IosModuleRanker";
 
+// This key is used to decide what modules a user should see on their Desktop
+// New Tab Page.
+const char kDesktopNtpModuleKey[] = "desktop_ntp_module";
+const char kDesktopNtpModuleUmaName[] = "DesktopNtpModule";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in
@@ -157,7 +162,7 @@ const char kSearchUserModelLabelHigh[] = "High";
 
 // Labels for device tier model.
 // Any updates to these strings need to also update the field trials allowlist
-// in go/segmentation-field-trials-map.;
+// in go/segmentation-field-trials-map.
 const char kDeviceTierSegmentLabelNone[] = "None";
 const char kDeviceTierSegmentLabelLow[] = "Low";
 const char kDeviceTierSegmentLabelMedium[] = "Medium";
@@ -165,7 +170,7 @@ const char kDeviceTierSegmentLabelHigh[] = "High";
 
 // Labels for tablet productivity user model.
 // Any updates to these strings need to also update the field trials allowlist
-// in go/segmentation-field-trials-map.;
+// in go/segmentation-field-trials-map.
 const char kTabletProductivityUserModelLabelNone[] = "None";
 const char kTabletProductivityUserModelLabelMedium[] = "Medium";
 const char kTabletProductivityUserModelLabelHigh[] = "High";
@@ -179,6 +184,12 @@ const char kSafetyCheck[] = "SafetyCheck";
 const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";
 const char kShortcutsFreshness[] = "shortcuts_freshness";
 const char kSafetyCheckFreshness[] = "safety_check_freshness";
+
+// Labels for desktop new tab page drive module model.
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.
+const char kDesktopNtpDriveModuleLabelShow[] = "show_drive";
+const char kDesktopNtpDriveModuleLabelDontShow[] = "dont_show_drive";
 
 // Custom inputs for contextual page actions model.
 const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";

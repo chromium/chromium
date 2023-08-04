@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
@@ -130,6 +131,16 @@ std::unique_ptr<Config> GetConfigForWebAppInstallationPromo() {
   return config;
 }
 
+std::unique_ptr<Config> GetConfigForDesktopNtpModule() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kDesktopNtpModuleKey;
+  config->segmentation_uma_name = kDesktopNtpModuleUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE);
+  config->auto_execute_and_cache = false;
+  return config;
+}
+
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
@@ -163,12 +174,14 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
-
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebAppsEnableMLModelForPromotion) ||
       base::FeatureList::IsEnabled(
           webapps::features::kInstallPromptSegmentation)) {
     configs.emplace_back(GetConfigForWebAppInstallationPromo());
+  }
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleSegmentation)) {
+    configs.emplace_back(GetConfigForDesktopNtpModule());
   }
 
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });

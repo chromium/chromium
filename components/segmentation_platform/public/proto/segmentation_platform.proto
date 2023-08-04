@@ -17,10 +17,10 @@ package segmentation_platform.proto;
 //     model, its values must be greater than MAX_OPTIMIZATION_TARGET.
 //
 // All new SegmentIds should be added to the following locations:
-//   1. SegmentIdToHistogramVariant() in
-//      components/segmentation_platform/public/constants.cc.
+//   1. The list of segmentation client keys in
+//   components/segmentation_platform/public/constants.h.
 //   2. Histogram variant must be added to SegmentationModel in
-//      tools/metrics/histograms/metadata/segmentation_platform/histograms.xml
+//      tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
 //
 // New server model segments must be added to the following locations:
 //   - OptimizationTargetProto in
@@ -28,7 +28,8 @@ package segmentation_platform.proto;
 enum SegmentId {
   // Reserved fields are `OptimizationTarget`s that are not used by segmentation
   // to prevent accidental misuse.
-  reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26, 30, 31;
+  reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26, 30, 31, 33, 34, 35,
+      36;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Target for segmentation: New tab page user.
@@ -65,6 +66,9 @@ enum SegmentId {
   OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO = 32;
   // Target for ios module ranker.
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER = 37;
+  // Target for segmentation: Determine what modules a user should see on their
+  // Desktop New Tab Page.
+  OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE = 38;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not

@@ -200,6 +200,9 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION = 36;
   // Target for ranking ios start page modules.
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER = 37;
+  // Target for segmentation: Determine what modules a user should see on their
+  // Desktop New Tab Page.
+  OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE = 38;
 }
 
 // The model engine versions that can be used to do model inference.
