@@ -82,6 +82,11 @@ using session_manager::SessionState;
 namespace ash {
 namespace {
 
+// Constants -------------------------------------------------------------------
+
+constexpr char kKioskUserEmail[] =
+    "fake_kiosk@kioks-apps.device-local.localhost";
+
 // AshEventGeneratorDelegate ---------------------------------------------------
 
 class AshEventGeneratorDelegate
@@ -409,10 +414,7 @@ void AshTestBase::CreateUserSessions(int n) {
 
 void AshTestBase::SimulateUserLogin(const std::string& user_email,
                                     user_manager::UserType user_type) {
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(user_email, user_type);
-  session->SwitchActiveUser(AccountId::FromUserEmail(user_email));
-  session->SetSessionState(SessionState::ACTIVE);
+  SimulateUserLogin(AccountId::FromUserEmail(user_email), user_type);
 }
 
 void AshTestBase::SimulateUserLogin(const AccountId& account_id,
@@ -421,20 +423,14 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id,
 }
 
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(user_email, user_manager::USER_TYPE_REGULAR,
-                          true /* provide_pref_service */,
-                          true /* is_new_profile */);
-  session->SwitchActiveUser(AccountId::FromUserEmail(user_email));
-  session->SetSessionState(session_manager::SessionState::ACTIVE);
+  ash_test_helper_->SimulateUserLogin(AccountId::FromUserEmail(user_email),
+                                      user_manager::UserType::USER_TYPE_REGULAR,
+                                      /*is_new_profile=*/true);
 }
 
 void AshTestBase::SimulateGuestLogin() {
-  const std::string guest = user_manager::kGuestUserName;
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(guest, user_manager::USER_TYPE_GUEST);
-  session->SwitchActiveUser(AccountId::FromUserEmail(guest));
-  session->SetSessionState(SessionState::ACTIVE);
+  SimulateUserLogin(AccountId::FromUserEmail(user_manager::kGuestUserName),
+                    user_manager::USER_TYPE_GUEST);
 }
 
 void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
@@ -442,12 +438,8 @@ void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
          user_type == user_manager::USER_TYPE_KIOSK_APP ||
          user_type == user_manager::USER_TYPE_WEB_KIOSK_APP);
 
-  const std::string user_email = "fake_kiosk@kioks-apps.device-local.localhost";
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->SetIsRunningInAppMode(true);
-  session->AddUserSession(user_email, user_type);
-  session->SwitchActiveUser(AccountId::FromUserEmail(user_email));
-  session->SetSessionState(SessionState::ACTIVE);
+  GetSessionControllerClient()->SetIsRunningInAppMode(true);
+  SimulateUserLogin(AccountId::FromUserEmail(kKioskUserEmail), user_type);
 }
 
 void AshTestBase::SetAccessibilityPanelHeight(int panel_height) {

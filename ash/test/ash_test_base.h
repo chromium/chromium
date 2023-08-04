@@ -322,33 +322,23 @@ class AshTestBase : public testing::Test {
   // behavior where |AccountId|s are compared, prefer the method of the same
   // name that takes an |AccountId| created with a valid storage key instead.
   // See the documentation for|AccountId::GetUserEmail| for discussion.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateUserLogin(
       const std::string& user_email,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateUserLogin(
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateNewUserFirstLogin(const std::string& user_email);
 
   // Similar to SimulateUserLogin but for a guest user.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateGuestLogin();
 
   // Simulates kiosk mode. |user_type| must correlate to a kiosk type user.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateKioskMode(user_manager::UserType user_type);
 
   // Simulates setting height of the accessibility panel.

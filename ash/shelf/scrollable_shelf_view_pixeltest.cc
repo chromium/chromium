@@ -92,7 +92,6 @@ class ScrollableShelfViewWithGuestModePixelTest
       SimulateGuestLogin();
     else
       SimulateUserLogin("user@gmail.com");
-    StabilizeUIForPixelTest();
   }
 
  private:
