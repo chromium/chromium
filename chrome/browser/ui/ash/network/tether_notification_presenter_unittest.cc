@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/url_constants.h"
@@ -291,6 +294,34 @@ TEST_F(TetherNotificationPresenterTest,
       1u /* num_expected_body_tapped_setup_required */,
       0u /* num_expected_body_tapped_connection_failed */,
       0u /* num_expected_button_tapped_single_host_nearby */);
+}
+
+TEST_F(TetherNotificationPresenterTest,
+       TestInstantHotspotNotification_NeverDismiss) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(ash::features::kInstantHotspotRebrand);
+  EXPECT_FALSE(
+      display_service_->GetNotification(GetPotentialHotspotNotificationId()));
+  notification_presenter_->NotifyPotentialHotspotNearby(
+      test_device_, kTestNetworkSignalStrength);
+
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(GetPotentialHotspotNotificationId());
+
+  EXPECT_TRUE(notification->never_timeout());
+}
+
+TEST_F(TetherNotificationPresenterTest,
+       TestInstantHotspotNotification_NeverDismissNoFF) {
+  EXPECT_FALSE(
+      display_service_->GetNotification(GetPotentialHotspotNotificationId()));
+  notification_presenter_->NotifyPotentialHotspotNearby(
+      test_device_, kTestNetworkSignalStrength);
+
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(GetPotentialHotspotNotificationId());
+
+  EXPECT_FALSE(notification->never_timeout());
 }
 
 TEST_F(TetherNotificationPresenterTest,

@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -320,6 +322,9 @@ TetherNotificationPresenter::CreateNotification(
               &TetherNotificationPresenter::OnNotificationClosed,
               weak_ptr_factory_.GetWeakPtr(), id)));
   notification->set_small_image(gfx::Image(small_image));
+  if (base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand)) {
+    notification->set_never_timeout(true);
+  }
   return notification;
 }
 
