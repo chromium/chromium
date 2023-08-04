@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
@@ -681,23 +682,33 @@ void AutofillSuggestionGenerator::SetCardArtURL(
     Suggestion& suggestion,
     const CreditCard& credit_card,
     bool virtual_card_option) const {
-  if (!virtual_card_option &&
-      !base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage)) {
-    return;
-  }
-
-  GURL card_art_url = personal_data_->GetCardArtURL(credit_card);
+  const GURL card_art_url = personal_data_->GetCardArtURL(credit_card);
 
   if (card_art_url.is_empty() || !card_art_url.is_valid())
     return;
 
+  // The Capital One icon for virtual cards is not card metadata, it only helps
+  // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
+  // should only ever use the network logo or rich card art. The Capital One
+  // logo is reserved for virtual cards only.
+  if (!virtual_card_option && card_art_url == kCapitalOneCardArtUrl) {
+    return;
+  }
+
+  // Only show card art if the experiment is enabled or if it is the Capital One
+  // virtual card icon.
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
+      card_art_url == kCapitalOneCardArtUrl) {
 #if BUILDFLAG(IS_ANDROID)
-  suggestion.custom_icon_url = card_art_url;
+    suggestion.custom_icon_url = card_art_url;
 #else
-  gfx::Image* image = personal_data_->GetCreditCardArtImageForUrl(card_art_url);
-  if (image)
-    suggestion.custom_icon = *image;
+    gfx::Image* image =
+        personal_data_->GetCreditCardArtImageForUrl(card_art_url);
+    if (image) {
+      suggestion.custom_icon = *image;
+    }
 #endif
+  }
 }
 
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(

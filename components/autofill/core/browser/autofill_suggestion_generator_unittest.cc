@@ -1102,7 +1102,7 @@ class AutofillSuggestionGeneratorTestForMetadata
     return std::get<0>(GetParam());
   }
   bool card_art_image_enabled() const { return std::get<1>(GetParam()); }
-  bool card_has_static_art_image() const { return std::get<2>(GetParam()); }
+  bool card_has_capital_one_icon() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_card_product_description_;
@@ -1134,8 +1134,9 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
             PopupItemId::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
-  EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
-                                            card_art_url, fake_image));
+  EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
+                                          fake_image),
+            card_art_image_enabled());
 
   Suggestion real_card_suggestion =
       suggestion_generator()->CreateCreditCardSuggestion(
@@ -1195,8 +1196,9 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
             PopupItemId::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
-  EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
-                                            card_art_url, fake_image));
+  EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
+                                          fake_image),
+            card_art_image_enabled());
 
   Suggestion real_card_suggestion =
       suggestion_generator()->CreateCreditCardSuggestion(
@@ -1219,7 +1221,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     // Create one server card with no metadata.
     CreditCard server_card = CreateServerCard();
     server_card.set_issuer_id(kCapitalOneCardIssuerId);
-    if (card_has_static_art_image()) {
+    if (card_has_capital_one_icon()) {
       server_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
     personal_data()->AddServerCreditCard(server_card);
@@ -1276,6 +1278,45 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     EXPECT_EQ(metadata_logging_context.issuer_to_metadata_availability,
               expected_issuer_to_metadata_availability);
   }
+}
+
+// Verifies that the custom icon is set correctly. The card art should be shown
+// when the metadata card art flag is enabled. Capital One virtual card icon is
+// an exception which should only and always be shown for virtual cards.
+TEST_P(AutofillSuggestionGeneratorTestForMetadata,
+       CreateCreditCardSuggestion_CustomCardIcon) {
+  // Create a server card.
+  CreditCard server_card = CreateServerCard();
+  GURL card_art_url =
+      GURL(card_has_capital_one_icon() ? kCapitalOneCardArtUrl
+                                       : "https://www.example.com/card-art");
+  server_card.set_card_art_url(card_art_url);
+  gfx::Image fake_image = CreateFakeImage();
+  personal_data()->AddCardArtImage(card_art_url, fake_image);
+
+  Suggestion virtual_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, AutofillType(CREDIT_CARD_NUMBER),
+          /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  // Verify that for virtual cards, the custom icon is shown if the card art is
+  // the Capital One virtual card art or if the metadata card art is enabled.
+  EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
+                                          fake_image),
+            card_has_capital_one_icon() || card_art_image_enabled());
+
+  Suggestion real_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, AutofillType(CREDIT_CARD_NUMBER),
+          /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  // Verify that for FPAN, the custom icon is shown if the card art is not the
+  // Capital One virtual card art and the metadata card art is enabled.
+  EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
+                                          fake_image),
+            !card_has_capital_one_icon() && card_art_image_enabled());
 }
 
 class AutofillSuggestionGeneratorTestForOffer
