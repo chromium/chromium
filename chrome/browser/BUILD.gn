@@ -2802,6 +2802,8 @@ static_library("browser") {
       "android/permissions/permission_settings_bridge.cc",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.cc",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h",
+      "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.cc",
+      "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h",
       "android/persisted_tab_data/persisted_tab_data_android.cc",
       "android/persisted_tab_data/persisted_tab_data_android.h",
       "android/persisted_tab_data/persisted_tab_data_config_android.cc",

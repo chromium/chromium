@@ -5,7 +5,9 @@
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h"
+#include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace {
 const char kSensitivityId[] = "sensitivity";
@@ -24,7 +26,8 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
                                    Profile* profile) {
   if (user_data_key == SensitivityPersistedTabDataAndroid::UserDataKey()) {
     return std::make_unique<PersistedTabDataConfigAndroid>(
-        LevelDBPersistedTabDataStorageAndroid::FromProfile(profile),
+        LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+            ->GetForBrowserContext(profile),
         kSensitivityId);
   }
   NOTREACHED() << "Unknown UserDataKey";

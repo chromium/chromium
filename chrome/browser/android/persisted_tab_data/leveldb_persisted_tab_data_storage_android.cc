@@ -10,9 +10,6 @@
 
 namespace {
 
-const char kLevelDBPersistedTabDataAndroid[] =
-    "level_db_persisted_tab_data_android";
-
 // Callback for inserting and deleting content.
 void OnUpdateCallback(bool success) {
   if (!success) {
@@ -44,24 +41,6 @@ const std::string GetKey(int tab_id, const char* data_id) {
 
 LevelDBPersistedTabDataStorageAndroid::
     ~LevelDBPersistedTabDataStorageAndroid() = default;
-
-LevelDBPersistedTabDataStorageAndroid*
-LevelDBPersistedTabDataStorageAndroid::FromProfile(Profile* profile) {
-  if (!profile) {
-    return nullptr;
-  }
-
-  LevelDBPersistedTabDataStorageAndroid* level_db_persisted_tab_data_android =
-      static_cast<LevelDBPersistedTabDataStorageAndroid*>(
-          profile->GetUserData(kLevelDBPersistedTabDataAndroid));
-  if (!level_db_persisted_tab_data_android) {
-    level_db_persisted_tab_data_android =
-        new LevelDBPersistedTabDataStorageAndroid(profile);
-    profile->SetUserData(kLevelDBPersistedTabDataAndroid,
-                         base::WrapUnique(level_db_persisted_tab_data_android));
-  }
-  return level_db_persisted_tab_data_android;
-}
 
 void LevelDBPersistedTabDataStorageAndroid::Save(
     int tab_id,

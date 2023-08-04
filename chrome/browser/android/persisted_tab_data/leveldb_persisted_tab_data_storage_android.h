@@ -8,19 +8,17 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/session_proto_db/session_proto_db.h"
 
 // Level DB backed implementation of PersistedTabDataStorage
 class LevelDBPersistedTabDataStorageAndroid
     : public PersistedTabDataStorageAndroid,
-      public base::SupportsUserData::Data {
+      public KeyedService {
  public:
   ~LevelDBPersistedTabDataStorageAndroid() override;
-
-  static LevelDBPersistedTabDataStorageAndroid* FromProfile(Profile* profile);
 
   // Save |data| into the database for a |tab_id| and |data_id| combination.
   void Save(int tab_id,
@@ -36,7 +34,9 @@ class LevelDBPersistedTabDataStorageAndroid
   void Remove(int tab_id, const char* data_id) override;
 
  private:
+  friend class LevelDBPersistedTabDataStorageAndroidFactory;
   explicit LevelDBPersistedTabDataStorageAndroid(Profile* profile);
+
   // Per profile/per proto storage
   raw_ptr<SessionProtoDB<persisted_state_db::PersistedStateContentProto>>
       proto_db_;

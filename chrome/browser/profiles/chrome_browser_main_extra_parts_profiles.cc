@@ -225,6 +225,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
+#include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h"
 #include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
@@ -751,6 +752,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   KAnonymityServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
+#if BUILDFLAG(IS_ANDROID)
+  LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
+#endif
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   LoginUIServiceFactory::GetInstance();
