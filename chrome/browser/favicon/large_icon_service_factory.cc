@@ -10,6 +10,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -19,6 +20,11 @@
 #include "ui/gfx/favicon_size.h"
 
 namespace {
+
+favicon::LargeFaviconProvider* GetLargeFaviconProvider(
+    content::BrowserContext* context) {
+  return LargeIconServiceFactory::GetInstance()->GetForBrowserContext(context);
+}
 
 #if BUILDFLAG(IS_ANDROID)
 // Seems like on Android `1 dip == 1 px`. The value of `kDipForServerRequests`
@@ -59,6 +65,8 @@ LargeIconServiceFactory::LargeIconServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(FaviconServiceFactory::GetInstance());
+  favicon::SetLargeFaviconProviderGetter(
+      base::BindRepeating(&GetLargeFaviconProvider));
 }
 
 LargeIconServiceFactory::~LargeIconServiceFactory() = default;

@@ -859,10 +859,10 @@ void InstallableManager::FetchFavicon() {
     return;
   }
 
-  favicon::LargeIconWorker::GetLargeIconRawBitmap(
-      favicon_provider, GetWebContents()->GetLastCommittedURL(),
+  favicon_provider->GetLargeIconImageOrFallbackStyleForPageUrl(
+      GetWebContents()->GetLastCommittedURL(),
       GetMinimumFaviconForPrimaryIconSizeInPx(),
-      GetIdealPrimaryIconSizeInPx(IconPurpose::ANY), {},
+      GetIdealPrimaryIconSizeInPx(IconPurpose::ANY),
       base::BindOnce(&InstallableManager::OnFaviconFetched,
                      weak_factory_.GetWeakPtr()),
       &favicon_task_tracker_);

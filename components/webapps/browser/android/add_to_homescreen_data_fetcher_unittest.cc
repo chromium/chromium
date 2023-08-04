@@ -320,10 +320,23 @@ class AddToHomescreenDataFetcherTest
     NullLargeFaviconProvider() = default;
     virtual ~NullLargeFaviconProvider() = default;
 
-    base::CancelableTaskTracker::TaskId GetLargestRawFaviconForPageURL(
+    MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
+                 base::CancelableTaskTracker::TaskId(
+                     const GURL& page_url,
+                     int min_source_size_in_pixel,
+                     int desired_size_in_pixel,
+                     favicon_base::LargeIconCallback callback,
+                     base::CancelableTaskTracker* tracker));
+    MOCK_METHOD5(GetLargeIconImageOrFallbackStyleForPageUrl,
+                 base::CancelableTaskTracker::TaskId(
+                     const GURL& page_url,
+                     int min_source_size_in_pixel,
+                     int desired_size_in_pixel,
+                     favicon_base::LargeIconImageCallback callback,
+                     base::CancelableTaskTracker* tracker));
+    base::CancelableTaskTracker::TaskId GetLargeIconRawBitmapForPageUrl(
         const GURL& page_url,
-        const std::vector<favicon_base::IconTypeSet>& icon_types,
-        int minimum_size_in_pixels,
+        int min_source_size_in_pixel,
         favicon_base::FaviconRawBitmapCallback callback,
         base::CancelableTaskTracker* tracker) override {
       content::GetUIThreadTaskRunner({})->PostTask(

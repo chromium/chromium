@@ -289,20 +289,13 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
   if (!web_contents_)
     return;
 
-  // Grab the best, largest icon we can find to represent this bookmark.
-  std::vector<favicon_base::IconTypeSet> icon_types = {
-      {favicon_base::IconType::kWebManifestIcon},
-      {favicon_base::IconType::kFavicon},
-      {favicon_base::IconType::kTouchPrecomposedIcon,
-       favicon_base::IconType::kTouchIcon}};
-
   // Using favicon if its size is not smaller than platform required size,
   // otherwise using the largest icon among all available icons.
   int threshold_to_get_any_largest_icon =
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
   favicon::GetLargeFaviconProvider(web_contents_->GetBrowserContext())
-      ->GetLargestRawFaviconForPageURL(
-          shortcut_info_.url, icon_types, threshold_to_get_any_largest_icon,
+      ->GetLargeIconRawBitmapForPageUrl(
+          shortcut_info_.url, threshold_to_get_any_largest_icon,
           base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
                          weak_ptr_factory_.GetWeakPtr()),
           &favicon_task_tracker_);
@@ -312,14 +305,16 @@ void AddToHomescreenDataFetcher::OnFaviconFetched(
     const favicon_base::FaviconRawBitmapResult& bitmap_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!web_contents_)
+  if (!web_contents_) {
     return;
+  }
 
   shortcut_info_.best_primary_icon_url = bitmap_result.icon_url;
 
-  // The user is waiting for the icon to be processed before they can proceed
-  // with add to homescreen. But if we shut down, there's no point starting the
-  // image processing. Use USER_VISIBLE with MayBlock and SKIP_ON_SHUTDOWN.
+  // The user is waiting for the icon to be processed before they can
+  // proceed with add to homescreen. But if we shut down, there's no point
+  // starting the image processing. Use USER_VISIBLE with MayBlock and
+  // SKIP_ON_SHUTDOWN.
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
