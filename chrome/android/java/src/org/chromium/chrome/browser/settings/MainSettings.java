@@ -20,6 +20,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -77,6 +78,7 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_NOTIFICATIONS = "notifications";
     public static final String PREF_DOWNLOADS = "downloads";
     public static final String PREF_DEVELOPER = "developer";
+    public static final String PREF_AUTOFILL_OPTIONS = "autofill_options";
 
     private final ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
@@ -229,6 +231,14 @@ public class MainSettings extends PreferenceFragmentCompat
             addPreferenceIfAbsent(PREF_SIGN_IN);
         } else {
             removePreferenceIfPresent(PREF_SIGN_IN);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+            addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
+        } else {
+            removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
         }
 
         updateManageSyncPreference();

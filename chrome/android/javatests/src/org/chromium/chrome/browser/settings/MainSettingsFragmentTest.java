@@ -93,6 +93,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
@@ -204,6 +205,7 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
     public void testStartup() {
         launchSettingsActivity();
 
@@ -223,6 +225,12 @@ public class MainSettingsFragmentTest {
 
         // Assert for "Basics" section
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
+        if (supportThirdPartyFillingSetting()) {
+            assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
+        } else {
+            Assert.assertNull("Third party filling setting should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_OPTIONS));
+        }
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
         assertSettingsExists("autofill_addresses", AutofillProfilesFragment.class);
@@ -591,5 +599,9 @@ public class MainSettingsFragmentTest {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         return PackageManagerUtils.canResolveActivity(
                 new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
+    }
+
+    private boolean supportThirdPartyFillingSetting() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 }

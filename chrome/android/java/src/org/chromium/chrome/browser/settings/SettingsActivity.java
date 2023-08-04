@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
@@ -548,6 +550,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof PasswordSettings) {
             ((PasswordSettings) fragment).setBottomSheetController(mBottomSheetController);
+        }
+        if (fragment instanceof AutofillOptionsFragment) {
+            AutofillOptionsCoordinator.createFor((AutofillOptionsFragment) fragment);
         }
     }
 

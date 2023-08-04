@@ -35,6 +35,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/FieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/HintedDropDownAdapter.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/TextFieldView.java",
+    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.autofill"
@@ -52,6 +54,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/util:java",
@@ -83,6 +86,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
@@ -171,7 +175,10 @@ android_library("test_java") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.autofill"
 
-  sources = [ "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsTest.java",
+  ]
 
   deps = [
     ":java",
@@ -189,9 +196,12 @@ robolectric_library("junit") {
     "//components/autofill/android:main_autofill_java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
