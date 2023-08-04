@@ -170,6 +170,7 @@ export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_a
 export {HandlerVoice, SettingsSelectToSpeakSubpageElement} from './os_a11y_page/select_to_speak_subpage.js';
 export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/switch_access_action_assignment_dialog.js';
 export {SwitchAccessCommand} from './os_a11y_page/switch_access_constants.js';
+export {SettingsSwitchAccessSubpageElement} from './os_a11y_page/switch_access_subpage.js';
 export {PdfOcrUserSelection, SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';
 export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.js';
 export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';

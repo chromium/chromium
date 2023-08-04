@@ -4,49 +4,20 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {Router, routes, SwitchAccessSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {SettingsSwitchAccessSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {Router, routes, settingMojom, SwitchAccessSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'refreshAssignmentsFromPrefs',
-      'notifySwitchAccessActionAssignmentPaneActive',
-      'notifySwitchAccessActionAssignmentPaneInactive',
-      'notifySwitchAccessSetupGuideAttached',
-    ]);
-  }
+import {TestSwitchAccessSubpageBrowserProxy} from './test_switch_access_subpage_browser_proxy.js';
 
-  /** @override */
-  refreshAssignmentsFromPrefs() {
-    this.methodCalled('refreshAssignmentsFromPrefs');
-  }
-
-  /** @override */
-  notifySwitchAccessActionAssignmentPaneActive() {
-    this.methodCalled('notifySwitchAccessActionAssignmentPaneActive');
-  }
-
-  /** @override */
-  notifySwitchAccessActionAssignmentPaneInactive() {
-    this.methodCalled('notifySwitchAccessActionAssignmentPaneInactive');
-  }
-
-  /** @override */
-  notifySwitchAccessSetupGuideAttached() {
-    this.methodCalled('notifySwitchAccessSetupGuideAttached');
-  }
-}
-
-suite('SwitchAccessSubpageTests', function() {
-  let page = null;
-  let browserProxy = null;
+suite('<settings-switch-access-subpage>', () => {
+  let page: SettingsSwitchAccessSubpageElement;
+  let browserProxy: TestSwitchAccessSubpageBrowserProxy;
 
   function getDefaultPrefs() {
     return {
@@ -87,64 +58,62 @@ suite('SwitchAccessSubpageTests', function() {
     };
   }
 
-  /** @param {?Object} prefs */
-  function initPage(prefs) {
+  function initPage(prefs?: {[key: string]: unknown}): void {
     page = document.createElement('settings-switch-access-subpage');
     page.prefs = prefs || getDefaultPrefs();
 
     document.body.appendChild(page);
   }
 
-  setup(function() {
+  suiteSetup(() => {
     browserProxy = new TestSwitchAccessSubpageBrowserProxy();
     SwitchAccessSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-    PolymerTest.clearBody();
   });
 
-  teardown(function() {
-    if (page) {
-      page.remove();
-    }
+  teardown(() => {
+    page.remove();
+    browserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
 
   /**
-   * @param {!Array<string>} keys New switch key assignments for select action.
-   * @return {string} Sub-label text from the select link row.
+   * @param keys New switch key assignments for select action.
+   * @return Sub-label text from the select link row.
    */
-  function getSublabelForSelectUpdates(keys) {
+  function getSublabelForSelectUpdates(keys: string[]): string {
     webUIListenerCallback('switch-access-assignments-changed', {
       select: keys.map(key => ({key, device: 'usb'})),
       next: [],
       previous: [],
     });
 
-    return page.shadowRoot.querySelector('#selectLinkRow')
-        .shadowRoot.querySelector('#subLabel')
-        .textContent.trim();
+    const linkRow = page.shadowRoot!.querySelector('#selectLinkRow');
+    assertTrue(!!linkRow);
+    const subLabel = linkRow.shadowRoot!.querySelector('#subLabel');
+    assertTrue(!!subLabel);
+    return subLabel.textContent!.trim();
   }
 
-
-  test('Switch assignment key display', function() {
+  test('Switch assignment key display', () => {
     initPage();
 
-    assertEquals(0, page.selectAssignments_.length);
-    assertEquals(0, page.nextAssignments_.length);
-    assertEquals(0, page.previousAssignments_.length);
+    assertEquals(0, page.get('selectAssignments_').length);
+    assertEquals(0, page.get('nextAssignments_').length);
+    assertEquals(0, page.get('previousAssignments_').length);
 
     // Simulate a pref change for the select action.
     webUIListenerCallback(
         'switch-access-assignments-changed',
         {select: [{key: 'a', device: 'usb'}], next: [], previous: []});
 
-    assertEquals(1, page.selectAssignments_.length);
-    assertDeepEquals({key: 'a', device: 'usb'}, page.selectAssignments_[0]);
-    assertEquals(0, page.nextAssignments_.length);
-    assertEquals(0, page.previousAssignments_.length);
+    assertEquals(1, page.get('selectAssignments_').length);
+    assertDeepEquals(
+        {key: 'a', device: 'usb'}, page.get('selectAssignments_')[0]);
+    assertEquals(0, page.get('nextAssignments_').length);
+    assertEquals(0, page.get('previousAssignments_').length);
   });
 
-  test('Switch assignment sub-labels', function() {
+  test('Switch assignment sub-labels', () => {
     initPage();
 
     assertEquals('0 switches assigned', getSublabelForSelectUpdates([]));
@@ -175,7 +144,7 @@ suite('SwitchAccessSubpageTests', function() {
             ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c', 'd']));
   });
 
-  test('Switch access action assignment dialog', async function() {
+  test('Switch access action assignment dialog', async () => {
     initPage();
 
     // Simulate a click on the select link row.
@@ -203,7 +172,7 @@ suite('SwitchAccessSubpageTests', function() {
         'notifySwitchAccessActionAssignmentPaneInactive');
   });
 
-  test('Switch access action assignment dialog error state', async function() {
+  test('Switch access action assignment dialog error state', async () => {
     initPage();
 
     // Simulate a click on the select link row.
@@ -220,16 +189,18 @@ suite('SwitchAccessSubpageTests', function() {
         'switch-access-got-key-press-for-assignment',
         {key: 'b', keyCode: 66, device: 'usb'});
 
-    const element =
-        page.shadowRoot.querySelector('#switchAccessActionAssignmentDialog');
+    const element = page.shadowRoot!.querySelector<HTMLElement>(
+        '#switchAccessActionAssignmentDialog');
+    assertTrue(!!element);
     await waitAfterNextRender(element);
 
     // This should update the error field at the bottom of the dialog.
-    const errorText =
-        page.shadowRoot.querySelector('#switchAccessActionAssignmentDialog')
-            .shadowRoot.querySelector('#switchAccessActionAssignmentPane')
-            .shadowRoot.querySelector('#error')
-            .textContent.trim();
+    const pane =
+        element.shadowRoot!.querySelector('#switchAccessActionAssignmentPane');
+    assertTrue(!!pane);
+    const error = pane.shadowRoot!.querySelector('#error');
+    assertTrue(!!error);
+    const errorText = error.textContent!.trim();
     assertEquals('Keys don’t match. Press any key to exit.', errorText);
   });
 
@@ -244,13 +215,18 @@ suite('SwitchAccessSubpageTests', function() {
     flush();
 
     const params = new URLSearchParams();
-    params.append('settingId', '1525');
+    params.append(
+        'settingId',
+        settingMojom.Setting.kSwitchActionAutoScanKeyboard.toString());
     Router.getInstance().navigateTo(
         routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);
 
+    const settingsSlider =
+        page.shadowRoot!.querySelector('#keyboardScanSpeedSlider');
+    assertTrue(!!settingsSlider);
     const deepLinkElement =
-        page.shadowRoot.querySelector('#keyboardScanSpeedSlider')
-            .shadowRoot.querySelector('cr-slider');
+        settingsSlider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
 
     assertEquals(
@@ -269,9 +245,15 @@ suite('SwitchAccessSubpageTests', function() {
     initPage(prefs);
 
     // Mock this API to confirm it's getting called with the right values.
-    const setPrefData = [];
+    interface Prefs {
+      key: string;
+      value: chrome.settingsPrivate.PrefType.DICTIONARY;
+    }
+    const setPrefData: Prefs[] = [];
+
     chrome.settingsPrivate.setPref = function(key, value) {
       setPrefData.push({key, value});
+      return Promise.resolve(true);
     };
 
     // Open the setup guide warning dialog.
@@ -279,41 +261,43 @@ suite('SwitchAccessSubpageTests', function() {
     flush();
 
     // Check that the dialog is open.
-    let warningDialog = page.shadowRoot.querySelector(
+    let warningDialog = page.shadowRoot!.querySelector(
         'settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
 
     // Press "cancel" to exit the dialog.
-    const cancelButton = warningDialog.$.cancel;
+    const cancelButton =
+        warningDialog.shadowRoot!.querySelector<HTMLButtonElement>('#cancel');
     assertTrue(!!cancelButton);
     cancelButton.click();
     flush();
 
     // Check that the dialog is closed, and the setup guide is not open.
-    warningDialog = page.shadowRoot.querySelector(
+    warningDialog = page.shadowRoot!.querySelector(
         'settings-switch-access-setup-guide-warning-dialog');
-    assertFalse(!!warningDialog);
-    let setupDialog = page.shadowRoot.querySelector(
+    assertNull(warningDialog);
+    let setupDialog = page.shadowRoot!.querySelector(
         'settings-switch-access-setup-guide-dialog');
 
-    assertFalse(!!setupDialog);
+    assertNull(setupDialog);
 
     // Re-open the warning dialog.
     page.$.setupGuideLink.click();
     flush();
-    warningDialog = page.shadowRoot.querySelector(
+    warningDialog = page.shadowRoot!.querySelector(
         'settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
 
     // Press "continue" to open the setup guide.
-    const continueButton = warningDialog.$.continue;
+    const continueButton =
+        warningDialog.shadowRoot!.querySelector<HTMLButtonElement>('#continue');
     assertTrue(!!continueButton);
     continueButton.click();
     flush();
     await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
     // Check that the setup guide has opened.
-    setupDialog = page.shadowRoot.querySelector(
+    setupDialog = page.shadowRoot!.querySelector(
         'settings-switch-access-setup-guide-dialog');
     assertTrue(!!setupDialog);
 
@@ -345,11 +329,11 @@ suite('SwitchAccessSubpageTests', function() {
         initPage();
         // Normally on startup, the browser proxy calls a C++ function,
         // which then fires an event that calls this function.
-        page.onAssignmentsChanged_({select: [], next: [], previous: []});
+        page['onAssignmentsChanged_']({select: [], next: [], previous: []});
         flush();
         await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
-        const setupDialog = page.shadowRoot.querySelector(
+        const setupDialog = page.shadowRoot!.querySelector(
             'settings-switch-access-setup-guide-dialog');
         assertTrue(!!setupDialog);
       });

@@ -507,6 +507,9 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_a11y_page/switch_access_action_assignment_dialog_test.js',
  ],
  [
+   'OsA11yPageSwitchAccessSubpage', 'os_a11y_page/switch_access_subpage_test.js'
+ ],
+ [
    'OsA11yPageTextToSpeechSubpage',
    'os_a11y_page/text_to_speech_subpage_test.js',
    {enabled: ['features::kPdfOcr']},
@@ -765,7 +768,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'settings_scheduler_slider/settings_scheduler_slider_test.js'
  ],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
- ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {

@@ -52,7 +52,7 @@ function ticksWithCountingLabels(ticks: number[]): SliderTick[] {
   return ticks.map((x, i) => ({label: `${i + 1}`, value: x}));
 }
 
-interface SettingsSwitchAccessSubpageElement {
+export interface SettingsSwitchAccessSubpageElement {
   $: {
     nextLinkRow: CrLinkRowElement,
     previousLinkRow: CrLinkRowElement,
@@ -64,7 +64,7 @@ interface SettingsSwitchAccessSubpageElement {
 const SettingsSwitchAccessSubpageElementBase = DeepLinkingMixin(PrefsMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsSwitchAccessSubpageElement extends
+export class SettingsSwitchAccessSubpageElement extends
     SettingsSwitchAccessSubpageElementBase {
   static get is() {
     return 'settings-switch-access-subpage';
