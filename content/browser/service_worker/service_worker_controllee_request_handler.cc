@@ -778,8 +778,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
     ServiceWorkerMetrics::EventType event_type) {
   // Start service worker if it is not running so that we run the code
   // written in the top level.
-  if (active_version->running_status() == EmbeddedWorkerStatus::STARTING ||
-      active_version->running_status() == EmbeddedWorkerStatus::RUNNING) {
+  if (active_version->running_status() == EmbeddedWorkerStatus::RUNNING) {
     return;
   }
   active_version->StartWorker(
