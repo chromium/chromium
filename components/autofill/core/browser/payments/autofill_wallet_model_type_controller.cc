@@ -62,8 +62,11 @@ AutofillWalletModelTypeController::GetPreconditionState() const {
 }
 
 bool AutofillWalletModelTypeController::ShouldRunInTransportOnlyMode() const {
-  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    return false;
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
+      return false;
+    }
   }
   return ModelTypeController::ShouldRunInTransportOnlyMode();
 }
