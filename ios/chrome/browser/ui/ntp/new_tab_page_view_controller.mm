@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -358,6 +359,13 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     [self updateFakeOmniboxForScrollPosition];
+    // Subviews will receive traitCollectionDidChange after this call, so the
+    // only way to ensure that the scrollview isn't scrolled up too far is to
+    // circle back afterwards and adjust if needed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [self updateHeightAboveFeed];
+        }));
   }
 
   [self.headerViewController updateConstraints];
@@ -500,10 +508,12 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     CGFloat oldHeightAboveFeed = self.collectionView.contentInset.top;
     CGFloat oldOffset = self.collectionView.contentOffset.y;
     [self updateFeedInsetsForContentAbove];
-    CGFloat change = self.collectionView.contentInset.top - oldHeightAboveFeed;
+    CGFloat newHeightAboveFeed = self.collectionView.contentInset.top;
+    CGFloat change = newHeightAboveFeed - oldHeightAboveFeed;
     // Offset the change by subtracting it from the content offset, in order to
-    // visually keep the same scroll position.
-    [self setContentOffset:oldOffset - change];
+    // visually keep the same scroll position, but don't allow an offset that
+    // is lower than the top.
+    [self setContentOffset:MAX(oldOffset - change, -newHeightAboveFeed)];
   }
 }
 
