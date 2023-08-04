@@ -1474,12 +1474,6 @@
       status: "experimental",
     },
     {
-      // Disables the `white-space` code in `edit_style.cc`.
-      // Part of crbug.com/1417543, see crrev.com/c/4289333.
-      name: "EditingStyleWhiteSpace",
-      status: "stable",
-    },
-    {
       // Experiment with preventing some instances of mutation XSS
       // by escaping "<" and ">" in attribute values.
       // See: crbug.com/1175016
