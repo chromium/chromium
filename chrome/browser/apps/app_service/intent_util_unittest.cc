@@ -646,7 +646,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
       apps_util::CreateIntentFilterForArc(arc_filter);
 
   for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::ConditionType::kHost) {
+    if (condition->condition_type == apps::ConditionType::kAuthority) {
       ASSERT_EQ(2u, condition->condition_values.size());
       ASSERT_EQ(kHost1, condition->condition_values[0]->value);
       ASSERT_EQ(kHost2, condition->condition_values[1]->value);
@@ -675,7 +675,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
       apps_util::CreateIntentFilterForArc(arc_filter);
 
   for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::ConditionType::kHost) {
+    if (condition->condition_type == apps::ConditionType::kAuthority) {
       ASSERT_EQ(condition->condition_values.size(), 2U);
 
       // Check wildcard host

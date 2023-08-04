@@ -555,7 +555,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
           schemes.push_back(condition_value->value);
         }
         break;
-      case apps::ConditionType::kHost:
+      case apps::ConditionType::kAuthority:
         for (auto& condition_value : condition->condition_values) {
           authorities.emplace_back(
               /*host=*/condition_value->value, /*port=*/0);
@@ -672,7 +672,7 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
         host_condition_values.end());
 
     auto host_condition = std::make_unique<apps::Condition>(
-        apps::ConditionType::kHost, std::move(host_condition_values));
+        apps::ConditionType::kAuthority, std::move(host_condition_values));
     intent_filter->conditions.push_back(std::move(host_condition));
   }
 

@@ -190,7 +190,7 @@ apps::IntentFilters CreateIntentFilters() {
   values3.push_back(std::make_unique<apps::ConditionValue>(
       url.host(), apps::PatternMatchType::kLiteral));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
-      apps::ConditionType::kHost, std::move(values3)));
+      apps::ConditionType::kAuthority, std::move(values3)));
 
   apps::ConditionValues values4;
   values4.push_back(std::make_unique<apps::ConditionValue>(

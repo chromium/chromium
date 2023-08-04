@@ -233,11 +233,11 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
 
   EXPECT_EQ(filter_url->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kAuthority) +
                 static_cast<int>(apps::IntentFilterMatchLevel::kPath));
   EXPECT_EQ(filter_scheme_and_host_only->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kHost));
+                static_cast<int>(apps::IntentFilterMatchLevel::kAuthority));
   EXPECT_EQ(filter_scheme_only->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme));
   EXPECT_EQ(filter_empty->GetFilterMatchLevel(),

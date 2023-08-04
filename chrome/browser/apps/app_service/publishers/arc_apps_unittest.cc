@@ -97,7 +97,7 @@ apps::IntentFilters CreateIntentFilters(
         authority, apps::PatternMatchType::kLiteral));
   }
   filter->conditions.push_back(std::make_unique<apps::Condition>(
-      apps::ConditionType::kHost, std::move(values)));
+      apps::ConditionType::kAuthority, std::move(values)));
 
   apps::ConditionValues values3;
   values3.push_back(std::make_unique<apps::ConditionValue>(

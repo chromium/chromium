@@ -26,7 +26,7 @@ namespace apps {
 enum class IntentFilterMatchLevel {
   kNone = 0,
   kScheme = 1,
-  kHost = 2,
+  kAuthority = 2,
   kPath = 4,
   kMimeType = 8,
 };
@@ -39,7 +39,7 @@ enum class ConditionType {
   // Matches the URL scheme (e.g. https, tel).
   kScheme = 0,
   // Matches the URL host (e.g. www.google.com).
-  kHost = 1,
+  kAuthority = 1,
   // Matches the URL path (e.g. /abc/*). Does not include the URL query or
   // hash.
   kPath = 2,

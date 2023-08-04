@@ -584,7 +584,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
                                          apps::PatternMatchType::kLiteral);
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority, "2",
                                          apps::PatternMatchType::kLiteral);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "3",
                                          apps::PatternMatchType::kPrefix);
@@ -596,7 +596,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
                                          apps::PatternMatchType::kMimeType);
   intent_filter->AddSingleValueCondition(
       apps::ConditionType::kFile, "7", apps::PatternMatchType::kFileExtension);
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "8",
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority, "8",
                                          apps::PatternMatchType::kSuffix);
   input->intent_filters.push_back(std::move(intent_filter));
 
@@ -617,7 +617,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   }
   {
     auto& condition = filter->conditions[1];
-    EXPECT_EQ(condition->condition_type, apps::ConditionType::kHost);
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kAuthority);
     ASSERT_EQ(condition->condition_values.size(), 1U);
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
@@ -665,7 +665,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   }
   {
     auto& condition = filter->conditions[7];
-    EXPECT_EQ(condition->condition_type, apps::ConditionType::kHost);
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kAuthority);
     ASSERT_EQ(condition->condition_values.size(), 1U);
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::PatternMatchType::kSuffix);
@@ -1130,7 +1130,7 @@ TEST(AppServiceTypesMojomTraitsTest, PreferredAppChanges) {
   intent_filter1->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
                                           apps::PatternMatchType::kLiteral);
   auto intent_filter2 = std::make_unique<apps::IntentFilter>();
-  intent_filter2->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kAuthority, "2",
                                           apps::PatternMatchType::kLiteral);
   added_filters.push_back(std::move(intent_filter1));
   added_filters.push_back(std::move(intent_filter2));

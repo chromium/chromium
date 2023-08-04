@@ -11,7 +11,7 @@ namespace apps {
 
 APP_ENUM_TO_STRING(ConditionType,
                    kScheme,
-                   kHost,
+                   kAuthority,
                    kPath,
                    kAction,
                    kMimeType,
@@ -147,8 +147,8 @@ int IntentFilter::GetFilterMatchLevel() {
       case ConditionType::kScheme:
         match_level += static_cast<int>(IntentFilterMatchLevel::kScheme);
         break;
-      case ConditionType::kHost:
-        match_level += static_cast<int>(IntentFilterMatchLevel::kHost);
+      case ConditionType::kAuthority:
+        match_level += static_cast<int>(IntentFilterMatchLevel::kAuthority);
         break;
       case ConditionType::kPath:
         match_level += static_cast<int>(IntentFilterMatchLevel::kPath);
@@ -208,7 +208,7 @@ std::set<std::string> IntentFilter::GetSupportedLinksForAppManagement() {
     }
 
     // For host conditions we add each value to the |hosts| set.
-    if (condition->condition_type == ConditionType::kHost) {
+    if (condition->condition_type == ConditionType::kAuthority) {
       for (auto& condition_value : condition->condition_values) {
         // Prepend the wildcard to indicate any subdomain in the hosts
         std::string host = condition_value->value;

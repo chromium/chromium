@@ -80,7 +80,8 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
                                          url.scheme(),
                                          apps::PatternMatchType::kLiteral);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, url.host(),
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
+                                         url.host(),
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, url.path(),
@@ -148,7 +149,7 @@ bool IsSupportedLinkForApp(const std::string& app_id,
           }
         }
         break;
-      case apps::ConditionType::kHost:
+      case apps::ConditionType::kAuthority:
         host = true;
         break;
       case apps::ConditionType::kPath:

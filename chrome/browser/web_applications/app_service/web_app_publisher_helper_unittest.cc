@@ -206,7 +206,7 @@ TEST_F(WebAppPublisherHelperTest,
 
   {
     const apps::Condition& condition = *filter->conditions[2];
-    EXPECT_EQ(condition.condition_type, apps::ConditionType::kHost);
+    EXPECT_EQ(condition.condition_type, apps::ConditionType::kAuthority);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);

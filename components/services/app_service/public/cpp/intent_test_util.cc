@@ -115,7 +115,7 @@ apps::IntentFilterPtr MakeSchemeAndHostOnlyFilter(const std::string& scheme,
   host_condition_values.push_back(std::make_unique<apps::ConditionValue>(
       host, apps::PatternMatchType::kLiteral));
   auto host_condition = std::make_unique<apps::Condition>(
-      apps::ConditionType::kHost, std::move(host_condition_values));
+      apps::ConditionType::kAuthority, std::move(host_condition_values));
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->conditions.push_back(std::move(scheme_condition));
