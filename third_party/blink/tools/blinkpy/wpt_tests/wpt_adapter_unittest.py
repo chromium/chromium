@@ -95,14 +95,10 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(options.rerun, 9)
             self.assertEqual(options.retry_unexpected, 11)
             self.assertEqual(options.default_exclude, True)
-            self.assertEqual(
-                set(options.exclude),
-                {
-                    'wpt_internal/variant.html',
-                    # `*webdriver/` tests are always implicitly excluded.
-                    'webdriver',
-                    'infrastructure/webdriver',
-                })
+            self.assertEqual(set(options.exclude),
+                             {'wpt_internal/variant.html'})
+            # `*webdriver/` tests are implicitly excluded by default.
+            self.assertNotIn('wdspec', options.test_types)
             self.assertEqual(options.include, ['dir/'])
 
             run_info = self._read_run_info(options)

@@ -191,6 +191,10 @@
             },
             "not_site_per_process_blink_wpt_tests (with patch)": {
                 "flag_specific": "disable-site-isolation-trials"
+            },
+            "webdriver_tests_suite (with patch)": {
+                "uses_wptrunner": true,
+                "product": "chrome"
             }
         },
         "is_try_builder": true

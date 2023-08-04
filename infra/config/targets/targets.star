@@ -564,12 +564,8 @@ targets.generated_script(
     name = "webdriver_wpt_tests",
     label = "//:webdriver_wpt_tests",
     args = [
-        "../../chrome/test/chromedriver/test/run_webdriver_tests.py",
-        "-v",
-        "--chromedriver=chromedriver",
-        "--log-path=${ISOLATED_OUTDIR}/chromedriver.log",
-        "--output-dir=${ISOLATED_OUTDIR}",
-        "--test-path=../../third_party/blink/web_tests/external/wpt/webdriver/tests/",
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
     ],
 )
 

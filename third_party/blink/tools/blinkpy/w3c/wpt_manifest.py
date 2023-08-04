@@ -16,7 +16,7 @@ Neither has a leading slash.
 
 import json
 import logging
-from typing import Optional
+from typing import Optional, Sequence
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
@@ -88,7 +88,11 @@ class WPTManifest(object):
         [[reference_url1, "=="], [reference_url2, "!="], ...]
     """
 
-    def __init__(self, host, manifest_path, exclude_jsshell: bool = True):
+    def __init__(self,
+                 host,
+                 manifest_path,
+                 test_types: Optional[Sequence[str]] = None,
+                 exclude_jsshell: bool = True):
         self.host = host
         self.port = self.host.port_factory.get()
         self.raw_dict = json.loads(
@@ -101,8 +105,13 @@ class WPTManifest(object):
             self.raw_dict.get('items', {}))
 
         self.wpt_manifest_path = manifest_path
-        self.test_types = ('manual', 'reftest', 'print-reftest', 'testharness',
-                           'crashtest')
+        self.test_types = test_types or (
+            'manual',
+            'reftest',
+            'print-reftest',
+            'testharness',
+            'crashtest',
+        )
         self.test_name_to_file = {}
         self._exclude_jsshell = exclude_jsshell
 

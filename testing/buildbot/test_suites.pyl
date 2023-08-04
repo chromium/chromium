@@ -4776,6 +4776,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
         'swarming': {
           'shards': 4,
         },

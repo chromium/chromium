@@ -1107,7 +1107,8 @@ class Port(object):
                 'manifest_update', False):
             _log.debug('Generating MANIFEST.json for %s...', path)
             WPTManifest.ensure_manifest(self, path)
-        return WPTManifest(self.host, manifest_path, exclude_jsshell)
+        return WPTManifest(self.host, manifest_path,
+                           self.get_option('test_types'), exclude_jsshell)
 
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""

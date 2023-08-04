@@ -276,10 +276,11 @@ class WPTAdapter:
 
         runner_options.binary_args.extend(self.options.additional_driver_flag)
 
-        if self.options.enable_sanitizer:
+        if (self.options.enable_sanitizer
+                or self.options.configuration == 'Debug'):
             runner_options.timeout_multiplier = 2
             logger.info('Defaulting to 2x timeout multiplier because '
-                        'sanitizer is enabled')
+                        'the build is debug or sanitized')
 
         if self.options.use_upstream_wpt:
             # when running with upstream, the goal is to get wpt report that can
@@ -334,6 +335,7 @@ class WPTAdapter:
             runner_options.exclude.extend(exclude)
 
         runner_options.exclude.extend(self.options.ignore_tests)
+        runner_options.test_types = self.options.test_types
 
         for path in self.paths:
             runner_options.include.append(self.finder.strip_wpt_path(path))
@@ -364,12 +366,6 @@ class WPTAdapter:
                 _has_explicit_tests(runner_options)
                 or self.options.isolated_script_test_filter):
             runner_options.default_exclude = True
-
-        runner_options.exclude.extend([
-            # Exclude webdriver tests for now. The CI runs them separately.
-            'webdriver',
-            'infrastructure/webdriver',
-        ])
 
     def _load_smoke_tests(self):
         """Read the smoke tests file and append its tests to the test list.

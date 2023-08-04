@@ -218,16 +218,23 @@ for the New Session command, use
 
 The tests are located in [//third_party/blink/web_tests/external/wpt](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt)
 directory.
-You can use the following command to run them.
+You can use the following commands to run them:
 
 ```bash
-testing/xvfb.py chrome/test/chromedriver/test/run_webdriver_tests.py \
-                --chromedriver=out/Release/chromedriver \
-                --test-path=third_party/blink/web_tests/external/wpt/<test-offset>
+autoninja -C out/Default webdriver_wpt_tests
+out/Default/bin/run_webdriver_wpt_tests -t Default webdriver/path/to/test/or/dir.py
 ```
 
-Note: The path to the tests must be specified relatively to the Chromium source
-code root.
+This will invoke [`//third_party/blink/tools/run_wpt_tests.py`][1], a thin
+wrapper around [wptrunner] used to run other types of WPTs in Chromium CQ/CI.
+See [these instructions] for suppressing failures with `.ini` metadata files.
+The [WPT importer] will automatically generate `.ini` files to suppress new
+test failures.
+
+[1]: /third_party/blink/tools/run_wpt_tests.py
+[wptrunner]: /docs/testing/web_platform_tests_wptrunner.md
+[these instructions]: /docs/testing/web_platform_tests_wptrunner.md#Expectations
+[WPT importer]: /docs/testing/web_platform_tests.md#Importing-tests
 
 ## JavaScript Unit Tests
 

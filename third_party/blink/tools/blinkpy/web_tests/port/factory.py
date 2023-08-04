@@ -635,6 +635,15 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                   'testharness test failures will be shown, even if the '
                   'failures are expected in *-expected.txt.'))
     else:
+        testing_group.add_argument(
+            '--test-types',
+            nargs='*',
+            choices=[
+                'testharness', 'reftest', 'wdspec', 'crashtest',
+                'print-reftest', 'manual'
+            ],
+            default=['testharness', 'reftest', 'crashtest', 'print-reftest'],
+            help='Test types to run')
         testing_group.add_argument('--no-wpt-internal',
                                    action='store_false',
                                    dest='run_wpt_internal',

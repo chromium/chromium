@@ -4656,6 +4656,13 @@
     ],
   },
   'webdriver_tests_suite': {
+    'modifications': {
+      'Linux Tests (dbg)(1)': {
+        'args': [
+          '--debug',
+        ],
+      },
+    },
     'remove_from': [
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
       'linux-rel-cft',

@@ -223,6 +223,10 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webdriver_tests_suite",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "dimension_sets": [
             {
