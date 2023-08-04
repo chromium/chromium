@@ -2222,8 +2222,6 @@ crbug.com/893480 [ Mac ] external/wpt/input-events/input-events-cut-paste.html [
 crbug.com/893480 [ Win ] external/wpt/input-events/input-events-cut-paste.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/html/semantics/forms/the-input-element/checkable-active-onblur.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/html/semantics/forms/the-button-element/active-onblur.html [ Failure Timeout ]
-crbug.com/893480 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-canceling.html [ Failure ]
-crbug.com/893480 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-node-is-uneditable.html [ Failure ]
 # tests in this group need implementation of focus navigation forward/backward
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation.html [ Failure ]

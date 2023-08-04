@@ -319,6 +319,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
+    case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
     case kPseudoDoubleButton:
@@ -438,6 +439,7 @@ struct NameToPseudoStruct {
 const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-autofill-previewed", CSSSelector::kPseudoAutofillPreviewed},
     {"-internal-autofill-selected", CSSSelector::kPseudoAutofillSelected},
+    {"-internal-dialog-in-top-layer", CSSSelector::kPseudoDialogInTopLayer},
     {"-internal-has-datalist", CSSSelector::kPseudoHasDatalist},
     {"-internal-is-html", CSSSelector::kPseudoIsHtml},
     {"-internal-list-box", CSSSelector::kPseudoListBox},
@@ -801,6 +803,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
+    case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
     case kPseudoDoubleButton:

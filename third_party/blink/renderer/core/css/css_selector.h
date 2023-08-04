@@ -227,6 +227,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoCornerPresent,
     kPseudoDecrement,
     kPseudoDefault,
+    kPseudoDialogInTopLayer,
     kPseudoDisabled,
     kPseudoDoubleButton,
     kPseudoDrag,

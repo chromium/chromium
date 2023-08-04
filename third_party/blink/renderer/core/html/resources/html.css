@@ -1410,7 +1410,7 @@ dialog[open] {
     display: block;
 }
 
-dialog:modal {
+dialog:-internal-dialog-in-top-layer {
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: fixed;
     overflow: auto;
@@ -1421,12 +1421,15 @@ dialog:modal {
     /* https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016679588 */
     user-select: text;
     visibility: visible;
+}
+
+dialog:modal {
     overlay: auto !important;
 }
 
 /* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the
    properties shared with :fullscreen::backdrop (see fullscreen.css). */
-dialog::backdrop {
+dialog:-internal-dialog-in-top-layer::backdrop {
     position: fixed;
     inset: 0;
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */

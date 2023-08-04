@@ -1719,6 +1719,22 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       break;
     }
+    case CSSSelector::kPseudoDialogInTopLayer:
+      if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+        if (dialog->IsModal() &&
+            dialog->FastHasAttribute(html_names::kOpenAttr)) {
+          DCHECK(dialog->GetDocument().TopLayerElements().Contains(dialog));
+          return true;
+        }
+        // When the dialog is transitioning to closed, we have to check the
+        // elements which are in the top layer but are pending removal to see if
+        // this element used to be open as a dialog.
+        absl::optional<Document::TopLayerReason> top_layer_reason =
+            dialog->GetDocument().IsScheduledForTopLayerRemoval(dialog);
+        return top_layer_reason &&
+               *top_layer_reason == Document::TopLayerReason::kDialog;
+      }
+      return false;
     case CSSSelector::kPseudoPopoverInTopLayer:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->HasPopoverAttribute()) {
