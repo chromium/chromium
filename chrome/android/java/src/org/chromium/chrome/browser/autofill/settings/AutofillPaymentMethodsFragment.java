@@ -54,6 +54,8 @@ public class AutofillPaymentMethodsFragment
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
+    static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
+            "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
     static final String MANDATORY_REAUTH_OPT_IN_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptIn";
     static final String MANDATORY_REAUTH_OPT_OUT_HISTOGRAM =
@@ -356,13 +358,22 @@ public class AutofillPaymentMethodsFragment
         // mReauthenticatorBridge should be initiated already when determining whether to show the
         // mandatory reauth toggle.
         assert mReauthenticatorBridge != null;
-
+        RecordHistogram.recordEnumeratedHistogram(MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
+                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
         // When mandatory reauth is enabled, offer device authentication challenge.
         mReauthenticatorBridge.reauthenticate(success -> {
             // If authentication is successful, manually trigger the local card edit page. Else,
             // stay on this page.
             if (success) {
+                RecordHistogram.recordEnumeratedHistogram(MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
+                        MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED,
+                        MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
                 showLocalCardEditPage(preference);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
+                        MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
+                        MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
             }
         }, /*useLastValidAuth=*/false);
         return true;

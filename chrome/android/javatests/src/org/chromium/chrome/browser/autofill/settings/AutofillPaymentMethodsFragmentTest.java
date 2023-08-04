@@ -127,8 +127,6 @@ public class AutofillPaymentMethodsFragmentTest {
             /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
             /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
             /* obfuscatedLastFourDigits= */ "");
-    private static final String SETTINGS_MANDATORY_REAUTH_OPT_CHANGE_HISTOGRAM_BASE =
-            "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage";
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -451,6 +449,13 @@ public class AutofillPaymentMethodsFragmentTest {
         });
         // Simulate the user can authenticate with biometric or screen lock.
         when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        var editCardReauthHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                AutofillPaymentMethodsFragment.MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED)
+                        .build();
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -472,6 +477,7 @@ public class AutofillPaymentMethodsFragmentTest {
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        editCardReauthHistogram.assertExpected();
     }
 
     @Test
@@ -485,6 +491,13 @@ public class AutofillPaymentMethodsFragmentTest {
         });
         // Simulate the user can authenticate with biometric or screen lock.
         when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        var editCardReauthHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                AutofillPaymentMethodsFragment.MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED)
+                        .build();
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -504,6 +517,7 @@ public class AutofillPaymentMethodsFragmentTest {
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         // Verify that the local card edit dialog was NOT shown.
         Assert.assertNull(rule.getLastestShownFragment());
+        editCardReauthHistogram.assertExpected();
     }
 
     @Test
