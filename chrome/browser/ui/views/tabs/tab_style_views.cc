@@ -1148,7 +1148,7 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
         GetTopCornerRadiusForWidth(tab()->width()) * scale;
     const float extension_corner_radius =
         tab_style()->GetBottomCornerRadius() * scale;
-    float tab_height = tab_style()->GetHeight() * scale;
+    float tab_height = GetLayoutConstant(TAB_HEIGHT) * scale;
 
     // The tab displays favicon animations that can emerge from the toolbar. The
     // interior clip needs to extend the entire height of the toolbar to support

@@ -145,7 +145,7 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
 TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth,
-                                    GetLayoutConstant(TAB_HEIGHT));
+                                    GetLayoutConstant(TAB_STRIP_HEIGHT));
 
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the

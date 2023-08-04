@@ -185,7 +185,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     if (features::IsChromeRefresh2023()) {
       tab_search_button_->SetProperty(
           views::kMarginsKey,
-          gfx::Insets::TLBR(0, 0,
+          gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING), 0,
                             GetLayoutConstant(TAB_STRIP_PADDING) +
                                 GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
                             GetLayoutConstant(TAB_STRIP_PADDING)));
@@ -433,7 +433,7 @@ void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void TabStripRegionView::UpdateNewTabButtonBorder() {
-  const int extra_vertical_space = GetLayoutConstant(TAB_HEIGHT) -
+  const int extra_vertical_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
                                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
                                    NewTabButton::kButtonSize.height();
   constexpr int kHorizontalInset = 8;

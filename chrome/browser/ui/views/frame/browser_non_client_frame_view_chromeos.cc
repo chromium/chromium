@@ -259,8 +259,12 @@ int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
   if (!toolbar_size.IsEmpty()) {
     header_height = std::max(header_height, toolbar_size.height());
   }
-  if (browser_view()->GetTabStripVisible())
+  if (browser_view()->GetTabStripVisible()) {
+    if (features::IsChromeRefresh2023()) {
+      return 0;
+    }
     return header_height - browser_view()->GetTabStripHeight();
+  }
 
   return UsePackagedAppHeaderStyle(browser)
              ? header_height

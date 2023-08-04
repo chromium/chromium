@@ -218,13 +218,17 @@ void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
-  if (!browser_view()->GetTabStripVisible())
+  if (!browser_view()->GetTabStripVisible()) {
     return 0;
+  }
+
+  // In Refresh, the tabstrip controls its own top padding.
+  if (features::IsChromeRefresh2023()) {
+    return 0;
+  }
 
   // Mac seems to reserve 1 DIP of the top inset as a resize handle.
-  const int kTabstripTopInset = features::IsChromeRefresh2023()
-                                    ? GetLayoutConstant(TAB_STRIP_PADDING)
-                                    : 8;
+  const int kTabstripTopInset = 8;
   int top_inset = kTabstripTopInset;
   if (EverHasVisibleBackgroundTabShapes()) {
     top_inset =

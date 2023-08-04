@@ -518,9 +518,7 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
   if (frame()->IsFullscreen() && !restored) {
-    return features::IsChromeRefresh2023()
-               ? GetLayoutConstant(TAB_STRIP_PADDING)
-               : 0;
+    return 0;
   }
 
   const bool maximized = IsMaximized() && !restored;
@@ -534,8 +532,9 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
     return top;
   }
 
+  // In Refresh, the tabstrip controls its own top padding.
   if (features::IsChromeRefresh2023()) {
-    return top + GetLayoutConstant(TAB_STRIP_PADDING);
+    return top;
   }
 
   // In maximized mode, we do not add any additional thickness to the grab

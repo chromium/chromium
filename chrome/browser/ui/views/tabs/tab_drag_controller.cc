@@ -2237,7 +2237,8 @@ gfx::Rect TabDragController::CalculateDraggedBrowserBounds(
     TabDragContext* source,
     const gfx::Point& point_in_screen,
     std::vector<gfx::Rect>* drag_bounds) {
-  gfx::Point center(0, source->height() / 2);
+  // Vertically center the dragged tabs around the mouse.
+  gfx::Point center(0, drag_bounds->front().CenterPoint().y());
   views::View::ConvertPointToWidget(source, &center);
   gfx::Rect new_bounds(source->GetWidget()->GetRestoredBounds());
 

@@ -503,7 +503,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     int x = 0;
     for (const TabSlotView* view : views) {
       const int width = view->width();
-      bounds.emplace_back(x, 0, width, view->height());
+      bounds.emplace_back(x, height() - view->height(), width, view->height());
       x += width - overlap;
     }
 
@@ -1808,7 +1808,7 @@ void TabStrip::Layout() {
         tab_container_->GetAvailableWidthForTabContainer();
     // Be as wide as possible subject to the above constraints.
     const int width = std::min(max_width, std::max(min_width, available_width));
-    SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
+    SetBounds(0, 0, width, GetLayoutConstant(TAB_STRIP_HEIGHT));
   }
 
   if (tab_container_->bounds() != GetLocalBounds()) {
