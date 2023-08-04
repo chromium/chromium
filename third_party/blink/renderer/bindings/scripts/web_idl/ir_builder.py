@@ -27,6 +27,7 @@ from .interface import Setlike
 from .literal_constant import LiteralConstant
 from .namespace import Namespace
 from .operation import Operation
+from .sync_iterator import SyncIterator
 from .typedef import Typedef
 
 
@@ -107,7 +108,8 @@ class _IRBuilder(object):
         child_nodes = list(node.GetChildren())
         inherited = self._take_inheritance(child_nodes)
         stringifier_members = self._take_stringifier(child_nodes)
-        iterable = self._take_iterable(child_nodes)
+        iterable = self._take_iterable(child_nodes,
+                                       interface_identifier=identifier)
         maplike = self._take_maplike(
             child_nodes, interface_identifier=identifier)
         setlike = self._take_setlike(
@@ -506,8 +508,9 @@ class _IRBuilder(object):
         assert node.GetName() == '...'
         return True
 
-    def _build_iterable(self, node):
+    def _build_iterable(self, node, interface_identifier):
         assert node.GetClass() == 'Iterable'
+        assert isinstance(interface_identifier, Identifier)
         types = list(map(self._build_type, node.GetChildren()))
         assert len(types) == 1 or len(types) == 2
         if len(types) == 1:  # value iterator
@@ -515,7 +518,8 @@ class _IRBuilder(object):
             operations = None
         else:  # pair iterator
             key_type, value_type = types
-            iter_ops = self._create_iterator_operations(node)
+            iter_ops = self._create_iterator_operations(
+                node, interface_identifier)
             iter_ops[Identifier('entries')].is_iterator = True
             operations = list(iter_ops.values())
         return Iterable.IR(
@@ -597,7 +601,7 @@ class _IRBuilder(object):
                 is_readonly=True,
                 node=node),
         ]
-        iter_map = self._create_iterator_operations(node)
+        iter_map = self._create_iterator_operations(node, interface_identifier)
         iter_map[Identifier('entries')].is_iterator = True
         iter_ops = list(iter_map.values())
         read_ops = [
@@ -687,7 +691,7 @@ class _IRBuilder(object):
                 is_readonly=True,
                 node=node),
         ]
-        iter_map = self._create_iterator_operations(node)
+        iter_map = self._create_iterator_operations(node, interface_identifier)
         iter_map[Identifier('values')].is_iterator = True
         iter_ops = list(iter_map.values())
         read_ops = [
@@ -1008,7 +1012,7 @@ class _IRBuilder(object):
             for key, values in key_values.items()
         ])
 
-    def _create_iterator_operations(self, node):
+    def _create_iterator_operations(self, node, interface_identifier):
         """Constructs a set of iterator operations."""
         return {
             Identifier('forEach'):
@@ -1026,32 +1030,35 @@ class _IRBuilder(object):
                                    },
                                    node=node),
             Identifier('entries'):
-            self._create_operation(Identifier('entries'),
-                                   return_type=Identifier('SyncIteratorType'),
-                                   extended_attributes={
-                                       'CallWith': 'ScriptState',
-                                       'RaisesException': None,
-                                       'ImplementedAs': 'entriesForBinding',
-                                   },
-                                   node=node),
+            self._create_operation(
+                Identifier('entries'),
+                return_type=SyncIterator.identifier_for(interface_identifier),
+                extended_attributes={
+                    'CallWith': 'ScriptState',
+                    'RaisesException': None,
+                    'ImplementedAs': 'entriesForBinding',
+                },
+                node=node),
             Identifier('keys'):
-            self._create_operation(Identifier('keys'),
-                                   return_type=Identifier('SyncIteratorType'),
-                                   extended_attributes={
-                                       'CallWith': 'ScriptState',
-                                       'RaisesException': None,
-                                       'ImplementedAs': 'keysForBinding',
-                                   },
-                                   node=node),
+            self._create_operation(
+                Identifier('keys'),
+                return_type=SyncIterator.identifier_for(interface_identifier),
+                extended_attributes={
+                    'CallWith': 'ScriptState',
+                    'RaisesException': None,
+                    'ImplementedAs': 'keysForBinding',
+                },
+                node=node),
             Identifier('values'):
-            self._create_operation(Identifier('values'),
-                                   return_type=Identifier('SyncIteratorType'),
-                                   extended_attributes={
-                                       'CallWith': 'ScriptState',
-                                       'RaisesException': None,
-                                       'ImplementedAs': 'valuesForBinding',
-                                   },
-                                   node=node),
+            self._create_operation(
+                Identifier('values'),
+                return_type=SyncIterator.identifier_for(interface_identifier),
+                extended_attributes={
+                    'CallWith': 'ScriptState',
+                    'RaisesException': None,
+                    'ImplementedAs': 'valuesForBinding',
+                },
+                node=node),
         }
 
     def _create_literal_constant(self, token):
@@ -1135,9 +1142,9 @@ class _IRBuilder(object):
         return self._take_and_build(
             'Argument', self._build_is_variadic_argument, node_list)
 
-    def _take_iterable(self, node_list):
+    def _take_iterable(self, node_list, **kwargs):
         return self._take_and_build('Iterable', self._build_iterable,
-                                    node_list)
+                                    node_list, **kwargs)
 
     def _take_maplike(self, node_list, **kwargs):
         return self._take_and_build('Maplike', self._build_maplike, node_list,

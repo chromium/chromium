@@ -3,32 +3,16 @@
 // found in the LICENSE file.
 
 // https://webidl.spec.whatwg.org/#common
-
 typedef (ArrayBuffer or ArrayBufferView) BufferSource;
 typedef unsigned long long DOMTimeStamp;
-
 
 // https://webidl.spec.whatwg.org/#Function
 [SupportsTaskAttribution]
 callback Function = any (any... arguments);
 
-
 // Blink-specific forEach iterator's callback
 // https://webidl.spec.whatwg.org/#es-forEach
-
 callback ForEachIteratorCallback = void (any value, any key, any obj);
 
-
 // Blink-specific constructor type used in many places.
-
 callback NoArgumentConstructor = any ();
-
-// Blink-specific synchronous iterator object type, which corresponds to
-// "default iterator object",
-// https://webidl.spec.whatwg.org/#dfn-default-iterator-object
-// "map iterator", and
-// https://webidl.spec.whatwg.org/#create-a-map-iterator
-// "set iterator"
-// https://webidl.spec.whatwg.org/#create-a-set-iterator
-
-typedef object SyncIteratorType;

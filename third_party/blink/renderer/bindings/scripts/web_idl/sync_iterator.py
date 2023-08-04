@@ -31,6 +31,15 @@ class SyncIterator(UserDefinedType, WithExtendedAttributes,
     [4] https://webidl.spec.whatwg.org/#create-a-map-iterator
     [5] https://webidl.spec.whatwg.org/#create-a-set-iterator
     """
+    @staticmethod
+    def identifier_for(interface_identifier):
+        """
+        Returns the identifier of the synchronous iterator type of the given
+        interface type.
+        """
+        assert isinstance(interface_identifier, Identifier)
+        return Identifier('SyncIterator_{}'.format(interface_identifier))
+
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):
         def __init__(self,
@@ -47,8 +56,7 @@ class SyncIterator(UserDefinedType, WithExtendedAttributes,
                 isinstance(operation, Operation.IR)
                 for operation in operations)
 
-            identifier = Identifier('SyncIterator_{}'.format(
-                interface.identifier))
+            identifier = SyncIterator.identifier_for(interface.identifier)
 
             IRMap.IR.__init__(self, identifier, IRMap.IR.Kind.SYNC_ITERATOR)
             WithExtendedAttributes.__init__(self)
