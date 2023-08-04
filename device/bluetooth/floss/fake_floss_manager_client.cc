@@ -27,8 +27,8 @@ void FakeFlossManagerClient::NotifyObservers(
   }
 }
 
-void FakeFlossManagerClient::SetAdapterPowered(int adapter, bool powered) {
-  adapter_to_powered_.emplace(adapter, powered);
+void FakeFlossManagerClient::SetDefaultEnabled(bool enabled) {
+  adapter_to_enabled_.insert_or_assign(GetDefaultAdapter(), enabled);
 }
 
 }  // namespace floss

@@ -214,9 +214,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Default adapter to use.
   int default_adapter_ = 0;
 
-  // Cached list of available adapters and their powered state indexed by hci
+  // Cached list of available adapters and their enabled state indexed by hci
   // index.
-  base::flat_map<int, bool> adapter_to_powered_;
+  base::flat_map<int, bool> adapter_to_enabled_;
 
   // Name of service that implements manager interface.
   std::string service_name_;
@@ -255,8 +255,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // enabled).
   static const int kSetFlossEnabledDBusTimeoutMs;
 
-  // Powered callback called only when adapter actually powers on
-  std::unique_ptr<WeaklyOwnedResponseCallback<Void>> powered_callback_;
+  // Enabled callback called only when adapter becomes enabled.
+  std::unique_ptr<WeaklyOwnedResponseCallback<Void>> adapter_enabled_callback_;
 
   // Callback sent for SetFlossEnabled completion.
   std::unique_ptr<WeaklyOwnedResponseCallback<bool>>

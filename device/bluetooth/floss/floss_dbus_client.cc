@@ -17,7 +17,7 @@ namespace floss {
 int kDBusTimeoutMs = 2000;
 // Timeout for waiting HCI enabled changed. Make it longer since it takes longer
 // when there is a connected device.
-int kAdapterPowerTimeoutMs = 5000;
+int kAdapterEnabledTimeoutMs = 5000;
 
 // TODO(b/189499077) - Expose via floss package
 const char kAdapterService[] = "org.chromium.bluetooth";

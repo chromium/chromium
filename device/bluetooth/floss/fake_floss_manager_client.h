@@ -11,6 +11,8 @@
 
 namespace floss {
 
+// FakeFlossManagerClient is the fake FlossManagerClient that is currently
+// used by both the unit tests and the emulator.
 class DEVICE_BLUETOOTH_EXPORT FakeFlossManagerClient
     : public FlossManagerClient {
  public:
@@ -21,7 +23,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossManagerClient
   void NotifyObservers(
       const base::RepeatingCallback<void(Observer*)>& notify) const;
 
-  void SetAdapterPowered(int adapter, bool powered);
+  // Test utility to set the status of the default adapter, without invoking
+  // Floss callbacks.
+  void SetDefaultEnabled(bool enabled);
 
   void Init(dbus::Bus* bus,
             const std::string& service_name,

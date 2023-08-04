@@ -25,7 +25,7 @@
 namespace floss {
 
 extern DEVICE_BLUETOOTH_EXPORT int kDBusTimeoutMs;
-extern DEVICE_BLUETOOTH_EXPORT int kAdapterPowerTimeoutMs;
+extern DEVICE_BLUETOOTH_EXPORT int kAdapterEnabledTimeoutMs;
 
 // TODO(b/189499077) - Expose via floss package
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];

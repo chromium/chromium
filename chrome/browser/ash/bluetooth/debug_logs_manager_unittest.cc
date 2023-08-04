@@ -77,8 +77,7 @@ class DebugLogsManagerTest : public testing::Test {
     floss_setter->SetFlossLoggingClient(
         std::make_unique<floss::FakeFlossLoggingClient>());
 
-    GetFakeManagerClient()->SetAdapterPowered(/*adapter=*/0,
-                                              /*powered=*/true);
+    GetFakeManagerClient()->SetDefaultEnabled(true);
   }
 
   void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
