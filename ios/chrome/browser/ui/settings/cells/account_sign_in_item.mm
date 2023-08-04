@@ -38,7 +38,7 @@
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     cell.textLabel.text =
-        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SIGNIN_WITH_UNO);
     cell.image = DefaultSymbolTemplateWithPointSize(
         kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
     [cell setImageViewTintColor:[UIColor colorNamed:kBlue600Color]];
