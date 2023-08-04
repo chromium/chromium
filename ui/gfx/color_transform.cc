@@ -186,7 +186,7 @@ BASE_FEATURE(kHlgPqUnifiedTonemap,
 
 BASE_FEATURE(kHlgPqSdrRelative,
              "HlgPqSdrRelative",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class ColorTransformMatrix;
 class ColorTransformSkTransferFn;
