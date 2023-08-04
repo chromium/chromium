@@ -6558,3 +6558,9 @@ crbug.com/1469087 virtual/fenced-frame-mparch/external/wpt/fetch/private-network
 
 # Gardener 2023-08-03
 crbug.com/1470007 [ Mac10.15 ] external/wpt/webrtc-stats/supported-stats.https.html [ Failure Pass ]
+
+# Fix importer 2023-08-04
+crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.html [ Failure Pass ]
+crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.sharedworker.html [ Failure Pass ]
+crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.worker.html [ Failure Pass ]
+crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/basic/request-forbidden-headers.any.serviceworker.html [ Failure Pass ]
