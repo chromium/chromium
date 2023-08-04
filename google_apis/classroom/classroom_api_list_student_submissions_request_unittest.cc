@@ -125,14 +125,14 @@ class ClassroomApiListStudentSubmissionRequestsTest : public testing::Test {
 
 TEST_F(ClassroomApiListStudentSubmissionRequestsTest,
        ListStudentSubmissionsRequest) {
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/courses/course-1/courseWork/course-work-1/"
-                   "studentSubmissions?fields=studentSubmissions(id%2C"
-                   "courseWorkId%2Cstate%2CassignedGrade)%2CnextPageToken")))))
+  EXPECT_CALL(request_handler(),
+              HandleRequest(AllOf(
+                  Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+                  Field(&HttpRequest::relative_url,
+                        Eq("/v1/courses/course-1/courseWork/course-work-1/"
+                           "studentSubmissions?fields=studentSubmissions(id%2C"
+                           "courseWorkId%2CupdateTime%2Cstate%2CassignedGrade)%"
+                           "2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
   base::test::TestFuture<
@@ -152,15 +152,15 @@ TEST_F(ClassroomApiListStudentSubmissionRequestsTest,
 
 TEST_F(ClassroomApiListStudentSubmissionRequestsTest,
        ListStudentSubmissionsRequestWithAdditionalQueryParamaters) {
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(
-          AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                Field(&HttpRequest::relative_url,
-                      Eq("/v1/courses/course-1/courseWork/course-work-1/"
-                         "studentSubmissions?fields=studentSubmissions(id%2C"
-                         "courseWorkId%2Cstate%2CassignedGrade)%2CnextPageToken"
-                         "&pageToken=qwerty")))))
+  EXPECT_CALL(request_handler(),
+              HandleRequest(AllOf(
+                  Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+                  Field(&HttpRequest::relative_url,
+                        Eq("/v1/courses/course-1/courseWork/course-work-1/"
+                           "studentSubmissions?fields=studentSubmissions(id%2C"
+                           "courseWorkId%2CupdateTime%2Cstate%2CassignedGrade)%"
+                           "2CnextPageToken"
+                           "&pageToken=qwerty")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
   base::test::TestFuture<
@@ -180,14 +180,14 @@ TEST_F(ClassroomApiListStudentSubmissionRequestsTest,
 
 TEST_F(ClassroomApiListStudentSubmissionRequestsTest,
        ListStudentSubmissionsRequestHandlesError) {
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/courses/course-1/courseWork/course-work-1/"
-                   "studentSubmissions?fields=studentSubmissions(id%2C"
-                   "courseWorkId%2Cstate%2CassignedGrade)%2CnextPageToken")))))
+  EXPECT_CALL(request_handler(),
+              HandleRequest(AllOf(
+                  Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+                  Field(&HttpRequest::relative_url,
+                        Eq("/v1/courses/course-1/courseWork/course-work-1/"
+                           "studentSubmissions?fields=studentSubmissions(id%2C"
+                           "courseWorkId%2CupdateTime%2Cstate%2CassignedGrade)%"
+                           "2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   base::test::TestFuture<

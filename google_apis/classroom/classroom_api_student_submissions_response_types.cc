@@ -6,6 +6,7 @@
 
 #include "base/json/json_value_converter.h"
 #include "google_apis/common/parser_util.h"
+#include "google_apis/common/time_util.h"
 
 namespace google_apis::classroom {
 namespace {
@@ -15,6 +16,7 @@ constexpr char kApiResponseStudentSubmissionCourseWorkIdKey[] = "courseWorkId";
 constexpr char kApiResponseStudentSubmissionStateKey[] = "state";
 constexpr char kApiResponseStudentSubmissionAssignedGradeKey[] =
     "assignedGrade";
+constexpr char kApiResponseStudentSubmissionUpdateTimeKey[] = "updateTime";
 
 constexpr char kNewStudentSubmissionState[] = "NEW";
 constexpr char kCreatedStudentSubmissionState[] = "CREATED";
@@ -46,6 +48,16 @@ bool ConvertAssignedGrade(const base::Value* input,
   return true;
 }
 
+bool ConvertUpdateTime(base::StringPiece input,
+                       absl::optional<base::Time>* output) {
+  base::Time update_time;
+  if (!util::GetTimeFromString(input, &update_time)) {
+    return false;
+  }
+  *output = update_time;
+  return true;
+}
+
 }  // namespace
 
 // ----- StudentSubmission -----
@@ -62,6 +74,9 @@ void StudentSubmission::RegisterJSONConverter(
   converter->RegisterCustomValueField<absl::optional<double>>(
       kApiResponseStudentSubmissionAssignedGradeKey,
       &StudentSubmission::assigned_grade_, &ConvertAssignedGrade);
+  converter->RegisterCustomField<absl::optional<base::Time>>(
+      kApiResponseStudentSubmissionUpdateTimeKey,
+      &StudentSubmission::last_update_, &ConvertUpdateTime);
 }
 
 // ----- StudentSubmissions -----

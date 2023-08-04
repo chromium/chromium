@@ -92,6 +92,10 @@ void GlanceablesClassroomCourseWorkItem::SetCourseWorkItem(
 void GlanceablesClassroomCourseWorkItem::AddStudentSubmission(
     const google_apis::classroom::StudentSubmission* submission) {
   ++current_submissions_state_.total_count;
+  if (submission->last_update().has_value() &&
+      submission->last_update() > most_recent_submission_update_time_) {
+    most_recent_submission_update_time_ = submission->last_update().value();
+  }
 
   switch (CalculateStudentSubmissionState(submission)) {
     case GlanceablesClassroomStudentSubmissionState::kGraded:

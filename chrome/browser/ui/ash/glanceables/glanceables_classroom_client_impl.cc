@@ -262,9 +262,9 @@ void GlanceablesClassroomClientImpl::GetCompletedStudentAssignments(
   auto sort_comparator =
       base::BindRepeating([](const GlanceablesClassroomCourseWorkItem* lhs,
                              const GlanceablesClassroomCourseWorkItem* rhs) {
-        // TODO(b/291609743): Order by when a student submission is turned-in
-        // in descending order.
-        return true;
+        // Order by the submission's last update time in descending order.
+        return lhs->most_recent_submission_update_time() >
+               rhs->most_recent_submission_update_time();
       });
   InvokeOnceStudentDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredStudentAssignments,

@@ -142,6 +142,9 @@ class GlanceablesClassroomCourseWorkItem {
   int graded_submissions() const {
     return current_submissions_state_.number_graded;
   }
+  const base::Time& most_recent_submission_update_time() const {
+    return most_recent_submission_update_time_;
+  }
 
   bool has_fresh_submissions_state() const {
     return has_fresh_submissions_state_;
@@ -178,6 +181,10 @@ class GlanceablesClassroomCourseWorkItem {
   // Whether the student submissions have been fetched during the latest course
   // work data update.
   bool has_fresh_submissions_state_ = false;
+
+  // The most recent student submission update time from all of this course work
+  // item's student submissions.
+  base::Time most_recent_submission_update_time_;
 
   // If the student submissions state is valid, the time when the submissions
   // state has been last refreshed.
