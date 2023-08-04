@@ -202,6 +202,10 @@ class FloatingWorkspaceService : public KeyedService,
   // template associated with the current user, which we want to keep.
   void DoGarbageCollection(const DeskTemplate* exclude_template);
 
+  // Close desks that were already open on current device.
+  void RemoveAllPreviousDesksExceptActiveDesk(
+      const base::Uuid& exclude_desk_uuid);
+
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;

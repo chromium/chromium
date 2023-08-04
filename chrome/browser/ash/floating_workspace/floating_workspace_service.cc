@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
@@ -497,6 +498,10 @@ void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
   if (desk_template == nullptr) {
     return;
   }
+  base::Uuid active_desk_uuid = GetDesksClient()->GetActiveDesk();
+
+  RemoveAllPreviousDesksExceptActiveDesk(
+      /*exclude_desk_uuid=*/active_desk_uuid);
   GetDesksClient()->LaunchDeskTemplate(
       desk_template->uuid(),
       base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
@@ -592,6 +597,7 @@ void FloatingWorkspaceService::OnTemplateLaunched(
     return;
   }
   RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
+  RemoveAllPreviousDesksExceptActiveDesk(/*exclude_desk_uuid=*/desk_uuid);
 }
 
 void FloatingWorkspaceService::OnTemplateCaptured(
@@ -781,6 +787,21 @@ void FloatingWorkspaceService::DoGarbageCollection(
     }
     base::Uuid uuid = entry->uuid();
     desk_sync_service_->GetDeskModel()->DeleteEntry(uuid, base::DoNothing());
+  }
+}
+
+// TODO(b/294456894): Migrate to desk controller logic.
+void FloatingWorkspaceService::RemoveAllPreviousDesksExceptActiveDesk(
+    const base::Uuid& exclude_desk_uuid) {
+  auto all_desks = GetDesksClient()->GetAllDesks();
+  if (all_desks.has_value() && all_desks.value().size() > 1) {
+    for (const Desk* entry : all_desks.value()) {
+      if (entry && entry->uuid() != exclude_desk_uuid) {
+        base::Uuid uuid_to_remove = entry->uuid();
+        GetDesksClient()->RemoveDesk(uuid_to_remove,
+                                     ash::DeskCloseType::kCloseAllWindows);
+      }
+    }
   }
 }
 

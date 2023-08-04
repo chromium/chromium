@@ -5,6 +5,7 @@
 #include <memory>
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/files/scoped_temp_dir.h"
@@ -95,6 +96,14 @@ std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
 class MockDesksClient : public DesksClient {
  public:
   MockDesksClient() = default;
+  MOCK_METHOD((base::expected<std::vector<const ash::Desk*>, DeskActionError>),
+              GetAllDesks,
+              (),
+              (override));
+  MOCK_METHOD((absl::optional<DesksClient::DeskActionError>),
+              RemoveDesk,
+              (const base::Uuid& desk_uuid, ash::DeskCloseType close_type),
+              (override));
 
   void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
                          ash::DeskTemplateType template_type) override {

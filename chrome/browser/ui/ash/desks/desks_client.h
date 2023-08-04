@@ -120,7 +120,8 @@ class DesksClient : public ash::SessionObserver {
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
   // Returns the current available desks.
-  base::expected<std::vector<const ash::Desk*>, DeskActionError> GetAllDesks();
+  virtual base::expected<std::vector<const ash::Desk*>, DeskActionError>
+  GetAllDesks();
 
   using GetTemplateJsonCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result,
@@ -160,7 +161,7 @@ class DesksClient : public ash::SessionObserver {
   // otherwise combine the windows to the active desk to the left. Provide
   // a notification allowing the user to undo the removal if `close_type` is
   // set to `kCloseAllWindowsAndWait`
-  absl::optional<DesksClient::DeskActionError> RemoveDesk(
+  virtual absl::optional<DesksClient::DeskActionError> RemoveDesk(
       const base::Uuid& desk_uuid,
       ash::DeskCloseType close_type);
 
