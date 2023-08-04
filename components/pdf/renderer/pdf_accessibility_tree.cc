@@ -2086,10 +2086,20 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     return;
   }
 
+  // Check if `ocr_service_` is still available. If not, it means PDF OCR has
+  // been turned off, so just return here to ignore OCR results.
+  if (!ocr_service_) {
+    return;
+  }
+
+  // `nodes_` will be empty once they are unserialized to `tree_`.
+  bool did_unserialize_once = nodes_.empty();
+
+  CHECK(doc_node_);
   CHECK_EQ(ocr_requests.size(), tree_updates.size());
   for (uint32_t i = 0; i < ocr_requests.size(); ++i) {
     const PdfOcrRequest& ocr_request = ocr_requests[i];
-    const ui::AXTreeUpdate& tree_update = tree_updates[i];
+    ui::AXTreeUpdate& tree_update = tree_updates[i];
 
     // TODO(accessibility): Following the convensions in this file, this method
     // manipulates the collection of `ui::AXNodeData` stored in the `nodes_`
@@ -2100,37 +2110,27 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
                                   PdfOcrRequestStatus::kPerformed);
 
-    // Check if `ocr_service_` is still available. If not, it means PDF OCR has
-    // been turned off, so just return here to ignore OCR results.
-    if (!ocr_service_) {
-      return;
-    }
-
-    // Update the flag if OCR extracted text from any images. This flag will be
-    // used to update the status node to notify users of it.
-    was_text_converted_from_image_ |= !tree_update.nodes.empty();
-
     if (tree_update.nodes.empty()) {
       VLOG(1) << "Empty OCR data received.";
       return;
     }
 
+    // Update the flag if OCR extracted text from any images. This flag will be
+    // used to update the status node to notify users of it.
+    was_text_converted_from_image_ = true;
     VLOG(1) << "OCR data received with a child tree update's root id: "
             << tree_update.root_id;
     // `tree_update` encodes a subtree that is going to be added to the PDF
     // accessibility tree directly. Thus, `tree_update.root_id` isn't the root
     // of the PDF accessibility tree, but the root of the subtree being added.
     const ui::AXNodeID& page_node_id = tree_update.root_id;
-    DCHECK_NE(page_node_id, ui::kInvalidAXNodeID);
+    CHECK_NE(page_node_id, ui::kInvalidAXNodeID);
 
     const gfx::RectF& image_bounds = ocr_request.image.bounds;
-    DCHECK_NE(ocr_request.image_node_id, ui::kInvalidAXNodeID);
-    DCHECK_NE(ocr_request.parent_node_id, ui::kInvalidAXNodeID);
-    DCHECK(!image_bounds.IsEmpty());
-    DCHECK(doc_node_);
+    CHECK_NE(ocr_request.image_node_id, ui::kInvalidAXNodeID);
+    CHECK_NE(ocr_request.parent_node_id, ui::kInvalidAXNodeID);
+    CHECK(!image_bounds.IsEmpty());
 
-    // `nodes_` will be empty once they are unserialized to `tree_`.
-    bool did_unserialize_once = nodes_.empty();
 #if DCHECK_IS_ON()
     if (!did_unserialize_once) {
       DCHECK(ranges::find_if(
@@ -2151,33 +2151,29 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     // OCR result. Then record the most detected language in UMA.
     std::map<std::string, size_t> detected_language_count_map;
 
-    // Copy nodes from `AXTreeUpdate` from OCR results and update their relative
-    // bounds. PDF accessibility tree assumes that all nodes have bounds
-    // relative to the root node.
-    for (const auto& node_from_ocr : tree_update.nodes) {
-      std::unique_ptr<ui::AXNodeData> new_node =
-          std::make_unique<ui::AXNodeData>(node_from_ocr);
-      if (new_node->id == page_node_id) {
-        // This page node will be replaced with the image node, so it needs to
-        // have the image node's bounds.
-        new_node->relative_bounds.bounds = image_bounds;
+    // Update the relative bounds of all nodes in the tree update. The PDF
+    // accessibility tree assumes that all nodes have bounds relative to the
+    // root node.
+    for (auto& node_from_ocr : tree_update.nodes) {
+      if (node_from_ocr.id == page_node_id) {
+        // This page node will replace the image node, so it needs to have the
+        // image node's bounds.
+        node_from_ocr.relative_bounds.bounds = image_bounds;
       } else {
-        new_node->relative_bounds.bounds =
-            transform.MapRect(new_node->relative_bounds.bounds);
+        node_from_ocr.relative_bounds.bounds =
+            transform.MapRect(node_from_ocr.relative_bounds.bounds);
         // Make all the other nodes relative to the page node.
-        new_node->relative_bounds.bounds.Offset(image_bounds.x(),
-                                                image_bounds.y());
+        node_from_ocr.relative_bounds.bounds.Offset(image_bounds.x(),
+                                                    image_bounds.y());
       }
       // Make all nodes relative to the root node.
-      new_node->relative_bounds.offset_container_id = doc_node_->id;
+      node_from_ocr.relative_bounds.offset_container_id = doc_node_->id;
       // Count languages detected in OCR results. It will be used in UMA.
-      if (new_node->HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {
-        std::string detected_language =
-            new_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
+      std::string detected_language;
+      if (node_from_ocr.GetStringAttribute(
+              ax::mojom::StringAttribute::kLanguage, &detected_language)) {
         detected_language_count_map[detected_language]++;
       }
-      // Move to `nodes_` for later unserialization in `UnserializeNodes()`.
-      nodes_.push_back(std::move(new_node));
     }
     RecordMostDetectedLanguageInOcrData(detected_language_count_map);
 
@@ -2185,6 +2181,10 @@ void PdfAccessibilityTree::OnOcrDataReceived(
       // `nodes_` have not been unserialized yet, so update `nodes_` directly
       // and return. `nodes_` will be unserialized in `UnserializeNodes()`
       // later.
+      ranges::transform(tree_update.nodes, std::back_inserter(nodes_),
+                        [](const ui::AXNodeData& node) {
+                          return std::make_unique<ui::AXNodeData>(node);
+                        });
       int num_erased = base::EraseIf(
           nodes_, [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
             return node->id == ocr_request.image_node_id;
@@ -2202,26 +2202,20 @@ void PdfAccessibilityTree::OnOcrDataReceived(
       return;
     }
 
-    // Create a new AXTreeUpdate only after `tree_` being unserialized in
-    // UnserializeNodes(). Otherwise, it may try updating a AXNodeData that is
-    // not existed in `tree_` yet, which will lead to an error.
-    ui::AXNode* parent_node_ptr = tree_.GetFromId(ocr_request.parent_node_id);
-    ui::AXNodeData parent_node(parent_node_ptr->data());
-
+    // Create a new `AXTreeUpdate` only after `tree_` has been unserialized in
+    // `UnserializeNodes()`. Otherwise, it may try updating an `AXNodeData` that
+    // is not existed in `tree_` yet, which will lead to an error.
+    ui::AXNode* parent_node = tree_.GetFromId(ocr_request.parent_node_id);
+    CHECK(parent_node);
+    ui::AXNodeData parent_node_data = parent_node->data();
     int num_erased =
-        base::Erase(parent_node.child_ids, ocr_request.image_node_id);
+        base::Erase(parent_node_data.child_ids, ocr_request.image_node_id);
     CHECK_EQ(num_erased, 1);
-    parent_node.child_ids.push_back(page_node_id);
-
-    ui::AXTreeUpdate update;
-    update.node_id_to_clear = ocr_request.image_node_id;
-    update.root_id = doc_node_->id;
-    update.nodes.push_back(std::move(parent_node));
-    for (const auto& node : nodes_) {
-      update.nodes.push_back(std::move(*node));
-    }
-
-    if (!tree_.Unserialize(update)) {
+    parent_node_data.child_ids.push_back(page_node_id);
+    tree_update.root_id = doc_node_->id;
+    tree_update.nodes.insert(tree_update.nodes.begin(),
+                             std::move(parent_node_data));
+    if (!tree_.Unserialize(tree_update)) {
       LOG(FATAL) << tree_.error();
     }
   }
