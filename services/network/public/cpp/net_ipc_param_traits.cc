@@ -76,8 +76,8 @@ void ParamTraits<net::HashValue>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<net::HashValue>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
-  std::string str;
-  return ReadParam(m, iter, &str) && r->FromString(str);
+  base::StringPiece encoded;
+  return iter->ReadStringPiece(&encoded) && r->FromString(encoded);
 }
 
 void ParamTraits<net::HashValue>::Log(const param_type& p, std::string* l) {
