@@ -2195,7 +2195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction{HostType}.RetryReason"
-    enum="HttpNetworkTransactionRetryReason" expires_after="2023-09-01">
+    enum="HttpNetworkTransactionRetryReason" expires_after="2024-03-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>Log the reason when HttpNetworkTransaction retries.</summary>
@@ -2690,7 +2690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicProtocolErrorRetryDelay{HostType}.{FinalResult}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-03-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2708,7 +2708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicProtocolError{HostType}.RetryStatus"
-    enum="QuicProtocolErrorRetryStatus" expires_after="2023-09-01">
+    enum="QuicProtocolErrorRetryStatus" expires_after="2024-03-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2722,7 +2722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicProtocolError{HostType}.{RetryStatus}.QuicErrorCode"
-    enum="QuicErrorCodes" expires_after="2023-09-01">
+    enum="QuicErrorCodes" expires_after="2024-03-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2744,7 +2744,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicProtocolError{HostType}.{RetryStatus}.QuicStreamErrorCode"
-    enum="QuicRstStreamErrorCodes" expires_after="2023-09-01">
+    enum="QuicRstStreamErrorCodes" expires_after="2024-03-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
