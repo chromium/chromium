@@ -330,7 +330,7 @@ void ShowNotificationForDevice(const std::string& guid,
   }
 
   if (bruschetta::BruschettaFeatures::Get()->IsEnabled()) {
-    vm_name = l10n_util::GetStringUTF16(IDS_BRUSCHETTA_NAME);
+    vm_name = bruschetta::GetOverallVmName(profile());
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
             IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
