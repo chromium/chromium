@@ -202,7 +202,7 @@ enum PermissionsPolicyFeature {
   kClientHintPrefersReducedMotion = 105,
 
   // Controls use of Compute Pressure API.
-  // https://wicg.github.io/compute-pressure/#policy-control
+  // https://w3c.github.io/compute-pressure/#policy-control
   kComputePressure = 106,
 
   // Web Smart Card API

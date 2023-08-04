@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/compute-pressure/#dom-pressurestate
+// https://w3c.github.io/compute-pressure/#dom-pressurestate
 enum PressureState {
   "nominal",
   "fair",
@@ -10,7 +10,7 @@ enum PressureState {
   "critical"
 };
 
-// https://wicg.github.io/compute-pressure/#dom-pressurerecord
+// https://w3c.github.io/compute-pressure/#the-pressurerecord-interface
 [
     Exposed=(DedicatedWorker,SharedWorker,Window),
     RuntimeEnabled=ComputePressure,

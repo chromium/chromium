@@ -107,7 +107,7 @@ void PressureObserver::unobserve(V8PressureSource source) {
   if (!manager_)
     return;
 
-  // https://wicg.github.io/compute-pressure/#the-unobserve-method
+  // https://w3c.github.io/compute-pressure/#the-unobserve-method
   manager_->RemoveObserver(source.AsEnum(), this);
   last_record_map_[ToSourceIndex(source.AsEnum())].Clear();
   // Reject all pending promises for `source`.
@@ -125,7 +125,7 @@ void PressureObserver::disconnect() {
   if (!manager_)
     return;
 
-  // https://wicg.github.io/compute-pressure/#the-disconnect-method
+  // https://w3c.github.io/compute-pressure/#the-disconnect-method
   manager_->RemoveObserverFromAllSources(this);
   for (auto& last_record : last_record_map_)
     last_record.Clear();
@@ -221,7 +221,7 @@ HeapVector<Member<PressureRecord>> PressureObserver::takeRecords() {
   return records;
 }
 
-// https://wicg.github.io/compute-pressure/#dfn-passes-rate-test
+// https://w3c.github.io/compute-pressure/#dfn-passes-rate-test
 bool PressureObserver::PassesRateTest(
     V8PressureSource::Enum source,
     const DOMHighResTimeStamp& timestamp) const {
@@ -235,7 +235,7 @@ bool PressureObserver::PassesRateTest(
   return (time_delta_milliseconds / 1000.0) >= interval_seconds;
 }
 
-// https://wicg.github.io/compute-pressure/#dfn-has-change-in-data
+// https://w3c.github.io/compute-pressure/#dfn-has-change-in-data
 bool PressureObserver::HasChangeInData(V8PressureSource::Enum source,
                                        V8PressureState::Enum state) const {
   const auto& last_record = last_record_map_[ToSourceIndex(source)];
