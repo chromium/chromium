@@ -566,7 +566,9 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2148613324460538318">Engeza ikhadi</translation>
 <translation id="2148716181193084225">Namhlanje</translation>
 <translation id="2149968176347646218">Ukuxhumeka akuvikelekile</translation>
+<translation id="2152495481414285304">Ama-application</translation>
 <translation id="2153609454945889823">Faka i-Google Play Services for AR?</translation>
+<translation id="2154144347038514978">Qala ngokuzenzakalelayo kudivayisi yakho</translation>
 <translation id="2154484045852737596">Hlela ikhadi</translation>
 <translation id="2154739667870063220">Ukuqalisa</translation>
 <translation id="2155260325161282517">U-5 x 7 phakathi</translation>
@@ -2908,6 +2910,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7186833457841277072">Imvilophu (i-Inkjet)</translation>
 <translation id="7186840261985974511">Imvilophu ye-#12</translation>
 <translation id="718872491229180389">Awe-Cheerleading</translation>
+<translation id="7188840756966467339">Qala kabusha futhi usebenzise izinqubomgomo</translation>
 <translation id="7192188280913829296">Isibaluli esithi "vendor_id" kufanele sicaciswe.</translation>
 <translation id="7192203810768312527">Khulula u-<ph name="SIZE" />. Amanye amasayihi angalayisha kancane Some sites may load more slowly on your next visit.</translation>
 <translation id="7192537357091279678">Amadrayivu Nezitoreji Zekhompyutha</translation>
@@ -3006,6 +3009,7 @@ Imininingwane engeziwe:
 <translation id="7400418766976504921">I-URL</translation>
 <translation id="7403392780200267761">Yabelana ngale thebhu ngokwabelana ngelinki, ukudala ikhodi ye-QR, ukusakaza, nokuningi</translation>
 <translation id="7403591733719184120">I-<ph name="DEVICE_NAME" /> yakho iphethwe</translation>
+<translation id="7405878640835614059">I-<ph name="ENROLLMENT_DOMAIN" /> ifake ama-app emisebenzi engeziwe. Izandiso zinokufinyelela kwenye idatha yakho.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Uzobona leli phutha uma unesofthiwe le-Superfish elivuliwe kwikhompyutha yakho ye-Windows.&lt;/p&gt;
     &lt;p&gt;Landela lezi zinyathelo ukuze ukhubaze okwesikhashana isofthiwe ukuze ungene kuwebhu. Uzodinga amalungelo omlawuli.&lt;/p&gt;
     &lt;ol&gt;
@@ -3485,6 +3489,7 @@ Imininingwane engeziwe:
 <translation id="8349305172487531364">Ibha yamabhukhimakhi</translation>
 <translation id="8351131234907093545">Dala inothi</translation>
 <translation id="835203957414790336">Okuqukethwe kwamakhasi owaphrintayo nolwazi olumayelana nephrinta yakho kuthunyelwa ku-Google Cloud noma ezinkampanini ezingahlangene ngqo ukuze zihlaziywe. Ngokwesibonelo, kungaskenwa mayelana nedatha ezwelayo.</translation>
+<translation id="8352849934814541340">Umlawuli wale divayisi ufake izandiso zemisebenzi eyengeziwe. Izandiso zinokufinyelela kwenye idatha yakho.</translation>
 <translation id="8355270400102541638">Umongo Wokukhubazeka Kwendawo:</translation>
 <translation id="8363502534493474904">Cisha imodi yendiza</translation>
 <translation id="8364627913115013041">Akusethiwe.</translation>
@@ -3733,6 +3738,7 @@ Imininingwane engeziwe:
 <translation id="8903921497873541725">Sondeza</translation>
 <translation id="890493561996401738">Susa inkinobho yesiphazamiso, cindezela ku-Enter ukuze ususe, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 intshi</translation>
+<translation id="8918062451146297192">I-CVC yekhadi elibonakalayo</translation>
 <translation id="8919740778133505789">Izimoto Zezemidlalo</translation>
 <translation id="8919895429178014996">Fihla zonke izinto</translation>
 <translation id="8922013791253848639">Njalo vumela izikhangiso kuleli sayithi</translation>

@@ -566,7 +566,9 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2148613324460538318">Ychwanegu Cerdyn</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2149968176347646218">Nid yw'r cysylltiad yn ddiogel</translation>
+<translation id="2152495481414285304">Apiau</translation>
 <translation id="2153609454945889823">Gosod Google Play Services ar gyfer AR?</translation>
+<translation id="2154144347038514978">Dechrau yn awtomatig ar eich dyfais</translation>
 <translation id="2154484045852737596">Golygu cerdyn</translation>
 <translation id="2154739667870063220">Ailgychwyn</translation>
 <translation id="2155260325161282517">5 x 7 modfedd</translation>
@@ -2911,6 +2913,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7186833457841277072">Amlen (Inkjet)</translation>
 <translation id="7186840261985974511">Amlen #12</translation>
 <translation id="718872491229180389">Codi hwyl</translation>
+<translation id="7188840756966467339">Ailgychwyn a chymhwyso polisïau</translation>
 <translation id="7192188280913829296">Rhaid nodi'r briodwedd "vendor_id" hefyd.</translation>
 <translation id="7192203810768312527">Yn creu <ph name="SIZE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="7192537357091279678">Gyriannau a Storfa Cyfrifiaduron</translation>
@@ -3009,6 +3012,7 @@ Manylion ychwanegol:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Gallwch rannu'r tab hwn drwy rannu'r ddolen, creu cod QR, castio, a rhagor</translation>
 <translation id="7403591733719184120">Rheolir eich <ph name="DEVICE_NAME" /></translation>
+<translation id="7405878640835614059">Mae <ph name="ENROLLMENT_DOMAIN" /> wedi gosod apiau ar gyfer swyddogaethau ychwanegol. Mae gan apiau fynediad at rywfaint o'ch data.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Byddwch yn gweld y gwall hwn os oes gennych feddalwedd Superfish ar eich cyfrifiadur Windows.&lt;/p&gt;
       &lt;p&gt;Dilynwch y camau hyn i analluogi'r feddalwedd dros dro fel y gallwch fynd ar y we. Bydd angen breintiau gweinyddwr arnoch.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3492,7 @@ Manylion ychwanegol:
 <translation id="8349305172487531364">Bar nodau tudalen</translation>
 <translation id="8351131234907093545">Creu nodyn</translation>
 <translation id="835203957414790336">Mae cynnwys tudalennau rydych yn eu hargraffu a gwybodaeth am eich argraffydd yn cael eu hanfon at Google Cloud neu drydydd partïon i'w dadansoddi. Er enghraifft, mae'n bosib y bydd yn cael ei sganio am ddata sensitif neu ddrwgwedd.</translation>
+<translation id="8352849934814541340">Mae gweinyddwr y ddyfais hon wedi gosod apiau ar gyfer swyddogaethau ychwanegol. Mae gan apiau fynediad at rywfaint o'ch data.</translation>
 <translation id="8355270400102541638">Cyd-destun Toriad Lleol:</translation>
 <translation id="8363502534493474904">Yn diffodd modd awyrennau</translation>
 <translation id="8364627913115013041">Heb ei osod.</translation>
@@ -3736,6 +3741,7 @@ Manylion ychwanegol:
 <translation id="8903921497873541725">Chwyddo</translation>
 <translation id="890493561996401738">Tynnwch y botwm Awgrym, pwyswch Enter i dynnu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 modfedd</translation>
+<translation id="8918062451146297192">CVC ar gyfer cerdyn rhithwir</translation>
 <translation id="8919740778133505789">Ceir Chwaraeon</translation>
 <translation id="8919895429178014996">Cuddio pob eitem</translation>
 <translation id="8922013791253848639">Caniatáu hysbysebion ar y wefan hon bob amser</translation>

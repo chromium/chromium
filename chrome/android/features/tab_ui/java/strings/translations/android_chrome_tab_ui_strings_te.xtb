@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(స్టోర్ రేటింగ్)</translation>
 <translation id="6333260925957816943">ఈ స్టోర్‌కు సంబంధించిన సమాచారం</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ట్యాబ్‌ను అన్‌గ్రూప్ చేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ట్యాబ్‌లను అన్‌గ్రూప్ చేయండి}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{మీరు మూసివేసిన ట్యాబ్‌లను, Chrome ప్రధాన మెనూలో ఉండే ఇటీవలి ట్యాబ్‌లలో చూడవచ్చు. మీ అజ్ఞాత ట్యాబ్ అందుబాటులో ఉండదు.}other{మీరు మూసివేసిన ట్యాబ్‌లను, Chrome ప్రధాన మెనూలో ఉండే ఇటీవలి ట్యాబ్‌లలో చూడవచ్చు. మీ # అజ్ఞాత ట్యాబ్‌లు అందుబాటులో ఉండవు.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
 <translation id="6549021453810473782">స్టోర్ సమాచారాన్ని చూడండి</translation>
 <translation id="6562820390860419811">ట్యాబ్‌ను ఎడమకు తరలించు</translation>
 <translation id="6615455863669487791">నాకు చూపించు</translation>
+<translation id="661742612106409204">మీరు మూసివేసిన ట్యాబ్‌లను, Chrome ప్రధాన మెనూలో ఉండే ఇటీవలి ట్యాబ్‌లలో చూడవచ్చు.</translation>
 <translation id="6840760312327750441">ట్యాబ్‌లను సమూహంగా చేయడానికి, ట్యాబ్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి. ట్యాబ్‌ను మరొక ట్యాబ్‌ మీదకు లాగండి.</translation>
 <translation id="6856809498882026482">బహుళ-ఎంపిక మోడ్‌ను దాచండి</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ట్యాబ్‌ను షేర్ చేయండి}other{ట్యాబ్‌లను షేర్ చేయండి}}</translation>

@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
+<translation id="1793631236004319016">上次使用时间：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可执行多种操作，按 Tab 键可循环浏览这些操作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">虚拟卡详细信息</translation>
@@ -567,6 +568,7 @@
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2152495481414285304">应用</translation>
 <translation id="2153609454945889823">安装“面向 AR 的 Google Play 服务”？</translation>
+<translation id="2154144347038514978">在设备上自动启动</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2154739667870063220">重新启动</translation>
 <translation id="2155260325161282517">5 x 7 英寸</translation>
@@ -938,6 +940,7 @@
 <translation id="299990983510665749">掀背车</translation>
 <translation id="3002501248619246229">检查进纸匣媒体</translation>
 <translation id="3005723025932146533">显示已保存的版本</translation>
+<translation id="300580149047131921">最近使用过</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
 <translation id="3013291976881901233">MIDI 设备</translation>
 <translation id="3014553260345122294">财经新闻</translation>
@@ -2657,6 +2660,7 @@
 <translation id="6671169470640320959">汽车贷款</translation>
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
 <translation id="6677351035258626477">快餐</translation>
+<translation id="6681790815630918386">已保存银行卡验证码 (CVC)</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6683717648675961851">招聘信息</translation>
 <translation id="6687230248707087982">信封（普通）</translation>
@@ -2904,6 +2908,7 @@
 <translation id="7186833457841277072">信封（喷墨纸）</translation>
 <translation id="7186840261985974511">#12 信封</translation>
 <translation id="718872491229180389">啦啦队</translation>
+<translation id="7188840756966467339">重启浏览器并应用政策</translation>
 <translation id="7192188280913829296">还必须指定“vendor_id”属性。</translation>
 <translation id="7192203810768312527">释放了 <ph name="SIZE" />。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="7192537357091279678">计算机驱动器和存储设备</translation>
@@ -3002,6 +3007,7 @@
 <translation id="7400418766976504921">网址</translation>
 <translation id="7403392780200267761">通过分享链接、创建二维码、投放等操作分享此标签页</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 受管理</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> 已安装了一些应用来提供更多功能。这些应用有权访问您的部分数据。</translation>
 <translation id="7407424307057130981">&lt;p&gt;如果您的 Windows 计算机上装有 SuperFish 软件，您将会看到这条错误消息。&lt;/p&gt;
       &lt;p&gt;您可以按照下述步骤暂时停用该软件，以便连接到网络。您需要拥有管理员权限才能执行下列操作。&lt;/p&gt;
       &lt;ol&gt;
@@ -3464,6 +3470,7 @@
 <translation id="830498451218851433">对折</translation>
 <translation id="8308653357438598313">实时视频直播</translation>
 <translation id="8311895354659782580">房地产信息</translation>
+<translation id="8316555157357957253">正在使用中</translation>
 <translation id="8317570861267063617">为便于更快速结账，请将此卡的银行卡验证码 (CVC) 保存到您的设备上</translation>
 <translation id="8319269383395457801">住宅销售</translation>
 <translation id="831997045666694187">晚上</translation>
@@ -3480,6 +3487,7 @@
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="835203957414790336">您打印的页面内容和您的打印机相关信息会被发送到 Google Cloud 或第三方进行分析。例如，这类内容可能会被扫描，以确定其中是否包含敏感数据。</translation>
+<translation id="8352849934814541340">此设备的管理员已安装了一些应用来提供更多功能。这些应用有权访问您的部分数据。</translation>
 <translation id="8355270400102541638">本机崩溃上下文：</translation>
 <translation id="8363502534493474904">关闭飞行模式</translation>
 <translation id="8364627913115013041">未设置。</translation>
@@ -3729,6 +3737,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="890493561996401738">“移除建议”按钮，按 Enter 键即可移除“<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />”</translation>
 <translation id="8910898109640902752">8 x 10 英寸</translation>
+<translation id="8918062451146297192">虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="8919740778133505789">跑车</translation>
 <translation id="8919895429178014996">隐藏所有项</translation>
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>

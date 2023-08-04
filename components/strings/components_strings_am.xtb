@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google ዘመናዊ ቁልፍ</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ለማስተዳደር ትር ከዚያ አስገባን ይጫኑ</translation>
+<translation id="1793631236004319016">ለመጨረሻ ጊዜ ጥቅም ላይ የዋለው ከ<ph name="NUM_HOURS_MINUTES_SECONDS" /> በፊት</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ርካታ እርምጃዎች ይገኛሉ፣ በእነሱ ውስጥ ለማሰስ ትርን ይጫኑ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">የምናባዊ ካርድ ዝርዝሮች</translation>
@@ -565,7 +566,9 @@
 <translation id="2148613324460538318">ካርድ አክል</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="2149968176347646218">ግንኙነትዎ ደህንነቱ የተጠበቀ አይደለም</translation>
+<translation id="2152495481414285304">መተግበሪያዎች</translation>
 <translation id="2153609454945889823">የGoogle Play አገልግሎቶችን ለኤአር ይጭናሉ?</translation>
+<translation id="2154144347038514978">በመሣሪያዎ ላይ በራስ-ሰር ጀምር</translation>
 <translation id="2154484045852737596">ካርትን ያርትዑ</translation>
 <translation id="2154739667870063220">ዳግም አስነሳ</translation>
 <translation id="2155260325161282517">5 x 7 ኢንች</translation>
@@ -937,6 +940,7 @@
 <translation id="299990983510665749">ሃችባኮች</translation>
 <translation id="3002501248619246229">የግቤት መሳቢያ ሚዲያን ይመልከቱ</translation>
 <translation id="3005723025932146533">የተቀመጠ ቅጂ አሳይ</translation>
+<translation id="300580149047131921">በቅርቡ ጥቅም ላይ የዋለ</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የሚገኙ እርምጃዎችን ለማሰስ Tabን በመቀጠል የተመረጠውን እርምጃ ለመፈጸም Enterን ይጫኑ።</translation>
 <translation id="3013291976881901233">የMIDI መሣሪያዎች</translation>
 <translation id="3014553260345122294">የንግድ ዜና</translation>
@@ -2660,6 +2664,7 @@
 <translation id="6671169470640320959">ራስ ሰር ፋይናንሲንግ</translation>
 <translation id="6671697161687535275">የአስተያየት ጥቆማ ከChromium ይወገድ?</translation>
 <translation id="6677351035258626477">ፈጣን ምግብ</translation>
+<translation id="6681790815630918386">ካርድ ማረጋገጫ ኮድ ተቀምጧል</translation>
 <translation id="6683022854667115063">የራስ ላይ ማዳመጫዎች</translation>
 <translation id="6683717648675961851">የሥራ ዝርዝሮች</translation>
 <translation id="6687230248707087982">ፖስታ (ምንም የሌለበት)</translation>
@@ -2907,6 +2912,7 @@
 <translation id="7186833457841277072">ፖስታ (ኢንክጄት)</translation>
 <translation id="7186840261985974511">#12 ፖስታ</translation>
 <translation id="718872491229180389">ቺርሊዲንግ</translation>
+<translation id="7188840756966467339">እንደገና ጀምር እና መመሪያዎችን ተግብር</translation>
 <translation id="7192188280913829296">እንዲሁም መገለጫ ባህሪው «vendor_id» መገለጽ አለበት።</translation>
 <translation id="7192203810768312527">እስከ <ph name="SIZE" /> ያስለቅቃል። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ በዝግታ ሊጫኑ ይችላሉ።</translation>
 <translation id="7192537357091279678">የኮምፒውተር አንጻፊዎች እና ማከማቻዎች</translation>
@@ -3005,6 +3011,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">አገናኙን በማጋራት፣ የQR ኮድ በመፍጠር፣ ካስት እና ሌሎችንም በማድረግ ይህን ትር ያጋሩ</translation>
 <translation id="7403591733719184120">የእርስዎ <ph name="DEVICE_NAME" /> የሚተዳደር ነው</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ለተጨማሪ ተግባራት መተግበሪያዎችን ጭኗል። መተግበሪያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
 <translation id="7407424307057130981">&lt;p&gt;በWindows ኮምፒውተርዎ ላይ የSuperfish ሶፍትዌር ካለዎት ይህን ስህተት ያዩታል።&lt;/p&gt;
     &lt;p&gt;ወደ ድሩ መሄድ እንዲችሉ ሶፍትዌሩን ለጊዜው ለማሰናከል እነዚህን ደረጃዎች ይከተሉ። የአስተዳዳሪ ልዩ መብቶች ያስፈልገዎታል።&lt;/p&gt;
     &lt;ol&gt;
@@ -3467,6 +3474,7 @@
 <translation id="830498451218851433">ግማሽ እጠፍ</translation>
 <translation id="8308653357438598313">የቀጥታ ስርጭት የቪድዮ ዥረት</translation>
 <translation id="8311895354659782580">የሪል ስቴት ዝርዝሮች</translation>
+<translation id="8316555157357957253">አሁን ጥቅም ላይ እየወለ ያለ</translation>
 <translation id="8317570861267063617">ይበልጥ ፈጣን ለሆነ ክፍያ ማጠናቀቅ ካርድ ማረጋገጫ ኮዱን ለዚህ ካርድ ወደ መሣሪያዎ ያስቀምጡ</translation>
 <translation id="8319269383395457801">የመኖሪያ ሽያጮች</translation>
 <translation id="831997045666694187">ምሽት</translation>
@@ -3483,6 +3491,7 @@
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>
 <translation id="835203957414790336">እርስዎ የሚያትሙት የገጾች ይዘት እና ስለአታሚዎ መረጃ ለትንተና ወደ Google ደመና ወይም ለሶስተኛ ወገኖች ይላካል። ለምሳሌ፣ አደጋን ሊያስከትል ለሚችል ውሂብ ሊቃኝ ይችላል።</translation>
+<translation id="8352849934814541340">የዚህ መሣሪያ አስተዳዳሪ ለተጨማሪ ተግባራት መተግበሪያዎችን ጭኗል። መተግበሪያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
 <translation id="8355270400102541638">የአካባቢያዊ ስንክል አውድ፦</translation>
 <translation id="8363502534493474904">የአውሮፕላን ሁነታን ማጥፋት</translation>
 <translation id="8364627913115013041">አልተዋቀረም።</translation>
@@ -3732,6 +3741,7 @@
 <translation id="8903921497873541725">አጉላ</translation>
 <translation id="890493561996401738">የአስተያየት ጥቆማ አስወግድ አዝራር፣ ለማስወገድ አስገባን ይጫኑ፣ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ኢንች</translation>
+<translation id="8918062451146297192">ካርድ ማረጋገጫ ኮድ ለምናባዊ ካርድ</translation>
 <translation id="8919740778133505789">የስፖርት መኪናዎች</translation>
 <translation id="8919895429178014996">ሁሉንም ንጥሎች ደብቅ</translation>
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>

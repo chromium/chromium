@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Skjástillingar forritsins þíns taka gildi við næstu endurræsingu.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 mín. eftir}one{# mín. eftir}other{# mín. eftir}}</translation>
+<translation id="7363164521834647158">Senda svar</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Fyrir 1 mín.}one{Fyrir # mín.}other{Fyrir # mín.}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 mínúta eftir}one{# mínúta eftir}other{# mínútur eftir}}</translation>

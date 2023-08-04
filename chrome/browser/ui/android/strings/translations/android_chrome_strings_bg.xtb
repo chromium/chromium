@@ -1056,6 +1056,7 @@
 <translation id="663674369910034433">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK1" />Синхронизиране<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />услуги на Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">С цел подобряване на приложението Chrome изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_UMA_LINK" />Управление<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блокиране във всички случаи</translation>
+<translation id="664050863900079109">Четене на глас</translation>
 <translation id="6641780377503683465">Премахване на <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6645629752388991326">Управлявайте това, кои устройства могат да влизат чрез използване на това устройство като ключ за сигурност.</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7146622961999026732">Тези сайтове и приложения изглеждат важни за вас:</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>
+<translation id="7152808996372201178">Четене на глас на поддържаните страници. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="7155317020660659215">За да сканирате QR код, променете настройките, така че Chrome да може да използва камерата</translation>
 <translation id="7168323970702333693">Влезли сте като <ph name="USER_NAME" />. Отваря настройките.</translation>
 <translation id="7173114856073700355">Към настройките</translation>

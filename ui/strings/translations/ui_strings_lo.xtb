@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">ການຕັ້ງຄ່າການສະແດງຜົນຂອງແອັບພລິເຄຊັນຂອງທ່ານຈະມີຜົນເມື່ອຣິສະຕາດມັນໃນຄັ້ງຕໍ່ໄປ.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ຍັ​ງ​ເຫຼືອ 1 ນາ​ທີ}other{ຍັງ​ເຫຼືອ # ນາ​ທີ}}</translation>
+<translation id="7363164521834647158">ສົ່ງການຕອບກັບ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ນາ​ທີ​ກ່ອນ​​ນີ້}other{# ນາ​ທີ​ກ່ອນ​ນີ້}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ຍັງ​ເຫຼືອ 1 ນາ​ທີ​}other{ຍັງ​ເຫຼືອ # ນາ​ທີ}}</translation>

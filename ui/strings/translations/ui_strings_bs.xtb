@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Postavke ekrana aplikacije će stupiti na snagu kada je sljedeći put ponovo pokrenete.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Ostala je još 1 min}one{Ostala je još # min}few{Ostale su još # min}other{Ostalo je još # min}}</translation>
+<translation id="7363164521834647158">Slanje odgovora</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Prije 1 min}one{Prije # min}few{Prije # min}other{Prije # min}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Još 1 minuta}one{Još # minuta}few{Još # minute}other{Još # minuta}}</translation>

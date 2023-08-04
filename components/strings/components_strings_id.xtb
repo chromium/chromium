@@ -408,6 +408,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info, privasi, dan keamanan di Akun Google Anda</translation>
+<translation id="1793631236004319016">Terakhir digunakan <ph name="NUM_HOURS_MINUTES_SECONDS" /> lalu</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, beberapa tindakan tersedia, tekan Tab untuk melihat semua tindakan</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detail kartu virtual</translation>
@@ -567,6 +568,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2149968176347646218">Koneksi tidak aman</translation>
 <translation id="2152495481414285304">Aplikasi</translation>
 <translation id="2153609454945889823">Instal Layanan Google Play untuk AR?</translation>
+<translation id="2154144347038514978">Mulai otomatis di perangkat Anda</translation>
 <translation id="2154484045852737596">Edit kartu</translation>
 <translation id="2154739667870063220">Mulai ulang</translation>
 <translation id="2155260325161282517">5 x 7 inci (12 x 17 cm)</translation>
@@ -938,6 +940,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="299990983510665749">Hatchback</translation>
 <translation id="3002501248619246229">Periksa media baki masukan</translation>
 <translation id="3005723025932146533">Tampilkan salinan yang disimpan</translation>
+<translation id="300580149047131921">Baru saja digunakan</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menjelajahi tindakan yang tersedia, lalu tekan Enter untuk menjalankan tindakan yang dipilih.</translation>
 <translation id="3013291976881901233">Perangkat MIDI</translation>
 <translation id="3014553260345122294">Berita Bisnis</translation>
@@ -2661,6 +2664,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6671169470640320959">Pembiayaan Otomotif</translation>
 <translation id="6671697161687535275">Hapus saran formulir dari Chromium?</translation>
 <translation id="6677351035258626477">Makanan Cepat Saji</translation>
+<translation id="6681790815630918386">CVC disimpan</translation>
 <translation id="6683022854667115063">Headphone</translation>
 <translation id="6683717648675961851">Lowongan pekerjaan</translation>
 <translation id="6687230248707087982">Amplop (Polos)</translation>
@@ -2908,6 +2912,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7186833457841277072">Amplop (Inkjet)</translation>
 <translation id="7186840261985974511">Envelope #12</translation>
 <translation id="718872491229180389">Pemandu sorak</translation>
+<translation id="7188840756966467339">Mulai ulang dan terapkan kebijakan</translation>
 <translation id="7192188280913829296">Atribut "vendor_id" juga harus ditentukan.</translation>
 <translation id="7192203810768312527">Sediakan ruang sebesar <ph name="SIZE" />. Sebagian situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="7192537357091279678">Drive &amp; Penyimpanan Komputer</translation>
@@ -3004,6 +3009,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Bagikan tab ini dengan membagikan link, membuat kode QR, melakukan transmisi, dan lainnya</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> Anda dikelola</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> telah menginstal aplikasi untuk fungsi tambahan. Aplikasi memiliki akses ke sebagian data Anda.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Anda akan melihat error ini jika memiliki software Superfish di komputer Windows.&lt;/p&gt;
       &lt;p&gt;Ikuti langkah-langkah ini untuk menonaktifkan software tersebut sementara waktu agar Anda dapat mengakses web. Anda memerlukan hak istimewa administrator.&lt;/p&gt;
       &lt;ol&gt;
@@ -3466,6 +3472,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="830498451218851433">Lipatan setengah</translation>
 <translation id="8308653357438598313">Streaming Video Live</translation>
 <translation id="8311895354659782580">Listingan Real Estat</translation>
+<translation id="8316555157357957253">Sedang digunakan sekarang</translation>
 <translation id="8317570861267063617">Untuk checkout yang lebih cepat, simpan CVC kartu ini ke perangkat Anda</translation>
 <translation id="8319269383395457801">Penjualan Rumah</translation>
 <translation id="831997045666694187">Sore</translation>
@@ -3482,6 +3489,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8349305172487531364">Bilah bookmark</translation>
 <translation id="8351131234907093545">Buat catatan</translation>
 <translation id="835203957414790336">Konten halaman yang Anda cetak dan informasi tentang printer Anda akan dikirim ke Google Cloud atau pihak ketiga untuk dianalisis. Misalnya, teks mungkin dipindai untuk mendeteksi data sensitif.</translation>
+<translation id="8352849934814541340">Administrator perangkat ini telah menginstal aplikasi untuk fungsi tambahan. Aplikasi memiliki akses ke sebagian data Anda.</translation>
 <translation id="8355270400102541638">Konteks Error Lokal:</translation>
 <translation id="8363502534493474904">Nonaktifkan mode pesawat</translation>
 <translation id="8364627913115013041">Tidak disetel.</translation>
@@ -3728,6 +3736,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8903921497873541725">Perbesar</translation>
 <translation id="890493561996401738">Hapus tombol Saran, tekan Enter untuk menghapus, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inci (20 x 25 cm)</translation>
+<translation id="8918062451146297192">CVC untuk kartu virtual</translation>
 <translation id="8919740778133505789">Mobil Sport</translation>
 <translation id="8919895429178014996">Sembunyikan semua item</translation>
 <translation id="8922013791253848639">Selalu izinkan iklan di situs ini</translation>

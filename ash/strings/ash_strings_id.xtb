@@ -141,6 +141,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1557622599341396706">Tampilkan nama desktop</translation>
 <translation id="1569384531973824928">Tindakan ini akan mengizinkan akses untuk semua aplikasi serta situs yang memiliki izin kamera dan mikrofon. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
+<translation id="1571697193564730395">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Perkecil saat kaca pembesar diaktifkan</translation>
 <translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
@@ -579,6 +580,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3563775809269155755">Aktifkan hotspot</translation>
 <translation id="3566240529365775567">Baru saja dibuka</translation>
 <translation id="3571734092741541777">Siapkan</translation>
+<translation id="3572988532398145777">Anda tidak dapat meluaskan notifikasi saat panel terbuka. Tutup panel di bawah terlebih dahulu.</translation>
 <translation id="3573179567135747900">Ubah kembali ke "<ph name="FROM_LOCALE" />" (harus dinyalakan ulang)</translation>
 <translation id="3576141592585647168">Ubah zona waktu</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
@@ -687,6 +689,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3990002060657467458">Kontrol yang sering digunakan seperti Wi-Fi, Bluetooth, dan volume ada di Setelan Cepat. Anda juga dapat membuka Setelan Cepat untuk mengambil screenshot.</translation>
 <translation id="3995138139523574647">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="40062176907008878">Tulis tangan</translation>
+<translation id="4011112806063830608">Mode Jangan Ganggu aktif.</translation>
 <translation id="4017989525502048489">Penunjuk laser</translation>
 <translation id="401993194061514265">Penanda tidak tersedia. Buka kembali Screencast.</translation>
 <translation id="4021716437419160885">Scroll ke bawah</translation>
@@ -720,6 +723,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4165275524535002941">Kabel mungkin tidak mendukung layar</translation>
+<translation id="4177415338862979658">Klik untuk memeriksa detailnya</translation>
 <translation id="4177913004758410636">{0,plural, =1{Update perangkat dalam 1 hari}other{Update perangkat dalam # hari}}</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4185671786623711291">Pindahkan jendela aktif ke desktop di sisi kanan</translation>
@@ -1438,6 +1442,7 @@ Baru diinstal</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="7313193732017069507">Luaskan kamera</translation>
+<translation id="7316261577130609484">Tambahkan tugas baru</translation>
 <translation id="7340731148882810149">Menu klik otomatis</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
@@ -1590,6 +1595,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7944023924886109030">Lihat semua acara hari ini</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Redupkan keyboard</translation>
+<translation id="7963689218131240420">Mode Jangan Ganggu nonaktif.</translation>
 <translation id="7963992254934562106">Dari <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder ...</translation>
 <translation id="797512352675305461">Aktifkan atau nonaktifkan kaca pembesar layar penuh</translation>
@@ -1842,6 +1848,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9080073830732419341">Kamera dipaskan ke pojok kiri atas</translation>
 <translation id="9080132581049224423">Geser ke atas untuk membuka beranda</translation>
 <translation id="9080206825613744995">Mikrofon sedang digunakan.</translation>
+<translation id="908451241440060346">Notifikasi dibisukan saat mode Jangan Ganggu aktif</translation>
 <translation id="9084606467167974638">Beralih posisi menu</translation>
 <translation id="9085962983642906571">Baterai diisi daya sampai 80% saat dicolokkan ke sumber listrik untuk memperpanjang masa pakai baterai.</translation>
 <translation id="9089416786594320554">Metode masukan</translation>

@@ -568,6 +568,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="1488724823347505879">Activer le partage des applis Android vers les applis Web</translation>
+<translation id="1490962807364514840">Fréquence de collecte des données télémétriques des compteurs d'exécution du processeur en millisecondes.</translation>
 <translation id="1492223733885011596">Cette règle active la prise en charge des GIF dans le sélecteur d'emoji sur <ph name="PRODUCT_OS_NAME" />.
 Si cette règle est activée, le sélecteur d'emoji prend en charge les emoji GIF.
 Si cette règle est désactivée ou n'est pas configurée, le sélecteur d'emoji ne sera pas compatible avec les emoji GIF.
@@ -1383,6 +1384,7 @@ La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter qu
 <translation id="2178899310296064282">Appliquer au moins le mode restreint modéré sur YouTube</translation>
 <translation id="2180958780733364832">Contrôler l'utilisation du mode sans interface graphique</translation>
 <translation id="2182291258410176649">L'utilisateur décide d'activer ou non le service de sauvegarde et de restauration</translation>
+<translation id="2183338188392346527">Ne pas signaler les compteurs d'exécution de l'appareil</translation>
 <translation id="219297066914002620">Ordonne à <ph name="PRODUCT_OS_NAME" /> d'activer ou de désactiver les outils de la console de gestion des machines virtuelles.
 
       Si la règle est définie sur "true" ou n'est pas définie, l'utilisateur pourra se servir de l'interface de ligne de commande de gestion des machines virtuelles.
@@ -3022,6 +3024,9 @@ Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les req
 
 À partir de la version 114, <ph name="DOH_SALT_POLICY_NAME" /> est facultatif si cette règle est configurée.</translation>
 <translation id="3634125384445314047">Autoriser l'accès aux photos et vidéos récentes prises sur le téléphone via Phone Hub.</translation>
+<translation id="3637063789824963261">Si cette règle est activée, les appareils enregistrés signalent des compteurs d'exécution de l'appareil (Intel vPro de 14e génération et version ultérieures uniquement).
+
+Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne signalent pas et ne sauvegardent pas les compteurs d'exécution de l'appareil.</translation>
 <translation id="3642557248926713561">Désactiver la protection des extensions de la navigation sécurisée</translation>
 <translation id="3644735978203799620">Activer la sélection automatique de captures d'écran multiples</translation>
 <translation id="3646859102161347133">Définir le type de loupe</translation>
@@ -3580,6 +3585,9 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 
 Si cette règle n'est pas configurée, toutes les origines nécessitent un geste préalable de l'utilisateur pour appeler cette API.</translation>
 <translation id="4115501011761259824">Activer les ensembles propriétaires pour tous les utilisateurs concernés</translation>
+<translation id="4120401094617902941">Fréquence d'échantillonnage et de collecte des compteurs d'exécution. La valeur minimale autorisée est de 1 jour.
+
+Si cette règle n'est pas configurée, la fréquence par défaut (1 jour) est appliquée.</translation>
 <translation id="4121350739760194865">Empêcher les promotions pour des applications de s'afficher sur la page Nouvel onglet</translation>
 <translation id="4122473079291425973">Fiches affichées sur la page Nouvel onglet si du contenu est disponible, avec toutefois la possibilité pour l'utilisateur de modifier ce paramètre</translation>
 <translation id="4122565688998751716">Cette règle est obsolète (veuillez utiliser la règle <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> à la place).
@@ -5553,6 +5561,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="5979376378555121803">Application hébergée</translation>
 <translation id="5984099692320899605">Ne pas utiliser l'authentification NTLM</translation>
 <translation id="5984237109586500246">Accepter les contenus Web diffusés via Signed HTTP Exchange</translation>
+<translation id="5987654816293745077">Signaler les compteurs d'exécution de l'appareil</translation>
 <translation id="5991707691018985057">Afficher la boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Ne pas afficher de boîte de dialogue d'annulation quand event.returnValue est la chaîne vide pour l'événement beforeunload.</translation>
 <translation id="5994438001592408007">Les Glanceables sont activés pour les utilisateurs.</translation>
 <translation id="5997543603646547632">Utiliser le format d'horloge 24 h par défaut</translation>

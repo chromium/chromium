@@ -141,6 +141,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1557622599341396706">Vis skrivebordets navn</translation>
 <translation id="1569384531973824928">Dette gir tilgang til alle apper og nettsteder som har kamera- og mikrofontillatelsen. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
+<translation id="1571697193564730395">Slå av/på Ikke forstyrr. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zoom ut når forstørreren er på</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
@@ -579,6 +580,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3563775809269155755">Slå på wifi-sone</translation>
 <translation id="3566240529365775567">Åpnet nå nettopp</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
+<translation id="3572988532398145777">Du kan ikke vise varselet mens et panel er åpent. Lukk panelet nedenfor først.</translation>
 <translation id="3573179567135747900">Endre tilbake til <ph name="FROM_LOCALE" /> (krever omstart)</translation>
 <translation id="3576141592585647168">Endre tidssonen</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
@@ -687,6 +689,7 @@ Koble enheten til strøm.</translation>
 <translation id="3990002060657467458">Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermdumper.</translation>
 <translation id="3995138139523574647">USB-C-enhet (porten bak på høyre side)</translation>
 <translation id="40062176907008878">Håndskrift</translation>
+<translation id="4011112806063830608">Ikke forstyrr er på.</translation>
 <translation id="4017989525502048489">Laserpeker</translation>
 <translation id="401993194061514265">Merkepennen er ikke tilgjengelig. Åpne Screencast på nytt.</translation>
 <translation id="4021716437419160885">Rull ned</translation>
@@ -720,6 +723,7 @@ Koble enheten til strøm.</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4150201353443180367">Skjerm</translation>
 <translation id="4165275524535002941">Kabelen støtter kanskje ikke skjermer</translation>
+<translation id="4177415338862979658">Klikk for å se etter detaljer</translation>
 <translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4185671786623711291">Flytt det aktive vinduet til skrivebordet til høyre</translation>
@@ -1438,6 +1442,7 @@ Nylig installert</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
+<translation id="7316261577130609484">Legg til et nytt gjøremål</translation>
 <translation id="7340731148882810149">Automatisk klikk-meny</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
@@ -1590,6 +1595,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7944023924886109030">Se alle hendelser for i dag</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vil bruke <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Gjør tastaturet mørkere</translation>
+<translation id="7963689218131240420">Ikke forstyrr er av.</translation>
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Velg mappe…</translation>
 <translation id="797512352675305461">Slå forstørrelse av hele skjermen på eller av</translation>
@@ -1842,6 +1848,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9080073830732419341">Kameraet er festet til øvre venstre hjørne</translation>
 <translation id="9080132581049224423">Sveip opp for å gå til startskjermen</translation>
 <translation id="9080206825613744995">Mikrofonen er i bruk.</translation>
+<translation id="908451241440060346">Varsler ignoreres når Ikke forstyrr er på</translation>
 <translation id="9084606467167974638">Endre menyplasseringen</translation>
 <translation id="9085962983642906571">Batteriet holdes på 80 % mens enheten er koblet til strøm, slik at batterilevetiden forlenges.</translation>
 <translation id="9089416786594320554">Inndatametoder</translation>

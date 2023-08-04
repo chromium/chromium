@@ -1056,6 +1056,7 @@
 <translation id="663674369910034433">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK1" />同步功能<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服务<ph name="END_LINK2" />部分</translation>
 <translation id="6637100877383020115">为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">始终屏蔽</translation>
+<translation id="664050863900079109">大声朗读</translation>
 <translation id="6641780377503683465">移除“<ph name="INTEREST" />”</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645629752388991326">控制哪些设备可在登录时将此设备用作安全密钥。</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7138678301420049075">其他</translation>
 <translation id="7146622961999026732">这些网站和应用似乎对您很重要：</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
+<translation id="7152808996372201178">大声朗读功能支持的页面。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="7155317020660659215">如需扫描二维码，请更改您的设置以允许 Chrome 使用您的摄像头</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
 <translation id="7173114856073700355">打开“设置”</translation>

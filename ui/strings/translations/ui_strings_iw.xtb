@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">הגדרות התצוגה של האפליקציה ייכנסו לתוקף בפעם הבאה שהיא תופעל מחדש.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{נותרה דק‘ אחת}one{נותרו # דק‘}two{נותרו # דק‘}other{נותרו # דק‘}}</translation>
+<translation id="7363164521834647158">שליחת התשובה</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{לפני דק‘ אחת}one{לפני # דק‘}two{לפני # דק‘}other{לפני # דק‘}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{נותרה דקה אחת}one{נותרו # דקות}two{נותרו # דקות}other{נותרו # דקות}}</translation>

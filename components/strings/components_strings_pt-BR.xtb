@@ -408,6 +408,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar suas informações, sua privacidade e sua segurança na Conta do Google</translation>
+<translation id="1793631236004319016">Última utilização: há <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Várias ações disponíveis. Pressione "Tab" para alternar entre elas</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalhes do cartão virtual</translation>
@@ -567,6 +568,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2149968176347646218">A conexão não é segura</translation>
 <translation id="2152495481414285304">Aplicativos</translation>
 <translation id="2153609454945889823">Instalar o Google Play Services para RA?</translation>
+<translation id="2154144347038514978">Início automático no dispositivo</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2154739667870063220">Reinicializar</translation>
 <translation id="2155260325161282517">5 x 7 pol.</translation>
@@ -938,6 +940,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="299990983510665749">Carros hatch</translation>
 <translation id="3002501248619246229">Verificar mídia de bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar cópia salva</translation>
+<translation id="300580149047131921">Usado recentemente</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab para procurar as ações disponíveis e Enter para executar a selecionada.</translation>
 <translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="3014553260345122294">Notícias de negócios</translation>
@@ -2662,6 +2665,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6671169470640320959">Financiamento de automóveis</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6677351035258626477">Fast food</translation>
+<translation id="6681790815630918386">CVC salvo</translation>
 <translation id="6683022854667115063">Fones de ouvido</translation>
 <translation id="6683717648675961851">Vagas de emprego</translation>
 <translation id="6687230248707087982">Envelope (simples)</translation>
@@ -2909,6 +2913,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7186833457841277072">Envelope (jato de tinta)</translation>
 <translation id="7186840261985974511">Envelope 12</translation>
 <translation id="718872491229180389">Líderes de torcida</translation>
+<translation id="7188840756966467339">Reiniciar e aplicar políticas</translation>
 <translation id="7192188280913829296">O atributo "vendor_id" também precisa ser especificado.</translation>
 <translation id="7192203810768312527">Libera <ph name="SIZE" />. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>
 <translation id="7192537357091279678">Unidades de armazenamento para computadores</translation>
@@ -3007,6 +3012,7 @@ Mais detalhes:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Você verá esse erro se tiver o software Superfish no seu computador Windows.&lt;/p&gt;
     &lt;p&gt;Siga estas etapas para desativar temporariamente o software. Assim, você poderá se conectar à Web. Será necessário ter de privilégios de administrador.&lt;/p&gt;
     &lt;ol&gt;
@@ -3469,6 +3475,7 @@ Mais detalhes:
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="8308653357438598313">Streaming de vídeo ao vivo</translation>
 <translation id="8311895354659782580">Listagens de bens imobiliários</translation>
+<translation id="8316555157357957253">Usando agora</translation>
 <translation id="8317570861267063617">Para agilizar a finalização da compra, salve o CVC do cartão no dispositivo</translation>
 <translation id="8319269383395457801">Vendas de casas</translation>
 <translation id="831997045666694187">Noite</translation>
@@ -3485,6 +3492,7 @@ Mais detalhes:
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="835203957414790336">As informações sobre sua impressora e o conteúdo das páginas que você imprime são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem verificar se há algum dado sensível.</translation>
+<translation id="8352849934814541340">O administrador do dispositivo instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
 <translation id="8355270400102541638">Contexto de falha local:</translation>
 <translation id="8363502534493474904">Desativar o modo avião</translation>
 <translation id="8364627913115013041">Não definida.</translation>
@@ -3734,6 +3742,7 @@ Mais detalhes:
 <translation id="8903921497873541725">Aumentar zoom</translation>
 <translation id="890493561996401738">Botão "Remover sugestão", pressione Enter para remover, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">20 x 25 cm</translation>
+<translation id="8918062451146297192">CVC do cartão virtual</translation>
 <translation id="8919740778133505789">Carros esportivos</translation>
 <translation id="8919895429178014996">Ocultar todos os itens</translation>
 <translation id="8922013791253848639">Sempre permitir anúncios neste site</translation>

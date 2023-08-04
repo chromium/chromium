@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Настройките за дисплея на приложението ви ще влязат в сила при следващото му рестартиране.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Остава 1 мин}other{Остават # мин}}</translation>
+<translation id="7363164521834647158">Изпращане на отговор</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Преди 1 мин}other{Преди # мин}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Остава 1 минута}other{Остават # минути}}</translation>

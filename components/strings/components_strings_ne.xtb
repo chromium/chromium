@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="1793631236004319016">पछिल्लो पटक <ph name="NUM_HOURS_MINUTES_SECONDS" /> अघि प्रयोग गरिएको</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकभन्दा बढी कार्य गर्न सकिन्छ, एक एक गरी प्रत्येक कार्य गर्न Tab थिच्नुहोस्</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">भर्चुअल कार्डसम्बन्धी विवरणहरू</translation>
@@ -937,6 +938,7 @@
 <translation id="299990983510665749">ह्याचब्याक कारहरू</translation>
 <translation id="3002501248619246229">इनपुट ट्रेको मिडिया जाँच्नुहोस्</translation>
 <translation id="3005723025932146533">बचत गरिएको प्रति देखाउनुहोस्</translation>
+<translation id="300580149047131921">हालसालै प्रयोग गरिएको</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, गर्न सकिने विभिन्न कारबाहीहरू हेर्न Tab थिच्नुहोस् अनि आफूले चयन गरेको कारबाही कार्यान्वयन गर्न Enter थिच्नुहोस्।</translation>
 <translation id="3013291976881901233">MIDI यन्त्रहरू</translation>
 <translation id="3014553260345122294">व्यावसायिक समाचार</translation>
@@ -2659,6 +2661,7 @@
 <translation id="6671169470640320959">अटो फाइनान्सिङ</translation>
 <translation id="6671697161687535275">Chromium बाट फारम सुझाव हटाउने हो?</translation>
 <translation id="6677351035258626477">फास्ट फुड</translation>
+<translation id="6681790815630918386">CVC सेभ गरिएको छ</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683717648675961851">जागिरका सूची</translation>
 <translation id="6687230248707087982">इन्भलप (प्लेन)</translation>
@@ -3466,6 +3469,7 @@
 <translation id="830498451218851433">आधा फोल्ड</translation>
 <translation id="8308653357438598313">लाइभ भिडियो स्ट्रिमिङ</translation>
 <translation id="8311895354659782580">घरजग्गाको सूची</translation>
+<translation id="8316555157357957253">अहिले प्रयोग गरिँदै छ</translation>
 <translation id="8317570861267063617">अझ छिटो चेकआउट गर्नका लागि यो कार्डको CVC आफ्नो डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="8319269383395457801">रेसिडेन्सियल सेल</translation>
 <translation id="831997045666694187">साँझ</translation>

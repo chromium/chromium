@@ -141,6 +141,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1557622599341396706">Rādīt darbvietas nosaukumu</translation>
 <translation id="1569384531973824928">Tādējādi piekļuve tiek atļauta visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
+<translation id="1571697193564730395">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Tālināt, kad ieslēgta lupa</translation>
 <translation id="1586324912145647027">Pāriet uz pirmo no astoņām darbvirsmām</translation>
 <translation id="1589090746204042747">Piekļūt visām jūsu darbībām šīs sesijas laikā</translation>
@@ -579,6 +580,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3563775809269155755">Iespējot tīklāju</translation>
 <translation id="3566240529365775567">Tikko atvērts</translation>
 <translation id="3571734092741541777">Iestatīt</translation>
+<translation id="3572988532398145777">Kad panelis ir atvērts, paziņojumu nevar izvērst. Vispirms aizveriet tālāk esošo paneli.</translation>
 <translation id="3573179567135747900">Mainīt atpakaļ uz <ph name="FROM_LOCALE" /> (nepieciešama restartēšana)</translation>
 <translation id="3576141592585647168">Mainīt laika joslu</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
@@ -687,6 +689,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3990002060657467458">Bieži izmantotās vadīklas, piemēram, Wi-Fi, Bluetooth un skaļums, ir pieejamas ātrajos iestatījumos. Šeit varat arī izveidot ekrānuzņēmumus.</translation>
 <translation id="3995138139523574647">USB-C ierīce (pieslēgvieta labajā pusē aizmugurē)</translation>
 <translation id="40062176907008878">Rokraksts</translation>
+<translation id="4011112806063830608">Ir ieslēgts režīms “Netraucēt”.</translation>
 <translation id="4017989525502048489">Lāzera rādītājs</translation>
 <translation id="401993194061514265">Marķieris nav pieejams. Atkārtoti atveriet lietotni Ekrāna apraide.</translation>
 <translation id="4021716437419160885">Ritināt uz leju</translation>
@@ -720,6 +723,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4146833061457621061">Atskaņot mūziku</translation>
 <translation id="4150201353443180367">Displejs</translation>
 <translation id="4165275524535002941">Iespējams, vads neatbalsta displejus</translation>
+<translation id="4177415338862979658">Noklikšķiniet, lai skatītu detalizētu informāciju</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ierīce jāatjaunina dienas laikā}zero{Ierīce jāatjaunina # dienu laikā}one{Ierīce jāatjaunina # dienas laikā}other{Ierīce jāatjaunina # dienu laikā}}</translation>
 <translation id="4181841719683918333">Valodas</translation>
 <translation id="4185671786623711291">Pārvietot aktīvo logu uz darbvietu labajā pusē</translation>
@@ -1438,6 +1442,7 @@ Jauna instalācija</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrators atiestata jūsu eSIM. Atiestatīšana var ilgt dažas minūtes.</translation>
 <translation id="7313193732017069507">Izvērst kameru</translation>
+<translation id="7316261577130609484">Pievienot jaunu uzdevumu</translation>
 <translation id="7340731148882810149">Automātisko klikšķu izvēlne</translation>
 <translation id="7346909386216857016">Labi, sapratu</translation>
 <translation id="7348093485538360975">Ekrāntastatūra</translation>
@@ -1590,6 +1595,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7944023924886109030">Skatīt visus šodienas pasākumus</translation>
 <translation id="7947798320695032612">Lietotne <ph name="APP_NAME" /> pieprasa atļauju izmantot šo ierīci: <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">Aptumšot tastatūru</translation>
+<translation id="7963689218131240420">Režīms “Netraucēt” ir izslēgts.</translation>
 <translation id="7963992254934562106">No <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Atlasīt mapi…</translation>
 <translation id="797512352675305461">Ieslēgt vai izslēgt pilnekrāna lupu</translation>
@@ -1842,6 +1848,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9080073830732419341">Kamera pārnesta uz kreiso augšējo stūri</translation>
 <translation id="9080132581049224423">Velciet augšup, lai pārietu uz sākuma ekrānu.</translation>
 <translation id="9080206825613744995">Tiek izmantots mikrofons.</translation>
+<translation id="908451241440060346">Kad ir ieslēgts režīms “Netraucēt”, paziņojumi tiek paslēpti.</translation>
 <translation id="9084606467167974638">Pārslēgt izvēlnes pozīciju</translation>
 <translation id="9085962983642906571">Lai paildzinātu akumulatora darbību, tas tiks uzlādēts līdz 80%, kamēr ir pievienots strāvas avotam.</translation>
 <translation id="9089416786594320554">Ievades metodes</translation>

@@ -141,6 +141,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1557622599341396706">Bureaunaam tonen</translation>
 <translation id="1569384531973824928">Hiermee geef je toegang aan alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
+<translation id="1571697193564730395">Niet storen aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
@@ -579,6 +580,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3563775809269155755">Hotspot aanzetten</translation>
 <translation id="3566240529365775567">Zojuist geopend</translation>
 <translation id="3571734092741541777">Instellen</translation>
+<translation id="3572988532398145777">Je kunt de melding niet uitvouwen terwijl er een deelvenster is geopend. Sluit eerst het deelvenster hieronder.</translation>
 <translation id="3573179567135747900">Teruggaan naar '<ph name="FROM_LOCALE" />' (opnieuw starten vereist)</translation>
 <translation id="3576141592585647168">Tijdzone wijzigen</translation>
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
@@ -687,6 +689,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3990002060657467458">Veelgebruikte bedieningsopties, zoals wifi, bluetooth en volume, staan in Snelle instellingen. Je kunt hier ook naartoe gaan om screenshots te maken.</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="40062176907008878">Handschrift</translation>
+<translation id="4011112806063830608">Niet storen staat aan.</translation>
 <translation id="4017989525502048489">Laserpen</translation>
 <translation id="401993194061514265">Stift niet beschikbaar. Open Screencast opnieuw.</translation>
 <translation id="4021716437419160885">Omlaag scrollen</translation>
@@ -720,6 +723,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4146833061457621061">Speel muziek</translation>
 <translation id="4150201353443180367">Weergave</translation>
 <translation id="4165275524535002941">De kabel ondersteunt misschien geen schermen</translation>
+<translation id="4177415338862979658">Klik voor details</translation>
 <translation id="4177913004758410636">{0,plural, =1{Apparaat binnen een dag updaten}other{Apparaat binnen # dagen updaten}}</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4185671786623711291">Actief venster verplaatsen naar bureau aan de rechterkant</translation>
@@ -1435,6 +1439,7 @@ Nieuwe installatie</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7313193732017069507">Camera uitvouwen</translation>
+<translation id="7316261577130609484">Nieuwe taak toevoegen</translation>
 <translation id="7340731148882810149">Menu Automatische klikken</translation>
 <translation id="7346909386216857016">OK, begrepen</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
@@ -1587,6 +1592,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7944023924886109030">Alle afspraken voor vandaag bekijken</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil je <ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="7951630946012935453">Toetsenbord dimmen</translation>
+<translation id="7963689218131240420">Niet storen staat uit.</translation>
 <translation id="7963992254934562106">Van <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
 <translation id="797512352675305461">Vergrootglas op volledig scherm aan- of uitzetten</translation>
@@ -1839,6 +1845,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9080073830732419341">Camera uitgelijnd op de linkerbovenhoek</translation>
 <translation id="9080132581049224423">Swipe omhoog om naar het startscherm te gaan</translation>
 <translation id="9080206825613744995">Microfoon wordt gebruikt.</translation>
+<translation id="908451241440060346">Het geluid van meldingen staat uit als Niet storen aanstaat</translation>
 <translation id="9084606467167974638">Positie van menu wijzigen</translation>
 <translation id="9085962983642906571">Je batterij wordt op 80% gehouden terwijl deze is aangesloten om de batterijduur te verlengen.</translation>
 <translation id="9089416786594320554">Invoermethoden</translation>

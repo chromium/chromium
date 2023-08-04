@@ -570,6 +570,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="1488724823347505879">Habilitar el uso compartido de apps para Android a aplicaciones web</translation>
+<translation id="1490962807364514840">Tasa de recopilación de telemetría de los contadores de tiempo de ejecución de la CPU en milisegundos</translation>
 <translation id="1492223733885011596">Esta política habilita la compatibilidad con GIF para el selector de emojis en <ph name="PRODUCT_OS_NAME" />.
 Si habilitas esta política, el selector de emojis admitirá GIF de emojis.
 Si la inhabilitas o no la estableces, el selector de emojis no admitirá GIF de emojis.
@@ -1396,6 +1397,7 @@ los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="2178899310296064282">Aplicar al menos el modo restringido moderado en YouTube</translation>
 <translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
+<translation id="2183338188392346527">No informar los contadores de tiempo de ejecución del dispositivo</translation>
 <translation id="219297066914002620">Indica a <ph name="PRODUCT_OS_NAME" /> que habilite o inhabilite las herramientas de la consola de administración de máquinas virtuales.
 
       Si se establece la política como verdadera o no se establece, el usuario podrá usar la CLI de administración de VM.
@@ -3090,6 +3092,9 @@ Si la plantilla de URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, la
 
 En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional si se establece esta política.</translation>
 <translation id="3634125384445314047">Permitir el acceso a las fotos y los videos tomados recientemente del teléfono mediante Phone Hub</translation>
+<translation id="3637063789824963261">Si habilitas la política, los dispositivos inscritos informarán los contadores de tiempo de ejecución de los dispositivos (solo con Intel vPro Gen 14 y versiones posteriores).
+
+Si inhabilitas la política o no la estableces, los dispositivos inscritos no registrarán ni informarán los contadores de tiempo de ejecución de los dispositivos.</translation>
 <translation id="3642557248926713561">Inhabilitar la protección para extensiones que otorga Navegación segura</translation>
 <translation id="3644735978203799620">Habilitar la selección automática para capturas de pantallas múltiples</translation>
 <translation id="3646859102161347133">Establece el tipo de lupa.</translation>
@@ -3658,6 +3663,9 @@ un valor aceptado para esta política.
 Si estableces esta política, todos los orígenes requerirán un gesto previo del usuario para llamar
 a esta API.</translation>
 <translation id="4115501011761259824">Habilitar First-Party Sets para todos los usuarios afectados</translation>
+<translation id="4120401094617902941">Tasa en la que se recopilan los contadores de tiempo de ejecución y se toman muestras de ellos. El mínimo permitido es de 1 día.
+
+Si no estableces la política, se aplicará la tasa predeterminada de 1 día.</translation>
 <translation id="4121350739760194865">Impedir que aparezcan las promociones de aplicaciones en la página de la nueva pestaña</translation>
 <translation id="4122473079291425973">La página Nueva pestaña mostrará tarjetas si hay contenido disponible, pero permitirá que el usuario cambie esta configuración</translation>
 <translation id="4122565688998751716">Esta política dejó de estar disponible. Usa la política "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />" en su lugar.
@@ -5675,6 +5683,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5979376378555121803">App alojada</translation>
 <translation id="5984099692320899605">No usar la autenticación de NTLM</translation>
 <translation id="5984237109586500246">Aceptar contenidos web que se presenten como intercambios HTTP firmados</translation>
+<translation id="5987654816293745077">Informar los contadores de tiempo de ejecución del dispositivo</translation>
 <translation id="5991707691018985057">Mostrar el diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload No mostrar el diálogo de cancelación cuando event.returnValue sea la cadena vacía del evento beforeunload</translation>
 <translation id="5994438001592408007">Habilitar los widgets de consulta rápida para los usuarios</translation>
 <translation id="5997543603646547632">Utilizar reloj con formato de 24 horas de forma predeterminada</translation>

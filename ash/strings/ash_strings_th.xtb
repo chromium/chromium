@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1557622599341396706">แสดงชื่อเดสก์</translation>
 <translation id="1569384531973824928">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
+<translation id="1571697193564730395">เปิด/ปิดโหมดห้ามรบกวน <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ซูมออกเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">เปิดใช้ฮอตสปอต</translation>
 <translation id="3566240529365775567">เปิดเมื่อสักครู่</translation>
 <translation id="3571734092741541777">ตั้งค่า</translation>
+<translation id="3572988532398145777">คุณขยายการแจ้งเตือนขณะที่แผงเปิดอยู่ไม่ได้ โปรดปิดแผงด้านล่างก่อน</translation>
 <translation id="3573179567135747900">เปลี่ยนกลับเป็น "<ph name="FROM_LOCALE" />" (จำเป็นต้องรีสตาร์ต)</translation>
 <translation id="3576141592585647168">เปลี่ยนแปลงเขตเวลา</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
@@ -683,6 +685,7 @@
 <translation id="3990002060657467458">การควบคุมที่ใช้บ่อย เช่น Wi-Fi, บลูทูธ และระดับเสียงจะอยู่ในการตั้งค่าด่วน คุณยังจับภาพหน้าจอได้จากที่นี่ด้วย</translation>
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="40062176907008878">การเขียนด้วยลายมือ</translation>
+<translation id="4011112806063830608">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="4017989525502048489">ตัวชี้เลเซอร์</translation>
 <translation id="401993194061514265">ตัวทำเครื่องหมายไม่พร้อมใช้งาน เปิด Screencast อีกครั้ง</translation>
 <translation id="4021716437419160885">เลื่อนลง</translation>
@@ -716,6 +719,7 @@
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4165275524535002941">สายสัญญาณอาจไม่รองรับจอแสดงผล</translation>
+<translation id="4177415338862979658">คลิกเพื่อดูรายละเอียด</translation>
 <translation id="4177913004758410636">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 วัน}other{อัปเดตอุปกรณ์ภายใน # วัน}}</translation>
 <translation id="4181841719683918333">ภาษา</translation>
 <translation id="4185671786623711291">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังเดสก์ทางด้านขวา</translation>
@@ -1434,6 +1438,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
+<translation id="7316261577130609484">เพิ่มงานใหม่</translation>
 <translation id="7340731148882810149">เมนูการคลิกอัตโนมัติ</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
@@ -1586,6 +1591,7 @@
 <translation id="7944023924886109030">ดูกิจกรรมทั้งหมดของวันนี้</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">หรี่แสงแป้นพิมพ์</translation>
+<translation id="7963689218131240420">โหมดห้ามรบกวนปิดอยู่</translation>
 <translation id="7963992254934562106">จาก <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">เลือกโฟลเดอร์...</translation>
 <translation id="797512352675305461">เปิดหรือปิดแว่นขยายแบบเต็มหน้าจอ</translation>
@@ -1838,6 +1844,7 @@
 <translation id="9080073830732419341">จัดกล้องพอดีกับมุมซ้ายบนแล้ว</translation>
 <translation id="9080132581049224423">ปัดขึ้นเพื่อไปที่หน้าแรก</translation>
 <translation id="9080206825613744995">ใช้ไมโครโฟนอยู่</translation>
+<translation id="908451241440060346">ปิดเสียงการแจ้งเตือนเมื่อโหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="9084606467167974638">เปลี่ยนตำแหน่งเมนู</translation>
 <translation id="9085962983642906571">แบตเตอรี่จะคงไว้ที่ระดับ 80% ในระหว่างเสียบปลั๊กอยู่เพื่อยืดอายุการใช้งานแบตเตอรี่</translation>
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>

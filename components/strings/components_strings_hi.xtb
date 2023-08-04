@@ -409,6 +409,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
+<translation id="1793631236004319016">आखिरी बार <ph name="NUM_HOURS_MINUTES_SECONDS" /> पहले इस्तेमाल किया गया</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एक से ज़्यादा कार्रवाइयां उपलब्ध हैं, एक-एक करके उन पर जाने के लिए Tab दबाएं</translation>
 <translation id="1800473098294731951">बी9</translation>
 <translation id="1801812870656502108">वर्चुअल कार्ड की जानकारी</translation>
@@ -568,6 +569,7 @@
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नहीं है</translation>
 <translation id="2152495481414285304">ऐप्‍लिकेशन</translation>
 <translation id="2153609454945889823">Google Play Services for AR को इंस्टॉल करें?</translation>
+<translation id="2154144347038514978">आपके डिवाइस पर अपने-आप चालू हो जाएगा</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2154739667870063220">फिर चालू करें</translation>
 <translation id="2155260325161282517">5 x 7 इंच</translation>
@@ -939,6 +941,7 @@
 <translation id="299990983510665749">हैचबैक</translation>
 <translation id="3002501248619246229">इनपुट ट्रे मीडिया को चुनें</translation>
 <translation id="3005723025932146533">सहेजी गई कॉपी दिखाएं</translation>
+<translation id="300580149047131921">इस सुविधा का हाल ही में इस्तेमाल किया गया है</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कार्रवाइयों को ब्राउज़ करने के लिए Tab दबाएं और फिर चुनी गई कार्रवाई करने के लिए, Enter दबाएं.</translation>
 <translation id="3013291976881901233">MIDI डिवाइस</translation>
 <translation id="3014553260345122294">कारोबार की खबरें</translation>
@@ -2662,6 +2665,7 @@
 <translation id="6671169470640320959">वाहनों के लिए क़र्ज़</translation>
 <translation id="6671697161687535275">क्रोमियम से फ़ॉर्म सुझाव निकालें?</translation>
 <translation id="6677351035258626477">फ़ास्ट फ़ूड</translation>
+<translation id="6681790815630918386">सीवीसी सेव किया गया</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6683717648675961851">नौकरी के विज्ञापन</translation>
 <translation id="6687230248707087982">एन्वेलप (प्लेन)</translation>
@@ -2909,6 +2913,7 @@
 <translation id="7186833457841277072">एन्वेलप (इंकजेट)</translation>
 <translation id="7186840261985974511">#12 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="718872491229180389">चीयरलीडिंग</translation>
+<translation id="7188840756966467339">रीस्टार्ट करें और नीतियां लागू करें</translation>
 <translation id="7192188280913829296">"vendor_id" एट्रिब्यूट की जानकारी भी दी जानी चाहिए.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें ज़्यादा धीमे लोड हो सकती हैं.</translation>
 <translation id="7192537357091279678">कंप्यूटर की ड्राइव और स्टोरेज</translation>
@@ -3007,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करें</translation>
 <translation id="7403591733719184120">आपका <ph name="DEVICE_NAME" /> प्रबंधित है</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ने अन्य फ़ंक्शन के लिए ऐप्लिकेशन इंस्टॉल किए हैं. ऐप्लिकेशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="7407424307057130981">&lt;p&gt;अगर आपके Windows कंप्यूटर पर Superfish सॉफ़्टवेयर है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
       &lt;p&gt;आगे बताए गए कदम उठाकर सॉफ़्टवेयर को कुछ देर के लिए बंद कर दें, ताकि आप वेब पर जा सकें. आपको एडमिन विशेषाधिकार चाहिए होंगे.&lt;/p&gt;
       &lt;ol&gt;
@@ -3469,6 +3475,7 @@
 <translation id="830498451218851433">फ़ोल्ड हाल्फ़</translation>
 <translation id="8308653357438598313">लाइव वीडियो स्ट्रीमिंग</translation>
 <translation id="8311895354659782580">रीयल एस्टेट की सूची</translation>
+<translation id="8316555157357957253">अभी इस सुविधा का इस्तेमाल किया जा रहा है</translation>
 <translation id="8317570861267063617">तेज़ी से चेकआउट करने के लिए, इस कार्ड का सीवीसी अपने डिवाइस में सेव करें</translation>
 <translation id="8319269383395457801">रेज़िडेंशियल सेल</translation>
 <translation id="831997045666694187">शाम</translation>
@@ -3485,6 +3492,7 @@
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>
 <translation id="835203957414790336">प्रिंट किए जाने वाले पेजों का कॉन्टेंट और आपके प्रिंटर की जानकारी, विश्लेषण के लिए Google Cloud या तीसरे पक्ष की कंपनियों के पास भेजी जाती है. उदाहरण के लिए, इसे संवेदनशील डेटा की जांच के लिए स्कैन किया जा सकता है.</translation>
+<translation id="8352849934814541340">इस डिवाइस के एडमिन ने अन्य फ़ंक्शन के लिए ऐप्लिकेशन इंस्टॉल किए हैं. ऐप्लिकेशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="8355270400102541638">स्थानीय खराबी रिपोर्ट से जुड़ी जानकारी:</translation>
 <translation id="8363502534493474904">हवाई जहाज़ मोड बंद करें</translation>
 <translation id="8364627913115013041">सेट नहीं है.</translation>
@@ -3734,6 +3742,7 @@
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
 <translation id="890493561996401738">सुझाव बटन हटाएं, हटाने के लिए Enter दबाएं, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 इंच</translation>
+<translation id="8918062451146297192">वर्चुअल कार्ड के लिए सीवीसी</translation>
 <translation id="8919740778133505789">स्पोर्ट्स कार</translation>
 <translation id="8919895429178014996">सभी आइटम छिपाएं</translation>
 <translation id="8922013791253848639">इस साइट पर विज्ञापनों की हमेशा अनुमति दें</translation>

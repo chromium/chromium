@@ -210,6 +210,7 @@
 <translation id="2268044343513325586">Боловсронгуй болгох</translation>
 <translation id="2269277877025820298">Дэлгэрэнгүй харах</translation>
 <translation id="2273327106802955778">Дэлгэрэнгүй цэс</translation>
+<translation id="2275480389219976105">Хаяг олдлоо</translation>
 <translation id="2286505070150039482">Тодруулсан текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Энэ хаягийг энэ төхөөрөмжөөс устгана.}other{Эдгээр хаягийг энэ төхөөрөмжөөс устгана.}}</translation>
 <translation id="2297822946037605517">Энэ хуудсыг хуваалцах</translation>
@@ -542,6 +543,7 @@
 <translation id="430793432425771671">Бүгдийг синк хийх</translation>
 <translation id="4309403553630140242">Дэлгэрэнгүй мэдээлэл авахын тулд хоёр товшино уу</translation>
 <translation id="430967081421617822">Бүх цаг</translation>
+<translation id="4331177082088332784">Та үүнийг BEGIN_LINK Контентын тохиргоонд END_LINK удирдах боломжтой</translation>
 <translation id="4334428914252001502">Уншаагүй 1 нийтлэл.</translation>
 <translation id="4338650699862464074">Таны зочилсон хуудасны URL-г Google-д илгээдэг.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Энэ хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана.}other{Эдгээр хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана}}</translation>
@@ -1068,6 +1070,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7340958967809483333">Discover-н сонголт</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="734758817008927353">Картыг хадгалах сонголтууд</translation>
+<translation id="7349129508108954623">Танд илрүүлсэн хаягуудын чиглэл болон орон нутгийн мэдээллийг өгөхийн тулд Google Газрын зургийг ашиглахыг Chrome-д зөвшөөрнө үү.</translation>
 <translation id="7351537303876921605">Хам сэдэв цэсээс Холбоос үүсгэх дээр товшино уу</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="7353432112255316844">Өөрийгөө мөн болохыг бататгах</translation>
@@ -1124,6 +1127,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7719038820139380048">Сонирхолдоо үндэслэн контент авахын тулд нэвтэрнэ үү.</translation>
 <translation id="7720410380936703141">ДАХИН ОРОЛДОХ</translation>
 <translation id="7726702057919861819">Цэс → Түүх → Интернэтээр үзсэн өгөгдлийг арилгах</translation>
+<translation id="7729458878441927652">Бусад төхөөрөмжийнхөө табуудыг харахын тулд табууд болон түүхээ синк хийнэ үү.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Зөвхөн энэ төхөөрөмжид.</translation>
 <translation id="7738120385185846461">Асуудал мэдээлэх…</translation>
 <translation id="7741325291586284254">Шинэ Нууцлалтай таб хуудас</translation>

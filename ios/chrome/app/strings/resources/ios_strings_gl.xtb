@@ -210,6 +210,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2268044343513325586">Refina</translation>
 <translation id="2269277877025820298">Ver máis</translation>
 <translation id="2273327106802955778">Menú Máis</translation>
+<translation id="2275480389219976105">Enderezo atopado</translation>
 <translation id="2286505070150039482">Texto destacado</translation>
 <translation id="2287614783861766820">{count,plural, =1{Este enderezo eliminarase do dispositivo.}other{Estes enderezos eliminaranse do dispositivo.}}</translation>
 <translation id="2297822946037605517">Compartir esta páxina</translation>
@@ -539,6 +540,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
 <translation id="430967081421617822">Todo o período</translation>
+<translation id="4331177082088332784">Podes xestionalo en BEGIN_LINK Configuración de contido END_LINK</translation>
 <translation id="4334428914252001502">1 artigo non lido.</translation>
 <translation id="4338650699862464074">Envía a Google os URL das páxinas que visitas.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Este enderezo eliminarase deste dispositivo e do resto de dispositivos nos que teñas a sesión iniciada.}other{Estes enderezos eliminaranse deste dispositivo e do resto de dispositivos nos que teñas a sesión iniciada.}}</translation>
@@ -1058,6 +1060,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7340958967809483333">Opcións de Discover</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="734758817008927353">Opcións para gardar unha tarxeta</translation>
+<translation id="7349129508108954623">Permite que Chrome use Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="7351537303876921605">Toca Create Link (Crear ligazón) no menú contextual</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7353432112255316844">Verificar a túa identidade</translation>
@@ -1114,6 +1117,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7719038820139380048">Inicia sesión para desfrutar de contido en función dos teus intereses.</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
+<translation id="7729458878441927652">Para ver as pestanas doutros dispositivos, sincroniza as pestanas e o historial.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
 <translation id="7738120385185846461">Informar dun problema…</translation>
 <translation id="7741325291586284254">Páxina de nova pestana do modo de incógnito</translation>

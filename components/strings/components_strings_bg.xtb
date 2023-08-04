@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате информацията си и настройките за поверителност и сигурност в профила си в Google</translation>
+<translation id="1793631236004319016">Последно използване преди <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Възможни са няколко действия. Натискайте Tab, за да преминавате циклично между тях</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Подробности на виртуалната карта</translation>
@@ -567,6 +568,7 @@
 <translation id="2149968176347646218">Връзката не е защитена</translation>
 <translation id="2152495481414285304">Приложения</translation>
 <translation id="2153609454945889823">Да се инсталират ли услугите за Google Play за AR?</translation>
+<translation id="2154144347038514978">Автоматично стартиране на устройството ви</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2154739667870063220">Рестартиране</translation>
 <translation id="2155260325161282517">5 x 7 инча</translation>
@@ -938,6 +940,7 @@
 <translation id="299990983510665749">Хечбек</translation>
 <translation id="3002501248619246229">Проверете хартията във входната тава</translation>
 <translation id="3005723025932146533">Показване на запазено копие</translation>
+<translation id="300580149047131921">Наскоро използвано</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab, за да видите наличните действия, и след това Enter, за да изпълните избраното.</translation>
 <translation id="3013291976881901233">MIDI устройства</translation>
 <translation id="3014553260345122294">Бизнес новини</translation>
@@ -2662,6 +2665,7 @@
 <translation id="6671169470640320959">Финансиране на покупки на автомобили</translation>
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
 <translation id="6677351035258626477">Бързо хранене</translation>
+<translation id="6681790815630918386">Кодът за проверка е запазен</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683717648675961851">Обяви за работа</translation>
 <translation id="6687230248707087982">Плик (обикновен)</translation>
@@ -2909,6 +2913,7 @@
 <translation id="7186833457841277072">Плик (мастиленоструен печат)</translation>
 <translation id="7186840261985974511">Плик №12</translation>
 <translation id="718872491229180389">Клакьорки</translation>
+<translation id="7188840756966467339">Рестартиране и прилагане на правилата</translation>
 <translation id="7192188280913829296">Атрибутът vendor_id също трябва да е посочен.</translation>
 <translation id="7192203810768312527">Ще освободите <ph name="SIZE" />. Някои сайтове може да се заредят по-бавно при следващото ви посещение.</translation>
 <translation id="7192537357091279678">Компютърни дискови устройства и хранилища</translation>
@@ -3007,6 +3012,7 @@
 <translation id="7400418766976504921">URL адрес</translation>
 <translation id="7403392780200267761">Споделяне на този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="7403591733719184120">Устройството ви <ph name="DEVICE_NAME" /> е управлявано</translation>
+<translation id="7405878640835614059">От <ph name="ENROLLMENT_DOMAIN" /> са инсталирали приложения за допълнителни функции. Приложенията имат достъп до част от данните ви.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ще виждате това съобщение за грешка, ако софтуерът Superfish е инсталиран на компютъра ви с Windows.&lt;/p&gt;
 &lt;p&gt;Изпълнете следните стъпки, за да деактивирате временно софтуера, така че да можете да се свържете с мрежата. Ще са ви необходими администраторски права.&lt;/p&gt;
 &lt;ol&gt;
@@ -3469,6 +3475,7 @@
 <translation id="830498451218851433">Сгъване в средата</translation>
 <translation id="8308653357438598313">Поточно видео на живо</translation>
 <translation id="8311895354659782580">Обяви за недвижими имоти</translation>
+<translation id="8316555157357957253">Използва се в момента</translation>
 <translation id="8317570861267063617">С цел по-бързо плащане запазете кода за проверка за тази карта на устройството си</translation>
 <translation id="8319269383395457801">Жилищни продажби</translation>
 <translation id="831997045666694187">Вечерта</translation>
@@ -3485,6 +3492,7 @@
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="835203957414790336">Съдържанието на страниците, които отпечатвате, и информацията за принтера ви се изпращат за анализ до Google Cloud или трети страни. Възможно е например да бъдат сканирани за чувствителни данни.</translation>
+<translation id="8352849934814541340">Администраторът на това устройство е инсталирал приложения за допълнителни функции. Приложенията имат достъп до част от данните ви.</translation>
 <translation id="8355270400102541638">Локален контекст за срива:</translation>
 <translation id="8363502534493474904">Изключете самолетния режим.</translation>
 <translation id="8364627913115013041">Не е зададено.</translation>
@@ -3733,6 +3741,7 @@
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="890493561996401738">Бутон за премахване на предложенията. Натиснете Enter, за да премахнете – <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 инча</translation>
+<translation id="8918062451146297192">Код за проверка на виртуалната карта</translation>
 <translation id="8919740778133505789">Спортни автомобили</translation>
 <translation id="8919895429178014996">Скриване на всички елементи</translation>
 <translation id="8922013791253848639">Рекламите на този сайт да са разрешени винаги</translation>

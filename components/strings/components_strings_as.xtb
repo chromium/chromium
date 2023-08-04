@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">কাৰ্ড যোগ কৰক</translation>
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2149968176347646218">সংযোগটো সুৰক্ষিত নহয়</translation>
+<translation id="2152495481414285304">এপ্লিকেশ্বন</translation>
 <translation id="2153609454945889823">Google Play Services for AR ইনষ্টল কৰিবনে?</translation>
+<translation id="2154144347038514978">আপোনাৰ ডিভাইচত স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰক</translation>
 <translation id="2154484045852737596">কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="2154739667870063220">ৰিবুট কৰক</translation>
 <translation id="2155260325161282517">৫ x ৭ ইঞ্চি</translation>
@@ -2906,6 +2908,7 @@
 <translation id="7186833457841277072">এনভেল’প (ইংকজেট)</translation>
 <translation id="7186840261985974511">এনভেল’প #১২</translation>
 <translation id="718872491229180389">চিয়েৰলিডিং</translation>
+<translation id="7188840756966467339">ৰিষ্টাৰ্ট কৰক আৰু নীতিসমূহ প্ৰয়োগ কৰক</translation>
 <translation id="7192188280913829296">"vendor_id" এট্ৰিবিউটটোও নিৰ্দিষ্ট কৰিবই লাগিব।</translation>
 <translation id="7192203810768312527"><ph name="SIZE" />লৈকে বিনামূলীয়া। আপুনি পৰৱর্তী সময়ত কিছুমান ছাইট চাওতে লেহেমীয়াকৈ ল’ড হ’ব পাৰে।</translation>
 <translation id="7192537357091279678">কম্পিউটাৰৰ ড্ৰাইভ আৰু ষ্ট’ৰেজ</translation>
@@ -3004,6 +3007,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">লিংকটো শ্বেয়াৰ কৰি, এটা কিউআৰ ক’ড সৃষ্টি কৰি, কাষ্ট কৰি আৰু বহুতো সুবিধাৰ জৰিয়তে এই টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="7403591733719184120">আপোনাৰ <ph name="DEVICE_NAME" /> পৰিচালিত</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" />এ অতিৰিক্ত ফাংশ্বনৰ বাবে এপ্লিকেশ্বন ইনষ্টল কৰিছে। এপ্লিকেশ্বনসমূহে আপোনাৰ কিছুমান ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7407424307057130981">&lt;p&gt;আপোনাৰ Windows কম্পিউটাৰত Superfish ছফ্‌টৱেৰ থাকিলে আপুনি এই আসোঁৱাহটো দেখা পাব৷&lt;/p&gt;
       &lt;p&gt;ছফ্‌টৱেৰটো অস্থায়ীভাৱে অক্ষম কৰিবলৈ এই পদক্ষেপসমূহ পালন কৰক যাতে আপুনি ৱেবলৈ যাব পাৰে৷ আপোনাক প্ৰশাসকৰ বিশেষাধিকাৰৰ প্ৰয়োজন হ’ব৷&lt;/p&gt;
       &lt;ol&gt;
@@ -3483,6 +3487,7 @@
 <translation id="8349305172487531364">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="8351131234907093545">টোকা সৃষ্টি কৰক</translation>
 <translation id="835203957414790336">আপুনি প্ৰিণ্ট কৰা পৃষ্ঠাখনৰ সমলখিনি আৰু আপোনাৰ প্ৰিণ্টাৰটোৰ বিষয়ে তথ্যখিনি বিশ্লেষণ কৰিবলৈ Google Cloud অথবা তৃতীয় পক্ষসমূহলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইসমূহ সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে।</translation>
+<translation id="8352849934814541340">এই ডিভাইচটোৰ প্ৰশাসকে অতিৰিক্ত ফাংশ্বনৰ বাবে এপ্লিকেশ্বন ইনষ্টল কৰিছে। এপ্লিকেশ্বনসমূহে আপোনাৰ কিছুমান ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="8355270400102541638">ল'কেল ক্ৰেশ্বৰ প্ৰসংগ:</translation>
 <translation id="8363502534493474904">এয়াৰপ্লেন ম’ড অফ কৰি থকা হৈছে</translation>
 <translation id="8364627913115013041">ছেট কৰা হোৱা নাই।</translation>
@@ -3731,6 +3736,7 @@
 <translation id="8903921497873541725">জুম ইন কৰক</translation>
 <translation id="890493561996401738">পৰামৰ্শৰ বুটামটো আঁতৰাওক, আঁতৰাবলৈ এণ্টাৰ টিপক, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">৮ x ১০ ইঞ্চি</translation>
+<translation id="8918062451146297192">ভাৰ্ছুৱেল কাৰ্ডৰ বাবে CVC</translation>
 <translation id="8919740778133505789">স্পৰ্টছ গাড়ী</translation>
 <translation id="8919895429178014996">আটাইবোৰ বস্তু লুকুৱাওক</translation>
 <translation id="8922013791253848639">এই ছাইটটোত সদায় বিজ্ঞাপনৰ অনুমতি দিয়ক</translation>

@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1557622599341396706">显示桌面名称</translation>
 <translation id="1569384531973824928">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
+<translation id="1571697193564730395">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
 <translation id="1586324912145647027">转至桌面 1 到 8</translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">启用热点</translation>
 <translation id="3566240529365775567">刚才打开过</translation>
 <translation id="3571734092741541777">设置</translation>
+<translation id="3572988532398145777">面板处于打开状态时，您无法展开通知。请先关闭下面的面板。</translation>
 <translation id="3573179567135747900">重新更改为“<ph name="FROM_LOCALE" />”（需要重启）</translation>
 <translation id="3576141592585647168">更改时区</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
@@ -687,6 +689,7 @@
 <translation id="3990002060657467458">您可在“快捷设置”中找到常用控件（例如 Wi-Fi、蓝牙和音量），也可在那里执行截屏操作。</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="40062176907008878">手写</translation>
+<translation id="4011112806063830608">“勿扰”模式处于开启状态。</translation>
 <translation id="4017989525502048489">激光笔</translation>
 <translation id="401993194061514265">无法使用标记。请重新打开“屏幕录制”应用。</translation>
 <translation id="4021716437419160885">向下滚动</translation>
@@ -720,6 +723,7 @@
 <translation id="4146833061457621061">播放音乐</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4165275524535002941">数据线可能不支持显示屏</translation>
+<translation id="4177415338862979658">点击即可查看详情</translation>
 <translation id="4177913004758410636">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4185671786623711291">将活动窗口移至右侧桌面</translation>
@@ -1435,6 +1439,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313193732017069507">展开相机</translation>
+<translation id="7316261577130609484">添加新任务</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
@@ -1587,6 +1592,7 @@
 <translation id="7944023924886109030">查看今天的所有活动</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />想使用您的<ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">调暗键盘</translation>
+<translation id="7963689218131240420">“勿扰”模式处于关闭状态。</translation>
 <translation id="7963992254934562106">来自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="797512352675305461">开启或关闭全屏放大镜</translation>
@@ -1839,6 +1845,7 @@
 <translation id="9080073830732419341">相机已对准左上角</translation>
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>
 <translation id="9080206825613744995">麦克风目前处于使用状态。</translation>
+<translation id="908451241440060346">当“勿扰”模式处于开启状态时，系统会忽略通知</translation>
 <translation id="9084606467167974638">切换菜单位置</translation>
 <translation id="9085962983642906571">您的电池已接通电源，但电量会保持在 80% 以延长电池续航时间。</translation>
 <translation id="9089416786594320554">输入法</translation>

@@ -408,6 +408,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je gegevens, privacy en beveiliging te beheren in je Google-account</translation>
+<translation id="1793631236004319016">Laatst gebruikt: <ph name="NUM_HOURS_MINUTES_SECONDS" /> geleden</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, er zijn meerdere acties beschikbaar, druk op 'Tab' om erdoorheen te bladeren</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Gegevens van virtuele kaart</translation>
@@ -567,6 +568,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2149968176347646218">Verbinding is niet beveiligd</translation>
 <translation id="2152495481414285304">Applicaties</translation>
 <translation id="2153609454945889823">Google Play-services voor AR installeren?</translation>
+<translation id="2154144347038514978">Automatisch starten op je apparaat</translation>
 <translation id="2154484045852737596">Pas bewerken</translation>
 <translation id="2154739667870063220">Opnieuw opstarten</translation>
 <translation id="2155260325161282517">5 x 7 inch</translation>
@@ -938,6 +940,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="299990983510665749">Hatchbacks</translation>
 <translation id="3002501248619246229">Materiaal in de invoerlade controleren</translation>
 <translation id="3005723025932146533">Opgeslagen kopie bekijken</translation>
+<translation id="300580149047131921">Recent gebruikt</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab om door de beschikbare acties te browsen en op Enter om de geselecteerde actie uit te voeren.</translation>
 <translation id="3013291976881901233">MIDI-apparaten</translation>
 <translation id="3014553260345122294">Zakelijk nieuws</translation>
@@ -2656,6 +2659,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6671169470640320959">Autofinanciering</translation>
 <translation id="6671697161687535275">Formuliersuggestie verwijderen uit Chromium?</translation>
 <translation id="6677351035258626477">Fastfood</translation>
+<translation id="6681790815630918386">CVC opgeslagen</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6683717648675961851">Vacatures</translation>
 <translation id="6687230248707087982">Envelop (effen)</translation>
@@ -2903,6 +2907,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7186833457841277072">Envelop (inkjet)</translation>
 <translation id="7186840261985974511">Envelop #12</translation>
 <translation id="718872491229180389">Cheerleaden</translation>
+<translation id="7188840756966467339">Opnieuw opstarten en beleid toepassen</translation>
 <translation id="7192188280913829296">Het kenmerk 'vendor_id' moet ook worden opgegeven.</translation>
 <translation id="7192203810768312527">Hiermee wordt <ph name="SIZE" /> vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
 <translation id="7192537357091279678">Computerschijven en gegevensopslag</translation>
@@ -3001,6 +3006,7 @@ Aanvullende informatie:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Deel dit tabblad door bijvoorbeeld de link te delen, een QR-code te maken en te casten</translation>
 <translation id="7403591733719184120">Je <ph name="DEVICE_NAME" /> wordt beheerd</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> heeft apps geïnstalleerd voor aanvullende functies. Apps hebben toegang tot sommige van je gegevens.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Je ziet deze foutmelding als je Superfish-software op je Windows-computer hebt geïnstalleerd.&lt;/p&gt;
       &lt;p&gt;Volg deze stappen om de software tijdelijk uit te zetten, zodat je verbinding met internet kunt maken. Je hebt beheerdersrechten nodig.&lt;/p&gt;
       &lt;ol&gt;
@@ -3463,6 +3469,7 @@ Aanvullende informatie:
 <translation id="830498451218851433">Enkele vouw</translation>
 <translation id="8308653357438598313">Live videostreaming</translation>
 <translation id="8311895354659782580">Verkoop van onroerend goed</translation>
+<translation id="8316555157357957253">Nu in gebruik</translation>
 <translation id="8317570861267063617">Sla de CVC voor deze kaart op je apparaat op om sneller te betalen</translation>
 <translation id="8319269383395457801">Particuliere verkoop</translation>
 <translation id="831997045666694187">Avond</translation>
@@ -3479,6 +3486,7 @@ Aanvullende informatie:
 <translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8351131234907093545">Notitie maken</translation>
 <translation id="835203957414790336">De content van pagina's die je afdrukt en informatie over je printer worden naar Google Cloud of derden gestuurd voor analyse. De tekst kan bijvoorbeeld worden gescand op gevoelige gegevens.</translation>
+<translation id="8352849934814541340">De beheerder van dit apparaat heeft apps geïnstalleerd voor aanvullende functies. Apps hebben toegang tot sommige van je gegevens.</translation>
 <translation id="8355270400102541638">Lokale crashcontext:</translation>
 <translation id="8363502534493474904">Zet de vliegtuigmodus uit</translation>
 <translation id="8364627913115013041">Niet ingesteld.</translation>
@@ -3727,6 +3735,7 @@ Aanvullende informatie:
 <translation id="8903921497873541725">Inzoomen</translation>
 <translation id="890493561996401738">Suggestieknop verwijderen, druk op Enter om te verwijderen, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inch</translation>
+<translation id="8918062451146297192">CVC voor virtuele kaart</translation>
 <translation id="8919740778133505789">Sportwagens</translation>
 <translation id="8919895429178014996">Alle items verbergen</translation>
 <translation id="8922013791253848639">Altijd advertenties op deze site toestaan</translation>

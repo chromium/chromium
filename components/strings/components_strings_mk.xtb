@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да управувате со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
+<translation id="1793631236004319016">Последно користење: пред <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Податоци за виртуелна картичка</translation>
@@ -937,6 +938,7 @@
 <translation id="299990983510665749">Хечбек автомобили</translation>
 <translation id="3002501248619246229">Провери ги содржините во влезната фиока</translation>
 <translation id="3005723025932146533">Прикажи зачувана копија</translation>
+<translation id="300580149047131921">Неодамна користено</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете на Tab за прелистување на достапните дејства, а потоа притиснете на Enter за извршување на избраното дејство.</translation>
 <translation id="3013291976881901233">MIDI-уреди</translation>
 <translation id="3014553260345122294">Бизнис-вести</translation>
@@ -2661,6 +2663,7 @@
 <translation id="6671169470640320959">Финансирање за автомобил</translation>
 <translation id="6671697161687535275">Да се отстранат предлозите за формулари од Chromium?</translation>
 <translation id="6677351035258626477">Брза храна</translation>
+<translation id="6681790815630918386">CVC е зачуван</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683717648675961851">Огласи за работа</translation>
 <translation id="6687230248707087982">Коверт (обичен)</translation>
@@ -3468,6 +3471,7 @@
 <translation id="830498451218851433">Превиткување на половина</translation>
 <translation id="8308653357438598313">Видеострим во живо</translation>
 <translation id="8311895354659782580">Огласи за недвижности</translation>
+<translation id="8316555157357957253">Се користи сега</translation>
 <translation id="8317570861267063617">За побрзо плаќање, зачувајте го CVC за картичкава на уредот</translation>
 <translation id="8319269383395457801">Продажба на живеалишта</translation>
 <translation id="831997045666694187">Приквечер</translation>

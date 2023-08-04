@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Programmets visningsinnstillinger trer i kraft neste gang det startes på nytt.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min igjen}other{# min igjen}}</translation>
+<translation id="7363164521834647158">Send svar</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{For 1 min siden}other{For # min siden}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minutt igjen}other{# minutter igjen}}</translation>

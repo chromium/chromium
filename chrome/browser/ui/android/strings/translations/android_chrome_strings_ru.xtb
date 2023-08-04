@@ -1056,6 +1056,7 @@
 <translation id="663674369910034433">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK1" />Синхронизация<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Сервисы Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Chrome отправляет в Google статистику использования и отчеты о сбоях, которые помогают улучшать приложение. <ph name="BEGIN_UMA_LINK" />Настроить отправку данных<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блокировать всегда</translation>
+<translation id="664050863900079109">Читать вслух</translation>
 <translation id="6641780377503683465">Удалить интерес "<ph name="INTEREST" />"</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6645629752388991326">Использовать этот телефон как электронный ключ на выбранных устройствах</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7146622961999026732">Кажется, следующие сайты и приложения важны для вас:</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
+<translation id="7152808996372201178">Читать вслух поддерживаемые страницы. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="7155317020660659215">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере в настройках.</translation>
 <translation id="7168323970702333693">Вы вошли как <ph name="USER_NAME" />. Открывает настройки.</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>

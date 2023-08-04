@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Tab, а затем Ввод.</translation>
+<translation id="1793631236004319016">Разрешение использовалось <ph name="NUM_HOURS_MINUTES_SECONDS" /> назад</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Возможны разные действия. Нажимайте Tab для переключения между ними.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Реквизиты виртуальной карты</translation>
@@ -938,6 +939,7 @@
 <translation id="299990983510665749">Автомобили типа "хетчбэк"</translation>
 <translation id="3002501248619246229">Проверить данные входного лотка</translation>
 <translation id="3005723025932146533">Открыть сохраненную копию</translation>
+<translation id="300580149047131921">Разрешение использовалось недавно</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, чтобы посмотреть доступные действия, затем Ввод, чтобы выполнить выбранное.</translation>
 <translation id="3013291976881901233">MIDI-устройства</translation>
 <translation id="3014553260345122294">Деловые новости</translation>
@@ -2661,6 +2663,7 @@
 <translation id="6671169470640320959">Автокредиты</translation>
 <translation id="6671697161687535275">Удалить подсказку из Chromium?</translation>
 <translation id="6677351035258626477">Фастфуд</translation>
+<translation id="6681790815630918386">CVC-код сохранен</translation>
 <translation id="6683022854667115063">Наушники</translation>
 <translation id="6683717648675961851">Вакансии и поиск работы</translation>
 <translation id="6687230248707087982">Конверт (обычный)</translation>
@@ -3468,6 +3471,7 @@
 <translation id="830498451218851433">Фальцовка книжкой</translation>
 <translation id="8308653357438598313">Онлайн-видеотрансляции</translation>
 <translation id="8311895354659782580">Недвижимость и земельные участки</translation>
+<translation id="8316555157357957253">Разрешение используется сейчас</translation>
 <translation id="8317570861267063617">Чтобы сократить время оплаты, сохраните CVC-код для этой карты на устройстве</translation>
 <translation id="8319269383395457801">Продажа жилья</translation>
 <translation id="831997045666694187">До вечера</translation>

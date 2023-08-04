@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">（商店评分）</translation>
 <translation id="6333260925957816943">此商店的相关信息</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页取消分组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页取消分组}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{通过在 Chrome 主菜单中点击“最近打开的标签页”，您可以找到已关闭的标签页。不过，那里不会显示您已关闭的无痕式标签页。}other{通过在 Chrome 主菜单中点击“最近打开的标签页”，您可以找到已关闭的标签页。不过，那里不会显示您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6549021453810473782">查看商店信息</translation>
 <translation id="6562820390860419811">左移标签页</translation>
 <translation id="6615455863669487791">演示一下</translation>
+<translation id="661742612106409204">通过在 Chrome 主菜单中点击“最近打开的标签页”，您可以找到已关闭的标签页。</translation>
 <translation id="6840760312327750441">要将标签页分组，请轻触并按住某个标签页，然后拖动到另一个标签页上。</translation>
 <translation id="6856809498882026482">隐藏多选模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享标签页}other{分享标签页}}</translation>

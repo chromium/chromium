@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">Карт нэмэх</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2149968176347646218">Холболт аюултай байна</translation>
+<translation id="2152495481414285304">Аппликэйшнүүд</translation>
 <translation id="2153609454945889823">Google Play Services for AR-г суулгах уу?</translation>
+<translation id="2154144347038514978">Таны төхөөрөмжид автоматаар эхлүүлэх</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
 <translation id="2154739667870063220">Дахин асаах</translation>
 <translation id="2155260325161282517">5 x 7 инч</translation>
@@ -2911,6 +2913,7 @@
 <translation id="7186833457841277072">Дугтуй (бэхэн)</translation>
 <translation id="7186840261985974511">Дугтуй #12</translation>
 <translation id="718872491229180389">Хөгжөөн дэмжих</translation>
+<translation id="7188840756966467339">Дахин эхлүүлж, бодлогыг хэрэгжүүлэх</translation>
 <translation id="7192188280913829296">"Vendor_id" атрибутыг мөн заасан байх ёстой.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" />-н зай гаргана уу. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="7192537357091279678">Компьютерын драйвууд болон хадгалах сан</translation>
@@ -3009,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Энэ табыг холбоос хуваалцаж, QR код үүсгэж, дамжуулж мөн бусад зүйлийг хийснээр хуваалцаарай</translation>
 <translation id="7403591733719184120">Таны <ph name="DEVICE_NAME" />-г удирдаж байна</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> нэмэлт функцэд зориулж аппликэйшнүүд суулгасан. Аппликэйшнүүд таны зарим өгөгдөлд хандах эрхтэй.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Таны Windows компьютерт Superfish программ хангамж байгаа тохиолдолд та тус алдааг харах болно.&lt;/p&gt;
       &lt;p&gt;Тус программ хангамжийг түр хугацаанд идэвхгүй болгохын тулд эдгээр алхмыг дагаснаар та вебэд хандах боломжтой болно. Танд админы эрх шаардлагатай.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3492,7 @@
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
 <translation id="835203957414790336">Таны хэвлэх хуудасны контент болон хэвлэгчийн талаарх мэдээллийг задлан шинжлүүлэхээр Google Cloud эсвэл гуравдагч талууд руу илгээнэ. Жишээ нь үүнд эмзэг өгөгдөл байгаа эсэхийг скан хийж болзошгүй.</translation>
+<translation id="8352849934814541340">Энэ төхөөрөмжийн администратор нэмэлт функцэд зориулж аппликэйшнүүдийг суулгасан. Аппликэйшнүүд таны зарим өгөгдөлд хандах эрхтэй.</translation>
 <translation id="8355270400102541638">Дотоод гэмтлийн контекст:</translation>
 <translation id="8363502534493474904">Нислэгийн горимыг унтрааж байна</translation>
 <translation id="8364627913115013041">Тохиргоо хийгдээгүй.</translation>
@@ -3736,6 +3741,7 @@
 <translation id="8903921497873541725">Томруулж харах</translation>
 <translation id="890493561996401738">Зөвлөмж устгах товчлуур, устгахын тулд Enter дээр дарна уу, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 инч</translation>
+<translation id="8918062451146297192">Виртуал картын карт баталгаажуулалтын код</translation>
 <translation id="8919740778133505789">Спорт загварын автомашинууд</translation>
 <translation id="8919895429178014996">Бүх зүйлийг нуух</translation>
 <translation id="8922013791253848639">Энэ сайтад зарыг үргэлж зөвшөөрөх</translation>

@@ -568,6 +568,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2149968176347646218">Ryšys nėra saugus</translation>
 <translation id="2152495481414285304">Programos</translation>
 <translation id="2153609454945889823">Diegti „Google Play“ paslaugas, skirtas AR?</translation>
+<translation id="2154144347038514978">Automatinis paleidimas įrenginyje</translation>
 <translation id="2154484045852737596">Kortelės informacijos redagavimas</translation>
 <translation id="2154739667870063220">Paleisti iš naujo</translation>
 <translation id="2155260325161282517">5 x 7 col.</translation>
@@ -2913,6 +2914,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7186833457841277072">Vokas (rašalinis)</translation>
 <translation id="7186840261985974511">Nr. 12 vokas</translation>
 <translation id="718872491229180389">Komandų palaikymas</translation>
+<translation id="7188840756966467339">Paleisti iš naujo ir taikyti politiką</translation>
 <translation id="7192188280913829296">Taip pat reikia nurodyti atributą „vendor_id“.</translation>
 <translation id="7192203810768312527">Atlaisvina <ph name="SIZE" />. Per kitą jūsų apsilankymą kai kurios svetainės gali būti įkeliamos lėčiau.</translation>
 <translation id="7192537357091279678">Kompiuterio diskai ir atmintinės</translation>
@@ -3011,6 +3013,7 @@ Papildoma išsami informacija:
 <translation id="7400418766976504921">URL adresas</translation>
 <translation id="7403392780200267761">Bendrinkite šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami ir kt.</translation>
 <translation id="7403591733719184120">Jūsų „<ph name="DEVICE_NAME" />“ tvarkomas</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ši klaida rodoma, jei „Windows“ kompiuteryje naudojate „Superfish“ programinę įrangą.&lt;/p&gt;
     &lt;p&gt;Vadovaudamiesi toliau nurodytais veiksmais laikinai išjunkite programinę įrangą, kad galėtumėte naršyti žiniatinklyje. Reikės administratoriaus teisių.&lt;/p&gt;
     &lt;ol&gt;
@@ -3490,6 +3493,7 @@ Papildoma išsami informacija:
 <translation id="8349305172487531364">Žymių juosta</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="835203957414790336">Spausdinamų puslapių turinys ir informacija apie spausdintuvą siunčiami „Google Cloud“ arba trečiosioms šalims analizuoti. Pavyzdžiui, tekstas gali būti nuskaitytas, ar jame nėra neskelbtinų duomenų.</translation>
+<translation id="8352849934814541340">Šio įrenginio administratorius įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
 <translation id="8355270400102541638">Vietinės strigties kontekstas:</translation>
 <translation id="8363502534493474904">Išjungti lėktuvo režimą</translation>
 <translation id="8364627913115013041">Nenustatyta.</translation>
@@ -3739,6 +3743,7 @@ Papildoma išsami informacija:
 <translation id="8903921497873541725">Artinti</translation>
 <translation id="890493561996401738">Pašalinkite pasiūlymo mygtuką, paspauskite „Enter“, kad pašalintumėte, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 col.</translation>
+<translation id="8918062451146297192">Virtualios kortelės saugos kodas (CVC)</translation>
 <translation id="8919740778133505789">Sportiniai automobiliai</translation>
 <translation id="8919895429178014996">Slėpti visus elementus</translation>
 <translation id="8922013791253848639">Visada leisti skelbimus šioje svetainėje</translation>

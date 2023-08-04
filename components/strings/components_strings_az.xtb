@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">Kart Əlavə Edin</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2149968176347646218">Bağlantı güvənli deyil</translation>
+<translation id="2152495481414285304">Tətbiqlər</translation>
 <translation id="2153609454945889823">Google Play AR Xidmətləri quraşdırılsın?</translation>
+<translation id="2154144347038514978">Cihazda avtomatik başladın</translation>
 <translation id="2154484045852737596">Kartı redaktə edin</translation>
 <translation id="2154739667870063220">Yenidən başladın</translation>
 <translation id="2155260325161282517">5 x 7 düym</translation>
@@ -2907,6 +2909,7 @@
 <translation id="7186833457841277072">Zərf (mürəkkəbli)</translation>
 <translation id="7186840261985974511">Zərf #12</translation>
 <translation id="718872491229180389">Çerlidinq</translation>
+<translation id="7188840756966467339">Yenidən başladın və siyasətləri tətbiq edin</translation>
 <translation id="7192188280913829296">"Təchizatçı ID'si" atributu da qeyd edilməlidir.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> yer boşaldır. Bəzi saytlar növbəti dəfə daxil olduğunuzda gec yüklənə bilər.</translation>
 <translation id="7192537357091279678">Kompüter diskləri və yaddaş</translation>
@@ -3005,6 +3008,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Keçid paylaşaraq, QR kodu yaradaraq, yayımlayaraq və digər əməliyyatları edərək bu tabı paylaşın</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> idarə edilir</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> əlavə funksiyalar üçün tətbiqlər quraşdırıb. Tətbiqlər müəyyən dataya daxil ola bilər.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows kompüterinizdə Superfish proqramı varsa, bu xətanı görəcəksiniz.&lt;/p&gt;
     &lt;p&gt;Bu məhələlərə baxaraq proqramı müvəqqəti olaraq deaktiv edin ki, vebə daxil ola biləsiniz. Administrator imtiyazları lazım olacaq.&lt;/p&gt;
     &lt;ol&gt;
@@ -3484,6 +3488,7 @@
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="835203957414790336">Çap etdiyiniz səhifələrin kontenti və printer haqqında məlumatlar təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Məsələn, həssas dataya görə skanlana bilər.</translation>
+<translation id="8352849934814541340">Bu cihazın administratoru əlavə funksiyalar üçün tətbiqlər quraşdırıb. Tətbiqlər müəyyən dataya daxil ola bilər.</translation>
 <translation id="8355270400102541638">Lokal Xəta Konteksti:</translation>
 <translation id="8363502534493474904">Təyyarə rejimi deaktiv edilir</translation>
 <translation id="8364627913115013041">Ayarlanmayıb</translation>
@@ -3732,6 +3737,7 @@
 <translation id="8903921497873541725">Zoom</translation>
 <translation id="890493561996401738">Təklifi Silmə düyməsi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> təklifini silmək üçün Enter düyməsinə basın</translation>
 <translation id="8910898109640902752">8 x 10 düym</translation>
+<translation id="8918062451146297192">Virtual kart üçün CVC</translation>
 <translation id="8919740778133505789">İdman avtomobilləri</translation>
 <translation id="8919895429178014996">Bütün elementləri gizlədin</translation>
 <translation id="8922013791253848639">Həmişə bu saytdakı reklamlara icazə verin</translation>

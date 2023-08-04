@@ -408,6 +408,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma Google'i kontol teabe, privaatsuse ja turvalisuse haldamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="1793631236004319016">Viimati kasutati <ph name="NUM_HOURS_MINUTES_SECONDS" /> tagasi</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, saadaval on mitu toimingut, vajutage nende vahel vahetamiseks tabulaatorit</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtuaalkaardi üksikasjad</translation>
@@ -567,6 +568,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2149968176347646218">Ühendus ei ole turvaline</translation>
 <translation id="2152495481414285304">Rakendused</translation>
 <translation id="2153609454945889823">Kas installida rakendus Google Play Services for AR?</translation>
+<translation id="2154144347038514978">Käivita seadmes automaatselt</translation>
 <translation id="2154484045852737596">Kaardi muutmine</translation>
 <translation id="2154739667870063220">Taaskäivita</translation>
 <translation id="2155260325161282517">5 × 7 tolli</translation>
@@ -938,6 +940,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="299990983510665749">Luukpäraga autod</translation>
 <translation id="3002501248619246229">Kontrolli sisestussalve meediat</translation>
 <translation id="3005723025932146533">Kuva salvestatud koopia</translation>
+<translation id="300580149047131921">Kasutati hiljuti</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage saadaolevate toimingute sirvimiseks tabulaatorit, seejärel valitud toimingu käivitamiseks sisestusklahvi.</translation>
 <translation id="3013291976881901233">MIDI-seadmed</translation>
 <translation id="3014553260345122294">Äriuudised</translation>
@@ -2662,6 +2665,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6671169470640320959">Sõidukite finantseerimisteenused</translation>
 <translation id="6671697161687535275">Kas eemaldada Chromiumist vormi soovitus?</translation>
 <translation id="6677351035258626477">Kiirtoit</translation>
+<translation id="6681790815630918386">CVC on salvestatud</translation>
 <translation id="6683022854667115063">Kõrvaklapid</translation>
 <translation id="6683717648675961851">Töökuulutused</translation>
 <translation id="6687230248707087982">Ümbrik (tavaline)</translation>
@@ -2909,6 +2913,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7186833457841277072">Ümbrik (tindiprinter)</translation>
 <translation id="7186840261985974511">Ümbrik nr 12</translation>
 <translation id="718872491229180389">Ergutustants</translation>
+<translation id="7188840756966467339">Taaskäivita ja rakenda eeskirjad</translation>
 <translation id="7192188280913829296">Määrata tuleb ka atribuut „vendor_id“.</translation>
 <translation id="7192203810768312527">Vabastab <ph name="SIZE" />. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>
 <translation id="7192537357091279678">Arvutikettad ja -mälu</translation>
@@ -3007,6 +3012,7 @@ Lisateave:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Selle vahelehe jagamine lingi jagamise, QR-koodi loomise, ülekandmise ja muu abil</translation>
 <translation id="7403591733719184120">Teie seadet <ph name="DEVICE_NAME" /> hallatakse</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> on installinud rakendused, et pakkuda lisafunktsioone. Rakendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="7407424307057130981">&lt;p&gt;See viga ilmneb juhul, kui teie Windowsi arvutis on tarkvara Superfish.&lt;/p&gt;
       &lt;p&gt;Selleks et veebi pääseda, järgige tarkvara keelamiseks neid toiminguid. Vajate administraatoriõigusi.&lt;/p&gt;
       &lt;ol&gt;
@@ -3469,6 +3475,7 @@ Lisateave:
 <translation id="830498451218851433">Pooleks volditud</translation>
 <translation id="8308653357438598313">Reaalajas videote voogesitamine</translation>
 <translation id="8311895354659782580">Kinnisvaraloendid</translation>
+<translation id="8316555157357957253">Kasutatakse praegu</translation>
 <translation id="8317570861267063617">Kiiremaks maksmiseks salvestage selle kaardi CVC oma seadmesse</translation>
 <translation id="8319269383395457801">Elamute ja eluruumide müük</translation>
 <translation id="831997045666694187">Õhtu</translation>
@@ -3485,6 +3492,7 @@ Lisateave:
 <translation id="8349305172487531364">Järjehoidjariba</translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="835203957414790336">Sisu teie prinditavatel lehtedel ja printeri teave saadetakse analüüsiks Google Cloudile või kolmandatele osapooltele. Näiteks võidakse seda skannida tundlike andmete tuvastamiseks.</translation>
+<translation id="8352849934814541340">Seadme administraator on installinud rakendused, mis hõlmavad lisafunktsioone. Rakendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
 <translation id="8364627913115013041">Määramata.</translation>
@@ -3733,6 +3741,7 @@ Lisateave:
 <translation id="8903921497873541725">Suurendab</translation>
 <translation id="890493561996401738">Soovituse eemaldamise nupp, vajutage eemaldamiseks sisestusklahvi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tolli</translation>
+<translation id="8918062451146297192">CVC virtuaalkaardi jaoks</translation>
 <translation id="8919740778133505789">Sportautod</translation>
 <translation id="8919895429178014996">Kõigi üksuste peitmine</translation>
 <translation id="8922013791253848639">Luba sellel saidil alati reklaamid</translation>

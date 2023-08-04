@@ -141,6 +141,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Desktopnamen anzeigen</translation>
 <translation id="1569384531973824928">Dadurch erhalten alle Apps und Websites mit Kamera- und Mikrofonberechtigung Zugriff. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
+<translation id="1571697193564730395">„Bitte nicht stören“ aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Herauszoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
 <translation id="1589090746204042747">Auf alle deine Aktivitäten in dieser Sitzung zugreifen</translation>
@@ -579,6 +580,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3563775809269155755">Hotspot aktivieren</translation>
 <translation id="3566240529365775567">Soeben geöffnet</translation>
 <translation id="3571734092741541777">Einrichten</translation>
+<translation id="3572988532398145777">Du kannst die Benachrichtigung nicht maximieren, während ein Steuerfeld geöffnet ist. Schließe zuerst das Steuerfeld unten.</translation>
 <translation id="3573179567135747900">Zurücksetzen auf "<ph name="FROM_LOCALE" />" (Neustart erforderlich)</translation>
 <translation id="3576141592585647168">Zeitzone ändern</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
@@ -686,6 +688,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3990002060657467458">Häufig verwendete Einstellungen wie WLAN, Bluetooth und Lautstärke sind in den Schnelleinstellungen verfügbar. Du kannst hier auch Screenshots aufnehmen.</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
 <translation id="40062176907008878">Handschrift</translation>
+<translation id="4011112806063830608">„Bitte nicht stören“ ist aktiviert.</translation>
 <translation id="4017989525502048489">Laserpointer</translation>
 <translation id="401993194061514265">Filzstift nicht verfügbar. Screencast wieder öffnen.</translation>
 <translation id="4021716437419160885">Nach unten scrollen</translation>
@@ -719,6 +722,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4165275524535002941">Kabel unterstützt keine Bildschirme</translation>
+<translation id="4177415338862979658">Zum Prüfen der Details klicken</translation>
 <translation id="4177913004758410636">{0,plural, =1{Gerät innerhalb eines Tages neu starten}other{Gerät innerhalb von # Tagen neu starten}}</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4185671786623711291">Aktives Fenster in den rechten Desktop verschieben</translation>
@@ -1437,6 +1441,7 @@ Neuinstallation</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Dein Administrator setzt deine eSIM zurück. Das kann einige Minuten dauern.</translation>
 <translation id="7313193732017069507">Kamera maximieren</translation>
+<translation id="7316261577130609484">Neue Aufgabe hinzufügen</translation>
 <translation id="7340731148882810149">Menü „Automatische Klicks“</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bildschirmtastatur</translation>
@@ -1549,7 +1554,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7780159184141939021">Bildschirm drehen</translation>
 <translation id="7796735576426975947">Neue Benachrichtigung ausgeblendet</translation>
 <translation id="7798302898096527229">Drücke die Such-Taste oder Umschalttaste, um die Aktivierung aufzuheben.</translation>
-<translation id="780301667611848630">Kein Interesse</translation>
+<translation id="780301667611848630">Nein, danke</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> und <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Starkes Signal</translation>
@@ -1589,6 +1594,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7944023924886109030">Alle heutigen Termine anzeigen</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden.</translation>
 <translation id="7951630946012935453">Tastatur dimmen</translation>
+<translation id="7963689218131240420">„Bitte nicht stören“ ist deaktiviert.</translation>
 <translation id="7963992254934562106">Von <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Ordner auswählen...</translation>
 <translation id="797512352675305461">Vollbildlupe aktivieren oder deaktivieren</translation>
@@ -1840,6 +1846,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="9080073830732419341">Kamera ist an der oberen linken Ecke angepinnt</translation>
 <translation id="9080132581049224423">Nach oben wischen, um zum Startbildschirm zu gehen</translation>
 <translation id="9080206825613744995">Mikrofon wird verwendet.</translation>
+<translation id="908451241440060346">Benachrichtigungen sind stumm geschaltet, wenn „Bitte nicht stören“ aktiviert ist</translation>
 <translation id="9084606467167974638">Menüposition wechseln</translation>
 <translation id="9085962983642906571">Dein Akku bleibt mit 80 % aufgeladen, während er ans Stromnetz angeschlossen ist, um die Akkulaufzeit zu verlängern.</translation>
 <translation id="9089416786594320554">Eingabemethoden</translation>

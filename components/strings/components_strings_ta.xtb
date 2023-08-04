@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கில் உள்ள தகவல்கள், தனியுரிமை, பாதுகாப்பு ஆகியவற்றை நிர்வகிக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="1793631236004319016">கடைசியாகப் பயன்படுத்தியது: <ph name="NUM_HOURS_MINUTES_SECONDS" /> முன்பு</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ஒன்றுக்கும் மேற்பட்ட செயல்கள் உள்ளன, அவற்றில் ஒன்றைத் தேர்ந்தெடுக்க Tab விசையை அழுத்துங்கள்</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">விர்ச்சுவல் கார்டு விவரங்கள்</translation>
@@ -567,6 +568,7 @@
 <translation id="2149968176347646218">பாதுகாப்பற்ற இணைப்பு</translation>
 <translation id="2152495481414285304">ஆப்ஸ்</translation>
 <translation id="2153609454945889823">Google Play Services for ARரை நிறுவ வேண்டுமா?</translation>
+<translation id="2154144347038514978">உங்கள் சாதனத்தில் தானாகத் தொடங்கவும்</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
 <translation id="2154739667870063220">மறுபடி தொடங்கு</translation>
 <translation id="2155260325161282517">5 x 7 இன்ச்</translation>
@@ -938,6 +940,7 @@
 <translation id="299990983510665749">ஹாட்ச்பேக் கார்கள்</translation>
 <translation id="3002501248619246229">உள்ளீட்டுத் தட்டின் மீடியாவைச் சரிபார்</translation>
 <translation id="3005723025932146533">சேமித்த நகலைக் காட்டு</translation>
+<translation id="300580149047131921">சமீபத்தில் பயன்படுத்தப்பட்டது</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, கிடைக்கக்கூடிய செயல்களைப் பார்க்க Tab பட்டனை அழுத்தியபிறகு, தேர்ந்தெடுத்த செயலைச் செயல்படுத்த Enter பட்டனை அழுத்துங்கள்.</translation>
 <translation id="3013291976881901233">MIDI சாதனங்கள்</translation>
 <translation id="3014553260345122294">பிசினஸ் செய்திகள்</translation>
@@ -2657,6 +2660,7 @@
 <translation id="6671169470640320959">வாகனக் கடன்</translation>
 <translation id="6671697161687535275">Chromium இலிருந்து படிவப் பரிந்துரையை அகற்றவா?</translation>
 <translation id="6677351035258626477">துரித உணவு</translation>
+<translation id="6681790815630918386">CVC சேமிக்கப்பட்டது</translation>
 <translation id="6683022854667115063">ஹெட்ஃபோன்கள்</translation>
 <translation id="6683717648675961851">வேலை வாய்ப்புகள்</translation>
 <translation id="6687230248707087982">பிளெய்ன் என்வெலப்</translation>
@@ -2904,6 +2908,7 @@
 <translation id="7186833457841277072">இங்க்ஜெட் என்வெலப்</translation>
 <translation id="7186840261985974511">என்வெலப் #12</translation>
 <translation id="718872491229180389">சியர்லீடிங்</translation>
+<translation id="7188840756966467339">மீண்டும் தொடங்கி கொள்கைகளைப் பயன்படுத்து</translation>
 <translation id="7192188280913829296">"vendor_id" பண்புக்கூறும் குறிக்கப்பட வேண்டும்.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> அளவைக் காலியாக்கும். நீங்கள் அடுத்த முறை பார்வையிடும் போது, சில தளங்கள் மிகவும் மெதுவாக ஏற்றப்படலாம்.</translation>
 <translation id="7192537357091279678">கம்ப்யூட்டர் டிரைவ்கள் &amp; சேமிப்பகங்கள்</translation>
@@ -3002,6 +3007,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">இணைப்பைப் பகிர்தல், QR குறியீட்டை உருவாக்குதல், அலைபரப்புதல் போன்ற மேலும் பல விருப்பங்களைப் பயன்படுத்தி இந்த உலாவிப் பக்கத்தைப் பகிரலாம்</translation>
 <translation id="7403591733719184120">உங்கள் <ph name="DEVICE_NAME" /> சாதனம் நிர்வகிக்கப்படுகிறது</translation>
+<translation id="7405878640835614059">கூடுதல் செயல்பாடுகளுக்காக, சில ஆப்ஸை <ph name="ENROLLMENT_DOMAIN" /> நிறுவியுள்ளது. உங்களின் சில தரவுக்கான அணுகல் ஆப்ஸிற்கு உள்ளது.</translation>
 <translation id="7407424307057130981">&lt;p&gt;உங்கள் Windows கம்ப்யூட்டரில் Superfish மென்பொருள் இருந்தால், இந்தப் பிழையைப் பார்ப்பீர்கள்.&lt;/p&gt; 
       &lt;p&gt;மென்பொருளைத் தற்காலிகமாக முடக்கி, இணையத்துடன் இணைவதற்கு, பின்வரும் படிகளைப் பின்பற்றவும். உங்களுக்கு நிர்வாகி முன்னுரிமைகள் தேவைப்படும்.&lt;/p&gt; 
       &lt;ol&gt; 
@@ -3464,6 +3470,7 @@
 <translation id="830498451218851433">ஃபோல்டு ஹாஃப்</translation>
 <translation id="8308653357438598313">நேரலை வீடியோ ஸ்ட்ரீமிங்</translation>
 <translation id="8311895354659782580">ரியல் எஸ்டேட் விவரங்கள்</translation>
+<translation id="8316555157357957253">தற்போது பயன்படுத்துகிறது</translation>
 <translation id="8317570861267063617">விரைவான செக்-அவுட்டிற்கு, உங்கள் சாதனத்தில் இந்தக் கார்டிற்கான CVCயைச் சேமிக்கவும்</translation>
 <translation id="8319269383395457801">குடியிருப்பு விற்பனை</translation>
 <translation id="831997045666694187">மாலை</translation>
@@ -3480,6 +3487,7 @@
 <translation id="8349305172487531364">புக்மார்க் பட்டி</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
 <translation id="835203957414790336">நீங்கள் அச்சிடும் பக்கங்களில் இருக்கும் உள்ளடக்கமும் உங்கள் பிரிண்ட்டர் குறித்த தகவலும் பகுப்பாய்விற்காக Google Cloud அல்லது மூன்றாம் தரப்புகளுக்கு அனுப்பப்படும். உதாரணமாக, பாதுகாக்கப்பட வேண்டிய தனிப்பட்ட தரவு உள்ளதா எனக் கண்டறிவதற்காக அது ஸ்கேன் செய்யப்படலாம்.</translation>
+<translation id="8352849934814541340">கூடுதல் செயல்பாடுகளுக்காக, சில ஆப்ஸை இந்தச் சாதனத்தின் நிர்வாகி நிறுவியுள்ளார். உங்களின் சில தரவுக்கான அணுகல் ஆப்ஸிற்கு உள்ளது.</translation>
 <translation id="8355270400102541638">அகச் சிதைவுச் சூழல்:</translation>
 <translation id="8363502534493474904">விமானப் பயன்முறையை முடக்குதல்</translation>
 <translation id="8364627913115013041">அமைக்கப்படவில்லை.</translation>
@@ -3728,6 +3736,7 @@
 <translation id="8903921497873541725">பெரிதாக்கு</translation>
 <translation id="890493561996401738">பரிந்துரை பட்டனை அகற்றுக, அகற்ற Enterரை அழுத்தவும், <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 இன்ச்</translation>
+<translation id="8918062451146297192">விர்ச்சுவல் கார்டுக்கான CVC</translation>
 <translation id="8919740778133505789">ஸ்போர்ட்ஸ் கார்கள்</translation>
 <translation id="8919895429178014996">அனைத்தையும் மறை</translation>
 <translation id="8922013791253848639">இந்தத் தளத்தில் எப்போதும் விளம்பரங்களை அனுமதி</translation>

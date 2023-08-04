@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Appens skärminställningar börjar gälla nästa gång den startas om.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min kvar}other{# min kvar}}</translation>
+<translation id="7363164521834647158">Skicka svar</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{för 1 min sedan}other{för # min sedan}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minut kvar}other{# minuter kvar}}</translation>

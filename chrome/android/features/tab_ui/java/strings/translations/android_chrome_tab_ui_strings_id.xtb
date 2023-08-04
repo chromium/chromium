@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(rating toko)</translation>
 <translation id="6333260925957816943">Informasi tentang toko ini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Pisahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Pisahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. Tab Samaran Anda tidak akan tersedia.}other{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6549021453810473782">Lihat info toko</translation>
 <translation id="6562820390860419811">Pindahkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
+<translation id="661742612106409204">Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome.</translation>
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
 <translation id="6856809498882026482">Sembunyikan mode multi-pilihan</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bagikan tab}other{Bagikan tab}}</translation>

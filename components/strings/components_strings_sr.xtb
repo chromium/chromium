@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
+<translation id="1793631236004319016">Последњи пут коришћена пре <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, доступно је више радњи, притисните Tab да бисте их прегледали</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Подаци о виртуелној картици</translation>
@@ -567,6 +568,7 @@
 <translation id="2149968176347646218">Веза није безбедна</translation>
 <translation id="2152495481414285304">Апликације</translation>
 <translation id="2153609454945889823">Желите да инсталирате Google Play услуге за ПР?</translation>
+<translation id="2154144347038514978">Аутоматски покрећи на уређају</translation>
 <translation id="2154484045852737596">Измените картицу</translation>
 <translation id="2154739667870063220">Рестартуј</translation>
 <translation id="2155260325161282517">5×7 in</translation>
@@ -938,6 +940,7 @@
 <translation id="299990983510665749">Хечбек возила</translation>
 <translation id="3002501248619246229">Проверите медије улазне фиоке</translation>
 <translation id="3005723025932146533">Прикажи сачувану копију</translation>
+<translation id="300580149047131921">Недавно коришћена</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab да бисте прегледали доступне радње, па Enter да бисте извршили изабрану радњу.</translation>
 <translation id="3013291976881901233">MIDI уређаји</translation>
 <translation id="3014553260345122294">Пословне вести</translation>
@@ -2661,6 +2664,7 @@
 <translation id="6671169470640320959">Зајмови за куповину аутомобила</translation>
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6677351035258626477">Брза храна</translation>
+<translation id="6681790815630918386">CVC је сачуван</translation>
 <translation id="6683022854667115063">Слушалице</translation>
 <translation id="6683717648675961851">Огласи за посао</translation>
 <translation id="6687230248707087982">Коверта (обична)</translation>
@@ -2908,6 +2912,7 @@
 <translation id="7186833457841277072">Коверта (инкџет)</translation>
 <translation id="7186840261985974511">Коверта бр. 12</translation>
 <translation id="718872491229180389">Навијање</translation>
+<translation id="7188840756966467339">Рестартуј и примени смернице</translation>
 <translation id="7192188280913829296">Морате да наведете и атрибут „vendor_id“.</translation>
 <translation id="7192203810768312527">Ослободиће се <ph name="SIZE" />. Неки сајтови ће се спорије учитавати при следећој посети.</translation>
 <translation id="7192537357091279678">Рачунарски дискови и уређаји за складиштење података</translation>
@@ -3006,6 +3011,7 @@
 <translation id="7400418766976504921">URL адреса</translation>
 <translation id="7403392780200267761">Делите ову картицу дељењем линка, прављењем QR кода, пребацивањем и на друге начине</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" />-ом се управља</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> је инсталирао апликације за додатне функције. Апликације имају приступ неким од података.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ова грешка ће вам се приказати ако имате Superfish софтвер на Windows рачунару.&lt;/p&gt;
     &lt;p&gt;Пратите ове кораке да бисте привремено онемогућили софтвер и приступили вебу. Требаће вам привилегије администратора.&lt;/p&gt;
     &lt;ol&gt;
@@ -3468,6 +3474,7 @@
 <translation id="830498451218851433">Пресавијање напола</translation>
 <translation id="8308653357438598313">Видео стримовање уживо</translation>
 <translation id="8311895354659782580">Регистар некретнина за продају</translation>
+<translation id="8316555157357957253">Тренутно користите</translation>
 <translation id="8317570861267063617">Да бисте брже плаћали, сачувајте CVC за ову картицу на уређају</translation>
 <translation id="8319269383395457801">Продаја некретнина за становање</translation>
 <translation id="831997045666694187">Увече</translation>
@@ -3484,6 +3491,7 @@
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8351131234907093545">Направите белешку</translation>
 <translation id="835203957414790336">Садржај страница које штампате и информације о штампачу се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима.</translation>
+<translation id="8352849934814541340">Администратор овог уређаја је инсталирао апликације за додатне функције. Апликације имају приступ неким од података.</translation>
 <translation id="8355270400102541638">Контекст локалног отказивања:</translation>
 <translation id="8363502534493474904">да искључите режим рада у авиону</translation>
 <translation id="8364627913115013041">Није подешено.</translation>
@@ -3733,6 +3741,7 @@
 <translation id="8903921497873541725">Увећавање</translation>
 <translation id="890493561996401738">Дугме Уклони предлог, притисните Enter да бисте уклонили, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8×10 in</translation>
+<translation id="8918062451146297192">CVC за виртуелну картицу</translation>
 <translation id="8919740778133505789">Спортски аутомобили</translation>
 <translation id="8919895429178014996">Сакриј све ставке</translation>
 <translation id="8922013791253848639">Увек дозвољавај огласе на овом сајту</translation>

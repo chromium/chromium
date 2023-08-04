@@ -567,6 +567,7 @@
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2152495481414285304">アプリケーション</translation>
 <translation id="2153609454945889823">Google Play 開発者サービス（AR）をインストールしますか？</translation>
+<translation id="2154144347038514978">デバイスで自動的に開始する</translation>
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2154739667870063220">再起動</translation>
 <translation id="2155260325161282517">5x7 インチ（2L 判）</translation>
@@ -2909,6 +2910,7 @@
 <translation id="7186833457841277072">封筒（インクジェット）</translation>
 <translation id="7186840261985974511">#12 封筒</translation>
 <translation id="718872491229180389">チアリーディング</translation>
+<translation id="7188840756966467339">再起動してポリシーを適用</translation>
 <translation id="7192188280913829296">「vendor_id」属性も指定する必要があります。</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みがこれまでより遅くなる可能性があります。</translation>
 <translation id="7192537357091279678">コンピュータ ドライブ、ストレージ</translation>
@@ -3007,6 +3009,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有します</translation>
 <translation id="7403591733719184120">ご使用の <ph name="DEVICE_NAME" /> は管理されています</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> によって、機能を追加するアプリケーションがインストールされました。このアプリケーションでは、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="7407424307057130981">&lt;p&gt;このエラーは、Windows パソコンで Superfish ソフトウェアを使用している場合に表示されます。&lt;/p&gt;
       &lt;p&gt;次の手順でソフトウェアを一時的に無効にすると、インターネットに接続できるようになります。なお、この操作には管理者権限が必要です。&lt;/p&gt;
       &lt;ol&gt;
@@ -3485,6 +3488,7 @@
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="835203957414790336">印刷するページのコンテンツとプリンタに関する情報は、分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
+<translation id="8352849934814541340">このデバイスの管理者によって、機能を追加するアプリケーションがインストールされました。このアプリケーションでは、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="8355270400102541638">ローカル クラッシュ コンテキスト:</translation>
 <translation id="8363502534493474904">機内モードをオフにする</translation>
 <translation id="8364627913115013041">未設定</translation>
@@ -3734,6 +3738,7 @@
 <translation id="8903921497873541725">拡大する</translation>
 <translation id="890493561996401738">候補を削除するボタンです。Enter キーを押すと <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> を削除します</translation>
 <translation id="8910898109640902752">8x10 インチ</translation>
+<translation id="8918062451146297192">仮想カードの CVC</translation>
 <translation id="8919740778133505789">スポーツカー</translation>
 <translation id="8919895429178014996">すべてのアイテムを非表示にする</translation>
 <translation id="8922013791253848639">このサイトで常に広告を許可します</translation>

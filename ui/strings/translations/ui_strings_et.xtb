@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Teie rakenduse kuvaseaded jõustuvad pärast rakenduse taaskäivitamist.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min on jäänud}other{# min on jäänud}}</translation>
+<translation id="7363164521834647158">Saada vastus</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min tagasi}other{# min tagasi}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minut on jäänud}other{# minutit on jäänud}}</translation>

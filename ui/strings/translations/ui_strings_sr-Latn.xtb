@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">Podešavanja prikaza aplikacije će stupiti na snagu kada se ona sledeći put restartuje.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Još 1 min}one{Još # min}few{Još # min}other{Još # min}}</translation>
+<translation id="7363164521834647158">Pošaljite odgovor</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Pre 1 min}one{Pre # min}few{Pre # min}other{Pre # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Još 1 minut}one{Još # minut}few{Još # minuta}other{Još # minuta}}</translation>

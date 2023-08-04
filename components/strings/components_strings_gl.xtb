@@ -565,7 +565,9 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2148613324460538318">Engadir tarxeta</translation>
 <translation id="2148716181193084225">Hoxe</translation>
 <translation id="2149968176347646218">A conexión non é segura</translation>
+<translation id="2152495481414285304">Aplicacións</translation>
 <translation id="2153609454945889823">Queres instalar Servizos de Google Play para realidade aumentada?</translation>
+<translation id="2154144347038514978">Inicio automático no teu dispositivo</translation>
 <translation id="2154484045852737596">Editar tarxeta</translation>
 <translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2155260325161282517">5 x 7 polgadas</translation>
@@ -2908,6 +2910,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7186833457841277072">Sobre (tinta de inxección)</translation>
 <translation id="7186840261985974511">Sobre n.º 12</translation>
 <translation id="718872491229180389">Animación deportiva</translation>
+<translation id="7188840756966467339">Reiniciar e aplicar políticas</translation>
 <translation id="7192188280913829296">Tamén se debe especificar o atributo "vendor_id".</translation>
 <translation id="7192203810768312527">Libera ata <ph name="SIZE" />. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
 <translation id="7192537357091279678">Almacenamento e dispositivos informáticos</translation>
@@ -3006,6 +3009,7 @@ Detalles adicionais:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartir esta pestana mediante unha ligazón, a través da creación dun código QR, coa súa emisión e outras opcións</translation>
 <translation id="7403591733719184120">O teu <ph name="DEVICE_NAME" /> está xestionado</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instalou aplicacións que ofrecen funcións adicionais. As aplicacións teñen acceso a algúns dos teus datos.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Verás este erro se tes o software Superfish no teu ordenador Windows.&lt;/p&gt;
       &lt;p&gt;Sigue estes pasos para desactivar temporalmente o software e poder acceder á web. Precisarás privilexios de administrador.&lt;/p&gt;
       &lt;ol&gt;
@@ -3484,6 +3488,7 @@ Detalles adicionais:
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="835203957414790336">O contido das páxinas que imprimas e a información sobre a impresora enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían buscarse datos confidenciais.</translation>
+<translation id="8352849934814541340">O administrador deste dispositivo instalou aplicacións que ofrecen funcións adicionais. As aplicacións teñen acceso a algúns dos teus datos.</translation>
 <translation id="8355270400102541638">Contexto do fallo local:</translation>
 <translation id="8363502534493474904">Desactivar o modo avión</translation>
 <translation id="8364627913115013041">Sen configurar.</translation>
@@ -3732,6 +3737,7 @@ Detalles adicionais:
 <translation id="8903921497873541725">Achegar</translation>
 <translation id="890493561996401738">Botón Quitar suxestión, preme Intro para quitala, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 in</translation>
+<translation id="8918062451146297192">CVC da tarxeta virtual</translation>
 <translation id="8919740778133505789">Coches deportivos</translation>
 <translation id="8919895429178014996">Ocultar todos os elementos</translation>
 <translation id="8922013791253848639">Permitir sempre os anuncios neste sitio</translation>

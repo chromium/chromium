@@ -175,6 +175,7 @@
 <translation id="7170202025028120564">আপনার অ্যাপ্লিকেশনের ডিসপ্লে সেটিংস তখনই কার্যকর হবে পরে যখন এটি রিস্টার্ট করা হবে।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{১ মিনিট বাকি}one{# মিনিট বাকি}other{# মিনিট বাকি}}</translation>
+<translation id="7363164521834647158">উত্তর পাঠান</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{১ মিনিট পূর্বে}one{# মিনিট পূর্বে}other{# মিনিট পূর্বে}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{১ মিনিট বাকি}one{# মিনিট বাকি}other{# মিনিট বাকি}}</translation>

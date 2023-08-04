@@ -567,6 +567,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2149968176347646218">La connexió no és segura</translation>
 <translation id="2152495481414285304">Aplicacions</translation>
 <translation id="2153609454945889823">Vols instal·lar Serveis de Google Play per a RA?</translation>
+<translation id="2154144347038514978">Inici automàtic al dispositiu</translation>
 <translation id="2154484045852737596">Edita la targeta</translation>
 <translation id="2154739667870063220">Reinicia</translation>
 <translation id="2155260325161282517">5 x 7 polzades</translation>
@@ -2909,6 +2910,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7186833457841277072">Sobre (tinta d'injecció)</translation>
 <translation id="7186840261985974511">Sobre número 12</translation>
 <translation id="718872491229180389">Animació</translation>
+<translation id="7188840756966467339">Reinicia i aplica les polítiques</translation>
 <translation id="7192188280913829296">També s'ha d'especificar l'atribut "vendor_id".</translation>
 <translation id="7192203810768312527">Allibera <ph name="SIZE" />. És possible que alguns llocs es carreguin més a poc a poc la propera vegada que els visitis.</translation>
 <translation id="7192537357091279678">Emmagatzematge i unitats per a equips informàtics</translation>
@@ -3007,6 +3009,7 @@ Detalls addicionals:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Pots compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres</translation>
 <translation id="7403591733719184120">El dispositiu <ph name="DEVICE_NAME" /> està gestionat</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ha instal·lat aplicacions per obtenir funcions addicionals. Les aplicacions tenen accés a algunes de les teves dades.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Aquest error es mostra si teniu el programari Superfish en un ordinador Windows.&lt;/p&gt;
     &lt;p&gt;Seguiu aquests passos per desactivar temporalment el programari perquè pugueu accedir al web. Per fer-ho, necessitareu privilegis d'administrador.&lt;/p&gt;
     &lt;ol&gt;
@@ -3485,6 +3488,7 @@ Detalls addicionals:
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="835203957414790336">El contingut de les pàgines que imprimeixes i la informació sobre la impressora s'envien a Google Cloud o a tercers perquè l'analitzin. Per exemple, pot ser que s'analitzin per detectar-hi dades sensibles.</translation>
+<translation id="8352849934814541340">L'administrador del dispositiu ha instal·lat aplicacions per obtenir funcions addicionals. Les aplicacions tenen accés a algunes de les teves dades.</translation>
 <translation id="8355270400102541638">Context del bloqueig local:</translation>
 <translation id="8363502534493474904">Desactiva el mode d'avió.</translation>
 <translation id="8364627913115013041">No s'ha definit.</translation>
@@ -3733,6 +3737,7 @@ Detalls addicionals:
 <translation id="8903921497873541725">Amplia</translation>
 <translation id="890493561996401738">Botó Suprimeix el suggeriment, prem Retorn per suprimir, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 polzades</translation>
+<translation id="8918062451146297192">CVC de la targeta virtual</translation>
 <translation id="8919740778133505789">Cotxes esportius</translation>
 <translation id="8919895429178014996">Amaga tots els elements</translation>
 <translation id="8922013791253848639">Permet sempre els anuncis en aquest lloc web</translation>

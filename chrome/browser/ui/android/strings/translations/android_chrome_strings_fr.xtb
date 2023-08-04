@@ -1056,6 +1056,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="663674369910034433">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez les pages <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Toujours bloquer</translation>
+<translation id="664050863900079109">Lire à voix haute</translation>
 <translation id="6641780377503683465">Supprimer <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645629752388991326">Contrôlez quels appareils peuvent se connecter en utilisant ce téléphone comme clé de sécurité.</translation>
@@ -1155,6 +1156,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7146622961999026732">Ces sites et applications semblent importants pour vous :</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
+<translation id="7152808996372201178">Lisez à voix haute les pages compatibles. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="7155317020660659215">Pour scanner un code QR, modifiez vos paramètres afin d'autoriser Chrome à utiliser votre appareil photo</translation>
 <translation id="7168323970702333693">Connecté en tant que <ph name="USER_NAME" />. Ouvre les paramètres.</translation>
 <translation id="7173114856073700355">Paramètres</translation>

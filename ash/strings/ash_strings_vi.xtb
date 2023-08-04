@@ -141,6 +141,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1557622599341396706">Hiện tên không gian làm việc</translation>
 <translation id="1569384531973824928">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
+<translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
 <translation id="1586324912145647027">Chuyển đến không gian làm việc từ 1 đến 8</translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
@@ -579,6 +580,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
 <translation id="3566240529365775567">Vừa mới mở</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
+<translation id="3572988532398145777">Bạn không thể mở rộng thông báo khi có một bảng điều khiển đang mở. Trước tiên, hãy đóng bảng điều khiển bên dưới.</translation>
 <translation id="3573179567135747900">Thay đổi lại thành "<ph name="FROM_LOCALE" />" (yêu cầu khởi động lại)</translation>
 <translation id="3576141592585647168">Thay đổi múi giờ</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
@@ -687,6 +689,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3990002060657467458">Các tuỳ chọn kiểm soát thường dùng như Wi-Fi, Bluetooth và âm lượng sẽ nằm trong phần Cài đặt nhanh. Bạn cũng có thể vào phần này để chụp ảnh màn hình.</translation>
 <translation id="3995138139523574647">Thiết bị USB-C (cổng phía sau, bên phải)</translation>
 <translation id="40062176907008878">Chữ viết tay</translation>
+<translation id="4011112806063830608">Chế độ Không làm phiền đang bật.</translation>
 <translation id="4017989525502048489">Con trỏ laser</translation>
 <translation id="401993194061514265">Hiện không có điểm đánh dấu. Hãy mở lại Screencast.</translation>
 <translation id="4021716437419160885">Cuộn xuống</translation>
@@ -720,6 +723,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4146833061457621061">Phát nhạc</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
 <translation id="4165275524535002941">Có thể cáp không hỗ trợ màn hình</translation>
+<translation id="4177415338862979658">Nhấp để xem thông tin chi tiết</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4185671786623711291">Di chuyển cửa sổ đang hoạt động sang không gian làm việc ở bên phải</translation>
@@ -1438,6 +1442,7 @@ Mới cài đặt</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7313193732017069507">Mở rộng máy ảnh</translation>
+<translation id="7316261577130609484">Thêm việc mới cần làm</translation>
 <translation id="7340731148882810149">Trình đơn nhấp tự động</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
@@ -1590,6 +1595,7 @@ Mới cài đặt</translation>
 <translation id="7944023924886109030">Xem tất cả sự kiện cho hôm nay</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> muốn sử dụng <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="7951630946012935453">Giảm độ sáng bàn phím</translation>
+<translation id="7963689218131240420">Chế độ Không làm phiền đang tắt.</translation>
 <translation id="7963992254934562106">Từ <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Chọn thư mục...</translation>
 <translation id="797512352675305461">Bật hoặc tắt chế độ phóng to toàn màn hình</translation>
@@ -1842,6 +1848,7 @@ Mới cài đặt</translation>
 <translation id="9080073830732419341">Máy ảnh đang bám theo góc trên bên trái</translation>
 <translation id="9080132581049224423">Vuốt lên để chuyển đến màn hình chính</translation>
 <translation id="9080206825613744995">Micrô đang được sử dụng.</translation>
+<translation id="908451241440060346">Thông báo bị tắt tiếng khi chế độ Không làm phiền đang bật</translation>
 <translation id="9084606467167974638">Chuyển đổi vị trí menu</translation>
 <translation id="9085962983642906571">Pin duy trì ở mức 80% trong khi cắm nguồn để kéo dài thời lượng pin.</translation>
 <translation id="9089416786594320554">Phương thức nhập</translation>

@@ -779,7 +779,7 @@
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
-<translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
+<translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7154020516215182599">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. అవసరమైతే, మీ సమస్య ఎలా ఏర్పడింది అనే దానిని దశల వారిగా చేర్చండి.</translation>
 <translation id="7155171745945906037">కెమెరా లేదా ఫైల్‌లో ఉన్న ఫోటో</translation>
@@ -816,6 +816,7 @@
 <translation id="7397270852490618635">లేత రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
 <translation id="741244894080940828">మార్పిడి</translation>
 <translation id="7415801143053185905">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}=2{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}=3{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, ఇంకా <ph name="APP_NAME_3" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}other{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />‌తో పాటు, ఇంకా # ఇతర యాప్‌లు ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">అవతార్‌లను చూసి, వాటిని సెట్ చేయడానికి దయచేసి నెట్‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="7469648432129124067">పోర్టల్ గుర్తించబడింది</translation>
@@ -1014,6 +1015,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="8997710128084572139">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది.</translation>
+<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ఆటోమేటిక్‌గా ప్రారంభించబడింది}other{# యాప్‌లు ఆటోమేటిక్‌గా ప్రారంభించబడ్డాయి}}</translation>
 <translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9024331582947483881">ఫుల్-స్క్రీన్‌</translation>

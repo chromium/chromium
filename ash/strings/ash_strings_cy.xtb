@@ -141,6 +141,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="1557622599341396706">Dangos enw desg</translation>
 <translation id="1569384531973824928">Mae hyn yn caniatáu mynediad ar gyfer pob ap a gwefan sydd â'r caniatadau camera a meicroffon. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
+<translation id="1571697193564730395">Toglo Peidiwch ag Aflonyddu. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Pellhau pan fydd chwyddwydr ymlaen</translation>
 <translation id="1586324912145647027">Ewch i ddesg 1 i 8</translation>
 <translation id="1589090746204042747">Gael mynediad at eich holl weithgarwch yn y sesiwn hon</translation>
@@ -579,6 +580,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3563775809269155755">Galluogi poethfan</translation>
 <translation id="3566240529365775567">Newydd ei hagor</translation>
 <translation id="3571734092741541777">Gosod</translation>
+<translation id="3572988532398145777">Ni allwch ehangu'r hysbysiad tra bod panel ar agor. Caewch y panel isod yn gyntaf.</translation>
 <translation id="3573179567135747900">Newid yn ôl i "<ph name="FROM_LOCALE" />" (bydd angen ailgychwyn)</translation>
 <translation id="3576141592585647168">Newid cylchfa amser</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
@@ -687,6 +689,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3990002060657467458">Mae rheolyddion a ddefnyddir yn aml megis Wi-Fi, Bluetooth a lefel sain yn ymddangos yn y Gosodiadau Cyflym. Gallwch hefyd fynd yma i gymryd sgrinluniau.</translation>
 <translation id="3995138139523574647">Dyfais USB-C (porth de ar y cefn)</translation>
 <translation id="40062176907008878">Llawysgrifen</translation>
+<translation id="4011112806063830608">Mae Peidiwch ag Aflonyddu ymlaen.</translation>
 <translation id="4017989525502048489">Pwyntydd laser</translation>
 <translation id="401993194061514265">Marciwr ddim ar gael. Ailagorwch Screencast.</translation>
 <translation id="4021716437419160885">Sgrolio i lawr</translation>
@@ -720,6 +723,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4146833061457621061">Play Music</translation>
 <translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4165275524535002941">Mae'n bosib na fydd cebl yn cefnogi sgriniau</translation>
+<translation id="4177415338862979658">Cliciwch i wirio am fanylion</translation>
 <translation id="4177913004758410636">{0,plural, =1{Diweddarwch y ddyfais o fewn diwrnod}zero{Diweddarwch y ddyfais o fewn # diwrnod}two{Diweddarwch y ddyfais o fewn # ddiwrnod}few{Diweddarwch y ddyfais o fewn # diwrnod}many{Diweddarwch y ddyfais o fewn # diwrnod}other{Diweddarwch y ddyfais o fewn # diwrnod}}</translation>
 <translation id="4181841719683918333">Ieithoedd</translation>
 <translation id="4185671786623711291">Symud y ffenestr weithredol i'r ddesg ar y dde</translation>
@@ -1438,6 +1442,7 @@ Gosodiad newydd</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Mae eich gweinyddwr yn ailosod eich eSIM. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="7313193732017069507">Ehangu'r camera</translation>
+<translation id="7316261577130609484">Ychwanegu tasg newydd</translation>
 <translation id="7340731148882810149">Dewislen cliciau awtomatig</translation>
 <translation id="7346909386216857016">Iawn, rwy'n deall</translation>
 <translation id="7348093485538360975">Bysellfwrdd ar y sgrîn</translation>
@@ -1558,6 +1563,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7842569679327885685">Rhybudd: Nodwedd arbrofol</translation>
 <translation id="7846634333498149051">Bysellfwrdd</translation>
 <translation id="7848989271541991537">Symudwyd i Dudalen <ph name="PAGE_NUMBER" />, rhes <ph name="ROW_NUMBER" />, colofn <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Peidiwch ag Aflonyddu</translation>
 <translation id="7851039877802112575">Symud y ffocws i ffenestri naid a deialog</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Sweipiwch i fyny gyda thri bys i ddechrau'r Trosolwg</translation>
@@ -1589,6 +1595,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7944023924886109030">Gweld yr holl ddigwyddiadau ar gyfer heddiw</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Bysellfwrdd pylu</translation>
+<translation id="7963689218131240420">Mae Peidiwch ag Aflonyddu wedi'i ddiffodd.</translation>
 <translation id="7963992254934562106">Gan <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Dewis ffolder…</translation>
 <translation id="797512352675305461">Troi chwyddwydr sgrîn lawn ymlaen neu ei ddiffodd</translation>
@@ -1841,6 +1848,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9080073830732419341">Mae'r camera wedi'i snapio i'r gornel chwith uchaf</translation>
 <translation id="9080132581049224423">Sweipiwch i fyny i fynd i'r dudalen hafan</translation>
 <translation id="9080206825613744995">Mae'r meicroffon yn cael ei ddefnyddio.</translation>
+<translation id="908451241440060346">Mae hysbysiadau wedi'u distewi pan fydd Peidiwch ag Aflonyddu ymlaen</translation>
 <translation id="9084606467167974638">Toglo safle'r ddewislen</translation>
 <translation id="9085962983642906571">Cedwir eich batri ar 80% pan fo wedi'i blygio i mewn er mwyn ymestyn oes y batri.</translation>
 <translation id="9089416786594320554">Dulliau mewnbynnu</translation>

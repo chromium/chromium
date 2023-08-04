@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে নিজের সম্পর্কে তথ্য, গোপনীয়তা এবং সুরক্ষা ম্যানেজ করতে প্রথমে Tab তারপরে Enter প্রেস করুন</translation>
+<translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> আগে শেষবার ব্যবহার করা হয়েছে</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাজ করা যাবে, বিকল্পগুলি এক এক করে দেখতে ট্যাব টিপুন</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ভার্চুয়াল কার্ডের বিবরণ</translation>
@@ -939,6 +940,7 @@
 <translation id="299990983510665749">হ্যাচব্যাক</translation>
 <translation id="3002501248619246229">ইনপুট ট্রে মিডিয়া চেক করুন</translation>
 <translation id="3005723025932146533">সেভ করা কপি দেখুন</translation>
+<translation id="300580149047131921">সম্প্রতি ব্যবহার করা হয়েছে</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, উপলভ্য অ্যাকশন ব্রাউজ করতে ট্যাব প্রেস করুন, তারপরে বেছে নেওয়া অ্যাকশন এডিট করতে এন্টার প্রেস করুন।</translation>
 <translation id="3013291976881901233">MIDI ডিভাইসগুলি</translation>
 <translation id="3014553260345122294">ব্যবসার খবর</translation>
@@ -2662,6 +2664,7 @@
 <translation id="6671169470640320959">অটো ফাইন্যান্সিং</translation>
 <translation id="6671697161687535275">Chromium থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="6677351035258626477">ফাস্ট ফুড</translation>
+<translation id="6681790815630918386">CVC সেভ করা হয়েছে</translation>
 <translation id="6683022854667115063">হেডফোন</translation>
 <translation id="6683717648675961851">চাকরির তালিকা</translation>
 <translation id="6687230248707087982">এনভেলপ (প্লেইন)</translation>
@@ -3469,6 +3472,7 @@
 <translation id="830498451218851433">অর্ধেক ফোল্ড করুন</translation>
 <translation id="8308653357438598313">লাইভ ভিডিও স্ট্রিমিং</translation>
 <translation id="8311895354659782580">রিয়েল এস্টেটের তালিকা</translation>
+<translation id="8316555157357957253">এখন ব্যবহার করা হচ্ছে</translation>
 <translation id="8317570861267063617">আরও দ্রুত চেক-আউট করতে, নিজের ডিভাইসে এই কার্ডের জন্য CVC সেভ করুন</translation>
 <translation id="8319269383395457801">আবাসন বিক্রি</translation>
 <translation id="831997045666694187">সন্ধ্যা</translation>

@@ -568,6 +568,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="1488724823347505879">Delen van Android-apps naar web-apps aanzetten</translation>
+<translation id="1490962807364514840">Verzamelingssnelheid voor telemetrie voor CPU-runtime-tellers in milliseconden.</translation>
 <translation id="1492223733885011596">Met dit beleid wordt gif-ondersteuning voor de emoji-kiezer aangezet op <ph name="PRODUCT_OS_NAME" />.
 Als je dit beleid toepast, ondersteunt de emoji-kiezer gif-emoji's.
 Als je dit beleid niet toepast of niet instelt, ondersteunt de emoji-kiezer geen gif-emoji's.
@@ -1382,6 +1383,7 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 <translation id="2178899310296064282">Minimaal de gemiddelde 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="2180958780733364832">Gebruik van de stand zonder interface beheer</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden aangezet</translation>
+<translation id="2183338188392346527">Runtime-tellers voor apparaat niet rapporteren</translation>
 <translation id="219297066914002620">Geeft <ph name="PRODUCT_OS_NAME" /> de instructie om consoletools voor het beheer van virtuele machines aan te zetten.
 
       Als het beleid is ingesteld op True of als het niet is ingesteld, kan de gebruiker CLI gebruiken voor VM-beheer.
@@ -3015,6 +3017,9 @@ Als de URI-template een variabele <ph name="HTTP_VARIABLE_DNS" /> bevat, wordt v
 
 In versie 114 en hoger is <ph name="DOH_SALT_POLICY_NAME" /> optioneel als dit beleid is ingesteld.</translation>
 <translation id="3634125384445314047">Recente foto's en video's die op de telefoon zijn gemaakt, toegankelijk maken via Telefoonhub.</translation>
+<translation id="3637063789824963261">Als je het beleid toepast, rapporteren ingeschreven apparaten runtime-tellers voor het apparaat (alleen Intel vPro Gen 14+).
+
+Als je het beleid niet toepast of niet instelt, kunnen ingeschreven apparaten geen runtime-tellers voor het apparaat registreren of rapporteren.</translation>
 <translation id="3642557248926713561">Safe Browsing-extensiebeveiliging uitzetten</translation>
 <translation id="3644735978203799620">Zet automatisch selecteren aan voor opnamen van meerdere schermen</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
@@ -3573,6 +3578,9 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 
 Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersgebaar vereist om deze API aan te roepen.</translation>
 <translation id="4115501011761259824">First-Party Sets aanzetten voor alle betrokken gebruikers</translation>
+<translation id="4120401094617902941">Snelheid waarmee runtime-tellers worden bemonsterd en verzameld. Het toegestane minimum is 1 dag.
+
+Als je dit niet instelt, is de standaardsnelheid van 1 dag van toepassing.</translation>
 <translation id="4121350739760194865">Voorkomen dat app-promoties worden weergegeven op de pagina 'Nieuw tabblad'</translation>
 <translation id="4122473079291425973">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
 <translation id="4122565688998751716">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
@@ -5523,6 +5531,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 <translation id="5979376378555121803">Gehoste app</translation>
 <translation id="5984099692320899605">NTLM-verificatie niet gebruiken</translation>
 <translation id="5984237109586500246">Webcontent accepteren die wordt geleverd als Signed HTTP Exchanges</translation>
+<translation id="5987654816293745077">Runtime-tellers voor apparaat rapporteren</translation>
 <translation id="5991707691018985057">Annuleringsdialoogvenster tonen als event.preventDefault() wordt aangeroepen voor de beforeunload-gebeurtenis. Annuleringsdialoogvenster niet tonen als event.returnValue de lege tekenreeks voor de beforeunload-gebeurtenis is.</translation>
 <translation id="5994438001592408007">Glanceables staan aan voor gebruikers.</translation>
 <translation id="5997543603646547632">Klok met 24-uursnotatie standaard gebruiken</translation>

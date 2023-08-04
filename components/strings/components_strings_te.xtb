@@ -410,6 +410,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయడం కోసం Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
+<translation id="1793631236004319016">చివరిగా <ph name="NUM_HOURS_MINUTES_SECONDS" /> క్రితం ఉపయోగించడం జరిగింది</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, పలు చర్యలు అందుబాటులో ఉన్నాయి, వాటిలో దేనిని అయినా ఎంచుకోవడానికి 'Tab'ను నొక్కండి</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">వర్చువల్ కార్డ్ వివరాలు</translation>
@@ -569,6 +570,7 @@
 <translation id="2149968176347646218">కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="2152495481414285304">యాప్‌లు</translation>
 <translation id="2153609454945889823">Google Play Services for ARను ఇన్‌స్టాల్ చేయాలా?</translation>
+<translation id="2154144347038514978">మీ పరికరంలో ఆటోమేటిక్‌గా ఆన్ అయ్యే ఫీచర్</translation>
 <translation id="2154484045852737596">కార్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2154739667870063220">రీబూట్ చేయండి</translation>
 <translation id="2155260325161282517">5 x 7 అంగుళాలు</translation>
@@ -940,6 +942,7 @@
 <translation id="299990983510665749">హ్యాచ్‌బ్యాక్‌లు</translation>
 <translation id="3002501248619246229">ఇన్‌పుట్ ట్రే మీడియాను చెక్ చేయండి</translation>
 <translation id="3005723025932146533">సేవ్ చేయబడిన కాపీని చూపు</translation>
+<translation id="300580149047131921">ఇటీవలే ఉపయోగించబడింది</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, అందుబాటులో ఉన్న చర్యలను బ్రౌజ్ చేయడానికి ట్యాబ్‌ను నొక్కండి, ఆపై ఎంచుకున్న చర్యను అమలు చేయడానికి ఎంటర్ చేయండి.</translation>
 <translation id="3013291976881901233">MIDI పరికరాలు</translation>
 <translation id="3014553260345122294">బిజినెస్ వార్తలు</translation>
@@ -2664,6 +2667,7 @@
 <translation id="6671169470640320959">ఆటో ఫైనాన్సింగ్</translation>
 <translation id="6671697161687535275">Chromium నుండి ఫారమ్ సూచనను తీసివేయాలా?</translation>
 <translation id="6677351035258626477">ఫాస్ట్ ఫుడ్</translation>
+<translation id="6681790815630918386">CVC సేవ్ అయింది</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
 <translation id="6683717648675961851">ఉద్యోగ లిస్టింగ్‌లు</translation>
 <translation id="6687230248707087982">ఎన్వలప్ (ప్లెయిన్)</translation>
@@ -2911,6 +2915,7 @@
 <translation id="7186833457841277072">ఎన్వలప్ (ఇంక్‌జెట్)</translation>
 <translation id="7186840261985974511">ఎన్వలప్ #12</translation>
 <translation id="718872491229180389">చీర్‌లీడింగ్</translation>
+<translation id="7188840756966467339">రీస్టార్ట్ చేసి, పాలసీలను వర్తింపజేయండి</translation>
 <translation id="7192188280913829296">"vendor_id" లక్షణం కూడా తప్పనిసరిగా పేర్కొనబడాలి.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> స్టోరేజీని ఖాళీ చేస్తుంది. కొన్ని సైట్‌లను మీరు తర్వాతిసారి సందర్శించినప్పుడు అవి మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
 <translation id="7192537357091279678">కంప్యూటర్ డ్రైవ్‌లు &amp; స్టోరేజ్</translation>
@@ -3009,6 +3014,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">'లింక్‌ను షేర్ చేయడం', 'QR కోడ్‌ను క్రియేట్ చేయడం', 'కాస్ట్ చేయడం' ఇంకా మరెన్నో ఆప్షన్‌ల ద్వారా ఈ ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="7403591733719184120">మీ <ph name="DEVICE_NAME" /> నిర్వహించబడుతోంది</translation>
+<translation id="7405878640835614059">అదనపు ఫంక్షన్‌ల కోసం <ph name="ENROLLMENT_DOMAIN" /> అప్లికేషన్‌లను ఇన్‌స్టాల్ చేసింది. మీ డేటాలో కొంత భాగానికి ఎక్స్‌టెన్షన్‌లకు యాక్సెస్ ఉంటుంది.</translation>
 <translation id="7407424307057130981">&lt;p&gt;మీ Windows కంప్యూటర్‌లో Superfish సాఫ్ట్‌వేర్ ఉన్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
       &lt;p&gt;మీరు వెబ్‌లోకి వెళ్లడం కోసం, సాఫ్ట్‌వేర్‌ను తాత్కాలికంగా నిలిపివేయడానికి ఈ దశలను అనుసరించండి. మీ వద్ద నిర్వాహకుడి స్థాయి అధికారాలు ఉండాలి.&lt;/p&gt;
       &lt;ol&gt;
@@ -3471,6 +3477,7 @@
 <translation id="830498451218851433">సగం ఫోల్డ్</translation>
 <translation id="8308653357438598313">లైవ్ వీడియో స్ట్రీమింగ్</translation>
 <translation id="8311895354659782580">రియల్ ఎస్టేట్ లిస్టింగ్‌లు</translation>
+<translation id="8316555157357957253">ఇప్పుడు ఉపయోగిస్తోంది</translation>
 <translation id="8317570861267063617">వేగవంతమైన చెక్ అవుట్ కోసం, CVCని మీ పరికరంలో ఈ కార్డ్ కోసం సేవ్ చేయండి</translation>
 <translation id="8319269383395457801">ఇళ్ల సేల్స్</translation>
 <translation id="831997045666694187">సాయంత్రం</translation>
@@ -3487,6 +3494,7 @@
 <translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>
 <translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>
 <translation id="835203957414790336">మీరు ప్రింట్ చేసే పేజీల కంటెంట్, మీ ప్రింటర్ గురించిన సమాచారం, విశ్లేషణ కోసం Google Cloud లేదా థర్డ్-పార్టీలకు పంపబడుతుంది. ఉదాహరణకు, ఇది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు.</translation>
+<translation id="8352849934814541340">ఈ పరికర అడ్మినిస్ట్రేటర్ అదనపు ఫంక్షన్‌ల కోసం అప్లికేషన్‌లను ఇన్‌స్టాల్ చేశారు. మీ డేటాలో కొంత భాగానికి ఎక్స్‌టెన్షన్‌లకు యాక్సెస్ ఉంటుంది.</translation>
 <translation id="8355270400102541638">స్థానిక క్రాష్ సందర్భం:</translation>
 <translation id="8363502534493474904">ఎయిర్‌ప్లైన్ మోడ్‌ను ఆఫ్ చేయడం</translation>
 <translation id="8364627913115013041">సెట్ చేయలేదు.</translation>
@@ -3735,6 +3743,7 @@
 <translation id="8903921497873541725">దగ్గరికి జూమ్ చేయి</translation>
 <translation id="890493561996401738">సూచన బటన్‌ను తీసివేయండి, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />ను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="8910898109640902752">8 x 10 అం.</translation>
+<translation id="8918062451146297192">వర్చువల్ కార్డ్ కోసం CVC</translation>
 <translation id="8919740778133505789">స్పోర్ట్స్ కార్‌లు</translation>
 <translation id="8919895429178014996">ఐటెమ్‌లన్నింటిని దాచండి</translation>
 <translation id="8922013791253848639">ప్రకటనలను ఈ సైట్‌లో ఎప్పుడూ అనుమతించండి</translation>

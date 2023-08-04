@@ -141,6 +141,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nombre de escritorio</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las aplicaciones y sitios web con los permisos de cámara y micrófono. Es posible que tengas que actualizar la página web o reiniciar la aplicación.</translation>
+<translation id="1571697193564730395">Activa o desactiva No molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Reducir cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir a un escritorio del 1 al 8</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
@@ -579,6 +580,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3563775809269155755">Compartir Internet</translation>
 <translation id="3566240529365775567">Abierto hace un momento</translation>
 <translation id="3571734092741541777">Configurar</translation>
+<translation id="3572988532398145777">No podrás desplegar la notificación mientras haya un panel abierto. Cierra el panel de abajo primero.</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
@@ -688,6 +690,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3990002060657467458">Los controles utilizados con frecuencia, como la conexión Wi-Fi, el Bluetooth y el volumen, están en Ajustes rápidos, donde también puedes hacer capturas de pantalla.</translation>
 <translation id="3995138139523574647">Dispositivo USB tipo C (puerto trasero derecho)</translation>
 <translation id="40062176907008878">Escritura a mano</translation>
+<translation id="4011112806063830608">No molestar está activado.</translation>
 <translation id="4017989525502048489">Puntero láser</translation>
 <translation id="401993194061514265">Rotulador no disponible. Vuelve a abrir Grabación de pantalla.</translation>
 <translation id="4021716437419160885">Desplazarse hacia abajo</translation>
@@ -721,6 +724,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4146833061457621061">Pon música</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4165275524535002941">El cable no es compatible con las pantallas</translation>
+<translation id="4177415338862979658">Haz clic para consultar información detallada</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 día}other{Actualiza el dispositivo en un plazo de # días}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4185671786623711291">Mover ventana activa al escritorio de la derecha</translation>
@@ -1439,6 +1443,7 @@ Nueva instalación</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
 <translation id="7313193732017069507">Ampliar cámara</translation>
+<translation id="7316261577130609484">Añadir tarea nueva</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
@@ -1591,6 +1596,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7944023924886109030">Ver todos los eventos de hoy</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenuar la luz del teclado</translation>
+<translation id="7963689218131240420">No molestar está desactivado.</translation>
 <translation id="7963992254934562106">Desde <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta...</translation>
 <translation id="797512352675305461">Activar o desactivar lupa a pantalla completa</translation>
@@ -1843,6 +1849,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="9080073830732419341">Cámara ajustada a la esquina superior izquierda</translation>
 <translation id="9080132581049224423">Desliza el dedo hacia arriba para ir a la página principal</translation>
 <translation id="9080206825613744995">El micrófono se está utilizando.</translation>
+<translation id="908451241440060346">Las notificaciones se silencian cuando No molestar está activada</translation>
 <translation id="9084606467167974638">Alternar la posición del menú</translation>
 <translation id="9085962983642906571">La batería se mantendrá al 80 % mientras esté enchufada para ampliar su duración.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>

@@ -565,6 +565,7 @@
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
+<translation id="1490962807364514840">CPU 运行时计数器遥测数据收集时间间隔（以毫秒为单位）。</translation>
 <translation id="1492223733885011596">此政策可为 <ph name="PRODUCT_OS_NAME" /> 上的表情符号选择器启用 GIF 支持。
 如果已启用此政策，表情符号选择器将支持 GIF 表情符号。
 如果已停用或未设置此政策，表情符号选择器将不支持 GIF 表情符号。
@@ -1373,6 +1374,7 @@
 <translation id="2178899310296064282">至少强制启用 YouTube“适中”受限模式</translation>
 <translation id="2180958780733364832">控制对无头模式的使用权限</translation>
 <translation id="2182291258410176649">用户可决定是否启用备份和恢复服务</translation>
+<translation id="2183338188392346527">不报告设备运行时计数器数据</translation>
 <translation id="219297066914002620">指示 <ph name="PRODUCT_OS_NAME" />启用或停用虚拟机管理控制台工具。
 
       如果此政策设为 true 或未设置，用户将能使用虚拟机管理 CLI。
@@ -3003,6 +3005,9 @@
 
 在 114 版及更高版本中，如果此政策已设置，<ph name="DOH_SALT_POLICY_NAME" /> 是可选的。</translation>
 <translation id="3634125384445314047">允许通过 Phone Hub 访问手机上近期拍摄的照片和视频。</translation>
+<translation id="3637063789824963261">如果此政策已启用，已注册的设备会报告设备运行时计数器数据（仅限 Intel vPro 第 14 代处理器及更高版本）。
+
+如果此政策已停用或未设置，已注册的设备将不会记录或报告设备运行时计数器数据。</translation>
 <translation id="3642557248926713561">停用安全浏览扩展程序保护功能</translation>
 <translation id="3644735978203799620">允许自动选择多个屏幕截图</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
@@ -3561,6 +3566,9 @@
 
 如果不设置此政策，所有源都将需要之前的用户手势才能调用此 API。</translation>
 <translation id="4115501011761259824">对所有受影响客户启用 First-Party Sets 功能</translation>
+<translation id="4120401094617902941">对运行时计数器进行数据采样和收集的时间间隔。所允许的最短时间间隔为 1 天。
+
+如果此政策未设置，系统会应用默认时间间隔（1 天）。</translation>
 <translation id="4121350739760194865">阻止在新标签页上显示应用宣传信息</translation>
 <translation id="4122473079291425973">“新标签页”页面会显示卡片（若有可用内容），但用户可以更改此设置</translation>
 <translation id="4122565688998751716">此政策已被弃用，请改用“<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />”政策。
@@ -5510,6 +5518,7 @@
 <translation id="5979376378555121803">托管应用程序</translation>
 <translation id="5984099692320899605">不使用 NTLM 身份验证</translation>
 <translation id="5984237109586500246">接受通过 Signed HTTP Exchange (SXG) 提供的网络内容</translation>
+<translation id="5987654816293745077">报告设备运行时计数器数据</translation>
 <translation id="5991707691018985057">针对 beforeunload 事件调用 event.preventDefault() 时显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，不显示取消对话框。</translation>
 <translation id="5994438001592408007">已为用户启用 Glanceables。</translation>
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>

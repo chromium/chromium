@@ -409,6 +409,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google ကစမတ်သော့ခတ်</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="1793631236004319016">ပြီးခဲ့သော <ph name="NUM_HOURS_MINUTES_SECONDS" /> က သုံးထားသည်</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လုပ်ဆောင်ချက် အများအပြား ရရှိနိုင်သည်၊ ၎င်းတို့ကိုပတ်ကြည့်ရန် Tab နှိပ်ပါ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ပကတိအသွင်ကတ် အသေးစိတ်</translation>
@@ -566,7 +567,9 @@
 <translation id="2148613324460538318">ကတ်ထည့်ရန်…</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2149968176347646218">ချိတ်ဆက်မှုသည် မလုံခြုံပါ</translation>
+<translation id="2152495481414285304">အပလီကေးရှင်းများ</translation>
 <translation id="2153609454945889823">AR အတွက် Google Play ဝန်ဆောင်မှုများကို ထည့်သွင်းမလား။</translation>
+<translation id="2154144347038514978">သင့်စက်ပေါ်တွင် အလိုအလျောက် စတင်ခြင်း</translation>
 <translation id="2154484045852737596">ကတ်ကို တည်းဖြတ်ပါ</translation>
 <translation id="2154739667870063220">ပြန်လည်စတင်ရန်</translation>
 <translation id="2155260325161282517">၅ x ၇ လက်မ</translation>
@@ -942,6 +945,7 @@
 <translation id="299990983510665749">နောက်ဖုံးဖွင့်ကားများ</translation>
 <translation id="3002501248619246229">ထည့်သွင်းသည့်ဗန်းရှိ မီဒီယာကို စစ်ဆေးပါ</translation>
 <translation id="3005723025932146533">သိမ်းထားသည့် မိတ္တူကိုပြပါ</translation>
+<translation id="300580149047131921">မကြာသေးမီက သုံးထားသည်</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ရနိုင်သောလုပ်ဆောင်ချက်များ ကြည့်ရန် ‘တဘ်’ ကိုနှိပ်ပြီး ရွေးထားသောလုပ်ဆောင်ချက်ကို ဆောင်ရွက်ရန် Enter နှိပ်ပါ။</translation>
 <translation id="3013291976881901233">MIDI စက်ပစ္စည်းများ</translation>
 <translation id="3014553260345122294">စီးပွားရေးသတင်း</translation>
@@ -2661,6 +2665,7 @@
 <translation id="6671169470640320959">ကားဝယ် ကားငှားရန် ငွေချေးခြင်း</translation>
 <translation id="6671697161687535275">Chromium ထဲမှ ပုံစံအကြံပြုချက်ကို ဖယ်ရှားရမလား။</translation>
 <translation id="6677351035258626477">အမြန်ပြင် အစားအသောက်</translation>
+<translation id="6681790815630918386">CVC သိမ်းလိုက်သည်</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
 <translation id="6683717648675961851">အလုပ်အကိုင် စာရင်းများ</translation>
 <translation id="6687230248707087982">စာအိတ် (အလွတ်)</translation>
@@ -2908,6 +2913,7 @@
 <translation id="7186833457841277072">စာအိတ် (အင့်ဂျက်)</translation>
 <translation id="7186840261985974511">#12 စာအိတ်</translation>
 <translation id="718872491229180389">အားပေးရန် စည်းရုံးခြင်း</translation>
+<translation id="7188840756966467339">ပြန်စပြီး မူဝါဒများ အသုံးချရန်</translation>
 <translation id="7192188280913829296">ရည်ညွှန်းချက် "vendor_id" ကိုလည်း သတ်မှတ်ရမည်။</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> နေရာလွတ်အောင်လုပ်ပါ။ နောက်တစ်ကြိမ် ဝင်ကြည့်သည့်အခါတွင် အချို့ဝဘ်ဆိုက်များက ပိုနှေးနေနိုင်ပါသည်။</translation>
 <translation id="7192537357091279678">ကွန်ပျူတာ စက်ပစ္စည်းနှင့် သိုလှောင်ခန်း</translation>
@@ -3007,6 +3013,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကို မျှဝေနိုင်သည်</translation>
 <translation id="7403591733719184120">သင်၏ <ph name="DEVICE_NAME" /> ကို စီမံခန့်ခွဲထားပါသည်</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> က ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် အပလီကေးရှင်းများ ထည့်သွင်းထားသည်။ အပလီကေးရှင်းများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="7407424307057130981">&lt;p&gt;သင်၏ Windows ကွန်ပျူတာပေါ်တွင် Superfish ဆော့ဖ်ဝဲရှိနေလျှင် ဤအမှားအယွင်းကို တွေ့ရပါမည်။&lt;/p&gt;
     &lt;p&gt;ဝဘ်သို့ ချိတ်ဆက်နိုင်ရန်အတွက် ဆော့ဖ်ဝဲကို ယာယီပိတ်ရန် ဤအဆင့်များအတိုင်း လုပ်ဆောင်ပါ။ စီမံခန့်ခွဲသူ လုပ်ပိုင်ခွင့်များ လိုအပ်ပါမည်။&lt;/p&gt;
     &lt;ol&gt;
@@ -3470,6 +3477,7 @@
 <translation id="830498451218851433">တစ်ဝက် ခေါက်ရန်</translation>
 <translation id="8308653357438598313">ဗီဒီယိုတိုက်ရိုက်လွှင့်ခြင်း</translation>
 <translation id="8311895354659782580">အိမ်ခြံမြေစာရင်း</translation>
+<translation id="8316555157357957253">ယခု သုံးနေသည်</translation>
 <translation id="8317570861267063617">အမြန်ငွေရှင်းနိုင်ရန် ဤကတ်အတွက် CVC နံပါတ်ကို သင့်စက်တွင် သိမ်းနိုင်သည်</translation>
 <translation id="8319269383395457801">လူနေရပ်ကွက်တွင်းအိမ် အရောင်း</translation>
 <translation id="831997045666694187">ညနေ</translation>
@@ -3486,6 +3494,7 @@
 <translation id="8349305172487531364">စာညှပ် ဘား</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="835203957414790336">သင်ပုံနှိပ်ထုတ်လိုက်သော စာမျက်နှာများ၏အကြောင်းအရာနှင့် သင့်ပရင်တာအကြောင်းကို စိတ်ဖြာလေ့လာရန် Google Cloud (သို့) ပြင်ပအဖွဲ့အစည်းသို့ ပို့လိုက်သည်။ ဥပမာ သတိထားရမည့်ဒေတာ ရှိ၊ မရှိ ၎င်းကို စစ်ဆေးနိုင်သည်။</translation>
+<translation id="8352849934814541340">ဤစက်၏ စီမံခန့်ခွဲသူက ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် အပလီကေးရှင်းများ ထည့်သွင်းထားသည်။ အပလီကေးရှင်းများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="8355270400102541638">စက်တွင်း ရပ်တန့်သွားမှု အခြေအနေ-</translation>
 <translation id="8363502534493474904">လေယာဉ်ပျံမုဒ်ကို ပိတ်နေသည်</translation>
 <translation id="8364627913115013041">မသတ်မှတ်ရသေး</translation>
@@ -3734,6 +3743,7 @@
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
 <translation id="890493561996401738">'အကြံပြုချက်' ခလုတ်ကို ဖယ်ရှားခြင်း၊ ဖယ်ရှားရန် Enter ကို နှိပ်ပါ၊ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">၈ x ၁၀ လက်မ</translation>
+<translation id="8918062451146297192">ပကတိအသွင်ကတ်အတွက် CVC</translation>
 <translation id="8919740778133505789">ပြိုင်ကား ငှားရမ်းခြင်း</translation>
 <translation id="8919895429178014996">ဖိုင်အားလုံး ဖျောက်ထားရန်</translation>
 <translation id="8922013791253848639">ဤဝဘ်ဆိုက်တွင် ကြော်ငြာများကို အမြဲတမ်း ခွင့်ပြုရန်</translation>

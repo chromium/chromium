@@ -568,6 +568,7 @@
 <translation id="2149968176347646218">연결이 안전하지 않음</translation>
 <translation id="2152495481414285304">애플리케이션</translation>
 <translation id="2153609454945889823">Google Play AR 서비스를 설치하시겠습니까?</translation>
+<translation id="2154144347038514978">기기에서 자동으로 시작하기</translation>
 <translation id="2154484045852737596">카드 수정</translation>
 <translation id="2154739667870063220">재부팅</translation>
 <translation id="2155260325161282517">5x7인치</translation>
@@ -2912,6 +2913,7 @@
 <translation id="7186833457841277072">봉투(잉크젯)</translation>
 <translation id="7186840261985974511">봉투 #12</translation>
 <translation id="718872491229180389">치어리딩</translation>
+<translation id="7188840756966467339">정책 다시 시작 및 적용</translation>
 <translation id="7192188280913829296">'vendor_id' 속성도 지정해야 합니다.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" />의 저장용량을 확보합니다. 일부 사이트는 다음에 방문할 때 로드 속도가 느려질 수도 있습니다.</translation>
 <translation id="7192537357091279678">컴퓨터 드라이브 및 저장장치</translation>
@@ -3010,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭 공유</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> 기기는 관리 대상 기기입니다</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" />에서 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows 컴퓨터에 Superfish 소프트웨어가 있으면 이 오류가 표시됩니다.&lt;/p&gt;
       &lt;p&gt;소프트웨어를 일시적으로 사용 중지하여 웹에 접속하려면 다음 단계를 따르세요. 관리자 권한이 필요합니다.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3491,7 @@
 <translation id="8349305172487531364">북마크바</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="835203957414790336">인쇄하는 페이지의 콘텐츠와 프린터 정보가 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있습니다.</translation>
+<translation id="8352849934814541340">이 기기의 관리자가 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
 <translation id="8364627913115013041">설정 안됨</translation>
@@ -3736,6 +3740,7 @@
 <translation id="8903921497873541725">확대</translation>
 <translation id="890493561996401738">추천 삭제 버튼, Enter 키를 눌러 삭제, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10인치</translation>
+<translation id="8918062451146297192">가상 카드용 CVC</translation>
 <translation id="8919740778133505789">스포츠카</translation>
 <translation id="8919895429178014996">모든 항목 숨기기</translation>
 <translation id="8922013791253848639">이 사이트의 광고 항상 허용</translation>

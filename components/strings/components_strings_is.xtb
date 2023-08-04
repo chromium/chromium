@@ -408,6 +408,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo á Enter til að stjórna upplýsingum, persónuvernd og öryggi á Google reikningnum þínum</translation>
+<translation id="1793631236004319016">Síðast notað fyrir <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, margar aðgerðir eru í boði, ýttu á Tab til að fletta í gegnum þær</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Upplýsingar um sýndarkort</translation>
@@ -937,6 +938,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="299990983510665749">Hlaðbakar</translation>
 <translation id="3002501248619246229">Athuga miðil í innbakka</translation>
 <translation id="3005723025932146533">Sýna vistað afrit</translation>
+<translation id="300580149047131921">Notað nýlega</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn til að skoða hvaða aðgerðir eru í boði og síðan á Enter til að framkvæma valda aðgerð.</translation>
 <translation id="3013291976881901233">MIDI-tæki</translation>
 <translation id="3014553260345122294">Viðskiptafréttir</translation>
@@ -2661,6 +2663,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6671169470640320959">Bílafjármögnun</translation>
 <translation id="6671697161687535275">Fjarlægja eyðublaðstillögu úr Chromium?</translation>
 <translation id="6677351035258626477">Skyndibiti</translation>
+<translation id="6681790815630918386">CVC-númer vistað</translation>
 <translation id="6683022854667115063">Heyrnartól</translation>
 <translation id="6683717648675961851">Atvinnuauglýsingar</translation>
 <translation id="6687230248707087982">Umslag (venjulegt)</translation>
@@ -3468,6 +3471,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="830498451218851433">Brotið í miðju</translation>
 <translation id="8308653357438598313">Myndstraumur í beinni</translation>
 <translation id="8311895354659782580">Fasteignaauglýsingar</translation>
+<translation id="8316555157357957253">Í notkun núna</translation>
 <translation id="8317570861267063617">Vistaðu CVC-númer kortsins í tækinu til að flýta fyrir greiðslu</translation>
 <translation id="8319269383395457801">Sala íbúðarhúsnæðis</translation>
 <translation id="831997045666694187">Kvöld</translation>
