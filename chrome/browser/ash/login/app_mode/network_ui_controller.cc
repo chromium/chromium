@@ -69,7 +69,7 @@ namespace ash {
 NetworkUiController::NetworkUiController(
     Observer& observer,
     LoginDisplayHost* host,
-    AppLaunchSplashScreenView* splash_screen,
+    AppLaunchSplashScreenView& splash_screen,
     std::unique_ptr<NetworkMonitor> network_monitor)
     : observer_(observer),
       host_(host),
@@ -117,10 +117,6 @@ void NetworkUiController::OnNetworkLostDuringInstallation() {
 }
 
 void NetworkUiController::InitializeNetwork() {
-  if (!splash_screen_view_) {
-    return;
-  }
-
   network_ui_state_ = NetworkUIState::kWaitingForNetwork;
 
   network_wait_timer_.Start(FROM_HERE, g_network_wait_time, this,
@@ -215,10 +211,6 @@ bool NetworkUiController::IsNetworkReady() const {
 
 void NetworkUiController::MaybeShowNetworkConfigureUI() {
   SYSLOG(INFO) << "Network configure UI was requested to be shown.";
-  if (!splash_screen_view_) {
-    return;
-  }
-
   if (!CanConfigureNetwork()) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kNetworkWaitTimeout);

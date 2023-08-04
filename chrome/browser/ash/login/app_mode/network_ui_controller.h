@@ -67,7 +67,7 @@ class NetworkUiController
 
   NetworkUiController(Observer& observer,
                       LoginDisplayHost* host,
-                      AppLaunchSplashScreenView* splash_screen,
+                      AppLaunchSplashScreenView& splash_screen,
                       std::unique_ptr<NetworkMonitor> network_monitor);
   NetworkUiController(const NetworkUiController&) = delete;
   NetworkUiController& operator=(const NetworkUiController&) = delete;
@@ -112,7 +112,7 @@ class NetworkUiController
 
   const raw_ref<Observer> observer_;
   const raw_ptr<LoginDisplayHost> host_;
-  const raw_ptr<AppLaunchSplashScreenView> splash_screen_view_;
+  const raw_ref<AppLaunchSplashScreenView> splash_screen_view_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<NetworkMonitor> network_monitor_;
 

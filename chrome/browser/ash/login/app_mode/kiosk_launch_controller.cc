@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -284,11 +285,11 @@ KioskLaunchController::KioskLaunchController(
     : host_(host),
       splash_screen_view_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
-      network_ui_controller_(
-          std::make_unique<NetworkUiController>(*this,
-                                                host_,
-                                                splash_screen_view_,
-                                                std::move(network_monitor))) {
+      network_ui_controller_(std::make_unique<NetworkUiController>(
+          *this,
+          host_,
+          CHECK_DEREF(splash_screen_view_.get()),
+          std::move(network_monitor))) {
   if (!host_) {
     CHECK_IS_TEST();
   }
