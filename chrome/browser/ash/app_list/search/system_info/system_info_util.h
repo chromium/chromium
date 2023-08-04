@@ -67,9 +67,6 @@ void PopulateBatteryHealth(
     const ash::cros_healthd::mojom::BatteryInfo& battery_info,
     BatteryHealth& battery_health);
 
-std::u16string CalculatePowerTime(
-    const power_manager::PowerSupplyProperties& proto);
-
 void PopulatePowerStatus(
     const power_manager::PowerSupplyProperties& power_supply_properties,
     BatteryHealth& battery_health);

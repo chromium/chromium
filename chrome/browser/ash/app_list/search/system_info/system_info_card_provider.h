@@ -42,8 +42,10 @@ class SystemInfoCardProvider : public SearchProvider,
   // cpu usage of the device.
   class CpuDataObserver : public base::CheckedObserver {
    public:
-    virtual void OnCpuDataUpdated(const std::u16string& title,
-                                  const std::u16string& description) = 0;
+    virtual void OnCpuDataUpdated(
+        const std::u16string& title,
+        const std::u16string& description,
+        const std::u16string& accessibility_label) = 0;
   };
 
   // Implemented by clients that wish to be updated periodically about the
@@ -51,7 +53,8 @@ class SystemInfoCardProvider : public SearchProvider,
   class MemoryObserver : public base::CheckedObserver {
    public:
     virtual void OnMemoryUpdated(const double memory_usage_percentage,
-                                 const std::u16string& description) = 0;
+                                 const std::u16string& description,
+                                 const std::u16string& accessibility_label) = 0;
   };
 
   explicit SystemInfoCardProvider(Profile* profile);

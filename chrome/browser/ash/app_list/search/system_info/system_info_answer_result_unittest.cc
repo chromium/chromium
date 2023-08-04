@@ -50,7 +50,10 @@ TEST_F(SystemInfoAnswerResultTest, version) {
       profile_.get(), u"query", "path", GetTestIcon(), 0.8,
       u"Version 108.0.5359.37 (Official Build) beta (64-bit)",
       u"Click here to check for updates",
-      SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info);
+      u"Current version 108.0.5359.37 (Official Build) beta (64-bit). Click "
+      u"to check for details",
+      SystemInfoAnswerResult::SystemInfoCategory::kSettings,
+      SystemInfoAnswerResult::SystemInfoCardType::kVersion, answer_card_info);
   EXPECT_EQ(result.id(), "os-settings://path");
   EXPECT_EQ(result.display_type(), DisplayType::kAnswerCard);
   EXPECT_EQ(result.category(), Category::kSettings);
@@ -64,8 +67,10 @@ TEST_F(SystemInfoAnswerResultTest, version) {
   EXPECT_EQ(result.system_info_answer_card_data()->display_type,
             ash::SystemInfoAnswerCardDisplayType::kTextCard);
   EXPECT_EQ(result.accessible_name(),
-            u"Version 108.0.5359.37 (Official Build) beta (64-bit), Click here "
-            u"to check for updates");
+            u"Showing OS version information. Current version 108.0.5359.37 "
+            u"(Official "
+            u"Build) beta (64-bit). Click "
+            u"to check for details. Select to open Settings page.");
 
   ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];
@@ -86,8 +91,9 @@ TEST_F(SystemInfoAnswerResultTest, memory) {
   SystemInfoAnswerResult result(
       profile_.get(), u"query", "", GetTestIcon(), 0.8, u"",
       u"5.16 GB of 15.52 GB available",
+      u"Memory 5.16 GB available out of 15.52 GB total",
       SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
-      answer_card_info);
+      SystemInfoAnswerResult::SystemInfoCardType::kMemory, answer_card_info);
   EXPECT_EQ(result.id(), kChromeUIDiagnosticsAppUrl);
   EXPECT_EQ(result.display_type(), DisplayType::kAnswerCard);
   EXPECT_EQ(result.category(), Category::kSettings);
@@ -101,7 +107,9 @@ TEST_F(SystemInfoAnswerResultTest, memory) {
   EXPECT_EQ(result.system_info_answer_card_data()->display_type,
             ash::SystemInfoAnswerCardDisplayType::kBarChart);
   EXPECT_EQ(result.system_info_answer_card_data()->bar_chart_percentage, 54.8);
-  EXPECT_EQ(result.accessible_name(), u"5.16 GB of 15.52 GB available");
+  EXPECT_EQ(result.accessible_name(),
+            u"Showing memory information. Memory 5.16 GB available out of "
+            u"15.52 GB total. Select to open Diagnostics app.");
 
   ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];

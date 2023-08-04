@@ -22,6 +22,10 @@ class BatteryHealth {
   void SetPowerTime(const std::u16string& power_time) {
     power_time_ = power_time;
   }
+  void SetAccessibilityLabel(const std::u16string& accessibility_label) {
+    accessibility_label_ = accessibility_label;
+  }
+
   void SetBatteryPercentage(int battery_percentage) {
     battery_percentage_ = battery_percentage;
   }
@@ -29,12 +33,14 @@ class BatteryHealth {
   int GetCycleCount() const { return cycle_count_; }
   int GetBatteryWearPercentage() const { return battery_wear_percentage_; }
   std::u16string GetPowerTime() const { return power_time_; }
+  std::u16string GetAccessibilityLabel() const { return accessibility_label_; }
   int GetBatteryPercentage() const { return battery_percentage_; }
 
  private:
   int cycle_count_ = 0;
   int battery_wear_percentage_ = 0;
   std::u16string power_time_ = u"";
+  std::u16string accessibility_label_ = u"";
   int battery_percentage_ = 0;
 };
 

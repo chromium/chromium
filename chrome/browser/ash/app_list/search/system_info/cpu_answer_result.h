@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_ANSWER_RESULT_H_
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 
@@ -25,7 +23,9 @@ class CpuAnswerResult : public SystemInfoAnswerResult,
                   double relevance_score,
                   const std::u16string& title,
                   const std::u16string& description,
+                  const std::u16string& accessibility_label,
                   SystemInfoCategory system_info_category,
+                  SystemInfoCardType system_info_card_type,
                   const ash::SystemInfoAnswerCardData& answer_card_info,
                   SystemInfoCardProvider::UpdateCpuResultCallback callback,
                   std::unique_ptr<base::RepeatingTimer> timer,
@@ -37,7 +37,8 @@ class CpuAnswerResult : public SystemInfoAnswerResult,
   CpuAnswerResult& operator=(const CpuAnswerResult& other) = delete;
 
   void OnCpuDataUpdated(const std::u16string& title,
-                        const std::u16string& description) override;
+                        const std::u16string& description,
+                        const std::u16string& accessibility_label) override;
   void UpdateResult();
 
  private:

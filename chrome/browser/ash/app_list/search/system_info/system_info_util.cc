@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -231,13 +230,14 @@ std::u16string GetBatteryTimeText(base::TimeDelta time_left) {
                                   time_left);
 }
 
-std::u16string CalculatePowerTime(
-    const power_manager::PowerSupplyProperties& proto) {
+void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
+                         BatteryHealth& battery_health) {
   bool charging = proto.battery_state() ==
                   power_manager::PowerSupplyProperties_BatteryState_CHARGING;
   bool calculating = proto.is_calculating_battery_time();
   int percent =
       ash::power_utils::GetRoundedBatteryPercent(proto.battery_percent());
+  DCHECK(percent <= 100 && percent >= 0);
   base::TimeDelta time_left;
   bool show_time = false;
 
@@ -248,25 +248,28 @@ std::u16string CalculatePowerTime(
   }
 
   std::u16string status_text;
+  std::u16string accessibility_string;
   if (show_time) {
     status_text = l10n_util::GetStringFUTF16(
         charging ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_DESCRIPTION_LEFT
                  : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT,
         base::NumberToString16(percent), GetBatteryTimeText(time_left));
+    accessibility_string = l10n_util::GetStringFUTF16(
+        charging
+            ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_ACCESSIBILITY_LABEL
+            : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL,
+        base::NumberToString16(percent), GetBatteryTimeText(time_left));
   } else {
     status_text = l10n_util::GetStringFUTF16(
         IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT_SHORT,
         base::NumberToString16(percent));
+    accessibility_string = l10n_util::GetStringFUTF16(
+        IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL_SHORT,
+        base::NumberToString16(percent));
   }
-  return status_text;
-}
 
-void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
-                         BatteryHealth& battery_health) {
-  int percent =
-      ash::power_utils::GetRoundedBatteryPercent(proto.battery_percent());
-
-  battery_health.SetPowerTime(CalculatePowerTime(proto));
+  battery_health.SetPowerTime(status_text);
+  battery_health.SetAccessibilityLabel(accessibility_string);
   battery_health.SetBatteryPercentage(percent);
 }
 

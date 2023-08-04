@@ -23,7 +23,9 @@ MemoryAnswerResult::MemoryAnswerResult(
     double relevance_score,
     const std::u16string& title,
     const std::u16string& description,
+    const std::u16string& accessibility_label,
     SystemInfoCategory system_info_category,
+    SystemInfoCardType system_info_card_type,
     const AnswerCardInfo& answer_card_info,
     SystemInfoCardProvider::UpdateMemoryResultCallback callback,
     std::unique_ptr<base::RepeatingTimer> timer,
@@ -35,7 +37,9 @@ MemoryAnswerResult::MemoryAnswerResult(
                              relevance_score,
                              title,
                              description,
+                             accessibility_label,
                              system_info_category,
+                             system_info_card_type,
                              answer_card_info),
       callback_(std::move(callback)),
       timer_(std::move(timer)),
@@ -53,9 +57,11 @@ MemoryAnswerResult::~MemoryAnswerResult() {
   }
 }
 
-void MemoryAnswerResult::OnMemoryUpdated(const double memory_usage_percentage,
-                                         const std::u16string& description) {
-  UpdateTitleAndDetails(u"", description);
+void MemoryAnswerResult::OnMemoryUpdated(
+    const double memory_usage_percentage,
+    const std::u16string& description,
+    const std::u16string& accessibility_label) {
+  UpdateTitleAndDetails(u"", description, accessibility_label);
   UpdateBarChartPercentage(memory_usage_percentage);
 }
 

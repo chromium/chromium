@@ -2071,14 +2071,23 @@ Style notes:
       <message name="IDS_ASH_VERSION_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current version in the launcher.">
         Click to check for details
       </message>
+      <message name="IDS_ASH_VERSION_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessibility label of the answer card with the current version in the launcher.">
+        Current version <ph name="VERSION_NAME">$1<ex>109.0.5414.125</ex></ph> (<ph name="OFFICIAL_STATUS">$2<ex>Official Build</ex></ph>) <ph name="CHANNEL_NAME">$3<ex>Beta</ex></ph> <ph name="PROCESSOR_VARIATION">$4<ex>(64-bit)</ex></ph>
+      </message>
       <message name="IDS_ASH_CPU_IN_LAUNCHER_TITLE" desc="Message content for the title of the answer card with the current CPU system information in the launcher.">
         CPU usage snapshot: <ph name="CPU_USEAGE">$1<ex>89</ex></ph>%
       </message>
       <message name="IDS_ASH_CPU_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current CPU system information in the launcher.">
         Temperature: <ph name="TEMPERATURE">$1<ex>34</ex></ph>°C - Current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ">$2<ex>1.52</ex></ph>GHz
       </message>
+      <message name="IDS_ASH_CPU_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessibility label of the answer card with the current CPU system information in the launcher.">
+        CPU usage snapshot, <ph name="CPU_USEAGE">$1<ex>89</ex></ph>%. Temperature <ph name="TEMPERATURE">$2<ex>34</ex></ph> degrees celsius, current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ">$3<ex>1.52</ex></ph>GHz
+      </message>
       <message name="IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current memory usage information in the launcher.">
         Memory <ph name="USED_MEMORY">$1<ex>2.4 GB</ex></ph> | <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
+      </message>
+      <message name="IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessibility label of the answer card with the current memory usage information in the launcher.">
+        Memory <ph name="USED_MEMORY">$1<ex>2.4 GB</ex></ph> available out of <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
       </message>
       <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT_SHORT" desc="Message content for the short description on the left of the battery answer card.">
         Battery <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>%
@@ -2092,8 +2101,50 @@ Style notes:
       <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_RIGHT" desc="Message content for the description on the right of the battery answer card, showing the battery health percentage and the cycle count.">
         Battery health <ph name="BATTERY_HEALTH_PERCENTAGE">$1<ex>97</ex></ph>% | Cycle count <ph name="CYCLE_COUNT">$2<ex>15</ex></ph>
       </message>
+      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL_SHORT" desc="Message content for the accessbility label of the battery answer card while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
+        Current battery level <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>%
+      </message>
+      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessbility label of the battery answer card while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
+        Current battery level <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>%, <ph name="TIME">$2<ex>2 hours and 20 minutes</ex></ph> left
+      </message>
+      <message name="IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessbility label of the battery answer card while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
+        Current battery level <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>%, <ph name="TIME">$2<ex>2 hours and 20 minutes</ex></ph> until full
+      </message>
+      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_EXTRA_DETAILS_ACCESSIBILITY_LABEL" desc="Message content for the accessbility label of the battery answer card while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
+        Battery health <ph name="BATTERY_HEALTH_PERCENTAGE">$1<ex>97</ex></ph>%, cycle count <ph name="CYCLE_COUNT">$2<ex>15</ex></ph>
+      </message>
       <message name="IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the storage answer card, showing the amount of storage currently in use and the total storage size.">
         Storage <ph name="STORAGE_IN_USE_SIZE">$1<ex>65 GB</ex></ph> in use | <ph name="STORAGE_TOTAL_SIZE">$2<ex>124 GB</ex></ph> total
+      </message>
+      <message name="IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessibility label of the storage answer card, showing the amount of storage currently in use and the total storage size.">
+        Storage <ph name="STORAGE_IN_USE_SIZE">$1<ex>65 GB</ex></ph> in use out of <ph name="STORAGE_TOTAL_SIZE">$2<ex>124 GB</ex></ph> total
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_ANSWER_TYPE_IN_LAUNCHER" desc="Beginning of accessibility label for System Info Answer cards.">
+        Showing <ph name="ANSWER_TYPE">$1<ex>Battery</ex></ph> information
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_OPEN_LABEL_IN_LAUNCHER" desc="Section to specify which app opens in the accessibility label for System Info Answer cards.">
+        Select to open <ph name="APP_TO_OPEN">$1<ex>Settings page</ex></ph>.
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_OS_VERSION_LABEL_IN_LAUNCHER" desc="Accessibility string for OS version in System Info Answer cards.">
+        OS version
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_BATTERY_LABEL_IN_LAUNCHER" desc="Accessibility string for battery in System Info Answer cards.">
+        battery
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_MEMORY_LABEL_IN_LAUNCHER" desc="Accessibility string for memory in System Info Answer cards.">
+        memory
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_STORAGE_LABEL_IN_LAUNCHER" desc="Accessibility string for storage in System Info Answer cards.">
+        storage space
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_CPU_LABEL_IN_LAUNCHER" desc="Accessibility string for CPU in System Info Answer cards.">
+        CPU
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_LABEL_DIAGNOSTICS_APP_IN_LAUNCHER" desc="Accessibility string for diagnostics app in System Info Answer cards.">
+        Diagnostics app
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_LABEL_SETTINGS_PAGE_IN_LAUNCHER" desc="Accessibility string for settings page in System Info Answer cards.">
+        Settings page
       </message>
       <message name="IDS_ASH_STORAGE_MANAGEMENT_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage management in launcher search that should trigger a storage answer card result.">
         storage management
