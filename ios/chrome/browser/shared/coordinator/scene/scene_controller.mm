@@ -253,7 +253,7 @@ void InjectNTP(Browser* browser) {
       _policyWatcherObserverBridge;
   // View controller presents the signed in accounts when they have changed
   // while the application was in background.
-  SignedInAccountsViewController* _accountsViewController;
+  SignedInAccountsViewController* _signedInAccountsVC;
   std::unique_ptr<
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
       _incognitoWebStateObserver;
@@ -782,10 +782,16 @@ void InjectNTP(Browser* browser) {
 }
 
 // Displays either the sign-in upgrade promo if it is eligible or the list
-// of signed-in accounts if the user has recently updated their accounts.
+// of signed-in accounts if the user has recently updated their accounts. These
+// two sign-in modal dialog are mutually exclusive (one is presented when the
+// user is signed in to Chrome, the other when the user is signed out of
+// Chrome).
 - (void)tryPresentSigninModalUI {
-  if ([self presentSignInAccountsViewControllerIfNecessary]) {
-    // The user is already signed-in, so do not display the sign-in promo.
+  [self presentSignInAccountsViewControllerIfNecessary];
+  if (_signedInAccountsVC) {
+    // The sign-in upgrade promo cannot be shown when the signed-in accounts
+    // view controller in shown (signed-in accounts view controller in only
+    // presented when the user is signed in to Chrome).
     return;
   }
 
@@ -827,15 +833,27 @@ void InjectNTP(Browser* browser) {
 
 // Present the sign-in accounts view if the accounts have changed while in
 // background.
-- (BOOL)presentSignInAccountsViewControllerIfNecessary {
+- (void)presentSignInAccountsViewControllerIfNecessary {
   ChromeBrowserState* browserState = self.currentInterface.browserState;
   DCHECK(browserState);
-  if ([SignedInAccountsViewController
+
+  if (_signedInAccountsVC ||
+      ![SignedInAccountsViewController
           shouldBePresentedForBrowserState:browserState]) {
-    [self presentSignedInAccountsViewControllerForBrowserState:browserState];
-    return YES;
+    return;
   }
-  return NO;
+
+  // The signed-in view controller needs to be presented.
+  id<ApplicationSettingsCommands> settingsHandler =
+      HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
+                         ApplicationSettingsCommands);
+  _signedInAccountsVC = [[SignedInAccountsViewController alloc]
+      initWithBrowserState:browserState
+                dispatcher:settingsHandler];
+  _signedInAccountsVC.delegate = self;
+  [[self topPresentedViewController] presentViewController:_signedInAccountsVC
+                                                  animated:YES
+                                                completion:nil];
 }
 
 - (void)initializeUI {
@@ -1183,9 +1201,9 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)teardownUI {
-  [_accountsViewController teardownUI];
-  _accountsViewController.delegate = nil;
-  _accountsViewController = nil;
+  [_signedInAccountsVC teardownUI];
+  _signedInAccountsVC.delegate = nil;
+  _signedInAccountsVC = nil;
 
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
@@ -3058,22 +3076,6 @@ void InjectNTP(Browser* browser) {
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
-- (void)presentSignedInAccountsViewControllerForBrowserState:
-    (ChromeBrowserState*)browserState {
-  CHECK(!_accountsViewController);
-  id<ApplicationSettingsCommands> settingsHandler =
-      HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
-                         ApplicationSettingsCommands);
-  _accountsViewController = [[SignedInAccountsViewController alloc]
-      initWithBrowserState:browserState
-                dispatcher:settingsHandler];
-  [[self topPresentedViewController]
-      presentViewController:_accountsViewController
-                   animated:YES
-                 completion:nil];
-  _accountsViewController.delegate = self;
-}
-
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
 - (void)closePresentedViews:(BOOL)animated
                  completion:(ProceduralBlock)completion {
@@ -3247,10 +3249,10 @@ void InjectNTP(Browser* browser) {
 
 - (void)signedInAccountsViewControllerIsDismissed:
     (SignedInAccountsViewController*)signedInAccountsViewController {
-  CHECK_EQ(_accountsViewController, signedInAccountsViewController);
-  [_accountsViewController teardownUI];
-  _accountsViewController.delegate = nil;
-  _accountsViewController = nil;
+  CHECK_EQ(_signedInAccountsVC, signedInAccountsViewController);
+  [_signedInAccountsVC teardownUI];
+  _signedInAccountsVC.delegate = nil;
+  _signedInAccountsVC = nil;
 }
 
 #pragma mark - WebStateListObserving

@@ -38,9 +38,6 @@ constexpr CGFloat kViewControllerHorizontalPadding = 20;
 constexpr CGFloat kDialogMaxWidth = 328;
 constexpr CGFloat kDefaultCellHeight = 54;
 
-// Whether the Signed In Accounts view is currently being shown.
-BOOL gSignedInAccountsViewControllerIsShown = NO;
-
 }  // namespace
 
 @interface SignedInAccountsViewController () <
@@ -68,8 +65,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   }
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  return !gSignedInAccountsViewControllerIsShown &&
-         authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+  return authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
          !authService->IsAccountListApprovedByUser();
 }
 
@@ -299,17 +295,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  if ([self isBeingPresented] || [self isMovingToParentViewController]) {
-    gSignedInAccountsViewControllerIsShown = YES;
-  }
   [_accountTableView loadModel];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  if ([self isBeingDismissed] || [self isMovingFromParentViewController]) {
-    gSignedInAccountsViewControllerIsShown = NO;
-  }
 }
 
 #pragma mark Events
