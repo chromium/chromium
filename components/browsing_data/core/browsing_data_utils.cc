@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -18,6 +19,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -168,11 +170,14 @@ std::u16string GetCounterTextFromResult(
     BrowsingDataCounter::ResultInt profile_passwords = password_result->Value();
 
     if (profile_passwords) {
+      // Whether the text should use the "synced".
+      bool uses_synced = password_result->is_sync_enabled() &&
+                         !base::FeatureList::IsEnabled(
+                             syncer::kReplaceSyncPromosWithSignInPromos);
       parts.emplace_back(base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
-              password_result->is_sync_enabled()
-                  ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
-                  : IDS_DEL_PASSWORDS_COUNTER,
+              uses_synced ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
+                          : IDS_DEL_PASSWORDS_COUNTER,
               profile_passwords),
           {CreateDomainExamples(profile_passwords,
                                 password_result->domain_examples())},
