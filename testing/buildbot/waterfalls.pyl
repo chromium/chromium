@@ -6645,6 +6645,18 @@
     'name': 'internal.chrome.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+      'android-emulator-finch-smoke-chrome': {
+        'mixins': [
+          'chrome-finch-swarming-pool',
+          'linux-jammy-or-bionic',
+          '11-x86-emulator',
+          'skia_gold_test',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_android_finch_smoke_tests',
+        },
+        'os_type': 'android',
+      },
       'android-nougat-x86-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',

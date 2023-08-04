@@ -390,14 +390,33 @@
         'experiment_percentage': 100,
       },
     },
+    'chrome_android_finch_smoke_tests': {
+      'variations_android_smoke_tests': {
+        'isolate_name': 'variations_desktop_smoke_tests',
+        'args': [
+          '--target-platform=android',
+        ],
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
+      'variations_webview_smoke_tests': {
+        'isolate_name': 'variations_desktop_smoke_tests',
+        'args': [
+          '--target-platform=webview',
+        ],
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
+    },
     'chrome_finch_smoke_tests': {
       'variations_desktop_smoke_tests': {
         'isolate_name': 'variations_desktop_smoke_tests',
         'lacros_args': [
           '--target-platform=lacros',
-        ],
-        'android_args': [
-          '--target-platform=android',
         ],
         'chromeos_args': [
           '--target-platform=cros',
