@@ -25,6 +25,9 @@ const char kPrintToPDFNoHeaderDeprecated[] = "print-to-pdf-no-header";
 // Do not display header and footer in the printed PDF file.
 const char kNoPDFHeaderFooter[] = "no-pdf-header-footer";
 
+// Do not emit tags when printing PDFs.
+const char kDisablePDFTagging[] = "disable-pdf-tagging";
+
 // Save a screenshot of the loaded page.
 const char kScreenshot[] = "screenshot";
 

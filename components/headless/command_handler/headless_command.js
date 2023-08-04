@@ -230,9 +230,11 @@ async function dumpDOM(dp) {
 
 async function printToPDF(dp, params) {
   const displayHeaderFooter = !params.noHeaderFooter;
+  const generateTaggedPDF = !params.disablePDFTagging;
 
   const printToPDFParams = {
     displayHeaderFooter,
+    generateTaggedPDF,
     printBackground: true,
     preferCSSPageSize: true,
   };

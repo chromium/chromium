@@ -36,9 +36,6 @@ const char kDisableCookieEncryption[] = "disable-cookie-encryption";
 // Disables lazy loading of images and frames.
 const char kDisableLazyLoading[] = "disable-lazy-loading";
 
-// Do not emit tags when printing PDFs.
-const char kDisablePDFTagging[] = "disable-pdf-tagging";
-
 // Use a specific disk cache location, rather than one derived from the
 // UserDatadir.
 const char kDiskCacheDir[] = "disk-cache-dir";

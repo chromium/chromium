@@ -447,14 +447,21 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
 }
 
 class HeadlessModeTaggedPrintToPdfCommandBrowserTest
-    : public HeadlessModePrintToPdfCommandBrowserTestBase {
+    : public HeadlessModePrintToPdfCommandBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
   HeadlessModeTaggedPrintToPdfCommandBrowserTest() = default;
+
+  bool generate_tagged_pdf() { return GetParam(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
         command_line);
     command_line->AppendArg(GetTargetUrl("/hello.html").spec());
+
+    if (!generate_tagged_pdf()) {
+      command_line->AppendSwitch(switches::kDisablePDFTagging);
+    }
   }
 };
 
@@ -470,7 +477,11 @@ const char kExpectedStructTreeJSON[] = R"({
 }
 )";
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         HeadlessModeTaggedPrintToPdfCommandBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
                        HeadlessTaggedPrintToPdf) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
@@ -489,12 +500,14 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
 
   EXPECT_THAT(num_pages, testing::Eq(1));
 
-  EXPECT_THAT(chrome_pdf::IsPDFDocTagged(pdf_span), testing::Optional(true));
+  ASSERT_THAT(chrome_pdf::IsPDFDocTagged(pdf_span),
+              testing::Optional(generate_tagged_pdf()));
 
-  base::Value struct_tree =
-      chrome_pdf::GetPDFStructTreeForPage(pdf_span, /*page_index=*/0);
-
-  EXPECT_THAT(kExpectedStructTreeJSON, base::test::IsJson((struct_tree)));
+  if (generate_tagged_pdf()) {
+    base::Value struct_tree =
+        chrome_pdf::GetPDFStructTreeForPage(pdf_span, /*page_index=*/0);
+    EXPECT_THAT(kExpectedStructTreeJSON, base::test::IsJson((struct_tree)));
+  }
 }
 
 }  // namespace headless

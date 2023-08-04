@@ -143,6 +143,10 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
                    << " is deprecated, use --" << switches::kNoPDFHeaderFooter;
     }
 
+    if (command_line->HasSwitch(switches::kDisablePDFTagging)) {
+      params.Set("disablePDFTagging", true);
+    }
+
     commands->Set("printToPDF", std::move(params));
   }
 

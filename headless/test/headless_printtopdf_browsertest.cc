@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "components/headless/command_handler/headless_command_switches.h"
 #include "components/headless/test/pdf_utils.h"
 #include "content/public/test/browser_test.h"
 #include "headless/public/switches.h"
