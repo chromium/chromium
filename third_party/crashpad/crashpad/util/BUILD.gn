@@ -205,7 +205,6 @@ crashpad_static_library("util") {
     "misc/address_sanitizer.h",
     "misc/address_types.h",
     "misc/arraysize.h",
-    "misc/as_underlying_type.h",
     "misc/capture_context.h",
     "misc/clock.h",
     "misc/elf_note_types.h",
