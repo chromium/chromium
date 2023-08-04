@@ -30,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
@@ -397,8 +398,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug109187Test) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
 }
 
-// TODO(crbug.com/1469760): Disabled due to Linux CFI failures.
-#if defined(LINUX)
+// TODO(crbug.com/1469760): Disabled due to timeout failures.
+#if defined(LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Bug941965Test DISABLED_Bug941965Test
 #else
 #define MAYBE_Bug941965Test Bug941965Test
