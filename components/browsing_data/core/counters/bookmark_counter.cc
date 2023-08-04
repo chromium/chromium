@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -36,7 +37,7 @@ class BookmarkModelHelper : public bookmarks::BaseBookmarkModelObserver {
                       BookmarkModelCallback callback)
       : bookmark_model_(bookmark_model), callback_(std::move(callback)) {
     DCHECK(!bookmark_model_->loaded());
-    bookmark_model_->AddObserver(this);
+    bookmark_model_observation_.Observe(bookmark_model_);
   }
 
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
@@ -54,10 +55,12 @@ class BookmarkModelHelper : public bookmarks::BaseBookmarkModelObserver {
   void BookmarkModelChanged() override {}
 
  private:
-  ~BookmarkModelHelper() override { bookmark_model_->RemoveObserver(this); }
 
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   BookmarkModelCallback callback_;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BaseBookmarkModelObserver>
+      bookmark_model_observation_{this};
 };
 
 }  // namespace
