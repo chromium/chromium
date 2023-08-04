@@ -69,10 +69,10 @@ class FontMetrics {
   float CapHeight() const { return cap_height_; }
   void SetCapHeight(float cap_height) { cap_height_ = cap_height; }
 
-  float FloatLineGap() const { return line_gap_; }
+  int LineGap() const { return static_cast<int>(lroundf(line_gap_)); }
   void SetLineGap(float line_gap) { line_gap_ = line_gap; }
 
-  float FloatLineSpacing() const { return line_spacing_; }
+  int LineSpacing() const { return static_cast<int>(lroundf(line_spacing_)); }
   void SetLineSpacing(float line_spacing) { line_spacing_ = line_spacing; }
 
   float XHeight() const { return x_height_; }
@@ -98,9 +98,6 @@ class FontMetrics {
   }
 
   int Height() const { return int_ascent_ + int_descent_; }
-
-  int LineGap() const { return static_cast<int>(lroundf(line_gap_)); }
-  int LineSpacing() const { return static_cast<int>(lroundf(line_spacing_)); }
 
   // LayoutUnit variants of certain metrics.
   // LayoutNG should use LayoutUnit for the block progression metrics.
