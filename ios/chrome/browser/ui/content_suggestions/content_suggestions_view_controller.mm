@@ -414,6 +414,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStackModuleOrder = [order mutableCopy];
   if (self.viewLoaded) {
     [self createMagicStack];
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
   }
 }
 
