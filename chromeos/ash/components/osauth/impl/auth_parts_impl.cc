@@ -116,6 +116,10 @@ void AuthPartsImpl::RegisterEarlyLoginAuthPolicyConnector(
       login_screen_policy_connector_.get());
 }
 
+void AuthPartsImpl::ReleaseEarlyLoginAuthPolicyConnector() {
+  early_login_policy_connector_.reset();
+}
+
 void AuthPartsImpl::SetProfilePrefsAuthPolicyConnector(
     AuthPolicyConnector* connector) {
   if (profile_prefs_policy_connector_) {

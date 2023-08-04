@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
       std::unique_ptr<AuthFactorEngineFactory> factory) = 0;
   virtual void RegisterEarlyLoginAuthPolicyConnector(
       std::unique_ptr<AuthPolicyConnector> connector) = 0;
+  virtual void ReleaseEarlyLoginAuthPolicyConnector() = 0;
   virtual void SetProfilePrefsAuthPolicyConnector(
       AuthPolicyConnector* connector) = 0;
 

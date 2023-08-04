@@ -61,6 +61,7 @@ ProfilePrefsAuthPolicyConnectorFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
+  AuthParts::Get()->ReleaseEarlyLoginAuthPolicyConnector();
   auto* user_manager = user_manager::UserManager::Get();
   if (auto* primary_user = user_manager->GetPrimaryUser()) {
     if (auto* primary_browser_context =
