@@ -53,8 +53,10 @@ double clamp(double min, double max, double value) {
 
 std::string ToUpperString(const std::string& str) {
   std::string ret;
-  for (uint32_t i = 0; i < str.size(); i++)
-    ret.push_back(static_cast<char>(toupper(str[i])));
+  ret.reserve(str.size());
+  std::transform(str.cbegin(), str.cend(), std::back_inserter(ret), [](char c) {
+    return (c < 'a' || c > 'z') ? c : (c + 'A' - 'a');
+  });
   return ret;
 }
 
