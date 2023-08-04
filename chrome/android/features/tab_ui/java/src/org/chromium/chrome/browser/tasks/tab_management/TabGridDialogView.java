@@ -52,9 +52,9 @@ import java.util.Map;
  * Parent for TabGridDialog component.
  */
 public class TabGridDialogView extends FrameLayout {
-    private static final int DIALOG_ANIMATION_DURATION = 400;
+    private static final int DIALOG_ANIMATION_DURATION = 300;
     private static final int DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION = 200;
-    private static final int DIALOG_ALPHA_ANIMATION_DURATION = DIALOG_ANIMATION_DURATION >> 1;
+    private static final int DIALOG_ALPHA_ANIMATION_DURATION = 150;
     private static final int CARD_FADE_ANIMATION_DURATION = 50;
     private static final int Y_TRANSLATE_DURATION_MS = 300;
     private static final int SCRIM_FADE_DURATION_MS = 350;
@@ -199,14 +199,14 @@ public class TabGridDialogView extends FrameLayout {
         ObjectAnimator dialogFadeInAnimator =
                 ObjectAnimator.ofFloat(mDialogContainerView, View.ALPHA, 0f, 1f);
         mBasicFadeInAnimation.play(dialogFadeInAnimator);
-        mBasicFadeInAnimation.setInterpolator(Interpolators.EMPHASIZED);
+        mBasicFadeInAnimation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         mBasicFadeInAnimation.setDuration(DIALOG_ANIMATION_DURATION);
 
         mBasicFadeOutAnimation = new AnimatorSet();
         ObjectAnimator dialogFadeOutAnimator =
                 ObjectAnimator.ofFloat(mDialogContainerView, View.ALPHA, 1f, 0f);
         mBasicFadeOutAnimation.play(dialogFadeOutAnimator);
-        mBasicFadeOutAnimation.setInterpolator(Interpolators.EMPHASIZED);
+        mBasicFadeOutAnimation.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mBasicFadeOutAnimation.setDuration(DIALOG_ANIMATION_DURATION);
         mBasicFadeOutAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -256,7 +256,7 @@ public class TabGridDialogView extends FrameLayout {
 
         mUngroupBarShow = ObjectAnimator.ofFloat(mUngroupBar, View.ALPHA, 0f, 1f);
         mUngroupBarShow.setDuration(DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION);
-        mUngroupBarShow.setInterpolator(Interpolators.EMPHASIZED);
+        mUngroupBarShow.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         mUngroupBarShow.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -276,7 +276,7 @@ public class TabGridDialogView extends FrameLayout {
 
         mUngroupBarHide = ObjectAnimator.ofFloat(mUngroupBar, View.ALPHA, 1f, 0f);
         mUngroupBarHide.setDuration(DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION);
-        mUngroupBarHide.setInterpolator(Interpolators.EMPHASIZED);
+        mUngroupBarHide.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mUngroupBarHide.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -417,7 +417,7 @@ public class TabGridDialogView extends FrameLayout {
 
         AnimatorSet cardZoomOutAnimatorSet = new AnimatorSet();
         cardZoomOutAnimatorSet.setDuration(DIALOG_ANIMATION_DURATION);
-        cardZoomOutAnimatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        cardZoomOutAnimatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         cardZoomOutAnimatorSet.play(cardZoomOutMoveYAnimator)
                 .with(cardZoomOutMoveXAnimator)
                 .with(cardZoomOutScaleYAnimator)
@@ -428,7 +428,7 @@ public class TabGridDialogView extends FrameLayout {
         final ObjectAnimator cardZoomOutAlphaAnimator =
                 ObjectAnimator.ofFloat(mAnimationCardView, View.ALPHA, 1f, 0f);
         cardZoomOutAlphaAnimator.setDuration(DIALOG_ALPHA_ANIMATION_DURATION);
-        cardZoomOutAlphaAnimator.setInterpolator(Interpolators.EMPHASIZED);
+        cardZoomOutAlphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         // In the second half of the dialog showing animation, the dialog zooms out from where the
         // card stops at the end of the first half and moves towards where the dialog should be.
@@ -443,7 +443,7 @@ public class TabGridDialogView extends FrameLayout {
 
         AnimatorSet dialogZoomOutAnimatorSet = new AnimatorSet();
         dialogZoomOutAnimatorSet.setDuration(DIALOG_ANIMATION_DURATION);
-        dialogZoomOutAnimatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        dialogZoomOutAnimatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         dialogZoomOutAnimatorSet.play(dialogZoomOutMoveYAnimator)
                 .with(dialogZoomOutMoveXAnimator)
                 .with(dialogZoomOutScaleYAnimator)
@@ -455,7 +455,7 @@ public class TabGridDialogView extends FrameLayout {
                 ObjectAnimator.ofFloat(mDialogContainerView, View.ALPHA, 0f, 1f);
         dialogZoomOutAlphaAnimator.setDuration(DIALOG_ALPHA_ANIMATION_DURATION);
         dialogZoomOutAlphaAnimator.setStartDelay(DIALOG_ALPHA_ANIMATION_DURATION);
-        dialogZoomOutAlphaAnimator.setInterpolator(Interpolators.EMPHASIZED);
+        dialogZoomOutAlphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         // During the whole dialog showing animation, the frame background scales up and moves so
         // that it looks like the card zooms out and becomes the dialog.
@@ -470,7 +470,7 @@ public class TabGridDialogView extends FrameLayout {
 
         AnimatorSet frameZoomOutAnimatorSet = new AnimatorSet();
         frameZoomOutAnimatorSet.setDuration(DIALOG_ANIMATION_DURATION);
-        frameZoomOutAnimatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        frameZoomOutAnimatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         frameZoomOutAnimatorSet.play(frameZoomOutMoveYAnimator)
                 .with(frameZoomOutMoveXAnimator)
                 .with(frameZoomOutScaleYAnimator)
@@ -540,7 +540,7 @@ public class TabGridDialogView extends FrameLayout {
                 .with(dialogZoomInScaleYAnimator)
                 .with(dialogZoomInScaleXAnimator);
         dialogZoomInAnimatorSet.setDuration(DIALOG_ANIMATION_DURATION);
-        dialogZoomInAnimatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        dialogZoomInAnimatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         dialogZoomInAnimatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -557,7 +557,7 @@ public class TabGridDialogView extends FrameLayout {
         final ObjectAnimator dialogZoomInAlphaAnimator =
                 ObjectAnimator.ofFloat(mDialogContainerView, View.ALPHA, 1f, 0f);
         dialogZoomInAlphaAnimator.setDuration(DIALOG_ALPHA_ANIMATION_DURATION);
-        dialogZoomInAlphaAnimator.setInterpolator(Interpolators.EMPHASIZED);
+        dialogZoomInAlphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         // In the second half of the dialog hiding animation, the animation card zooms in from where
         // the dialog stops at the end of the first half and moves towards where the card should be.
@@ -576,7 +576,7 @@ public class TabGridDialogView extends FrameLayout {
                 .with(cardZoomInScaleXAnimator)
                 .with(cardZoomInScaleYAnimator);
         cardZoomInAnimatorSet.setDuration(DIALOG_ANIMATION_DURATION);
-        cardZoomInAnimatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        cardZoomInAnimatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         // In the second half of the dialog hiding animation, the tab grid card fades in while it
         // scales down and moves.
@@ -584,7 +584,7 @@ public class TabGridDialogView extends FrameLayout {
                 ObjectAnimator.ofFloat(mAnimationCardView, View.ALPHA, 0f, 1f);
         cardZoomInAlphaAnimator.setDuration(DIALOG_ALPHA_ANIMATION_DURATION);
         cardZoomInAlphaAnimator.setStartDelay(DIALOG_ALPHA_ANIMATION_DURATION);
-        cardZoomInAlphaAnimator.setInterpolator(Interpolators.EMPHASIZED);
+        cardZoomInAlphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         cardZoomInAlphaAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -621,7 +621,7 @@ public class TabGridDialogView extends FrameLayout {
                 .with(frameZoomInScaleYAnimator)
                 .with(frameZoomInScaleXAnimator);
         frameZoomInAnimatorSet.setDuration(DIALOG_ANIMATION_DURATION);
-        frameZoomInAnimatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        frameZoomInAnimatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         frameZoomInAnimatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
