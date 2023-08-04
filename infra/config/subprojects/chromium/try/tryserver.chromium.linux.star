@@ -901,23 +901,6 @@ try_.builder(
 )
 ############### Coverage Builders End ##################
 
-# ML experimental builder, modifies RTS itself to use a ml model
-try_.builder(
-    name = "linux-rel-ml",
-    mirrors = builder_config.copy_from("linux-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.ALWAYS,
-        ),
-    ),
-    builderless = False,
-    cores = 16,
-    experiments = {"chromium_rts.experimental_model": 100},
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-)
-
 try_.builder(
     name = "linux-cr23-rel",
     mirrors = ["ci/linux-cr23-rel"],

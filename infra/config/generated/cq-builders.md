@@ -592,9 +592,6 @@ as required builders.
 * [linux-lacros-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-lacros-siso-rel""))
   * Experiment percentage: 10.0
 
-* [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml""))
-  * Experiment percentage: 5.0
-
 * [linux-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-siso-rel""))
   * Experiment percentage: 10.0
 

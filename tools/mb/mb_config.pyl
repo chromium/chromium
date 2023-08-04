@@ -1246,7 +1246,6 @@
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient',
       'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      'linux-rel-ml': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-siso-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
@@ -2877,11 +2876,6 @@
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'devtools_do_typecheck', 'chrome_for_testing',
-    ],
-
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'devtools_do_typecheck',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient': [
