@@ -27,6 +27,10 @@ class CrosHealthdRoutineControl
       delete;
   ~CrosHealthdRoutineControl() override;
 
+  // `TelemetryDiagnosticRoutineControl`:
+  void GetState(GetStateCallback callback) override;
+  void Start() override;
+
   mojo::Remote<cros_healthd::mojom::RoutineControl>& GetRemote();
 
  private:

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "chrome/browser/ash/telemetry_extension/routines/routine_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,6 +26,19 @@ CrosHealthdRoutineControl::CrosHealthdRoutineControl(
     : remote_(std::move(pending_remote)) {}
 
 CrosHealthdRoutineControl::~CrosHealthdRoutineControl() = default;
+
+void CrosHealthdRoutineControl::GetState(GetStateCallback callback) {
+  remote_->GetState(base::BindOnce(
+      [](GetStateCallback callback, healthd::RoutineStatePtr state) {
+        std::move(callback).Run(
+            converters::ConvertRoutinePtr(std::move(state)));
+      },
+      std::move(callback)));
+}
+
+void CrosHealthdRoutineControl::Start() {
+  remote_->Start();
+}
 
 mojo::Remote<healthd::RoutineControl>& CrosHealthdRoutineControl::GetRemote() {
   return remote_;

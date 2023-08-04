@@ -40,16 +40,6 @@ union TelemetryDiagnosticRoutineArgument {
   [Default] bool unrecognizedArgument @0;
 };
 
-// Interface exposed to clients for controlling a routine.
-//
-// Error Handling:
-// Please check the Error Handling section of
-// TelemetryDiagnosticRoutinesService.
-//
-// NextMinVersion: 1, NextIndex: 0
-[Stable]
-interface TelemetryDiagnosticRoutineControl {};
-
 // Routine has been initialized but not yet started.
 //
 // NextMinVersion: 1, NextIndex: 0
@@ -132,6 +122,28 @@ struct TelemetryDiagnosticRoutineState {
   uint8 percentage@0;
 
   TelemetryDiagnosticRoutineStateUnion state_union@1;
+};
+
+// Interface exposed to clients for controlling a routine.
+//
+// Error Handling:
+// Please check the Error Handling section of
+// TelemetryDiagnosticRoutinesService.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable]
+interface TelemetryDiagnosticRoutineControl {
+  // Gets the current state of the routine. Note that if the routine fails to
+  // initialize, the RoutineControl will disconnect before the callback is
+  // called.
+  [MinVersion=1] GetState@0() => (TelemetryDiagnosticRoutineState state);
+
+  // Starts the routine. Each routine can only be started once. Calling this
+  // method multiple times results in no-ops.
+  //
+  // See the error handling section above to know how to handle possible
+  // exceptions that occur before and after the routine has been started.
+  [MinVersion=1] Start@1();
 };
 
 // Implemented by clients who desire routine update notifications.

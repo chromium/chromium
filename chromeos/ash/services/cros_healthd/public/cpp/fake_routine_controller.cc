@@ -24,6 +24,18 @@ FakeRoutineController::FakeRoutineController(
 
 FakeRoutineController::~FakeRoutineController() = default;
 
+void FakeRoutineController::GetState(GetStateCallback callback) {
+  std::move(callback).Run(get_state_response_->Clone());
+}
+
+void FakeRoutineController::Start() {
+  start_called_ = true;
+}
+
+void FakeRoutineController::SetGetStateResponse(mojom::RoutineStatePtr& state) {
+  get_state_response_.Swap(&state);
+}
+
 mojo::Remote<mojom::RoutineObserver>* FakeRoutineController::GetObserver() {
   if (routine_observer_.is_bound()) {
     return &routine_observer_;

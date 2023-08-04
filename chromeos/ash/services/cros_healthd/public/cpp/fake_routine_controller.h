@@ -23,10 +23,22 @@ class FakeRoutineController : public mojom::RoutineControl {
   FakeRoutineController(const FakeRoutineController&) = delete;
   FakeRoutineController& operator=(const FakeRoutineController&) = delete;
 
+  // `RoutineControl`:
+  void GetState(GetStateCallback callback) override;
+  void Start() override;
+
+  void SetGetStateResponse(mojom::RoutineStatePtr& state);
+  bool has_start_been_called() { return start_called_; }
+
   mojo::Remote<mojom::RoutineObserver>* GetObserver();
   mojo::Receiver<mojom::RoutineControl>* GetReceiver();
 
  private:
+  // Returned on a call to `GetState`.
+  mojom::RoutineStatePtr get_state_response_{mojom::RoutineState::New()};
+  // Set to true when `Start` is called.
+  bool start_called_ = false;
+
   mojo::Remote<mojom::RoutineObserver> routine_observer_;
   mojo::Receiver<mojom::RoutineControl> receiver_;
 };

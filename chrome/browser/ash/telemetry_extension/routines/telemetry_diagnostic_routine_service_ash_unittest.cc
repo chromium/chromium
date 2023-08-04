@@ -114,6 +114,93 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
           healthd::RoutineArgument::Tag::kUnrecognizedArgument));
 }
 
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, StartRoutine) {
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+
+  control_remote->Start();
+
+  control_remote.FlushForTesting();
+  FlushForTesting();
+
+  EXPECT_TRUE(fake_controller->has_start_been_called());
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, GetState) {
+  constexpr uint8_t kPercentage = 50;
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+
+  auto routine_state = healthd::RoutineState::New();
+  routine_state->percentage = kPercentage;
+  routine_state->state_union =
+      healthd::RoutineStateUnion::NewUnrecognizedArgument(true);
+
+  fake_controller->SetGetStateResponse(routine_state);
+
+  base::test::TestFuture<crosapi::TelemetryDiagnosticRoutineStatePtr> future;
+  control_remote->GetState(future.GetCallback());
+
+  control_remote.FlushForTesting();
+  FlushForTesting();
+
+  ASSERT_TRUE(future.Wait());
+  auto result = future.Take();
+  EXPECT_EQ(result->percentage, kPercentage);
+  EXPECT_EQ(
+      result->state_union,
+      crosapi::TelemetryDiagnosticRoutineStateUnion::NewUnrecognizedArgument(
+          true));
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateAndStartRoutine) {
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  control_remote->Start();
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+
+  EXPECT_TRUE(fake_controller->has_start_been_called());
+}
+
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, RoutineObserver) {
   constexpr uint8_t kPercentage = 50;
   mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
