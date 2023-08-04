@@ -2950,7 +2950,7 @@ bool IsCrosPrivacyHubEnabled() {
 
 bool IsCrosPrivacyHubV0Enabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubV0) ||
-         IsCrosPrivacyHubV1Enabled();
+         IsCrosPrivacyHubV1Enabled() || IsVideoConferenceEnabled();
 }
 
 bool IsCrosPrivacyHubV2Enabled() {
