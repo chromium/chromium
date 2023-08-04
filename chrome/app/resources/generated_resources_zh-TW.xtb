@@ -642,7 +642,7 @@
 <translation id="1542137295869176367">無法更新你的登入資料</translation>
 <translation id="1542514202066550870">這個分頁正在對頭戴式裝置展示 VR 內容。</translation>
 <translation id="1543284117603151572">從 Edge 匯入的書籤</translation>
-<translation id="1543538514740974167">更快開啟這個頁面</translation>
+<translation id="1543538514740974167">快速使用這項服務</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或將檔案儲存至其他資料夾</translation>
 <translation id="1545177026077493356">自動 Kiosk 模式</translation>
 <translation id="1545749641540134597">掃描 QR code</translation>
@@ -3588,7 +3588,7 @@
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">前往主畫面</translation>
 <translation id="4048384495227695211">在資料夾中顯示 <ph name="FILE_NAME" /></translation>
-<translation id="404894744863342743">如果不再需要下載的檔案，請將檔案刪除，以免這部裝置的其他使用者看到你的密碼。</translation>
+<translation id="404894744863342743">下載的檔案使用完畢之後，請務必刪除，避免這部裝置的其他使用者知道你的密碼。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
 <translation id="4050225813016893843">驗證方式</translation>
 <translation id="4050534976465737778">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (開啟狀態區，再啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5479,7 +5479,7 @@
 <translation id="5787146423283493983">金鑰協議</translation>
 <translation id="5787420647064736989">裝置名稱</translation>
 <translation id="5788367137662787332">很抱歉，<ph name="DEVICE_LABEL" /> 裝置上至少有一個分割區無法掛載。</translation>
-<translation id="5789581866075720267">如要在這部裝置上將密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案。</translation>
+<translation id="5789581866075720267">如要在這部裝置上將密碼匯入 <ph name="BRAND" />，請選取 CSV 檔案。</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5790651917470750848">轉送連接埠已經存在</translation>
@@ -6832,7 +6832,7 @@
 <translation id="6968288415730398122">如要設定螢幕鎖定，請輸入你的密碼</translation>
 <translation id="6969047215179982698">關閉鄰近分享功能</translation>
 <translation id="6969216690072714773">請輸入這部裝置的相關資訊或更新現有資訊。</translation>
-<translation id="696942486482903620">將密碼儲存到 Google 帳戶後，你可以在這部裝置和任何已登入帳戶的裝置上使用這些密碼</translation>
+<translation id="696942486482903620">將密碼儲存到 Google 帳戶後，你可以在這部裝置和其他已登入帳戶的裝置上使用這些密碼</translation>
 <translation id="6970480684834282392">啟動類型</translation>
 <translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 個密碼。</translation>
 <translation id="6970856801391541997">列印特定網頁</translation>
@@ -7929,7 +7929,7 @@
 <translation id="7925285046818567682">正在等候 <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">這不是我。</translation>
 <translation id="7926975587469166629">卡片暱稱</translation>
-<translation id="7928175190925744466">你變更了這個密碼嗎？</translation>
+<translation id="7928175190925744466">已經變更這個密碼了嗎？</translation>
 <translation id="7930294771522048157">已儲存的付款方式會顯示在這裡</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> 正在共用您的畫面和音訊。</translation>
 <translation id="793293630927785390">新的 Wi-Fi 網路對話方塊</translation>
@@ -8729,7 +8729,7 @@
 <translation id="8634348081024879304">你將無法再透過 Google Pay 使用虛擬卡片。<ph name="BEGIN_LINK" />瞭解虛擬卡片<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">正在重新載入…</translation>
 <translation id="8636284842992792762">正在初始化擴充功能...</translation>
-<translation id="8636323803535540285">只要新增 <ph name="BRAND" />捷徑，就能更快地使用這項服務</translation>
+<translation id="8636323803535540285">新增 <ph name="BRAND" />捷徑即可快速使用這項服務</translation>
 <translation id="8636500887554457830">禁止網站傳送彈出式視窗或使用重新導向</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
 <translation id="8639047128869322042">正在檢查有害軟體...</translation>
