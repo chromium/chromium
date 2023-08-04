@@ -1113,13 +1113,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of the user pressing the mode change key.</summary>
 </histogram>
 
-<histogram name="InputMethod.Mojo.Extension.Event" enum="IMEExtensionMojoEvent"
-    expires_after="2021-10-01">
-  <owner>googleo@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>The events of Mojo service in the IME Extension.</summary>
-</histogram>
-
 <histogram name="InputMethod.MouseWheel.ScrollCharacters" units="characters"
     expires_after="2021-11-01">
   <owner>flackr@chromium.org</owner>
@@ -1183,17 +1176,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.MultilingualExperiment.NonAutocorrect"
-    enum="IMENonAutocorrectDiacriticStatus" expires_after="2022-12-01">
-  <owner>tranbaoduy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Diacritic status of non-autocorrected user-typed words. Recorded when the
-    user finishes typing a word. Only recorded for CrOS 1P experimental
-    multilingual input methods.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.NextWordPrediction" enum="BooleanEnabled"
     expires_after="2021-12-19">
   <owner>myy@chromium.org</owner>
@@ -1232,16 +1214,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Action performed on the Korean IME. Recorded whenever one of the actions is
     performed.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.PhysicalKeyboard.Korean.Layout"
-    enum="KoreanLayout" expires_after="2022-09-30">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The layout used by the Korean IME. Recorded when the user focuses on a new
-    input field.
   </summary>
 </histogram>
 

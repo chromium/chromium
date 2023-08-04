@@ -53240,15 +53240,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Aggressive"/>
 </enum>
 
-<enum name="IMEExtensionMojoEvent">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Init Success"/>
-  <int value="2" label="Init Failed"/>
-  <int value="3" label="Activate IME Success"/>
-  <int value="4" label="Activate IME Failed"/>
-  <int value="5" label="Service disconnected"/>
-</enum>
-
 <enum name="IMEGrammarActions">
   <int value="0" label="UNDERLINED"/>
   <int value="1" label="WINDOW_SHOWN"/>
@@ -53289,11 +53280,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="UnselectItem"/>
   <int value="4" label="DeleteItem"/>
   <int value="5" label="PasteSuggestion"/>
-</enum>
-
-<enum name="IMENonAutocorrectDiacriticStatus">
-  <int value="0" label="WITHOUT_DIACRITICS"/>
-  <int value="1" label="WITH_DIACRITICS"/>
 </enum>
 
 <enum name="IMEPaprikaActions">
@@ -57090,19 +57076,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Press Hanja key"/>
   <int value="2" label="Press Hangeul key"/>
   <int value="3" label="Compose out of order"/>
-</enum>
-
-<enum name="KoreanLayout">
-  <summary>Layouts that are available on the Korean IME.</summary>
-  <int value="0" label="Dubeolsik"/>
-  <int value="1" label="Dubeolsik (Old Hangeul)"/>
-  <int value="2" label="Sebeolsik (390)"/>
-  <int value="3" label="Sebeolsik (Final)"/>
-  <int value="4" label="Sebeolsik (No Shift)"/>
-  <int value="5" label="Sebeolsik (Old Hangeul)"/>
-  <int value="6" label="Sebeolsik (Dubeol)"/>
-  <int value="7" label="Romaja"/>
-  <int value="8" label="Ahnmatae"/>
 </enum>
 
 <enum name="LacrosLaunchMode">
