@@ -69,8 +69,8 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // Returns true if any of the damage received was due to an ongoing scroll.
   bool HasDamageDueToActiveScroller();
 
-  // Called after a successful draw and swap.
-  void DidDrawAndSwap();
+  // Called after a frame finishes (may or may not result in a draw).
+  void DidFinishFrame();
 
   bool root_frame_missing() const { return root_frame_missing_; }
   bool IsRootSurfaceValid() const;

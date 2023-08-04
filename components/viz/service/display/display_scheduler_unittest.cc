@@ -1083,5 +1083,47 @@ TEST_F(ImmediateInteractiveDrawTest, ResetScrollingBitAfterDrawAndSwap) {
             scheduler_->DesiredBeginFrameDeadlineTimeForTest());
 }
 
+TEST_F(ImmediateInteractiveDrawTest, ResetScrollingBitOnFrameFinished) {
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+  SurfaceId sid1(kArbitraryFrameSinkId,
+                 LocalSurfaceId(2, base::UnguessableToken::Create()));
+  SurfaceId sid2(kArbitraryFrameSinkId,
+                 LocalSurfaceId(3, base::UnguessableToken::Create()));
+
+  scheduler_->SetVisible(true);
+  SetNewRootSurface(root_surface_id);
+  EXPECT_EQ(BeginFrameAck(), client_.last_begin_frame_ack());
+
+  AdvanceTimeAndBeginFrameForTest({sid1, sid2});
+  EXPECT_EQ(BeginFrameAck(), client_.last_begin_frame_ack());
+
+  BeginFrameAck ack = AckForCurrentBeginFrame();
+  ack.has_damage = true;
+  bool display_damaged = true;
+  bool is_actively_scrolling = true;
+  damage_tracker_->SurfaceDamagedForTest(sid1, ack, display_damaged,
+                                         is_actively_scrolling);
+
+  // Despite the fact that we have pending surfaces, we should still be
+  // scheduled to draw immediately.
+  EXPECT_TRUE(scheduler_->has_pending_surfaces());
+  EXPECT_EQ(base::TimeTicks(),
+            scheduler_->DesiredBeginFrameDeadlineTimeForTest());
+
+  // Trigger a new frame. This should reset the bit even though, in this case,
+  // we will not even attempt to draw.
+  scheduler_->SetVisible(false);
+  AdvanceTimeAndBeginFrameForTest({root_surface_id, sid1, sid2});
+
+  is_actively_scrolling = false;
+  damage_tracker_->SurfaceDamagedForTest(sid1, ack, display_damaged,
+                                         is_actively_scrolling);
+  EXPECT_TRUE(scheduler_->has_pending_surfaces());
+  EXPECT_NE(base::TimeTicks(),
+            scheduler_->DesiredBeginFrameDeadlineTimeForTest());
+}
+
 }  // namespace
 }  // namespace viz

@@ -164,7 +164,7 @@ bool DisplayDamageTracker::HasDamageDueToActiveScroller() {
   return has_surface_damage_due_to_scroll_;
 }
 
-void DisplayDamageTracker::DidDrawAndSwap() {
+void DisplayDamageTracker::DidFinishFrame() {
   // We need to unset this bit otherwise we will continue to draw immediately
   // even when we have no new damage from an active scroller.
   has_surface_damage_due_to_scroll_ = false;
