@@ -338,11 +338,10 @@ class OutputMatch extends HTMLTableRowElement {
 
   constructor(match: AutocompleteMatch) {
     super();
-    let mouseMoved = false;
-    this.addEventListener('mousedown', () => mouseMoved = false);
-    this.addEventListener('mousemove', () => mouseMoved = true);
     this.addEventListener(
-        'click', () => !mouseMoved && this.classList.toggle('expanded'));
+        'click',
+        () => !document.getSelection()?.toString() &&
+            this.classList.toggle('expanded'));
 
     COLUMNS.forEach(column => {
       const property = column.create(match);
