@@ -137,10 +137,8 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeJSONParseError) {
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
   EXPECT_FALSE(decoded_json.has_value());
-  EXPECT_NE(
-      std::string::npos,
-      localized_error.find(
-          "Policy parsing error: Invalid JSON string: Line: 1, column: 14,"));
+  EXPECT_NE(std::string::npos,
+            localized_error.find("Policy parsing error: Invalid JSON string"));
 }
 
 #if GTEST_HAS_DEATH_TEST

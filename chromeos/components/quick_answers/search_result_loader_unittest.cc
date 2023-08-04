@@ -70,7 +70,7 @@ class SearchResultLoaderTest : public testing::Test {
   void TearDown() override { loader_.reset(); }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SearchResultLoader> loader_;
   std::unique_ptr<MockResultLoaderDelegate> mock_delegate_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

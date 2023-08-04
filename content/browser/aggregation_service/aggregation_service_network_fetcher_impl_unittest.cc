@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -326,14 +327,16 @@ TEST_F(AggregationServiceNetworkFetcherTest, HttpError_CallbackRuns) {
 
 TEST_F(AggregationServiceNetworkFetcherTest, MultipleRequests_AllCallbacksRun) {
   base::HistogramTester histograms;
+  auto barrier_closure =
+      base::BarrierClosure(10, task_environment_.QuitClosure());
 
   GURL url(kExampleUrl);
-  int num_callbacks_run = 0;
   for (int i = 0; i < 10; i++) {
     network_fetcher_->FetchPublicKeys(
         url,
-        base::BindLambdaForTesting(
-            [&](absl::optional<PublicKeyset> keyset) { ++num_callbacks_run; }));
+        base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+          barrier_closure.Run();
+        }));
   }
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 10);
@@ -342,8 +345,8 @@ TEST_F(AggregationServiceNetworkFetcherTest, MultipleRequests_AllCallbacksRun) {
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kExampleUrl, kExampleValidJson));
   }
+  task_environment_.RunUntilQuit();
 
-  EXPECT_EQ(num_callbacks_run, 10);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
   // kSuccess = 0

@@ -45,7 +45,7 @@ class TranslationResponseParserTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TranslationResponseParser> translation_response_parser_;
   std::unique_ptr<TranslationResult> translation_result_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
