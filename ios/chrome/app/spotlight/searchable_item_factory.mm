@@ -117,7 +117,9 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   if (!URLToRefresh.is_valid()) {
     return;
   }
-
+  // As the following code is executed in the background, adding a DCHECK here
+  // to analyse (crbug.com/1469801).
+  DCHECK(title);
   __weak SearchableItemFactory* weakSelf = self;
   _largeIconService->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       URLToRefresh, kMinIconSize * [UIScreen mainScreen].scale,
