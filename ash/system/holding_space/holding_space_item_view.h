@@ -85,7 +85,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
  protected:
   views::Builder<views::ImageView> CreateCheckmarkBuilder();
   views::Builder<views::View> CreatePrimaryActionBuilder(
-      const gfx::Size& min_size);
+      bool apply_accent_colors = false,
+      const gfx::Size& min_size = gfx::Size());
 
   virtual void OnPrimaryActionVisibilityChanged(bool visible) {}
   virtual void OnSelectionUiChanged();

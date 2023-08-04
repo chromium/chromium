@@ -341,6 +341,7 @@ HoldingSpaceItemView::CreateCheckmarkBuilder() {
 }
 
 views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
+    bool apply_accent_colors,
     const gfx::Size& min_size) {
   DCHECK(!primary_action_container_);
   DCHECK(!primary_action_cancel_);
@@ -377,14 +378,28 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
           views::Builder<views::ToggleImageButton>()
               .CopyAddressTo(&primary_action_pin_)
               .SetID(kHoldingSpaceItemPinButtonId)
+              .SetBackground(
+                  apply_accent_colors
+                      ? holding_space_util::CreateCircleBackground(
+                            cros_tokens::kCrosSysSystemPrimaryContainer)
+                      : nullptr)
               .SetCallback(base::BindRepeating(
                   &HoldingSpaceItemView::OnPrimaryActionPressed,
                   base::Unretained(this)))
               .SetFocusBehavior(views::View::FocusBehavior::NEVER)
-              .SetImageModel(views::Button::STATE_NORMAL,
-                             ui::ImageModel::FromVectorIcon(
-                                 views::kUnpinIcon, kColorAshButtonIconColor,
-                                 kHoldingSpaceIconSize))
+              .SetImageModel(
+                  views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      views::kUnpinIcon,
+                      apply_accent_colors
+                          ? static_cast<ui::ColorId>(
+                                cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                          : static_cast<ui::ColorId>(kColorAshButtonIconColor),
+                      kHoldingSpaceIconSize))
+              .SetToggledBackground(
+                  apply_accent_colors
+                      ? views::CreateSolidBackground(SK_ColorTRANSPARENT)
+                      : nullptr)
               .SetToggledImageModel(
                   views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(views::kPinIcon,

@@ -354,8 +354,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                             .SetOrientation(Orientation::kHorizontal)
                             .SetMainAxisAlignment(MainAxisAlignment::kEnd)
                             .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
-                            .AddChild(CreatePrimaryActionBuilder(
-                                /*min_size=*/gfx::Size()))))
+                            .AddChild(CreatePrimaryActionBuilder())))
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item`'s image.
