@@ -1383,6 +1383,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "cros-labs-continuous-overview-animation",
+    "owners": [ "sammiequon", "chromeos-wm-corexp@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "cros-labs-overview-desk-navigation",
     "owners": [ "richui", "janetmac" ],
     "expiry_milestone": 122

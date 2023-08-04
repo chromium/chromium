@@ -6705,6 +6705,13 @@ const char kOverviewScrollLayoutForClamshellDescription[] =
     "windows are on the display. Improves the performance of overview mode and "
     "prevents the screen from getting too cluttered";
 
+const char kContinuousOverviewScrollAnimationName[] =
+    "Makes the gesture for Overview continuous";
+const char kContinuousOverviewScrollAnimationDescription[] =
+    "When a user does the Overview gesture (3 finger swipe), smoothly animates "
+    "the transition into Overview as the gesture is done. Allows for the user "
+    "to scrub (move forward and backward) through Overview.";
+
 const char kSpeakOnMuteOptInNudgePrefsResetName[] =
     "Reset Speak-on-mute detection opt-in nudge prefs";
 const char kSpeakOnMuteOptInNudgePrefsResetDescription[] =

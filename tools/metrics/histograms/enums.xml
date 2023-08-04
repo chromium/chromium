@@ -60924,6 +60924,7 @@ from previous Chrome versions.
   <int value="-1559789642" label="RunAllFlashInAllowMode:enabled"/>
   <int value="-1559292789" label="SideSearch:disabled"/>
   <int value="-1558734415" label="ArcHostVpn:enabled"/>
+  <int value="-1558082361" label="ContinuousOverviewScrollAnimation:enabled"/>
   <int value="-1557747651" label="FractionalScrollOffsets:disabled"/>
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
@@ -67996,6 +67997,7 @@ from previous Chrome versions.
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2019319052" label="EnableVariableRefreshRate:disabled"/>
+  <int value="2019412678" label="ContinuousOverviewScrollAnimation:disabled"/>
   <int value="2020107447" label="AndroidPayIntegrationV1:enabled"/>
   <int value="2020898714" label="HudDisplayForPerformanceMetrics:enabled"/>
   <int value="2021142866" label="FeedbackReportQuestionnaire:disabled"/>

@@ -10635,6 +10635,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-labs-continuous-overview-animation",
+     flag_descriptions::kContinuousOverviewScrollAnimationName,
+     flag_descriptions::kContinuousOverviewScrollAnimationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kContinuousOverviewScrollAnimation)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"system-nudge-v2", flag_descriptions::kSystemNudgeV2Name,
      flag_descriptions::kSystemNudgeV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemNudgeV2)},

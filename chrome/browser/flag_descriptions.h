@@ -3855,6 +3855,9 @@ extern const char kSpeakOnMuteOptInNudgePrefsResetDescription[];
 extern const char kOverviewScrollLayoutForClamshellName[];
 extern const char kOverviewScrollLayoutForClamshellDescription[];
 
+extern const char kContinuousOverviewScrollAnimationName[];
+extern const char kContinuousOverviewScrollAnimationDescription[];
+
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
