@@ -450,16 +450,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AccountStorage.ClearedOnStartup2"
-    enum="PasswordAccountStoreClearedOnStartup" expires_after="2023-09-10">
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Records whether the account-scoped password storage had to be cleared during
-    regular profile initialization.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2"
     enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2023-12-04">
