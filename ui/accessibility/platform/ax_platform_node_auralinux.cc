@@ -3212,10 +3212,7 @@ void AXPlatformNodeAuraLinux::AddRelationToSet(AtkRelationSet* relation_set,
                                                AtkRelationType relation,
                                                AXPlatformNode* target) {
   DCHECK(target);
-
-  // Avoid adding self-referential relations.
-  if (target == this)
-    return;
+  DCHECK(GetDelegate()->IsValidRelationTarget(target));
 
   // If we were compiled with a newer version of ATK than the runtime version,
   // it's possible that we might try to add a relation that doesn't exist in
@@ -3259,11 +3256,8 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
   }
 
   // For each possible relation defined by an IntAttribute, we test that
-  // attribute and then look for reverse relations. AddRelationToSet handles
-  // discarding self-referential relations.
-  for (unsigned i = 0; i < G_N_ELEMENTS(kIntRelations); i++) {
-    const AtkIntRelation& relation = kIntRelations[i];
-
+  // attribute and then look for reverse relations.
+  for (auto relation : kIntRelations) {
     if (AXPlatformNode* target =
             GetDelegate()->GetTargetNodeForRelation(relation.attribute))
       AddRelationToSet(relation_set, relation.relation, target);
@@ -3271,7 +3265,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
     if (!relation.reverse_relation.has_value())
       continue;
 
-    std::set<AXPlatformNode*> target_ids =
+    std::vector<AXPlatformNode*> target_ids =
         GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);
@@ -3290,7 +3284,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
     if (!relation.reverse_relation.has_value())
       continue;
 
-    std::set<AXPlatformNode*> reverse_target_ids =
+    std::vector<AXPlatformNode*> reverse_target_ids =
         GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : reverse_target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);

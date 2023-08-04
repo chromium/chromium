@@ -56,7 +56,7 @@ class AXPlatformRelationWin : public SequenceAffineComObjectRoot,
                                     int desired_index,
                                     const std::wstring& desired_ia2_relation,
                                     std::wstring* out_ia2_relation,
-                                    std::set<AXPlatformNode*>* out_targets);
+                                    std::vector<AXPlatformNode*>* out_targets);
 
   void Initialize(const std::wstring& type);
   void Invalidate();

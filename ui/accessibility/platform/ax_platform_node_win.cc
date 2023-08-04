@@ -506,7 +506,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForRelation(
 
 SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForReverseRelation(
     const ax::mojom::IntListAttribute& attribute) {
-  std::set<AXPlatformNode*> reverse_relations =
+  std::vector<AXPlatformNode*> reverse_relations =
       GetDelegate()->GetSourceNodesForReverseRelations(attribute);
 
   std::vector<int32_t> id_list;
@@ -2067,7 +2067,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
   }
 
   std::wstring relation_type;
-  std::set<AXPlatformNode*> enumerated_targets;
+  std::vector<AXPlatformNode*> enumerated_targets;
   int found = AXPlatformRelationWin::EnumerateRelationships(
       this, 0, type, &relation_type, &enumerated_targets);
   if (found == 0)
@@ -2148,7 +2148,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relation(LONG relation_index,
   NotifyAddAXModeFlagsForIA2(kScreenReaderAndHTMLAccessibilityModes);
 
   std::wstring relation_type;
-  std::set<AXPlatformNode*> targets;
+  std::vector<AXPlatformNode*> targets;
   int found = AXPlatformRelationWin::EnumerateRelationships(
       this, relation_index, std::wstring(), &relation_type, &targets);
   if (found == 0)
@@ -2557,7 +2557,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_Target(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_Target");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_TARGET);
   UIA_VALIDATE_CALL_1_ARG(target);
-  std::set<AXPlatformNode*> reverse_relations =
+  std::vector<AXPlatformNode*> reverse_relations =
       GetDelegate()->GetSourceNodesForReverseRelations(
           ax::mojom::IntListAttribute::kDetailsIds);
 

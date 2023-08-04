@@ -156,7 +156,9 @@ struct DumpAccessibilityTreeTestPassToString {
   }
 };
 
-// UIA is excluded due to flakiness. See https://crbug.com/1459215
+// UIA is excluded due to flakiness. See https://crbug.com/1459215.
+// TODO(https://crbug.com/1470120): We need to create a way to incrementally
+// enable and create UIA tests.
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTest,
@@ -3663,6 +3665,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, WhitespaceDynamic) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, TableWithPseudoElements) {
   RunHtmlTest(FILE_PATH_LITERAL("table-with-pseudo-elements.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, IgnoreDuplicateRelationIds) {
+  RunRelationsTest(FILE_PATH_LITERAL("ignore-duplicate-relation-ids.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, IgnoreReflexiveRelations) {
+  RunRelationsTest(FILE_PATH_LITERAL("ignore-reflexive-relations.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       RelationsPreserveAuthorOrder) {
+  RunRelationsTest(FILE_PATH_LITERAL("relations-preserve-author-order.html"));
 }
 
 //

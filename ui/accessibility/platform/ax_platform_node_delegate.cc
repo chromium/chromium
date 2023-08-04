@@ -487,18 +487,12 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
   if (!GetIntAttribute(attr, &target_id))
     return nullptr;
 
-  return GetFromNodeID(target_id);
-}
-
-std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetNodesForNodeIds(
-    const std::set<int32_t>& ids) {
-  std::set<AXPlatformNode*> nodes;
-  for (int32_t node_id : ids) {
-    if (AXPlatformNode* node = GetFromNodeID(node_id)) {
-      nodes.insert(node);
-    }
+  AXPlatformNode* node = GetFromNodeID(target_id);
+  if (!IsValidRelationTarget(node)) {
+    return nullptr;
   }
-  return nodes;
+
+  return node;
 }
 
 std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
@@ -514,29 +508,54 @@ std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
 
   std::vector<ui::AXPlatformNode*> nodes;
   for (int32_t target_id : target_ids) {
-    if (ui::AXPlatformNode* node = GetFromNodeID(target_id)) {
-      if (!base::Contains(nodes, node))
-        nodes.push_back(node);
+    ui::AXPlatformNode* target = GetFromNodeID(target_id);
+    if (target && IsValidRelationTarget(target) &&
+        !base::Contains(nodes, target)) {
+      nodes.push_back(target);
     }
   }
 
   return nodes;
 }
 
-std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
+std::vector<AXPlatformNode*>
+AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   // TODO(accessibility) Implement these if views ever use relations more
   // widely. The use so far has been for the Omnibox to the suggestion
   // popup. If this is ever implemented, then the "popup for" to "controlled
   // by" mapping in AXPlatformRelationWin can be removed, as it would be
   // redundant with setting the controls relationship.
-  return std::set<AXPlatformNode*>();
+  return std::vector<AXPlatformNode*>();
 }
 
-std::set<AXPlatformNode*>
+std::vector<AXPlatformNode*>
 AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
-  return std::set<AXPlatformNode*>();
+  return std::vector<AXPlatformNode*>();
+}
+
+std::vector<ui::AXPlatformNode*>
+AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
+    const std::set<AXNodeID>& ids) {
+  std::vector<ui::AXPlatformNode*> nodes;
+
+  for (AXNodeID node_id : ids) {
+    ui::AXPlatformNode* node = GetFromNodeID(node_id);
+    if (node && IsValidRelationTarget(node)) {
+      nodes.push_back(node);
+    }
+  }
+  return nodes;
+}
+
+bool AXPlatformNodeDelegate::IsValidRelationTarget(
+    AXPlatformNode* target) const {
+  DCHECK_GT(GetUniqueId(), kInvalidAXUniqueId);
+  DCHECK(target);
+  DCHECK_GT(target->GetUniqueId(), kInvalidAXUniqueId);
+  // We should ignore reflexive relations.
+  return GetUniqueId() != target->GetUniqueId();
 }
 
 std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {

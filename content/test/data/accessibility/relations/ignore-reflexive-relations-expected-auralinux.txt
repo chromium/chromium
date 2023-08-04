@@ -1,0 +1,3 @@
+[document web]
+++[paragraph]
+++++[static] name='Self referential node'

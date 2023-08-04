@@ -494,14 +494,18 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Given an attribute which could be used to establish a reverse relationship
   // between this node and a set of other nodes (AKA the source nodes), return
   // the list of source nodes if any.
-  virtual std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
+  virtual std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr);
 
   // Given an attribute which could be used to establish a reverse relationship
   // between this node and a set of other nodes (AKA the source nodes), return
   // the list of source nodes if any.
-  virtual std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
+  virtual std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr);
+
+  // Given a potential target, check if this node can point to `target` with a
+  // relation.
+  bool IsValidRelationTarget(AXPlatformNode* target) const;
 
   // Returns the string representation of the unique ID assigned by the author,
   // otherwise returns an empty string if none has been assigned. The author ID
@@ -646,10 +650,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   AXPlatformNodeDelegate* GetParentDelegate() const;
 
-  // Given a list of node ids, return the nodes in this delegate's tree to
-  // which they correspond.
-  std::set<ui::AXPlatformNode*> GetNodesForNodeIds(
-      const std::set<int32_t>& ids);
+  // Given a set of Blink node IDs, get their respective platform nodes and
+  // return only those that are valid targets for a relation.
+  std::vector<ui::AXPlatformNode*> GetNodesFromRelationIdSet(
+      const std::set<AXNodeID>& ids);
 
  private:
   // The underlying node. This could change during the lifetime of this object

@@ -5073,6 +5073,14 @@ data/accessibility/regression/slot-creation-crash.html
 data/accessibility/regression/title-in-shadow-expected-blink.txt
 data/accessibility/regression/title-in-shadow.html
 data/accessibility/regression/xml-in-iframe-crash.html
+data/accessibility/relations/ignore-duplicate-relation-ids-expected-auralinux.txt
+data/accessibility/relations/ignore-duplicate-relation-ids-expected-win.txt
+data/accessibility/relations/ignore-duplicate-relation-ids.html
+data/accessibility/relations/ignore-reflexive-relations-expected-auralinux.txt
+data/accessibility/relations/ignore-reflexive-relations-expected-win.txt
+data/accessibility/relations/ignore-reflexive-relations.html
+data/accessibility/relations/relations-preserve-author-order-expected-win.txt
+data/accessibility/relations/relations-preserve-author-order.html
 data/accessibility/scrolling/embedded-text.html
 data/accessibility/scrolling/iframe-text.html
 data/accessibility/scrolling/implicit-root-scroller.html

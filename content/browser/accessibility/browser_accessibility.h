@@ -429,13 +429,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsOffscreen() const override;
   bool IsWebContent() const override;
   bool HasVisibleCaretOrSelection() const override;
-  ui::AXPlatformNode* GetTargetNodeForRelation(
+  std::vector<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr) override;
-  std::vector<ui::AXPlatformNode*> GetTargetNodesForRelation(
-      ax::mojom::IntListAttribute attr) override;
-  std::set<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
-      ax::mojom::IntAttribute attr) override;
-  std::set<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
+  std::vector<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr) override;
   absl::optional<int> GetPosInSet() const override;
   absl::optional<int> GetSetSize() const override;
@@ -518,11 +514,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
       ui::AXOffscreenResult* offscreen_result) const;
-
-  // Given a set of node ids, return the nodes in this delegate's tree to
-  // which they correspond.
-  std::set<ui::AXPlatformNode*> GetNodesForNodeIdSet(
-      const std::set<int32_t>& ids);
 
   // If the node has a child tree, get the root node.
   BrowserAccessibility* PlatformGetRootOfChildTree() const;
