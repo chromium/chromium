@@ -90,7 +90,7 @@ BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
 // that are opted-out of virtual cards.
 BASE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering,
              "AutofillEnableMerchantOptOutClientSideUrlFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on desktop.
