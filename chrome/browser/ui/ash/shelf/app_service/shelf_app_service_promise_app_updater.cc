@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/shelf/shelf_promise_app_updater.h"
+#include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_promise_app_updater.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

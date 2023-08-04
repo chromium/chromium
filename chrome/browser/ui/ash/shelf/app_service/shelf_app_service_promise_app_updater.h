@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SHELF_SHELF_PROMISE_APP_UPDATER_H_
-#define CHROME_BROWSER_UI_ASH_SHELF_SHELF_PROMISE_APP_UPDATER_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_SHELF_APP_SERVICE_PROMISE_APP_UPDATER_H_
+#define CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_SHELF_APP_SERVICE_PROMISE_APP_UPDATER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -36,4 +36,4 @@ class ShelfPromiseAppUpdater : public ShelfAppUpdater,
       promise_app_registry_cache_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_PROMISE_APP_UPDATER_H_
+#endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_SHELF_APP_SERVICE_PROMISE_APP_UPDATER_H_
