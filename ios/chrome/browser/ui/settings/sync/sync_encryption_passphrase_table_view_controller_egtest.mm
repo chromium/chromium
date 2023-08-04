@@ -115,7 +115,7 @@ NSString* const kPassphrase = @"hello";
 // passphrase.
 - (void)testShowAddSyncPassphrphrase {
   // TODO(crbug.com/1469537): Test fails when run on iOS 16 and iOS 17.
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
+  if (base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS 16 and iOS 17.");
   }
 
