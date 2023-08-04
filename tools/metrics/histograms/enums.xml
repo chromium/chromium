@@ -55302,10 +55302,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 <enum name="IOSMagicStackModuleType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>
-  <int value="2" label="kSetUpListSync"/>
-  <int value="3" label="kSetUpListAutofill"/>
-  <int value="4" label="kCompactedSetUpList"/>
-  <int value="5" label="kSetUpListAllSet"/>
+  <int value="2" label="Set Up List Sync"/>
+  <int value="3" label="Set Up List Default Browser"/>
+  <int value="4" label="Set Up List Autofill"/>
+  <int value="5" label="Set Up List Compacted"/>
+  <int value="6" label="Set Up List All Set"/>
 </enum>
 
 <enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
