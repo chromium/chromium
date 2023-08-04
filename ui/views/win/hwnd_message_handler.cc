@@ -1926,6 +1926,13 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
                                          const gfx::Size& screen_size) {
   TRACE_EVENT0("ui", "HWNDMessageHandler::OnDisplayChange");
 
+  // Typically, in the case of display changes, ScreenWin's OnDisplayChange
+  // handler will get called first, but sometimes it doesn't. This catches
+  // that case, when monitors are added or removed, without a lot of extra
+  // updates of the global ScreenWin DisplayInfos state. See
+  // https://crbug.com/1413940 for more info.
+  display::win::ScreenWin::UpdateDisplayInfosIfNeeded();
+
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   delegate_->HandleDisplayChange();
 
