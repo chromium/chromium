@@ -43,22 +43,17 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
-#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -71,8 +66,6 @@
 #include "components/reporting/util/test_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -93,9 +86,6 @@ using testing::Mock;
 namespace policy {
 
 namespace {
-
-constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
 
 constexpr char kExampleUrl1[] = "https://example1.com/";
 constexpr char kExampleUrl2[] = "https://example2.com/";
@@ -197,39 +187,35 @@ using FileDaemonInfo = policy::DlpFilesControllerAsh::FileDaemonInfo;
 
 }  // namespace
 
-class DlpFilesControllerAshTest : public testing::Test {
+class DlpFilesControllerAshTest : public DlpFilesTestBase {
  public:
   DlpFilesControllerAshTest(const DlpFilesControllerAshTest&) = delete;
   DlpFilesControllerAshTest& operator=(const DlpFilesControllerAshTest&) =
       delete;
 
  protected:
-  DlpFilesControllerAshTest()
-      : profile_(std::make_unique<TestingProfile>()),
-        user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(user_manager_.get()))) {}
+  DlpFilesControllerAshTest() = default;
 
   ~DlpFilesControllerAshTest() override = default;
 
   void SetUp() override {
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-    profile_->SetIsNewProfile(true);
-    user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, /*is_affiliated=*/false,
-            user_manager::USER_TYPE_REGULAR, profile_.get());
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                /*browser_restart=*/false,
-                                /*is_child=*/false);
-    user_manager_->SimulateUserProfileLoad(account_id);
-
-    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        profile_.get(),
-        base::BindRepeating(&DlpFilesControllerAshTest::SetDlpRulesManager,
-                            base::Unretained(this)));
-    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+    DlpFilesTestBase::SetUp();
     ASSERT_TRUE(rules_manager_);
+    files_controller_ =
+        std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
+
+    event_storage_ = files_controller_->GetEventStorageForTesting();
+    DCHECK(event_storage_);
+
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    event_storage_->SetTaskRunnerForTesting(task_runner_);
+
+    reporting_manager_ = std::make_unique<DlpReportingManager>();
+    SetReportQueueForReportingManager(
+        reporting_manager_.get(), events,
+        base::SequencedTaskRunner::GetCurrentDefault());
+    ON_CALL(*rules_manager_, GetReportingManager)
+        .WillByDefault(::testing::Return(reporting_manager_.get()));
 
     // Set FilesPolicyNotificationManager.
     policy::FilesPolicyNotificationManagerFactory::GetInstance()
@@ -260,37 +246,12 @@ class DlpFilesControllerAshTest : public testing::Test {
   }
 
   void TearDown() override {
-    scoped_user_manager_.reset();
-    profile_.reset();
+    DlpFilesTestBase::TearDown();
     reporting_manager_.reset();
 
     if (chromeos::DlpClient::Get()) {
       chromeos::DlpClient::Shutdown();
     }
-  }
-
-  std::unique_ptr<KeyedService> SetDlpRulesManager(
-      content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
-    rules_manager_ = dlp_rules_manager.get();
-
-    files_controller_ =
-        std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
-
-    event_storage_ = files_controller_->GetEventStorageForTesting();
-    DCHECK(event_storage_);
-
-    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-    event_storage_->SetTaskRunnerForTesting(task_runner_);
-
-    reporting_manager_ = std::make_unique<DlpReportingManager>();
-    SetReportQueueForReportingManager(
-        reporting_manager_.get(), events,
-        base::SequencedTaskRunner::GetCurrentDefault());
-    ON_CALL(*rules_manager_, GetReportingManager)
-        .WillByDefault(::testing::Return(reporting_manager_.get()));
-
-    return dlp_rules_manager;
   }
 
   std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
@@ -332,13 +293,6 @@ class DlpFilesControllerAshTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(&add_files_cb);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_ = nullptr;
   raw_ptr<MockFilesPolicyNotificationManager, ExperimentalAsh> fpnm_ = nullptr;
   std::unique_ptr<DlpFilesControllerAsh> files_controller_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;

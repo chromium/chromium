@@ -416,6 +416,8 @@ static_library("test_support") {
     "policy/dlp/dialogs/mock_dlp_warn_notifier.h",
     "policy/dlp/test/dlp_content_manager_test_helper.cc",
     "policy/dlp/test/dlp_content_manager_test_helper.h",
+    "policy/dlp/test/dlp_files_test_base.cc",
+    "policy/dlp/test/dlp_files_test_base.h",
     "policy/dlp/test/dlp_reporting_manager_test_helper.cc",
     "policy/dlp/test/dlp_reporting_manager_test_helper.h",
     "policy/dlp/test/dlp_rules_manager_test_utils.cc",
@@ -431,12 +433,19 @@ static_library("test_support") {
     ":chromeos",
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
     "//crypto:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/views",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    public_deps += [ "//chrome/browser/ash:test_support" ]
+  }
+
   deps = [
     ":dlp_policy_event_proto",
     "//components/reporting/client:test_support",
