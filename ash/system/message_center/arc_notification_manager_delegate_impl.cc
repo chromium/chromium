@@ -21,7 +21,7 @@ ArcNotificationManagerDelegateImpl::ArcNotificationManagerDelegateImpl() =
 ArcNotificationManagerDelegateImpl::~ArcNotificationManagerDelegateImpl() =
     default;
 
-bool ArcNotificationManagerDelegateImpl::IsPublicSessionOrKiosk() const {
+bool ArcNotificationManagerDelegateImpl::IsManagedGuestSessionOrKiosk() const {
   const LoginStatus login_status =
       Shell::Get()->session_controller()->login_status();
 
