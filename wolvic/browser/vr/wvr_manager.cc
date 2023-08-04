@@ -309,25 +309,16 @@ void WvrManager::OnWebXrFrameAvailable() {
   if (!webxr_frame_timeout_closure_.IsCancelled())
     webxr_frame_timeout_closure_.Cancel();
 
-  // The processing frame would be empty when this method is called again from
-  // Android system after OnWebXrTimedOut.
-  if (webxr_.HaveProcessingFrame()) {
-    // Frame should be locked. Unlock it.
-    DCHECK(webxr_.GetProcessingFrame()->state_locked);
-    webxr_.GetProcessingFrame()->state_locked = false;
+  // LIFECYCLE: we should be in processing state.
+  DCHECK(webxr_.HaveProcessingFrame());
+  device::WebXrFrame* processing_frame = webxr_.GetProcessingFrame();
 
-    if (!SubmitFrameInternal(webxr_.GetProcessingFrame()->index))
-      return;
+  // Frame should be locked. Unlock it.
+  DCHECK(processing_frame->state_locked);
+  processing_frame->state_locked = false;
 
-    if (webxr_.HaveRenderingFrame())
-      webxr_.EndFrameRendering();
-    webxr_.TransitionFrameProcessingToRendering();
-  }
-
-  // Renderer is waiting for the previous frame to render, unblock it now.
-  submit_client_->OnSubmitFrameRendered();
-
-  WebXrTryStartAnimatingFrame();
+  // Continue with submit immediately.
+  DrawFrameSubmitNow(processing_frame);
 }
 
 void WvrManager::OnWebXrTimedOut() {
@@ -499,6 +490,26 @@ WvrManager::GetInputSourceState() {
   return input_sources;
 }
 
+void WvrManager::DrawFrameSubmitNow(device::WebXrFrame* processing_frame) {
+  if (!SubmitFrameInternal(processing_frame->index))
+    return;
+
+  // Report rendering completion to the Renderer so that it's permitted to
+  // submit a fresh frame. We could do this earlier, as soon as the frame
+  // got pulled off the transfer surface, but that results in overstuffed
+  // buffers.
+
+  // Renderer is waiting for the previous frame to render, unblock it now.
+  submit_client_->OnSubmitFrameRendered();
+
+  if (webxr_.HaveRenderingFrame())
+    webxr_.EndFrameRendering();
+  webxr_.TransitionFrameProcessingToRendering();
+
+  // See if we can animate a new WebXR frame.
+  WebXrTryStartAnimatingFrame();
+}
+
 bool WvrManager::WebVrCanAnimateFrame() {
   // If we already have a JS frame that's animating, don't send another one.
   // This check depends on the Renderer calling either SubmitFrame or
@@ -593,16 +604,19 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
 
     if (exit_vr_callback_)
       std::move(exit_vr_callback_).Run();
+    DLOG(WARNING) << __func__
+                  << "Presenting generation changed. Don't submit frame";
     return false;
   }
-
-  last_frame_index_ = frame_index;
 
   if (!wvr_api_->SyncState(frame_index,
                            graphics_->webxr_texture_handle(),
                            graphics_->webxr_surface_size().width(),
-                           graphics_->webxr_surface_size().height()))
+                           graphics_->webxr_surface_size().height())) {
+    DLOG(WARNING) << __func__
+                  << "SyncState failed. Don't submit frame";
     return false;
+  }
 
   return true;
 }
