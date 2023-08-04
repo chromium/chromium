@@ -382,10 +382,6 @@ class VIEWS_EXPORT MenuItemView : public View {
     vertical_margin_ = vertical_margin;
     invalidate_dimensions();
   }
-  int vertical_margin() const {
-    return vertical_margin_.value_or(
-        MenuConfig::instance().item_vertical_margin);
-  }
 
   void set_children_use_full_width(bool children_use_full_width) {
     children_use_full_width_ = children_use_full_width;
@@ -413,6 +409,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns whether keyboard navigation through the menu should stop on this
   // item.
   bool IsTraversableByKeyboard() const;
+
+  // Returns the corresponding border padding from the `MenuConfig`.
+  int GetItemHorizontalBorder() const;
 
   bool last_paint_as_selected_for_testing() const {
     return last_paint_as_selected_;
@@ -576,6 +575,10 @@ class VIEWS_EXPORT MenuItemView : public View {
   void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color_id) {
     foreground_color_id_ = foreground_color_id;
   }
+
+  // Returns the corresponding margin from the `MenuConfig` if
+  // `vertical_margin_` is not set.
+  int GetVerticalMargin() const;
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as

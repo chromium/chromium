@@ -102,8 +102,8 @@ void SubmenuView::UpdateMenuPartSizes() {
   };
   const auto old_metrics = get_metrics();
 
-  trailing_padding_ =
-      config.item_horizontal_padding + config.item_horizontal_border_padding;
+  trailing_padding_ = config.item_horizontal_padding +
+                      parent_menu_item_->GetItemHorizontalBorder();
   const auto& menu_items = GetMenuItems();
   if (config.reserve_dedicated_arrow_column &&
       base::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {

@@ -64,6 +64,10 @@ struct VIEWS_EXPORT MenuConfig {
   // Margins between the item top/bottom and its contents.
   int item_vertical_margin = 4;
 
+  // Margins between the item top/bottom and its contents for ash system ui
+  // layout.
+  int ash_item_vertical_margin = 4;
+
   // Minimum dimensions used for entire items. If these are nonzero, they
   // override the vertical margin constants given above - the item's text and
   // icon are vertically centered within these heights.
@@ -81,6 +85,9 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Horizontal border padding in a menu item
   int item_horizontal_border_padding = 0;
+
+  // Horizontal border padding in a menu item for ash system ui layout.
+  int ash_item_horizontal_border_padding = 0;
 
   // Padding between the arrow and the edge.
   int arrow_to_edge_padding = 8;
