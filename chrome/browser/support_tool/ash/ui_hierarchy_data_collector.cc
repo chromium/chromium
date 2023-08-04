@@ -140,8 +140,9 @@ void UiHierarchyDataCollector::OnDataExportDone(
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success) {
-    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
-                              "Failed on data export."};
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        "UiHierarchyDataCollector failed on data export."};
     std::move(on_exported_callback).Run(error);
     return;
   }

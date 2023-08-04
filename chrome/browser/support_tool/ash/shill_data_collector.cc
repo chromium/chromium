@@ -170,8 +170,9 @@ void ShillDataCollector::OnGetManagerProperties(
     absl::optional<base::Value::Dict> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
-    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
-                              "ManagerPropertiesCallback Failed"};
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        "ShillDataCollector: ManagerPropertiesCallback failed"};
     std::move(data_collector_done_callback_).Run(/*error=*/error);
     return;
   }
@@ -343,16 +344,19 @@ void ShillDataCollector::OnPIIDetected(PIIMap detected_pii) {
   for (auto& entry : detected_pii)
     pii_map_[entry.first].insert(entry.second.begin(), entry.second.end());
   // Generates error message, if any.
-  std::string message;
+  std::string collector_errors;
   for (const auto& err : collector_err_) {
     if (err.second.size()) {
-      base::StrAppend(&message, {"Get ", err.first, " Properties Failed for : ",
-                                 base::JoinString(err.second, ", "), "\n"});
+      base::StrAppend(&collector_errors,
+                      {"Get ", err.first, " Properties Failed for : ",
+                       base::JoinString(err.second, ", "), "\n"});
     }
   }
-  if (message.size()) {
-    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
-                              std::move(message)};
+  if (collector_errors.size()) {
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        base::StrCat({"ShillDataCollector had errors collecting data: ",
+                      collector_errors})};
     std::move(data_collector_done_callback_).Run(/*error=*/error);
   } else {
     std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
@@ -409,7 +413,7 @@ void ShillDataCollector::OnFilesWritten(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success) {
     SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
-                              "Failed on data export."};
+                              "ShillDataCollector failed on data export."};
     std::move(on_exported_callback).Run(error);
     return;
   }
