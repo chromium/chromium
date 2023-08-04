@@ -107,14 +107,6 @@ public class TabInfo {
         return createTime;
     }
 
-    public int getIndex() {
-        return childIndex;
-    }
-
-    public void setIndex(int index) {
-        this.childIndex = index;
-    }
-
     public void setCurrentPageId(int currentPageId) {
         this.currentChildId = currentPageId;
     }
@@ -192,6 +184,10 @@ public class TabInfo {
         return create(parentId, false, createTime);
     }
 
+    public static TabInfo create(int parentId, boolean isGroup) {
+        return create(parentId, isGroup, System.currentTimeMillis());
+    }
+
     public static TabInfo create(int parentId, boolean isGroup, long createTime) {
         TabInfo manager = new TabInfo();
         manager.createTime = createTime;
@@ -217,6 +213,44 @@ public class TabInfo {
         os.writeInt(position);
         os.writeLong(accessTime);
         os.writeUTF(mTitle == null ? "" : mTitle);
+    }
+
+    public void fromStream(DataInputStream is) throws IOException {
+        int version = is.readInt();
+        ArkLogger.e(this, "fromStream version=" + version);
+        tabId = is.readInt();
+        if (version >= 3) {
+            if (version >= 5) {
+                mParentId = is.readInt();
+            } else {
+                String name = is.readUTF();
+                if ("group_incognito".equals(name)) {
+                    mParentId = -101;
+                } else {
+                    mParentId = -100;
+                }
+            }
+        } else {
+            mParentId = -100;
+        }
+        if (version >= 4) {
+            mIsGroup = is.readBoolean();
+        } else {
+            mIsGroup = false;
+        }
+        if (version >= 2) {
+            mLaunchType = is.readInt();
+        }
+        createTime = is.readLong();
+        incognito = is.readBoolean();
+        isLocked = is.readBoolean();
+        childIndex = is.readInt();
+        currentChildId = is.readInt();
+        position = is.readInt();
+        accessTime = is.readLong();
+        if (version >= 6) {
+            mTitle = is.readUTF();
+        }
     }
 
     public static TabInfo create(DataInputStream is) throws IOException {

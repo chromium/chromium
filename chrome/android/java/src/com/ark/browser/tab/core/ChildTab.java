@@ -138,12 +138,20 @@ public class ChildTab implements ITab, IPageGroup {
 
     @Override
     public PageInfo getCurrentPageInfo() {
-        return getPageInfoAt(mTabInfo.getChildIndex());
+        return getPageInfoAt(getCurrentIndex());
     }
 
     @Override
     public IPage getCurrentPage() {
-        return getPageAt(mTabInfo.getChildIndex());
+        return getPageAt(getCurrentIndex());
+    }
+
+    private int getCurrentIndex() {
+        if (mTabInfo.getChildIndex() >= mPages.size()) {
+            mTabInfo.setChildIndex(mPages.size() - 1);
+            saveTabInfo();
+        }
+        return mTabInfo.getChildIndex();
     }
 
 //    @Override

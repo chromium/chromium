@@ -263,6 +263,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/fragment_setting_site_redirect.xml",
     "//chrome/android/java/res_app/layout/fragment_setting_site_single.xml",
     "//chrome/android/java/res_app/layout/fragment_settings.xml",
+    "//chrome/android/java/res_app/layout/fragment_tab_search.xml",
     "//chrome/android/java/res_app/layout/fragment_wallpaper.xml",
     "//chrome/android/java/res_app/layout/fragment_wallpaper_previewer.xml",
 
@@ -282,6 +283,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_search.xml",
     "//chrome/android/java/res_app/layout/item_tab.xml",
     "//chrome/android/java/res_app/layout/item_tab_card.xml",
+    "//chrome/android/java/res_app/layout/item_tab_card_search.xml",
     "//chrome/android/java/res_app/layout/item_text.xml",
     "//chrome/android/java/res_app/layout/item_wallpaper.xml",
     "//chrome/android/java/res_app/layout/item_website.xml",

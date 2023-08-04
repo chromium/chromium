@@ -28,7 +28,9 @@ import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
+import com.ark.browser.ui.fragment.download.DownloadFragment2;
 import com.ark.browser.ui.fragment.download.DownloadMultiData;
 import com.ark.browser.ui.recycler.BookmarkMultiData;
 import com.ark.browser.ui.widget.FitWidthImageView;
@@ -50,6 +52,7 @@ import com.zpj.recyclerview.layouter.GridLayouter;
 import com.zpj.recyclerview.layouter.HorizontalLayouter;
 import com.zpj.recyclerview.layouter.VerticalLayouter;
 import com.zpj.recyclerview.manager.MultiLayoutManager;
+import com.zpj.skin.SkinEngine;
 import com.zpj.statemanager.State;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.KeyboardUtils;
@@ -94,21 +97,66 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
     private ZSearchBar searchBar;
 
 
-    private final StickHeaderMultiData stickHeader1 = new StickHeaderMultiData("搜索历史");
-    private final StickHeaderMultiData stickHeader0 = new StickHeaderMultiData("标签页");
-//    private final StickHeaderMultiData stickHeader3 = new StickHeaderMultiData("主页图标");
-    private final StickHeaderMultiData stickHeader4 = new StickHeaderMultiData("下载文件");
+    private final StickHeaderMultiData stickHeader1 = new StickHeaderMultiData("搜索历史") {
+
+        @Override
+        public void onBindViewHolder(EasyViewHolder holder, List<Void> list, int position, List<Object> payloads) {
+            super.onBindViewHolder(holder, list, position, payloads);
+            holder.setVisible(R.id.clear_search_history, true);
+            holder.setOnClickListener(R.id.clear_search_history, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ZDialog.arrowMenu()
+                            .setOrientation(LinearLayout.HORIZONTAL)
+                            .setOptionMenus("全部清除")
+                            .setOnItemClickListener((position, menu) -> {
+                                ZToast.normal(menu.getTitle().toString());
+                                ThreadPool.executeIO(() -> {
+                                    SearchHistoryManager.deleteAllLocalSearchHistory();
+                                    ThreadPool.postOnUIThread(SearchFragment.this::initFlowLayout);
+                                });
+                            })
+                            .setAttachView(v)
+                            .show(holder.getContext());
+                }
+            });
+        }
+    };
+    private final StickHeaderMultiData stickHeader0 = new StickHeaderMultiData("标签页") {
+        @Override
+        public void onBindViewHolder(EasyViewHolder holder, List<Void> list, int position, List<Object> payloads) {
+            super.onBindViewHolder(holder, list, position, payloads);
+            holder.setVisible(R.id.clear_search_history, true);
+            holder.setImageResource(R.id.clear_search_history, R.drawable.ic_enter_bak);
+            SkinEngine.setTint(holder.getImageView(R.id.clear_search_history), R.attr.textColorMajor);
+            holder.setOnClickListener(R.id.clear_search_history, v -> start(new TabSearchFragment()));
+        }
+    };
+    //    private final StickHeaderMultiData stickHeader3 = new StickHeaderMultiData("主页图标");
+    private final StickHeaderMultiData stickHeader4 = new StickHeaderMultiData("下载文件") {
+        @Override
+        public void onBindViewHolder(EasyViewHolder holder, List<Void> list, int position, List<Object> payloads) {
+            super.onBindViewHolder(holder, list, position, payloads);
+            holder.setVisible(R.id.clear_search_history, true);
+            holder.setImageResource(R.id.clear_search_history, R.drawable.ic_enter_bak);
+            SkinEngine.setTint(holder.getImageView(R.id.clear_search_history), R.attr.textColorMajor);
+            holder.setOnClickListener(R.id.clear_search_history, v -> start(DownloadFragment2.newInstance(0)));
+        }
+    };
     private final StickHeaderMultiData stickHeader2 = new StickHeaderMultiData("最近浏览") {
 
         @Override
         public void onBindViewHolder(EasyViewHolder holder, List<Void> list, int position, List<Object> payloads) {
             super.onBindViewHolder(holder, list, position, payloads);
-            holder.setVisible(R.id.clear_search_history, false);
+            holder.setVisible(R.id.clear_search_history, true);
+            holder.setImageResource(R.id.clear_search_history, R.drawable.ic_enter_bak);
+            SkinEngine.setTint(holder.getImageView(R.id.clear_search_history), R.attr.textColorMajor);
+            holder.setOnClickListener(R.id.clear_search_history, v -> start(CollectionFragment.newInstance(1)));
         }
     };
     private final FlowHeaderMultiData flowHeaderMultiData = new FlowHeaderMultiData();
     private final TabListMultiData tabListMultiData = new TabListMultiData();
-//    private final FavoriteItemMultiData favoriteItemMultiData = new FavoriteItemMultiData();
+    //    private final FavoriteItemMultiData favoriteItemMultiData = new FavoriteItemMultiData();
     private final DownloadMultiData downloadMultiData = new DownloadMultiData();
     private final GridHeaderMultiData gridHeaderMultiData = new GridHeaderMultiData();
     private final BookmarkMultiData bookmarkMultiData = new BookmarkMultiData(null);
@@ -189,24 +237,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
             ViewCompat.setElevation(holder.getItemView(), 0);
             holder.getItemView().setBackgroundColor(Color.TRANSPARENT);
 
-            holder.setVisible(R.id.clear_search_history, true);
-            holder.setOnClickListener(R.id.clear_search_history, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ZDialog.arrowMenu()
-                            .setOrientation(LinearLayout.HORIZONTAL)
-                            .setOptionMenus("全部清除")
-                            .setOnItemClickListener((position, menu) -> {
-                                ZToast.normal(menu.getTitle().toString());
-                                ThreadPool.executeIO(() -> {
-                                    SearchHistoryManager.deleteAllLocalSearchHistory();
-                                    ThreadPool.postOnUIThread(SearchFragment.this::initFlowLayout);
-                                });
-                            })
-                            .setAttachView(v)
-                            .show(holder.getContext());
-                }
-            });
+            holder.setVisible(R.id.clear_search_history, false);
         }
 
         @Override
@@ -596,7 +627,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
         }
     }
 
-    private void initFlowLayout(){
+    private void initFlowLayout() {
         flowHeaderMultiData.setOnItemClickListener(this);
         flowHeaderMultiData.setOnItemLongClickListener(this);
 
@@ -609,10 +640,9 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
         });
     }
 
-    private void handleSearch(String query){
+    private void handleSearch(String query) {
         KeyboardUtils.hideSoftInputKeyboard(searchBar.getEditor());
         insertToDB(query);
-
 
 
         if (UrlUtilities.isUrl(query)) {
@@ -660,7 +690,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
         historyProvider.queryHistory("");
     }
 
-    private void keywordFilter(String s){
+    private void keywordFilter(String s) {
         if (s.isEmpty()) {
             return;
         }
@@ -681,7 +711,6 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
             @Override
             public void onSuccess(String body) {
                 Log.d(TAG, "body111=" + body);
-
 
 
                 List<String> strings = new ArrayList<>();

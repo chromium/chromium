@@ -50,7 +50,7 @@ public class GroupTab implements ITabGroup {
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
     public GroupTab(ITabGroup parent) {
-        this(parent, TabInfo.create(parent.getId()));
+        this(parent, TabInfo.create(parent.getId(), true));
     }
 
     public GroupTab(ITabGroup parent, TabInfo tabInfo) {
@@ -101,24 +101,11 @@ public class GroupTab implements ITabGroup {
         return null;
     }
 
-    public void readGroupFile(DataInputStream is) {
+    private void readGroupFile(DataInputStream is) {
         try {
+            mTabInfo.fromStream(is);
             int version = is.readInt();
             ArkLogger.e(this, "readGroupFile version=" + version);
-            mTabInfo.setId(is.readInt());
-            mTabInfo.setParentId(is.readInt());
-            mTabInfo.setIsGroup(is.readBoolean());
-            mTabInfo.setLaunchType(is.readInt());
-            mTabInfo.setCreateTime(is.readLong());
-            mTabInfo.setIncognito(is.readBoolean());
-            mTabInfo.setLocked(is.readBoolean());
-            mTabInfo.setIndex(is.readInt());
-            mTabInfo.setCurrentPageId(is.readInt());
-            mTabInfo.setPosition(is.readInt());
-            mTabInfo.setAccessTime(is.readLong());
-            if (version >= 6) {
-                mTabInfo.setTitle(is.readUTF());
-            }
 
             int count = is.readInt();
             ArkLogger.e(TabInfo.class, "readGroupFile id="
@@ -161,7 +148,7 @@ public class GroupTab implements ITabGroup {
 
     @Override
     public int getIndex() {
-        return mTabInfo.getIndex();
+        return mTabInfo.getChildIndex();
     }
 
     @Override
@@ -356,25 +343,33 @@ public class GroupTab implements ITabGroup {
     }
 
     @Override
-    public boolean moveToNewGroup(ITab tab) {
+    public boolean moveToNewGroup(ITab tab, boolean selected) {
         if (tab.getParentTab() == this) {
             return false;
         }
         ITabGroup oldGroup = tab.getParentTab();
-        if (oldGroup.removeTab(tab)) {
+        if (oldGroup == null || oldGroup.removeTab(tab)) {
             tab.setParentGroup(this);
-            tab.getTabInfo().setPosition(mTabList.size());
+            ITab lastTab = getTabAt(mTabList.size() - 1);
+            if (lastTab == null) {
+                tab.getTabInfo().setPosition(0);
+            } else {
+                tab.getTabInfo().setPosition(lastTab.getTabInfo().getPosition() + 1);
+            }
             mTabList.add(tab);
             saveTabInfo();
             tab.saveTabInfo();
 
-            ITab current = tab;
-            ITabGroup parent = tab.getParentTab();
-            while (parent != null) {
-                parent.onIndexChanged(parent.indexOf(current));
-                current = parent;
-                parent = parent.getParentTab();
+            if (selected) {
+                ITab current = tab;
+                ITabGroup parent = tab.getParentTab();
+                while (parent != null) {
+                    parent.onIndexChanged(parent.indexOf(current));
+                    current = parent;
+                    parent = parent.getParentTab();
+                }
             }
+
 
             // TODO optimise
             TabGroupManager.global().notifyTabMoved(tab, oldGroup);
@@ -444,7 +439,7 @@ public class GroupTab implements ITabGroup {
         if (getIndex() == index) {
             return;
         }
-        mTabInfo.setIndex(index);
+        mTabInfo.setChildIndex(index);
         mTabInfo.setCurrentPageId(getTabAt(index).getId());
         saveTabInfo();
     }

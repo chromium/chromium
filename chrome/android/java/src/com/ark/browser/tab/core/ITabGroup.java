@@ -225,7 +225,7 @@ public interface ITabGroup extends ITab {
 
     boolean moveToNewTab(IPage page);
 
-    boolean moveToNewGroup(ITab tab);
+    boolean moveToNewGroup(ITab tab, boolean selected);
 
     default boolean closeTab(ITab tab) {
         if (removeTab(tab)) {
@@ -257,7 +257,7 @@ public interface ITabGroup extends ITab {
             if (getTabList().isEmpty()) {
                 // TODO remove empty group
                 index = ITab.INVALID_TAB_INDEX;
-            } else if (getIndex() > getTabList().size() - 1) {
+            } else if (index > getTabList().size() - 1) {
                 index = getTabList().size() - 1;
             }
             onIndexChanged(index);

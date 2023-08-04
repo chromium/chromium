@@ -612,7 +612,7 @@ public class SmartSearchPanel extends FrameLayout {
 
                 @Override
                 public void onIndexChanged(int index) {
-                    mTabInfo.setIndex(index);
+                    mTabInfo.setChildIndex(index);
                 }
 
             };

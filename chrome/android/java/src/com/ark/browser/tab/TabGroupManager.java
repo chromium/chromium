@@ -18,9 +18,8 @@ import com.ark.browser.utils.ThreadPool;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -265,6 +264,13 @@ public class TabGroupManager {
         public static final int ID_INCOGNITO = -101;
 
         private int mCurrentIndex = 0;
+
+        // TODO optimise
+        protected final TabContentManager mTabContentManager = new TabContentManager();
+
+        public TabContentManager getTabContentManager() {
+            return mTabContentManager;
+        }
 
         private GlobalSelector() {
             TabInfo info = TabInfo.create(ID_DEFAULT, -1, true);

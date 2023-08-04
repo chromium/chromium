@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabPickerDialog> {
@@ -42,13 +43,18 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
 
     private MultiRecycler mRecycler;
 
-    private ITab mTab;
+    private List<Integer> mGroupsToMove;
+    private List<ITab> mTabsToMove;
 
     public static GroupTabPickerDialog newInstance(int tabId) {
-        Bundle args = new Bundle();
-        args.putInt(Keys.KEY_ID, tabId);
         GroupTabPickerDialog fragment = new GroupTabPickerDialog();
-        fragment.setArguments(args);
+        fragment.mTabsToMove = Collections.singletonList(TabGroupManager.findTabById(tabId));
+        return fragment;
+    }
+
+    public static GroupTabPickerDialog newInstance(List<ITab> tabs) {
+        GroupTabPickerDialog fragment = new GroupTabPickerDialog();
+        fragment.mTabsToMove = tabs;
         return fragment;
     }
 
@@ -60,17 +66,17 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int tabId = Tab.INVALID_PAGE_ID;
-        if (savedInstanceState == null) {
-            if (getArguments() != null) {
-                tabId = getArguments().getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
-            }
-        } else {
-            tabId = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
-        }
-        mTab = TabGroupManager.findTabById(tabId);
-        if (mTab == null) {
+        if (mTabsToMove == null) {
             popThis();
+        } else {
+            for (ITab tab : mTabsToMove) {
+                if (tab instanceof ITabGroup) {
+                    if (mGroupsToMove == null) {
+                        mGroupsToMove = new ArrayList<>();
+                    }
+                    mGroupsToMove.add(tab.getId());
+                }
+            }
         }
     }
 
@@ -109,10 +115,17 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
     }
 
     private void updateFolderList() {
-        ITabGroup rootGroup = mTab.getRootGroupTab();
+        ITabGroup rootGroup = TabGroupManager.global().getTabGroup(false);
         TreeMultiData root = new TreeMultiData(null, rootGroup);
         getBookmarkFolderTree(root, 0);
-        mRecycler.setItems(root);
+        mRecycler.addItem(root);
+
+
+//        ITabGroup rootGroup2 = TabGroupManager.global().getTabGroup(true);
+//        TreeMultiData root2 = new TreeMultiData(null, rootGroup2);
+//        getBookmarkFolderTree(root2, 0);
+//        mRecycler.addItem(root2);
+
         postOnEnterAnimationEnd(() -> mRecycler.showContent());
     }
 
@@ -120,7 +133,7 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
         ITabGroup group = parent.getTabGroup();
         for (ITab child : group.getTabList()) {
             if (child instanceof ITabGroup) {
-                if (mTab instanceof ITabGroup && mTab.getId() == child.getId()) {
+                if (mGroupsToMove != null && mGroupsToMove.contains(child.getId())) {
                     continue;
                 }
                 TreeMultiData childNode = new TreeMultiData(parent, (ITabGroup) child);
@@ -213,9 +226,10 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
             holder.getItemView().setTag(tabGroup);
             TextView textView = holder.getView(R.id.tv_title);
             textView.setText(tabGroup.getTitle());
-            textView.setTextColor(mTab.getParentTab() == tabGroup ?
-                    context.getResources().getColor(R.color.colorPrimary)
-                    : SkinEngine.getColor(context, R.attr.textColorMajor));
+//            textView.setTextColor(mTab.getParentTab() == tabGroup ?
+//                    context.getResources().getColor(R.color.colorPrimary)
+//                    : SkinEngine.getColor(context, R.attr.textColorMajor));
+            textView.setTextColor(SkinEngine.getColor(context, R.attr.textColorMajor));
             ClickHelper.with(holder.getItemView())
                     .setOnClickListener(new ClickHelper.OnClickListener() {
                         @Override
@@ -235,23 +249,29 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
             ArkLogger.e(this, "moveToNewGroup group id=" + tabGroup.getId());
             if (tabGroup.getId() == ITab.INVALID_TAB_INDEX) {
                 ITabGroup newGroup = new GroupTab(tabGroup.getParentTab());
-                if (tabGroup.moveToNewGroup(newGroup)) {
-                    if (newGroup.moveToNewGroup(mTab)) {
-                        ArkLogger.e(this, "moveToNewGroup move tab success!");
-                    } else {
-                        ArkLogger.e(this, "moveToNewGroup move tab failed! info=" + mTab.getTabInfo());
-                    }
+                if (tabGroup.moveToNewGroup(newGroup, true)) {
+                    moveToNewGroup(newGroup);
                 } else {
-                    ArkLogger.e(this, "moveToNewGroup create new group failed! info=" + mTab.getTabInfo());
+                    ArkLogger.e(this, "moveToNewGroup create new group failed! new group info=" + newGroup.getTabInfo());
                 }
             } else {
-                if (tabGroup.moveToNewGroup(mTab)) {
-                    ArkLogger.e(this, "moveToNewGroup move tab success!");
+                moveToNewGroup(tabGroup);
+            }
+            mTabsToMove = null;
+            pop();
+        }
+
+        private void moveToNewGroup(ITabGroup group) {
+            for (ITab tab : mTabsToMove) {
+                if (tab instanceof ITabGroup && tab.getId() == group.getId()) {
+                    continue;
+                }
+                if (group.moveToNewGroup(tab, true)) {
+                    ArkLogger.e(this, "moveToNewGroup move tab success!info=" + tab.getTabInfo());
                 } else {
-                    ArkLogger.e(this, "moveToNewGroup move tab failed! info=" + mTab.getTabInfo());
+                    ArkLogger.e(this, "moveToNewGroup move tab failed! info=" + tab.getTabInfo());
                 }
             }
-            pop();
         }
 
         public boolean onLongClick(View v, int position, float x, float y) {
@@ -267,7 +287,7 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
                                         .setEmptyable(false)
                                         .setTitle("新建文件夹")
                                         .setPositiveButton((fragment, which) -> {
-                                            String text = ((InputDialogFragment) fragment).getText();
+                                            String text = fragment.getText();
                                             TabInfo tabInfo = TabInfo.create(ITab.INVALID_TAB_INDEX,
                                                     tabGroup.getId(), true);
                                             tabInfo.setTitle(text);

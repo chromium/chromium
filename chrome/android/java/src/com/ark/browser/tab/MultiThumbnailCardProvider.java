@@ -205,6 +205,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 if (mTabs.get(i) != null) {
                     final int index = i;
                     PageInfo pageInfo = mTabs.get(i).getCurrentPageInfo();
+                    if (pageInfo == null) {
+                        drawThumbnailBitmapOnCanvasWithFrame(null, i);
+                        continue;
+                    }
                     final GURL url = new GURL(pageInfo.getUrl());
                     final boolean isIncognito = pageInfo.isIncognito();
                     // getTabThumbnailWithCallback() might call the callback up to twice,

@@ -113,7 +113,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
             list.clear();
             list.addAll(((IPageGroup) mTab).getPages());
             Collections.reverse(list);
-            mSelectPosition = list.size() - mTab.getTabInfo().getIndex() - 1;
+            mSelectPosition = list.size() - mTab.getTabInfo().getChildIndex() - 1;
         } else {
             popThis();
         }

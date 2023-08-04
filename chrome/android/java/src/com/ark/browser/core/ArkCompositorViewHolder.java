@@ -45,6 +45,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.ark.browser.tab.ArkSwipeRefreshHandler;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.ArkTabWebContentsObserver;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
 import com.ark.browser.ui.widget.SmartSearchPanel;
@@ -138,7 +139,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     protected ArkWindowAndroid mWindowAndroid;
 
     protected ArkLayoutManager mLayoutManager;
-    protected final TabContentManager mTabContentManager = new TabContentManager();
+    protected final TabContentManager mTabContentManager = TabGroupManager.global().getTabContentManager();
 
     protected Callback mCallback;
 
