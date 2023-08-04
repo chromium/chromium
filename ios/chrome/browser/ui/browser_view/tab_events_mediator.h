@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+
 class ChromeBrowserState;
 @class NewTabPageCoordinator;
 @protocol SideSwipeToolbarSnapshotProviding;
@@ -18,7 +20,7 @@ class WebStateList;
 // The required dependencies are injected into the mediator instance on init,
 // and are generally expected not to change during the mediator's lifetime.
 // The mediator keeps only weak references to injected dependencies.
-@interface TabEventsMediator : NSObject
+@interface TabEventsMediator : NSObject <NewTabPageTabHelperDelegate>
 
 // Consumer for tab UI changes.
 @property(nonatomic, weak) id<TabConsumer> consumer;

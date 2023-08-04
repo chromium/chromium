@@ -332,4 +332,26 @@
                            bottomToolbarImage:bottomToolbarImage];
 }
 
+#pragma mark - NewTabPageTabHelperDelegate
+
+- (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
+                                forWebState:(web::WebState*)webState {
+  if (webState != _webStateList->GetActiveWebState()) {
+    // In the instance that a pageload starts while the WebState is not the
+    // active WebState anymore, do nothing.
+    return;
+  }
+  // Handle NTP visibility changes within a web state.
+  if (NTPHelper->IsActive()) {
+    if (!_ntpCoordinator.started) {
+      [_ntpCoordinator start];
+    }
+    [_ntpCoordinator didNavigateToNTPInWebState:webState];
+  } else {
+    [_ntpCoordinator didNavigateAwayFromNTP];
+    [_ntpCoordinator stopIfNeeded];
+  }
+  [self.consumer displayTabViewIfActive];
+}
+
 @end

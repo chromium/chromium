@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
@@ -246,7 +245,6 @@ enum class ToolbarKind {
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
-    NewTabPageTabHelperDelegate,
     OverscrollActionsControllerDelegate,
     PageInfoCommands,
     PageInfoPresentation,
@@ -1371,6 +1369,9 @@ enum class ToolbarKind {
   self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   self.tabEventsMediator.consumer = browserViewController;
 
+  CHECK(self.tabLifecycleMediator);
+  self.tabLifecycleMediator.NTPTabHelperDelegate = self.tabEventsMediator;
+
   browserViewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 
@@ -1402,7 +1403,6 @@ enum class ToolbarKind {
   tabLifecycleMediator.repostFormDelegate = self;
   tabLifecycleMediator.tabInsertionBrowserAgent =
       TabInsertionBrowserAgent::FromBrowser(browser);
-  tabLifecycleMediator.NTPTabHelperDelegate = self;
   tabLifecycleMediator.snapshotGeneratorDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
 
@@ -2761,36 +2761,6 @@ enum class ToolbarKind {
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
-}
-
-#pragma mark - NewTabPageTabHelperDelegate
-
-// TODO(crbug.com/1427128): Have the TabEventsMediator implement this.
-- (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
-                                forWebState:(web::WebState*)webState {
-  DCHECK(self.browser);
-  web::WebState* activeWebState = self.activeWebState;
-
-  if (webState != activeWebState) {
-    // In the instance that a pageload starts while the WebState is not the
-    // active WebState anymore, do nothing.
-    return;
-  }
-  NewTabPageCoordinator* NTPCoordinator = self.NTPCoordinator;
-  DCHECK(NTPCoordinator);
-  // Handle NTP visibility changes within a web state.
-  if (NTPHelper->IsActive()) {
-    if (!NTPCoordinator.started) {
-      [NTPCoordinator start];
-    }
-    [NTPCoordinator didNavigateToNTPInWebState:webState];
-  } else {
-    [NTPCoordinator didNavigateAwayFromNTP];
-    [NTPCoordinator stopIfNeeded];
-  }
-  if (self.isActive) {
-    [self.viewController displayCurrentTab];
-  }
 }
 
 #pragma mark - ReadingListCoordinatorDelegate
