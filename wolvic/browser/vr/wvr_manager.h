@@ -84,6 +84,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback);
 
+  void DrawFrameSubmitNow(device::WebXrFrame* processing_frame);
+
   device::mojom::XRPresentationTransportOptionsPtr
   GetWebXrFrameTransportOptions(
       const device::mojom::XRRuntimeSessionOptionsPtr&);
@@ -121,8 +123,6 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   base::TimeTicks pending_time_;
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
-
-  uint64_t last_frame_index_ = 0;
 
   // Communicate with the renderer.
   mojo::Receiver<device::mojom::XRPresentationProvider> presentation_receiver_{
