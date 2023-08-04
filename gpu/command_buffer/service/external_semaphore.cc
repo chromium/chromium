@@ -81,14 +81,13 @@ GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
 // static
 ExternalSemaphore ExternalSemaphore::Create(
     viz::VulkanContextProvider* context_provider) {
-  auto* implementation = context_provider->GetVulkanImplementation();
   VkDevice device = context_provider->GetDeviceQueue()->GetVulkanDevice();
 
-  VkSemaphore semaphore = implementation->CreateExternalSemaphore(device);
+  VkSemaphore semaphore = CreateVkOpaqueExternalSemaphore(device);
   if (semaphore == VK_NULL_HANDLE)
     return {};
 
-  auto handle = implementation->GetSemaphoreHandle(device, semaphore);
+  auto handle = ExportVkOpaqueExternalSemaphore(device, semaphore);
   if (!handle.is_valid()) {
     vkDestroySemaphore(device, semaphore, /*pAllocator=*/nullptr);
     return {};
