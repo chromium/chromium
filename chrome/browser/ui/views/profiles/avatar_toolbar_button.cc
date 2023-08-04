@@ -97,7 +97,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     label()->SetPaintToLayer();
     label()->SetSkipSubpixelRenderingOpacityCheck(true);
     label()->layer()->SetFillsBoundsOpaquely(false);
-    label()->SetBackgroundColor(SK_ColorTRANSPARENT);
+    label()->SetSubpixelRenderingEnabled(false);
   }
 }
 
