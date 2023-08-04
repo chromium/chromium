@@ -53,12 +53,10 @@ namespace ash {
 
 TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate)
     : GlanceableTrayChildBubble(delegate) {
-  if (ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()) {
-    ash::Shell::Get()
-        ->glanceables_v2_controller()
-        ->GetTasksClient()
-        ->GetTaskLists(base::BindOnce(&TasksBubbleView::InitViews,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  if (Shell::Get()->glanceables_v2_controller()->GetTasksClient()) {
+    Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTaskLists(
+        base::BindOnce(&TasksBubbleView::InitViews,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -184,6 +182,9 @@ void TasksBubbleView::SelectedTasksListChanged() {
   task_items_container_view_->SetVisible(false);
   list_footer_view_->SetVisible(false);
   add_new_task_button_->SetVisible(true);
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   ScheduleUpdateTasksList();
 }
 
@@ -196,7 +197,7 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
 
   GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
-  ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
+  Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
       active_task_list->id,
       base::BindOnce(&TasksBubbleView::UpdateTasksList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id));

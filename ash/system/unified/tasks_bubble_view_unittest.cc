@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -25,6 +24,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -110,7 +110,12 @@ class TasksBubbleViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter)));
   }
 
-  const FakeGlanceablesTasksClient* tasks_client() const {
+  const views::ProgressBar* GetProgressBar() const {
+    return views::AsViewClass<views::ProgressBar>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kProgressBar)));
+  }
+
+  FakeGlanceablesTasksClient* tasks_client() const {
     return fake_glanceables_tasks_client_.get();
   }
 
@@ -189,6 +194,24 @@ TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {
   EXPECT_TRUE(GetTaskItemsContainerView()->children().empty());
   EXPECT_TRUE(GetAddNewTaskButton()->GetVisible());
   EXPECT_FALSE(GetListFooterView()->GetVisible());
+}
+
+TEST_F(TasksBubbleViewTest, ShowsProgressBarWhileLoadingTasks) {
+  ASSERT_TRUE(GetProgressBar());
+  ASSERT_TRUE(GetComboBoxView());
+
+  tasks_client()->set_paused(true);
+
+  // Initially progress bar is hidden.
+  EXPECT_FALSE(GetProgressBar()->GetVisible());
+
+  // Switch to another task list, the progress bar should become visible.
+  GetComboBoxView()->MenuSelectionAt(2);
+  EXPECT_TRUE(GetProgressBar()->GetVisible());
+
+  // After replying to pending callbacks, the progress bar should become hidden.
+  EXPECT_EQ(tasks_client()->RunPendingGetTasksCallbacks(), 1u);
+  EXPECT_FALSE(GetProgressBar()->GetVisible());
 }
 
 }  // namespace ash

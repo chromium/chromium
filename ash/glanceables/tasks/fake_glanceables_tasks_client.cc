@@ -4,9 +4,14 @@
 
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 
+#include <list>
+#include <utility>
+
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_util.h"
 
 namespace ash {
@@ -27,7 +32,15 @@ void FakeGlanceablesTasksClient::GetTasks(const std::string& task_list_id,
                                           GetTasksCallback callback) {
   auto iter = tasks_in_task_lists_.find(task_list_id);
   CHECK(iter != tasks_in_task_lists_.end());
-  std::move(callback).Run(iter->second.get());
+
+  if (!paused_) {
+    std::move(callback).Run(iter->second.get());
+  } else {
+    pending_get_tasks_callbacks_.push_back(base::BindOnce(
+        [](ui::ListModel<ash::GlanceablesTask>* tasks,
+           GetTasksCallback callback) { std::move(callback).Run(tasks); },
+        iter->second.get(), std::move(callback)));
+  }
 }
 
 void FakeGlanceablesTasksClient::MarkAsCompleted(
@@ -47,6 +60,16 @@ int FakeGlanceablesTasksClient::GetAndResetBubbleClosedCount() {
   bubble_closed_count_ = 0;
   return result;
 }
+
+size_t FakeGlanceablesTasksClient::RunPendingGetTasksCallbacks() {
+  std::list<base::OnceClosure> callbacks;
+  pending_get_tasks_callbacks_.swap(callbacks);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
+  return callbacks.size();
+}
+
 void FakeGlanceablesTasksClient::PopulateTasks(base::Time tasks_due_time) {
   task_lists_ = std::make_unique<ui::ListModel<GlanceablesTaskList>>();
 
