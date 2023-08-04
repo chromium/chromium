@@ -282,20 +282,20 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
   // going to expand its capacity at all, it would do so synchronously within
   // AllocateData.
   constexpr size_t kParcelSize = 32;
-  std::vector<Parcel> parcels;
+  std::vector<std::unique_ptr<Parcel>> parcels;
   for (;;) {
-    Parcel parcel;
-    parcel.AllocateData(kParcelSize, /*allow_partial=*/false,
-                        &links.second->memory());
-    if (!parcel.has_data_fragment()) {
+    auto parcel = std::make_unique<Parcel>();
+    parcel->AllocateData(kParcelSize, /*allow_partial=*/false,
+                         &links.second->memory());
+    if (!parcel->has_data_fragment()) {
       break;
     }
 
     // Every fragment allocated must be of sufficient size and must be in the
     // link memory's primary buffer ONLY.
-    EXPECT_GE(parcel.data_fragment().size(), kParcelSize);
+    EXPECT_GE(parcel->data_fragment().size(), kParcelSize);
     EXPECT_EQ(NodeLinkMemory::kPrimaryBufferId,
-              parcel.data_fragment().buffer_id());
+              parcel->data_fragment().buffer_id());
     parcels.push_back(std::move(parcel));
   }
 

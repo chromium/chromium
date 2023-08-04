@@ -114,21 +114,6 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // `this` and `router`.
   bool HasLocalPeer(Router& router);
 
-  // Allocates an outbound parcel with the intention of eventually sending it
-  // from this Router via SendOutboundParcel(). This will always try to allocate
-  // exactly `num_bytes` capacity unless `allow_partial` is true; in which case
-  // the allocated size may be less than requested. If available, this will also
-  // attempt to allocate the parcel data as a fragment of the router's outward
-  // link memory.
-  IpczResult AllocateOutboundParcel(size_t num_bytes,
-                                    bool allow_partial,
-                                    Parcel& parcel);
-
-  // Attempts to send an outbound parcel originating from this Router. Called
-  // only as a direct result of a Put() or EndPut() call on the router's owning
-  // portal.
-  IpczResult SendOutboundParcel(Parcel& parcel);
-
   // Closes this side of the Router's own route. Only called terminal Routers.
   void CloseRoute();
 
@@ -148,12 +133,14 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // queue it for retrieval or forward it further inward. `source` indicates
   // whether the parcel is arriving as a direct result of some local ipcz API
   // call, or if it came from a remote node.
-  bool AcceptInboundParcel(const OperationContext& context, Parcel& parcel);
+  bool AcceptInboundParcel(const OperationContext& context,
+                           std::unique_ptr<Parcel> parcel);
 
   // Accepts an outbound parcel here from some other Router. The parcel is
   // transmitted immediately or queued for later transmission over the Router's
   // outward link. Called only on proxying Routers.
-  bool AcceptOutboundParcel(const OperationContext& context, Parcel& parcel);
+  bool AcceptOutboundParcel(const OperationContext& context,
+                            std::unique_ptr<Parcel> parcel);
 
   // Accepts notification that the other end of the route has been closed and
   // that the closed end transmitted a total of `sequence_length` parcels before
@@ -172,29 +159,6 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // notification to this rouer.
   bool AcceptRouteDisconnectedFrom(const OperationContext& context,
                                    LinkType link_type);
-
-  // Retrieves the next available inbound parcel from this Router, if present.
-  IpczResult GetNextInboundParcel(IpczGetFlags flags,
-                                  void* data,
-                                  size_t* num_bytes,
-                                  IpczHandle* handles,
-                                  size_t* num_handles,
-                                  IpczHandle* parcel);
-
-  // Begins a two-phase retrieval of the next available inbound parcel. See
-  // ipcz BeginGet() for details.
-  IpczResult BeginGetNextInboundParcel(IpczBeginGetFlags flags,
-                                       const volatile void** data,
-                                       size_t* num_bytes,
-                                       IpczHandle* handles,
-                                       size_t* num_handles,
-                                       IpczTransaction* transaction);
-
-  // Terminates a two-phase parcel retrieval previously started by
-  // BeginGetNextInboundParcel(). See ipcz EndGet() for details.
-  IpczResult EndGetNextInboundParcel(IpczTransaction transaction,
-                                     IpczEndGetFlags flags,
-                                     IpczHandle* parcel_handle);
 
   // Attempts to install a new trap on this Router, to invoke `handler` as soon
   // as one or more conditions in `conditions` is met. This method effectively
@@ -363,6 +327,20 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
 
   ~Router();
 
+  // Allocates an outbound parcel with the intention of eventually sending it
+  // from this Router via SendOutboundParcel(). This will always try to allocate
+  // exactly `num_bytes` capacity unless `allow_partial` is true; in which case
+  // the allocated size may be less than requested. If available, this will also
+  // attempt to allocate the parcel data as a fragment of the router's outward
+  // link memory.
+  std::unique_ptr<Parcel> AllocateOutboundParcel(size_t num_bytes,
+                                                 bool allow_partial);
+
+  // Attempts to send an outbound parcel originating from this Router. Called
+  // only as a direct result of a Put() or EndPut() call on the router's owning
+  // portal.
+  IpczResult SendOutboundParcel(std::unique_ptr<Parcel> parcel);
+
   // Attempts to initiate bypass of this router by its peers, and ultimately to
   // remove this router from its route.
   //
@@ -444,8 +422,8 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
                                            RouterDescriptor& descriptor,
                                            bool initiate_proxy_bypass);
 
-  void DiscardNextInboundParcel(const OperationContext& context,
-                                TrapEventDispatcher& dispatcher)
+  std::unique_ptr<Parcel> TakeNextInboundParcel(const OperationContext& context,
+                                                TrapEventDispatcher& dispatcher)
       ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   absl::Mutex mutex_;

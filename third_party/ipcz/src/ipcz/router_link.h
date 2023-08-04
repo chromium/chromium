@@ -70,7 +70,7 @@ class RouterLink : public RefCounted<RouterLink> {
   // Passes a parcel to the Router on the other side of this link to be queued
   // and/or router further.
   virtual void AcceptParcel(const OperationContext& context,
-                            Parcel& parcel) = 0;
+                            std::unique_ptr<Parcel> parcel) = 0;
 
   // Notifies the Router on the other side of the link that the route has been
   // closed from this side. `sequence_length` is the total number of parcels

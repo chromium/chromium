@@ -7,18 +7,20 @@
 
 #include "ipcz/parcel.h"
 #include "ipcz/sequenced_queue.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 
 namespace ipcz {
 
 struct ParcelQueueTraits {
-  static size_t GetElementSize(const Parcel& parcel) {
-    return parcel.data_view().size();
+  static size_t GetElementSize(const std::unique_ptr<Parcel>& parcel) {
+    ABSL_ASSERT(parcel);
+    return parcel->data_view().size();
   }
 };
 
 // A ParcelQueue is a SequencedQueue of Parcel objects which also tracks the
 // total data size (in bytes) of available parcels at the head of the queue.
-using ParcelQueue = SequencedQueue<Parcel, ParcelQueueTraits>;
+using ParcelQueue = SequencedQueue<std::unique_ptr<Parcel>, ParcelQueueTraits>;
 
 }  // namespace ipcz
 

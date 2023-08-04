@@ -122,13 +122,13 @@ void LocalRouterLink::AllocateParcelData(size_t num_bytes,
 }
 
 void LocalRouterLink::AcceptParcel(const OperationContext& context,
-                                   Parcel& parcel) {
+                                   std::unique_ptr<Parcel> parcel) {
   if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
     if (state_->type() == LinkType::kCentral) {
-      receiver->AcceptInboundParcel(context, parcel);
+      receiver->AcceptInboundParcel(context, std::move(parcel));
     } else {
       ABSL_ASSERT(state_->type() == LinkType::kBridge);
-      receiver->AcceptOutboundParcel(context, parcel);
+      receiver->AcceptOutboundParcel(context, std::move(parcel));
     }
   }
 }

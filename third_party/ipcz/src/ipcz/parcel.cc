@@ -23,10 +23,6 @@ Parcel::Parcel() = default;
 Parcel::Parcel(SequenceNumber sequence_number)
     : sequence_number_(sequence_number) {}
 
-Parcel::Parcel(Parcel&& other) = default;
-
-Parcel& Parcel::operator=(Parcel&& other) = default;
-
 Parcel::~Parcel() {
   if (objects_) {
     for (Ref<APIObject>& object : objects_->storage) {
@@ -179,17 +175,6 @@ std::string Parcel::Describe() const {
   return ss.str();
 }
 
-Parcel::DataFragment::DataFragment(DataFragment&& other)
-    : memory_(std::move(other.memory_)),
-      fragment_(std::exchange(other.fragment_, {})) {}
-
-Parcel::DataFragment& Parcel::DataFragment::operator=(DataFragment&& other) {
-  reset();
-  memory_ = std::move(other.memory_);
-  fragment_ = std::exchange(other.fragment_, {});
-  return *this;
-}
-
 Parcel::DataFragment::~DataFragment() {
   reset();
 }
@@ -207,17 +192,6 @@ void Parcel::DataFragment::reset() {
   memory_->FreeFragment(fragment_);
   memory_.reset();
   fragment_ = {};
-}
-
-Parcel::DataStorageWithView::DataStorageWithView(DataStorageWithView&& other)
-    : storage(std::exchange(other.storage, absl::monostate{})),
-      view(std::exchange(other.view, {})) {}
-
-Parcel::DataStorageWithView& Parcel::DataStorageWithView::operator=(
-    DataStorageWithView&& other) {
-  storage = std::exchange(other.storage, absl::monostate{});
-  view = std::exchange(other.view, {});
-  return *this;
 }
 
 }  // namespace ipcz
