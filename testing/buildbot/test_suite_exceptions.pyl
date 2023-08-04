@@ -1782,6 +1782,11 @@
           'shards': 4,
         },
       },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'linux-exp-tsan-fyi-rel': {
         'swarming': {
           'shards': 2,
@@ -2114,6 +2119,11 @@
         # TODO(crbug.com/1371630): Remove this when resource requirements are
         # lower.
         'ci_only': True,
+      },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 41,
+        },
       },
       'fuchsia-x64-cast-receiver-rel': {
         # Temporarily only run this on CI due to resource requirements.
@@ -2702,6 +2712,11 @@
   },
   'extensions_unittests': {
     'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'fuchsia-fyi-x64-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.extensions_unittests.filter',

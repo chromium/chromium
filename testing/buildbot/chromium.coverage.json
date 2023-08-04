@@ -8765,7 +8765,8 @@
               "os": "Ubuntu-22.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "components_browsertests",
         "test_id_prefix": "ninja://components:components_browsertests/"
@@ -8828,7 +8829,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
+          "shards": 41
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -8943,7 +8944,8 @@
               "os": "Ubuntu-22.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "extensions_unittests",
         "test_id_prefix": "ninja://extensions:extensions_unittests/"
