@@ -231,6 +231,12 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
 
 void AdAuctionServiceImpl::CreateAuctionNonce(
     CreateAuctionNonceCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeNegativeTargeting)) {
+    ReportBadMessageAndDeleteThis(
+        "CreateAuctionNonce with FledgeNegativeTargeting off");
+    return;
+  }
   base::Uuid token = base::Uuid::GenerateRandomV4();
   pending_auction_nonces_.insert(token);
   std::move(callback).Run(token);
@@ -262,6 +268,13 @@ void AdAuctionServiceImpl::RunAdAuction(
   }
 
   if (config.non_shared_params.auction_nonce) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kFledgeNegativeTargeting)) {
+      ReportBadMessageAndDeleteThis(
+          "auction_nonce set with FledgeNegativeTargeting off");
+      return;
+    }
+
     if (auto nonce_iter = pending_auction_nonces_.find(
             *config.non_shared_params.auction_nonce);
         nonce_iter != pending_auction_nonces_.end()) {

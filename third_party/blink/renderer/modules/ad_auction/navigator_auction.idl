@@ -25,7 +25,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   [CallWith=ScriptState, Measure, RaisesException]
   void updateAdInterestGroups();
 
-  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=FledgeNegativeTargeting, CallWith=ScriptState, Measure, RaisesException]
   Promise<USVString> createAuctionNonce();
 
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]

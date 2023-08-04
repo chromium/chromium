@@ -62,6 +62,7 @@ dictionary AuctionAdConfig {
   [RuntimeEnabled=FledgeNegativeTargeting]
   Promise<sequence<Uint8Array>> additionalBids;
 
+  [RuntimeEnabled=FledgeNegativeTargeting]
   USVString auctionNonce;
 
   sequence<AuctionAdConfig> componentAuctions;
