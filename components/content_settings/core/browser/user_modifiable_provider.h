@@ -33,6 +33,16 @@ class UserModifiableProvider : public ObservableProvider {
       ContentSettingsType content_type) = 0;
   // Sets the providers internal clock for testing purposes.
   virtual void SetClockForTesting(base::Clock* clock) = 0;
+
+  // Asks provider to expire the website setting for a particular
+  // |primary_pattern|, |secondary_pattern|, |content_type| tuple.
+  //
+  // This should only be called on the UI thread, and not after
+  // ShutdownOnUIThread has been called.
+  virtual void ExpireWebsiteSetting(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_settings_type);
 };
 
 }  // namespace content_settings

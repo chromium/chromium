@@ -29,6 +29,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -36,6 +37,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_delegate.h"
 #include "components/page_info/page_info_ui.h"
@@ -556,14 +558,14 @@ void PageInfo::OnSitePermissionChanged(
 
   // Count how often a permission for a specific content type is changed using
   // the Page Info UI.
-  RecordContentSettingsHistogram("WebsiteSettings.OriginInfo.PermissionChanged",
-                                 type);
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      "WebsiteSettings.OriginInfo.PermissionChanged", type);
 
   if (setting == ContentSetting::CONTENT_SETTING_ALLOW) {
-    RecordContentSettingsHistogram(
+    content_settings_uma_util::RecordContentSettingsHistogram(
         "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", type);
   } else if (setting == ContentSetting::CONTENT_SETTING_BLOCK) {
-    RecordContentSettingsHistogram(
+    content_settings_uma_util::RecordContentSettingsHistogram(
         "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", type);
   }
 
@@ -634,6 +636,10 @@ void PageInfo::OnSitePermissionChanged(
   Constraints constraints;
   if (is_one_time) {
     constraints.set_session_model(content_settings::SessionModel::OneTime);
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kActiveContentSettingExpiry)) {
+      constraints.set_lifetime(permissions::kOneTimePermissionMaximumLifetime);
+    }
   }
   map->SetNarrowestContentSetting(primary_url, site_url_, type, setting,
                                   constraints);

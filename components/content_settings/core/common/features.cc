@@ -32,6 +32,10 @@ BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              "SafetyCheckUnusedSitePermissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActiveContentSettingExpiry,
+             "ActiveContentSettingExpiry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta>
     kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval{
         &kSafetyCheckUnusedSitePermissions,

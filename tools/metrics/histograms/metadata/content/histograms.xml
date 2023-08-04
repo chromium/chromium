@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ContentAllProviderTypes">
+  <variant name="default"/>
+  <variant name="extension"/>
+  <variant name="installed_webapp_provider"/>
+  <variant name="notification_android"/>
+  <variant name="one_time"/>
+  <variant name="policy"/>
+  <variant name="preference"/>
+  <variant name="supervised_user"/>
+  <variant name="tests"/>
+  <variant name="tests_other"/>
+  <variant name="webui_allowlist"/>
+</variants>
+
 <variants name="FeedNetworkRequestType">
   <variant name=".FeedQuery" summary="FeedQuery"/>
   <variant name=".FollowWebFeed" summary="FollowWebFeed"/>
@@ -117,6 +131,19 @@ chromium-metrics-reviews@google.com.
     A content capture session begins with capturing on-screen content and ends
     in sending all changes.
   </summary>
+</histogram>
+
+<histogram
+    name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
+    enum="PermissionType" expires_after="2024-07-10">
+  <owner>fjacky@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Logs the number of active expiries per provider type at content setting
+    granularity. Events are recorded at expiry time.
+  </summary>
+  <token key="ProviderType" variants="ContentAllProviderTypes"/>
 </histogram>
 
 <histogram name="ContentSettings.AllowStorageAccessSync" units="ms"

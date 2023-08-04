@@ -28,6 +28,7 @@
 #include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -38,8 +39,10 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -49,6 +52,7 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -2032,19 +2036,51 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithSessionModel) {
   ASSERT_EQ(0u, settings.size());
 }
 
+class HostContentSettingsMapActiveExpirationTest
+    : public HostContentSettingsMapTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  HostContentSettingsMapActiveExpirationTest() {
+    feature_list_.InitWithFeatureState(
+        content_settings::features::kActiveContentSettingExpiry, GetParam());
+  }
+  HostContentSettingsMapActiveExpirationTest(
+      const HostContentSettingsMapActiveExpirationTest&) = delete;
+  HostContentSettingsMapActiveExpirationTest& operator=(
+      const HostContentSettingsMapActiveExpirationTest&) = delete;
+
+  void RunExpirationMechanismIfFeatureEnabled(HostContentSettingsMap* map,
+                                              ContentSettingsType type) {
+    if (GetParam()) {
+      map->DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(type);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostContentSettingsMapActiveExpirationTest,
+                         testing::Bool());
+
 // Validate that the settings array retrieved correctly carries the expiry data
 // for settings and they can detect if and when they expire.
 // GetSettingsForOneType should also omit any settings that are already expired.
-TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
+TEST_P(HostContentSettingsMapActiveExpirationTest,
+       GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms) {
+  base::HistogramTester t;
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
   content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
   ReloadProviders(profile.GetPrefs(), map);
+  const std::string kActiveExpiryHistogramName =
+      "ContentSettings.ActiveExpiry.PrefProvider.ContentSettingsType";
 
-  // The following type is used as a sample of the persistent permission type.
-  // It can be replaced with any other type if required.
+  // The following type is used as a sample of the persistent permission
+  // type. It can be replaced with any other type if required.
   const ContentSettingsType persistent_type =
       ContentSettingsType::STORAGE_ACCESS;
 
@@ -2105,9 +2141,15 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
     }
   }
 
+  RunExpirationMechanismIfFeatureEnabled(map,
+                                         ContentSettingsType::STORAGE_ACCESS);
+  t.ExpectTotalCount(kActiveExpiryHistogramName, 0);
+
   // If we Fastforward by 101 seconds we should see only our first setting is
   // expired, we now retrieve 1 less setting and the rest are okay.
   FastForwardTime(base::Seconds(101));
+  RunExpirationMechanismIfFeatureEnabled(map,
+                                         ContentSettingsType::STORAGE_ACCESS);
   ASSERT_TRUE(url1_setting.IsExpired());
   ASSERT_FALSE(url2_setting.IsExpired());
   ASSERT_FALSE(url3_setting.IsExpired());
@@ -2115,9 +2157,18 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
                              content_settings::SessionModel::UserSession);
   ASSERT_EQ(2u, settings.size());
 
+  t.ExpectTotalCount(kActiveExpiryHistogramName, GetParam() ? 1 : 0);
+  t.ExpectUniqueSample(
+      kActiveExpiryHistogramName,
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::STORAGE_ACCESS),
+      GetParam() ? 1 : 0);
+
   // If we fast forward again we should expire our second setting and drop if
   // from our retrieval list now.
   FastForwardTime(base::Seconds(101));
+  RunExpirationMechanismIfFeatureEnabled(map,
+                                         ContentSettingsType::STORAGE_ACCESS);
   ASSERT_TRUE(url1_setting.IsExpired());
   ASSERT_TRUE(url2_setting.IsExpired());
   ASSERT_FALSE(url3_setting.IsExpired());
@@ -2125,15 +2176,32 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
                              content_settings::SessionModel::UserSession);
   ASSERT_EQ(1u, settings.size());
 
+  t.ExpectTotalCount(kActiveExpiryHistogramName, GetParam() ? 2 : 0);
+
+  t.ExpectUniqueSample(
+      kActiveExpiryHistogramName,
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::STORAGE_ACCESS),
+      GetParam() ? 2 : 0);
+
   // If we fast forwarding much further it shouldn't make a difference as our
   // last setting and the default setting should never expire.
   FastForwardTime(base::Minutes(100));
+  RunExpirationMechanismIfFeatureEnabled(map,
+                                         ContentSettingsType::STORAGE_ACCESS);
   ASSERT_TRUE(url1_setting.IsExpired());
   ASSERT_TRUE(url2_setting.IsExpired());
   ASSERT_FALSE(url3_setting.IsExpired());
   map->GetSettingsForOneType(persistent_type, &settings,
                              content_settings::SessionModel::UserSession);
   ASSERT_EQ(1u, settings.size());
+
+  t.ExpectTotalCount(kActiveExpiryHistogramName, GetParam() ? 2 : 0);
+  t.ExpectUniqueSample(
+      kActiveExpiryHistogramName,
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::STORAGE_ACCESS),
+      GetParam() ? 2 : 0);
 }
 
 TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {

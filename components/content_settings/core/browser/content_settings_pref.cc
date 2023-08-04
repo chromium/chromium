@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
@@ -117,6 +118,10 @@ bool ShouldRemoveSetting(bool off_the_record,
                          base::Time expiration,
                          bool restore_session,
                          content_settings::SessionModel session_model) {
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kActiveContentSettingExpiry)) {
+    return false;
+  }
   // Delete if an expriation date is set and in the past.
   if (!expiration.is_null() && (expiration < base::Time::Now()))
     return true;

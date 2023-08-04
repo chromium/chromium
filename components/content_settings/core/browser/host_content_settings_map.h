@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -20,17 +21,37 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
-#include "components/content_settings/core/common/content_settings.h"
+
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+
+// In the context of active expiry enforcement, content settings are considered
+// expired if their expiration time is before 'Now() + `kEagerExpiryBuffer` at
+// the time of check. This value accounts for posted task delays due to
+// prioritization. Note that there are no guarantees about CPU contention, so
+// this doesn't prevent occasional outlier tasks that are delayed further.
+// However, consistency is more important then accuracy in this context.
+// Expirations are not user visible, and are not guarantees given to or chosen
+// by the user. If we do not delete but also don't provide, we get into an
+// inconsistent state which among other issues is also a security concern: the
+// expired content setting is no longer provided and thus isn't listed in page
+// info even though the site might still have active access to it. At this
+// point, the only way the user can block access to the permission is to
+// reload, navigate away or close the tab/browser. These are not reasonable user
+// journeys. Additionally, if CPU contention leads to significant delays in the
+// run loop, other browser process tasks such as checking content settings
+// are very likely similarly delayed.
+static constexpr base::TimeDelta kEagerExpiryBuffer = base::Seconds(5);
 
 class GURL;
 class PrefService;
@@ -346,6 +367,12 @@ class HostContentSettingsMap : public content_settings::Observer,
  private:
   friend class base::RefCountedThreadSafe<HostContentSettingsMap>;
   friend class content_settings::TestUtils;
+  friend class HostContentSettingsMapActiveExpirationTest;
+  friend class OneTimePermissionExpiryEnforcementUmaInteractiveUiTest;
+
+  FRIEND_TEST_ALL_PREFIXES(
+      OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
+      TestExpiryEnforcement);
   FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
                            MigrateRequestingAndTopLevelOriginSettings);
   FRIEND_TEST_ALL_PREFIXES(
@@ -439,6 +466,31 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       const base::Value& value);
 
+  // For the content setting `content_type` with expiry `expiration`, sets or
+  // updates the next run of expiration enforcement if required.
+  void UpdateExpiryEnforcementTimer(ContentSettingsType content_type,
+                                    base::Time expiration);
+
+  // If the feature
+  // `kActiveContentSettingExpiry` is enabled,
+  // this method checks for and deletes all
+  // content setting entries which will have
+  // expired before `now() +
+  // kEagerExpiryBuffer` in any provider. It
+  // also determines the time of the next
+  // future expiry and schedules itself to run
+  // at `expiration() - kEagerExpiryBuffer` if
+  // such a closest expiry exists for other
+  // content setting entries of this type in
+  // any provider. This method can and should
+  // be called each time a new expiration
+  // metadata field may be set for the
+  // provider. It aborts and potentially
+  // reinitializes running OneShotTimers
+  // automatically in those cases.
+  void DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
+      ContentSettingsType content_setting_type);
+
 #ifndef NDEBUG
   // This starts as the thread ID of the thread that constructs this
   // object, and remains until used by a different thread, at which
@@ -485,6 +537,13 @@ class HostContentSettingsMap : public content_settings::Observer,
   bool allow_invalid_secondary_pattern_for_testing_;
 
   raw_ptr<base::Clock> clock_;
+
+  // Maps content setting type to OneShotTimers that are used to run
+  // `DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun` which checks for, and
+  // deletes expired entries of the content setting if the feature flag
+  // `kActiveContentSettingExpiry` is enabled.
+  std::map<ContentSettingsType, std::unique_ptr<base::OneShotTimer>>
+      expiration_enforcement_timers_;
 
   base::WeakPtrFactory<HostContentSettingsMap> weak_ptr_factory_{this};
 };

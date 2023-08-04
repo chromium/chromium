@@ -361,15 +361,12 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
       rfh,
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
        GURL("http://google.com"), cookie_list, blocked_by_policy});
-  content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
-                                      GURL("http://google.com"),
-                                      blocked_by_policy);
-  content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
-                                      GURL("http://google.com"),
-                                      blocked_by_policy);
-  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
-                                      GURL("http://google.com"),
-                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::FILE_SYSTEM, GURL("http://google.com"), blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::INDEXED_DB, GURL("http://google.com"), blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::LOCAL_STORAGE, GURL("http://google.com"), blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::DATABASE, GURL("http://google.com"), blocked_by_policy);
 }
@@ -393,18 +390,16 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
                                       GURL("https://www.google.com"),
                                       blocked_by_policy);
-  content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
-                                      GURL("https://localhost"),
-                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::INDEXED_DB, GURL("https://localhost"), blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
                                       GURL("http://maps.google.com:8080"),
                                       blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
                                       GURL("http://example.com"),
                                       blocked_by_policy);
-  content_settings->OnStorageAccessed(StorageType::DATABASE,
-                                      GURL("http://192.168.0.1"),
-                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::DATABASE, GURL("http://192.168.0.1"), blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
       blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
@@ -581,15 +576,17 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
                                   GURL("http://example.com"),
                                   {*cookie4},
                                   blocked_by_policy});
-  content_settings->OnStorageAccessed(
-      StorageType::FILE_SYSTEM, GURL("https://www.google.com"),
-      blocked_by_policy);
+  content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
+                                      GURL("https://www.google.com"),
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::INDEXED_DB, GURL("https://localhost"), blocked_by_policy);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE, GURL("http://maps.google.com:8080"), blocked_by_policy);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE, GURL("http://example.com"), blocked_by_policy);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://maps.google.com:8080"),
+                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://example.com"),
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::DATABASE, GURL("http://192.168.0.1"), blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
