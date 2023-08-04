@@ -90,11 +90,11 @@ DeviceTrustConnectorState CreateManagedDeviceState() {
 
   return state;
 }
-#else
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 DeviceTrustConnectorState CreateUnmanagedState() {
   return DeviceTrustConnectorState();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -232,7 +232,16 @@ class DeviceTrustDelayedManagementBrowserTest
  protected:
   DeviceTrustDelayedManagementBrowserTest()
       : DeviceTrustBrowserTest(GetParam()) {
-    scoped_feature_list_.InitWithFeatureState(kUserDTCInlineFlowEnabled, true);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+          kUserDTCInlineFlowEnabled
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+              ,
+              ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        },
+        /*disabled_features=*/{});
   }
 };
 
@@ -270,15 +279,16 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustDelayedManagementBrowserTest,
   VerifyAttestationFlowSuccessful(success_result);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
+INSTANTIATE_TEST_SUITE_P(UnmanagedState,
                          DeviceTrustDelayedManagementBrowserTest,
-                         testing::Values(
+                         testing::Values(CreateUnmanagedState()));
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                             CreateManagedDeviceState()
-#else
-                             CreateUnmanagedState()
+INSTANTIATE_TEST_SUITE_P(ManagedState,
+                         DeviceTrustDelayedManagementBrowserTest,
+                         testing::Values(CreateManagedDeviceState()));
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-                                 ));
 
 // Tests that signal values respect the expected format and is filled-out as
 // expect per platform.
