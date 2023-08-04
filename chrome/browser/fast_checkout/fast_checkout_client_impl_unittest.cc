@@ -45,6 +45,9 @@ using ::autofill::AutofillDriver;
 using ::autofill::AutofillManager;
 using ::autofill::AutofillProfile;
 using ::autofill::CreditCard;
+using ::autofill::FastCheckoutRunOutcome;
+using ::autofill::FastCheckoutTriggerOutcome;
+using ::autofill::FastCheckoutUIState;
 using ::autofill::FieldGlobalId;
 using ::autofill::FormData;
 using ::autofill::FormFieldData;
@@ -315,7 +318,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 
   // Sets up test data, calls `TryToStart(..)` and `OnOptionsSelected(..)`.
@@ -350,9 +352,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     EXPECT_TRUE(fast_checkout_client()->TryToStart(
         GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
         autofill_manager()->GetWeakPtr()));
-    histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
-                                         FastCheckoutTriggerOutcome::kSuccess,
-                                         1u);
     OnAfterAskForValuesToFill();
     fast_checkout_client()->OnOptionsSelected(
         std::move(autofill_profile_unique_ptr),
@@ -495,9 +494,6 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsInvalidData_NoRun) {
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
       autofill_manager()->GetWeakPtr()));
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
@@ -517,9 +513,6 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
       autofill_manager()->GetWeakPtr()));
-  // Does not report metrics in case of `kUnsupportedFieldType` trigger outcome.
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
@@ -570,9 +563,6 @@ TEST_F(FastCheckoutClientImplTest,
       autofill_manager()->GetWeakPtr()));
   OnAfterAskForValuesToFill();
 
-  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
-                                       FastCheckoutTriggerOutcome::kSuccess,
-                                       1u);
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 

@@ -439,6 +439,7 @@ static_library("browser") {
     "ui/country_combobox_model.h",
     "ui/fast_checkout_client.h",
     "ui/fast_checkout_delegate.h",
+    "ui/fast_checkout_enums.h",
     "ui/label_formatter.cc",
     "ui/label_formatter.h",
     "ui/label_formatter_utils.cc",

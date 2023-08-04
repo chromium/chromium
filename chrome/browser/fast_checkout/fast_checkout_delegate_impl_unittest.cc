@@ -5,6 +5,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_delegate_impl.h"
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -18,6 +19,8 @@
 #include "components/unified_consent/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::autofill::FastCheckoutTriggerOutcome;
 
 class FastCheckoutDelegateImplTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -51,6 +54,7 @@ class FastCheckoutDelegateImplTest : public ChromeRenderViewHostTestHarness {
       test_autofill_driver_injector_;
   autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
       test_autofill_manager_injector_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutSucceeds) {
@@ -89,10 +93,41 @@ TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
 
-  EXPECT_CALL(fast_checkout_client_, IsSupported)
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(fast_checkout_client_, CanRun)
+      .WillOnce(testing::Return(FastCheckoutTriggerOutcome::kSuccess));
   EXPECT_TRUE(fast_checkout_delegate_->IntendsToShowFastCheckout(
       *autofill_manager(), form.global_id(), field.global_id()));
+  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
+                                       FastCheckoutTriggerOutcome::kSuccess,
+                                       1u);
   EXPECT_FALSE(fast_checkout_delegate_->IntendsToShowFastCheckout(
       *autofill_manager(), form.global_id(), non_seen_field.global_id()));
+}
+
+TEST_F(FastCheckoutDelegateImplTest,
+       RecordsFastCheckoutTriggerOutcomeMetricIfNotSupported) {
+  autofill::FormData form;
+  autofill::test::CreateTestAddressFormData(&form);
+  autofill::FormFieldData field = form.fields[0];
+  autofill_manager()->OnFormsSeen(
+      /*updated_forms=*/{form},
+      /*removed_forms=*/{});
+
+  EXPECT_CALL(fast_checkout_client_, CanRun)
+      .WillOnce(testing::Return(
+          FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile));
+  EXPECT_FALSE(fast_checkout_delegate_->IntendsToShowFastCheckout(
+      *autofill_manager(), form.global_id(), field.global_id()));
+  histogram_tester_.ExpectUniqueSample(
+      kUmaKeyFastCheckoutTriggerOutcome,
+      FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
+
+  EXPECT_CALL(fast_checkout_client_, CanRun)
+      .WillOnce(
+          testing::Return(FastCheckoutTriggerOutcome::kFailureFieldNotEmpty));
+  EXPECT_FALSE(fast_checkout_delegate_->IntendsToShowFastCheckout(
+      *autofill_manager(), form.global_id(), field.global_id()));
+  histogram_tester_.ExpectBucketCount(
+      kUmaKeyFastCheckoutTriggerOutcome,
+      FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);
 }

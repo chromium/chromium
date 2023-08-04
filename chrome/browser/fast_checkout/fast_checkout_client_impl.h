@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/fast_checkout/fast_checkout_accessibility_service.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_keyboard_suppressor.h"
@@ -19,6 +18,7 @@
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
+#include "components/autofill/core/browser/ui/fast_checkout_enums.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -53,7 +53,7 @@ class FastCheckoutClientImpl
   bool IsRunning() const override;
   bool IsShowing() const override;
   void OnNavigation(const GURL& url, bool is_cart_or_checkout_url) override;
-  bool IsSupported(
+  autofill::FastCheckoutTriggerOutcome CanRun(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
       const autofill::AutofillManager& autofill_manager) const override;
@@ -145,7 +145,7 @@ class FastCheckoutClientImpl
   void OnHidden();
 
   // Registers when a run is complete.
-  void OnRunComplete(FastCheckoutRunOutcome run_outcome,
+  void OnRunComplete(autofill::FastCheckoutRunOutcome run_outcome,
                      bool allow_further_runs = true);
 
   // Displays the bottom sheet UI. If the underlying autofill data is updated,
@@ -278,8 +278,8 @@ class FastCheckoutClientImpl
   base::flat_set<autofill::FormSignature> form_signatures_to_fill_;
 
   // The current state of the bottomsheet.
-  FastCheckoutUIState fast_checkout_ui_state_ =
-      FastCheckoutUIState::kNotShownYet;
+  autofill::FastCheckoutUIState fast_checkout_ui_state_ =
+      autofill::FastCheckoutUIState::kNotShownYet;
 
   // Identifier of the credit card form to be filled once the CVC popup is
   // fulfilled.

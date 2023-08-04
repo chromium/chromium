@@ -8,8 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
+#include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/ui/fast_checkout_enums.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/logging/log_macros.h"
@@ -40,7 +42,14 @@ bool FastCheckoutDelegateImpl::IntendsToShowFastCheckout(
   if (const autofill::FormStructure* form =
           manager_->FindCachedFormById(form_id)) {
     if (const autofill::AutofillField* field = form->GetFieldById(field_id)) {
-      return client_->IsSupported(form->ToFormData(), *field, manager);
+      autofill::FastCheckoutTriggerOutcome trigger_outcome =
+          client_->CanRun(form->ToFormData(), *field, manager);
+      if (trigger_outcome !=
+          autofill::FastCheckoutTriggerOutcome::kUnsupportedFieldType) {
+        base::UmaHistogramEnumeration(kUmaKeyFastCheckoutTriggerOutcome,
+                                      trigger_outcome);
+      }
+      return trigger_outcome == autofill::FastCheckoutTriggerOutcome::kSuccess;
     }
   }
   return false;

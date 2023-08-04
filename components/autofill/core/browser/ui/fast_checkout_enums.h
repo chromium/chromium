@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_ENUMS_H_
-#define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_ENUMS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_ENUMS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_ENUMS_H_
 
+namespace autofill {
 // Enum that describes different outcomes to an attempt of triggering the
 // FastCheckout bottomsheet.
 // Do not remove or renumber entries in this enum. It needs to be kept in
@@ -79,4 +80,6 @@ enum class FastCheckoutUIState {
   kWasShown,
 };
 
-#endif
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_ENUMS_H_
