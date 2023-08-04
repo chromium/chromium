@@ -79,8 +79,9 @@ luci.bucket(
         # Allow ci builders to create invocations in their own builds.
         luci.binding(
             roles = "role/resultdb.invocationCreator",
-            groups = [
-                "project-chromium-ci-task-accounts",
+            users = [
+                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                ci.gpu.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
     ],
