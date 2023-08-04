@@ -1002,7 +1002,7 @@
     {
       // crbug.com/1443291: Phrase Line Breaking
       name: "CSSPhraseLineBreak",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSPictureInPicture",
