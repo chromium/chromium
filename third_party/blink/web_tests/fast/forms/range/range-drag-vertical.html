@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<title>Test for input type date arrow key operations.</title>
+<style>
+input {
+  writing-mode: vertical-lr;
+}
+</style>
+<body></body>
+
+<script>
+function dragMouse(x, y0, y1) {
+  eventSender.mouseMoveTo(x, y0);
+  eventSender.mouseDown();
+  eventSender.mouseMoveTo(x, y1);
+  eventSender.mouseUp();
+}
+
+async_test(t => {
+  if (!window.eventSender)
+        return;
+
+  // TODO(crbug.com/1432009): Update LTR case when direction becomes supported for input type range.
+  // If direction LTR is supported, value 0 should be at the top and 100 at the bottom.
+  for (const dir of ['rtl', 'ltr']) {
+    for (const app of ['none', 'auto']) {
+      let range = document.createElement('input');
+      range.type = 'range';
+      range.style.direction = dir;
+      range.style.appearance = app;
+      range.min = 0;
+      range.max = 100;
+      range.value = 50;
+      document.body.appendChild(range);
+
+      const centerX = range.offsetLeft + range.offsetWidth / 2;
+      const centerY = range.offsetTop + range.offsetHeight / 2;
+      const topY = range.offsetTop;
+      const bottomY = range.offsetTop + range.offsetHeight;
+
+      dragMouse(centerX, centerY, topY);
+      assert_equals(range.value, '100', 'drag slider thumb up will increase value.');
+      dragMouse(centerX, topY, bottomY);
+      assert_equals(range.value, '0', 'drag slider thumb down will decrease value.');
+
+      let currentValue = range.value;
+      range.disabled = true;
+      dragMouse(centerX, bottomY, topY);
+      assert_equals(range.value, currentValue, 'drag slider thumb will not change value if disabled.');
+    }
+  }
+  t.done();
+}, 'All input[range] with vertical writing mode should change value on drag, increasing when drag up and decreasing when drag down.');
+</script>
+</body>
+</html>

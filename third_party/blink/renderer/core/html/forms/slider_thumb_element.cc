@@ -121,7 +121,7 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
     if (is_left_to_right_direction &&
         !RuntimeEnabledFeatures::
             FormControlsVerticalWritingModeDirectionSupportEnabled()) {
-      position -= thumb_box->MarginBottom() - track_size;
+      position -= thumb_box->MarginBottom();
     } else {
       position -= is_left_to_right_direction ? thumb_box->MarginTop()
                                              : thumb_box->MarginBottom();

@@ -1,0 +1,3 @@
+Clicking on the right side of slider should cause the thumb to move for vertical range input.
+
+PASSED
