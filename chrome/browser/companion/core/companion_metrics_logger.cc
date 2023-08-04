@@ -140,29 +140,30 @@ void CompanionMetricsLogger::RecordOpenTrigger(
 
 void CompanionMetricsLogger::RecordUiSurfaceShown(
     UiSurface ui_surface,
-    uint32_t ui_surface_position,
-    uint32_t child_element_available_count,
-    uint32_t child_element_shown_count) {
+    int32_t ui_surface_position,
+    int32_t child_element_available_count,
+    int32_t child_element_shown_count) {
   UiSurfaceMetrics& surface = ui_surface_metrics_[ui_surface];
   surface.last_event = UiEvent::kShown;
   // Clamped to record as having max 10 child elements.
   surface.ui_surface_position = ui_surface_position;
   surface.child_element_available_count =
-      std::clamp(child_element_available_count, 0u,
-                 static_cast<unsigned int>(kMaxNumChildElements));
+      std::clamp(child_element_available_count, 0, kMaxNumChildElements);
   surface.child_element_shown_count =
-      std::clamp(child_element_shown_count, 0u,
-                 static_cast<unsigned int>(kMaxNumChildElements));
+      std::clamp(child_element_shown_count, 0, kMaxNumChildElements);
 
   DCHECK(!IsListSurface(ui_surface) || child_element_shown_count > 0);
   base::UmaHistogramBoolean(
       "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown", true);
-  if (IsListSurface(ui_surface)) {
-    base::UmaHistogramExactLinear(
-        "Companion." + UiSurfaceToHistogramVariant(ui_surface) +
-            ".ChildElementCount",
-        surface.child_element_shown_count, kMaxNumChildElements);
+  // For surfaces that aren't in the form of a list, the child element count
+  // should be -1. Regardless, don't record histograms when the count is -1.
+  if (!IsListSurface(ui_surface) || child_element_shown_count < 0) {
+    return;
   }
+  base::UmaHistogramExactLinear(
+      "Companion." + UiSurfaceToHistogramVariant(ui_surface) +
+          ".ChildElementCount",
+      surface.child_element_shown_count, kMaxNumChildElements);
 }
 
 void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface,
@@ -227,8 +228,7 @@ void CompanionMetricsLogger::FlushStats() {
   auto iter = ui_surface_metrics_.find(UiSurface::kSearchBox);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetTextSearchCount(
-        std::clamp(iter->second.click_count, 0u,
-                   static_cast<unsigned int>(kMaxNumTextSearches)));
+        std::clamp(iter->second.click_count, 0, kMaxNumTextSearches));
   }
 
   // Region search.
