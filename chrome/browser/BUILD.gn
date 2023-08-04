@@ -2484,6 +2484,10 @@ static_library("browser") {
     "//ui/webui",
   ]
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/companion/visual_search:flags" ]
+  }
+
   if (enable_screen_ai_service) {
     sources += [
       "accessibility/ax_screen_ai_annotator.cc",

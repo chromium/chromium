@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
+#include <cstddef>
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
@@ -11,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/common/companion/visual_search.mojom-forward.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
@@ -33,10 +35,8 @@ using optimization_guide::proto::ThresholdingRule;
 
 using DOMImageList = base::flat_map<ImageId, SingleImageFeaturesAndBytes>;
 
-// We concurrently on send back up to 2 results of visual classifications.
-// The results are not ordered in any way, we simply return the first 4
-// items that we get from the classifier.
-const int kMaxNumberResults = 2;
+// Only sending back 1 result to match our current UI behavior.
+const int kMaxNumberResults = 1;
 
 EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
   EligibilitySpec eligibility_spec;
@@ -128,11 +128,12 @@ DOMImageList FindImagesOnPage(content::RenderFrame* render_frame) {
   return images;
 }
 
-std::vector<SkBitmap> ClassifyImagesOnBackground(DOMImageList images,
-                                                 std::string model_data,
-                                                 std::string config_proto,
-                                                 gfx::SizeF viewport_size) {
-  std::vector<SkBitmap> results;
+ClassificationResultsAndStats ClassifyImagesOnBackground(
+    DOMImageList images,
+    std::string model_data,
+    std::string config_proto,
+    gfx::SizeF viewport_size) {
+  ClassificationResultsAndStats results;
   const auto classifier = VisualClassificationAndEligibility::Create(
       model_data, CreateEligibilitySpec(config_proto));
 
@@ -145,9 +146,18 @@ std::vector<SkBitmap> ClassifyImagesOnBackground(DOMImageList images,
   auto classifier_results =
       classifier->RunClassificationAndEligibility(images, viewport_size);
 
+  const auto& metrics = classifier->classification_metrics();
+  results.second =
+      mojom::ClassificationStats::New(mojom::ClassificationStats());
+  results.second->eligible_count = metrics.eligible_count;
+  results.second->shoppy_count = metrics.shoppy_count;
+  results.second->sensitive_count = metrics.sensitive_count;
+  results.second->shoppy_nonsensitive_count = metrics.shoppy_nonsensitive_count;
+  results.second->results_count = metrics.result_count;
+
   int result_counter = 0;
   for (const auto& result : classifier_results) {
-    results.emplace_back(images[result].image_contents);
+    results.first.emplace_back(images[result].image_contents);
     if (++result_counter >= kMaxNumberResults) {
       break;
     }
@@ -186,20 +196,20 @@ void VisualSearchClassifierAgent::StartVisualClassification(
                           true);
   result_handler_.reset();
   result_handler_.Bind(std::move(result_handler));
-  std::vector<SkBitmap> empty_results;
+  ClassificationResultsAndStats empty_results;
 
   if (is_classifying_) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "Companion.VisualSearch.Agent.OngoingClassificationFailure",
         is_classifying_);
-    OnClassificationDone(empty_results);
+    OnClassificationDone(std::move(empty_results));
     return;
   }
 
   if (!visual_model.IsValid()) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InvalidModelFailure",
                             !visual_model.IsValid());
-    OnClassificationDone(empty_results);
+    OnClassificationDone(std::move(empty_results));
     return;
   }
 
@@ -207,7 +217,7 @@ void VisualSearchClassifierAgent::StartVisualClassification(
       !visual_model_.Initialize(std::move(visual_model))) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InitModelFailure",
                             true);
-    OnClassificationDone(empty_results);
+    OnClassificationDone(std::move(empty_results));
     return;
   }
 
@@ -231,15 +241,24 @@ void VisualSearchClassifierAgent::StartVisualClassification(
 }
 
 void VisualSearchClassifierAgent::OnClassificationDone(
-    const std::vector<SkBitmap> results) {
+    ClassificationResultsAndStats results) {
   is_classifying_ = false;
   std::vector<mojom::VisualSearchSuggestionPtr> final_results;
-  for (const auto& result : results) {
+  for (const auto& result : results.first) {
     final_results.emplace_back(mojom::VisualSearchSuggestion::New(result));
   }
-  result_handler_->HandleClassification(std::move(final_results));
+
+  mojom::ClassificationStatsPtr stats;
+  if (results.second.is_null()) {
+    stats = mojom::ClassificationStats::New(mojom::ClassificationStats());
+  } else {
+    stats = std::move(results.second);
+  }
+
+  result_handler_->HandleClassification(std::move(final_results),
+                                        std::move(stats));
   LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.Agent.ClassificationDone",
-                             results.size());
+                             results.first.size());
 }
 
 void VisualSearchClassifierAgent::OnRendererAssociatedRequest(

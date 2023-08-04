@@ -66,6 +66,35 @@ struct UiSurfaceMetrics {
   int32_t click_position = kInvalidPosition;
 };
 
+// Tracks visual suggestion metrics for a single page.
+struct VisualSuggestionsMetrics {
+  VisualSuggestionsMetrics() = default;
+  VisualSuggestionsMetrics(const VisualSuggestionsMetrics& other) = default;
+  VisualSuggestionsMetrics& operator=(const VisualSuggestionsMetrics& other) =
+      default;
+  ~VisualSuggestionsMetrics() = default;
+
+  // The number of images that pass visual suggestion requirements.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t results_count;
+
+  // The number of images eligible for visual classification.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t eligible_count;
+
+  // The number of images classified as sensitive.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t sensitive_count;
+
+  // The number of images classifier as shoppy.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t shoppy_count;
+
+  // The number of images classifier as shoppy and nonsensitive.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t shoppy_nonsensitive_count;
+};
+
 // Various types of events happening on the promo surfaces on the companion
 // page. Keep in sync with Companion.PromoEvent in enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
@@ -118,6 +147,9 @@ class CompanionMetricsLogger {
   // Logging method recording the status of whether user is opted-in to exps.
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) const;
 
+  // Logging method corresponding to visual query suggestions.
+  void OnVisualSuggestionsResult(const VisualSuggestionsMetrics& metrics);
+
  private:
   // Meant to be called at destruction. Flushes the UKM metrics.
   void FlushStats();
@@ -137,6 +169,9 @@ class CompanionMetricsLogger {
   // Indicates how the companion side panel was opened. Non-empty for the first
   // navigation.
   absl::optional<SidePanelOpenTrigger> open_trigger_;
+
+  // Stores metrics for visual query suggestions.
+  absl::optional<VisualSuggestionsMetrics> visual_suggestions_;
 };
 
 }  // namespace companion

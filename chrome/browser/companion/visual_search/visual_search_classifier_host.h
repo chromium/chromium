@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -16,6 +17,8 @@
 #include "url/gurl.h"
 
 namespace companion::visual_search {
+
+using ClassificationStats = mojom::ClassificationStatsPtr;
 
 // Used to store the last GURL/result pair that was classified.
 using VisualSearchResultPair = std::pair<GURL, std::vector<std::string>>;
@@ -68,7 +71,9 @@ enum class InitStatus {
 // It also fetches model file descriptors from the keyed service.
 class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
  public:
-  using ResultCallback = base::OnceCallback<void(std::vector<std::string>)>;
+  using ResultCallback =
+      base::OnceCallback<void(std::vector<std::string>,
+                              const VisualSuggestionsMetrics& metrics)>;
 
   explicit VisualSearchClassifierHost(
       VisualSearchSuggestionsService* visual_search_service);
@@ -84,7 +89,8 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
   // The list of image data uris are sent to side panel companion for
   // rendering.
   void HandleClassification(
-      std::vector<mojom::VisualSearchSuggestionPtr> results) override;
+      std::vector<mojom::VisualSearchSuggestionPtr> results,
+      mojom::ClassificationStatsPtr stats) override;
 
   // This is the main method used by the companion page handler to start the
   // visual search classification task. The RenderFrameHost is needed to

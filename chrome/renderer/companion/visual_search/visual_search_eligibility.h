@@ -70,6 +70,10 @@ class EligibilityModule {
   base::flat_map<std::string, double> GetDebugFeatureValuesForImage(
       const std::string& image_id);
 
+  // These methods are mainly used to calculate metrics for logging.
+  bool IsImageShoppyForMetrics(const std::string& image_id);
+  bool IsImageSensitiveForMetrics(const std::string& image_id);
+
   EligibilityModule(const EligibilityModule&) = delete;
   EligibilityModule& operator=(const EligibilityModule&) = delete;
   ~EligibilityModule();

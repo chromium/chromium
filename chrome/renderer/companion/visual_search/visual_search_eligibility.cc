@@ -306,6 +306,31 @@ bool EligibilityModule::EvaluateEligibilityRule(
   return false;
 }
 
+bool EligibilityModule::IsImageShoppyForMetrics(const std::string& image_id) {
+  for (const auto& classifier_rules : spec_.classifier_score_rules()) {
+    for (const auto& thresholding_rule : classifier_rules.rules()) {
+      if (thresholding_rule.feature_name() ==
+          FeatureLibrary::SHOPPING_CLASSIFIER_SCORE) {
+        return EvaluateThresholdingRule(thresholding_rule, image_id);
+      }
+    }
+  }
+  return false;
+}
+
+bool EligibilityModule::IsImageSensitiveForMetrics(
+    const std::string& image_id) {
+  for (const auto& classifier_rules : spec_.classifier_score_rules()) {
+    for (const auto& thresholding_rule : classifier_rules.rules()) {
+      if (thresholding_rule.feature_name() ==
+          FeatureLibrary::SENS_CLASSIFIER_SCORE) {
+        return !EvaluateThresholdingRule(thresholding_rule, image_id);
+      }
+    }
+  }
+  return false;
+}
+
 bool EligibilityModule::EvaluateThresholdingRule(
     const ThresholdingRule& thresholding_rule,
     const std::string& image_id) {
