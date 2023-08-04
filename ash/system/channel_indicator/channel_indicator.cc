@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -115,18 +116,26 @@ const char* ChannelIndicatorView::GetClassName() const {
 void ChannelIndicatorView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
 
+  auto* color_provider = GetColorProvider();
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   if (Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::ACTIVE) {
     // User is logged in, set image view colors.
     if (image_view()) {
       SetBackground(
           views::CreateBackgroundFromPainter(std::make_unique<CirclePainter>(
-              channel_indicator_utils::GetBgColor(channel_),
+              is_jelly_enabled
+                  ? color_provider->GetColor(
+                        channel_indicator_utils::GetBgColorJelly(channel_))
+                  : channel_indicator_utils::GetBgColor(channel_),
               IsHorizontalAlignment() ? GetLocalBounds().width()
                                       : GetLocalBounds().height())));
       image_view()->SetImage(gfx::CreateVectorIcon(
           channel_indicator_utils::GetVectorIcon(channel_), kVectorIconSize,
-          channel_indicator_utils::GetFgColor(channel_)));
+          is_jelly_enabled
+              ? color_provider->GetColor(
+                    channel_indicator_utils::GetFgColorJelly(channel_))
+              : channel_indicator_utils::GetFgColor(channel_)));
     }
     return;
   }
@@ -134,9 +143,17 @@ void ChannelIndicatorView::OnThemeChanged() {
   // User is not logged in, set label colors.
   if (label()) {
     label()->SetBackground(views::CreateRoundedRectBackground(
-        channel_indicator_utils::GetBgColor(channel_),
+        is_jelly_enabled
+            ? color_provider->GetColor(
+                  channel_indicator_utils::GetBgColorJelly(channel_))
+            : channel_indicator_utils::GetBgColor(channel_),
         kIndicatorBgCornerRadius));
-    label()->SetEnabledColor(channel_indicator_utils::GetFgColor(channel_));
+    if (is_jelly_enabled) {
+      label()->SetEnabledColorId(
+          channel_indicator_utils::GetFgColorJelly(channel_));
+    } else {
+      label()->SetEnabledColor(channel_indicator_utils::GetFgColor(channel_));
+    }
   }
 }
 
@@ -161,6 +178,8 @@ void ChannelIndicatorView::Update() {
 void ChannelIndicatorView::SetImageOrText() {
   DCHECK(channel_indicator_utils::IsDisplayableChannel(channel_));
 
+  auto* color_provider = GetColorProvider();
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   if (Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::ACTIVE) {
     // User is logged in, show the icon.
@@ -181,12 +200,22 @@ void ChannelIndicatorView::SetImageOrText() {
         gfx::Insets::VH(kLayoutManagerInset, kLayoutManagerInset));
     SetBackground(
         views::CreateBackgroundFromPainter(std::make_unique<CirclePainter>(
-            channel_indicator_utils::GetBgColor(channel_),
+            is_jelly_enabled
+                ? (color_provider
+                       ? color_provider->GetColor(
+                             channel_indicator_utils::GetBgColorJelly(channel_))
+                       : SkColor())
+                : channel_indicator_utils::GetBgColor(channel_),
             IsHorizontalAlignment() ? GetLocalBounds().width()
                                     : GetLocalBounds().height())));
     image_view()->SetImage(gfx::CreateVectorIcon(
         channel_indicator_utils::GetVectorIcon(channel_), kVectorIconSize,
-        channel_indicator_utils::GetFgColor(channel_)));
+        is_jelly_enabled
+            ? (color_provider
+                   ? color_provider->GetColor(
+                         channel_indicator_utils::GetFgColorJelly(channel_))
+                   : SkColor())
+            : channel_indicator_utils::GetFgColor(channel_)));
     PreferredSizeChanged();
     return;
   }
@@ -208,8 +237,20 @@ void ChannelIndicatorView::SetImageOrText() {
   label()->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, kBorderInset)));
   label()->SetBackground(views::CreateRoundedRectBackground(
-      channel_indicator_utils::GetBgColor(channel_), kIndicatorBgCornerRadius));
-  label()->SetEnabledColor(channel_indicator_utils::GetFgColor(channel_));
+      is_jelly_enabled
+          ? (color_provider
+                 ? color_provider->GetColor(
+                       channel_indicator_utils::GetBgColorJelly(channel_))
+                 : SkColor())
+          : channel_indicator_utils::GetBgColor(channel_),
+      kIndicatorBgCornerRadius));
+  if (is_jelly_enabled) {
+    label()->SetEnabledColorId(
+        channel_indicator_utils::GetFgColorJelly(channel_));
+  } else {
+    label()->SetEnabledColor(channel_indicator_utils::GetFgColor(channel_));
+  }
+
   label()->SetText(l10n_util::GetStringUTF16(
       channel_indicator_utils::GetChannelNameStringResourceID(
           channel_,

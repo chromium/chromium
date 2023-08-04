@@ -14,7 +14,9 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash::channel_indicator_utils {
@@ -53,7 +55,7 @@ int GetChannelNameStringResourceID(version_info::Channel channel,
 }
 
 SkColor GetFgColor(version_info::Channel channel) {
-  bool is_dark_mode_enabled =
+  const bool is_dark_mode_enabled =
       DarkLightModeController::Get()->IsDarkModeEnabled();
   switch (channel) {
     case version_info::Channel::BETA:
@@ -68,8 +70,23 @@ SkColor GetFgColor(version_info::Channel channel) {
   }
 }
 
+ui::ColorId GetFgColorJelly(version_info::Channel channel) {
+  CHECK(chromeos::features::IsJellyEnabled());
+  switch (channel) {
+    case version_info::Channel::BETA:
+      return cros_tokens::kCrosSysOnProgressContainer;
+    case version_info::Channel::DEV:
+      return cros_tokens::kCrosSysOnPositiveContainer;
+    case version_info::Channel::CANARY:
+      return cros_tokens::kCrosSysOnWarningContainer;
+    case version_info::Channel::STABLE:
+    case version_info::Channel::UNKNOWN:
+      return ui::ColorId();
+  }
+}
+
 SkColor GetBgColor(version_info::Channel channel) {
-  bool is_dark_mode_enabled =
+  const bool is_dark_mode_enabled =
       DarkLightModeController::Get()->IsDarkModeEnabled();
   switch (channel) {
     case version_info::Channel::BETA:
@@ -84,6 +101,21 @@ SkColor GetBgColor(version_info::Channel channel) {
     case version_info::Channel::STABLE:
     case version_info::Channel::UNKNOWN:
       return SkColorSetRGB(0x00, 0x00, 0x00);
+  }
+}
+
+ui::ColorId GetBgColorJelly(version_info::Channel channel) {
+  CHECK(chromeos::features::IsJellyEnabled());
+  switch (channel) {
+    case version_info::Channel::BETA:
+      return cros_tokens::kCrosSysProgressContainer;
+    case version_info::Channel::DEV:
+      return cros_tokens::kCrosSysPositiveContainer;
+    case version_info::Channel::CANARY:
+      return cros_tokens::kCrosSysWarningContainer;
+    case version_info::Channel::STABLE:
+    case version_info::Channel::UNKNOWN:
+      return ui::ColorId();
   }
 }
 

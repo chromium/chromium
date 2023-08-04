@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "components/version_info/channel.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash::channel_indicator_utils {
@@ -29,10 +30,20 @@ ASH_EXPORT int GetChannelNameStringResourceID(version_info::Channel channel,
 // value of SkColorSetRGB(0x00, 0x00, 0x00) otherwise.
 ASH_EXPORT SkColor GetFgColor(version_info::Channel channel);
 
+// For Jelly: returns the foreground `ui::ColorId` for release track `channel`.
+// If `channel` is one of the displayable values then the expected `ColorId` is
+// returned, a value of `ui::ColorId()` otherwise.
+ASH_EXPORT ui::ColorId GetFgColorJelly(version_info::Channel channel);
+
 // Returns the background UI color for release track `channel`. If `channel` is
 // one of the displayable values then the expected `SkColor` is returned, a
 // value of SkColorSetRGB(0x00, 0x00, 0x00) otherwise.
 ASH_EXPORT SkColor GetBgColor(version_info::Channel channel);
+
+// For Jelly returns the background `ui::ColorId` for release track `channel`.
+// If `channel` is one of the displayable values then the expected `ColorId` is
+// returned, a value of `ui::ColorId()` otherwise.
+ASH_EXPORT ui::ColorId GetBgColorJelly(version_info::Channel channel);
 
 // Returns the text for the version button text, for release track `channel`
 // e.g. "Beta 105.0.5167.0". If `channel` is not one of the displayable values,
