@@ -133,16 +133,6 @@ void WebHTTPBody::AppendBlob(const WebString& uuid) {
   private_->AppendBlob(uuid, nullptr);
 }
 
-void WebHTTPBody::AppendBlob(
-    const WebString& uuid,
-    uint64_t length,
-    CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob) {
-  EnsureMutable();
-  private_->AppendBlob(
-      uuid, BlobDataHandle::Create(uuid, "" /* type is not necessary */, length,
-                                   std::move(blob)));
-}
-
 void WebHTTPBody::AppendDataPipe(
     CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>
         data_pipe_getter) {
