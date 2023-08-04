@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_progress_event_throttle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -53,6 +52,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -88,9 +88,7 @@ class CORE_EXPORT XMLHttpRequest final
   static XMLHttpRequest* Create(ScriptState*);
   static XMLHttpRequest* Create(ExecutionContext*);
 
-  XMLHttpRequest(ExecutionContext*,
-                 v8::Isolate*,
-                 scoped_refptr<const DOMWrapperWorld> world);
+  XMLHttpRequest(ExecutionContext*, scoped_refptr<const DOMWrapperWorld> world);
   ~XMLHttpRequest() override;
 
   // These exact numeric values are important because JS expects them.
@@ -295,9 +293,6 @@ class CORE_EXPORT XMLHttpRequest final
   // Report the memory usage associated with this object to V8 so that V8 can
   // schedule GC accordingly.  This function should be called whenever the
   // internal memory usage changes except for the following members.
-  // - response_text_ of type TraceWrapperV8String
-  //   ScriptString internally creates and holds a v8::String, so V8 is aware of
-  //   its memory usage.
   // - response_array_buffer_ of type DOMArrayBuffer
   //   DOMArrayBuffer supports the memory usage reporting system on their own,
   //   so there is no need.
@@ -326,9 +321,7 @@ class CORE_EXPORT XMLHttpRequest final
 
   std::unique_ptr<TextResourceDecoder> decoder_;
 
-  // Avoid using a flat WTF::String here and rather use a traced v8::String
-  // which internally builds a string rope.
-  TraceWrapperV8String response_text_;
+  StringBuilder response_text_;
   Member<Document> response_document_;
   Member<DocumentParser> response_document_parser_;
 
@@ -353,7 +346,6 @@ class CORE_EXPORT XMLHttpRequest final
   // attribute.
   ResponseTypeCode response_type_code_ = kResponseTypeDefault;
 
-  v8::Isolate* const isolate_;
   // The DOMWrapperWorld in which the request initiated. Can be null.
   scoped_refptr<const DOMWrapperWorld> world_;
   // Stores the SecurityOrigin associated with the |world_| if it's an isolated
@@ -388,7 +380,6 @@ class CORE_EXPORT XMLHttpRequest final
   // True iff the ongoing resource loading is using the downloadToBlob
   // option.
   bool downloading_to_blob_ = false;
-  bool response_text_overflow_ = false;
   bool send_flag_ = false;
   bool response_array_buffer_failure_ = false;
 

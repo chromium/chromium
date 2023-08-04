@@ -279,25 +279,19 @@ class XMLHttpRequest::BlobLoader final
 
 XMLHttpRequest* XMLHttpRequest::Create(ScriptState* script_state) {
   return MakeGarbageCollected<XMLHttpRequest>(
-      ExecutionContext::From(script_state), script_state->GetIsolate(),
-      &script_state->World());
+      ExecutionContext::From(script_state), &script_state->World());
 }
 
 XMLHttpRequest* XMLHttpRequest::Create(ExecutionContext* context) {
-  v8::Isolate* isolate = context->GetIsolate();
-  CHECK(isolate);
-
-  return MakeGarbageCollected<XMLHttpRequest>(context, isolate, nullptr);
+  return MakeGarbageCollected<XMLHttpRequest>(context, nullptr);
 }
 
 XMLHttpRequest::XMLHttpRequest(ExecutionContext* context,
-                               v8::Isolate* isolate,
                                scoped_refptr<const DOMWrapperWorld> world)
     : ActiveScriptWrappable<XMLHttpRequest>({}),
       ExecutionContextLifecycleObserver(context),
       progress_event_throttle_(
           MakeGarbageCollected<XMLHttpRequestProgressEventThrottle>(this)),
-      isolate_(isolate),
       world_(std::move(world)),
       isolated_world_security_origin_(world_ && world_->IsIsolatedWorld()
                                           ? world_->IsolatedWorldSecurityOrigin(
@@ -326,7 +320,7 @@ String XMLHttpRequest::responseText(ExceptionState& exception_state) {
   }
   if (error_ || (state_ != kLoading && state_ != kDone))
     return String();
-  return response_text_.Flatten(isolate_);
+  return response_text_.ToString();
 }
 
 void XMLHttpRequest::InitResponseDocument() {
@@ -374,7 +368,7 @@ Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
     if (!response_document_)
       return nullptr;
 
-    response_document_->SetContent(response_text_.Flatten(isolate_));
+    response_document_->SetContent(response_text_.ToString());
     if (!response_document_->WellFormed()) {
       response_document_ = nullptr;
     } else {
@@ -398,7 +392,7 @@ v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
   // spec says. https://xhr.spec.whatwg.org/#response-body
   v8::Local<v8::Value> json =
       FromJSONString(isolate, isolate->GetCurrentContext(),
-                     response_text_.Flatten(isolate), exception_state);
+                     response_text_.ToString(), exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
     return v8::Null(isolate);
@@ -1789,12 +1783,8 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
   }
 
   if (decoder_) {
-    auto text = decoder_->Flush();
-
-    if (!text.empty() && !response_text_overflow_) {
-      response_text_.Concat(isolate_, text);
-      response_text_overflow_ = response_text_.IsEmpty();
-    }
+    response_text_.Append(decoder_->Flush());
+    ReportMemoryUsageToV8();
   }
 
   ClearVariablesForLoading();
@@ -1982,11 +1972,8 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
     if (!decoder_)
       decoder_ = CreateDecoder();
 
-    auto text = decoder_->Decode(data, len);
-    if (!text.empty() && !response_text_overflow_) {
-      response_text_.Concat(isolate_, text);
-      response_text_overflow_ = response_text_.IsEmpty();
-    }
+    response_text_.Append(decoder_->Decode(data, len));
+    ReportMemoryUsageToV8();
   } else if (response_type_code_ == kResponseTypeArrayBuffer ||
              response_type_code_ == kResponseTypeBlob) {
     // Buffer binary data.
@@ -2111,8 +2098,10 @@ void XMLHttpRequest::ReportMemoryUsageToV8() {
           static_cast<int64_t>(length_downloaded_to_blob_last_reported_);
   length_downloaded_to_blob_last_reported_ = length_downloaded_to_blob_;
 
-  if (diff)
-    isolate_->AdjustAmountOfExternalAllocatedMemory(diff);
+  if (diff) {
+    GetExecutionContext()->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(
+        diff);
+  }
 }
 
 void XMLHttpRequest::Trace(Visitor* visitor) const {
@@ -2124,7 +2113,6 @@ void XMLHttpRequest::Trace(Visitor* visitor) const {
   visitor->Trace(progress_event_throttle_);
   visitor->Trace(upload_);
   visitor->Trace(blob_loader_);
-  visitor->Trace(response_text_);
   XMLHttpRequestEventTarget::Trace(visitor);
   ThreadableLoaderClient::Trace(visitor);
   DocumentParserClient::Trace(visitor);

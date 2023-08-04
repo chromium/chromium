@@ -462,8 +462,6 @@ component("platform") {
     "bindings/to_blink_string.h",
     "bindings/to_v8.h",
     "bindings/trace_wrapper_v8_reference.h",
-    "bindings/trace_wrapper_v8_string.cc",
-    "bindings/trace_wrapper_v8_string.h",
     "bindings/union_base.cc",
     "bindings/union_base.h",
     "bindings/v8_binding.cc",
