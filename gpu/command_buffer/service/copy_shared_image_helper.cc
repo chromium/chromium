@@ -31,6 +31,8 @@
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -804,8 +806,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
   texture_info.fTarget = target;
   // Get the surface color format similar to that in VideoFrameYUVConverter.
   texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
-  GrBackendTexture backend_texture(width, height, GrMipMapped::kNo,
-                                   texture_info);
+  auto backend_texture = GrBackendTextures::MakeGL(
+      width, height, skgpu::Mipmapped::kNo, texture_info);
 
   auto dest_color_space = SkColorSpace::MakeSRGB();
   GrDirectContext* direct_context = shared_context_state_->gr_context();

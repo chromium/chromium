@@ -39,6 +39,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -159,8 +160,8 @@ bool ReadbackTexturePlaneToMemorySyncSkImage(const VideoFrame& src_frame,
   gl_texture_info.fID = texture_id;
   gl_texture_info.fTarget = holder.texture_target;
   gl_texture_info.fFormat = texture_format;
-  GrBackendTexture texture(width, height, skgpu::Mipmapped::kNo,
-                           gl_texture_info);
+  auto texture = GrBackendTextures::MakeGL(width, height, skgpu::Mipmapped::kNo,
+                                           gl_texture_info);
 
   auto image = SkImages::BorrowTextureFrom(
       gr_context, texture,

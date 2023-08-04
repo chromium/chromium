@@ -12,6 +12,8 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface.h"
@@ -111,9 +113,10 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
   framebuffer_info.fFormat = GL_RGBA8;
   SkColorType color_type = kSurfaceColorType;
 
-  GrBackendRenderTarget render_target(size_.width(), size_.height(),
-                                      /*sampleCnt=*/0,
-                                      /*stencilBits=*/0, framebuffer_info);
+  auto render_target =
+      GrBackendRenderTargets::MakeGL(size_.width(), size_.height(),
+                                     /*sampleCnt=*/0,
+                                     /*stencilBits=*/0, framebuffer_info);
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;

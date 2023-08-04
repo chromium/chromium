@@ -42,8 +42,10 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums.h"
@@ -1025,8 +1027,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     texture_info.fID = buffer->texture->get();
     texture_info.fTarget = GL_TEXTURE_2D;
     texture_info.fFormat = kSizedInternalFormat;
-    GrBackendTexture backend_texture(size.width(), size.height(),
-                                     GrMipMapped::kNo, texture_info);
+    auto backend_texture = GrBackendTextures::MakeGL(
+        size.width(), size.height(), skgpu::Mipmapped::kNo, texture_info);
     buffer->sk_surface = SkSurfaces::WrapBackendTexture(
         gr_context_.get(), backend_texture, kTopLeft_GrSurfaceOrigin,
         /* sampleCnt */ 0, kColorType, /* colorSpace */ nullptr,

@@ -37,6 +37,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace blink {
@@ -388,9 +389,9 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
       context_provider_wrapper->ContextProvider()->GetGrGLTextureFormat(
           viz::SkColorTypeToSinglePlaneSharedImageFormat(
               sk_image_info_.colorType()));
-  GrBackendTexture backend_texture(sk_image_info_.width(),
-                                   sk_image_info_.height(), GrMipMapped::kNo,
-                                   texture_info);
+  auto backend_texture =
+      GrBackendTextures::MakeGL(sk_image_info_.width(), sk_image_info_.height(),
+                                skgpu::Mipmapped::kNo, texture_info);
 
   GrSurfaceOrigin origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
                                              : kBottomLeft_GrSurfaceOrigin;

@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space_win.h"
@@ -396,8 +397,8 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDrawGanesh(
       NOTREACHED() << "color_type: " << color_type;
   }
 
-  GrBackendRenderTarget render_target(size().width(), size().height(),
-                                      final_msaa_count, 0, framebuffer_info);
+  auto render_target = GrBackendRenderTargets::MakeGL(
+      size().width(), size().height(), final_msaa_count, 0, framebuffer_info);
   auto surface = SkSurfaces::WrapBackendRenderTarget(
       context_state->gr_context(), render_target, surface_origin(), color_type,
       color_space().ToSkColorSpace(), &surface_props);

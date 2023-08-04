@@ -46,6 +46,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -203,8 +204,8 @@ sk_sp<SkImage> WrapGLTexture(
   // SkImage factory should reflect video_frame->format(). Update once
   // Skia supports GL_RGB. skbug.com/7533
   texture_info.fFormat = GL_RGBA8_OES;
-  GrBackendTexture backend_texture(size.width(), size.height(),
-                                   GrMipMapped::kNo, texture_info);
+  auto backend_texture = GrBackendTextures::MakeGL(
+      size.width(), size.height(), skgpu::Mipmapped::kNo, texture_info);
   return SkImages::AdoptTextureFrom(
       raster_context_provider->GrContext(), backend_texture,
       texture_origin_is_top_left ? kTopLeft_GrSurfaceOrigin
@@ -935,7 +936,7 @@ class VideoTextureBacking : public cc::TextureBacking {
         DLOG(ERROR) << "Failed to get backend texture for VideoTextureBacking.";
         return false;
       }
-      if (!texture.getGLTextureInfo(&texture_info)) {
+      if (!GrBackendTextures::GetGLTextureInfo(texture, &texture_info)) {
         DLOG(ERROR) << "Failed to getGLTextureInfo for VideoTextureBacking.";
         return false;
       }

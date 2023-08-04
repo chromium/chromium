@@ -21,6 +21,8 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace {
@@ -62,8 +64,8 @@ class ScopedAcceleratedSkImage {
         texture_id,
         provider->GetGrGLTextureFormat(format),
     };
-    GrBackendTexture backend_texture(size.width(), size.height(),
-                                     GrMipmapped::kNo, gl_info);
+    auto backend_texture = GrBackendTextures::MakeGL(
+        size.width(), size.height(), skgpu::Mipmapped::kNo, gl_info);
 
     SkColorType color_type = viz::ToClosestSkColorType(
         /*gpu_compositing=*/true, format);

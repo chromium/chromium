@@ -48,6 +48,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
@@ -565,8 +566,8 @@ GrBackendTexture CanvasResourceRasterSharedImage::CreateGrTexture() const {
   texture_info.fFormat =
       context_provider_wrapper_->ContextProvider()->GetGrGLTextureFormat(
           GetSharedImageFormat());
-  return GrBackendTexture(Size().width(), Size().height(),
-                          skgpu::Mipmapped::kNo, texture_info);
+  return GrBackendTextures::MakeGL(Size().width(), Size().height(),
+                                   skgpu::Mipmapped::kNo, texture_info);
 }
 
 CanvasResourceRasterSharedImage::~CanvasResourceRasterSharedImage() {

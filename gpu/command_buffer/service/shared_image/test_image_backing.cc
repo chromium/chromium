@@ -9,6 +9,8 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/mock/GrMockTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -118,8 +120,8 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
 
  private:
   GrBackendTexture backend_tex() {
-    return GrBackendTexture(
-        size().width(), size().height(), GrMipMapped::kNo,
+    return GrBackendTextures::MakeGL(
+        size().width(), size().height(), skgpu::Mipmapped::kNo,
         GrGLTextureInfo{GL_TEXTURE_EXTERNAL_OES,
                         static_cast<TestImageBacking*>(backing())->service_id(),
                         static_cast<GrGLenum>(TextureStorageFormat(

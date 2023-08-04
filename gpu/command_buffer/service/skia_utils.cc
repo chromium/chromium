@@ -19,6 +19,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "ui/base/ui_base_features.h"
@@ -162,10 +163,9 @@ GLuint GetGrGLBackendTextureFormat(
 
   // Map ETC1 to ETC2 type depending on conversion by skia
   if (gl_storage_format == GL_ETC1_RGB8_OES) {
-    GrGLFormat gr_gl_format =
-        gr_context_thread_safe
-            ->compressedBackendFormat(SkTextureCompressionType::kETC1_RGB8)
-            .asGLFormat();
+    GrGLFormat gr_gl_format = GrBackendFormats::AsGLFormat(
+        gr_context_thread_safe->compressedBackendFormat(
+            SkTextureCompressionType::kETC1_RGB8));
     if (gr_gl_format == GrGLFormat::kCOMPRESSED_ETC1_RGB8) {
       internal_format = GL_ETC1_RGB8_OES;
     } else if (gr_gl_format == GrGLFormat::kCOMPRESSED_RGB8_ETC2) {
@@ -200,8 +200,8 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
   texture_info.fTarget = target;
   texture_info.fFormat = GetGrGLBackendTextureFormat(
       feature_info, gl_storage_format, gr_context_thread_safe);
-  *gr_texture = GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo,
-                                 texture_info);
+  *gr_texture = GrBackendTextures::MakeGL(size.width(), size.height(),
+                                          skgpu::Mipmapped::kNo, texture_info);
   return true;
 }
 
@@ -417,8 +417,9 @@ uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
   switch (backend_texture.backend()) {
     case GrBackendApi::kOpenGL: {
       GrGLTextureInfo tex_info;
-      if (backend_texture.getGLTextureInfo(&tex_info))
+      if (GrBackendTextures::GetGLTextureInfo(backend_texture, &tex_info)) {
         return tex_info.fID;
+      }
       break;
     }
 #if BUILDFLAG(ENABLE_VULKAN)

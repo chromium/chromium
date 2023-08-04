@@ -18,8 +18,10 @@
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
@@ -94,8 +96,8 @@ void SkiaGlRenderer::RenderFrame() {
     GrGLFramebufferInfo framebuffer_info;
     framebuffer_info.fFBOID = 0;
     framebuffer_info.fFormat = GL_RGBA8;
-    GrBackendRenderTarget render_target(size_.width(), size_.height(), 0, 8,
-                                        framebuffer_info);
+    auto render_target = GrBackendRenderTargets::MakeGL(
+        size_.width(), size_.height(), 0, 8, framebuffer_info);
 
     sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
         gr_context_.get(), render_target, kBottomLeft_GrSurfaceOrigin,

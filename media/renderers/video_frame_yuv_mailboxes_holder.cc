@@ -20,6 +20,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
@@ -179,9 +180,9 @@ GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
   ImportTextures(for_surface);
   GrBackendTexture backend_textures[SkYUVAInfo::kMaxPlanes];
   for (size_t plane = 0; plane < num_planes_; ++plane) {
-    backend_textures[plane] = {plane_sizes_[plane].width(),
-                               plane_sizes_[plane].height(), GrMipmapped::kNo,
-                               textures_[plane].texture};
+    backend_textures[plane] = GrBackendTextures::MakeGL(
+        plane_sizes_[plane].width(), plane_sizes_[plane].height(),
+        skgpu::Mipmapped::kNo, textures_[plane].texture);
   }
   return GrYUVABackendTextures(yuva_info_, backend_textures,
                                kTopLeft_GrSurfaceOrigin);

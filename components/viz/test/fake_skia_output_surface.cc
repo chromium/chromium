@@ -31,6 +31,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -365,9 +366,9 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
       context_provider()->ContextCapabilities().angle_rgbx_internal_format);
   GrGLTextureInfo gl_texture_info = {
       image_context.mailbox_holder().texture_target, texture_id, gl_format};
-  *backend_texture = GrBackendTexture(image_context.size().width(),
-                                      image_context.size().height(),
-                                      GrMipMapped::kNo, gl_texture_info);
+  *backend_texture = GrBackendTextures::MakeGL(
+      image_context.size().width(), image_context.size().height(),
+      skgpu::Mipmapped::kNo, gl_texture_info);
   return true;
 }
 

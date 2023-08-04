@@ -63,6 +63,8 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -1199,7 +1201,7 @@ GrGLuint GpuImageDecodeCache::GlIdFromSkImage(const SkImage* image) {
   }
 
   GrGLTextureInfo info;
-  if (!backend_texture.getGLTextureInfo(&info)) {
+  if (!GrBackendTextures::GetGLTextureInfo(backend_texture, &info)) {
     return 0;
   }
 

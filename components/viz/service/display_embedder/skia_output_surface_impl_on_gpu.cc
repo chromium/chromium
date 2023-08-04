@@ -74,6 +74,7 @@
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -1772,7 +1773,7 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
       for (GrPromiseImageTexture* promise_texture :
            context->promise_image_textures()) {
         GrBackendTexture backend_texture = promise_texture->backendTexture();
-        backend_texture.glTextureParametersModified();
+        GrBackendTextures::GLTextureParametersModified(&backend_texture);
       }
     }
   }

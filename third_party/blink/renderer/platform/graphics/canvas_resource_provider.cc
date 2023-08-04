@@ -42,6 +42,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace blink {
@@ -339,9 +340,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       // Note that the call below is guarenteed to not issue any GPU work for
       // the backend texture since we ensure that all skia work on the resource
       // is issued before releasing write access.
-      SkSurfaces::GetBackendTexture(surface_.get(),
-                                    SkSurfaces::BackendHandleAccess::kFlushRead)
-          .glTextureParametersModified();
+      auto tex = SkSurfaces::GetBackendTexture(
+          surface_.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
+      GrBackendTextures::GLTextureParametersModified(&tex);
     }
   }
 
@@ -843,7 +844,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
             viz::SkColorTypeToSinglePlaneSharedImageFormat(
                 GetSkImageInfo().colorType()));
 
-    auto backend_texture = GrBackendTexture(
+    auto backend_texture = GrBackendTextures::MakeGL(
         Size().width(), Size().height(), skgpu::Mipmapped::kNo, texture_info);
 
     const auto props = GetSkSurfaceProps();
