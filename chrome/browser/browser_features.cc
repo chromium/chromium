@@ -166,19 +166,6 @@ BASE_FEATURE(kWebUsbDeviceDetection,
              "WebUsbDeviceDetection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables Certificate Transparency on Android.
-// TODO(crbug.com/1467556): Since CT on Android launched, there is no longer a
-// need for a separate flag. This can be merged with
-// kCertificateTransparencyAskBeforeEnabling.
-BASE_FEATURE(kCertificateTransparencyAndroid,
-             "CertificateTransparencyAndroid",
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else
 // Enables Certificate Transparency on Desktop.
 // Enabling CT enforcement requires maintaining a log policy, and the ability to
 // update the list of accepted logs. Embedders who are planning to enable this
@@ -190,7 +177,6 @@ BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kLargeFaviconFromGoogle,
              "LargeFaviconFromGoogle",

@@ -869,13 +869,8 @@ bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
 //   - by default for Chrome-branded builds
 //   - on an opt-in basis for other builds and embedders, controlled with the
 //     kCertificateTransparencyAskBeforeEnabling flag
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kCertificateTransparencyAndroid);
-#else
   return base::FeatureList::IsEnabled(
       features::kCertificateTransparencyAskBeforeEnabling);
-#endif  // BUILDFLAG(IS_ANDROID)
 #else
   return false;
 #endif  // defined(OFFICIAL_BUILD)
