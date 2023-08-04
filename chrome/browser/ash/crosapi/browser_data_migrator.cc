@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -405,22 +406,31 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
                                          version_info::GetVersion());
   }
 
-  if (result.data_migration_result.kind == ResultKind::kSucceeded) {
-    crosapi::browser_util::SetProfileMigrationCompletedForUser(
-        local_state_, user_id_hash_,
-        crosapi::browser_util::MigrationMode::kMove);
+  switch (result.data_migration_result.kind) {
+    case ResultKind::kSucceeded:
+      crosapi::browser_util::SetProfileMigrationCompletedForUser(
+          local_state_, user_id_hash_,
+          crosapi::browser_util::MigrationMode::kMove);
 
-    // Profile migration is marked as completed both when the migration is
-    // performed (here) and for a new user without actually performing data
-    // migration (`ProfileImpl::OnLocaleReady`). The timestamp of completed
-    // migration is only recorded when the migration is actually performed.
-    crosapi::browser_util::SetProfileMigrationCompletionTimeForUser(
-        local_state_, user_id_hash_);
+      // Profile migration is marked as completed both when the migration is
+      // performed (here) and for a new user without actually performing data
+      // migration (`ProfileImpl::OnLocaleReady`). The timestamp of completed
+      // migration is only recorded when the migration is actually performed.
+      crosapi::browser_util::SetProfileMigrationCompletionTimeForUser(
+          local_state_, user_id_hash_);
 
-    ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
+      ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
+      break;
+    case ResultKind::kFailed:
+      LOG(ERROR) << "Migration failed for some reason. Look at logs from "
+                    "move_migrator.cc for details.";
+      // This should not happen often. Send a crash report for debugging.
+      base::debug::DumpWithoutCrashing();
+      break;
+    case ResultKind::kCancelled:
+      LOG(WARNING) << "Migration was cancelled by the user.";
+      break;
   }
-  // If migration has failed or skipped, we silently relaunch ash and send them
-  // to their home screen. In that case lacros will be disabled.
 
   local_state_->CommitPendingWrite();
 
