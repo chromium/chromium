@@ -8,12 +8,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
+#include "media/capture/capture_switches.h"
 #include "media/capture/video/apple/video_capture_device_apple.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
@@ -79,23 +81,27 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
 // uniqueId. At the moment these are just Blackmagic devices.
 const char* kBlockedCamerasIdSignature[] = {"-01FDA82C8A9C"};
 
-}  // anonymous namespace
-
-namespace media {
-
-static bool IsDeviceBlocked(const VideoCaptureDeviceDescriptor& descriptor) {
+bool IsDeviceBlockedForAVFoundation(const std::string& device_id) {
   bool is_device_blocked = false;
   for (size_t i = 0;
        !is_device_blocked && i < std::size(kBlockedCamerasIdSignature); ++i) {
-    is_device_blocked =
-        base::EndsWith(descriptor.device_id, kBlockedCamerasIdSignature[i],
-                       base::CompareCase::INSENSITIVE_ASCII);
+    is_device_blocked = base::EndsWith(device_id, kBlockedCamerasIdSignature[i],
+                                       base::CompareCase::INSENSITIVE_ASCII);
   }
+  return is_device_blocked;
+}
+
+bool IsDeviceBlocked(const media::VideoCaptureDeviceDescriptor& descriptor) {
+  bool is_device_blocked = IsDeviceBlockedForAVFoundation(descriptor.device_id);
   DVLOG_IF(2, is_device_blocked)
       << "Blocked camera: " << descriptor.display_name()
       << ", id: " << descriptor.device_id;
   return is_device_blocked;
 }
+
+}  // anonymous namespace
+
+namespace media {
 
 VideoCaptureDeviceFactoryApple::VideoCaptureDeviceFactoryApple() {
   thread_checker_.DetachFromThread();
@@ -171,6 +177,12 @@ void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
   VideoCaptureDeviceDeckLinkMac::EnumerateDevices(&devices_info);
 #endif
   std::move(callback).Run(std::move(devices_info));
+}
+
+bool ShouldEnableGpuMemoryBuffer(const std::string& device_id) {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
+         !IsDeviceBlockedForAVFoundation(device_id);
 }
 
 }  // namespace media

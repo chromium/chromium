@@ -28,6 +28,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryApple
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 };
 
+CAPTURE_EXPORT bool ShouldEnableGpuMemoryBuffer(const std::string& device_id);
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_FACTORY_APPLE_H_

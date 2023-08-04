@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
@@ -27,6 +26,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
 #endif
 
 namespace content {
@@ -158,8 +161,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #elif BUILDFLAG(IS_MAC)
   // For mac(https://crbug.com/1175142), zero-copy is always enabled unless the
   // user explicitly asks to disable it.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableVideoCaptureUseGpuMemoryBuffer)) {
+  if (media::ShouldEnableGpuMemoryBuffer(device_id)) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
 #else
