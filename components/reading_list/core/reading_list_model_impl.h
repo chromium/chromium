@@ -31,13 +31,16 @@ class ModelTypeChangeProcessor;
 // Concrete implementation of a reading list model using in memory lists.
 class ReadingListModelImpl : public ReadingListModel {
  public:
-  // Initialize a ReadingListModelImpl to load and save data in
-  // |storage_layer|, which must not be null.
-  // |sync_storage_type| specifies whether the model is meant to sync in
-  // transport-mode or the default and traditional unspecified mode.
-  // |clock| will be used to timestamp all the operations.
+  // Initialize a ReadingListModelImpl to load and save data in |storage_layer|,
+  // which must not be null. |sync_storage_type_for_uma| specifies whether the
+  // model is meant to sync in transport-mode or the default and traditional
+  // unspecified mode, for the purpose of metric-reporting.
+  // |wipe_model_upon_sync_disabled_behavior| influences what happens when sync
+  // is disabled. |clock| will be used to timestamp all the operations.
   ReadingListModelImpl(std::unique_ptr<ReadingListModelStorage> storage_layer,
-                       syncer::StorageType sync_storage_type,
+                       syncer::StorageType sync_storage_type_for_uma,
+                       syncer::WipeModelUponSyncDisabledBehavior
+                           wipe_model_upon_sync_disabled_behavior,
                        base::Clock* clock);
   ~ReadingListModelImpl() override;
 
@@ -134,7 +137,9 @@ class ReadingListModelImpl : public ReadingListModel {
   // Test-only factory function to inject an arbitrary change processor.
   static std::unique_ptr<ReadingListModelImpl> BuildNewForTest(
       std::unique_ptr<ReadingListModelStorage> storage_layer,
-      syncer::StorageType sync_storage_type,
+      syncer::StorageType sync_storage_type_for_uma,
+      syncer::WipeModelUponSyncDisabledBehavior
+          wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
@@ -159,7 +164,9 @@ class ReadingListModelImpl : public ReadingListModel {
 
   ReadingListModelImpl(
       std::unique_ptr<ReadingListModelStorage> storage_layer,
-      syncer::StorageType sync_storage_type,
+      syncer::StorageType sync_storage_type_for_uma,
+      syncer::WipeModelUponSyncDisabledBehavior
+          wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 

@@ -116,6 +116,7 @@ source_set("test_support") {
     "//base",
     "//components/reading_list/core:test_support",
     "//components/sync/base",
+    "//components/sync/model",
   ]
   public_deps = [
     "//components/keyed_service/core",
@@ -143,6 +144,7 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/sync/base",
+    "//components/sync/model",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",

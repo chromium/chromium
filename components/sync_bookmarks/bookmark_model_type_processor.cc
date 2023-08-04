@@ -124,7 +124,8 @@ size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
 
 BookmarkModelTypeProcessor::BookmarkModelTypeProcessor(
     BookmarkUndoService* bookmark_undo_service,
-    WipeModelUponSyncDisabledBehavior wipe_model_upon_sync_disabled_behavior)
+    syncer::WipeModelUponSyncDisabledBehavior
+        wipe_model_upon_sync_disabled_behavior)
     : bookmark_undo_service_(bookmark_undo_service),
       wipe_model_upon_sync_disabled_behavior_(
           wipe_model_upon_sync_disabled_behavior),
@@ -388,14 +389,14 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
 
   if (!bookmark_tracker_ &&
       wipe_model_upon_sync_disabled_behavior_ ==
-          WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata) {
+          syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata) {
     // Since the model isn't initially tracking metadata, move away from
     // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
     // turned on later and back to off. This should be practically unreachable
     // because usually ClearMetadataWhileStopped() would be invoked earlier,
     // but let's be extra safe and avoid relying on this behavior.
     wipe_model_upon_sync_disabled_behavior_ =
-        WipeModelUponSyncDisabledBehavior::kNever;
+        syncer::WipeModelUponSyncDisabledBehavior::kNever;
   }
 
   ConnectIfReady();
@@ -827,16 +828,16 @@ void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
 
 void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
   switch (wipe_model_upon_sync_disabled_behavior_) {
-    case WipeModelUponSyncDisabledBehavior::kNever:
+    case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       // Nothing to do.
       break;
-    case WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
+    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
       // Do it this time, but switch to kNever so it doesn't trigger next
       // time.
       wipe_model_upon_sync_disabled_behavior_ =
-          WipeModelUponSyncDisabledBehavior::kNever;
+          syncer::WipeModelUponSyncDisabledBehavior::kNever;
       [[fallthrough]];
-    case WipeModelUponSyncDisabledBehavior::kAlways:
+    case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
       bookmark_model_->RemoveAllUserBookmarks();
       break;
   }

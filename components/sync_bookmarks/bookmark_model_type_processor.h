@@ -16,8 +16,8 @@
 #include "base/sequence_checker.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
-#include "components/sync_bookmarks/wipe_model_upon_sync_disabled_behavior.h"
 
 class BookmarkUndoService;
 
@@ -37,9 +37,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                                    public syncer::ModelTypeControllerDelegate {
  public:
   // `bookmark_undo_service` must not be nullptr and must outlive this object.
-  BookmarkModelTypeProcessor(
-      BookmarkUndoService* bookmark_undo_service,
-      WipeModelUponSyncDisabledBehavior wipe_model_upon_sync_disabled_behavior);
+  BookmarkModelTypeProcessor(BookmarkUndoService* bookmark_undo_service,
+                             syncer::WipeModelUponSyncDisabledBehavior
+                                 wipe_model_upon_sync_disabled_behavior);
 
   BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
   BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
@@ -172,8 +172,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   const raw_ptr<BookmarkUndoService, DanglingUntriaged> bookmark_undo_service_;
 
   // Controls whether bookmarks should be wiped when sync is stopped.
-  WipeModelUponSyncDisabledBehavior wipe_model_upon_sync_disabled_behavior_ =
-      WipeModelUponSyncDisabledBehavior::kNever;
+  syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_ =
+          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   // The callback used to schedule the persistence of bookmark model as well as
   // the metadata to a file during which latest metadata should also be pulled

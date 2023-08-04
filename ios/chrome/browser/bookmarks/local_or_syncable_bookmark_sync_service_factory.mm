@@ -9,8 +9,8 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/features.h"
+#import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "components/sync_bookmarks/bookmark_sync_service.h"
-#import "components/sync_bookmarks/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -26,19 +26,19 @@ BASE_FEATURE(kAllowBookmarkModelWipingForFirstSessionAfterDeviceRestore,
              "AllowBookmarkModelWipingForFirstSessionAfterDeviceRestore",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-sync_bookmarks::WipeModelUponSyncDisabledBehavior
+syncer::WipeModelUponSyncDisabledBehavior
 GetWipeModelUponSyncDisabledBehavior() {
   if (IsFirstSessionAfterDeviceRestore() != signin::Tribool::kTrue) {
-    return sync_bookmarks::WipeModelUponSyncDisabledBehavior::kNever;
+    return syncer::WipeModelUponSyncDisabledBehavior::kNever;
   }
 
   return (base::FeatureList::IsEnabled(
               kAllowBookmarkModelWipingForFirstSessionAfterDeviceRestore) &&
           base::FeatureList::IsEnabled(
               syncer::kReplaceSyncPromosWithSignInPromos))
-             ? sync_bookmarks::WipeModelUponSyncDisabledBehavior::
+             ? syncer::WipeModelUponSyncDisabledBehavior::
                    kOnceIfTrackingMetadata
-             : sync_bookmarks::WipeModelUponSyncDisabledBehavior::kNever;
+             : syncer::WipeModelUponSyncDisabledBehavior::kNever;
 }
 
 }  // namespace
