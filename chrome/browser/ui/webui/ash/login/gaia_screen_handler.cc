@@ -838,6 +838,8 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   online_login_helper_->SetUserContext(std::move(user_context));
   online_login_helper_->RequestCookiesAndCompleteAuthentication();
 
+  populated_account_id_.clear();
+
   if (test_expects_complete_login_) {
     VLOG(2) << "Complete test login for " << sanitized_email
             << ", requested=" << test_user_;
@@ -1368,7 +1370,6 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
 
-  populated_account_id_.clear();
   LoadGaia(context);
 }
 
