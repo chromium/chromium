@@ -56,9 +56,11 @@ constexpr double kFractionOfExecutionTimeToSample = 0.02;
 bool IsCurrentProcessBackgrounded() {
 #if BUILDFLAG(IS_MAC)
   base::SelfPortProvider provider;
-  return base::Process::Current().IsProcessBackgrounded(&provider);
+  return base::Process::Current().GetPriority(&provider) ==
+         base::Process::Priority::kBestEffort;
 #else   // BUILDFLAG(IS_MAC)
-  return base::Process::Current().IsProcessBackgrounded();
+  return base::Process::Current().GetPriority() ==
+         base::Process::Priority::kBestEffort;
 #endif  // BUILDFLAG(IS_MAC)
 }
 
