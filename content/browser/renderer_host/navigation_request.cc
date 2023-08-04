@@ -2053,6 +2053,8 @@ NavigationRequest::~NavigationRequest() {
     GetFencedFrameURLMap().RemoveObserverForURN(common_params_->url, this);
   }
 
+  RecordEarlyRenderFrameHostSwapMetrics();
+
   if (IsNavigationStarted()) {
     GetDelegate()->DidFinishNavigation(this);
     ProcessOriginAgentClusterEndResult();
@@ -9618,6 +9620,19 @@ void NavigationRequest::OnResponseBodyReady(MojoResult) {
       // to unblock the throttle.
       std::move(response_body_callback_).Run(std::string());
       break;
+  }
+}
+
+void NavigationRequest::RecordEarlyRenderFrameHostSwapMetrics() {
+  base::UmaHistogramEnumeration("Navigation.EarlyRenderFrameHostSwapType",
+                                early_render_frame_host_swap_type_);
+  if (early_render_frame_host_swap_type_ !=
+      NavigationRequest::EarlyRenderFrameHostSwapType::kNone) {
+    base::UmaHistogramBoolean(
+        "Navigation.EarlyRenderFrameHostSwap.HasCommitted", HasCommitted());
+    base::UmaHistogramBoolean(
+        "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame",
+        IsInOutermostMainFrame());
   }
 }
 

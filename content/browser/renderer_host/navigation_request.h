@@ -1269,6 +1269,24 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   ErrorPageProcess ComputeErrorPageProcess();
 
+  // This describes the reason for performing an early RenderFrameHost swap, if
+  // any. This enum is used in UMA histograms, so existing values should be
+  // neither reordered nor removed.
+  enum class EarlyRenderFrameHostSwapType {
+    kNone = 0,
+    kInitialFrame = 1,
+    kCrashedFrame = 2,
+    kMaxValue = kCrashedFrame,
+  };
+
+  // Remember if this navigation triggered an early swap of a speculative
+  // RenderFrameHost to become a current RenderFrameHost prior to the
+  // navigation commit, and if so, what triggered it.
+  void set_early_render_frame_host_swap_type(
+      EarlyRenderFrameHostSwapType type) {
+    early_render_frame_host_swap_type_ = type;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -1957,6 +1975,10 @@ class CONTENT_EXPORT NavigationRequest
   // callback once the body has been successfully read from its corresponding
   // data pipe.
   void OnResponseBodyReady(MojoResult result);
+
+  // Helper to record early RenderFrameHost swap metrics at the end of a
+  // navigation.
+  void RecordEarlyRenderFrameHostSwapMetrics();
 
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
@@ -2678,6 +2700,9 @@ class CONTENT_EXPORT NavigationRequest
 
   // Used to prevent re-entrancy into `Resume()`.
   bool is_resuming_ = false;
+
+  EarlyRenderFrameHostSwapType early_render_frame_host_swap_type_ =
+      EarlyRenderFrameHostSwapType::kNone;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

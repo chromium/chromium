@@ -1352,6 +1352,16 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
     return;
   }
 
+  // Remember why the early swap is occurring for metrics. Note that we're
+  // being slightly imprecise here by using kCrashedFrame for
+  // must_be_replaced(), which includes all cases where a RenderFrameHost has
+  // had a process in the past but then lost it via RenderProcessGone, which
+  // also includes cases like OOM.
+  using EarlySwapType = NavigationRequest::EarlyRenderFrameHostSwapType;
+  EarlySwapType early_swap_type = render_frame_host_->must_be_replaced()
+                                      ? EarlySwapType::kCrashedFrame
+                                      : EarlySwapType::kInitialFrame;
+
   // Now, proceed with the early swap. There's no reason to sit around with a
   // sad tab or a newly created RFH while we wait for the navigation to
   // complete. Just switch to the speculative RFH now and allow the navigation
@@ -1409,6 +1419,8 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
       request->browsing_context_group_swap().ShouldClearProxiesOnCommit());
   request->SetAssociatedRFHType(
       NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
+
+  request->set_early_render_frame_host_swap_type(early_swap_type);
 }
 
 base::expected<RenderFrameHostImpl*, GetFrameHostForNavigationFailed>

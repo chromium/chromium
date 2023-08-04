@@ -31108,6 +31108,12 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="TTLS"/>
 </enum>
 
+<enum name="EarlyRFHSwapType">
+  <int value="0" label="No early swap"/>
+  <int value="1" label="Early swap for the initial non-live RenderFrameHost"/>
+  <int value="2" label="Early swap for a crashed RenderFrameHost"/>
+</enum>
+
 <enum name="EasyUnlockAuthEvent">
   <int value="0" label="Smart Lock success"/>
   <int value="1" label="Smart Lock failure"/>

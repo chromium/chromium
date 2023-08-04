@@ -4652,4 +4652,111 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest,
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       EarlySwapMetrics_InitialFrame) {
+  base::HistogramTester histograms;
+
+  // Navigate the initial frame to a WebUI URL. Currently, the initial RFH
+  // cannot be reused for such a URL, and hence we should create a speculative
+  // RenderFrameHost and swap it in early because the initial frame is not
+  // live.
+  ASSERT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+  GURL web_ui_url(GetWebUIURL("gpu"));
+  ASSERT_TRUE(NavigateToURL(shell(), web_ui_url));
+  histograms.ExpectUniqueSample(
+      "Navigation.EarlyRenderFrameHostSwapType",
+      NavigationRequest::EarlyRenderFrameHostSwapType::kInitialFrame, 1);
+  histograms.ExpectUniqueSample(
+      "Navigation.EarlyRenderFrameHostSwap.HasCommitted", 1, 1);
+  histograms.ExpectUniqueSample(
+      "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       EarlySwapMetrics_CrashNoCommit) {
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  {
+    base::HistogramTester histograms;
+    // Ensure that a normal navigation doesn't log early swap metrics.
+    ASSERT_TRUE(NavigateToURL(shell(), url_a));
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwapType",
+        NavigationRequest::EarlyRenderFrameHostSwapType::kNone, 1);
+    histograms.ExpectTotalCount(
+        "Navigation.EarlyRenderFrameHostSwap.HasCommitted", 0);
+    histograms.ExpectTotalCount(
+        "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 0);
+  }
+
+  // Crash the main frame.
+  RenderProcessHost* process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  RenderProcessHostWatcher crash_observer(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(0);
+  crash_observer.Wait();
+  ASSERT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  {
+    base::HistogramTester histograms;
+
+    // Load a page that results in a 204 error.  This should result in an early
+    // RFH swap that leaves the new RFH in a blank state.  The HasCommitted
+    // early swap metric should be logged as false.
+    GURL url_204(embedded_test_server()->GetURL("a.test", "/nocontent"));
+    EXPECT_TRUE(NavigateToURLAndExpectNoCommit(shell(), url_204));
+
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwapType",
+        NavigationRequest::EarlyRenderFrameHostSwapType::kCrashedFrame, 1);
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwap.HasCommitted", 0, 1);
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 1, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       EarlySwapMetrics_CrashedSubframe) {
+  // Needed to guarantee that the subframe will be an OOPIF on Android.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* subframe_rfh = root->child_at(0)->current_frame_host();
+
+  // Crash the subframe.
+  RenderProcessHost* child_process = subframe_rfh->GetProcess();
+  RenderProcessHostWatcher crash_observer(
+      child_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  child_process->Shutdown(0);
+  crash_observer.Wait();
+  ASSERT_FALSE(subframe_rfh->IsRenderFrameLive());
+
+  {
+    base::HistogramTester histograms;
+
+    // Navigate the subframe, which should result in an early RFH swap.
+    GURL subframe_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+    TestNavigationObserver load_observer(shell()->web_contents());
+    EXPECT_TRUE(
+        ExecJs(shell(), JsReplace("frames[0].location = $1", subframe_url)));
+    load_observer.Wait();
+
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwapType",
+        NavigationRequest::EarlyRenderFrameHostSwapType::kCrashedFrame, 1);
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwap.HasCommitted", 1, 1);
+    histograms.ExpectUniqueSample(
+        "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 0, 1);
+  }
+}
+
 }  // namespace content
