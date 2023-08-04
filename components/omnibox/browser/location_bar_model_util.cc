@@ -27,13 +27,10 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
     case security_state::NONE:
       return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
                                            : omnibox::kHttpIcon;
-    case security_state::SECURE: {
-      return use_updated_connection_security_indicators
-                 ? vector_icons::kHttpsValidArrowIcon
-                 : (IsChromeRefreshIconsEnabled()
-                        ? omnibox::kSecurePageInfoChromeRefreshIcon
-                        : vector_icons::kHttpsValidIcon);
-    }
+    case security_state::SECURE:
+      return IsChromeRefreshIconsEnabled()
+                 ? omnibox::kSecurePageInfoChromeRefreshIcon
+                 : vector_icons::kHttpsValidIcon;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return IsChromeRefreshIconsEnabled()
                  ? vector_icons::kBusinessChromeRefreshIcon
