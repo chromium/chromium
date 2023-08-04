@@ -58,8 +58,8 @@ class MockMsiHandle : public MsiHandleInterface {
 };
 
 struct MsiSetTagsTestCase {
-  std::string msi_file_name;
-  std::string expected_tag_string;
+  const std::string msi_file_name;
+  const std::string expected_tag_string;
 };
 
 }  // namespace
