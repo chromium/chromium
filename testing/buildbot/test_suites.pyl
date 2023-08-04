@@ -525,12 +525,10 @@
           '--platform=android',
         ],
         'swarming': {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
         },
         'remove_mixins': [
           'android_r',
@@ -848,69 +846,55 @@
     'chromium_dev_linux_gtests': {
       'base_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
+          'dimensions': {
+            'cores': '8',
+          },
         },
       },
       'browser_tests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
+          'dimensions': {
+            'cores': '8',
+          },
           'shards': 8,
         },
       },
       'content_browsertests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
+          'dimensions': {
+            'cores': '8',
+          },
           'shards': 5,
         },
       },
       'content_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '2',
-            },
-          ],
+          'dimensions': {
+            'cores': '2',
+          },
         },
       },
       'interactive_ui_tests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
+          'dimensions': {
+            'cores': '8',
+          },
           'shards': 3,
         },
       },
       'net_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
+          'dimensions': {
+            'cores': '8',
+          },
         },
       },
       'rust_gtest_interop_unittests': {},
       'unit_tests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '2',
-            },
-          ],
+          'dimensions': {
+            'cores': '2',
+          },
         },
       },
     },
@@ -2027,14 +2011,12 @@
           'script': '//tools/perf/process_perf_results.py',
         },
         'swarming': {
-          'dimension_sets': [
-            # This suite simply analyzes build targets without running them.
-            # It can thus run on a standard linux machine w/o a device.
-            {
-              'os': 'Ubuntu-22.04',
-              'cpu': 'x86'
-            },
-          ],
+          # This suite simply analyzes build targets without running them.
+          # It can thus run on a standard linux machine w/o a device.
+          'dimensions': {
+            'os': 'Ubuntu-22.04',
+            'cpu': 'x86'
+          },
         },
         'resultdb': {
           'enable': True,
@@ -2049,14 +2031,12 @@
           'script': '//tools/perf/process_perf_results.py',
         },
         'swarming': {
-          'dimension_sets': [
-            # This suite simply analyzes build targets without running them.
-            # It can thus run on a standard linux machine w/o a device.
-            {
-              'os': 'Ubuntu-22.04',
-              'cpu': 'x86'
-            },
-          ],
+          # This suite simply analyzes build targets without running them.
+          # It can thus run on a standard linux machine w/o a device.
+          'dimensions': {
+            'os': 'Ubuntu-22.04',
+            'cpu': 'x86'
+          },
         },
         'resultdb': {
           'enable': True,
@@ -2621,22 +2601,18 @@
     'goma_mac_gtests': {
       'base_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Mac-10.13',
-            },
-          ],
+          'dimensions': {
+            'cpu': 'x86-64',
+            'os': 'Mac-10.13',
+          },
         }
       },
       'content_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Mac-10.13',
-            },
-          ],
+          'dimensions': {
+            'cpu': 'x86-64',
+            'os': 'Mac-10.13',
+          },
         },
       },
     },
@@ -4952,16 +4928,14 @@
     'monochrome_public_apk_checker_isolated_script': {
       'monochrome_public_apk_checker': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-              'cpu': 'x86',
-              'device_os': None,
-              'device_os_flavor': None,
-              'device_playstore_version': None,
-              'device_type': None,
-            },
-          ],
+          'dimensions': {
+            'os': 'Ubuntu-18.04',
+            'cpu': 'x86',
+            'device_os': None,
+            'device_os_flavor': None,
+            'device_playstore_version': None,
+            'device_type': None,
+          },
         },
         'remove_mixins': [
           'android_r',
@@ -5762,11 +5736,9 @@
         'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
                  '--test-launcher-print-test-stdio=always'],
         'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'WebRTC-chromium',
-            }
-          ],
+          'dimensions': {
+            'pool': 'WebRTC-chromium',
+          },
         },
       },
     },
@@ -6013,32 +5985,26 @@
       'install_static_unittests': {},
       'installer_util_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ],
+          'dimensions': {
+            'integrity': 'high',
+          },
         },
       },
       'notification_helper_unittests': {},
       'sbox_integration_tests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ],
+          'dimensions': {
+            'integrity': 'high',
+          },
         },
       },
       'sbox_unittests': {},
       'sbox_validation_tests': {},
       'setup_unittests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ],
+          'dimensions': {
+            'integrity': 'high',
+          },
         },
       },
       'updater_tests': {},
@@ -6049,11 +6015,9 @@
     'win_specific_isolated_scripts': {
       'mini_installer_tests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ],
+          'dimensions': {
+            'integrity': 'high',
+          },
         },
       },
       'polymer_tools_python_unittests': {

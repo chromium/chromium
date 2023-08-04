@@ -39,13 +39,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "jacuzzi",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -90,13 +88,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "jacuzzi",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -134,13 +130,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "jacuzzi",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -177,13 +171,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "jacuzzi",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -234,13 +226,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "octopus",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -285,13 +275,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "octopus",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -329,13 +317,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "octopus",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -372,13 +358,11 @@
         "should_retry_with_patch": false,
         "swarming": {
           "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "octopus",
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

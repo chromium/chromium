@@ -24,12 +24,10 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04|Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "named_caches": [
             {
               "name": "generic_android30",
@@ -66,12 +64,10 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04|Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "named_caches": [
             {
               "name": "generic_android30",
@@ -109,12 +105,10 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04|Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "named_caches": [
             {
               "name": "generic_android24",
@@ -148,12 +142,10 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04|Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "named_caches": [
             {
               "name": "generic_android24",
@@ -190,12 +182,10 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04|Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "named_caches": [
             {
               "name": "generic_android24",
@@ -253,12 +243,10 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04|Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
@@ -286,13 +274,11 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-12",
+            "pool": "chrome.tests.finch"
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
@@ -324,13 +310,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -344,13 +328,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -364,13 +346,11 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -385,13 +365,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -405,13 +383,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -425,13 +401,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -445,13 +419,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -465,13 +437,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -485,13 +455,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -505,13 +473,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -526,13 +492,11 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -546,13 +510,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -566,13 +528,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -590,13 +550,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -618,13 +576,11 @@
         },
         "name": "cr23_browser_tests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -655,13 +611,11 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -689,13 +643,11 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -713,13 +665,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -733,13 +683,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -753,13 +701,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -773,13 +719,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -793,13 +737,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -813,13 +755,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -833,13 +773,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -853,13 +791,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -873,13 +809,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -893,13 +827,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -913,13 +845,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -934,13 +864,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -954,13 +882,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -974,13 +900,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -994,13 +918,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1014,13 +936,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1034,13 +954,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1054,13 +972,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1074,13 +990,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1094,13 +1008,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1114,13 +1026,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1135,13 +1045,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1155,13 +1063,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1175,13 +1081,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1195,13 +1099,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1215,13 +1117,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1235,13 +1135,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1255,13 +1153,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1275,13 +1171,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1295,13 +1189,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1315,13 +1207,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1335,13 +1225,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1355,13 +1243,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1375,13 +1261,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1395,13 +1279,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1415,13 +1297,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1435,14 +1315,12 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "integrity": "high",
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "integrity": "high",
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1459,13 +1337,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1487,13 +1363,11 @@
         },
         "name": "cr23_interactive_ui_tests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1523,13 +1397,11 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1555,13 +1427,11 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1575,13 +1445,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1595,13 +1463,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1616,13 +1482,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1636,13 +1500,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1656,13 +1518,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1676,13 +1536,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1696,13 +1554,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1716,13 +1572,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1736,13 +1590,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1756,13 +1608,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1776,13 +1626,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1796,13 +1644,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1816,13 +1662,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1836,13 +1680,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1856,13 +1698,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1877,13 +1717,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1897,13 +1735,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1917,14 +1753,12 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "integrity": "high",
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "integrity": "high",
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1938,13 +1772,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1958,13 +1790,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1978,13 +1808,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1998,13 +1826,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2018,14 +1844,12 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "integrity": "high",
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "integrity": "high",
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2039,13 +1863,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2059,13 +1881,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2079,13 +1899,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2099,13 +1917,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2119,13 +1935,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2139,13 +1953,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2160,13 +1972,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2180,13 +1990,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2203,13 +2011,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2223,13 +2029,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2243,13 +2047,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2263,13 +2065,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2291,13 +2091,11 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2311,13 +2109,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2338,13 +2134,11 @@
         },
         "name": "cr23_views_unittests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2358,13 +2152,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2378,13 +2170,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2398,13 +2188,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2418,13 +2206,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2438,13 +2224,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2458,13 +2242,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2485,13 +2267,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2519,13 +2299,11 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2554,13 +2332,11 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2583,13 +2359,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2604,13 +2378,11 @@
         },
         "name": "chromedriver_replay_unittests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2631,13 +2403,11 @@
         },
         "name": "components_perftests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2656,13 +2426,11 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2681,13 +2449,11 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2705,13 +2471,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2726,14 +2490,12 @@
         },
         "name": "mini_installer_tests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "integrity": "high",
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "integrity": "high",
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2751,13 +2513,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2773,13 +2533,11 @@
         },
         "name": "polymer_tools_python_unittests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2804,13 +2562,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2828,13 +2584,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "idempotent": false,
@@ -2856,13 +2610,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "idempotent": false,
@@ -2886,13 +2638,11 @@
           "enable": true
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "idempotent": false,
@@ -2915,13 +2665,11 @@
         },
         "name": "views_perftests",
         "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64"
+          },
           "expiration": 64800,
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2960,12 +2708,10 @@
           "result_format": "single"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Windows-10",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "os": "Windows-10",
+            "pool": "chrome.tests.finch"
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"

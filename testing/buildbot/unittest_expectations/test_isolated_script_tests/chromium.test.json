@@ -10,11 +10,9 @@
         },
         "name": "foo_test",
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Linux"
-            }
-          ]
+          "dimensions": {
+            "os": "Linux"
+          }
         }
       }
     ]

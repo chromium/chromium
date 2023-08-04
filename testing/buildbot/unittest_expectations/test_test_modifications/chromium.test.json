@@ -11,13 +11,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "integrity": "high",
-              "kvm": "1",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "integrity": "high",
+            "kvm": "1",
+            "os": "Linux"
+          },
           "expiration": 120,
           "hard_timeout": 600
         },

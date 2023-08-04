@@ -8,11 +8,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "os": "Linux"
+          },
           "named_caches": [
             {
               "file": "cache_in_test_file",

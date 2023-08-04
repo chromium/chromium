@@ -8,12 +8,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "integrity": "high",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "integrity": "high",
+            "os": "Linux"
+          },
           "expiration": 120,
           "shards": 20,
           "value": "exception"

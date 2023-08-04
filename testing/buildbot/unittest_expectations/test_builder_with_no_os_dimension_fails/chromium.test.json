@@ -8,11 +8,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "foo": "bar"
-            }
-          ]
+          "dimensions": {
+            "foo": "bar"
+          }
         },
         "test": "foo_test"
       }

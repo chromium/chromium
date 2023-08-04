@@ -8,13 +8,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "dimension_sets": [
-            {
-              "iama": "mixin",
-              "integrity": "high",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "iama": "mixin",
+            "integrity": "high",
+            "os": "Linux"
+          },
           "expiration": 120,
           "value": "test"
         },

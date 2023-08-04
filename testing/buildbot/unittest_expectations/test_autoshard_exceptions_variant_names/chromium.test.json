@@ -15,11 +15,9 @@
         },
         "name": "swarming_test a_variant",
         "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "os": "Linux"
+          },
           "shards": 10
         },
         "test": "foo_test_apk",

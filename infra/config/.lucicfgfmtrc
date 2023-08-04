@@ -98,7 +98,6 @@ rules {
         arg: "win64_args"
 
         # swarming
-        arg: "dimension_sets"
         arg: "dimensions"
         arg: "optional_dimensions"
 
