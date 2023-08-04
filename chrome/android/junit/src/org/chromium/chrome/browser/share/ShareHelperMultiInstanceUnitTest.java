@@ -129,7 +129,7 @@ public class ShareHelperMultiInstanceUnitTest {
     public void shareInTwoWindow_KillFirstWindowThenCompleteSecond() throws SendIntentException {
         mWindowFoo.startShare();
         mWindowBar.startShare();
-        mWindowFoo.closeWindow();
+        mWindowFoo.closeWindow().verifyCleanerIntentDispatched();
         mWindowBar.verifyCallbackNotCalled()
                 .completeShareWithComponent(COMPONENT_NAME_2)
                 .verifyCallbackState()
@@ -140,7 +140,7 @@ public class ShareHelperMultiInstanceUnitTest {
     @Test
     public void shareInTwoWindow_KillSecondWindowThenCompleteFirst() throws SendIntentException {
         mWindowFoo.startShare();
-        mWindowBar.startShare().closeWindow();
+        mWindowBar.startShare().closeWindow().verifyCleanerIntentDispatched();
         mWindowFoo.verifyCallbackNotCalled()
                 .completeShareWithComponent(COMPONENT_NAME_1)
                 .verifyCallbackState()
@@ -240,13 +240,25 @@ public class ShareHelperMultiInstanceUnitTest {
             return this;
         }
 
-        public void closeWindow() {
-            if (mClosed) return;
+        public SingleWindowTestInstance verifyCleanerIntentDispatched() {
+            Intent intent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+            assertNotNull("Cleaner intent is not sent.", intent);
+            assertEquals("Cleaner intent does not have the right class name.",
+                    intent.getComponent().getClassName(), mActivity.getClass().getName());
+            assertTrue("FLAG_ACTIVITY_CLEAR_TOP is not set for cleaner intent.",
+                    (intent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP) != 0);
+            return this;
+        }
+
+        public SingleWindowTestInstance closeWindow() {
+            if (mClosed) return this;
 
             mClosed = true;
             mWindow.destroy();
             mActivity.finish();
             mActivityScenario.close();
+
+            return this;
         }
 
         private ShareParams getTextParams() {
