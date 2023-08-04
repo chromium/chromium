@@ -482,6 +482,25 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   return false;
 }
 
+size_t GetNumOriginalAccelerators(
+    std::vector<mojom::AcceleratorInfoPtr> infos) {
+  size_t num_original_accelerators = 0;
+  for (const auto& info : infos) {
+    // If a standard accelerator has an `original_accelerator` value then it is
+    // a generated aliased accelerator. Do not count it as part of the original
+    // number of accelerators.
+    if (info->layout_properties->is_standard_accelerator()) {
+      if (info->layout_properties->get_standard_accelerator()
+              ->original_accelerator.has_value()) {
+        continue;
+      }
+    }
+    ++num_original_accelerators;
+  }
+
+  return num_original_accelerators;
+}
+
 void LogReplaceAccelerator(mojom::AcceleratorSource source,
                            const ui::Accelerator& old_accelerator,
                            const ui::Accelerator& new_accelerator,
@@ -809,7 +828,8 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   // Check that there is less than `kMaxAcceleratorsAllowed` accelerator infos
   // in the cached accelerator configuration mapping for `action_id`.
   if (found_accelerator_infos != ash_accelerators_mapping->second.end() &&
-      found_accelerator_infos->second.size() >= kMaxAcceleratorsAllowed) {
+      GetNumOriginalAccelerators(mojo::Clone(
+          found_accelerator_infos->second)) >= kMaxAcceleratorsAllowed) {
     result_data->result = AcceleratorConfigResult::kMaximumAcceleratorsReached;
     LogAddAccelerator(source, accelerator, result_data->result);
     std::move(callback).Run(std::move(result_data));

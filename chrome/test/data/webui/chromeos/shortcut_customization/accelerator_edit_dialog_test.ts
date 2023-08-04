@@ -21,7 +21,7 @@ import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createCustomStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
+import {createAliasedStandardAcceleratorInfo, createCustomStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('acceleratorEditDialogTest', function() {
   let viewElement: AcceleratorEditDialogElement|null = null;
@@ -767,5 +767,59 @@ suite('acceleratorEditDialogTest', function() {
     assertFalse(addButtonContainer.hidden);
     assertFalse(restoreButton.hidden);
     assertFalse(doneButton.disabled);
+  });
+
+  test('aliasedAcceleratorNotCountedTowardsMaximumAllowed', async () => {
+    const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo3: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.COMMAND,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo4: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    const acceleratorInfo5: AcceleratorInfo =
+        createAliasedStandardAcceleratorInfo(
+            Modifier.CONTROL, /*key=*/ 67, /*keyDisplay=*/ 'c',
+            AcceleratorState.kEnabled, {modifiers: Modifier.ALT, keyCode: 67});
+
+    // Initialize with max accelerators.
+    const accelerators = [
+      acceleratorInfo1,
+      acceleratorInfo2,
+      acceleratorInfo3,
+      acceleratorInfo4,
+      acceleratorInfo5,
+    ];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(5, acceleratorElements.length);
+
+    // Expect maxAccelsReachedHint is visible and addButton is hidden.
+    const maxAccelReachedHint =
+        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
+        HTMLDivElement;
+    const addButtonContainer =
+        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
+        HTMLDivElement;
+    assertTrue(maxAccelReachedHint.hidden);
+    assertFalse(addButtonContainer.hidden);
   });
 });

@@ -229,7 +229,21 @@ export class AcceleratorEditDialogElement extends
   }
 
   protected acceleratorLimitNotReached(): boolean {
-    return this.acceleratorInfos.length < MAX_NUM_ACCELERATORS;
+    let originalAcceleratorsCount = 0;
+    for (const acceleratorInfo of this.acceleratorInfos) {
+      if (isStandardAcceleratorInfo(acceleratorInfo)) {
+        // Check if this is an aliased accelerator, if so do not count it since
+        // we only care about the original accelerator that the user or system
+        // originally provided.
+        if (acceleratorInfo.layoutProperties.standardAccelerator
+                ?.originalAccelerator !== undefined) {
+          continue;
+        }
+        ++originalAcceleratorsCount;
+      }
+    }
+
+    return originalAcceleratorsCount < MAX_NUM_ACCELERATORS;
   }
 
   protected onRestoreDefaultButtonClicked(): void {

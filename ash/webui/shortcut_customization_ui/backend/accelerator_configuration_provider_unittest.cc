@@ -1573,6 +1573,79 @@ TEST_F(AcceleratorConfigurationProviderTest,
             result->result);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest,
+       AddAcceleratorExceedsMaximumWithAliasedAccelerators) {
+  // Add a fake keyboard, this ensure aliasing will occur for 6-pack keys.
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, "");
+
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+
+  // Initialize default accelerators.
+  // VKEY_HOME + Control will result in a aliased accelerator.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_D, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_F, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the generated alias is present.
+  const AcceleratorData expected_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT,
+       ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_D, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/true, ui::VKEY_F, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleAppList},
+  };
+
+  // Verify observer received the correct accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
+                               expected_test_data, mojo_observer.config());
+
+  AcceleratorResultDataPtr result;
+  // Attempting to add a 6th accelerator should be okay since there are
+  // only 4 active accelerators for `kToggleAppList`.
+  const ui::Accelerator accelerator(ui::VKEY_M, ui::EF_CONTROL_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleAppList, accelerator,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  // Attempting to add a 7th accelerator will result to an error since there are
+  // 5 active accelerators for `kToggleAppList`.
+  const ui::Accelerator accelerator2(ui::VKEY_E, ui::EF_CONTROL_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleAppList, accelerator,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kMaximumAcceleratorsReached,
+            result->result);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
