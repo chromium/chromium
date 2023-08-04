@@ -1306,6 +1306,46 @@ TEST_F(PageSpecificContentSettingsTest, MediaIndicatorsMinHoldDurationDelay) {
       PageSpecificContentSettings::kCameraAccessed));
 }
 
+// Tests that if media indicator display time almost equals to the min hold
+// duration, a delay should be not less than 1 second.
+TEST_F(PageSpecificContentSettingsTest, AlmostExpiredMinHoldDurationDelay) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  pscs->set_media_stream_access_origin_for_testing(
+      web_contents()->GetLastCommittedURL());
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  task_environment()->AdvanceClock(base::Milliseconds(4800));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  //  `kCameraAccessed` is true because of 1 second delay.
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  task_environment()->AdvanceClock(base::Milliseconds(800));
+  base::RunLoop().RunUntilIdle();
+
+  //  `kCameraAccessed` is true because waited only 800 ms.
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  task_environment()->AdvanceClock(base::Milliseconds(300));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+}
+
 TEST_F(PageSpecificContentSettingsTest,
        MediaIndicatorsHoldAfterUseDurationDelay) {
   NavigateAndCommit(GURL("http://google.com"));

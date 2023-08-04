@@ -1495,6 +1495,11 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
       // `kMediaIndicatorMinimumHoldDuration`.
       if (indicator_display_time < kMediaIndicatorMinimumHoldDuration) {
         delay = kMediaIndicatorMinimumHoldDuration - indicator_display_time;
+        // `delay` should not be smaller than
+        // `kMediaIndicatorHoldAfterUseDuration`.
+        delay = std::max(
+            kMediaIndicatorMinimumHoldDuration - indicator_display_time,
+            kMediaIndicatorHoldAfterUseDuration);
       } else {
         delay = kMediaIndicatorHoldAfterUseDuration;
       }
