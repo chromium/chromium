@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
+#include "content/public/browser/file_select_listener.h"
 #include "ui/views/controls/webview/webview.h"
 
 class Profile;
@@ -36,6 +37,9 @@ class CompanionSidePanelWebView
       content::MediaResponseCallback callback) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
 
  private:
   base::WeakPtrFactory<CompanionSidePanelWebView> weak_factory_{this};
