@@ -218,6 +218,14 @@ void LogSaveCardPromptResultMetric(
     security_state::SecurityLevel security_level,
     AutofillSyncSigninState sync_state);
 
+void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
+                                 bool is_uploading,
+                                 bool is_reshow);
+
+void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
+                                  bool is_uploading,
+                                  bool is_reshow);
+
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);
 

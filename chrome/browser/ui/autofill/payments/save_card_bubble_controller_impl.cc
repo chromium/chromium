@@ -355,8 +355,9 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   set_bubble_view(nullptr);
 
   // Log save card prompt result according to the closed reason.
-  if ((current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-       current_bubble_type_ == BubbleType::UPLOAD_SAVE)) {
+  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
+      current_bubble_type_ == BubbleType::UPLOAD_SAVE ||
+      current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
     autofill_metrics::SaveCardPromptResult metric;
     switch (closed_reason) {
       case PaymentsBubbleClosedReason::kAccepted:
@@ -378,9 +379,15 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
         metric = autofill_metrics::SaveCardPromptResult::kUnknown;
         break;
     }
-    autofill_metrics::LogSaveCardPromptResultMetric(
-        metric, is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
-        GetSyncState());
+
+    if (current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
+      autofill_metrics::LogSaveCvcPromptResultMetric(metric, is_upload_save_,
+                                                     is_reshow_);
+    } else {
+      autofill_metrics::LogSaveCardPromptResultMetric(
+          metric, is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
+          GetSyncState());
+    }
   }
 
   // Handles |current_bubble_type_| change according to its current type and the
@@ -520,13 +527,16 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
           is_reshow_, options_, GetSecurityLevel(), GetSyncState());
       break;
+    case BubbleType::LOCAL_CVC_SAVE:
+      autofill_metrics::LogSaveCvcPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
+          is_reshow_);
+      break;
     case BubbleType::MANAGE_CARDS:
       LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsShown,
                                  is_upload_save_);
       break;
     case BubbleType::FAILURE:
-    // TODO (crbug.com/1462821): Add metrics for local CVC save.
-    case BubbleType::LOCAL_CVC_SAVE:
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::INACTIVE:
@@ -593,9 +603,12 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
           is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
           GetSyncState());
       break;
-    case BubbleType::FAILURE:
-    // TODO (crbug.com/1462821): Add metrics for local CVC save.
     case BubbleType::LOCAL_CVC_SAVE:
+      autofill_metrics::LogSaveCvcPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+          is_upload_save_, is_reshow_);
+      break;
+    case BubbleType::FAILURE:
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::MANAGE_CARDS:

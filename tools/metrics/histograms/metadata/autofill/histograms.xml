@@ -114,8 +114,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.PaymentBubble.Show">
-  <variant name="FirstShow" summary="first-shows"/>
-  <variant name="Reshows" summary="re-shows"/>
+  <variant name="FirstShow" summary="first-show"/>
+  <variant name="Reshows" summary="re-show"/>
 </variants>
 
 <variants name="Autofill.PaymentsRpcCardType">
@@ -245,8 +245,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AutofillSaveCreditCardPromptDestination">
-  <variant name=".Local" summary="to local storage"/>
-  <variant name=".Upload" summary="to upload"/>
+  <variant name=".Local" summary="locally"/>
+  <variant name=".Upload" summary="to server"/>
 </variants>
 
 <variants name="AutofillSeamlessnessFillability">
@@ -3914,8 +3914,8 @@ chromium-metrics-reviews@google.com.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which the Autofill save credit card prompt is
-    shown or not. Logged when the flow is triggered and the prompt should be
-    shown. {AutofillSaveCreditCardPromptDestination}
+    shown or not to save credit card {AutofillSaveCreditCardPromptDestination}.
+    Logged when the flow is triggered and the prompt should be shown.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
       variants="AutofillSaveCreditCardPromptDestination">
@@ -3931,13 +3931,45 @@ chromium-metrics-reviews@google.com.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which users accept or deny the Autofill save
-    credit card prompt. Logged when users interacted with the prompt.
-    {AutofillSaveCreditCardPromptDestination}
+    credit card prompt to save credit card
+    {AutofillSaveCreditCardPromptDestination}. Logged when the prompt closes.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
       variants="AutofillSaveCreditCardPromptDestination">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCvcPromptOffer{AutofillSaveCreditCardPromptDestination}.{ShowType}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2024-08-01">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which the Autofill save CVC prompt is shown or
+    not to save CVC {AutofillSaveCreditCardPromptDestination}. Logged when the
+    flow is triggered and the prompt should be shown. It was a {ShowType}.
+  </summary>
+  <token key="AutofillSaveCreditCardPromptDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCvcPromptResult{AutofillSaveCreditCardPromptDestination}.{ShowType}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2024-08-01">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which users accept or deny the Autofill save CVC
+    prompt to save CVC {AutofillSaveCreditCardPromptDestination}. Logged when
+    the prompt closes. It was a {ShowType}.
+  </summary>
+  <token key="AutofillSaveCreditCardPromptDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
 <histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}.{ShowType}"

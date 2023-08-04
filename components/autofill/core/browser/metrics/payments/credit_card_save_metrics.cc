@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill::autofill_metrics {
@@ -75,7 +76,8 @@ void LogSaveCardPromptOfferMetric(SaveCardPromptOffer metric,
   std::string destination = is_uploading ? ".Upload" : ".Local";
   std::string show = is_reshow ? ".Reshows" : ".FirstShow";
   std::string metric_with_destination_and_show =
-      base_histogram_name + destination + show;
+      base::StrCat({base_histogram_name, destination, show});
+
   base::UmaHistogramEnumeration(metric_with_destination_and_show, metric);
 
   base::UmaHistogramEnumeration(
@@ -129,7 +131,7 @@ void LogSaveCardPromptResultMetric(
   std::string destination = is_uploading ? ".Upload" : ".Local";
   std::string show = is_reshow ? ".Reshows" : ".FirstShow";
   std::string metric_with_destination_and_show =
-      base_histogram_name + destination + show;
+      base::StrCat({base_histogram_name, destination, show});
 
   base::UmaHistogramEnumeration(metric_with_destination_and_show, metric);
 
@@ -165,6 +167,30 @@ void LogSaveCardPromptResultMetric(
             base_histogram_name + destination, security_level),
         metric);
   }
+}
+
+void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
+                                 bool is_uploading,
+                                 bool is_reshow) {
+  DCHECK_LE(metric, SaveCardPromptOffer::kMaxValue);
+  std::string_view base_histogram_name = "Autofill.SaveCvcPromptOffer";
+  std::string_view destination = is_uploading ? ".Upload" : ".Local";
+  std::string_view show = is_reshow ? ".Reshows" : ".FirstShow";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, destination, show}), metric);
+}
+
+void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
+                                  bool is_uploading,
+                                  bool is_reshow) {
+  DCHECK_LE(metric, SaveCardPromptResult::kMaxValue);
+  std::string_view base_histogram_name = "Autofill.SaveCvcPromptResult";
+  std::string_view destination = is_uploading ? ".Upload" : ".Local";
+  std::string_view show = is_reshow ? ".Reshows" : ".FirstShow";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, destination, show}), metric);
 }
 
 void LogSaveCardRequestExpirationDateReasonMetric(
