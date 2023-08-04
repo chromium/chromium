@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -620,7 +621,12 @@ TEST_F(
           .Build());
 }
 
-TEST_F(CreditCardAccessoryControllerTest, VirtualCreditCardWithCardArtUrl) {
+TEST_F(CreditCardAccessoryControllerTest,
+       CardArtIsNotShownEvenWhenMetadataIsAvailableAndEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardArtImage);
+
   // Add a masked card to PersonalDataManager.
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
@@ -635,35 +641,45 @@ TEST_F(CreditCardAccessoryControllerTest, VirtualCreditCardWithCardArtUrl) {
   controller()->RefreshSuggestions();
 
   EXPECT_EQ(result, controller()->GetSheetData());
-  // Verify that a virtual card is inserted before the actual masked card.
-  std::u16string virtual_card_label =
-      u"Virtual card " +
-      masked_card.ObfuscatedNumberWithVisibleLastFourDigits();
-  EXPECT_EQ(
-      result,
-      CreditCardAccessorySheetDataBuilder()
-          .AddUserInfo(kMasterCard, UserInfo::IsExactMatch(true),
-                       GURL("http://www.example.com/image.png"))
-          .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
-                       virtual_card_label, masked_card.guid() + "_vcn",
-                       /*is_obfuscated=*/false,
-                       /*selectable=*/true)
-          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(masked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(std::u16string())
-          .AddUserInfo(kMasterCard, UserInfo::IsExactMatch(true))
-          .AppendField(masked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                       /*text_to_fill*/ std::u16string(),
-                       masked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                       masked_card.guid(),
-                       /*is_obfuscated=*/false,
-                       /*selectable=*/true)
-          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(masked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(std::u16string())
-          .Build());
+
+  // Verify both the virtual card and the masked server card are in the
+  // suggestions.
+  EXPECT_EQ(result.user_info_list().size(), 2u);
+  // Verify card art is not shown for the virtual card.
+  EXPECT_EQ(result.user_info_list()[0].icon_url(), GURL());
+  // Verify card art is not shown for the masked server card.
+  EXPECT_EQ(result.user_info_list()[1].icon_url(), GURL());
+}
+
+TEST_F(
+    CreditCardAccessoryControllerTest,
+    CapitalOneVirtualCardIconIsShownForVirtualCardsEvenWhenMetadataIsNotEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableCardArtImage);
+
+  // Add a masked card to PersonalDataManager.
+  CreditCard masked_card = test::GetMaskedServerCard();
+  masked_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
+  masked_card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+  data_manager_.AddCreditCard(masked_card);
+
+  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                            std::u16string());
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+
+  // Verify both the virtual card and the masked server card are in the
+  // suggestions.
+  EXPECT_EQ(result.user_info_list().size(), 2u);
+  // Verify the the Capital One virtual card icon is shown for the virtual card.
+  EXPECT_EQ(result.user_info_list()[0].icon_url(), GURL(kCapitalOneCardArtUrl));
+  // Verify card art is not shown for the masked server card.
+  EXPECT_EQ(result.user_info_list()[1].icon_url(), GURL());
 }
 
 // Tests that when |kAutofillFillMerchantPromoCodeFields| feature is enabled,
