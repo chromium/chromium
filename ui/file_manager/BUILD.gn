@@ -385,7 +385,11 @@ copy("for_image_loader") {
     "file_manager/common/js/test_error_reporting.js",
   ]
   outputs = [ "$target_gen_dir/file_manager/common/js/{{source_file_part}}" ]
-  deps = [ ":build_ts" ]
+  if (enable_webui_inline_sourcemaps) {
+    deps = [ ":merge_source_maps" ]
+  } else {
+    deps = [ ":build_ts" ]
+  }
 }
 
 js_library("js_from_ts") {
