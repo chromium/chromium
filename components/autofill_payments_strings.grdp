@@ -739,8 +739,14 @@
       Virtual card turned on
     </message>
   </if>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE" desc="Text to be displayed when displaying an autofill suggestion to fill a standalone CVC for a virtual card on file.">
-    CVC for virtual card
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for filling in CVC on a virtual card that is saved on file of a merchant website.">
+      Use CVC for this virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for filling in CVC on a virtual card that is saved on file of a merchant website.">
+      Fill in CVC for this virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE" desc="Text to be displayed when displaying an Autofill suggestion to fill a standalone CVC for a virtual card on file.">
+      CVC for virtual card
   </message>
   <!-- virtual cards related strings - end -->
   <message name="IDS_AUTOFILL_CARD_AUTH_SELECTION_DIALOG_TITLE_MULTIPLE_OPTIONS" desc="Title for the credit card unmasking dialog for multiple challenge options. Used in VCN authentication, and once a challenge option is selected a new dialog is rendered where the user authenticates with the selected challenge option." formatter_data="android_java">

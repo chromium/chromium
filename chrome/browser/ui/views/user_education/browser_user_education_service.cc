@@ -262,6 +262,16 @@ void MaybeRegisterChromeFeaturePromos(
                     IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
                     .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
 
+  // kIPHAutofillVirtualCardCVCSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
+          kAutofillCreditCardSuggestionEntryElementId,
+          IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL,
+          IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
+
   // kIPHAutofillVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForLegacyPromo(

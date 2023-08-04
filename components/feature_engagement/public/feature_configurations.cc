@@ -1378,6 +1378,36 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+
+  if (kIPHAutofillVirtualCardCVCSuggestionFeature.name == feature->name) {
+    // A config that allows the virtual card CVC suggestion IPH to be
+    // shown when:
+    // * it has been shown less than three times in last 90 days;
+    // * the virtual card CVC suggestion has been selected less than twice in
+    // last 90 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config->trigger = EventConfig("autofill_virtual_card_cvc_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 90, 360);
+    config->used = EventConfig("autofill_virtual_card_cvc_suggestion_accepted",
+                               Comparator(LESS_THAN, 2), 90, 360);
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    std::vector<std::string> affected_features;
+    affected_features.push_back("IPH_AutofillVirtualCardSuggestion");
+
+#if BUILDFLAG(IS_ANDROID)
+    affected_features.push_back("IPH_KeyboardAccessoryBarSwiping");
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    session_rate_impact.affected_features = affected_features;
+    config->session_rate_impact = session_rate_impact;
+    return config;
+  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)

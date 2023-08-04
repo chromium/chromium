@@ -255,6 +255,8 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
     suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
     suggestion.payload = Suggestion::BackendId(credit_card.guid());
+    suggestion.feature_for_iph =
+        feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
     SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
     suggestion.main_text.value =
         l10n_util::GetStringUTF16(

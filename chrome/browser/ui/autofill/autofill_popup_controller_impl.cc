@@ -349,9 +349,15 @@ void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
 
   if (web_contents_ &&
       suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
+    std::string event_name =
+        suggestion.feature_for_iph ==
+                feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature
+                    .name
+            ? "autofill_virtual_card_cvc_suggestion_accepted"
+            : "autofill_virtual_card_suggestion_accepted";
     feature_engagement::TrackerFactory::GetForBrowserContext(
         web_contents_->GetBrowserContext())
-        ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
+        ->NotifyEvent(event_name);
   }
 
   if (web_contents_ &&

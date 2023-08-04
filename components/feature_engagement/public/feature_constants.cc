@@ -524,6 +524,9 @@ BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
 BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
              "IPH_AutofillExternalAccountProfileSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillVirtualCardCVCSuggestionFeature,
+             "IPH_AutofillVirtualCardCVCSuggestion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature,
              "IPH_AutofillVirtualCardSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
