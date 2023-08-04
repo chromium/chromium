@@ -34,6 +34,9 @@ export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://r
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {SettingsAboutPageElement} from './about_page/about_page.js';
 // clang-format off
+// <if expr="_google_chrome">
+export {ABOUT_PAGE_PRIVACY_POLICY_URL} from './about_page/about_page.js';
+// </if>
 export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus} from './about_page/about_page_browser_proxy.js';
 // <if expr="_google_chrome and is_macosx">
 export {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';

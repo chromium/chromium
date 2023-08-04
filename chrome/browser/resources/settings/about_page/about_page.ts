@@ -26,6 +26,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+// <if expr="_google_chrome">
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+// </if>
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -45,6 +48,10 @@ import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
 // </if>
 // clang-format on
 
+// <if expr="_google_chrome">
+export const ABOUT_PAGE_PRIVACY_POLICY_URL: string =
+    'https://policies.google.com/privacy';
+// </if>
 
 const SettingsAboutPageElementBase =
     RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
@@ -359,6 +366,11 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   private onReportIssueClick_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }
+
+  private onPrivacyPolicyClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(ABOUT_PAGE_PRIVACY_POLICY_URL);
+  }
+
 
   private onGetTheMostOutOfChromeClick_() {
     Router.getInstance().navigateTo(routes.GET_MOST_CHROME);

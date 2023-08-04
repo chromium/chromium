@@ -10,6 +10,11 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
+// <if expr="_google_chrome">
+import {ABOUT_PAGE_PRIVACY_POLICY_URL, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+// </if>
+
 // <if expr="_google_chrome and is_macosx">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
@@ -18,7 +23,11 @@ import {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // <if expr="not chromeos_ash">
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+// </if>
+
+// <if expr="_google_chrome or not chromeos_ash">
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
 // clang-format on
@@ -322,11 +331,14 @@ suite('AllBuilds', function() {
 suite('OfficialBuild', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
     setupRouter();
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstance(browserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
     document.body.appendChild(page);
@@ -336,6 +348,15 @@ suite('OfficialBuild', function() {
     assertTrue(!!page.shadowRoot!.querySelector('#reportIssue'));
     page.shadowRoot!.querySelector<HTMLElement>('#reportIssue')!.click();
     await browserProxy.whenCalled('openFeedbackDialog');
+  });
+
+  test('PrivacyPolicy', async function() {
+    const privacyPolicyLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicy');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(ABOUT_PAGE_PRIVACY_POLICY_URL, url);
   });
 
   // <if expr="is_macosx">
