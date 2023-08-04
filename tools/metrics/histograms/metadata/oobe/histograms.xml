@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Demo-setup"/>
   <variant name="Device-disabled"/>
   <variant name="Display-size"/>
+  <variant name="Drive-pinning"/>
   <variant name="Edu-coexistence-login"/>
   <variant name="Encryption-migration"/>
   <variant name="Enroll"/>
@@ -116,6 +117,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="OOBEOptionalScreens">
   <variant name="Display-size"/>
+  <variant name="Drive-pinning"/>
   <variant name="Theme-selection"/>
   <variant name="Touchpad-scroll"/>
 </variants>
@@ -355,6 +357,8 @@ chromium-metrics-reviews@google.com.
     screen was visited. Recorded when the user clicks &quot;next&quot; or
     &quot;return to CHOOBE&quot; button. This metric is recorded regardless of
     whether the CHOOBE screen was shown.
+
+    The histogram is recorded once per visit to the screen.
   </summary>
   <token key="OOBEOptionalScreens" variants="OOBEOptionalScreens"/>
 </histogram>
@@ -377,6 +381,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks user actions on the consolidated consent screen. Recorded when user
     clicks on buttons on the consolidated consent screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.DrivePinning.Enabled" enum="BooleanEnabled"
+    expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether the user has enabled or disabled Drive Pinning. Recorded once with
+    the final decision made by the user. The recording is done after onboarding
+    is completed and before starting the drive pinning feature.
   </summary>
 </histogram>
 

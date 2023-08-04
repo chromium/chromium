@@ -54,6 +54,15 @@ void RecordOOBEScreenSkippedMetric(drivefs::pinning::Stage stage) {
       "FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenStage", stage);
 }
 
+void RecordSettingChanged(bool initial, bool current) {
+  base::UmaHistogramBoolean("OOBE.CHOOBE.SettingChanged.Drive-pinning",
+                            initial != current);
+}
+
+void RecordUserSelection(bool option) {
+  base::UmaHistogramBoolean("OOBE.Drive-pinning.Enabled", option);
+}
+
 }  // namespace
 
 // static
@@ -77,6 +86,8 @@ void DrivePinningScreen::ApplyDrivePinningPref(Profile* profile) {
                                   drive_pinning);
   drivefs::pinning::RecordBulkPinningEnabledSource(
       drivefs::pinning::BulkPinningEnabledSource::kChoobe);
+
+  RecordUserSelection(drive_pinning);
   prefs->ClearPref(prefs::kOobeDrivePinningEnabledDeferred);
 }
 
@@ -152,6 +163,9 @@ void DrivePinningScreen::OnProgress(const Progress& progress) {
 
 void DrivePinningScreen::OnNext(bool drive_pinning) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
+  bool old_value =
+      profile->GetPrefs()->GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
+  RecordSettingChanged(old_value, drive_pinning);
   profile->GetPrefs()->SetBoolean(prefs::kOobeDrivePinningEnabledDeferred,
                                   drive_pinning);
   exit_callback_.Run(Result::NEXT);
