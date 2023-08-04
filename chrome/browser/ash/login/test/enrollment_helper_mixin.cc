@@ -60,6 +60,10 @@ void EnrollmentHelperMixin::ResetMock() {
   EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
 }
 
+void EnrollmentHelperMixin::VerifyAndClear() {
+  testing::Mock::VerifyAndClear(mock_);
+}
+
 void EnrollmentHelperMixin::ExpectNoEnrollment() {
   EXPECT_CALL(*mock_, Setup(_, _, _, _)).Times(0);
 }

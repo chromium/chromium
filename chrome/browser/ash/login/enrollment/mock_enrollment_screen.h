@@ -47,6 +47,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, MockUnbind, ());
   MOCK_METHOD(void, ShowSigninScreen, ());
   MOCK_METHOD(void, ReloadSigninScreen, ());
+  MOCK_METHOD(void, ResetEnrollmentScreen, ());
   MOCK_METHOD(void, ShowUserError, (const std::string& email));
   MOCK_METHOD(void, ShowEnrollmentDuringTrialNotAllowedError, ());
   MOCK_METHOD(void, ShowSkipConfirmationDialog, ());

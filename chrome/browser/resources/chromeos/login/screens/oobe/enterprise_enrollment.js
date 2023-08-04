@@ -347,9 +347,11 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
 
     invokePolymerMethod(this.$['step-ad-join'], 'onBeforeShow');
-    this.showStep(
-        this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
-                             OobeTypes.EnrollmentStep.LOADING);
+    if (!this.uiStep) {
+      this.showStep(
+          this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
+                               OobeTypes.EnrollmentStep.LOADING);
+    }
   }
 
   /**

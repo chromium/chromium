@@ -97,6 +97,9 @@ class EnrollmentScreenView
   // Reloads the signin screen.
   virtual void ReloadSigninScreen() = 0;
 
+  // Resets shown enrollment screen.
+  virtual void ResetEnrollmentScreen() = 0;
+
   // Shows error related to user account eligibility.
   virtual void ShowUserError(const std::string& email) = 0;
 
