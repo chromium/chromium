@@ -26534,12 +26534,6 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Encryption unavailable"/>
 </enum>
 
-<enum name="DeleteStaleCookiesResult">
-  <int value="0" label="Old directory was not found"/>
-  <int value="1" label="Deleted successfully"/>
-  <int value="2" label="Error when deleting"/>
-</enum>
-
 <enum name="DemoModeApp">
   <summary>
     Pre-installed app or other window type available in Chrome OS Demo Mode.

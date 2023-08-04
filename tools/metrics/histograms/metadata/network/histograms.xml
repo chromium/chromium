@@ -4012,17 +4012,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.ClearStaleDataDirectoryResult"
-    enum="DeleteStaleCookiesResult" expires_after="2023-09-03">
-  <owner>wfh@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    The result of an attempt to delete stale network context data directory
-    (e.g. cookies). Recorded during construction of network context for Chrome
-    and Safebrowsing. Android only.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.CorsPreflightMethodAllowed"
     enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="2023-06-18">
   <owner>hiroshige@chromium.org</owner>

@@ -1199,8 +1199,6 @@ component("base") {
       "android/reached_addresses_bitset.h",
       "android/reached_code_profiler.cc",
       "android/reached_code_profiler.h",
-      "android/remove_stale_data.cc",
-      "android/remove_stale_data.h",
       "android/scoped_hardware_buffer_fence_sync.cc",
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",

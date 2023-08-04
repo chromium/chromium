@@ -1086,7 +1086,6 @@ if (is_android) {
       "../browser/metrics/sampled_out_client_id_saved_browsertest.cc",
       "../browser/metrics/startup_metrics_browsertest.cc",
       "../browser/metrics/ukm_browsertest.cc",
-      "../browser/net/android_network_service_browsertest.cc",
       "../browser/net/cert_verifier_service_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_android_browsertest.cc",

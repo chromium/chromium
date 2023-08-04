@@ -76,10 +76,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/remove_stale_data.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
@@ -836,16 +832,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->file_paths->unsandboxed_data_path = path;
     network_context_params->file_paths->trigger_migration =
         base::FeatureList::IsEnabled(features::kTriggerNetworkDataMigration);
-
-#if BUILDFLAG(IS_ANDROID)
-    // On Android the `data_directory` was used by some wrong builds instead of
-    // `unsandboxed_data_path`. Cleaning it up. See crbug.com/1331809.
-    // The `trigger_migration` has always been false and will remain to be such
-    // on Android, hence not checking for it.
-    DCHECK(!network_context_params->file_paths->trigger_migration);
-    base::android::RemoveStaleDataDirectory(
-        network_context_params->file_paths->data_directory.path());
-#endif  // BUILDFLAG(IS_ANDROID)
 
     // Currently this just contains HttpServerProperties, but that will likely
     // change.
