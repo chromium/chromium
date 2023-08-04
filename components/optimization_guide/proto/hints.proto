@@ -191,6 +191,9 @@ enum OptimizationType {
   PRICE_INSIGHTS = 30;
   // Information about which JavaScript functions should be eager compiled.
   V8_COMPILE_HINTS = 31;
+  // This optimization provides information about shoppinge page types of this
+  // page.
+  SHOPPING_PAGE_TYPES = 32;
 }
 
 // Presents semantics for how page load URLs should be matched.

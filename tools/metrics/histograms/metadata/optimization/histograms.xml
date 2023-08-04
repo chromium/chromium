@@ -140,6 +140,9 @@ chromium-metrics-reviews@google.com.
       summary="Provides information about images for a URL."/>
   <variant name="ShoppingPagePredictor"
       summary="Determines if a page is shopping related or not"/>
+  <variant name="ShoppingPageTypes"
+      summary="This optimization provides information about shopping page
+               types of this page."/>
   <variant name="ThankCreatorEligible"
       summary="This optimization provides information for whether a page is
                eligible for the 'Thank Creator' feature."/>
