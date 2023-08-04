@@ -32,21 +32,22 @@ __handlers.update(proto.handlers)
 __handlers.update(reproxy.handlers)
 
 def __disable_remote_b281663988(step_config):
-    step_config["rules"].insert(0, {
-        # TODO(b/281663988): missing headers.
-        "name": "b281663988/missing-headers",
-        "action_outs": [
-            "./obj/ui/qt/qt5_shim/qt_shim.o",
-            "./obj/ui/qt/qt6_shim/qt_shim.o",
-            "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
-            "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
-            "./obj/ui/qt/qt_interface/qt_interface.o",
-        ],
-        "remote": False,
-        # This rule is used only with use_remoteexec.
-        # TODO(b/292838933): Move this rule into reproxy.star?
-        "handler": "strip_rewrapper",
-    })
+    step_config["rules"].extend([
+        {
+            # TODO(b/281663988): missing headers.
+            "name": "b281663988/missing-headers",
+            "action_outs": [
+                "./obj/ui/qt/qt5_shim/qt_shim.o",
+                "./obj/ui/qt/qt6_shim/qt_shim.o",
+                "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
+                "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
+                "./obj/ui/qt/qt_interface/qt_interface.o",
+            ],
+            "remote": False,
+            # This rule is used only with use_remoteexec.
+            "handler": "strip_rewrapper",
+        },
+    ])
     return step_config
 
 def __disable_remote_b289968566(ctx, step_config):
@@ -77,7 +78,7 @@ def __disable_remote_b289968566(ctx, step_config):
     }
     if reproxy.enabled(ctx):
         rule["handler"] = "strip_rewrapper"
-    step_config["rules"].insert(0, rule)
+    step_config["rules"].extend([rule])
     return step_config
 
 def __step_config(ctx, step_config):
@@ -108,11 +109,16 @@ def __step_config(ctx, step_config):
     step_config = nasm.step_config(ctx, step_config)
     step_config = proto.step_config(ctx, step_config)
     step_config = mojo.step_config(ctx, step_config)
-    step_config = clang.step_config(ctx, step_config)
 
     if reproxy.enabled(ctx):
         step_config = __disable_remote_b281663988(step_config)
+
+        # Needs to be last to rewrite native remote rules.
         step_config = reproxy.step_config(ctx, step_config)
+    else:
+        # Already handled by reproxy.
+        # TODO(b/292838933): Always enable, change reproxy.star to rewrite these instead.
+        step_config = clang.step_config(ctx, step_config)
 
     return step_config
 
