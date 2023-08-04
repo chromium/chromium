@@ -130,12 +130,24 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
                                                                   expiration);
   }
 
+  // Wait for the TestURLLoaderFactory to have a pending request, returning a
+  // pointer to it (but leaving the request in the factory).
+  const network::TestURLLoaderFactory::PendingRequest* WaitForPendingRequest() {
+    while (true) {
+      const auto* pending_request =
+          test_url_loader_factory_.GetPendingRequest(0);
+      if (pending_request) {
+        return pending_request;
+      }
+      task_environment_.RunUntilIdle();
+    }
+  }
+
   void RespondWithTrustTokenNonUniqueUserId(int id) {
     std::string request_url =
         base::StrCat({kAuthServer, "/v1/generateShortIdentifier"});
 
-    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_TRUE(pending_request);
+    const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
     EXPECT_EQ(request_url, request.url);
     EXPECT_TRUE(
@@ -154,8 +166,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     std::string request_url =
         base::StringPrintf("%s/v1/%d/fetchKeys?key=", kAuthServer, id);
 
-    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_TRUE(pending_request);
+    const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
     EXPECT_EQ(0u, request.url.spec().rfind(request_url));
     EXPECT_FALSE(
@@ -187,8 +198,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     std::string request_url =
         base::StringPrintf("%s/v1/%d/issueTrustToken", kAuthServer, id);
 
-    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_TRUE(pending_request);
+    const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
     EXPECT_EQ(request_url, request.url);
     EXPECT_TRUE(

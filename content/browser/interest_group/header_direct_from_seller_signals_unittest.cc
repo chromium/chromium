@@ -52,7 +52,7 @@ class HeaderDirectFromSellerSignalsTest : public ::testing::Test {
     return result;
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 
   std::vector<std::string> errors_;
