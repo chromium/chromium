@@ -265,8 +265,33 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
   base::UmaHistogramPercentageObsoleteDoNotUse(name, engagement_score);
 }
 
+// Records in a UMA histogram whether we should expect to see an event in UKM,
+// to allow for evaluating if the current constraints on UKM recording work well
+// in practice.
+void RecordUmaForWhetherRevocationUkmWasRecorded(
+    ContentSettingsType permission_type,
+    bool has_source_id) {
+  if (permission_type == ContentSettingsType::NOTIFICATIONS) {
+    base::UmaHistogramBoolean(
+        "Permissions.Revocation.Notifications.DidRecordUkm", has_source_id);
+  }
+}
+
+// Records in a UMA histogram whether we should expect to see an event in UKM,
+// to allow for evaluating if the current constraints on UKM recording work well
+// in practice.
+void RecordUmaForWhetherUsageUkmWasRecorded(ContentSettingsType permission_type,
+                                            bool has_source_id) {
+  if (permission_type == ContentSettingsType::NOTIFICATIONS) {
+    base::UmaHistogramBoolean("Permissions.Usage.Notifications.DidRecordUkm",
+                              has_source_id);
+  }
+}
+
 void RecordPermissionUsageUkm(ContentSettingsType permission_type,
                               absl::optional<ukm::SourceId> source_id) {
+  RecordUmaForWhetherUsageUkmWasRecorded(permission_type,
+                                         source_id.has_value());
   if (!source_id.has_value())
     return;
 
@@ -298,6 +323,11 @@ void RecordPermissionActionUkm(
     PredictionRequestFeatures::ActionCounts actions_counts,
     absl::optional<bool> prediction_decision_held_back,
     absl::optional<ukm::SourceId> source_id) {
+  if (action == PermissionAction::REVOKED) {
+    RecordUmaForWhetherRevocationUkmWasRecorded(permission,
+                                                source_id.has_value());
+  }
+
   // Only record the permission change if the origin is in the history.
   if (!source_id.has_value())
     return;

@@ -1319,6 +1319,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Revocation.Notifications.DidRecordUkm"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>engedy@chromium.org</owner>
+  <owner>willxu@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records, each time when the notification permission is revoked, whether a
+    UKM event was recorded as well.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Serial.ChooserClosed" enum="SerialChooserOutcome"
     expires_after="never">
 <!-- expires-never: Used to monitor user interaction with the Web Serial API. -->
@@ -1348,6 +1359,17 @@ chromium-metrics-reviews@google.com.
     Records the time elapsed since the grant of the permission until it's latest
     usage. This histogram will be recorded only for the first usage of a given
     permission after the site has loaded.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.Usage.Notifications.DidRecordUkm" enum="Boolean"
+    expires_after="2024-01-01">
+  <owner>engedy@chromium.org</owner>
+  <owner>willxu@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records, each time when the notification permission is used, whether a UKM
+    event was recorded as well.
   </summary>
 </histogram>
 
