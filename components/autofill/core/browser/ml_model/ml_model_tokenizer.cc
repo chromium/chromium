@@ -65,7 +65,7 @@ size_t AutofillMLModelTokenizer::GetDictionarySize() const {
 }
 
 AutofillMLModelTokenizer::TokenId AutofillMLModelTokenizer::TokenToId(
-    const std::u16string& token) const {
+    std::u16string_view token) const {
   auto match = token_to_id_.find(token);
   if (match == token_to_id_.end()) {
     return kUnknownTokenId;
@@ -75,7 +75,7 @@ AutofillMLModelTokenizer::TokenId AutofillMLModelTokenizer::TokenToId(
 
 std::array<AutofillMLModelTokenizer::TokenId,
            AutofillMLModelTokenizer::kOutputSequenceLength>
-AutofillMLModelTokenizer::Vectorize(const std::u16string& input) const {
+AutofillMLModelTokenizer::Vectorize(std::u16string_view input) const {
   std::u16string standardized_input = base::ToLowerASCII(input);
   base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
   std::vector<std::u16string> split_string =
@@ -86,7 +86,7 @@ AutofillMLModelTokenizer::Vectorize(const std::u16string& input) const {
   std::array<TokenId, kOutputSequenceLength> output;
   base::ranges::transform(
       split_string, output.begin(),
-      [&](const std::u16string& token) { return TokenToId(token); });
+      [&](std::u16string_view token) { return TokenToId(token); });
   return output;
 }
 

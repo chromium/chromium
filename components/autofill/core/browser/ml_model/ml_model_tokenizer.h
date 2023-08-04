@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,7 @@ class AutofillMLModelTokenizer {
   static constexpr size_t kOutputSequenceLength = 5;
   // Special characters to remove from the field label input.
   static constexpr char16_t kSpecialChars[] =
-      uR"(!"#$%&()\*\+,-\./:;<=>?@\[\\\]^_`{|}~\')";
+      uR"(!"#$%&()\*+,-./:;<=>?@[]^_`{|}~')";
 
   // Factory function returns instance of the tokenizer if initialized.
   // If dictionary file path is not found, initialization fails and
@@ -42,8 +43,8 @@ class AutofillMLModelTokenizer {
   // whitespaces, tokenizing each string and padding the array to have
   // size `kOutputSequenceLength`.
   std::array<TokenId, kOutputSequenceLength> Vectorize(
-      const std::u16string& input) const;
-  TokenId TokenToId(const std::u16string& token) const;
+      std::u16string_view input) const;
+  TokenId TokenToId(std::u16string_view token) const;
 
   size_t GetDictionarySize() const;
 
