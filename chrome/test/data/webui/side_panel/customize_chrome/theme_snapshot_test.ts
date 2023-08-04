@@ -103,7 +103,7 @@ suite('ThemeSnapshotTest', () => {
             '#classicChromeBackground img')!.getAttribute('aria-labelledby'),
         'classicChromeThemeTitle');
     assertEquals(
-        'Classic Chrome',
+        'Default Chrome',
         $$(themeSnapshotElement,
            '.snapshot-container #classicChromeThemeTitle')!.textContent!
             .trim());
