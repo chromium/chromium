@@ -235,7 +235,9 @@ public class WebsitePermissionsFetcher {
 
             if (category.getType() == SiteSettingsCategory.Type.ALL_SITES) {
                 addAllFetchers(queue);
-            } else if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
+                // TODO(crbug.com/1459631): Add in fetcher for Zoom info.
+            } else if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE
+                    || category.getType() == SiteSettingsCategory.Type.ZOOM) {
                 addFetcherForStorage(queue);
             } else {
                 assert getPermissionsType(category.getContentSettingsType()) != null;

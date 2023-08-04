@@ -130,6 +130,9 @@ public class SiteSettings extends SiteSettingsPreferenceFragment
                 p.setSummary(ContentSettingsResources.getDesktopSiteListSummary(checked));
             } else if (Type.AUTO_DARK_WEB_CONTENT == prefCategory) {
                 p.setSummary(ContentSettingsResources.getAutoDarkWebContentListSummary(checked));
+            } else if (Type.ZOOM == prefCategory) {
+                // Don't want to set a summary for Zoom because we don't want any message to display
+                // under the Zoom row on site settings.
             } else if (requiresTriStateSetting) {
                 p.setSummary(ContentSettingsResources.getCategorySummary(setting));
             } else {
@@ -142,10 +145,13 @@ public class SiteSettings extends SiteSettingsPreferenceFragment
             }
         }
 
+        // For AllSiteSettings options.
         Preference p = findPreference(Type.ALL_SITES);
         if (p != null) p.setOnPreferenceClickListener(this);
         // TODO(finnur): Re-move this for Storage once it can be moved to the 'Usage' menu.
         p = findPreference(Type.USE_STORAGE);
+        if (p != null) p.setOnPreferenceClickListener(this);
+        p = findPreference(Type.ZOOM);
         if (p != null) p.setOnPreferenceClickListener(this);
     }
 

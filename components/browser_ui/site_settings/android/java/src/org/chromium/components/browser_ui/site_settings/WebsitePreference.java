@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.format.Formatter;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -86,6 +87,15 @@ class WebsitePreference extends ChromeImageViewPreference {
     private void refresh() {
         setTitle(mSite.getTitle());
 
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            // Create and set the delete button for this preference.
+            setImageView(R.drawable.btn_close, R.string.webstorage_clear_data_dialog_title,
+                    (OnClickListener) view
+                    -> mSiteSettingsDelegate.resetZoomLevel(mSite.getAddress().getHost()));
+            setImageViewEnabled(true);
+            setImagePadding(25, 0, 0, 0);
+        }
+
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
                 && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
                 && mSite.getFPSCookieInfo() != null) {
@@ -157,6 +167,15 @@ class WebsitePreference extends ChromeImageViewPreference {
                 usageText.setTextSize(TEXT_SIZE_SP);
                 usageText.setVisibility(View.VISIBLE);
             }
+        }
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            // TODO(crbug.com/1459631): Get current zoom for the URL to replace this "100" with.
+            String currentZoom =
+                    String.format(getContext().getString(R.string.page_zoom_level), 100);
+            usageText.setText(currentZoom);
+            usageText.setTextSize(TEXT_SIZE_SP);
+            usageText.setVisibility(View.VISIBLE);
+            setViewClickable(false);
         }
 
         // Manually apply ListItemStartIcon style to draw the outer circle in the right size.

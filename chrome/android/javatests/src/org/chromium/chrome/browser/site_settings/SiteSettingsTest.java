@@ -494,7 +494,8 @@ public class SiteSettingsTest {
         final SettingsActivity settingsActivity;
 
         if (type == SiteSettingsCategory.Type.ALL_SITES
-                || type == SiteSettingsCategory.Type.USE_STORAGE) {
+                || type == SiteSettingsCategory.Type.USE_STORAGE
+                || type == SiteSettingsCategory.Type.ZOOM) {
             settingsActivity = SiteSettingsTestUtils.startAllSitesSettings(type);
         } else {
             settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(type);
@@ -1181,7 +1182,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(29, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(30, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1190,6 +1191,14 @@ public class SiteSettingsTest {
     @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
     public void testOnlyExpectedPreferencesAllSites() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, NULL_ARRAY);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
+    public void testOnlyExpectedPreferencesZoom() {
+        checkPreferencesForCategory(SiteSettingsCategory.Type.ZOOM, NULL_ARRAY);
     }
 
     @Test

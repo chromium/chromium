@@ -415,7 +415,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
-                || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
+                || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE
+                || mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             throw new IllegalArgumentException("Use AllSiteSettings instead.");
         }
 

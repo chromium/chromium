@@ -35,6 +35,11 @@ public interface SiteSettingsDelegate {
     ManagedPreferenceDelegate getManagedPreferenceDelegate();
 
     /**
+     * Callback for when an ImageView is enabled for WebsitePreference row.
+     */
+    void resetZoomLevel(String host);
+
+    /**
      * Asynchronously looks up the locally cached favicon image for the given URL, generating a
      * fallback if one isn't available.
      *
