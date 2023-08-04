@@ -20,7 +20,8 @@ import itertools
 import json
 from typing import Literal
 
-from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
+from anys import (ANY_NUMBER, ANY_STR, AnyContains, AnyFullmatch, AnyGT, AnyLT,
+                  AnyWithEntries)
 from PIL import Image, ImageChops
 
 _command_counter = itertools.count(1)
@@ -138,9 +139,13 @@ async def wait_for_event(websocket, event_method: str) -> dict:
 ANY_SHARED_ID = ANY_STR & AnyContains("_element_")
 
 # Check if the timestamp has the proper order of magnitude between
-#   "2020-01-01 00:00:00" (1577833200000) and
-#   "2100-01-01 00:00:00" (4102441200000).
+#  - "2020-01-01 00:00:00" (1577833200000) and
+#  - "2100-01-01 00:00:00" (4102441200000).
 ANY_TIMESTAMP = ANY_NUMBER & AnyGT(1577833200000) & AnyLT(4102441200000)
+
+# Check if the UUID is a valid UUID v4.
+ANY_UUID = AnyFullmatch(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
 
 
 def AnyExtending(expected: list | dict):

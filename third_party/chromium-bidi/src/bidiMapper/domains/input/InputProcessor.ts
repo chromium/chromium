@@ -28,14 +28,8 @@ export class InputProcessor {
 
   readonly #inputStateManager = new InputStateManager();
 
-  private constructor(browsingContextStorage: BrowsingContextStorage) {
+  constructor(browsingContextStorage: BrowsingContextStorage) {
     this.#browsingContextStorage = browsingContextStorage;
-  }
-
-  static create(
-    browsingContextStorage: BrowsingContextStorage
-  ): InputProcessor {
-    return new InputProcessor(browsingContextStorage);
   }
 
   async performActions(

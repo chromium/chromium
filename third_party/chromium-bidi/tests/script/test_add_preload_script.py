@@ -15,8 +15,8 @@
 
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (AnyExtending, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_UUID, AnyExtending, execute_command,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -29,7 +29,7 @@ async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
                 "functionDeclaration": "() => { window.foo='bar'; }",
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
 
     await execute_command(
         websocket, {
@@ -67,7 +67,7 @@ async def test_preloadScript_add_logging(websocket, context_id, html):
                 "functionDeclaration": "() => console.log('my preload script')",
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
 
     command_id = await send_JSON_command(
         websocket, {
@@ -151,7 +151,7 @@ async def test_preloadScript_add_sameScript_multipleTimes(
                 "functionDeclaration": EXPRESSION,
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
     id1 = result['script']
 
     result = await execute_command(
@@ -161,7 +161,7 @@ async def test_preloadScript_add_sameScript_multipleTimes(
                 "functionDeclaration": EXPRESSION,
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
     id2 = result['script']
 
     # Same script added twice should result in different ids.
@@ -565,7 +565,7 @@ async def test_preloadScript_add_sandbox(websocket, context_id, html):
                 "sandbox": "MY_SANDBOX",
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
 
     await execute_command(
         websocket, {
@@ -760,7 +760,7 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
                 "context": context_id,
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
 
     command_id = await send_JSON_command(
         websocket, {
@@ -816,7 +816,7 @@ async def test_preloadScript_channel_newContext(websocket,
                 }, ],
             }
         })
-    assert result == {'script': ANY_STR}
+    assert result == {'script': ANY_UUID}
 
     command_id = await send_JSON_command(websocket, {
         "method": "browsingContext.create",

@@ -27,7 +27,7 @@ import type {EventManager} from '../events/EventManager.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {Network} from '../../../protocol/protocol.js';
 
-import {NetworkRequest} from './networkRequest.js';
+import {NetworkRequest} from './NetworkRequest.js';
 
 export class NetworkManager {
   readonly #eventManager: EventManager;
