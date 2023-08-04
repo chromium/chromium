@@ -11,6 +11,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -327,7 +328,7 @@ void InputInjectorWayland::Core::InjectKeyEventHelper(const KeyEvent& event) {
   }
 
   if (event.pressed()) {
-    if (pressed_keys_.find(keycode) != pressed_keys_.end()) {
+    if (base::Contains(pressed_keys_, keycode)) {
       // Ignore repeats for modifier keys.
       if (IsDomModifierKey(static_cast<ui::DomCode>(event.usb_keycode()))) {
         return;

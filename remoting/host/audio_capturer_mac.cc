@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -80,7 +81,7 @@ void AudioCapturerInstanceSet::Remove(AudioCapturerMac* instance) {
 
 // static
 bool AudioCapturerInstanceSet::Contains(AudioCapturerMac* instance) {
-  return Get()->instance_set_.find(instance) != Get()->instance_set_.end();
+  return base::Contains(Get()->instance_set_, instance);
 }
 
 AudioCapturerInstanceSet::AudioCapturerInstanceSet() = default;
