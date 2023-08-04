@@ -19,8 +19,12 @@ namespace ash::welcome_tour_metrics {
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
 enum class AbortedReason {
-  kUnknown,
-  kMaxValue = kUnknown,
+  kUnknown = 0,
+  kAccelerator = 1,
+  kChromeVoxEnabled = 2,
+  kTabletModeEnabled = 3,
+  kUserDeclinedTour = 4,
+  kMaxValue = kUserDeclinedTour,
 };
 
 // Enumeration of reasons the Welcome Tour may be prevented. These values are

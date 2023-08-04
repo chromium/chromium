@@ -268,7 +268,8 @@ void WelcomeTourController::OnAccessibilityControllerShutdown() {
 
 void WelcomeTourController::OnAccessibilityStatusChanged() {
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    MaybeAbortWelcomeTour();
+    MaybeAbortWelcomeTour(
+        welcome_tour_metrics::AbortedReason::kChromeVoxEnabled);
   }
 }
 
@@ -291,7 +292,8 @@ void WelcomeTourController::OnTabletControllerDestroyed() {
 }
 
 void WelcomeTourController::OnTabletModeStarting() {
-  MaybeAbortWelcomeTour();
+  MaybeAbortWelcomeTour(
+      welcome_tour_metrics::AbortedReason::kTabletModeEnabled);
 }
 
 void WelcomeTourController::MaybeStartWelcomeTour() {
@@ -383,7 +385,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   OnWelcomeTourStarted();
 }
 
-void WelcomeTourController::MaybeAbortWelcomeTour() {
+void WelcomeTourController::MaybeAbortWelcomeTour(
+    welcome_tour_metrics::AbortedReason reason) {
+  if (aborted_reason_ == welcome_tour_metrics::AbortedReason::kUnknown) {
+    aborted_reason_ = reason;
+  }
+
   UserEducationTutorialController::Get()->AbortTutorial(
       UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1);
 }
@@ -396,9 +403,11 @@ void WelcomeTourController::MaybeAbortWelcomeTour() {
 // TODO(http://b/277091619): Stabilize wallpaper.
 // TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
+  aborted_reason_ = welcome_tour_metrics::AbortedReason::kUnknown;
   accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>(
       base::BindRepeating(&WelcomeTourController::MaybeAbortWelcomeTour,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          welcome_tour_metrics::AbortedReason::kAccelerator));
 
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
 
@@ -416,10 +425,12 @@ void WelcomeTourController::OnWelcomeTourStarted() {
       /*accept_callback=*/base::DoNothing(),
       /*cancel_callback=*/
       base::BindOnce(&WelcomeTourController::MaybeAbortWelcomeTour,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     welcome_tour_metrics::AbortedReason::kUserDeclinedTour),
       /*close_callback=*/
       base::BindOnce(&WelcomeTourController::MaybeAbortWelcomeTour,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     welcome_tour_metrics::AbortedReason::kUnknown));
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourStarted();
@@ -448,13 +459,17 @@ void WelcomeTourController::OnWelcomeTourEnded(
     UserEducationController::Get()->LaunchSystemWebAppAsync(
         UserEducationPrivateApiKey(), ash::SystemWebAppType::HELP,
         display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  } else if (auto* dialog = WelcomeTourDialog::Get()) {
-    // Ensure the Welcome Tour dialog is closed when the tour is aborted since
-    // the abort could have originated from outside of the dialog itself. Note
-    // that weak pointers are invalidated to avoid doing work on widget close.
-    if (auto* widget = dialog->GetWidget(); widget && !widget->IsClosed()) {
-      weak_ptr_factory_.InvalidateWeakPtrs();
-      widget->Close();
+  } else {
+    welcome_tour_metrics::RecordTourAborted(aborted_reason_);
+
+    if (auto* dialog = WelcomeTourDialog::Get()) {
+      // Ensure the Welcome Tour dialog is closed when the tour is aborted since
+      // the abort could have originated from outside of the dialog itself. Note
+      // that weak pointers are invalidated to avoid doing work on widget close.
+      if (auto* widget = dialog->GetWidget(); widget && !widget->IsClosed()) {
+        weak_ptr_factory_.InvalidateWeakPtrs();
+        widget->Close();
+      }
     }
   }
 

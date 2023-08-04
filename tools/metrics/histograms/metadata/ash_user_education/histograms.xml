@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Ash.WelcomeTour.Aborted.Reason"
+    enum="WelcomeTourAbortedReason" expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the reason that the Welcome Tour was aborted after starting.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
     enum="WelcomeTourPreventedReason" expires_after="2024-01-01">
   <owner>angusmclean@google.com</owner>

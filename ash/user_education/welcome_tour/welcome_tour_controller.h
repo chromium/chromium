@@ -14,6 +14,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/user_education/user_education_feature_controller.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -76,12 +77,16 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void MaybeStartWelcomeTour();
 
   // Aborts the Welcome Tour if and only if the tour is in progress.
-  void MaybeAbortWelcomeTour();
+  void MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason reason);
 
   // Invoked when the Welcome Tour is started/ended. The latter is called
   // regardless of whether the tour was `completed` or aborted.
   void OnWelcomeTourStarted();
   void OnWelcomeTourEnded(bool completed, base::ElapsedTimer time_since_start);
+
+  // The reason the tour was aborted.
+  welcome_tour_metrics::AbortedReason aborted_reason_ =
+      welcome_tour_metrics::AbortedReason::kUnknown;
 
   // Blocks all notifications while the Welcome Tour is in progress. Any
   // notifications received during the tour will appear in the Notification

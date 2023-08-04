@@ -75,7 +75,7 @@ void RecordTimeToInteraction(Interaction interaction, base::TimeDelta delta) {
 }
 
 void RecordTourAborted(AbortedReason reason) {
-  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Aborted`.";
+  base::UmaHistogramEnumeration("Ash.WelcomeTour.Aborted.Reason", reason);
 }
 
 void RecordTourDuration(base::TimeDelta duration, bool completed) {
