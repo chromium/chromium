@@ -48,7 +48,9 @@ SodaLanguagePackComponentInstallerPolicy::
       on_ready_callback_(std::move(on_ready_callback)) {}
 
 SodaLanguagePackComponentInstallerPolicy::
-    ~SodaLanguagePackComponentInstallerPolicy() = default;
+    ~SodaLanguagePackComponentInstallerPolicy() {
+  prefs_ = nullptr;
+}
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
     speech::LanguageCode language_code) {
