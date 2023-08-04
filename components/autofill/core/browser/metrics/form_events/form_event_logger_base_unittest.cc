@@ -137,7 +137,7 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
     histogram_tester.ExpectTotalCount(
         "Autofill.Autocomplete.Off.FillingAcceptance.Address", 0);
     VerifyUkm(
-        test_ukm_recorder_, form, UkmAutofillKeyMetricsType::kEntryName,
+        &test_ukm_recorder(), form, UkmAutofillKeyMetricsType::kEntryName,
         {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
           {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
           {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
@@ -275,7 +275,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 0);
 
-  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
@@ -313,7 +313,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
 
-  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
@@ -350,7 +350,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
 
-  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
               {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
@@ -389,7 +389,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 1, 1);
 
-  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
               {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
               {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
@@ -432,7 +432,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 0, 1);
 
-  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
               {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
               {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},

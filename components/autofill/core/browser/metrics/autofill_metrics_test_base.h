@@ -217,18 +217,24 @@ class AutofillMetricsBaseTest {
         *autofill_driver_->autofill_manager());
   }
 
+  AutofillExternalDelegate& external_delegate() {
+    return *test_api(autofill_manager()).external_delegate();
+  }
+
   TestPersonalDataManager& personal_data() {
     return *autofill_client_->GetPersonalDataManager();
+  }
+
+  ukm::TestUkmRecorder& test_ukm_recorder() {
+    return *autofill_client_->GetTestUkmRecorder();
   }
 
   const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
-  raw_ptr<ukm::TestUkmRecorder, DanglingUntriaged> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
-  raw_ptr<AutofillExternalDelegate, DanglingUntriaged> external_delegate_;
 
  private:
   void CreateTestAutofillProfiles();

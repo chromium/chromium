@@ -46,6 +46,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->external_delegate_ = std::move(external_delegate);
   }
 
+  AutofillExternalDelegate* external_delegate() {
+    return manager_->external_delegate_.get();
+  }
+
   bool ShouldTriggerRefill(const FormStructure& form_structure) {
     return manager_->ShouldTriggerRefill(form_structure);
   }

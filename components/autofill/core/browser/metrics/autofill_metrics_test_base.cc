@@ -41,7 +41,6 @@ AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 void AutofillMetricsBaseTest::SetUpHelper() {
   autofill_client_ = std::make_unique<MockAutofillClient>();
   autofill_client_->SetPrefs(test::PrefServiceForTesting());
-  test_ukm_recorder_ = autofill_client_->GetTestUkmRecorder();
 
   personal_data().set_auto_accept_address_imports_for_testing(true);
   personal_data().SetPrefService(autofill_client_->GetPrefs());
@@ -72,11 +71,9 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       autofill_driver_.get(), autofill_client_.get());
   autofill_driver_->set_autofill_manager(std::move(browser_autofill_manager));
 
-  auto external_delegate =
-      std::make_unique<AutofillExternalDelegate>(&autofill_manager());
-  external_delegate_ = external_delegate.get();
   test_api(autofill_manager())
-      .SetExternalDelegate(std::move(external_delegate));
+      .SetExternalDelegate(
+          std::make_unique<AutofillExternalDelegate>(&autofill_manager()));
 
 #if !BUILDFLAG(IS_IOS)
   autofill_manager()
@@ -91,14 +88,14 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 }
 
 void AutofillMetricsBaseTest::TearDownHelper() {
-  test_ukm_recorder_->Purge();
+  test_ukm_recorder().Purge();
   autofill_driver_.reset();
   autofill_client_.reset();
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
   autofill_manager().Reset();
-  test_ukm_recorder_->Purge();
+  test_ukm_recorder().Purge();
   autofill_client_->InitializeUKMSources();
 }
 

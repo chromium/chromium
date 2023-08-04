@@ -559,7 +559,7 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
   ExpectedUkmMetrics expected_ukm_metrics;
   AppendFieldTypeUkm(form, heuristic_types, server_types, actual_types,
                      &expected_ukm_metrics);
-  VerifyUkm(test_ukm_recorder_, form, UkmFieldTypeValidationType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form, UkmFieldTypeValidationType::kEntryName,
             expected_ukm_metrics);
 
   // Validate the total samples and the crossed (predicted-to-actual) samples.
