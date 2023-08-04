@@ -283,17 +283,16 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   // on the document element because of change of BackgroundTransfersToView()
   // which depends on the document element style.
   if (IsDocumentElement()) {
-    if (HTMLBodyElement* body = GetDocument().FirstBodyElement()) {
-      if (auto* body_object = body->GetLayoutObject()) {
-        if (body_object->IsBoxModelObject()) {
-          auto* body_box_model = To<LayoutBoxModelObject>(body_object);
-          bool new_body_background_transfers =
-              body_box_model->BackgroundTransfersToView(Style());
-          bool old_body_background_transfers =
-              old_style && body_box_model->BackgroundTransfersToView(old_style);
-          if (new_body_background_transfers != old_body_background_transfers &&
-              body_object->Style() && body_object->StyleRef().HasBackground())
-            body_object->SetBackgroundNeedsFullPaintInvalidation();
+    if (const HTMLBodyElement* body = GetDocument().FirstBodyElement()) {
+      if (auto* body_object =
+              DynamicTo<LayoutBoxModelObject>(body->GetLayoutObject())) {
+        bool new_body_background_transfers =
+            body_object->BackgroundTransfersToView(Style());
+        bool old_body_background_transfers =
+            old_style && body_object->BackgroundTransfersToView(old_style);
+        if (new_body_background_transfers != old_body_background_transfers &&
+            body_object->Style() && body_object->StyleRef().HasBackground()) {
+          body_object->SetBackgroundNeedsFullPaintInvalidation();
         }
       }
     }
