@@ -9,6 +9,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#include "chrome/common/chrome_features.h"
 
 // static
 PasswordStatusCheckServiceFactory*
@@ -19,6 +20,9 @@ PasswordStatusCheckServiceFactory::GetInstance() {
 // static
 PasswordStatusCheckService* PasswordStatusCheckServiceFactory::GetForProfile(
     Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    return nullptr;
+  }
   return static_cast<PasswordStatusCheckService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -43,5 +47,8 @@ PasswordStatusCheckServiceFactory::~PasswordStatusCheckServiceFactory() =
 
 KeyedService* PasswordStatusCheckServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    return nullptr;
+  }
   return new PasswordStatusCheckService(Profile::FromBrowserContext(context));
 }
