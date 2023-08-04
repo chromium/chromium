@@ -884,7 +884,7 @@ void BookmarkBarView::GetAnchorPositionForButton(
 
 int BookmarkBarView::GetLeadingMargin() const {
   static constexpr int kBookmarksBarLeadingMarginPreRefresh = 8;
-  static constexpr int kBookmarksBarLeadingMarginWithoutSavedTabGroups = 5;
+  static constexpr int kBookmarksBarLeadingMarginWithoutSavedTabGroups = 6;
   static constexpr int kBookmarksBarLeadingMarginWithSavedTabGroups = 12;
 
   if (!features::IsChromeRefresh2023()) {
