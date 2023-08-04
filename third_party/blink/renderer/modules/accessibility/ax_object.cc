@@ -3785,6 +3785,13 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
+  // Ensure clean teardown of AXMenuList.
+  if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+    if (option->OwnerSelectElement()) {
+      return true;
+    }
+  }
+
   if (IsExcludedByFormControlsFilter()) {
     return false;
   }
@@ -3889,12 +3896,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (IsA<HTMLTableElement>(element) || IsA<HTMLTableSectionElement>(element) ||
       IsA<HTMLTableRowElement>(element) || IsA<HTMLTableCellElement>(element)) {
     return true;
-  }
-
-  // Ensure clean teardown of AXMenuList.
-  if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
-    if (option->OwnerSelectElement())
-      return true;
   }
 
   // Preserve nodes with language attributes.
