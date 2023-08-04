@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://app-settings/web_app_settings.js';
 
 import {App, AppManagementPermissionItemElement, AppManagementToggleRowElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
