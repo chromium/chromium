@@ -50,7 +50,7 @@ void TestPaymentsClient::UnmaskCard(
     const UnmaskRequestDetails& unmask_request,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             UnmaskResponseDetails&)> callback) {
-  unmask_request_ = &unmask_request;
+  unmask_request_ = unmask_request;
 }
 
 void TestPaymentsClient::GetUploadDetails(
