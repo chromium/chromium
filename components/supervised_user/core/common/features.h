@@ -22,17 +22,15 @@ BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 BASE_DECLARE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn);
 
-// Enables invoking the CreatePermissionRequest service through a proto fetcher.
-BASE_DECLARE_FEATURE(kEnableCreatePermissionRequestFetcher);
-
 // Returns whether banner can be displayed to the user after website filtering
 // is enabled
 bool CanDisplayFirstTimeInterstitialBanner();
 
 BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
-// Enables invoking the ClassifyUrl service through a proto fetcher.
+// Experiments to enable proto fetchers
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
+BASE_DECLARE_FEATURE(kEnableCreatePermissionRequestFetcher);
 
 // Instead of manually implementing the process, use the proto_fetcher.cc's one.
 BASE_DECLARE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers);

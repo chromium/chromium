@@ -34,9 +34,13 @@ constexpr base::FeatureParam<std::string> kLocalWebApprovalsPreferredButton{
     &kLocalWebApprovals, "preferred_button",
     kLocalWebApprovalsPreferredButtonLocal};
 
+// Proto fetcher experiments.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableCreatePermissionRequestFetcher,
+             "EnableCreatePermissionRequestFetcher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers,
              "UseBuiltInRetryingMechanismForListFamilyMembers",
@@ -97,10 +101,6 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
              "SupervisedPrefsControlledBySupervisedStore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableCreatePermissionRequestFetcher,
-             "EnableCreatePermissionRequestFetcher",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to display a "Managed by your parent" or similar text for supervised
