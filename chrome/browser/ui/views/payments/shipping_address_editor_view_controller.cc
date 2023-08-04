@@ -98,17 +98,25 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
     std::move(on_added_).Run(profile);
     on_edited_.Reset();
   } else {
-    autofill::ServerFieldTypeSet all_fields;
-    profile_to_edit_->GetSupportedTypes(&all_fields);
-    // Clear all the address data in |profile_to_edit_| except the email field,
-    // in anticipation of adding only the fields present in the editor. Prefer
-    // this method to copying |profile| into |profile_to_edit_|, because the
-    // latter object needs to retain other properties (use count, use date,
-    // guid, etc.).
-    for (autofill::ServerFieldType type : all_fields) {
-      if (type != autofill::ServerFieldType::EMAIL_ADDRESS) {
-        profile_to_edit_->SetRawInfo(type, std::u16string());
-      }
+    // The address fields to clear in the saved profile,
+    // if the address form did not show them.
+    autofill::ServerFieldTypeSet address_fields_to_clear;
+
+    profile_to_edit_->GetSupportedTypes(&address_fields_to_clear);
+
+    // Never clear fields that this form does not show or that are not
+    // part of an address (e.g., phone number or email address).
+    for (autofill::ServerFieldType field_type :
+         autofill::i18n::GetStaticEditorFields()) {
+      address_fields_to_clear.erase(field_type);
+    }
+
+    // Clear all the address data in |profile_to_edit_|, in anticipation of
+    // adding only the fields present in the editor. Prefer this method to
+    // copying |profile| into |profile_to_edit_|, because the latter object
+    // needs to retain other properties (use count, use date, guid, etc.).
+    for (autofill::ServerFieldType type : address_fields_to_clear) {
+      profile_to_edit_->SetRawInfo(type, std::u16string());
     }
 
     bool success = SaveFieldsToProfile(profile_to_edit_,
