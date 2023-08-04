@@ -9,9 +9,12 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -19,7 +22,9 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +36,15 @@ namespace {
 
 const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
+
+bool IsDefaultBrowserDisabledByPolicy() {
+  const PrefService::Preference* pref =
+      g_browser_process->local_state()->FindPreference(
+          prefs::kDefaultBrowserSettingEnabled);
+  CHECK(pref);
+  DCHECK(pref->GetValue()->is_bool());
+  return pref->IsManaged() && !pref->GetValue()->GetBool();
+}
 
 class IntroStepController : public ProfileManagementStepController {
  public:
@@ -153,8 +167,12 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
 
   void OnStepCompleted(DefaultBrowserChoice choice) {
     if (choice == DefaultBrowserChoice::kSetAsDefault) {
-      // TODO(crbug.com/1465822): Set as default browser.
-      LOG(ERROR) << "DefaultBrowserChoice::kSetAsDefault";
+      CHECK(!IsDefaultBrowserDisabledByPolicy());
+      // The worker pointer is reference counted. While it is running, sequence
+      // it runs on will hold references to it and it will be automatically
+      // freed once all its tasks have finished.
+      base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+          ->StartSetAsDefault(base::NullCallback());
     }
     CHECK(step_completed_callback_);
     std::move(step_completed_callback_).Run();
@@ -323,13 +341,26 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
 
   post_host_cleared_callback_ = std::move(post_host_cleared_callback);
 
-  // TODO(crbug.com/1465822): Also check policy and the current default state.
+  // If the feature is enabled, the default browser step should be shown only on
+  // Windows. If it's forced, it should be shown on the other platforms for
+  // testing.
   bool should_show_default_browser_step =
+#if BUILDFLAG(IS_WIN)
+      kForYouFreWithDefaultBrowserStep.Get() != WithDefaultBrowserStep::kNo;
+#else
+      // Non-Windows platforms should not show this unless forced (e.g. command
+      // line)
+      kForYouFreWithDefaultBrowserStep.Get() == WithDefaultBrowserStep::kForced;
+#endif  // BUILDFLAG(IS_WIN)
+
+  // TODO(crbug.com/1465822): Also check the current default state.
+  should_show_default_browser_step =
+      should_show_default_browser_step &&
       // Proceed with the callback  directly instead of showing the default
       // browser prompt.
       !is_continue_callback &&
-      // The feature configuration ultimately gates the step.
-      kForYouFreWithDefaultBrowserStep.Get() != WithDefaultBrowserStep::kNo;
+      // Check for policies.
+      !IsDefaultBrowserDisabledByPolicy();
 
   if (!should_show_default_browser_step) {
     FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
