@@ -1,0 +1,22 @@
+{
+  "source_filter_data": {
+    "a": []
+  },
+  "event_trigger_data": [
+    {
+      "trigger_data": "4",
+      "filters": {
+        "a": [],
+        "_lookback_window": 1
+      }
+    },
+    {
+      "trigger_data": "5",
+      "filters": {
+        "a": [],
+        "_lookback_window": 10000
+      }
+    }
+  ],
+  "expected_trigger_data": "5"
+}

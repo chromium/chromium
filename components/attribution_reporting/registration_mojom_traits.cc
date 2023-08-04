@@ -78,6 +78,31 @@ bool StructTraits<attribution_reporting::mojom::FilterDataDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::FilterConfigDataView,
+                  attribution_reporting::FilterConfig>::
+    Read(attribution_reporting::mojom::FilterConfigDataView data,
+         attribution_reporting::FilterConfig* out) {
+  attribution_reporting::FilterValues filter_values;
+  if (!data.ReadFilterValues(&filter_values)) {
+    return false;
+  }
+
+  absl::optional<base::TimeDelta> lookback_window;
+  if (!data.ReadLookbackWindow(&lookback_window)) {
+    return false;
+  }
+
+  auto config = attribution_reporting::FilterConfig::Create(
+      std::move(filter_values), lookback_window);
+  if (!config.has_value()) {
+    return false;
+  }
+  *out = std::move(config.value());
+
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::AggregationKeysDataView,
                   attribution_reporting::AggregationKeys>::
     Read(attribution_reporting::mojom::AggregationKeysDataView data,

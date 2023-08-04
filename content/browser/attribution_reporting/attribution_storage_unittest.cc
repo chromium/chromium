@@ -80,6 +80,7 @@ using ::testing::UnorderedElementsAre;
 
 using AttributionFilterData = ::attribution_reporting::FilterData;
 
+using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceType;
@@ -151,11 +152,13 @@ class AttributionStorageTest : public testing::Test {
       const AttributionTrigger& conversion) {
     // TOO(apaseltiner): Replace this logic with explicit setting of expected
     // values.
+    const base::Time trigger_time = source.source_time() + kReportDelay;
     auto event_trigger = base::ranges::find_if(
         conversion.registration().event_triggers,
         [&](const attribution_reporting::EventTriggerData& event_trigger) {
           return source.filter_data().Matches(
-              source.common_info().source_type(), event_trigger.filters);
+              source.common_info().source_type(), source.source_time(),
+              trigger_time, event_trigger.filters);
         });
     CHECK(event_trigger != conversion.registration().event_triggers.end());
 
@@ -165,7 +168,7 @@ class AttributionStorageTest : public testing::Test {
                              .Build(),
                          source)
         .SetTriggerData(event_trigger->data)
-        .SetReportTime(source.source_time() + kReportDelay)
+        .SetReportTime(trigger_time)
         .SetPriority(event_trigger->priority)
         .Build();
   }
@@ -2338,6 +2341,8 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
               *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
+  task_environment_.FastForwardBy(kReportDelay);
+
   AttributionTrigger trigger1(
       /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
@@ -2363,20 +2368,48 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
       {
           "filter mismatch",
           attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/123, FilterPair(/*positive=*/{{
-                                                {"abc", {"456"}},
-                                            }},
-                                            /*negative=*/{})),
+              /*dedup_key=*/123,
+              FilterPair(/*positive=*/{*FilterConfig::Create({
+                             {"abc", {"456"}},
+                         })},
+                         /*negative=*/{})),
           false,
       },
       {
           "filter match",
           attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/123, FilterPair(/*positive=*/{{
-                                                {"abc", {"123"}},
-                                            }},
-                                            /*negative=*/{})),
+              /*dedup_key=*/123,
+              FilterPair(/*positive=*/{*FilterConfig::Create({
+                             {"abc", {"123"}},
+                         })},
+                         /*negative=*/{})),
           true,
+      },
+      {
+          "filter match wih lookback_window",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123, FilterPair(
+                                     /*positive=*/{*FilterConfig::Create(
+                                         {
+                                             {"abc", {"123"}},
+                                         },
+                                         /*lookback_window=*/kReportDelay)},
+                                     /*negative=*/{})),
+          true,
+      },
+      {
+          "filter mismatch due to lookback_window",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123, FilterPair(
+                                     /*positive=*/{*FilterConfig::Create(
+
+                                         {
+                                             {"abc", {"123"}},
+                                         },
+                                         /*lookback_window=*/kReportDelay -
+                                             base::Microseconds(1))},
+                                     /*negative=*/{})),
+          false,
       },
       {
           "negated filters match",
@@ -2387,6 +2420,29 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
                   /*negative=*/attribution_reporting::FiltersForSourceType(
                       SourceType::kNavigation))),
           false,
+      },
+      {
+          "negated filters match with lookback_window",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              FilterPair(
+                  /*positive=*/{},
+                  /*negative=*/attribution_reporting::FiltersForSourceType(
+                      SourceType::kNavigation,
+                      /*lookback_window=*/kReportDelay))),
+          false,
+      },
+      {
+          "negated filters mismatch due to lookback_window",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              FilterPair(
+                  /*positive=*/{},
+                  /*negative=*/attribution_reporting::FiltersForSourceType(
+                      SourceType::kNavigation,
+                      /*lookback_window=*/kReportDelay -
+                          base::Microseconds(1)))),
+          true,
       },
       {
           "negated filters mismatch",
@@ -2401,10 +2457,11 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
       {
           "null dedup key",
           attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/absl::nullopt, FilterPair(/*positive=*/{{
-                                                          {"abc", {"123"}},
-                                                      }},
-                                                      /*negative=*/{})),
+              /*dedup_key=*/absl::nullopt,
+              FilterPair(/*positive=*/{*FilterConfig::Create({
+                             {"abc", {"123"}},
+                         })},
+                         /*negative=*/{})),
           false,
       },
   };
@@ -3188,15 +3245,17 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .Build());
 
+  task_environment_.FastForwardBy(kReportDelay);
+
   const std::vector<attribution_reporting::EventTriggerData> event_triggers = {
       // Filters don't match.
       attribution_reporting::EventTriggerData(
           /*data=*/11,
           /*priority=*/12,
           /*dedup_key=*/13,
-          FilterPair(/*positive=*/{{
+          FilterPair(/*positive=*/{*FilterConfig::Create({
                          {"abc", {"456"}},
-                     }},
+                     })},
                      /*negative=*/{})),
 
       // Filters match, but negated filters do not.
@@ -3204,22 +3263,24 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*data=*/21,
           /*priority=*/22,
           /*dedup_key=*/23,
-          FilterPair(/*positive=*/{{
+          FilterPair(/*positive=*/{*FilterConfig::Create({
                          {"abc", {"123"}},
-                     }},
-                     /*negative=*/{{
+                     })},
+                     /*negative=*/{*FilterConfig::Create({
                          {"source_type", {"navigation"}},
-                     }})),
+                     })})),
 
       // Filters and negated filters match.
       attribution_reporting::EventTriggerData(
           /*data=*/31,
           /*priority=*/32,
           /*dedup_key=*/33,
-          FilterPair(/*positive=*/{{
-                         {"abc", {"123"}},
-                     }},
-                     /*negative=*/{{{"source_type", {"event"}}}})),
+          FilterPair(
+              /*positive=*/{*FilterConfig::Create({
+                  {"abc", {"123"}},
+              })},
+              /*negative=*/{*FilterConfig::Create(
+                  {{"source_type", {"event"}}})})),
 
       // Filters and negated filters match, but not the first event
       // trigger to match.
@@ -3227,12 +3288,12 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*data=*/41,
           /*priority=*/42,
           /*dedup_key=*/43,
-          FilterPair(/*positive=*/{{
+          FilterPair(/*positive=*/{*FilterConfig::Create({
                          {"abc", {"123"}},
-                     }},
-                     /*negative=*/{{
+                     })},
+                     /*negative=*/{*FilterConfig::Create({
                          {"source_type", {"event"}},
-                     }})),
+                     })})),
   };
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -3288,12 +3349,14 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
               *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
+  task_environment_.FastForwardBy(kReportDelay);
+
   AttributionTrigger trigger1(
       /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          FilterPair(/*positive=*/{{
+          FilterPair(/*positive=*/{*FilterConfig::Create({
                          {"abc", {"456"}},
-                     }},
+                     })},
                      /*negative=*/{}),
           /*debug_key=*/absl::nullopt,
           /*aggregatable_dedup_keys=*/{}, event_triggers,
@@ -3307,10 +3370,13 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   AttributionTrigger trigger2(
       /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          FilterPair(/*positive=*/{{
-                         {"abc", {"123"}},
-                     }},
-                     /*negative=*/{}),
+          FilterPair(
+              /*positive=*/{*FilterConfig::Create(
+                  {
+                      {"abc", {"123"}},
+                  },
+                  /*lookback_window=*/kReportDelay)},
+              /*negative=*/{}),
           /*debug_key=*/absl::nullopt,
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
@@ -3336,6 +3402,25 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
+  AttributionTrigger trigger4(
+      /*reporting_origin=*/origin,
+      attribution_reporting::TriggerRegistration(
+          FilterPair(
+              /*positive=*/{*FilterConfig::Create(
+                  {
+                      {"abc", {"123"}},
+                  },
+                  /*lookback_window=*/kReportDelay - base::Microseconds(1))},
+              /*negative=*/{}),
+          /*debug_key=*/absl::nullopt,
+          /*aggregatable_dedup_keys=*/{}, event_triggers,
+          aggregatable_trigger_data, aggregatable_values,
+          /*debug_reporting=*/false,
+          /*aggregation_coordinator_origin=*/absl::nullopt,
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
+      /*destination_origin=*/origin, /*verifications=*/{},
+      /*is_within_fenced_frame=*/false);
+
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger1),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::
@@ -3351,6 +3436,14 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                         AttributionTrigger::AggregatableResult::kSuccess)));
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger3),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::
+                            kNoMatchingSourceFilterData),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::
+                            kNoMatchingSourceFilterData)));
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger4),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::
                             kNoMatchingSourceFilterData),

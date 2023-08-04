@@ -25,8 +25,14 @@ struct SuitableOrigin {
 // See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
 struct FilterData {
-  // Map of filter name to a possibly empty set of values. Must not contain a
-  // `source_type` key.
+  // Map of filter name to a possibly empty set of values. Must not contain
+  // `source_type` or `_lookback_window` keys.
+  map<string, array<string>> filter_values;
+};
+
+// Internal structure to support the lookback window implementation.
+struct FilterConfig {
+  mojo_base.mojom.TimeDelta? lookback_window;
   map<string, array<string>> filter_values;
 };
 
@@ -36,11 +42,11 @@ struct FilterData {
 struct FilterPair {
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data matches.
-  array<map<string, array<string>>> positive;
+  array<FilterConfig> positive;
 
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data does *NOT* match.
-  array<map<string, array<string>>> negative;
+  array<FilterConfig> negative;
 };
 
 // See https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#attribution-source-registration

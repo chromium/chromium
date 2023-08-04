@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -28,12 +29,16 @@
 
 namespace attribution_reporting {
 
-FiltersDisjunction FiltersForSourceType(mojom::SourceType source_type) {
-  return {{
+FiltersDisjunction FiltersForSourceType(
+    mojom::SourceType source_type,
+    absl::optional<base::TimeDelta> lookback_window) {
+  return {*FilterConfig::Create(
       {
-          {FilterData::kSourceTypeFilterKey, {SourceTypeName(source_type)}},
+          {
+              {FilterData::kSourceTypeFilterKey, {SourceTypeName(source_type)}},
+          },
       },
-  }};
+      lookback_window)};
 }
 
 bool operator==(const AggregationKeys& a, const AggregationKeys& b) {
@@ -47,6 +52,13 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const FilterData& a, const FilterData& b) {
   return a.filter_values() == b.filter_values();
+}
+
+bool operator==(const FilterConfig& a, const FilterConfig& b) {
+  auto tie = [](const FilterConfig& c) {
+    return std::make_tuple(c.filter_values(), c.lookback_window());
+  };
+  return tie(a) == tie(b);
 }
 
 std::ostream& operator<<(std::ostream& out, const FilterData& filter_data) {

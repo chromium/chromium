@@ -93,6 +93,24 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::FilterConfigDataView,
+                 attribution_reporting::FilterConfig> {
+  static const absl::optional<base::TimeDelta>& lookback_window(
+      const attribution_reporting::FilterConfig& filter_config) {
+    return filter_config.lookback_window();
+  }
+
+  static const attribution_reporting::FilterValues& filter_values(
+      const attribution_reporting::FilterConfig& filter_config) {
+    return filter_config.filter_values();
+  }
+
+  static bool Read(attribution_reporting::mojom::FilterConfigDataView data,
+                   attribution_reporting::FilterConfig* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::AggregationKeysDataView,
                  attribution_reporting::AggregationKeys> {
   static const attribution_reporting::AggregationKeys::Keys& keys(

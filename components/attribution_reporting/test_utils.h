@@ -9,6 +9,11 @@
 
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -25,13 +30,17 @@ struct OsRegistrationItem;
 struct SourceRegistration;
 struct TriggerRegistration;
 
-FiltersDisjunction FiltersForSourceType(mojom::SourceType);
+FiltersDisjunction FiltersForSourceType(
+    mojom::SourceType,
+    absl::optional<base::TimeDelta> lookback_window = absl::nullopt);
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 
 std::ostream& operator<<(std::ostream&, const AggregationKeys&);
 
 bool operator==(const FilterData&, const FilterData&);
+
+bool operator==(const FilterConfig&, const FilterConfig&);
 
 std::ostream& operator<<(std::ostream&, const FilterData&);
 

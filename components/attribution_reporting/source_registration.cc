@@ -93,7 +93,7 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
 }  // namespace
 
 void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError3", error);
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError4", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)

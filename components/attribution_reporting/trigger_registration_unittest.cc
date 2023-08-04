@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
@@ -66,9 +67,10 @@ TEST(TriggerRegistrationTest, Parse) {
       },
       {
           "filters_valid",
-          R"json({"filters":{"a":["b"]}})json",
+          R"json({"filters":{"a":["b"], "_lookback_window": 2 }})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.positive = FiltersDisjunction({{{"a", {"b"}}}});
+            r.filters.positive = {*FilterConfig::Create(
+                {{{"a", {"b"}}}}, /*lookback_window=*/base::Seconds(2))};
           }),
       },
       {
@@ -80,7 +82,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.negative = FiltersDisjunction({{{"a", {"b"}}}});
+            r.filters.negative = {*FilterConfig::Create({{{"a", {"b"}}}})};
           }),
       },
       {
@@ -316,8 +318,9 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.debug_key = 3;
             r.debug_reporting = true;
             r.event_triggers = {EventTriggerData()};
-            r.filters.positive = FiltersDisjunction({{{"b", {}}}});
-            r.filters.negative = FiltersDisjunction({{{"c", {}}}});
+            r.filters.positive = {*FilterConfig::Create({{{"b", {}}}})};
+            r.filters.negative = {*FilterConfig::Create(
+                {{{"c", {}}}}, /*lookback_window=*/base::Seconds(2))};
             r.source_registration_time_config =
                 mojom::SourceRegistrationTimeConfig::kInclude;
           }),
@@ -330,7 +333,7 @@ TEST(TriggerRegistrationTest, ToJson) {
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
             "filters": [{"b": []}],
-            "not_filters": [{"c": []}]
+            "not_filters": [{"c": [], "_lookback_window": 2}]
           })json",
       },
   };

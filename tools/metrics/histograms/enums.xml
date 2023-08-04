@@ -19887,6 +19887,7 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="expiry value is invalid"/>
   <int value="22" label="event_report_window value is invalid"/>
   <int value="23" label="aggregatable_report_window value is invalid"/>
+  <int value="24" label="filter_data has a _lookback_window key"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

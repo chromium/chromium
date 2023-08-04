@@ -3,7 +3,7 @@
   "input": {
     "sources": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -24,7 +24,7 @@
         }]
       },
       {
-        "timestamp": "1643235573001",
+        "timestamp": "1",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -43,7 +43,7 @@
     ],
     "triggers": [
       {
-        "timestamp": "1643235574000",
+        "timestamp": "10000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -91,7 +91,7 @@
         }]
       },
       {
-        "timestamp": "1643235575000",
+        "timestamp": "20000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -139,7 +139,7 @@
         }]
       },
       {
-        "timestamp": "1643235576000",
+        "timestamp": "30000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -193,7 +193,7 @@
       // Should not result in an event-level report as there's no matching
       // configuration.
       {
-        "timestamp": "1643235577000",
+        "timestamp": "40000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://another-destination.test"
@@ -210,6 +210,13 @@
                   "filters": {
                     "source_type": ["navigation"]
                   }
+                },
+                {
+                  "trigger_data": "1",
+                  "filters": {
+                    "source_type": ["event"],
+                    "_lookback_window": 39
+                  }
                 }
               ]
             }
@@ -217,7 +224,7 @@
         }]
       },
       {
-        "timestamp": "1643235578000",
+        "timestamp": "50000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://another-destination.test"
@@ -236,7 +243,8 @@
                 {
                   "trigger_data": "1",
                   "filters": {
-                    "source_type": ["event"]
+                    "source_type": ["event"],
+                    "_lookback_window": 51
                   }
                 }
               ]
@@ -252,49 +260,49 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "176400",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "3"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "176400000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "176400",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "5"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "176400000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "176400",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "6"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "176400000"
       },
       {
         "payload": {
           "attribution_destination": "https://another-destination.test",
           "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "1645831173",
+          "scheduled_report_time": "2595600",
           "source_event_id": "456",
           "source_type": "event",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1645831173001"
+        "report_time": "2595600001"
       }
     ],
     "verbose_debug_reports": [
@@ -307,7 +315,7 @@
           },
           "type": "trigger-event-no-matching-configurations"
        } ],
-       "report_time": "1643235577000",
+       "report_time": "40000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]

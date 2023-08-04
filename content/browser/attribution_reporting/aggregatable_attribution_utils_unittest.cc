@@ -33,6 +33,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::mojom::SourceType;
 using ::testing::ElementsAre;
@@ -46,6 +47,9 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       {{"key1", 345}, {"key2", 5}, {"key3", 123}});
   ASSERT_TRUE(source.has_value());
 
+  base::Time source_time = base::Time::Now();
+  base::Time trigger_time = source_time + base::Seconds(5);
+
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data{
           // The first trigger data applies to "key1", "key3".
@@ -53,29 +57,45 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
               absl::MakeUint128(/*high=*/0, /*low=*/1024),
               /*source_keys=*/{"key1", "key3"},
               FilterPair(
-                  /*positive=*/{{{"filter", {"value"}}}},
+                  /*positive=*/{*FilterConfig::Create({{"filter", {"value"}}})},
                   /*negative=*/{})),
 
           // The second trigger data applies to "key2", "key4" is ignored.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/2688),
               /*source_keys=*/{"key2", "key4"},
-              FilterPair(/*positive=*/{{{"a", {"b", "c"}}}},
-                         /*negative=*/{})),
+              FilterPair(
+                  /*positive=*/{*FilterConfig::Create({{"a", {"b", "c"}}})},
+                  /*negative=*/{})),
 
           // The third trigger will be ignored due to mismatched filters.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
-              FilterPair(/*positive=*/{{{"filter", {}}}},
+              FilterPair(/*positive=*/{*FilterConfig::Create({{"filter", {}}})},
                          /*negative=*/{})),
 
           // The fourth trigger will be ignored due to matched not_filters.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
-              FilterPair(/*positive=*/{},
-                         /*negative=*/{{{"filter", {"value"}}}}))};
+              FilterPair(
+                  /*positive=*/{},
+                  /*negative=*/{*FilterConfig::Create(
+                      {{"filter", {"value"}}})})),
+
+          // The fifth trigger will be ignored due to mismatched
+          // lookback_window.
+          *attribution_reporting::AggregatableTriggerData::Create(
+              absl::MakeUint128(/*high=*/0, /*low=*/4096),
+              /*source_keys=*/{"key1", "key3"},
+              FilterPair(
+                  /*positive=*/{*FilterConfig::Create(
+                      {{"filter", {"value"}}},
+                      /*lookback_window=*/base::Seconds(5) -
+                          base::Microseconds(1))},
+                  /*negative=*/{})),
+      };
 
   absl::optional<attribution_reporting::FilterData> source_filter_data =
       attribution_reporting::FilterData::Create({{"filter", {"value"}}});
@@ -85,9 +105,9 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       {{"key1", 32768}, {"key2", 1664}});
 
   std::vector<AggregatableHistogramContribution> contributions =
-      CreateAggregatableHistogram(*source_filter_data, SourceType::kEvent,
-                                  *source, std::move(aggregatable_trigger_data),
-                                  aggregatable_values);
+      CreateAggregatableHistogram(
+          *source_filter_data, SourceType::kEvent, source_time, trigger_time,
+          *source, std::move(aggregatable_trigger_data), aggregatable_values);
 
   // "key3" is not present as no value is found.
   EXPECT_THAT(
@@ -97,7 +117,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
           AggregatableHistogramContribution(/*key=*/2693, /*value=*/1664u)));
 
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 50, 1);
+      "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 60, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
   histograms.ExpectUniqueSample(
@@ -114,7 +134,9 @@ TEST(AggregatableAttributionUtilsTest,
 
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          attribution_reporting::FilterData(), SourceType::kNavigation, *source,
+          attribution_reporting::FilterData(), SourceType::kNavigation,
+          /*source_time=*/base::Time::Now(), /*trigger_time=*/base::Time::Now(),
+          *source,
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
           *attribution_reporting::AggregatableValues::Create(

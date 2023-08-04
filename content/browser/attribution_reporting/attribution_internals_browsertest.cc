@@ -65,6 +65,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceType;
@@ -1076,52 +1077,57 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  const auto create_trigger =
-      [](std::vector<network::TriggerVerification> verifications) {
-        return AttributionTrigger(
-            /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-            attribution_reporting::TriggerRegistration(
-                FilterPair(/*positive=*/{{{"a", {"b"}}}},
-                           /*negative=*/{{{"g", {"h"}}}}),
-                /*debug_key=*/1,
-                {attribution_reporting::AggregatableDedupKey(
-                    /*dedup_key=*/18, FilterPair())},
-                {
-                    attribution_reporting::EventTriggerData(
-                        /*data=*/2,
-                        /*priority=*/3,
-                        /*dedup_key=*/absl::nullopt,
-                        FilterPair(
-                            /*positive=*/{{{"c", {"d"}}}},
-                            /*negative=*/{})),
-                    attribution_reporting::EventTriggerData(
-                        /*data=*/4,
-                        /*priority=*/5,
-                        /*dedup_key=*/6,
-                        FilterPair(/*positive=*/{},
-                                   /*negative=*/{{{"e", {"f"}}}})),
-                },
-                {*attribution_reporting::AggregatableTriggerData::Create(
-                     /*key_piece=*/345,
-                     /*source_keys=*/{"a"},
-                     FilterPair(/*positive=*/{},
-                                /*negative=*/{{{"c", {"d"}}}})),
-                 *attribution_reporting::AggregatableTriggerData::Create(
-                     /*key_piece=*/678,
-                     /*source_keys=*/{"b"},
-                     FilterPair(/*positive=*/{},
-                                /*negative=*/{{{"e", {"f"}}}}))},
-                /*aggregatable_values=*/
-                *attribution_reporting::AggregatableValues::Create(
-                    {{"a", 123}, {"b", 456}}),
-                /*debug_reporting=*/false,
-                /*aggregation_coordinator_origin=*/absl::nullopt,
-                attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                    kInclude),
-            *SuitableOrigin::Deserialize("https://d.test"),
-            std::move(verifications),
-            /*is_within_fenced_frame=*/false);
-      };
+  const auto create_trigger = [](std::vector<network::TriggerVerification>
+                                     verifications) {
+    return AttributionTrigger(
+        /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+        attribution_reporting::TriggerRegistration(
+            FilterPair(
+                /*positive=*/{*FilterConfig::Create({{"a", {"b"}}})},
+                /*negative=*/{*FilterConfig::Create(
+                    {{"g", {"h"}}}, /*lookback_window=*/base::Seconds(2))}),
+            /*debug_key=*/1,
+            {attribution_reporting::AggregatableDedupKey(
+                /*dedup_key=*/18, FilterPair())},
+            {
+                attribution_reporting::EventTriggerData(
+                    /*data=*/2,
+                    /*priority=*/3,
+                    /*dedup_key=*/absl::nullopt,
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create({{"c", {"d"}}})},
+                        /*negative=*/{})),
+                attribution_reporting::EventTriggerData(
+                    /*data=*/4,
+                    /*priority=*/5,
+                    /*dedup_key=*/6,
+                    FilterPair(
+                        /*positive=*/{},
+                        /*negative=*/{*FilterConfig::Create({{"e", {"f"}}})})),
+            },
+            {*attribution_reporting::AggregatableTriggerData::Create(
+                 /*key_piece=*/345,
+                 /*source_keys=*/{"a"},
+                 FilterPair(
+                     /*positive=*/{},
+                     /*negative=*/{*FilterConfig::Create({{"c", {"d"}}})})),
+             *attribution_reporting::AggregatableTriggerData::Create(
+                 /*key_piece=*/678,
+                 /*source_keys=*/{"b"},
+                 FilterPair(
+                     /*positive=*/{},
+                     /*negative=*/{*FilterConfig::Create({{"e", {"f"}}})}))},
+            /*aggregatable_values=*/
+            *attribution_reporting::AggregatableValues::Create(
+                {{"a", 123}, {"b", 456}}),
+            /*debug_reporting=*/false,
+            /*aggregation_coordinator_origin=*/absl::nullopt,
+            attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                kInclude),
+        *SuitableOrigin::Deserialize("https://d.test"),
+        std::move(verifications),
+        /*is_within_fenced_frame=*/false);
+  };
 
   static constexpr char kScript[] = R"(
     const expectedVerification =

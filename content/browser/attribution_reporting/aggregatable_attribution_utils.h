@@ -33,6 +33,8 @@ CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
     attribution_reporting::mojom::SourceType,
+    const base::Time& source_time,
+    const base::Time& trigger_time,
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<attribution_reporting::AggregatableTriggerData>&,
     const attribution_reporting::AggregatableValues&);

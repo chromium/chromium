@@ -285,7 +285,7 @@ TEST(SourceRegistrationTest, Parse) {
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError3";
+      "Conversions.SourceRegistrationError4";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;

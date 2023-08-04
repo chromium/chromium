@@ -209,10 +209,12 @@ absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
 
   for (google::protobuf::MapPair<std::string, proto::AttributionFilterValues>&
            entry : *msg.mutable_filter_values()) {
-    // Serialized source filter data can only contain this key due to DB
+    // Serialized source filter data can only contain these keys due to DB
     // corruption or deliberate modification.
     if (entry.first ==
-        attribution_reporting::FilterData::kSourceTypeFilterKey) {
+            attribution_reporting::FilterData::kSourceTypeFilterKey ||
+        entry.first ==
+            attribution_reporting::FilterConfig::kLookbackWindowKey) {
       continue;
     }
 
@@ -1246,6 +1248,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const bool top_level_filters_match =
       source_to_attribute->source.filter_data().Matches(
           source_to_attribute->source.common_info().source_type(),
+          source_to_attribute->source.source_time(), trigger_time,
           trigger_registration.filters);
 
   if (!top_level_filters_match) {
@@ -1523,7 +1526,9 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   auto event_trigger = base::ranges::find_if(
       trigger.registration().event_triggers,
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
-        return source.filter_data().Matches(source_type, event_trigger.filters);
+        return source.filter_data().Matches(
+            source_type, source.source_time(),
+            /*trigger_time=*/attribution_info.time, event_trigger.filters);
       });
 
   if (event_trigger == trigger.registration().event_triggers.end()) {
@@ -2902,8 +2907,10 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       trigger.registration().aggregatable_dedup_keys,
       [&](const attribution_reporting::AggregatableDedupKey&
               aggregatable_dedup_key) {
-        return source.filter_data().Matches(source_type,
-                                            aggregatable_dedup_key.filters);
+        return source.filter_data().Matches(
+            source_type, source.source_time(),
+            /*trigger_time=*/attribution_info.time,
+            aggregatable_dedup_key.filters);
       });
 
   if (matched_dedup_key !=
@@ -2924,7 +2931,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
 
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          source.filter_data(), source_type, source.aggregation_keys(),
+          source.filter_data(), source_type, source.source_time(),
+          /*trigger_time=*/attribution_info.time, source.aggregation_keys(),
           trigger_registration.aggregatable_trigger_data,
           trigger_registration.aggregatable_values);
   if (contributions.empty()) {
