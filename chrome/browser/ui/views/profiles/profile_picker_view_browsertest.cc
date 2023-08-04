@@ -593,7 +593,6 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-            .WithCookie()
             .WithAccessPoint(
                 signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER)
             .Build(email));
@@ -608,6 +607,12 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       SimulateEnableSyncDiceHeader(web_contents(),
                                    core_account_info.account_id);
     }
+
+    // The flow should work even if the primary account is not set at this
+    // point,for example because the /ListAccounts call did not complete yet.
+    // Regression test for https://crbug.com/1469586
+    EXPECT_FALSE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
     return account_info;
   }

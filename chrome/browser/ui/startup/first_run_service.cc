@@ -354,8 +354,9 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
     // Noting that we expect that the name should already be available, as
     // after sign-in, the extended info is fetched and used for the sync
     // opt-in screen.
-    profile_name_resolver_ =
-        std::make_unique<ProfileNameResolver>(&identity_manager_.get());
+    profile_name_resolver_ = std::make_unique<ProfileNameResolver>(
+        &identity_manager_.get(),
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &FirstRunService::FinishProfileSetUp, weak_ptr_factory_.GetWeakPtr()));
   } else if (reason == FinishedReason::kSkippedByPolicies) {

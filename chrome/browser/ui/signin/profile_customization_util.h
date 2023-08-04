@@ -22,13 +22,14 @@ void FinalizeNewProfileSetup(Profile* profile,
 
 // Helper to obtain a profile name derived from the user's identity.
 //
-// Obtains the identity from `identity_manager` and caches the computed name,
-// which can be obtained by calling `resolved_profile_name()`. Calling
-// `RunWithProfileName()` also allows providing a callback that will be executed
-// when the name is resolved.
+// Obtains the identity associated with `account_id` from `identity_manager`
+// and caches the computed name, which can be obtained by calling
+// `resolved_profile_name()`. Calling `RunWithProfileName()` also allows
+// providing a callback that will be executed when the name is resolved.
 class ProfileNameResolver : public signin::IdentityManager::Observer {
  public:
-  explicit ProfileNameResolver(signin::IdentityManager* identity_manager);
+  explicit ProfileNameResolver(signin::IdentityManager* identity_manager,
+                               const CoreAccountId& account_id);
 
   ProfileNameResolver(const ProfileNameResolver&) = delete;
   ProfileNameResolver& operator=(const ProfileNameResolver&) = delete;
@@ -58,7 +59,7 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
  private:
   void OnProfileNameResolved(const std::u16string& profile_name);
 
-  const CoreAccountInfo primary_account_;
+  const CoreAccountId account_id_;
 
   std::u16string resolved_profile_name_;
   base::CancelableOnceClosure extended_account_info_timeout_closure_;

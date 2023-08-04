@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/core_account_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
@@ -28,12 +29,14 @@ ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
 
 void ProfileManagementFlowControllerImpl::SwitchToIdentityStepsFromPostSignIn(
     Profile* signed_in_profile,
+    const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents,
     StepSwitchFinishedCallback step_switch_finished_callback) {
   DCHECK_NE(Step::kPostSignInFlow, current_step());
   DCHECK(!IsStepInitialized(Step::kPostSignInFlow));
-  RegisterStep(Step::kPostSignInFlow,
-               CreatePostSignInStep(signed_in_profile, std::move(contents)));
+  RegisterStep(
+      Step::kPostSignInFlow,
+      CreatePostSignInStep(signed_in_profile, account_id, std::move(contents)));
   SwitchToStep(Step::kPostSignInFlow,
                /*reset_state=*/true, std::move(step_switch_finished_callback));
 }
@@ -75,10 +78,11 @@ void ProfileManagementFlowControllerImpl::
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreatePostSignInStep(
     Profile* signed_in_profile,
+    const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents) {
   return ProfileManagementStepController::CreateForPostSignInFlow(
-      host(),
-      CreateSignedInFlowController(signed_in_profile, std::move(contents)));
+      host(), CreateSignedInFlowController(signed_in_profile, account_id,
+                                           std::move(contents)));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -100,14 +104,14 @@ ProfileManagementFlowControllerImpl::CreateSamlStep(
 
 void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     Profile* signed_in_profile,
-    bool is_saml,
+    const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!signin_util::IsForceSigninEnabled());
   DCHECK(signed_in_profile);
   DCHECK_EQ(Step::kAccountSelection, current_step());
 
   Step step;
-  if (is_saml) {
+  if (account_id.empty()) {
     step = Step::kFinishSamlSignin;
     DCHECK(!IsStepInitialized(step));
     // The SAML step controller handles finishing the profile setup by itself
@@ -116,8 +120,8 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   } else {
     step = Step::kPostSignInFlow;
     DCHECK(!IsStepInitialized(step));
-    RegisterStep(step,
-                 CreatePostSignInStep(signed_in_profile, std::move(contents)));
+    RegisterStep(step, CreatePostSignInStep(signed_in_profile, account_id,
+                                            std::move(contents)));
   }
 
   SwitchToStep(step, /*reset_state=*/true);

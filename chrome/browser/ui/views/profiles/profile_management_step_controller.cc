@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "google_apis/gaia/core_account_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
@@ -119,9 +120,10 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
  private:
   void OnStepFinished(Profile* profile,
-                      bool is_saml,
+                      const CoreAccountId& account_id,
                       std::unique_ptr<content::WebContents> contents) {
-    std::move(signed_in_callback_).Run(profile, is_saml, std::move(contents));
+    std::move(signed_in_callback_)
+        .Run(profile, account_id, std::move(contents));
     // The step controller can be destroyed when `signed_in_callback_` runs.
     // Don't interact with members below.
   }

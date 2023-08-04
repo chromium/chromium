@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -39,6 +40,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
@@ -753,7 +755,10 @@ void ProfilePickerView::SwitchToSignedInFlow(
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!signin_util::IsForceSigninEnabled());
   GetProfilePickerFlowController()->SwitchToPostSignIn(
-      signed_in_profile, profile_color, std::move(contents));
+      signed_in_profile,
+      IdentityManagerFactory::GetForProfile(signed_in_profile)
+          ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      profile_color, std::move(contents));
 }
 #endif
 

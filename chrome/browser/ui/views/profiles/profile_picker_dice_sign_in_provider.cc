@@ -32,6 +32,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -175,7 +176,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
     // The rest of the SAML flow logic is handled by the signed-in flow
     // controller.
-    FinishFlow(/*is_saml=*/true);
+    FinishFlow(CoreAccountId());
   }
 }
 
@@ -251,11 +252,23 @@ bool ProfilePickerDiceSignInProvider::IsInitialized() const {
   return profile_ != nullptr;
 }
 
-void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
+void ProfilePickerDiceSignInProvider::FinishFlow(
+    const CoreAccountId& account_id) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
   contents()->SetDelegate(nullptr);
-  std::move(callback_).Run(profile_.get(), is_saml, std::move(contents_));
+  std::move(callback_).Run(profile_.get(), account_id, std::move(contents_));
+}
+
+void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
+    Profile* profile,
+    signin_metrics::AccessPoint /*access_point*/,
+    signin_metrics::PromoAction /*promo_action*/,
+    signin_metrics::Reason /*reason*/,
+    content::WebContents* /*contents*/,
+    const CoreAccountId& account_id) {
+  CHECK_EQ(profile, profile_.get());
+  FinishFlow(account_id);
 }
 
 GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
@@ -280,13 +293,9 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       // assuming that this is not SAML. If the user uses a SAML account, a
       // browser window will open, and the `DiceTabHelper` will be reinitialized
       // with the `kInBrowser` mode.
-      enable_sync_callback =
-          base::IgnoreArgs<Profile*, signin_metrics::AccessPoint,
-                           signin_metrics::PromoAction, signin_metrics::Reason,
-                           content::WebContents*, const CoreAccountId&>(
-              base::BindRepeating(&ProfilePickerDiceSignInProvider::FinishFlow,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  /*is_saml=*/false));
+      enable_sync_callback = base::BindRepeating(
+          &ProfilePickerDiceSignInProvider::FinishFlowInPicker,
+          weak_ptr_factory_.GetWeakPtr());
       // TODO(https://crbug.com/1467483): Handle signin errors in the profile
       // picker.
       show_signin_error_callback = base::DoNothing();

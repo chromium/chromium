@@ -13,10 +13,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace {
 // Registers a new `Observer` that will invoke `callback_` when `manager`
@@ -56,12 +58,14 @@ class LacrosFirstRunSignedInFlowController
   LacrosFirstRunSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents,
       base::OnceClosure sync_confirmation_seen_callback,
       base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback)
       : ProfilePickerSignedInFlowController(
             host,
             profile,
+            account_id,
             std::move(contents),
             signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
             absl::optional<SkColor>()),
@@ -198,6 +202,8 @@ void FirstRunFlowControllerLacros::Init(
     StepSwitchFinishedCallback step_switch_finished_callback) {
   SwitchToIdentityStepsFromPostSignIn(
       profile_,
+      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin),
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_)),
       std::move(step_switch_finished_callback));
@@ -217,6 +223,7 @@ bool FirstRunFlowControllerLacros::PreFinishWithBrowser() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 FirstRunFlowControllerLacros::CreateSignedInFlowController(
     Profile* signed_in_profile,
+    const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(profile_, signed_in_profile);
 
@@ -227,7 +234,7 @@ FirstRunFlowControllerLacros::CreateSignedInFlowController(
                      base::Unretained(this));
 
   auto signed_in_flow = std::make_unique<LacrosFirstRunSignedInFlowController>(
-      host(), profile_, std::move(contents),
+      host(), profile_, account_id, std::move(contents),
       std::move(mark_sync_confirmation_seen_callback),
       // This is the last step: when it completes, finish and exit the whole
       // flow.

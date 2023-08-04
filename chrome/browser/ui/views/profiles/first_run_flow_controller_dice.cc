@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace {
@@ -180,10 +181,12 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
   FirstRunPostSignInAdapter(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents,
       IdentityStepsCompletedCallback step_completed_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
+                                            account_id,
                                             std::move(contents),
                                             kAccessPoint,
                                             /*profile_color=*/absl::nullopt),
@@ -353,10 +356,11 @@ FirstRunFlowControllerDice::CreateDiceSignInProvider() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 FirstRunFlowControllerDice::CreateSignedInFlowController(
     Profile* signed_in_profile,
+    const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(profile_, signed_in_profile);
   return std::make_unique<FirstRunPostSignInAdapter>(
-      host(), signed_in_profile, std::move(contents),
+      host(), signed_in_profile, account_id, std::move(contents),
       base::BindOnce(&FirstRunFlowControllerDice::HandleIdentityStepsCompleted,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.

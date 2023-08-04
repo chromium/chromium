@@ -11,9 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,12 +52,12 @@ class ProfileNameResolverTest : public testing::Test {
 
 TEST_F(ProfileNameResolverTest, RunWithProfileName) {
   CoreAccountInfo core_account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(
-          kTestEmail, signin::ConsentLevel::kSignin);
+      identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::test::TestFuture<std::u16string> profile_name_future;
   base::test::TestFuture<std::u16string> profile_name_future_2;
 
-  ProfileNameResolver resolver{identity_test_env()->identity_manager()};
+  ProfileNameResolver resolver{identity_test_env()->identity_manager(),
+                               core_account_info.account_id};
 
   // `RunWithProfileName` should not run the callback as no profile name is
   // available.
@@ -83,13 +80,13 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName) {
 
 TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoAvailable) {
   CoreAccountInfo core_account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(
-          kTestEmail, signin::ConsentLevel::kSignin);
+      identity_test_env()->MakeAccountAvailable(kTestEmail);
   identity_test_env()->UpdateAccountInfoForAccount(
       FillAccountInfo(core_account_info, kTestGivenName));
   base::test::TestFuture<std::u16string> profile_name_future;
 
-  ProfileNameResolver resolver{identity_test_env()->identity_manager()};
+  ProfileNameResolver resolver{identity_test_env()->identity_manager(),
+                               core_account_info.account_id};
 
   // The information is available, the callback should run right away.
   resolver.RunWithProfileName(profile_name_future.GetCallback());
@@ -99,15 +96,15 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoAvailable) {
 
 TEST_F(ProfileNameResolverTest, RunWithProfileName_InvalidInfo) {
   CoreAccountInfo core_account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(
-          kTestEmail, signin::ConsentLevel::kSignin);
+      identity_test_env()->MakeAccountAvailable(kTestEmail);
   auto scoped_timeout_override =
       ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
           base::TimeDelta());
 
   base::test::TestFuture<std::u16string> profile_name_future;
 
-  ProfileNameResolver resolver{identity_test_env()->identity_manager()};
+  ProfileNameResolver resolver{identity_test_env()->identity_manager(),
+                               core_account_info.account_id};
   resolver.RunWithProfileName(profile_name_future.GetCallback());
 
   // Simulate the account info being updated with invalid info. Should result in

@@ -45,9 +45,11 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
 
+  // `account_id` may not be set as the primary account yet.
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents) override;
 
  private:

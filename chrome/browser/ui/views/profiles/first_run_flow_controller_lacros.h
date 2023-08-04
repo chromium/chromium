@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
+#include "google_apis/gaia/core_account_id.h"
 
 class FirstRunFlowControllerLacros
     : public ProfileManagementFlowControllerImpl {
@@ -38,6 +39,7 @@ class FirstRunFlowControllerLacros
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents) override;
 
  private:

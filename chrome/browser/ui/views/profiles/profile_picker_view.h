@@ -198,7 +198,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
                             std::unique_ptr<content::WebContents> contents);
 #endif
 
-  // Builds the views hieararchy.
+  // Builds the views hierarchy.
   void BuildLayout();
 
   void ShowScreenFinished(

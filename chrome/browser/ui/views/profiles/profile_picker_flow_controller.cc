@@ -30,6 +30,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -121,17 +122,21 @@ void MaybeShowProfileSwitchIPH(Browser* browser) {
 // - finalizes the profile (deleting it if the flow is aborted, marks it
 //   non-ephemeral if the flow is completed)
 // `finish_flow_callback` is not called if the flow is canceled.
+// Note that `account_id` has been added to the `IdentityManager` but may not
+// be set as primary yet, because this operation is asynchronous.
 class ProfileCreationSignedInFlowController
     : public ProfilePickerSignedInFlowController {
  public:
   ProfileCreationSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents,
       absl::optional<SkColor> profile_color,
       base::OnceCallback<void(PostHostClearedCallback)> finish_flow_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
+                                            account_id,
                                             std::move(contents),
                                             kAccessPoint,
                                             profile_color),
@@ -166,7 +171,7 @@ class ProfileCreationSignedInFlowController
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
     profile_name_resolver_ =
-        std::make_unique<ProfileNameResolver>(identity_manager);
+        std::make_unique<ProfileNameResolver>(identity_manager, account_id());
   }
 
   void Cancel() override {
@@ -283,12 +288,13 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfilePickerFlowController::SwitchToPostSignIn(
     Profile* signed_in_profile,
+    const CoreAccountId& account_id,
     absl::optional<SkColor> profile_color,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
   suggested_profile_color_ = profile_color;
   SwitchToIdentityStepsFromPostSignIn(
-      signed_in_profile,
+      signed_in_profile, account_id,
       content::WebContents::Create(
           content::WebContents::CreateParams(signed_in_profile)),
       StepSwitchFinishedCallback());
@@ -360,6 +366,7 @@ ProfilePickerFlowController::CreateDiceSignInProvider() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 ProfilePickerFlowController::CreateSignedInFlowController(
     Profile* signed_in_profile,
+    const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!weak_signed_in_flow_controller_);
 
@@ -373,8 +380,8 @@ ProfilePickerFlowController::CreateSignedInFlowController(
                      base::Unretained(signed_in_profile));
 
   auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
-      host(), signed_in_profile, std::move(contents), suggested_profile_color_,
-      std::move(finish_flow_callback));
+      host(), signed_in_profile, account_id, std::move(contents),
+      suggested_profile_color_, std::move(finish_flow_callback));
   weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
   return signed_in_flow;
 }
