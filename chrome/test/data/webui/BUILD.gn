@@ -71,6 +71,7 @@ source_set("browser_tests") {
     sources += [
       "intro/intro_browsertest.cc",
       "signin/profile_picker_browsertest.cc",
+      "signin/signin_browsertest.cc",
     ]
   }
 
@@ -226,8 +227,6 @@ if (include_js2gtest_tests) {
         "js/i18n_process_test.js",
         "settings/chromeos/os_settings_browsertest.js",
       ]
-    } else {
-      sources += [ "signin/signin_browsertest.js" ]
     }
 
     if (enable_webui_certificate_viewer) {
