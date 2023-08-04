@@ -90,6 +90,9 @@ class ASH_EXPORT CameraPrivacySwitchController
       const CameraPrivacySwitchController&) = delete;
   ~CameraPrivacySwitchController() override;
 
+  // Gets the instance from Shell.
+  static CameraPrivacySwitchController* Get();
+
   // Handles the change in the number of cameras.
   void OnCameraCountChanged(int new_camera_count);
 

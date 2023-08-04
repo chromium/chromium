@@ -71,11 +71,9 @@ absl::optional<std::u16string> MapAppIdToShortName(
 // stops using the camera.
 void SendActiveCameraApplicationsChangedNotification(bool application_added) {
   if (ash::features::IsCrosPrivacyHubEnabled()) {
-    ash::PrivacyHubController* privacy_hub_controller =
-        ash::Shell::Get()->privacy_hub_controller();
-    DCHECK(privacy_hub_controller);
-    privacy_hub_controller->camera_controller().ActiveApplicationsChanged(
-        application_added);
+    auto* camera_controller = ash::CameraPrivacySwitchController::Get();
+    CHECK(camera_controller);
+    camera_controller->ActiveApplicationsChanged(application_added);
   }
 }
 

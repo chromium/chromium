@@ -9,6 +9,7 @@
 #include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
@@ -39,24 +40,21 @@ void SetUpCameraCountObserver() {
     return;
   }
 
-  DCHECK(Shell::Get());
-  PrivacyHubController* privacy_hub_controller =
-      Shell::Get()->privacy_hub_controller();
-  CHECK(privacy_hub_controller);
-  CameraPrivacySwitchController& camera_controller =
-      privacy_hub_controller->camera_controller();
+  auto* camera_controller = CameraPrivacySwitchController::Get();
+  CHECK(camera_controller);
+
   base::RepeatingCallback<void(int)> update_camera_count_in_privacy_hub =
       base::BindRepeating(
           [](CameraPrivacySwitchController* controller, int camera_count) {
             controller->OnCameraCountChanged(camera_count);
           },
-          &camera_controller);
+          camera_controller);
   auto notifier = std::make_unique<CameraPresenceNotifier>(
       std::move(update_camera_count_in_privacy_hub));
   notifier->Start();
 
   static const char kUserDataKey = '\0';
-  camera_controller.SetUserData(&kUserDataKey, std::move(notifier));
+  camera_controller->SetUserData(&kUserDataKey, std::move(notifier));
 }
 
 // Notifies the Privacy Hub controller.
@@ -64,10 +62,11 @@ void TrackGeolocationAttempted(const std::string& name) {
   if (!features::IsCrosPrivacyHubEnabled()) {
     return;
   }
-  PrivacyHubController* controller = PrivacyHubController::Get();
+  GeolocationPrivacySwitchController* controller =
+      GeolocationPrivacySwitchController::Get();
   // TODO(b/288854399): Remove this if.
   if (controller) {
-    controller->geolocation_controller().TrackGeolocationAttempted(name);
+    controller->TrackGeolocationAttempted(name);
   }
 }
 
@@ -76,9 +75,11 @@ void TrackGeolocationRelinquished(const std::string& name) {
   if (!features::IsCrosPrivacyHubEnabled()) {
     return;
   }
-  PrivacyHubController* controller = PrivacyHubController::Get();
+  GeolocationPrivacySwitchController* controller =
+      GeolocationPrivacySwitchController::Get();
+  // TODO(b/288854399): Remove this if.
   if (controller) {
-    controller->geolocation_controller().TrackGeolocationRelinquished(name);
+    controller->TrackGeolocationRelinquished(name);
   }
 }
 
@@ -93,9 +94,10 @@ bool UsingCameraLEDFallback() {
     return false;
   }
   if (!camera_led_fallback_for_testing.has_value()) {
-    PrivacyHubController* const controller = PrivacyHubController::Get();
+    CameraPrivacySwitchController* const controller =
+        CameraPrivacySwitchController::Get();
     CHECK(controller);
-    return controller->camera_controller().UsingCameraLEDFallback();
+    return controller->UsingCameraLEDFallback();
   }
 
   // Can happen in some testing environments

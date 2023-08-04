@@ -12,6 +12,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
@@ -89,11 +90,8 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   void ShowNotification(Sensor sensor) {
     if (sensor == Sensor::kMicrophone) {
-      Shell::Get()
-          ->privacy_hub_controller()
-          ->microphone_controller()
-          .OnInputMuteChanged(true,
-                              CrasAudioHandler::InputMuteChangeMethod::kOther);
+      MicrophonePrivacySwitchController::Get()->OnInputMuteChanged(
+          true, CrasAudioHandler::InputMuteChangeMethod::kOther);
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 1}});
     } else {
@@ -103,11 +101,8 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   void RemoveNotification(Sensor sensor) {
     if (sensor == Sensor::kMicrophone) {
-      Shell::Get()
-          ->privacy_hub_controller()
-          ->microphone_controller()
-          .OnInputMuteChanged(false,
-                              CrasAudioHandler::InputMuteChangeMethod::kOther);
+      MicrophonePrivacySwitchController::Get()->OnInputMuteChanged(
+          false, CrasAudioHandler::InputMuteChangeMethod::kOther);
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 0}});
     } else {

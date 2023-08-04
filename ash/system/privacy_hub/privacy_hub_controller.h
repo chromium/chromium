@@ -48,17 +48,17 @@ class ASH_EXPORT PrivacyHubController {
   // otherwise returns nullptr.
   static PrivacyHubController* Get();
 
-  // Gets the camera controller. CHECK-fails if not available.
-  CameraPrivacySwitchController& camera_controller();
+  // Gets the camera controller if available.
+  CameraPrivacySwitchController* camera_controller();
 
-  // Gets the microphone controller. CHECK-fails if not available.
-  MicrophonePrivacySwitchController& microphone_controller();
+  // Gets the microphone controller if available.
+  MicrophonePrivacySwitchController* microphone_controller();
 
-  // Gets the speak-on-mute controller. CHECK-fails if not available.
-  SpeakOnMuteDetectionPrivacySwitchController& speak_on_mute_controller();
+  // Gets the speak-on-mute controller if available.
+  SpeakOnMuteDetectionPrivacySwitchController* speak_on_mute_controller();
 
-  // Gets the geolocation controller. CHECK-fails if not available.
-  GeolocationPrivacySwitchController& geolocation_controller();
+  // Gets the geolocation controller if available.
+  GeolocationPrivacySwitchController* geolocation_controller();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);

@@ -60,6 +60,14 @@ MicrophonePrivacySwitchController::~MicrophonePrivacySwitchController() {
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
+// static
+MicrophonePrivacySwitchController* MicrophonePrivacySwitchController::Get() {
+  auto* privacy_hub_controller = PrivacyHubController::Get();
+  return privacy_hub_controller
+             ? privacy_hub_controller->microphone_controller()
+             : nullptr;
+}
+
 void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // Subscribing again to pref changes.

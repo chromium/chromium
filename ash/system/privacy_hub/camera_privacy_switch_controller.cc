@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
@@ -161,7 +162,15 @@ CameraPrivacySwitchController::CameraPrivacySwitchController() {
   InitUsingCameraLEDFallback();
 }
 
-CameraPrivacySwitchController::~CameraPrivacySwitchController() {}
+CameraPrivacySwitchController::~CameraPrivacySwitchController() = default;
+
+// static
+CameraPrivacySwitchController* CameraPrivacySwitchController::Get() {
+  PrivacyHubController* privacy_hub_controller =
+      Shell::Get()->privacy_hub_controller();
+  return privacy_hub_controller ? privacy_hub_controller->camera_controller()
+                                : nullptr;
+}
 
 void CameraPrivacySwitchController::OnPreferenceChangedImpl() {
   // Always remove the sensor disabled notification if the sensor was unmuted.

@@ -85,7 +85,7 @@ class ScopedCameraMuteToggler {
  public:
   explicit ScopedCameraMuteToggler(bool software_switch)
       : camera_privacy_switch_controller_(
-            Shell::Get()->privacy_hub_controller()->camera_controller()),
+            *CameraPrivacySwitchController::Get()),
         software_switch_(software_switch) {
     if (software_switch_) {
       Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -130,7 +130,7 @@ class PrivacyHubCameraControllerTestBase : public AshTestBase {
     auto mock_switch = std::make_unique<::testing::NiceMock<MockSwitchAPI>>();
     mock_switch_ = mock_switch.get();
 
-    controller_ = &Shell::Get()->privacy_hub_controller()->camera_controller();
+    controller_ = CameraPrivacySwitchController::Get();
     controller_->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
 
     // Set up the fake `SensorDisabledNotificationDelegate`.
@@ -303,7 +303,8 @@ TEST_P(PrivacyHubCameraControllerTest, OnCameraSoftwarePrivacySwitchChanged) {
 TEST_P(PrivacyHubCameraControllerTest,
        OnCameraHardwarePrivacySwitchChangedMultipleCameras) {
   CameraPrivacySwitchController& controller =
-      Shell::Get()->privacy_hub_controller()->camera_controller();
+      *CameraPrivacySwitchController::Get();
+
   // We have 2 cameras in the system.
   controller.OnCameraCountChanged(2);
   // Camera is enabled in Privacy Hub.
@@ -339,7 +340,7 @@ TEST_P(PrivacyHubCameraControllerTest,
 TEST_P(PrivacyHubCameraControllerTest,
        OnCameraHardwarePrivacySwitchChangedOneCamera) {
   CameraPrivacySwitchController& controller =
-      Shell::Get()->privacy_hub_controller()->camera_controller();
+      *CameraPrivacySwitchController::Get();
   // We have 1 camera in the system.
   controller.OnCameraCountChanged(1);
   // Camera is enabled in Privacy Hub.
@@ -376,7 +377,7 @@ TEST_P(PrivacyHubCameraControllerTest,
 TEST_P(PrivacyHubCameraControllerTest,
        OnCameraHardwarePrivacySwitchChangedNotificationClearing) {
   CameraPrivacySwitchController& controller =
-      Shell::Get()->privacy_hub_controller()->camera_controller();
+      *CameraPrivacySwitchController::Get();
   SetUserPref(true);
   controller.OnCameraCountChanged(2);
 
@@ -465,11 +466,8 @@ TEST_P(PrivacyHubCameraControllerTest,
   SetUserPref(true);
 
   // Flip the hardware switch.
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->camera_controller()
-      .OnCameraHWPrivacySwitchStateChanged(
-          "0", cros::mojom::CameraPrivacySwitchState::ON);
+  controller_->OnCameraHWPrivacySwitchStateChanged(
+      "0", cros::mojom::CameraPrivacySwitchState::ON);
 
   // No notification is fired for switch changes during the capture session.
   // But one will be fired if a new session starts.
@@ -764,15 +762,14 @@ TEST_P(PrivacyIndicatorAndVideoConferenceCameraControllerTest,
     EXPECT_FALSE(GetSWSwitchNotification());
 
     // Repeat the test with the hardware switch.
-    CameraPrivacySwitchController& controller =
-        Shell::Get()->privacy_hub_controller()->camera_controller();
-    controller.OnCameraHWPrivacySwitchStateChanged(
+    auto* controller = CameraPrivacySwitchController::Get();
+    controller->OnCameraHWPrivacySwitchStateChanged(
         std::string(), cros::mojom::CameraPrivacySwitchState::ON);
 
     // It shall not cause SW notification
     EXPECT_FALSE(GetSWSwitchNotification());
 
-    controller.OnCameraHWPrivacySwitchStateChanged(
+    controller->OnCameraHWPrivacySwitchStateChanged(
         std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
 
     // It shall not cause SW notification

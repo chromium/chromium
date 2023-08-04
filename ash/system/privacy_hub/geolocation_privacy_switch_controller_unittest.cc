@@ -54,9 +54,7 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
   // AshTest:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    controller_ =
-        &Shell::Get()->privacy_hub_controller()->geolocation_controller();
+    controller_ = GeolocationPrivacySwitchController::Get();
   }
 
   void SetUserPref(bool allowed) {

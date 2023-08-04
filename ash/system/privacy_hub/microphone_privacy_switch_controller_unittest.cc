@@ -300,10 +300,8 @@ TEST_P(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
 
 TEST_P(PrivacyHubMicrophoneControllerTest, OnMicrophoneMuteSwitchValueChanged) {
   EXPECT_CALL(mock_frontend_, MicrophoneHardwareToggleChanged(_));
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->microphone_controller()
-      .OnInputMutedByMicrophoneMuteSwitchChanged(true);
+  MicrophonePrivacySwitchController::Get()
+      ->OnInputMutedByMicrophoneMuteSwitchChanged(true);
 }
 
 TEST_P(PrivacyHubMicrophoneControllerTest, SimpleMuteUnMute) {

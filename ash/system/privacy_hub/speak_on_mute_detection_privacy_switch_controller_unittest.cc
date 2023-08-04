@@ -37,7 +37,7 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     speak_on_mute_controller_ =
-        &Shell::Get()->privacy_hub_controller()->speak_on_mute_controller();
+        Shell::Get()->privacy_hub_controller()->speak_on_mute_controller();
   }
 
   void SetUserPref(bool enabled) {

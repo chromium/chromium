@@ -83,27 +83,23 @@ void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUserGeolocationAllowed, true);
 }
 
-CameraPrivacySwitchController& PrivacyHubController::camera_controller() {
-  CHECK(camera_controller_);
-  return *camera_controller_;
+CameraPrivacySwitchController* PrivacyHubController::camera_controller() {
+  return camera_controller_.get();
 }
 
-MicrophonePrivacySwitchController&
+MicrophonePrivacySwitchController*
 PrivacyHubController::microphone_controller() {
-  CHECK(microphone_controller_);
-  return *microphone_controller_;
+  return microphone_controller_.get();
 }
 
-SpeakOnMuteDetectionPrivacySwitchController&
+SpeakOnMuteDetectionPrivacySwitchController*
 PrivacyHubController::speak_on_mute_controller() {
-  CHECK(speak_on_mute_controller_);
-  return *speak_on_mute_controller_;
+  return speak_on_mute_controller_.get();
 }
 
-GeolocationPrivacySwitchController&
+GeolocationPrivacySwitchController*
 PrivacyHubController::geolocation_controller() {
-  CHECK(geolocation_switch_controller_);
-  return *geolocation_switch_controller_;
+  return geolocation_switch_controller_.get();
 }
 
 }  // namespace ash

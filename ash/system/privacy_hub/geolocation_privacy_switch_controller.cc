@@ -31,7 +31,7 @@ GeolocationPrivacySwitchController* GeolocationPrivacySwitchController::Get() {
   PrivacyHubController* privacy_hub_controller =
       Shell::Get()->privacy_hub_controller();
   return privacy_hub_controller
-             ? &privacy_hub_controller->geolocation_controller()
+             ? privacy_hub_controller->geolocation_controller()
              : nullptr;
 }
 
