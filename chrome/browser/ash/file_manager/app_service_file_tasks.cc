@@ -183,19 +183,18 @@ std::string ToSwaActionId(const std::string& action_id) {
          action_id;
 }
 
-// True if |launch_entry| represents a task which opens the file by getting the
-// URL for a file rather than by opening the local contents of the file.
-bool IsFilesAppUrlOpener(const apps::IntentLaunchInfo& launch_entry) {
-  if (launch_entry.app_id != kFileManagerSwaAppId) {
+// True if |app_id| and |action_id| represent a task which opens the file by
+// getting the URL for a file rather than by opening the local contents of the
+// file.
+bool IsFilesAppUrlOpener(const std::string& app_id,
+                         const std::string& action_id) {
+  if (app_id != kFileManagerSwaAppId) {
     return false;
   }
-  return launch_entry.activity_name == ToSwaActionId(kActionIdOpenInOffice) ||
-         launch_entry.activity_name ==
-             ToSwaActionId(kActionIdWebDriveOfficeWord) ||
-         launch_entry.activity_name ==
-             ToSwaActionId(kActionIdWebDriveOfficeExcel) ||
-         launch_entry.activity_name ==
-             ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
+  return action_id == ToSwaActionId(kActionIdOpenInOffice) ||
+         action_id == ToSwaActionId(kActionIdWebDriveOfficeWord) ||
+         action_id == ToSwaActionId(kActionIdWebDriveOfficeExcel) ||
+         action_id == ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
 }
 
 bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
@@ -280,7 +279,8 @@ void FindAppServiceTasks(Profile* profile,
       // tasks which only access the file via URL.
       if (has_non_native_file &&
           !(IsSystemAppIdWithFileHandlers(launch_entry.app_id) ||
-            IsFilesAppUrlOpener(launch_entry))) {
+            IsFilesAppUrlOpener(launch_entry.app_id,
+                                launch_entry.activity_name))) {
         continue;
       }
 
