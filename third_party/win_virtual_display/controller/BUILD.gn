@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+executable("display_driver_controller_executable") {
+  deps = [
+    "//base",
+    "//base/win:base_win_buildflags",
+    "//third_party/win_virtual_display/driver/public",
+  ]
+  sources = [ "display_driver_controller.cc" ]
+  libs = [
+    "ntdll.lib",
+    "onecore.lib",
+  ]
+}

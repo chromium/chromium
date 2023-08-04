@@ -1,0 +1,10 @@
+#include <windows.h>
+#include <ntverp.h>
+
+#define VER_FILETYPE                VFT_DLL
+#define VER_FILESUBTYPE             VFT_UNKNOWN
+#define VER_FILEDESCRIPTION_STR     "Chromium Virtual Display Driver"
+#define VER_INTERNALNAME_STR        "ChromiumVirtualDisplayDriver"
+#define VER_ORIGINALFILENAME_STR    "ChromiumVirtualDisplayDriver.dll"
+
+#include "common.ver"
