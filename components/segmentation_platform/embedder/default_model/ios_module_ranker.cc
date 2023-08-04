@@ -181,6 +181,7 @@ std::unique_ptr<Config> IosModuleRanker::GetConfig() {
   config->AddSegmentId(kSegmentId, serve_default_config
                                        ? std::make_unique<IosModuleRanker>()
                                        : nullptr);
+  config->auto_execute_and_cache = false;
   return config;
 }
 

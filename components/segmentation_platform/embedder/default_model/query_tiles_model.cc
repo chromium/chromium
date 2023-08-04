@@ -68,6 +68,7 @@ std::unique_ptr<Config> QueryTilesModel::GetConfig() {
   config->segmentation_uma_name = kQueryTilesUmaName;
   config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
                        GetQueryTilesDefaultModel());
+  config->auto_execute_and_cache = true;
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       query_tiles::features::kQueryTilesSegmentation,

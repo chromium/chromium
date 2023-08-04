@@ -165,6 +165,7 @@ std::unique_ptr<Config> FeedUserSegment::GetConfig() {
   config->segmentation_uma_name = kFeedUserSegmentUmaName;
   config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
                        GetFeedUserSegmentDefautlModel());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,

@@ -67,6 +67,7 @@ std::unique_ptr<Config> FrequentFeatureUserModel::GetConfig() {
   config->segmentation_uma_name = kFrequentFeatureUserUmaName;
   config->AddSegmentId(SegmentId::FREQUENT_FEATURE_USER_SEGMENT,
                        std::make_unique<FrequentFeatureUserModel>());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl = base::Days(7);
   config->unknown_selection_ttl = base::Days(7);
   config->is_boolean_segment = true;

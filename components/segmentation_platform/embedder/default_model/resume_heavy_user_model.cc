@@ -49,6 +49,7 @@ std::unique_ptr<Config> ResumeHeavyUserModel::GetConfig() {
   config->segmentation_uma_name = kResumeHeavyUserUmaName;
   config->AddSegmentId(SegmentId::RESUME_HEAVY_USER_SEGMENT,
                        std::make_unique<ResumeHeavyUserModel>());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kResumeHeavyUserSegmentFeature,

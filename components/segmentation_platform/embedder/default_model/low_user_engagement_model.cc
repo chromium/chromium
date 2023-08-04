@@ -50,6 +50,7 @@ std::unique_ptr<Config> LowUserEngagementModel::GetConfig() {
   config->segmentation_uma_name = kChromeLowUserEngagementUmaName;
   config->AddSegmentId(kChromeStartSegmentId,
                        std::make_unique<LowUserEngagementModel>());
+  config->auto_execute_and_cache = true;
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       features::kSegmentationPlatformLowEngagementFeature,

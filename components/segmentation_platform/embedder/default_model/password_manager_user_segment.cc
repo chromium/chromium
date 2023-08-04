@@ -145,6 +145,7 @@ std::unique_ptr<Config> PasswordManagerUserModel::GetConfig() {
   config->segmentation_uma_name = kPasswordManagerUserUmaName;
   config->AddSegmentId(kPasswordManagerUserSegmentId,
                        std::make_unique<PasswordManagerUserModel>());
+  config->auto_execute_and_cache = true;
   config->is_boolean_segment = true;
 
   return config;

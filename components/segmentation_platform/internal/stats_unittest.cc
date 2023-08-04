@@ -72,6 +72,7 @@ TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
   Config config;
   config.segmentation_key = kAdaptiveToolbarSegmentationKey;
   config.segmentation_uma_name = kAdaptiveToolbarUmaName;
+  config.auto_execute_and_cache = true;
 
   // Share -> New tab.
   RecordSegmentSelectionComputed(
@@ -108,6 +109,7 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
   Config config;
   config.segmentation_key = kPowerUserKey;
   config.segmentation_uma_name = kPowerUserUmaName;
+  config.auto_execute_and_cache = true;
 
   auto result_low = metadata_utils::CreatePredictionResult(
       /*model_scores=*/{0.2},
@@ -170,6 +172,7 @@ TEST(StatsTest, SegmentComputedWithMultiOutput) {
   Config config;
   config.segmentation_key = kPowerUserKey;
   config.segmentation_uma_name = kPowerUserUmaName;
+  config.auto_execute_and_cache = true;
 
   auto result_low = metadata_utils::CreatePredictionResult(
       /*model_scores=*/{0.2},
@@ -208,6 +211,7 @@ TEST(StatsTest, BooleanSegmentSwitch) {
   Config config;
   config.segmentation_key = kChromeStartAndroidSegmentationKey;
   config.segmentation_uma_name = kChromeStartAndroidUmaName;
+  config.auto_execute_and_cache = true;
   config.is_boolean_segment = true;
 
   // Start to none.

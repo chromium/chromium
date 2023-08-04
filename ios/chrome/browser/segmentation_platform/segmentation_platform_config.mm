@@ -30,87 +30,7 @@ namespace segmentation_platform {
 
 namespace {
 
-constexpr char kDefaultModelEnabledParam[] = "enable_default_model";
-
 using ::segmentation_platform::proto::SegmentId;
-
-constexpr int kFeedUserSegmentSelectionTTLDays = 14;
-constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
-
-constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
-constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
-
-constexpr int kSearchUserSegmentSelectionTTLDays = 7;
-constexpr int kSearchUserSegmentUnknownSelectionTTLDays = 7;
-
-std::unique_ptr<Config> GetConfigForFeedSegments() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformFeedSegmentFeature)) {
-    return nullptr;
-  }
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kFeedUserSegmentationKey;
-  config->segmentation_uma_name = kFeedUserSegmentUmaName;
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
-  config->segment_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformFeedSegmentFeature,
-          "segment_selection_ttl_days", kFeedUserSegmentSelectionTTLDays));
-  config->unknown_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformFeedSegmentFeature,
-          "unknown_selection_ttl_days",
-          kFeedUserSegmentUnknownSelectionTTLDays));
-  return config;
-}
-
-std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformCrossDeviceUser)) {
-    return nullptr;
-  }
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kCrossDeviceUserKey;
-  config->segmentation_uma_name = kCrossDeviceUserUmaName;
-  config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
-                       std::make_unique<CrossDeviceUserSegment>());
-  config->segment_selection_ttl =
-      base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
-  config->unknown_selection_ttl =
-      base::Days(kCrossDeviceUserSegmentUnknownSelectionTTLDays);
-  return config;
-}
-
-std::unique_ptr<DefaultModelProvider> GetSearchUserDefaultModel() {
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
-          true)) {
-    return nullptr;
-  }
-  return std::make_unique<SearchUserModel>();
-}
-
-std::unique_ptr<Config> GetConfigForSearchUserModel() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformSearchUser)) {
-    return nullptr;
-  }
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kSearchUserKey;
-  config->segmentation_uma_name = kSearchUserUmaName;
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER,
-                       GetSearchUserDefaultModel());
-  config->segment_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformSearchUser,
-          "segment_selection_ttl_days", kSearchUserSegmentSelectionTTLDays));
-  config->unknown_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformSearchUser,
-          "unknown_selection_ttl_days",
-          kSearchUserSegmentUnknownSelectionTTLDays));
-  return config;
-}
 
 }  // namespace
 
@@ -118,19 +38,10 @@ using proto::SegmentId;
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   std::vector<std::unique_ptr<Config>> configs;
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformFeedSegmentFeature)) {
-    configs.emplace_back(GetConfigForFeedSegments());
-  }
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformSearchUser)) {
-    configs.emplace_back(GetConfigForSearchUserModel());
-  }
-
-  configs.emplace_back(GetConfigForCrossDeviceSegments());
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformDeviceSwitcher)) {
-    configs.emplace_back(DeviceSwitcherModel::GetConfig());
-  }
-
+  configs.emplace_back(FeedUserSegment::GetConfig());
+  configs.emplace_back(CrossDeviceUserSegment::GetConfig());
+  configs.emplace_back(SearchUserModel::GetConfig());
+  configs.emplace_back(DeviceSwitcherModel::GetConfig());
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());

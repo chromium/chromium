@@ -179,6 +179,7 @@ std::unique_ptr<Config> PowerUserSegment::GetConfig() {
   config->segmentation_uma_name = kPowerUserUmaName;
   config->AddSegmentId(SegmentId::POWER_USER_SEGMENT,
                        std::make_unique<PowerUserSegment>());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl = base::Days(7);
   config->unknown_selection_ttl = base::Days(7);
   config->is_boolean_segment = true;

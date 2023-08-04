@@ -67,6 +67,7 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
   config->segmentation_uma_name = kAdaptiveToolbarUmaName;
+  config->auto_execute_and_cache = true;
 
   if (base::FeatureList::IsEnabled(
           segmentation_platform::features::

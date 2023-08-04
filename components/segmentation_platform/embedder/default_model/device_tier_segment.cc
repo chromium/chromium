@@ -38,6 +38,7 @@ std::unique_ptr<Config> DeviceTierSegment::GetConfig() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kDeviceTierKey;
   config->segmentation_uma_name = kDeviceTierUmaName;
+  config->auto_execute_and_cache = true;
   config->AddSegmentId(kDeviceTierSegmentId,
                        std::make_unique<DeviceTierSegment>());
   config->is_boolean_segment = true;

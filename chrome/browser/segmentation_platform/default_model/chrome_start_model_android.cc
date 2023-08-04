@@ -75,6 +75,7 @@ std::unique_ptr<Config> ChromeStartModel::GetConfig() {
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
       GetChromeStartAndroidModel());
+  config->auto_execute_and_cache = true;
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kStartSurfaceAndroid,

@@ -91,6 +91,7 @@ std::unique_ptr<Config> TabletProductivityUserModel::GetConfig() {
   config->segmentation_uma_name = kTabletProductivityUserUmaName;
   config->AddSegmentId(kTabletProductivityUserSegmentId,
                        std::make_unique<TabletProductivityUserModel>());
+  config->auto_execute_and_cache = true;
   config->is_boolean_segment = true;
   return config;
 }

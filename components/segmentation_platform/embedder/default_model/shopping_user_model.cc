@@ -51,6 +51,7 @@ std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kShoppingUserSegmentationKey;
   config->segmentation_uma_name = kShoppingUserUmaName;
+  config->auto_execute_and_cache = true;
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
       std::make_unique<ShoppingUserModel>());

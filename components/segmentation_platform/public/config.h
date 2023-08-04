@@ -70,7 +70,7 @@ struct Config {
   // The service will run models in the background and keep results ready for
   // use at all times. The TTL settings in the model metadata should be used to
   // specify how often to refresh results.
-  bool auto_execute_and_cache = true;
+  bool auto_execute_and_cache = false;
 
   // List of custom  inputs provided for running the segments. The delegate will
   // be invoked for input based on the model metadata's input processing config.

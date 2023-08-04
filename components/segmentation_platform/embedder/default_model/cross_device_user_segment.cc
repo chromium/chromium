@@ -119,6 +119,7 @@ std::unique_ptr<Config> CrossDeviceUserSegment::GetConfig() {
   config->segmentation_uma_name = kCrossDeviceUserUmaName;
   config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
                        std::make_unique<CrossDeviceUserSegment>());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl =
       base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
   config->unknown_selection_ttl =

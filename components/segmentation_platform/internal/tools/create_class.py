@@ -208,6 +208,7 @@ std::unique_ptr<Config> {clas}::GetConfig() {{
   config->segmentation_uma_name = k{clas}UmaName;
   config->AddSegmentId(kSegmentId,
                        std::make_unique<{clas}>());
+  config->auto_execute_and_cache = false;
   return config;
 }}
 

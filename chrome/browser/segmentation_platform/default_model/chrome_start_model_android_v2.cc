@@ -61,6 +61,7 @@ std::unique_ptr<Config> ChromeStartModelV2::GetConfig() {
       chrome::android::kStartSurfaceReturnTime,
       kVariationsParamNameSegmentSelectionTTLDays,
       kChromeStartV2DefaultSelectionTTLDays);
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = config->segment_selection_ttl;
   config->is_boolean_segment = true;

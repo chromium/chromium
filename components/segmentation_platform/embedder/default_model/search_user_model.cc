@@ -65,6 +65,7 @@ std::unique_ptr<Config> SearchUserModel::GetConfig() {
   config->segmentation_key = kSearchUserKey;
   config->segmentation_uma_name = kSearchUserUmaName;
   config->AddSegmentId(kSearchUserSegmentId, GetSearchUserDefaultModel());
+  config->auto_execute_and_cache = true;
   return config;
 }
 

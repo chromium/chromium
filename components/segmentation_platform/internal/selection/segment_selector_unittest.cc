@@ -62,6 +62,7 @@ std::unique_ptr<Config> CreateTestConfig() {
   config->segmentation_uma_name = "TestKey";
   config->segment_selection_ttl = base::Days(28);
   config->unknown_selection_ttl = base::Days(14);
+  config->auto_execute_and_cache = true;
   config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   return config;
