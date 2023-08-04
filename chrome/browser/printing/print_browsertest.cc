@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +28,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
@@ -39,6 +42,7 @@
 #include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/printing/test_print_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -87,6 +91,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -1787,6 +1792,82 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   done_observer.WaitForPrintPreviewDialogClosed();
   EXPECT_EQ(true, content::EvalJs(rfh, "firedBeforePrint"));
   EXPECT_EQ(true, content::EvalJs(rfh, "firedAfterPrint"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
+                       WindowDotPrintWhilePrintPreviewIsInProgress) {
+  const char kHtmlData[] = "data:text/html,hello";
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kHtmlData)));
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  // This should not crash the renderer. In older builds, this can trigger 2
+  // beforeprint events in a row without an afterprint event in between.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.print()"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
+                       WindowDotPrintWhilePrintPreviewForNodeIsInProgress) {
+  // This test is a bit quirky and brittle:
+  // - `ContextMenuWaiter` does not seem to work in general, but does work for
+  //   the data scheme.
+  // - Normally only PDF nodes can be printed, but loading PDFs in an iframe
+  //   reliably is very hard, so use an image instead.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    const char kHtmlData[] =
+        "data:text/html,"
+        "<iframe src='data:image/png;base64,%s' name='imageframe'>";
+    base::FilePath image_path =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII("printing")
+            .AppendASCII("test1.png");
+    absl::optional<std::vector<uint8_t>> image_data =
+        base::ReadFileToBytes(image_path);
+    ASSERT_TRUE(image_data.has_value());
+    GURL data_url(base::StringPrintf(
+        kHtmlData, base::Base64Encode(image_data.value()).c_str()));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
+  }
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(main_rfh);
+
+  content::RenderFrameHost* iframe_rfh = nullptr;
+  main_rfh->ForEachRenderFrameHost(
+      [&iframe_rfh](content::RenderFrameHost* rfh) {
+        if (rfh->GetFrameName() != "imageframe") {
+          return;
+        }
+
+        DCHECK(!iframe_rfh);  // There can be only 1.
+        iframe_rfh = rfh;
+      });
+  ASSERT_TRUE(iframe_rfh);
+  EXPECT_NE(main_rfh, iframe_rfh);
+
+  {
+    // `ContextMenuWaiter` can issue `IDC_PRINT` even though it is not in the
+    // menu.
+    ContextMenuWaiter menu_observer(IDC_PRINT);
+
+    // Send mouse right-click to activate context menu. Otherwise the renderer
+    // does not have a WebNode to print.
+    content::SimulateMouseClickAt(web_contents, /*modifiers=*/0,
+                                  blink::WebMouseEvent::Button::kRight,
+                                  gfx::Point(100, 100));
+    menu_observer.WaitForMenuOpenAndClose();
+    EXPECT_EQ(menu_observer.params().media_type,
+              blink::mojom::ContextMenuDataMediaType::kImage);
+  }
+
+  // This should not crash the renderer. In older builds, this can trigger 2
+  // beforeprint events in a row without an afterprint event in between.
+  ASSERT_TRUE(content::ExecJs(iframe_rfh, "window.print()"));
 }
 
 class PrintPrerenderBrowserTest : public PrintBrowserTest {

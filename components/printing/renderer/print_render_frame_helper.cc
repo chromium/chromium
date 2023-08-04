@@ -1337,29 +1337,35 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
     return;
   }
 
-  print_in_progress_ = true;
-  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    print_in_progress_ = true;
     print_preview_context_.InitWithFrame(web_frame);
     RequestPrintPreview(PrintPreviewRequestType::kScripted,
                         /*already_notified_frame=*/false);
+    // Print Preview resets `print_in_progress_` when the dialog closes.
+    return;
 #else
     NOTREACHED_NORETURN();
 #endif
-  } else {
-    RecordBeforeAfterPrintEventForDebugging(__LINE__);
-    web_frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
-    if (!weak_this)
-      return;
-
-    Print(web_frame, blink::WebNode(), PrintRequestType::kScripted);
-    if (!weak_this)
-      return;
-
-    RecordBeforeAfterPrintEventForDebugging(__LINE__);
-    web_frame->DispatchAfterPrintEvent();
   }
+
+  print_in_progress_ = true;
+
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
+  web_frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+  if (!weak_this) {
+    return;
+  }
+
+  Print(web_frame, blink::WebNode(), PrintRequestType::kScripted);
+  if (!weak_this) {
+    return;
+  }
+
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
+  web_frame->DispatchAfterPrintEvent();
   if (!weak_this)
     return;
 
@@ -1486,10 +1492,13 @@ void PrintRenderFrameHelper::PrintForSystemDialog() {
 
   Print(frame, print_preview_context_.source_node(),
         PrintRequestType::kRegular);
-  if (!render_frame_gone_) {
-    RecordBeforeAfterPrintEventForDebugging(__LINE__);
-    print_preview_context_.DispatchAfterPrintEvent();
+  if (render_frame_gone_) {
+    return;
   }
+
+  print_in_progress_ = false;
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
+  print_preview_context_.DispatchAfterPrintEvent();
   // WARNING: |this| may be gone at this point. Do not do any more work here and
   // just return.
 }
@@ -1511,6 +1520,10 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
+  if (print_in_progress_) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_renderer) {
     print_renderer_.Bind(std::move(print_renderer));
@@ -1527,11 +1540,14 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
     PrintNode(plugin);
     return;
   }
+
+  print_in_progress_ = true;
   print_preview_context_.InitWithFrame(frame);
   RequestPrintPreview(has_selection
                           ? PrintPreviewRequestType::kUserInitiatedSelection
                           : PrintPreviewRequestType::kUserInitiatedEntireFrame,
                       /*already_notified_frame=*/false);
+  // Print Preview resets `print_in_progress_` when the dialog closes.
 }
 
 void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
@@ -1588,10 +1604,15 @@ void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
 
 void PrintRenderFrameHelper::OnPrintPreviewDialogClosed() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (!render_frame_gone_) {
-    RecordBeforeAfterPrintEventForDebugging(__LINE__);
-    print_preview_context_.DispatchAfterPrintEvent();
+  if (render_frame_gone_) {
+    return;
   }
+
+  print_in_progress_ = false;
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
+  print_preview_context_.DispatchAfterPrintEvent();
+  // WARNING: |this| may be gone at this point. Do not do any more work here and
+  // just return.
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -2136,41 +2157,48 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
     return;
   }
 
-  print_in_progress_ = true;
-
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    print_in_progress_ = true;
     print_preview_context_.InitWithNode(node);
     RequestPrintPreview(PrintPreviewRequestType::kUserInitiatedContextNode,
                         /*already_notified_frame=*/false);
+    // Print Preview resets `print_in_progress_` when the dialog closes.
+    return;
 #else
     NOTREACHED_NORETURN();
 #endif
-  } else {
-    // Make a copy of the node, in case RenderView::OnContextMenuClosed() resets
-    // its |context_menu_node_|.
-    blink::WebNode duplicate_node(node);
+  }
 
-    blink::WebLocalFrame* frame = duplicate_node.GetDocument().GetFrame();
-    if (!frame)
-      return;
+  blink::WebLocalFrame* frame = node.GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
 
-    RecordBeforeAfterPrintEventForDebugging(__LINE__);
-    auto weak_this = weak_ptr_factory_.GetWeakPtr();
-    frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
-    if (!weak_this)
-      return;
+  print_in_progress_ = true;
 
-    Print(duplicate_node.GetDocument().GetFrame(), duplicate_node,
-          PrintRequestType::kRegular);
-    // Check if |this| is still valid.
-    if (!weak_this)
-      return;
+  // Make a copy of the node, in case RenderView::OnContextMenuClosed() resets
+  // its |context_menu_node_|.
+  blink::WebNode duplicate_node(node);
 
-    RecordBeforeAfterPrintEventForDebugging(__LINE__);
-    frame->DispatchAfterPrintEvent();
-    if (!weak_this)
-      return;
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+  if (!weak_this) {
+    return;
+  }
+
+  Print(duplicate_node.GetDocument().GetFrame(), duplicate_node,
+        PrintRequestType::kRegular);
+  // Check if |this| is still valid.
+  if (!weak_this) {
+    return;
+  }
+
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
+  frame->DispatchAfterPrintEvent();
+  if (!weak_this) {
+    return;
   }
 
   print_in_progress_ = false;
