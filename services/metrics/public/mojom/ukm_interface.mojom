@@ -10,6 +10,14 @@ struct UkmEntry {
   map<uint64,int64> metrics;
 };
 
+// Interface for communicating singular UkmEntries from browser to browser
+// process.
+interface SingularUkmInterface {
+  // Sends the UkmEntry to receiver. This sender can be in either the same
+  // process or remote process.
+  Submit(UkmEntry entry);
+};
+
 struct UkmRecorderParameters {
   // Informs whether UKM recording is enabled or disabled.
   bool is_enabled;
