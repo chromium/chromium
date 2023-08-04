@@ -296,6 +296,14 @@
   E_CPONLY(kColorFrameInactive) \
   E_CPONLY(kColorHelpIconActive) \
   E_CPONLY(kColorHelpIconInactive) \
+  /* These should be refactored into chrome_color_id or removed once the */ \
+  /* history clusters side panel is refactored to use shadow parts. */ \
+  E_CPONLY(kColorHistoryClustersSidePanelDivider) \
+  E_CPONLY(kColorHistoryClustersSidePanelDialogBackground) \
+  E_CPONLY(kColorHistoryClustersSidePanelDialogDivider) \
+  E_CPONLY(kColorHistoryClustersSidePanelDialogPrimaryForeground) \
+  E_CPONLY(kColorHistoryClustersSidePanelDialogSecondaryForeground) \
+  E_CPONLY(kColorHistoryClustersSidePanelCardSecondaryForeground) \
   E_CPONLY(kColorIcon) \
   E_CPONLY(kColorIconDisabled) \
   E_CPONLY(kColorIconSecondary) \

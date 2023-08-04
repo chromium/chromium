@@ -75,6 +75,16 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
                                                         : kColorRefSecondary0};
   mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
   mixer[kColorIcon] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorHistoryClustersSidePanelDivider] = {kColorSysOnBaseDivider};
+  mixer[kColorHistoryClustersSidePanelDialogBackground] = {kColorSysSurface};
+  mixer[kColorHistoryClustersSidePanelDialogDivider] = {
+      kColorSysNeutralOutline};
+  mixer[kColorHistoryClustersSidePanelDialogPrimaryForeground] = {
+      kColorSysOnSurface};
+  mixer[kColorHistoryClustersSidePanelDialogSecondaryForeground] = {
+      kColorSysOnSurfaceSubtle};
+  mixer[kColorHistoryClustersSidePanelCardSecondaryForeground] = {
+      kColorSysOnSurfaceSubtle};
   mixer[kColorLinkForegroundDefault] = {kColorSysPrimary};
   mixer[kColorListItemFolderIconBackground] = {kColorSysTonalContainer};
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};

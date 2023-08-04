@@ -14,7 +14,6 @@ html {
   --annotation-text-color: var(--google-green-600);
   --border-color: var(--google-grey-300);
   --entity-image-background-color: var(--google-grey-50);
-  --grey-fill-color: var(--google-grey-100);
   --icon-color: var(--google-grey-600);
   --url-color: var(--google-blue-600);
   --side-panel-url-color: var(--google-grey-700);
@@ -26,7 +25,6 @@ html {
   --annotation-text-color: var(--google-grey-900);
   --border-color: var(--google-grey-700);
   --entity-image-background-color: var(--google-grey-800);
-  --grey-fill-color: var(--google-grey-700);
   --icon-color: white;
   --url-color: var(--google-blue-300);
   --side-panel-url-color: var(--google-grey-500);

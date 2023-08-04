@@ -82,7 +82,7 @@
     line-height: calc(5/3); /* 20px */
   }
 
-  :host-context([chrome-refresh-2023]) .timestamp {
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) .timestamp {
     font-size: .6875rem; /* 11px */
   }
 
@@ -96,7 +96,7 @@
 
   :host-context([chrome-refresh-2023]):host([in-side-panel]) #related-searches-divider {
     display: block;
-    background-color: var(--color-side-panel-divider);
+    background-color: var(--color-history-clusters-side-panel-divider);
     height: 1px;
     margin: 8px 16px;
   }

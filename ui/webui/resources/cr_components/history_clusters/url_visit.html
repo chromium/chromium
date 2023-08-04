@@ -125,7 +125,7 @@
     line-height: calc(20/13);  /* 20px */
   }
 
-  :host-context([chrome-refresh-2023]) #title {
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #title {
     font-size: .75rem; /* 12px */
     font-weight: 500;
   }
@@ -141,7 +141,8 @@
     line-height: calc(5/3);  /* 20px */
   }
 
-  :host-context([chrome-refresh-2023]) #url {
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #url {
+    color: var(--color-history-clusters-side-panel-card-secondary-foreground);
     font-size: .6875rem; /* 11px */
   }
 
