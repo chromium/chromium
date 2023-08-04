@@ -14,7 +14,7 @@ import sys
 TAG_HEADER = """\
 # OS
 # tags: [ android android-lollipop android-marshmallow android-nougat
-#             android-pie android-r android-s android-t
+#             android-oreo android-pie android-r android-s android-t
 #         chromeos
 #         fuchsia
 #         linux ubuntu
