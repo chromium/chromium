@@ -6154,7 +6154,6 @@
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,
-      runtime_flag: "CSSTextWrap",
     },
     {
       name: "widows",

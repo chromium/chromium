@@ -1532,7 +1532,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kDisc || value_id == CSSValueID::kCircle ||
              value_id == CSSValueID::kSquare || value_id == CSSValueID::kNone;
     case CSSPropertyID::kTextWrap:
-      DCHECK(RuntimeEnabledFeatures::CSSTextWrapEnabled());
       if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
         return value_id == CSSValueID::kWrap ||
                value_id == CSSValueID::kBalance;

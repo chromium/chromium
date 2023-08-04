@@ -1115,22 +1115,17 @@
       name: "CSSTextBoxTrim",
       status: "test",
     },
-    // `text-wrap: balance`. crbug.com/1251079
-    {
-      name: "CSSTextWrap",
-      status: "stable",
-    },
     // Use the `NGSCoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
     {
       name: "CSSTextWrapBalanceByScore",
       status: "stable",
-      depends_on: ["CSSTextWrap", "CSSWhiteSpaceShorthand"],
+      depends_on: ["CSSWhiteSpaceShorthand"],
     },
     // `text-wrap: pretty`. crbug.com/1432798
     {
       name: "CSSTextWrapPretty",
       status: "stable",
-      depends_on: ["CSSTextWrap", "CSSWhiteSpaceShorthand"],
+      depends_on: ["CSSWhiteSpaceShorthand"],
     },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
@@ -1217,7 +1212,6 @@
     {
       name: "CSSWhiteSpaceShorthand",
       status: "stable",
-      depends_on: ["CSSTextWrap"],
     },
     {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname
