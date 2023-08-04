@@ -1,16 +1,27 @@
 <html>
 <style>
-/* Add space to separate the touch selection targets. */
-.padded {
-  margin-bottom: 30px;
-}
+  /* Use a font with characters of fixed width to make it easier to test
+     selection gestures precisely. */
+  @font-face {
+    font-family: 'Ahem';
+    src: local('Ahem'),
+      url('../../font/Ahem.ttf');
+  }
+  div, input {
+    font-size: 15px;
+    font-family: "Ahem";
+  }
+  /* Add space to separate the touch selection targets. */
+  .padded {
+    margin-bottom: 30px;
+  }
 </style>
 <body>
 <div>Dummy Padding Text</div>
 <div id='textDiv' class='padded'>Some text we can select</div>
 
 <div>Dummy Padding Text</div>
-<input id='textfield' class='padded' type="text" value="Text in a textfield">
+<input id='textfield' class='padded' type="text" value="Some editable text">
 
 <div>Dummy Padding Text</div>
 <input id='emptyTextfield' class='padded' type="text" value="">
