@@ -7625,6 +7625,11 @@ void NavigationRequest::SetLCPPNavigationHint(
   commit_params_->lcpp_hint = hint.Clone();
 }
 
+const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
+NavigationRequest::GetLCPPNavigationHint() {
+  return commit_params_->lcpp_hint;
+}
+
 const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {
   return response_head_.get() ? response_head_->headers.get() : nullptr;
 }

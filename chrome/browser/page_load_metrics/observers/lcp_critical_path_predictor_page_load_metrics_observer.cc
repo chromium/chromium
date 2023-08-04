@@ -6,11 +6,17 @@
 
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+namespace internal {
+
+#define HISTOGRAM_PREFIX "PageLoad.Clients.LCPP."
+const char kHistogramLCPPFirstContentfulPaint[] =
+    HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
+
+}  // namespace internal
 
 PAGE_USER_DATA_KEY_IMPL(
     LcpCriticalPathPredictorPageLoadMetricsObserver::PageData);
@@ -22,23 +28,8 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::PageData(
 LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::~PageData() =
     default;
 
-// static
-std::unique_ptr<LcpCriticalPathPredictorPageLoadMetricsObserver>
-LcpCriticalPathPredictorPageLoadMetricsObserver::CreateIfNeeded(
-    content::WebContents* web_contents) {
-  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  if (!loading_predictor) {
-    return nullptr;
-  }
-  return base::WrapUnique(new LcpCriticalPathPredictorPageLoadMetricsObserver(
-      *loading_predictor->resource_prefetch_predictor()));
-}
-
 LcpCriticalPathPredictorPageLoadMetricsObserver::
-    LcpCriticalPathPredictorPageLoadMetricsObserver(
-        predictors::ResourcePrefetchPredictor& predictor)
-    : predictor_(predictor) {}
+    LcpCriticalPathPredictorPageLoadMetricsObserver() = default;
 
 LcpCriticalPathPredictorPageLoadMetricsObserver::
     ~LcpCriticalPathPredictorPageLoadMetricsObserver() = default;
@@ -54,6 +45,12 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnStart(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
+  const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr& hint =
+      navigation_handle->GetLCPPNavigationHint();
+  if (hint && !hint->lcp_element_locators.empty()) {
+    is_lcpp_hinted_navigation_ = true;
+  }
+
   commit_url_ = navigation_handle->GetURL();
   LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetOrCreateForPage(
       GetDelegate().GetWebContents()->GetPrimaryPage())
@@ -100,6 +97,18 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCPPSignals() {
     return;
   }
 
+  // `loading_predictor` is nullptr in
+  // `LcpCriticalPathPredictorPageLoadMetricsObserverTest`, or if the profile
+  // `IsOffTheRecord`.
+  // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
+  // this. Unflag the feature.
+  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
+      Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext()));
+  if (!loading_predictor) {
+    return;
+  }
+
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
       GetDelegate()
           .GetLargestContentfulPaintHandler()
@@ -108,6 +117,21 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCPPSignals() {
   if (largest_contentful_paint.ContainsValidTime() &&
       WasStartedInForegroundOptionalEventInForeground(
           largest_contentful_paint.Time(), GetDelegate())) {
-    predictor_->LearnLcpp(commit_url_->host(), *lcp_element_locator_);
+    predictors::ResourcePrefetchPredictor* predictor =
+        loading_predictor->resource_prefetch_predictor();
+    predictor->LearnLcpp(commit_url_->host(), *lcp_element_locator_);
   }
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::
+    OnFirstContentfulPaintInPage(
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!is_lcpp_hinted_navigation_) {
+    return;
+  }
+
+  base::TimeDelta corrected =
+      page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+          GetDelegate(), timing.paint_timing->first_contentful_paint.value());
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPFirstContentfulPaint, corrected);
 }

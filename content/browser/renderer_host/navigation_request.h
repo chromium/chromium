@@ -374,6 +374,8 @@ class CONTENT_EXPORT NavigationRequest
   void SetLCPPNavigationHint(
       const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint)
       override;
+  const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
+  GetLCPPNavigationHint() override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
   net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() override;
   const absl::optional<net::SSLInfo>& GetSSLInfo() override;

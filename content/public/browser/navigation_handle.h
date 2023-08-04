@@ -402,6 +402,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual void SetLCPPNavigationHint(
       const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint) = 0;
 
+  // Peek into LCP Critical Path Predictor hint data attached to the navigation.
+  virtual const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
+  GetLCPPNavigationHint() = 0;
+
   // Returns the response headers for the request, or nullptr if there aren't
   // any response headers or they have not been received yet. The response
   // headers may change during the navigation (e.g. after encountering a server

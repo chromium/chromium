@@ -8,16 +8,16 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/page_user_data.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace internal {
 
-namespace predictors {
-class ResourcePrefetchPredictor;
-}  // namespace predictors
+// Expose metrics for tests.
+extern const char kHistogramLCPPFirstContentfulPaint[];
 
-// Observer responsible for accumulating and storing LCP element locator
-// information.
+}  // namespace internal
+
+// PageLoadMetricsObserver responsible for:
+// - Staging LCP element locator information until LCP is finalized, and
+// - Reporting "PageLoad.Clients.LCPP." UMAs
 class LcpCriticalPathPredictorPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
@@ -45,10 +45,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
         lcpp_page_load_metrics_observer_;
   };
 
-  // Returns a LcpCriticalPathPredictorPageLoadMetricsObserver, or nullptr if it
-  // is not needed.
-  static std::unique_ptr<LcpCriticalPathPredictorPageLoadMetricsObserver>
-  CreateIfNeeded(content::WebContents* web_contents);
+  LcpCriticalPathPredictorPageLoadMetricsObserver();
   LcpCriticalPathPredictorPageLoadMetricsObserver(
       const LcpCriticalPathPredictorPageLoadMetricsObserver&) = delete;
   LcpCriticalPathPredictorPageLoadMetricsObserver& operator=(
@@ -60,8 +57,6 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   }
 
  private:
-  explicit LcpCriticalPathPredictorPageLoadMetricsObserver(
-      predictors::ResourcePrefetchPredictor& predictor);
   // PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
@@ -78,10 +73,20 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void RecordTimingHistograms();
   void FinalizeLCPPSignals();
+  void OnFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
+  // The URL of the last navigation commit.
   absl::optional<GURL> commit_url_;
+
+  // Flipped to true iff the navigation had associated non-empty LCPP hint data.
+  bool is_lcpp_hinted_navigation_ = false;
+
+  // LCPP write path [1]: Staging area of the proto3 serialized element locator
+  // of the latest LCP candidate element. [1]
+  // https://docs.google.com/document/d/1waakt6bSvedWdaUQ2mC255NF4k8j7LybK2dQ7WptxiE/edit#heading=h.hy4g58pyf548
   absl::optional<std::string> lcp_element_locator_;
-  const raw_ref<predictors::ResourcePrefetchPredictor> predictor_;
+
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};
 };

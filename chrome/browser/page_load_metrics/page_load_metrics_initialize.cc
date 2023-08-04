@@ -172,11 +172,8 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
                 web_contents());
     if (loading_predictor_observer)
       tracker->AddObserver(std::move(loading_predictor_observer));
-    if (auto lcp_critical_path_predictor_observer =
-            LcpCriticalPathPredictorPageLoadMetricsObserver::CreateIfNeeded(
-                web_contents())) {
-      tracker->AddObserver(std::move(lcp_critical_path_predictor_observer));
-    }
+    tracker->AddObserver(
+        std::make_unique<LcpCriticalPathPredictorPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
     tracker->AddObserver(
