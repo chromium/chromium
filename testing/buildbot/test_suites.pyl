@@ -1515,13 +1515,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 1,
@@ -1547,13 +1545,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 3,
@@ -1577,13 +1573,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 5,
@@ -1604,13 +1598,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 7,
@@ -2105,13 +2097,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 5,
@@ -2132,13 +2122,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 7,
@@ -2240,13 +2228,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 5,
@@ -2269,13 +2255,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 5,
@@ -2296,13 +2280,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 7,
@@ -2326,13 +2308,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 5,
@@ -2353,13 +2333,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 7,
@@ -2976,6 +2954,7 @@
           '--flag-specific=webgpu',
         ],
         'mixins': [
+          'has_native_resultdb_integration',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
           'webgpu_cts',
@@ -2990,6 +2969,7 @@
           '--timeout-ms=30000',
         ],
         'mixins': [
+          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
       },
@@ -3003,6 +2983,7 @@
           '--flag-specific=webgpu-swiftshader',
         ],
         'mixins': [
+          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
       },
@@ -3015,6 +2996,7 @@
           '--timeout-ms=30000',
         ],
         'mixins': [
+          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
       },
@@ -4853,13 +4835,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 8,
@@ -4886,13 +4866,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 10,
@@ -5751,13 +5729,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
       },
     },
@@ -5887,13 +5863,11 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
         ],
-        'resultdb': {
-          'enable': True,
-        },
         'results_handler': 'layout tests',
       },
     },
