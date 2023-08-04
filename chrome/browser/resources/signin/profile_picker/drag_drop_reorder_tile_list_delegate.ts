@@ -5,6 +5,23 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
+function isIndexInBetweenStartEnd(
+    index: number, start: number, end: number): boolean {
+  if (start === -1 || end === -1) {
+    return false;
+  }
+
+  const lower = Math.min(start, end);
+  const higher = Math.max(start, end);
+
+  return lower <= index && index <= higher;
+}
+
+// Class tags to use throughout the drag events.
+//
+// Tag for a tile that is shifted during a drag cycle event.
+const SHIFTED_TAG: string = 'shifted';
+
 // Interface to interact with the real underlying tile list that expects to have
 // the Drag and Drop functionality.
 export interface DraggableTileListInterface {
@@ -39,6 +56,7 @@ export class DragDropReorderTileListDelegate {
 
   private draggingTile_: HTMLElement|null = null;
   private dragStartIndex_: number = -1;
+  private dropTargetIndex: number = -1;
 
   private eventTracker_: EventTracker;
 
@@ -156,17 +174,25 @@ export class DragDropReorderTileListDelegate {
     }
 
     event.preventDefault();
+
     // Tile that the dragging tile entered.
     const enteredTile = event.target as HTMLElement;
 
-    // Index of the entered tile, it is the target of the drag event.
-    const dragTargetIndex = this.getDraggableTileIndex_(enteredTile);
+    const newDragTargetIndex = this.computeNewTargetIndex_(enteredTile);
+
+    // Reset any tile that shifted to its initial position, except the tiles
+    // that do not need to be shifted back based on the new drag target index.
+    this.resetShiftedTiles_(newDragTargetIndex);
+
+    // Set the new drag target index for future drag enter events.
+    this.dropTargetIndex = newDragTargetIndex;
 
     // Increment of +/-1 depending on the direction of the dragging event.
-    const indexIncrement = Math.sign(this.dragStartIndex_ - dragTargetIndex);
+    const indexIncrement =
+        Math.sign(this.dragStartIndex_ - this.dropTargetIndex);
     // Loop from target to start with the direction increment.
     // Shift all tiles by 1 spot based on the direction.
-    for (let i = dragTargetIndex; i !== this.dragStartIndex_;
+    for (let i = this.dropTargetIndex; i !== this.dragStartIndex_;
          i += indexIncrement) {
       const tileToShift = this.getDraggableTile_(i);
       const tileAtTargetLocation = this.getDraggableTile_(i + indexIncrement);
@@ -183,6 +209,8 @@ export class DragDropReorderTileListDelegate {
     // the one that started the drag event cycle.
     assert(this.draggingTile_);
     assert(this.draggingTile_ === event.target as HTMLElement);
+
+    this.dropTargetIndex = -1;
     this.resetDraggingTile_();
   }
 
@@ -191,11 +219,63 @@ export class DragDropReorderTileListDelegate {
   // effect is set to 'transform' in the 'initialize()'.
   private shiftTile_(
       tileToShift: HTMLElement, tileAtTargetLocation: HTMLElement) {
+    // Tag tile as shifted.
+    tileToShift.classList.add(SHIFTED_TAG);
+
     // Compute relative positions to apply to transform with XY Translation.
     const diffx = tileToShift.offsetLeft - tileAtTargetLocation.offsetLeft;
     const diffy = tileToShift.offsetTop - tileAtTargetLocation.offsetTop;
     tileToShift.style.transform =
         `translateX(${- diffx}px) translateY(${- diffy}px)`;
+  }
+
+  // Reset elements from start index until the end index.
+  // If some indices are between the start index and the new end index, do not
+  // reset these elements as their shifted position should not be modified.
+  private resetShiftedTiles_(newDragTargetIndex: number) {
+    if (this.dropTargetIndex === -1) {
+      return;
+    }
+
+    // Increment of +/-1 depending on the direction of the dragging event.
+    const indexIncrement =
+        Math.sign(this.dragStartIndex_ - this.dropTargetIndex);
+    // Loop from target to start with the direction increment.
+    for (let i = this.dropTargetIndex; i !== this.dragStartIndex_;
+         i += indexIncrement) {
+      // Do not reset tiles that have indices between the start and new drag
+      // target index since their shift should be kept.
+      if (!isIndexInBetweenStartEnd(
+              i, this.dragStartIndex_, newDragTargetIndex)) {
+        this.resetShiftedTile_(this.getDraggableTile_(i));
+      }
+    }
+  }
+
+  // Resetting a tile that was shifted to it's initial state by clearing the
+  // transform.
+  private resetShiftedTile_(tile: HTMLElement) {
+    tile.style.transform = '';
+    tile.classList.remove(SHIFTED_TAG);
+  }
+
+  // Compute the new drag target index based on the tile that is being hovered
+  // over.
+  // In case a tile is shifted by a previous reoredering, it's index is not
+  // adapted, therefore we should offset the new target index.
+  private computeNewTargetIndex_(enteredTile: HTMLElement): number {
+    let newTargetIndex = this.getDraggableTileIndex_(enteredTile);
+
+    // If the tile being dragged over was shifted by a previous reordering,
+    // it's index will be shifted by 1, so we need to offset it to get
+    // the right index.
+    if (enteredTile.classList.contains(SHIFTED_TAG)) {
+      const indexIncrement =
+          Math.sign(this.dragStartIndex_ - this.dropTargetIndex);
+      newTargetIndex += indexIncrement;
+    }
+
+    return newTargetIndex;
   }
 
   // Prepare 'this.draggingTile_' member variable as the dragging tile.

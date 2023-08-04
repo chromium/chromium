@@ -501,4 +501,63 @@ suite('ProfilePickerMainViewTest', function() {
     // crash.
     assertProfilesPositions(cards, null, initialRects, initiIndices);
   });
+
+  test('ProfilesDragSingleEnterWithReset', async function() {
+    // Note that in this test, both "reset" enter events (the second event in
+    // both cases) works whether it is the moved card or the dragging card. Both
+    // result in the same behavior; having the initial state as if there was no
+    // shift. This is expected, because right before the reset, the cards are on
+    // top of each other, and we expect that if any of those are entered to have
+    // the same behavior.
+
+    // Last enter event enters the shifted card.
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 3,
+      dragIndex: 1,
+      dragEnterEvents: [
+        {index: 2, expectedResultIndices: [0, 2, 1]},
+        {index: 1, expectedResultIndices: [0, 1, 2]},
+      ],
+    });
+
+    resetTest();
+
+    // Last enter event enters the dragging card.
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 3,
+      dragIndex: 1,
+      dragEnterEvents: [
+        {index: 2, expectedResultIndices: [0, 2, 1]},
+        {index: 2, expectedResultIndices: [0, 1, 2]},
+      ],
+    });
+  });
+
+  test('ProfilesDragMultipleEntersWithResets', async function() {
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 4,
+      dragIndex: 0,
+      dragEnterEvents: [
+        {index: 1, expectedResultIndices: [1, 0, 2, 3]},
+        {index: 2, expectedResultIndices: [1, 2, 0, 3]},
+        {index: 3, expectedResultIndices: [1, 2, 3, 0]},
+        {index: 3, expectedResultIndices: [1, 2, 0, 3]},
+        {index: 2, expectedResultIndices: [1, 0, 2, 3]},
+        {index: 1, expectedResultIndices: [0, 1, 2, 3]},
+      ],
+    });
+  });
+
+  test(
+      'ProfilesDragMultipleEntersOnDifferentSidesOfTheDraggingCard',
+      async function() {
+        await testProfileReorderingDragCycle({
+          numberOfProfiles: 4,
+          dragIndex: 2,
+          dragEnterEvents: [
+            {index: 3, expectedResultIndices: [0, 1, 3, 2]},
+            {index: 0, expectedResultIndices: [2, 0, 1, 3]},
+          ],
+        });
+      });
 });
