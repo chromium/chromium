@@ -166,8 +166,9 @@ export class PowerBookmarkRowElement extends PolymerElement {
    */
   private onRowClicked_(event: MouseEvent) {
     // Ignore clicks on the row when it has an input, to ensure the row doesn't
-    // eat input clicks.
-    if (this.hasInput) {
+    // eat input clicks. Also ignore clicks if the row has no associated
+    // bookmark.
+    if (this.hasInput || !this.bookmark) {
       return;
     }
     event.preventDefault();
