@@ -693,7 +693,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiEventPageTest,
 // This check is not done in the Standard test so we can test if the granular
 // Privacy Sandbox APIs are turned off, when |kPrivacySandboxApisEnabled| is
 // turned off, in isolation of controlling them directly.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, PrivacySandboxMigration) {
+// TODO(crbug.com/1470295): Test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
+                       DISABLED_PrivacySandboxMigration) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
   prefs->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
