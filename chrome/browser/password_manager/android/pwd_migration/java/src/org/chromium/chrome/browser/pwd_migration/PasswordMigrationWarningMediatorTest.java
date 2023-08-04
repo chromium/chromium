@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -85,7 +85,7 @@ public class PasswordMigrationWarningMediatorTest {
                     false))));
 
     @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -120,9 +120,10 @@ public class PasswordMigrationWarningMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
-        mMediator = new PasswordMigrationWarningMediator(mProfile, mOptionsHandler);
+        mMediator = new PasswordMigrationWarningMediator(
+                mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.CHROME_STARTUP);
         mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                mMediator::onDismissed, mMediator);
+                mMediator::onShown, mMediator::onDismissed, mMediator);
         mMediator.initializeModel(mModel);
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -393,5 +394,25 @@ public class PasswordMigrationWarningMediatorTest {
 
         mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertFalse(mModel.get(SHOULD_OFFER_SYNC));
+    }
+
+    @Test
+    public void testOnShownSetsPreForStartup() {
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        PasswordMigrationWarningMediator mediator = new PasswordMigrationWarningMediator(
+                mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.CHROME_STARTUP);
+        mediator.onShown();
+        verify(mPrefService)
+                .setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
+    }
+
+    @Test
+    public void testOnShownDoesntSetPrefIfNotOnStartup() {
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        PasswordMigrationWarningMediator mediator = new PasswordMigrationWarningMediator(
+                mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.TOUCH_TO_FILL);
+        mediator.onShown();
+        verify(mPrefService, never())
+                .setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
     }
 }

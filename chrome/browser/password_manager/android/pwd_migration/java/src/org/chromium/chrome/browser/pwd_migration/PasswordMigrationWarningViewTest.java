@@ -71,6 +71,8 @@ public class PasswordMigrationWarningViewTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock
+    private Runnable mOnShowEventListener;
+    @Mock
     private Callback<Integer> mDismissCallback;
     @Mock
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
@@ -90,7 +92,7 @@ public class PasswordMigrationWarningViewTest {
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
             mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                    mDismissCallback, mOnClickHandler);
+                    mOnShowEventListener, mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(
                     mActivityTestRule.getActivity(), mBottomSheetController, () -> {});
             PropertyModelChangeProcessor.create(mModel, mView,
@@ -110,6 +112,15 @@ public class PasswordMigrationWarningViewTest {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         assertThat(mView.getContentView().isShown(), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void testCallsOnShowListener() {
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        verify(mOnShowEventListener).run();
     }
 
     @Test

@@ -36,6 +36,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  */
 public class PasswordMigrationWarningView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
+    private Runnable mOnShowEventListener;
     private Callback<Integer> mDismissHandler;
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
     private FragmentManager mFragmentManager;
@@ -83,6 +84,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         public void onSheetOpened(@StateChangeReason int reason) {
             if (mBottomSheetController.getCurrentSheetContent() == PasswordMigrationWarningView.this
                     && mScreenType != ScreenType.NONE && getContentView().isShown()) {
+                mOnShowEventListener.run();
                 setFragment();
             }
         }
@@ -101,6 +103,10 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
         mFragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+    }
+
+    void setOnShowEventListener(Runnable onShowEventListener) {
+        mOnShowEventListener = onShowEventListener;
     }
 
     void setDismissHandler(Callback<Integer> dismissHandler) {

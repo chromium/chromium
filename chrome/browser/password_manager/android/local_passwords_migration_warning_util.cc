@@ -51,7 +51,8 @@ void ShowWarning(
 
   Java_PasswordMigrationWarningBridge_showWarning(
       AttachCurrentThread(), window->GetJavaObject(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      static_cast<int>(trigger_source));
 
   RecordPasswordMigrationWarningTriggerSource(trigger_source);
 }
@@ -69,7 +70,8 @@ void ShowWarningWithActivity(
 
   Java_PasswordMigrationWarningBridge_showWarningWithActivity(
       AttachCurrentThread(), activity, bottom_sheet_controller,
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      static_cast<int>(trigger_source));
 
   RecordPasswordMigrationWarningTriggerSource(trigger_source);
 }

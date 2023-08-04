@@ -100,7 +100,7 @@ public class PasswordMigrationWarningRenderTest {
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
             mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                    mDismissCallback, mOnClickHandler);
+                    () -> {}, mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(
                     mActivityTestRule.getActivity(), mBottomSheetController, () -> {});
             PropertyModelChangeProcessor.create(mModel, mView,

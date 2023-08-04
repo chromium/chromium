@@ -39,6 +39,8 @@ class PasswordMigrationWarningProperties {
     }
 
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
+    public static final ReadableObjectPropertyKey<Runnable> ON_SHOW_EVENT_LISTENER =
+            new ReadableObjectPropertyKey<>("on_show_event_listener");
     static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new ReadableObjectPropertyKey<>("dismiss_handler");
     static final ReadableObjectPropertyKey<PasswordMigrationWarningOnClickHandler>
@@ -52,11 +54,13 @@ class PasswordMigrationWarningProperties {
     public static final WritableObjectPropertyKey ACCOUNT_DISPLAY_NAME =
             new WritableObjectPropertyKey("account_display_name");
 
-    static PropertyModel createDefaultModel(Callback<Integer> dismissHandler,
+    static PropertyModel createDefaultModel(Runnable onShowEventListener,
+            Callback<Integer> dismissHandler,
             PasswordMigrationWarningOnClickHandler onClickHandler) {
         return new PropertyModel
-                .Builder(VISIBLE, DISMISS_HANDLER, SHOULD_OFFER_SYNC, ON_CLICK_HANDLER,
-                        CURRENT_SCREEN, ACCOUNT_DISPLAY_NAME)
+                .Builder(VISIBLE, ON_SHOW_EVENT_LISTENER, DISMISS_HANDLER, SHOULD_OFFER_SYNC,
+                        ON_CLICK_HANDLER, CURRENT_SCREEN, ACCOUNT_DISPLAY_NAME)
+                .with(ON_SHOW_EVENT_LISTENER, onShowEventListener)
                 .with(DISMISS_HANDLER, dismissHandler)
                 .with(ON_CLICK_HANDLER, onClickHandler)
                 .build();

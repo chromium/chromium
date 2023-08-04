@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarning
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ON_CLICK_HANDLER;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ON_SHOW_EVENT_LISTENER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.SHOULD_OFFER_SYNC;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
@@ -27,7 +28,9 @@ class PasswordMigrationWarningViewBinder {
      */
     static void bindPasswordMigrationWarningView(
             PropertyModel model, PasswordMigrationWarningView view, PropertyKey propertyKey) {
-        if (propertyKey == DISMISS_HANDLER) {
+        if (propertyKey == ON_SHOW_EVENT_LISTENER) {
+            view.setOnShowEventListener(model.get(ON_SHOW_EVENT_LISTENER));
+        } else if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));

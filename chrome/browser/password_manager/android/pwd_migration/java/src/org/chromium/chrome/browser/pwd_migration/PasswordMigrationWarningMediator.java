@@ -46,6 +46,7 @@ class PasswordMigrationWarningMediator
     private PropertyModel mModel;
     private Profile mProfile;
     private MigrationWarningOptionsHandler mOptionsHandler;
+    private @PasswordMigrationWarningTriggers int mReferrer;
 
     public interface MigrationWarningOptionsHandler {
         /**
@@ -83,21 +84,30 @@ class PasswordMigrationWarningMediator
         void passwordsAvailable();
     }
 
-    PasswordMigrationWarningMediator(
-            Profile profile, MigrationWarningOptionsHandler optionsHandler) {
+    PasswordMigrationWarningMediator(Profile profile, MigrationWarningOptionsHandler optionsHandler,
+            @PasswordMigrationWarningTriggers int referrer) {
         mProfile = profile;
         mOptionsHandler = optionsHandler;
+        mReferrer = referrer;
     }
 
     void initializeModel(PropertyModel model) {
         mModel = model;
     }
 
-    void showWarning(int screenType) {
+    void showWarning(@ScreenType int screenType) {
         mModel.set(SHOULD_OFFER_SYNC, shouldOfferSync());
         mModel.set(VISIBLE, true);
         mModel.set(CURRENT_SCREEN, screenType);
         mModel.set(ACCOUNT_DISPLAY_NAME, getAccountDisplayName(mProfile));
+    }
+
+    void onShown() {
+        if (mReferrer != PasswordMigrationWarningTriggers.CHROME_STARTUP) {
+            return;
+        }
+        PrefService prefService = UserPrefs.get(mProfile);
+        prefService.setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
     }
 
     void onDismissed(@StateChangeReason int reason) {

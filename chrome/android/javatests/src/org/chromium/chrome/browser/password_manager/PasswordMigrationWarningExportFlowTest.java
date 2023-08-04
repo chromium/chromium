@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHand
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningTriggers;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -111,7 +112,7 @@ public class PasswordMigrationWarningExportFlowTest {
                     ManageSyncSettings.class, mExportFlow,
                     (PasswordListObserver observer)
                             -> PasswordManagerHandlerProvider.getInstance().addObserver(observer),
-                    mPasswordStoreBridge);
+                    mPasswordStoreBridge, PasswordMigrationWarningTriggers.CHROME_STARTUP);
             PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
             mCoordinator.showWarning();
         });

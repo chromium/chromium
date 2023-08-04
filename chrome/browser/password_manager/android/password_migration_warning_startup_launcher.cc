@@ -56,16 +56,11 @@ void PasswordMigrationWarningStartupLauncher::
     return;
   }
 
-  if (local_password_migration::ShouldShowWarning(profile_) &&
-      show_migration_warning_callback_) {
+  if (show_migration_warning_callback_) {
     std::move(show_migration_warning_callback_)
         .Run(web_contents_->GetTopLevelNativeWindow(), profile_,
              password_manager::metrics_util::PasswordMigrationWarningTriggers::
                  kChromeStartup);
-    PrefService* prefs = profile_->GetPrefs();
-    prefs->SetBoolean(
-        password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
-        true);
   }
 }
 

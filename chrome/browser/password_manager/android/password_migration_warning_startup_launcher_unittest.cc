@@ -101,17 +101,6 @@ TEST_F(PasswordMigrationWarningStartupLauncherTest,
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(PasswordMigrationWarningStartupLauncherTest, MarksWarningAsShown) {
-  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
-      password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup));
-  store()->AddLogin(CreateTestPasswordForm());
-  task_environment()->RunUntilIdle();
-  warning_startup_launcher()->MaybeFetchPasswordsAndShowWarning(store());
-  task_environment()->RunUntilIdle();
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup));
-}
-
 TEST_F(PasswordMigrationWarningStartupLauncherTest, DoesntFetchIfAlreadyShown) {
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
