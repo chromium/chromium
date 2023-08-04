@@ -602,15 +602,14 @@ void Component::NotifyObservers(UpdateClient::Observer::Events event) const {
 
 base::TimeDelta Component::GetUpdateDuration() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (update_begin_.is_null())
+  if (update_begin_.is_null()) {
     return base::TimeDelta();
-
+  }
   const base::TimeDelta update_cost(base::TimeTicks::Now() - update_begin_);
-  CHECK_GE(update_cost, base::TimeDelta());
-  const base::TimeDelta max_update_delay =
-      update_context_->config->UpdateDelay();
-  return std::min(update_cost, max_update_delay);
+  if (update_cost.is_negative()) {
+    return base::TimeDelta();
+  }
+  return std::min(update_cost, update_context_->config->UpdateDelay());
 }
 
 base::Value::Dict Component::MakeEventUpdateComplete() const {
