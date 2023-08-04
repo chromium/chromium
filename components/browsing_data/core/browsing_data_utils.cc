@@ -283,25 +283,29 @@ std::u16string GetCounterTextFromResult(
     }
 
     bool synced = autofill_result->is_sync_enabled();
+    // Whether the text should use the "synced".
+    bool uses_synced =
+        synced && !base::FeatureList::IsEnabled(
+                      syncer::kReplaceSyncPromosWithSignInPromos);
 
     // Construct the resulting string from the sections in |displayed_strings|.
     switch (displayed_strings.size()) {
       case 0:
         return l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
       case 1:
-        return synced ? l10n_util::GetStringFUTF16(
-                            IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
-                            displayed_strings[0])
-                      : displayed_strings[0];
+        return uses_synced ? l10n_util::GetStringFUTF16(
+                                 IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
+                                 displayed_strings[0])
+                           : displayed_strings[0];
       case 2:
         return l10n_util::GetStringFUTF16(
-            synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
-                   : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
+            uses_synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
+                        : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
             displayed_strings[0], displayed_strings[1]);
       case 3:
         return l10n_util::GetStringFUTF16(
-            synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
-                   : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
+            uses_synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
+                        : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
             displayed_strings[0], displayed_strings[1], displayed_strings[2]);
       default:
         NOTREACHED();
