@@ -119,9 +119,9 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
       g_browser_process->shared_url_loader_factory();
   auto cache = std::make_unique<chromeos::ExternalCacheImpl>(
       GetCrxCacheDir(), shared_url_loader_factory, GetBackgroundTaskRunner(),
-      delegate, true /* always_check_updates */,
-      false /* wait_for_cache_initialization */,
-      true /* allow_scheduled_updates */);
+      delegate, /*always_check_updates=*/true,
+      /*wait_for_cache_initialization=*/false,
+      /*allow_scheduled_updates=*/true);
   cache->set_flush_on_put(true);
   return cache;
 }

@@ -746,8 +746,8 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_PreserveLocalData) {
   extensions::ResultCatcher catcher;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -760,8 +760,8 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PreserveLocalData) {
   extensions::ResultCatcher catcher;
   StartExistingAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false);
 
   EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();

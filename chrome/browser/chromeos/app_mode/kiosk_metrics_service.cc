@@ -73,7 +73,7 @@ bool IsPreviousKioskSessionCrashed(const std::vector<std::string>& crash_dirs,
       continue;
     }
     base::FileEnumerator enumerator(
-        base::FilePath(crash_file_path), /* recursive= */ true,
+        base::FilePath(crash_file_path), /*recursive=*/true,
         base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
     while (!enumerator.Next().empty()) {
       if (enumerator.GetInfo().GetLastModifiedTime() > previous_start_time) {

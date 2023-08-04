@@ -95,7 +95,7 @@ class ArcKioskAppServiceTest : public testing::Test {
     arc_app_test_.set_persist_service_manager(true);
     arc_app_test_.SetUp(profile_.get());
     app_info_ = arc::mojom::AppInfo::New(kAppName, kAppPackageName,
-                                         kAppClassName, true /* sticky */);
+                                         kAppClassName, /*sticky=*/true);
     arc_policy_bridge_ =
         arc::ArcPolicyBridge::GetForBrowserContextForTesting(profile_.get());
     app_manager_ = std::make_unique<ArcKioskAppManager>();

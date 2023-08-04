@@ -313,8 +313,8 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
 }
 
 void KioskBaseTest::WaitForAppLaunchSuccess() {
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              true /* terminate_app */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/true);
 }
 
 void KioskBaseTest::RunAppLaunchNetworkDownTest() {

@@ -222,8 +222,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
 
   PrepareAppLaunch();
   EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskApp));
-  WaitForAppLaunchWithOptions(false /* check_launch_data */,
-                              true /* terminate_app */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/false,
+                              /*terminate_app=*/true);
 
   // Private store should serve crx and CWS should not.
   DCHECK_GT(private_store.GetUpdateCheckCountAndReset(), 0);
@@ -298,9 +298,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, LaunchAppUserCancel) {
 class KioskEnterpriseEphemeralTest
     : public KioskEnterpriseTest,
       public testing::WithParamInterface<std::tuple<
-          /* ephemeral_users_enabled */ bool,
-          /* kiosk_ephemeral_mode */ policy::DeviceLocalAccount::
-              EphemeralMode>> {
+          /*ephemeral_users_enabled=*/bool,
+          /*kiosk_ephemeral_mode=*/policy::DeviceLocalAccount::EphemeralMode>> {
  public:
   KioskEnterpriseEphemeralTest(const KioskEnterpriseEphemeralTest&) = delete;
   KioskEnterpriseEphemeralTest& operator=(const KioskEnterpriseEphemeralTest&) =

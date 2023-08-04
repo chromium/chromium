@@ -182,9 +182,9 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, DISABLED_SpokenFeedback) {
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(false /* check launch data */,
-                              false /* terminate app */,
-                              true /* keep app open */);
+  WaitForAppLaunchWithOptions(/*check launch data=*/false,
+                              /*terminate app=*/false,
+                              /*keep app open=*/true);
   sm.ExpectSpeech("ChromeVox spoken feedback is ready");
   sm.Call([]() {
     // Navigate to the next object (should move to the heading and speak
