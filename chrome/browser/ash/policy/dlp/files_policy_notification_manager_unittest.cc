@@ -692,6 +692,13 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   // Only the task_id field is important.
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
+  status.state = file_manager::io_task::State::kPaused;
+  status.type = type;
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
+      absl::nullopt);
+  status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      policy, /*warning_files_count=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
@@ -729,6 +736,20 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   // Only the task_id field is important.
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
+  status.state = file_manager::io_task::State::kPaused;
+  status.type = type;
+  base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII(kFile1);
+  ASSERT_FALSE(src_file_path_1.empty());
+  base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII(kFile2);
+  ASSERT_FALSE(src_file_path_2.empty());
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
+      absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
+      absl::nullopt);
+  status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      policy, /*warning_files_count=*/2);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
@@ -791,6 +812,12 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   // Only the task_id field is important.
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
+  status.state = file_manager::io_task::State::kError;
+  status.type = type;
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
+      absl::nullopt);
+  status.policy_error.emplace(policy, /*blocked_files=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
@@ -826,6 +853,19 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   // Only the task_id field is important.
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
+  status.state = file_manager::io_task::State::kError;
+  status.type = type;
+  base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII(kFile1);
+  ASSERT_FALSE(src_file_path_1.empty());
+  base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII(kFile2);
+  ASSERT_FALSE(src_file_path_2.empty());
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
+      absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
+      absl::nullopt);
+  status.policy_error.emplace(policy, 2);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
