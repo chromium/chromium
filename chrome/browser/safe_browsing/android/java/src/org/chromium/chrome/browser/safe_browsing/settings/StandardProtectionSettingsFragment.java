@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -24,6 +25,12 @@ import org.chromium.components.user_prefs.UserPrefs;
  */
 public class StandardProtectionSettingsFragment
         extends SafeBrowsingSettingsFragmentBase implements Preference.OnPreferenceChangeListener {
+    @VisibleForTesting
+    static final String PREF_SUBTITLE = "subtitle";
+    @VisibleForTesting
+    static final String PREF_BULLET_ONE = "bullet_one";
+    @VisibleForTesting
+    static final String PREF_BULLET_TWO = "bullet_two";
     @VisibleForTesting
     static final String PREF_EXTENDED_REPORTING = "extended_reporting";
     @VisibleForTesting
@@ -46,12 +53,39 @@ public class StandardProtectionSettingsFragment
         mPasswordLeakDetectionPreference.setOnPreferenceChangeListener(this);
         mPasswordLeakDetectionPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
+        updateToFriendlierSettings();
         updateLeakDetectionAndExtendedReportingPreferences();
     }
 
     @Override
     protected int getPreferenceResource() {
         return R.xml.standard_protection_preferences;
+    }
+
+    /**
+     * Updates the standard protection fragment based on the value of the friendlier settings
+     * feature flag. The updates include removing the two bullet points and updating the strings.
+     */
+    private void updateToFriendlierSettings() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
+            // Remove the two bullet points
+            getPreferenceScreen().removePreference(findPreference(PREF_BULLET_ONE));
+            getPreferenceScreen().removePreference(findPreference(PREF_BULLET_TWO));
+
+            // Update the strings to the friendlier settings strings if the friendlier settings
+            // feature flag is enabled. Otherwise, it will use the default strings that are
+            // defined in the standard_protection_preferences.xml file.
+            findPreference(PREF_SUBTITLE)
+                    .setTitle(getContext().getString(
+                            R.string.safe_browsing_standard_protection_subtitle_updated));
+            mExtendedReportingPreference.setTitle(getContext().getString(
+                    R.string.safe_browsing_standard_protection_extended_reporting_title_updated));
+            mPasswordLeakDetectionPreference.setTitle(
+                    getContext().getString(R.string.passwords_leak_detection_switch_title_updated));
+            mPasswordLeakDetectionPreference.setSummary(
+                    getContext().getString(R.string.passwords_leak_detection_switch_summary));
+        }
     }
 
     /**

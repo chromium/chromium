@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -101,6 +102,13 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         mStandardProtection = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
                 R.id.standard_protection);
         mStandardProtection.setAuxButtonClickedListener(this);
+        // Update the description text with the friendlier settings string based on the value
+        // of the friendlier settings feature flag
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
+            mStandardProtection.setDescriptionText(getContext().getString(
+                    R.string.safe_browsing_standard_protection_summary_updated));
+        }
         mNoProtection = (RadioButtonWithDescription) holder.findViewById(R.id.no_protection);
         RadioButtonWithDescriptionLayout groupLayout =
                 (RadioButtonWithDescriptionLayout) mNoProtection.getRootView();

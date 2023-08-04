@@ -594,6 +594,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_TITLE" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn you if passwords are exposed in a data breach
       </message>
+      <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_TITLE_UPDATED" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
+        Warn you if a password was compromised in a data breach
+      </message>
+      <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_SUMMARY" desc="Summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
+        When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
+      </message>
       <message name="IDS_PASSWORDS_CHECK_TITLE" desc="Title for the check passwords button which allows to check whether the user's passwords have been compromised.">
         Check passwords
       </message>
@@ -1697,6 +1703,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY" desc="Summary for Safe Browsing standard protection mode.">
         Standard protection against websites, downloads, and extensions that are known to be dangerous.
       </message>
+      <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY_UPDATED" desc="Summary for Safe Browsing standard protection mode.">
+        Protects against sites, downloads, and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.
+      </message>
       <message name="IDS_SAFE_BROWSING_NO_PROTECTION_TITLE" desc="Title for Safe Browsing no protection mode. [CHAR_LIMIT=32]">
         No protection (not recommended)
       </message>
@@ -1728,6 +1737,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_SUBTITLE" desc="Subtitle for Safe Browsing standard protection mode.">
         Standard protection:
       </message>
+      <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_SUBTITLE_UPDATED" desc="Subtitle for Safe Browsing standard protection mode.">
+        Standard protection
+      </message>
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE" desc="First bullet point under the Safe Browsing standard protection mode.">
         Detects and warns you about dangerous events when they happen.
       </message>
@@ -1736,6 +1748,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE" desc="Title for Safe Browsing extended reporting.">
         Help improve security on the web
+      </message>
+      <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE_UPDATED" desc="Title for Safe Browsing extended reporting.">
+        Help improve security on the web for everyone
       </message>
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY" desc="Summary for Safe Browsing extended reporting.">
         Sends URLs of some pages you visit, limited system information, and some page content to Google, to help discover new threats and protect everyone on the web.

@@ -275,6 +275,8 @@ public abstract class ChromeFeatureList {
             "ForceDisableExtendedSyncPromos";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";
+    public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION =
+            "FriendlierSafeBrowsingSettingsStandardProtection";
     public static final String GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES =
             "GridTabSwitcherLandscapeAspectRatioPhones";
     public static final String HISTORY_JOURNEYS = "Journeys";
