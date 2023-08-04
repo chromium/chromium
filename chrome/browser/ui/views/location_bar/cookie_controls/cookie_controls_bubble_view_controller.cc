@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 
 #include "base/check_is_test.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -245,11 +247,21 @@ void CookieControlsBubbleViewController::SetCallbacks() {
               base::Unretained(this)));
 }
 
-void CookieControlsBubbleViewController::OnToggleButtonPressed(bool new_value) {
-  controller_->OnCookieBlockingEnabledForSite(!new_value);
+void CookieControlsBubbleViewController::OnToggleButtonPressed(
+    bool allow_third_party_cookies) {
+  if (allow_third_party_cookies) {
+    base::RecordAction(base::UserMetricsAction(
+        "CookieControls.Bubble.AllowThirdPartyCookies"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "CookieControls.Bubble.BlockThirdPartyCookies"));
+  }
+  controller_->OnCookieBlockingEnabledForSite(!allow_third_party_cookies);
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("CookieControls.Bubble.SendFeedback"));
   chrome::ShowFeedbackPage(
       chrome::FindBrowserWithWebContents(web_contents_.get()),
       chrome::kFeedbackSourceCookieControls,

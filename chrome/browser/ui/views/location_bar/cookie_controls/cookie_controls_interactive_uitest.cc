@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list_buildflags.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +30,12 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+
+const char kUMABubbleAllowThirdPartyCookies[] =
+    "CookieControls.Bubble.AllowThirdPartyCookies";
+const char kUMABubbleBlockThirdPartyCookies[] =
+    "CookieControls.Bubble.BlockThirdPartyCookies";
+const char kUMABubbleSendFeedback[] = "CookieControls.Bubble.SendFeedback";
 }
 
 class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
@@ -140,6 +147,7 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
                                   "/third_party_partitioned_cookies.html");
   }
 
+  base::UserActionTester user_actions_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
@@ -239,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
       PressButton(kCookieControlsIconElementId),
       PressButton(CookieControlsContentView::kFeedbackButton),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleSendFeedback), 1);
 }
 #endif
 
@@ -260,6 +269,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
       PressButton(kLocationIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
@@ -281,4 +292,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
       PressButton(kLocationIconElementId),
       EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleSendFeedback), 0);
 }
