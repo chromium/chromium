@@ -195,6 +195,16 @@ export const OPTION_DEFAULT = {
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
   [OptionType.ZHUYIN_PAGE_SIZE]: '10',
   [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
+  // Options for Vietnamese inputs.
+  [OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS]: true,
+  [OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT]: false,
+  [OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO]: false,
+  [OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE]: true,
+  [OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS]: true,
+  [OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT]: false,
+  [OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO]: false,
+  [OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W]: false,
+  [OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE]: true,
 } satisfies Partial<Record<OptionType, unknown>>;
 
 /**
