@@ -82,6 +82,10 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/condition_variable.cpp",
     "//third_party/libc++/src/src/condition_variable_destructor.cpp",
     "//third_party/libc++/src/src/exception.cpp",
+    "//third_party/libc++/src/src/filesystem/directory_iterator.cpp",
+    "//third_party/libc++/src/src/filesystem/filesystem_error.cpp",
+    "//third_party/libc++/src/src/filesystem/operations.cpp",
+    "//third_party/libc++/src/src/filesystem/path.cpp",
     "//third_party/libc++/src/src/functional.cpp",
     "//third_party/libc++/src/src/future.cpp",
     "//third_party/libc++/src/src/hash.cpp",
@@ -129,11 +133,7 @@ target(_libcxx_target_type, "libc++") {
     # which currently only needs to run on Linux.
     sources += [
       "//third_party/libc++/src/src/filesystem/directory_entry.cpp",
-      "//third_party/libc++/src/src/filesystem/directory_iterator.cpp",
       "//third_party/libc++/src/src/filesystem/filesystem_clock.cpp",
-      "//third_party/libc++/src/src/filesystem/filesystem_error.cpp",
-      "//third_party/libc++/src/src/filesystem/operations.cpp",
-      "//third_party/libc++/src/src/filesystem/path.cpp",
     ]
   }
 
