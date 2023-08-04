@@ -1737,6 +1737,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MINI_MAP_CONSENT_FOOTER" desc="The text of the footer note in the consent screen for mini map. Contains a link [iOS only].">
         You can manage this in BEGIN_LINK Content Settings END_LINK
       </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_MORE" desc="The text of the button to show more text of the consent [iOS only].">
+        More
+      </message>
       <message name="IDS_IOS_MINI_MAP_CONSENT_SUBTITLE" desc="The subtitle of the consent screen for mini map [iOS only].">
         Allow Chrome to use Google Maps to give you directions and local info on detected addresses.
       </message>

@@ -92,6 +92,13 @@
 - (void)showConsentInterstitial {
   self.consentViewController = [[MiniMapInterstitialViewController alloc] init];
   self.consentViewController.actionHandler = self;
+  self.consentViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.consentViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents =
+      @[ UISheetPresentationControllerDetent.largeDetent ];
   [self.baseViewController presentViewController:self.consentViewController
                                         animated:YES
                                       completion:nil];

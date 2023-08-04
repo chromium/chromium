@@ -28,7 +28,7 @@
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.bannerName = @"Sample-banner-tall";
-  self.isTallBanner = YES;
+  self.bannerSize = BannerImageSizeType::kTall;
   self.scrollToEndMandatory = YES;
 
   // Add some screen-specific content and its constraints.

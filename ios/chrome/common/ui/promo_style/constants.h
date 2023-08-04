@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-// A11y Identifier for avatar background image.
-extern NSString* const kPromoStyleAvatarBackgroundAccessibilityIdentifier;
+// A11y Identifier for header view background image.
+extern NSString* const kPromoStyleHeaderViewBackgroundAccessibilityIdentifier;
 
 // A11y Identifier for title label.
 extern NSString* const kPromoStyleTitleAccessibilityIdentifier;

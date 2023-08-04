@@ -69,12 +69,12 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier = kTangibleSyncViewAccessibilityIdentifier;
   self.shouldHideBanner = YES;
-  self.hasAvatarImage = YES;
+  self.headerImageType = PromoStyleImageType::kAvatar;
   self.scrollToEndMandatory = YES;
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
-  self.avatarImage = self.primaryIdentityAvatarImage;
-  self.avatarAccessibilityLabel = self.primaryIdentityAvatarAccessibilityLabel;
+  self.headerImage = self.primaryIdentityAvatarImage;
+  self.headerAccessibilityLabel = self.primaryIdentityAvatarAccessibilityLabel;
   int titleStringID = 0;
   int subtitleStringID = 0;
   titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
@@ -134,7 +134,7 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
 - (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage {
   if (_primaryIdentityAvatarImage != primaryIdentityAvatarImage) {
     _primaryIdentityAvatarImage = primaryIdentityAvatarImage;
-    self.avatarImage = primaryIdentityAvatarImage;
+    self.headerImage = primaryIdentityAvatarImage;
   }
 }
 
@@ -144,7 +144,7 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
       primaryIdentityAvatarAccessibilityLabel) {
     _primaryIdentityAvatarAccessibilityLabel =
         primaryIdentityAvatarAccessibilityLabel;
-    self.avatarAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
+    self.headerAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
   }
 }
 

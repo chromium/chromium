@@ -5,8 +5,8 @@
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import <Foundation/Foundation.h>
 
-NSString* const kPromoStyleAvatarBackgroundAccessibilityIdentifier =
-    @"PromoStyleAvatarBackgroundAccessibilityIdentifier";
+NSString* const kPromoStyleHeaderViewBackgroundAccessibilityIdentifier =
+    @"PromoStyleHeaderViewBackgroundAccessibilityIdentifier";
 NSString* const kPromoStyleTitleAccessibilityIdentifier =
     @"PromoStyleTitleAccessibilityIdentifier";
 NSString* const kPromoStyleSubtitleAccessibilityIdentifier =

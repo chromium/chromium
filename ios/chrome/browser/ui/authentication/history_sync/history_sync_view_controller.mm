@@ -16,8 +16,8 @@
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier = kHistorySyncViewAccessibilityIdentifier;
   self.shouldHideBanner = YES;
-  self.hasAvatarImage = YES;
-  self.avatarBackgroundImage =
+  self.headerImageType = PromoStyleImageType::kAvatar;
+  self.headerBackgroundImage =
       [UIImage imageNamed:@"history_sync_opt_in_background"];
   self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);
@@ -31,12 +31,12 @@
 #pragma mark - HistorySyncConsumer
 
 - (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage {
-  self.avatarImage = primaryIdentityAvatarImage;
+  self.headerImage = primaryIdentityAvatarImage;
 }
 
 - (void)setPrimaryIdentityAvatarAccessibilityLabel:
     (NSString*)primaryIdentityAvatarAccessibilityLabel {
-  self.avatarAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
+  self.headerAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
 }
 
 @end

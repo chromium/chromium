@@ -57,7 +57,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSignInScreenAccessibilityIdentifier;
-  self.isTallBanner = NO;
+  self.bannerSize = BannerImageSizeType::kStandard;
   self.scrollToEndMandatory = YES;
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);

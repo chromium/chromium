@@ -18,7 +18,7 @@
   self.secondaryActionString = @"Not now";
   self.tertiaryActionString = @"Customize sync";
   self.bannerName = @"Sample-banner";
-  self.isTallBanner = NO;
+  self.bannerSize = BannerImageSizeType::kStandard;
 
   // Add some screen-specific content and its constraints.
   UILabel* label = [[UILabel alloc] init];

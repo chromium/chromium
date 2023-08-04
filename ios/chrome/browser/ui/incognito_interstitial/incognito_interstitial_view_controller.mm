@@ -76,7 +76,7 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
       kIncognitoInterstitialAccessibilityIdentifier;
 
   self.bannerName = kIncognitoInterstitialBannerName;
-  self.isTallBanner = NO;
+  self.bannerSize = BannerImageSizeType::kStandard;
   self.shouldBannerFillTopSpace = YES;
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
 
@@ -217,9 +217,9 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   [self updateNavigationBarAppearance];
-  [super traitCollectionDidChange:previousTraitCollection];
 }
 
 - (void)viewDidLayoutSubviews {

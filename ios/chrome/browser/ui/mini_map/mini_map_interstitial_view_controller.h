@@ -8,9 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/mini_map/mini_map_action_handler.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // The view controller presenting the Consent screen for the Minimap feature.
-@interface MiniMapInterstitialViewController : UIViewController
+@interface MiniMapInterstitialViewController : PromoStyleViewController
 
 // The handler for UI interactions.
 @property(nonatomic, weak) id<MiniMapActionHandler> actionHandler;

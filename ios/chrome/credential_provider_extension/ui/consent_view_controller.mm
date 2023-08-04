@@ -40,7 +40,7 @@ NSString* const kConsentViewControllerIdentifier =
   self.titleText =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_TITLE",
                         @"The title in the consent screen.");
-  self.isTallBanner = NO;
+  self.bannerSize = BannerImageSizeType::kStandard;
   self.shouldShowLearnMoreButton = YES;
   self.primaryActionString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_BUTTON_TITLE",
