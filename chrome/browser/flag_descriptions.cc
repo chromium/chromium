@@ -5162,6 +5162,16 @@ const char kAdaptiveChargingName[] = "Enable adaptive charging feature";
 const char kAdaptiveChargingDescription[] =
     "Show settings to enable/disable adaptive charging feature.";
 
+const char kAllowCrossDeviceFeatureSuiteName[] =
+    "Allow the use of Cross-Device features";
+const char kAllowCrossDeviceFeatureSuiteDescription[] =
+    "Allow features such as Nearby Share, PhoneHub, Fast Pair, and Smart Lock, "
+    "that require communication with a nearby device. This should be enabled "
+    "by default on most platforms, and only disabled in cases where we cannot "
+    "guarantee a good experience with the stock Bluetooth hardware (e.g. "
+    "ChromeOS Flex). If disabled, this removes all Cross-Device features and "
+    "their entries in the Settings app.";
+
 const char kAllowDevtoolsInSystemUIName[] = "Enable DevTools in System UI";
 const char kAllowDevtoolsInSystemUIDescription[] =
     "Enable the developer tools (DevTools) including the page source viewer "

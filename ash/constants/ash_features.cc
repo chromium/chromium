@@ -11,6 +11,7 @@
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 
 namespace ash::features {
@@ -51,6 +52,19 @@ BASE_FEATURE(kAdjustSplitViewForVK,
 BASE_FEATURE(kAllowAmbientEQ,
              "AllowAmbientEQ",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Cross-Device features, e.g. Nearby Share, Smart Lock, Fast Pair, etc.
+// This flag is used to disable Cross-Device on platforms where we cannot yet
+// guarantee a good experience with the stock Bluetooth hardware (e.g. Reven /
+// ChromeOS Flex).
+BASE_FEATURE(kAllowCrossDeviceFeatureSuite,
+             "AllowCrossDeviceFeatureSuite",
+#if BUILDFLAG(IS_REVEN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_REVEN)
+);
 
 // Allows DevTools to open from the context menu and shortcut keys in Ash if
 // Lacros is the only browser.

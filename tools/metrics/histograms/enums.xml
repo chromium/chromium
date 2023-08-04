@@ -59753,6 +59753,7 @@ from previous Chrome versions.
   <int value="-2141247271" label="AndroidOmniboxPreviewsBadge:enabled"/>
   <int value="-2141179322" label="ChromeOSSyncedSessionSharing:disabled"/>
   <int value="-2140007754" label="HomepageSettingsUIConversion:disabled"/>
+  <int value="-2139889252" label="AllowCrossDeviceFeatureSuite:disabled"/>
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
   <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
@@ -64024,6 +64025,7 @@ from previous Chrome versions.
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>
   <int value="4588113" label="CacheOneGoogleBar:disabled"/>
+  <int value="4662589" label="AllowCrossDeviceFeatureSuite:enabled"/>
   <int value="5654819" label="CrostiniGpuSupport:disabled"/>
   <int value="5719625" label="PretokenizeCss:disabled"/>
   <int value="6041813" label="PermissionChipGestureSensitive:disabled"/>

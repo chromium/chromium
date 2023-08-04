@@ -2989,6 +2989,9 @@ extern const char kAdaptiveChargingDescription[];
 extern const char kAdaptiveChargingForTestingName[];
 extern const char kAdaptiveChargingForTestingDescription[];
 
+extern const char kAllowCrossDeviceFeatureSuiteName[];
+extern const char kAllowCrossDeviceFeatureSuiteDescription[];
+
 extern const char kAllowDevtoolsInSystemUIName[];
 extern const char kAllowDevtoolsInSystemUIDescription[];
 
