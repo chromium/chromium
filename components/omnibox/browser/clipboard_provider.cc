@@ -323,7 +323,8 @@ void ClipboardProvider::OnReceiveClipboardContent(
     const AutocompleteInput& input,
     base::TimeDelta clipboard_contents_age,
     std::set<ClipboardContentType> matched_types) {
-  if (matched_types.find(ClipboardContentType::Image) != matched_types.end()) {
+  if (TemplateURLSupportsImageSearch() &&
+      matched_types.find(ClipboardContentType::Image) != matched_types.end()) {
     // The image content will be added in later. If the image is large, encoding
     // the image may take some time, so just be wary whenever that step happens
     // (e.g OmniboxView::OpenMatch).
@@ -337,8 +338,9 @@ void ClipboardProvider::OnReceiveClipboardContent(
     AddCreatedMatchWithTracking(input, std::move(match),
                                 clipboard_contents_age);
     NotifyListeners(true);
-  } else if (matched_types.find(ClipboardContentType::Text) !=
-             matched_types.end()) {
+  } else if (TemplateURLSupportsTextSearch() &&
+             matched_types.find(ClipboardContentType::Text) !=
+                 matched_types.end()) {
     AutocompleteMatch match = NewBlankTextMatch();
     AddCreatedMatchWithTracking(input, std::move(match),
                                 clipboard_contents_age);
@@ -378,6 +380,10 @@ absl::optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
   *read_clipboard_content = false;
   if (base::FeatureList::IsEnabled(
           omnibox::kClipboardSuggestionContentHidden)) {
+    return absl::nullopt;
+  }
+
+  if (!TemplateURLSupportsTextSearch()) {
     return absl::nullopt;
   }
 
@@ -477,6 +483,12 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
   AutocompleteMatch match(this, kClipboardMatchRelevanceScore,
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_TEXT);
+  // Any path leading here should first verify whether
+  // TemplateUrlSupportsTextSearch().
+  TemplateURLService* url_service = client_->GetTemplateURLService();
+  const TemplateURL* default_url = url_service->GetDefaultSearchProvider();
+  DCHECK(!!default_url);
+  match.keyword = default_url->keyword();
 
   match.description.assign(l10n_util::GetStringUTF16(IDS_TEXT_FROM_CLIPBOARD));
   if (!match.description.empty())
@@ -500,6 +512,12 @@ AutocompleteMatch ClipboardProvider::NewBlankImageMatch() {
   AutocompleteMatch match(this, kClipboardMatchRelevanceScore,
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_IMAGE);
+  // Any path leading here should first verify whether
+  // TemplateUrlSupportsImageSearch().
+  TemplateURLService* url_service = client_->GetTemplateURLService();
+  const TemplateURL* default_url = url_service->GetDefaultSearchProvider();
+  DCHECK(!!default_url);
+  match.keyword = default_url->keyword();
 
   match.description.assign(l10n_util::GetStringUTF16(IDS_IMAGE_FROM_CLIPBOARD));
   if (!match.description.empty())
