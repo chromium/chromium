@@ -631,6 +631,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
         ->current_replication_state();
   }
 
+  // In certain cases, such as when navigating from a non-live (e.g., crashed
+  // or initial) RenderFrameHost, the target speculative RenderFrameHost needs
+  // to be swapped in and become the current RenderFrameHost before the
+  // navigation commit.  This is a helper for performing this early
+  // RenderFrameHost swap when necessary.  It should only be called once during
+  // `request`'s lifetime.
+  void PerformEarlyRenderFrameHostSwapIfNeeded(NavigationRequest* request);
+
   base::WeakPtr<RenderFrameHostManager> GetWeakPtr();
 
  private:
