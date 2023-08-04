@@ -17068,21 +17068,6 @@
             ]
         }
     ],
-    "WinSboxAllowSystemFonts": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "WinSboxAllowSystemFonts"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSboxHighRendererJobMemoryLimits": [
         {
             "platforms": [

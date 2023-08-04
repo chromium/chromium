@@ -88,11 +88,7 @@ RendererSandboxedProcessLauncherDelegateWin::
 }
 
 bool RendererSandboxedProcessLauncherDelegateWin::AllowWindowsFontsDir() {
-  if (is_pdf_renderer_) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(
-      sandbox::policy::features::kWinSboxAllowSystemFonts);
+  return is_pdf_renderer_;
 }
 
 std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {

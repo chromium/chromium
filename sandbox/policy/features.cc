@@ -59,12 +59,6 @@ BASE_FEATURE(kRendererAppContainer,
              "RendererAppContainer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Emergency "off switch" for removal of direct system font access from
-// web renderer processes.
-BASE_FEATURE(kWinSboxAllowSystemFonts,
-             "WinSboxAllowSystemFonts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables very high job memory limits for sandboxed renderer processes. This
 // sets a limit of 1Tb, effectively removing the Job memory limits, except in
 // egregious cases.
