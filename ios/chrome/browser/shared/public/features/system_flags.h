@@ -91,9 +91,8 @@ NSString* GetForcedPromoToDisplay();
 // switches, but the former takes precedence.
 std::string GetSegmentForForcedDeviceSwitcherExperience();
 
-// Returns true if the the post iOS restore from backup state should be forced.
-// When true, SignInUtil::IsFirstSessionAfterDeviceRestore() will return true.
-bool IsPostDeviceRestoreForced();
+// Whether a phone backup/restore state should be simulated.
+bool SimulatePostDeviceRestore();
 
 }  // namespace experimental_flags
 

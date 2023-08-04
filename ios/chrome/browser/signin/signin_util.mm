@@ -97,7 +97,7 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
 }
 
 signin::Tribool IsFirstSessionAfterDeviceRestore() {
-  if (experimental_flags::IsPostDeviceRestoreForced()) {
+  if (experimental_flags::SimulatePostDeviceRestore()) {
     return signin::Tribool::kTrue;
   }
   static signin::Tribool is_first_session_after_device_restore =

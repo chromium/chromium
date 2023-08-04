@@ -196,9 +196,9 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Force Post Restore State</string>
+			<string>Simulate Post Phone Restore</string>
 			<key>Key</key>
-			<string>ForcePostRestoreState</string>
+			<string>SimulatePostDeviceRestore</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>

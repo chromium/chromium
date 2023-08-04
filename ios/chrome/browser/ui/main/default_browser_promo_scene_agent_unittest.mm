@@ -78,17 +78,20 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   }
 
   void TearDown() override {
-    [[NSUserDefaults standardUserDefaults] setBool:NO
-                                            forKey:@"ForcePostRestoreState"];
+    [[NSUserDefaults standardUserDefaults]
+        setBool:NO
+         forKey:@"SimulatePostDeviceRestore"];
     browser_state_.reset();
     ClearDefaultBrowserPromoData();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
   }
+
   void EnableDefaultBrowserPromoRefactoringFlag() {
     scoped_feature_list_.InitWithFeatures(
         {kDefaultBrowserRefactoringPromoManager}, {});
   }
+
   void SignIn() {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
@@ -98,9 +101,11 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
-  void ForcePostRestoreState() {
-    [[NSUserDefaults standardUserDefaults] setBool:YES
-                                            forKey:@"ForcePostRestoreState"];
+
+  void SimulatePostDeviceRestore() {
+    [[NSUserDefaults standardUserDefaults]
+        setBool:YES
+         forKey:@"SimulatePostDeviceRestore"];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -232,7 +237,7 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationPostRestore_ChromeNotSetDefaultBrowser) {
   scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
-  ForcePostRestoreState();
+  SimulatePostDeviceRestore();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
@@ -246,7 +251,7 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 // conditions are met.
 TEST_F(DefaultBrowserPromoSceneAgentTest, TestPromoRegistrationPostRestore) {
   scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
-  ForcePostRestoreState();
+  SimulatePostDeviceRestore();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   LogOpenHTTPURLFromExternalURL();
   EXPECT_CALL(*promos_manager_.get(),

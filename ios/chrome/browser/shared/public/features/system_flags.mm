@@ -33,10 +33,10 @@ NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
     @"ForceExperienceForDeviceSwitcher";
+NSString* const kSimulatePostDeviceRestore = @"SimulatePostDeviceRestore";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
-NSString* const kForcePostRestoreState = @"ForcePostRestoreState";
 
 }  // namespace
 
@@ -157,9 +157,9 @@ std::string GetSegmentForForcedDeviceSwitcherExperience() {
   return segment;
 }
 
-bool IsPostDeviceRestoreForced() {
-  return
-      [[NSUserDefaults standardUserDefaults] boolForKey:kForcePostRestoreState];
+bool SimulatePostDeviceRestore() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kSimulatePostDeviceRestore];
 }
 
 }  // namespace experimental_flags
