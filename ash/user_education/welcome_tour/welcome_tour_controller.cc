@@ -306,44 +306,61 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   session_observation_.Reset();
 
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
-    // Welcome Tour is not supported for "existing" users.
-    // NOTE: If it is not known whether the user is "new" or "existing" when
+    const absl::optional<bool>& is_new_user =
+        UserEducationController::Get()->IsNewUser(UserEducationPrivateApiKey());
+
+    // If it is not known whether the user is "new" or "existing" when
     // this code is reached, the user is treated as "existing" since the Welcome
     // Tour cannot be delayed and we want to err on the side of being
     // conservative.
-    if (!UserEducationController::Get()
-             ->IsNewUser(UserEducationPrivateApiKey())
-             .value_or(false)) {
+    if (!is_new_user.has_value()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserNewnessNotAvailable);
+      return;
+    }
+
+    // Welcome Tour is not supported for "existing" users.
+    if (!is_new_user.value()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserNotNew);
       return;
     }
 
     // Welcome Tour is not supported for managed accounts.
     const auto* const session_controller = Shell::Get()->session_controller();
     if (session_controller && session_controller->IsActiveAccountManaged()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kManagedAccount);
       return;
     }
 
     // Welcome Tour is supported for regular users only.
     if (const auto user_type = session_controller->GetUserType();
         user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
       return;
     }
   }
 
   // Welcome Tour is not supported with ChromeVox enabled.
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    welcome_tour_metrics::RecordTourPrevented(
+        welcome_tour_metrics::PreventedReason::kChromeVoxEnabled);
     return;
   }
 
   // Welcome Tour is not supported in tablet mode.
   if (TabletMode::IsInTabletMode()) {
+    welcome_tour_metrics::RecordTourPrevented(
+        welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
     return;
   }
 
   // Welcome Tour is not supported for counterfactual experiment arms.
   if (features::IsWelcomeTourEnabledCounterfactually()) {
-    // TODO(http://b/293200505): Record metric.
-    NOTIMPLEMENTED();
+    welcome_tour_metrics::RecordTourPrevented(
+        welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm);
     return;
   }
 

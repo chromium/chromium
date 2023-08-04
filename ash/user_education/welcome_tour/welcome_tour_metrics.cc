@@ -87,7 +87,7 @@ void RecordTourDuration(base::TimeDelta duration, bool completed) {
 }
 
 void RecordTourPrevented(PreventedReason reason) {
-  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Prevented`.";
+  base::UmaHistogramEnumeration("Ash.WelcomeTour.Prevented.Reason", reason);
 }
 
 }  // namespace ash::welcome_tour_metrics

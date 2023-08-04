@@ -27,8 +27,15 @@ enum class AbortedReason {
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
 enum class PreventedReason {
-  kUnknown,
-  kMaxValue = kUnknown,
+  kUnknown = 0,
+  kChromeVoxEnabled = 1,
+  kCounterfactualExperimentArm = 2,
+  kManagedAccount = 3,
+  kTabletModeEnabled = 4,
+  kUserNewnessNotAvailable = 5,
+  kUserNotNew = 6,
+  kUserTypeNotRegular = 7,
+  kMaxValue = kUserTypeNotRegular,
 };
 
 // Enumeration of steps in the Welcome Tour. These values are persisted to logs.
