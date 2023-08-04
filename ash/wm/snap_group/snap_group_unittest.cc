@@ -1103,6 +1103,25 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowReorderInAltTab) {
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
+// Tests that after creating a snap group in clamshell, transition to tablet
+// mode won't crash (b/288179725).
+TEST_F(SnapGroupEntryPointArm1Test, NoCrashWhenRemovingGroupInTabletMode) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+
+  SwitchToTabletMode();
+
+  // Close w2. Test that the group is destroyed but we are still in split view.
+  w2.reset();
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
+  EXPECT_EQ(split_view_controller()->primary_window(), w1.get());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
 // Tests that the swap window source histogram is recorded correctly.
 // TODO(michelefan): move this test to the snap group histogram test fixture
 // when implementing the histograms for the feature.

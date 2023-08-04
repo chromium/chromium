@@ -87,7 +87,10 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
         window_to_snap_group_map_.find(window2) !=
             window_to_snap_group_map_.end());
 
-  snap_group->RestoreWindowsBoundsOnSnapGroupRemoved();
+  if (!Shell::Get()->IsInTabletMode()) {
+    snap_group->RestoreWindowsBoundsOnSnapGroupRemoved();
+  }
+
   window_to_snap_group_map_.erase(window1);
   window_to_snap_group_map_.erase(window2);
   snap_group->StopObservingWindows();

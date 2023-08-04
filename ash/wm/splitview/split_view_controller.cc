@@ -2352,7 +2352,7 @@ void SplitViewController::OnSnapGroupCreated() {
 }
 
 void SplitViewController::OnSnapGroupRemoved() {
-  CHECK(IsSnapGroupEnabledInClamshellMode());
+  CHECK(Shell::Get()->snap_group_controller());
   split_view_divider_.reset();
 }
 
