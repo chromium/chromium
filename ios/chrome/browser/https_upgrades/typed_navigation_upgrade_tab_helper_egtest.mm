@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/common/features.h"
@@ -52,6 +53,8 @@ std::string GetURLWithoutScheme(const GURL& url) {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(omnibox::kDefaultTypedNavigationsToHttps);
+  config.features_disabled.push_back(
+      security_interstitials::features::kHttpsUpgrades);
   return config;
 }
 
