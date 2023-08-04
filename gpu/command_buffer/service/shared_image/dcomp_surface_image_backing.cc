@@ -23,6 +23,7 @@
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space_win.h"
+#include "ui/gl/debug_utils.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
@@ -418,24 +419,54 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
     const wgpu::Device& device,
     const wgpu::TextureUsage usage,
     const gfx::Rect& update_rect) {
-  gfx::Point update_offset;
-  auto draw_texture = BeginDraw(update_rect, update_offset);
+  auto draw_texture = BeginDraw(update_rect, dcomp_update_offset_);
 
   if (!draw_texture) {
     return nullptr;
   }
 
-  // TODO(crbug.com/1468842): figure how to use the update_offset.
+  if (!dcomp_surface_draw_texture_copy_) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+    draw_texture->GetDevice(&d3d11_device);
+
+    D3D11_TEXTURE2D_DESC d3d11_texture_desc;
+    draw_texture->GetDesc(&d3d11_texture_desc);
+
+    // Textures from DComp are guarded and not textureable. Graphite cannot
+    // render to it. We need to create an intermediate texture with
+    // D3D11_BIND_SHADER_RESOURCE and without D3D11_RESOURCE_MISC_GUARDED.
+    // The EndDraw() will copy the content from the intermediate texture back.
+
+    d3d11_texture_desc.Width = size().width();
+    d3d11_texture_desc.Height = size().height();
+    d3d11_texture_desc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+    d3d11_texture_desc.MiscFlags &= ~D3D11_RESOURCE_MISC_GUARDED;
+
+    HRESULT hr = d3d11_device->CreateTexture2D(
+        &d3d11_texture_desc, nullptr, &dcomp_surface_draw_texture_copy_);
+
+    if (FAILED(hr)) {
+      LOG(ERROR) << "CreateTexture2D failed: "
+                 << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+
+    const char kDebugLabel[] = "SharedImage_DCompSurfaceDrawTextureCopy";
+    gl::SetDebugName(dcomp_surface_draw_texture_copy_.Get(), kDebugLabel);
+  }
+
+  dcomp_surface_draw_texture_ = std::move(draw_texture);
+  update_rect_ = update_rect;
 
   // Import the texture into dawn
   D3D11_TEXTURE2D_DESC d3d11_texture_desc;
-  draw_texture->GetDesc(&d3d11_texture_desc);
+  dcomp_surface_draw_texture_copy_->GetDesc(&d3d11_texture_desc);
 
   DCHECK(!external_image_);
-  external_image_ =
-      CreateDawnExternalImageDXGI(device, DCompSurfaceImageBacking::usage(),
-                                  d3d11_texture_desc, draw_texture,
-                                  /*view_formats=*/{});
+  external_image_ = CreateDawnExternalImageDXGI(
+      device, DCompSurfaceImageBacking::usage(), d3d11_texture_desc,
+      dcomp_surface_draw_texture_copy_,
+      /*view_formats=*/{});
   if (!external_image_) {
     LOG(ERROR) << "Failed to create external image.";
     return nullptr;
@@ -461,6 +492,24 @@ void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
   external_image_->EndAccess(texture.Get(), &descriptor);
   external_image_ = nullptr;
   texture.Destroy();
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  dcomp_surface_draw_texture_->GetDevice(&d3d11_device);
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
+  d3d11_device->GetImmediateContext(&d3d11_context);
+  D3D11_BOX src_box = {
+      static_cast<UINT>(update_rect_.x()),
+      static_cast<UINT>(update_rect_.y()),
+      0u,  // front
+      static_cast<UINT>(update_rect_.right()),
+      static_cast<UINT>(update_rect_.bottom()),
+      1u,  // back
+  };
+  d3d11_context->CopySubresourceRegion(
+      dcomp_surface_draw_texture_.Get(), /*DstSubresource=*/0,
+      dcomp_update_offset_.x(), dcomp_update_offset_.y(), /*DstZ=*/0,
+      dcomp_surface_draw_texture_copy_.Get(), /*SrcSubresource=*/0, &src_box);
+  dcomp_surface_draw_texture_.Reset();
 
   EndDraw();
 }

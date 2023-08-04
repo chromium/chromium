@@ -123,6 +123,20 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
 
   Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface_;
 
+  // The texture returned from |dcomp_surface_|'s BeginDraw.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> dcomp_surface_draw_texture_;
+
+  // The intermediate texture that is wrapped into wgpu::Texture and used for
+  // drawing. The content will be copied back to |dcomp_surface_draw_texture_|
+  // at EndDraw.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> dcomp_surface_draw_texture_copy_;
+
+  // The update_rect passed to |dcomp_surface_|'s BeginDraw.
+  gfx::Rect update_rect_;
+
+  // The update_offset returned from |dcomp_surface_|'s BeginDraw.
+  gfx::Point dcomp_update_offset_;
+
   // ExternalImageDXGI is created from |dcomp_surface_|'s draw texture between
   // |BeginDrawGraphite| and |EndDrawGraphite|. This |external_image_| wraps the
   // ComPtr<ID3D11Texture> instead of creating from a share HANDLE.

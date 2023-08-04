@@ -355,8 +355,12 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
     DCHECK(format.is_single_plane());
     DCHECK(!is_yuv_plane);
     DCHECK(!format.IsLegacyMultiplanar());
-    // Textures from DComp surfaces are not samplable.
-    return wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc |
+    // Textures from DComp surfaces cannot be used as TextureBinding, however
+    // DCompSurfaceImageBacking creates a textureable intermediate texture.
+    // TODO(crbug.com/1468844): Remove TextureBinding usage when the
+    // intermediate workaround is remove.
+    return wgpu::TextureUsage::RenderAttachment |
+           wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc |
            wgpu::TextureUsage::CopyDst;
   }
 
