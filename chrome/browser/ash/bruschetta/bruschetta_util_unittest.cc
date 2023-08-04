@@ -7,10 +7,12 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace bruschetta {
 
@@ -60,11 +62,12 @@ TEST(BruschettaUtilTest, SortInstallableConfigs) {
 TEST(BruschettaUtilTest, GetOverallVmNameFromPolicy) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  EXPECT_EQ(GetOverallVmName(&profile), absl::nullopt);
+  EXPECT_EQ(GetOverallVmName(&profile),
+            l10n_util::GetStringUTF16(IDS_BRUSCHETTA_NAME));
   SetVMConfigPref(&profile);
-  EXPECT_EQ(GetOverallVmName(&profile), "def");
+  EXPECT_EQ(GetOverallVmName(&profile), u"def");
   SetInstallerConfigPref(&profile);
-  EXPECT_EQ(GetOverallVmName(&profile), "Display name");
+  EXPECT_EQ(GetOverallVmName(&profile), u"Display name");
 }
 
 TEST(BruschettaUtilTest, GetLearnMoreUrl) {

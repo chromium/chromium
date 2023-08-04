@@ -266,16 +266,7 @@ bool CrostiniSection::ShouldShowBruschetta(Profile* profile) {
 
 void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"bruschettaPageLabel", IDS_SETTINGS_BRUSCHETTA_LABEL},
       {"bruschettaEnable", IDS_SETTINGS_TURN_ON},
-      {"bruschettaSharedUsbDevicesDescription",
-       IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION},
-      {"bruschettaSharedPathsInstructionsAdd",
-       IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD},
-      {"bruschettaSharedPathsRemoveFailureDialogMessage",
-       IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE},
-      {"bruschettaSubtext", IDS_SETTINGS_BRUSCHETTA_SUBTEXT},
-      {"bruschettaRemove", IDS_SETTINGS_BRUSCHETTA_REMOVE},
       {"bruschettaRemoveButton", IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
@@ -461,12 +452,51 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // Should Bruschetta be displayed in the settings at all?
   html_source->AddBoolean("showBruschetta", ShouldShowBruschetta(profile_));
 
+  auto bruschetta_name = bruschetta::GetOverallVmName(profile_);
+
+  html_source->AddString("bruschettaPageLabel",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_BRUSCHETTA_LABEL, bruschetta_name));
+
+  auto learn_more_url =
+      base::UTF8ToUTF16(bruschetta::GetLearnMoreUrl(profile_).spec());
+  if (learn_more_url.empty()) {
+    html_source->AddString(
+        "bruschettaSubtext",
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_BRUSCHETTA_SUBTEXT_NO_LINK,
+                                   ui::GetChromeOSDeviceName()));
+  } else {
+    html_source->AddString("bruschettaSubtext",
+                           l10n_util::GetStringFUTF16(
+                               IDS_SETTINGS_BRUSCHETTA_SUBTEXT,
+                               ui::GetChromeOSDeviceName(), learn_more_url));
+  }
+
+  html_source->AddString(
+      "bruschettaSharedUsbDevicesDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION,
+          bruschetta_name));
   html_source->AddString(
       "bruschettaSharedPathsInstructionsLocate",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_LOCATE,
+          bruschetta_name,
           base::ASCIIToUTF16(
               bruschetta::BruschettaChromeOSBaseDirectory().value())));
+  html_source->AddString(
+      "bruschettaSharedPathsInstructionsAdd",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD,
+          bruschetta_name));
+  html_source->AddString(
+      "bruschettaSharedPathsRemoveFailureDialogMessage",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE,
+          bruschetta_name));
+  html_source->AddString("bruschettaRemove",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_BRUSCHETTA_REMOVE, bruschetta_name));
 
   html_source->AddString(
       "crostiniSubtext",

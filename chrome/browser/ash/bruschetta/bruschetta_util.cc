@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace bruschetta {
 
@@ -164,14 +167,21 @@ absl::optional<const base::Value::Dict*> GetConfigForGuest(
   return GetConfigWithEnabledLevel(profile, config_id, enabled_level);
 }
 
-absl::optional<std::string> GetOverallVmName(Profile* profile) {
+std::u16string GetOverallVmName(Profile* profile) {
+  const std::u16string fallback_name =
+      l10n_util::GetStringUTF16(IDS_BRUSCHETTA_NAME);
+  if (!profile) {
+    // If no profile is present (e.g. some tests), we can't access the policy.
+    return fallback_name;
+  }
+
   // First see if the name is explicitly set in policy.
   const auto& installer_config =
       profile->GetPrefs()->GetDict(prefs::kBruschettaInstallerConfiguration);
   const auto* display_name =
       installer_config.FindString(prefs::kPolicyDisplayNameKey);
   if (display_name) {
-    return *display_name;
+    return base::UTF8ToUTF16(*display_name);
   }
 
   // If not, pick the name of the first VM in configuration.
@@ -182,12 +192,12 @@ absl::optional<std::string> GetOverallVmName(Profile* profile) {
     const base::Value::Dict& first_vm = configs[0].second;
     const auto* name = first_vm.FindString(prefs::kPolicyNameKey);
     if (name) {
-      return *name;
+      return base::UTF8ToUTF16(*name);
     }
     // Config exists but no name, use the key as its name.
-    return configs[0].first;
+    return base::UTF8ToUTF16(configs[0].first);
   }
-  return absl::nullopt;
+  return fallback_name;
 }
 
 GURL GetLearnMoreUrl(Profile* profile) {

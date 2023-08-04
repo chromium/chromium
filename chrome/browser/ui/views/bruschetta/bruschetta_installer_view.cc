@@ -42,14 +42,6 @@ constexpr auto kButtonRowInsets = gfx::Insets::TLBR(0, 64, 32, 64);
 constexpr int kWindowWidth = 768;
 constexpr int kWindowHeight = 636;
 
-std::u16string GetVmName(Profile* profile) {
-  const auto maybe_vm_name = bruschetta::GetOverallVmName(profile);
-  if (maybe_vm_name.has_value()) {
-    return base::UTF8ToUTF16(maybe_vm_name.value());
-  }
-  return l10n_util::GetStringUTF16(IDS_BRUSCHETTA_NAME);
-}
-
 }  // namespace
 
 // static
@@ -111,7 +103,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
 
   // Set the window title.
   SetTitle(l10n_util::GetStringFUTF16(IDS_BRUSCHETTA_INSTALLER_WINDOW_TITLE,
-                                      GetVmName(profile)));
+                                      bruschetta::GetOverallVmName(profile)));
 
   SetCanMinimize(true);
   set_draggable(true);
@@ -326,7 +318,8 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringFUTF16(
-          IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_MESSAGE, GetVmName(profile_));
+          IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_MESSAGE,
+          bruschetta::GetOverallVmName((profile_)));
     case State::kInstalling:
       switch (installing_state_) {
         case InstallerState::kInstallStarted:
