@@ -20,21 +20,13 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list_entry.html.js';
-
-export interface StorageAccessSiteListEntryElement {
-  $: {
-    displayName: HTMLElement,
-    resetAllButton: HTMLElement,
-    expandButton: HTMLElement,
-    originList: CrLazyRenderElement<IronCollapseElement>,
-  };
-}
+import {StorageAccessStaticSiteListEntry} from './storage_access_static_site_list_entry.js';
 
 const StorageAccessSiteListEntryElementBase =
     FocusRowMixin(SiteSettingsMixin(I18nMixin(PolymerElement)));
@@ -52,8 +44,8 @@ export class StorageAccessSiteListEntryElement extends
   static get properties() {
     return {
       /**
-       * A group of storage access site exceptions with the same |origin| and
-       * |setting|.
+       * A group of storage access site exceptions with the same `origin` and
+       * `setting`.
        */
       model: {
         type: Object,
@@ -75,35 +67,20 @@ export class StorageAccessSiteListEntryElement extends
   model: StorageAccessSiteException;
 
   private description_: string;
+  private expandAriaLabel_: string;
   private expanded_: boolean;
 
   /**
    * Triggered when the top row reset button is clicked.
-   * Resets all the permissions in |model.exceptions| i.e. all
+   * Resets all the permissions in `model.exceptions` i.e. all
    * permissions with the same origin.
    */
   private onResetAllButtonClick_() {
     for (const exception of this.model.exceptions) {
-      this.resetException_(exception);
+      this.browserProxy.resetCategoryPermissionForPattern(
+          this.model.origin, exception.embeddingOrigin,
+          ContentSettingsTypes.STORAGE_ACCESS, exception.incognito);
     }
-  }
-
-  /**
-   * Triggered when a nested row reset button is clicked. Resets a single
-   * permission associated with the clicked button.
-   */
-  private onResetButtonClick_(
-      event: DomRepeatEvent<StorageAccessEmbeddingException>) {
-    this.resetException_(event.model.item);
-  }
-
-  /**
-   * Resets a single permission |StorageAccessEmbeddingException|.
-   */
-  private resetException_(exception: StorageAccessEmbeddingException) {
-    this.browserProxy.resetCategoryPermissionForPattern(
-        this.model.origin, exception.embeddingOrigin,
-        ContentSettingsTypes.STORAGE_ACCESS, exception.incognito);
   }
 
   /**
@@ -119,6 +96,7 @@ export class StorageAccessSiteListEntryElement extends
    */
   private onExpandedChanged_() {
     this.description_ = this.computeDescription_();
+    this.expandAriaLabel_ = this.computeExpandButtonAriaLabel_();
 
     if (!this.expanded_) {
       return;
@@ -126,7 +104,9 @@ export class StorageAccessSiteListEntryElement extends
 
     // Renders the nested rows if they haven't been opened before, so we can
     // scroll to make them visible if necessary.
-    this.$.originList.get();
+    this.shadowRoot!
+        .querySelector<CrLazyRenderElement<IronCollapseElement>>(
+            '#originList')!.get();
 
     this.scrollIntoViewIfNeeded();
   }
@@ -141,7 +121,7 @@ export class StorageAccessSiteListEntryElement extends
         item.embeddingDisplayName);
   }
 
-  private getExpandButtonAriaLabel_() {
+  private computeExpandButtonAriaLabel_() {
     return this.expanded_ ? this.i18n('storageAccessCloseExpand') :
                             this.i18n('storageAccessOpenExpand');
   }
@@ -150,12 +130,54 @@ export class StorageAccessSiteListEntryElement extends
    * @returns the correct description according to the widget's state.
    */
   private computeDescription_(): string {
-    if (!this.model) {
+    if (!this.model || !this.model.openDescription ||
+        !this.model.closeDescription) {
       return '';
     }
 
     return this.expanded_ ? this.model.openDescription :
                             this.model.closeDescription;
+  }
+
+  private shouldBeStatic_(): boolean {
+    if (!this.model) {
+      return false;
+    }
+
+    return this.model.exceptions.length === 0;
+  }
+
+  private shouldBeCollapsible_(): boolean {
+    if (!this.model) {
+      return false;
+    }
+
+    return this.model.exceptions.length !== 0;
+  }
+
+  private getStaticSiteEntryForModel_(): StorageAccessStaticSiteListEntry {
+    return {
+      faviconOrigin: this.model.origin,
+      displayName: this.model.displayName,
+      description: this.model.description,
+      resetAriaLabel: this.getResetAllButtonAriaLabel_(),
+      origin: this.model.origin,
+      embeddingOrigin: '',
+      incognito: this.model.incognito || false,
+    };
+  }
+
+  private getStaticSiteEntryForException_(
+      item: StorageAccessEmbeddingException): StorageAccessStaticSiteListEntry {
+    return {
+      faviconOrigin: item.embeddingOrigin,
+      displayName: item.embeddingDisplayName,
+      description: item.description,
+      resetAriaLabel: this.getResetButtonAriaLabel_(item),
+      origin: this.model.origin,
+      embeddingOrigin: item.embeddingOrigin,
+      incognito: item.incognito,
+    };
   }
 }
 

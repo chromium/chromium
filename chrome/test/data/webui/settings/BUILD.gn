@@ -111,6 +111,7 @@ build_webui_tests("build") {
     "site_list_test.ts",
     "site_settings_page_test.ts",
     "startup_urls_page_test.ts",
+    "storage_access_static_site_list_entry_test.ts",
     "storage_access_site_list_entry_test.ts",
     "storage_access_site_list_test.ts",
     "sync_account_control_test.ts",

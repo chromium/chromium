@@ -559,6 +559,14 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_TRUE(display_name);
     ASSERT_EQ(expected_display_name, *display_name);
 
+    // Simple description and incognito should only be present for static
+    // exceptions.
+    const auto* description = exception.FindString(site_settings::kDescription);
+    ASSERT_FALSE(description);
+    absl::optional<bool> incognito =
+        exception.FindBool(site_settings::kIncognito);
+    ASSERT_FALSE(incognito.has_value());
+
     const auto expected_close_description = l10n_util::GetPluralStringFUTF8(
         IDS_DEL_SITE_SETTINGS_COUNTER, expected_embedding_exceptions.size());
     const auto* close_description =
@@ -628,6 +636,57 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
                   expected_embedding_exception.lifetime_in_days);
     ASSERT_TRUE(description);
     ASSERT_EQ(expected_description, *description);
+  }
+
+  void ValidateStaticStorageAccessException(
+      const std::string& expected_origin,
+      const std::string& expected_display_name,
+      const ContentSetting expected_setting,
+      bool expected_incognito,
+      size_t index = 0) {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+
+    const base::Value::Dict& exception =
+        data.arg3()->GetList()[index].GetDict();
+
+    const auto* origin = exception.FindString(site_settings::kOrigin);
+    ASSERT_TRUE(origin);
+    ASSERT_EQ(expected_origin, *origin);
+
+    const auto* display_name =
+        exception.FindString(site_settings::kDisplayName);
+    ASSERT_TRUE(display_name);
+    ASSERT_EQ(expected_display_name, *display_name);
+
+    // Close and open description should only be present for non-static
+    // exceptions.
+    const auto* close_description =
+        exception.FindString(site_settings::kCloseDescription);
+    ASSERT_FALSE(close_description);
+    const auto* open_description =
+        exception.FindString(site_settings::kOpenDescription);
+    ASSERT_FALSE(open_description);
+
+    std::string expected_description = l10n_util::GetStringUTF8(
+        IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED);
+    const auto* description = exception.FindString(site_settings::kDescription);
+    ASSERT_TRUE(description);
+    ASSERT_EQ(expected_description, *description);
+
+    const auto* setting = exception.FindString(site_settings::kSetting);
+    ASSERT_TRUE(setting);
+    ASSERT_EQ(content_settings::ContentSettingToString(expected_setting),
+              *setting);
+
+    absl::optional<bool> incognito =
+        exception.FindBool(site_settings::kIncognito);
+    ASSERT_TRUE(incognito.has_value());
+    EXPECT_EQ(expected_incognito, *incognito);
+
+    const auto* exceptions_list =
+        exception.FindList(site_settings::kExceptions);
+    ASSERT_TRUE(exceptions_list);
+    ASSERT_EQ(0U, exceptions_list->size());
   }
 
   void ValidateNoOrigin(size_t expected_total_calls) {
@@ -3241,8 +3300,7 @@ TEST_P(SiteSettingsHandlerTest, StorageAccessExceptions_Description_All) {
       {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}});
 }
 
-TEST_F(SiteSettingsHandlerTest,
-       StorageAccessExceptions_Description_IsEmbargoed) {
+TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_Description_Embargoed) {
   const std::string kOrigin("https://google.com:443");
   const std::string kDisplayName("google.com");
 
@@ -3270,8 +3328,59 @@ TEST_F(SiteSettingsHandlerTest,
   // Verify that group exception with an embargoed is correct.
   ValidateStorageAccessList(/*expected_total_calls=*/1U,
                             /*expected_num_groups=*/1U);
+  ValidateStaticStorageAccessException(kOrigin, kDisplayName,
+                                       CONTENT_SETTING_BLOCK,
+                                       /*expected_incognito=*/false);
+}
+
+TEST_F(SiteSettingsHandlerTest,
+       StorageAccessExceptions_Description_EmbargoedTwoProfiles) {
+  const std::string kOrigin("https://google.com:443");
+  const std::string kDisplayName("google.com");
+
+  // Set an embargoed setting for regular and incognito profile
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+
+  permissions::PermissionDecisionAutoBlocker* auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
+  auto_blocker->SetClockForTesting(&clock);
+  for (int i = 0; i < 3; ++i) {
+    auto_blocker->RecordDismissAndEmbargo(GURL(kOrigin),
+                                          kPermissionStorageAccess, false);
+  }
+  EXPECT_EQ(
+      CONTENT_SETTING_BLOCK,
+      auto_blocker->GetEmbargoResult(GURL(kOrigin), kPermissionStorageAccess)
+          ->content_setting);
+
+  CreateIncognitoProfile();
+  permissions::PermissionDecisionAutoBlocker* auto_blocker_incognito =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
+  auto_blocker_incognito->SetClockForTesting(&clock);
+  for (int i = 0; i < 3; ++i) {
+    auto_blocker_incognito->RecordDismissAndEmbargo(
+        GURL(kOrigin), kPermissionStorageAccess, false);
+  }
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            auto_blocker_incognito
+                ->GetEmbargoResult(GURL(kOrigin), kPermissionStorageAccess)
+                ->content_setting);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that group exception with an embargoed origin in two profiles is
+  // correct.
+  ValidateStorageAccessList(/*expected_total_calls=*/2U,
+                            /*expected_num_groups=*/1U);
   ValidateStorageAccessException(kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
                                  {{std::string(), "*", /*incognito=*/false,
+                                   /*embargoed=*/true, 0},
+                                  {std::string(), "*", /*incognito=*/true,
                                    /*embargoed=*/true, 0}});
 }
 

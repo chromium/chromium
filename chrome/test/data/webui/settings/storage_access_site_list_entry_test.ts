@@ -8,8 +8,8 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {StorageAccessSiteException, StorageAccessSiteListEntryElement, ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {StorageAccessStaticSiteListEntry, IronCollapseElement, CrLazyRenderElement, StorageAccessSiteException, StorageAccessSiteListEntryElement, ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 
@@ -18,15 +18,15 @@ import {createStorageAccessSiteException, createStorageAccessEmbeddingException}
 // clang-format on
 
 /**
- * Origin used in |exceptionStorageAccessOrigin| and
- * |exceptionStorageAccessOriginWithIncognito|.
+ * Origin used in `storageAccessException` and
+ * `storageAccessExceptionAppliesToEverything`.
  */
 const origin = 'https://example.com';
 
 /**
- * An example of a |StorageAccessSiteException|.
+ * An example of a `StorageAccessSiteException`.
  */
-const exceptionStorageAccessOrigin: StorageAccessSiteException =
+const storageAccessException: StorageAccessSiteException =
     createStorageAccessSiteException(origin, {
       setting: ContentSetting.BLOCK,
       closeDescription: 'open description',
@@ -35,25 +35,20 @@ const exceptionStorageAccessOrigin: StorageAccessSiteException =
         createStorageAccessEmbeddingException(
             'https://foo.com', {description: 'embedding description'}),
         createStorageAccessEmbeddingException(
-            'https://foo2.com', {description: ''}),
+            'https://foo2.com', {description: '', incognito: true}),
       ],
     });
 
 /**
- * An example of a |StorageAccessSiteException| with an incognito exception.
+ * An example of a `StorageAccessSiteException` with only one exception that
+ * applies to every origin.
  */
-const exceptionStorageAccessOriginWithIncognito: StorageAccessSiteException =
+const storageAccessExceptionAppliesToEverything: StorageAccessSiteException =
     createStorageAccessSiteException(origin, {
       setting: ContentSetting.BLOCK,
-      closeDescription: 'open description',
-      openDescription: 'close description',
-      exceptions: [
-        createStorageAccessEmbeddingException(
-            'https://foo.com',
-            {incognito: true, description: 'embedding description'}),
-        createStorageAccessEmbeddingException(
-            'https://foo2.com', {description: 'embedding 2 description'}),
-      ],
+      description: 'description',
+      incognito: false,
+      exceptions: [],
     });
 
 suite('StorageAccessSiteListEntry', function() {
@@ -78,7 +73,7 @@ suite('StorageAccessSiteListEntry', function() {
 
   /**
    * Configures the test element for a particular category.
-   * @param exceptions The |StorageAccessSiteException| to use.
+   * @param exceptions The `StorageAccessSiteException` to use.
    */
   function setUpEntry(exception: StorageAccessSiteException): Promise<void> {
     testElement.model = exception;
@@ -86,110 +81,117 @@ suite('StorageAccessSiteListEntry', function() {
   }
 
   test('origin site name', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
+    await setUpEntry(storageAccessException);
+
+    assertTrue(!!testElement.shadowRoot);
+    const displayName = testElement.shadowRoot.querySelector('#displayName');
+    assertTrue(!!displayName);
 
     // Validate that the StorageAccess origin is displayed on the top level row.
     assertEquals(
         origin,
-        testElement.$.displayName.querySelector('.site-representation')!
-            .textContent!.trim());
+        displayName.querySelector('.site-representation')!.textContent!.trim());
   });
 
   test('origin site description', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
+    await setUpEntry(storageAccessException);
 
-    const secondLine = testElement.$.displayName.querySelector('.second-line');
+    assertTrue(!!testElement.shadowRoot);
+    const displayName = testElement.shadowRoot.querySelector('#displayName');
+    assertTrue(!!displayName);
+
+    const secondLine = displayName.querySelector('.second-line');
     assertTrue(!!secondLine);
 
     // Validate the row description when closed.
     assertEquals(
-        exceptionStorageAccessOrigin.closeDescription,
+        storageAccessException.closeDescription,
         secondLine.textContent!.trim());
 
-    testElement.$.expandButton.click();
+    const expandButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('#expandButton');
+    assertTrue(!!expandButton);
+    expandButton.click();
 
     // Validate the row description when opened.
     assertEquals(
-        exceptionStorageAccessOrigin.openDescription,
-        secondLine.textContent!.trim());
+        storageAccessException.openDescription, secondLine.textContent!.trim());
   });
 
-  test('embedding site rows', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
+  test('nested site rows', async function() {
+    await setUpEntry(storageAccessException);
 
-    const collapseChild = testElement.$.originList.get();
+    assertTrue(!!testElement.shadowRoot);
+    const collapseChild =
+        testElement.shadowRoot
+            .querySelector<CrLazyRenderElement<IronCollapseElement>>(
+                '#originList')!.get();
     assertTrue(!!collapseChild);
     flush();
 
-    // Validate that the embedding origins are displayed on the collapsible
+    // Validate that the nested site entries are created on the collapsible
     // element.
-    const siteListEntry = collapseChild.querySelectorAll('.list-item');
+    const siteListEntry =
+        collapseChild.querySelectorAll('storage-access-static-site-list-entry');
 
     assertEquals(
-        exceptionStorageAccessOrigin.exceptions.length, siteListEntry.length);
+        storageAccessException.exceptions.length, siteListEntry.length);
 
+    // Validate that the first nested site entry.
     const firstNested = siteListEntry[0];
     assertTrue(!!firstNested);
+    const firstException = storageAccessException.exceptions[0];
+    assertTrue(!!firstException);
 
-    const firstUrl = firstNested.querySelector('.url-directionality');
-    assertTrue(!!firstUrl);
-    assertEquals(
-        exceptionStorageAccessOrigin.exceptions[0]!.embeddingDisplayName,
-        firstUrl.textContent!.trim());
+    const expectedFirstReset = loadTimeData.getStringF(
+        'storageAccessResetSite', origin, firstException.embeddingDisplayName);
 
-    const firstDescription = firstNested.querySelector('.second-line');
-    assertTrue(!!firstDescription);
-    assertEquals(
-        exceptionStorageAccessOrigin.exceptions[0]!.description,
-        firstDescription.textContent!.trim());
+    const expectedFirstModel: StorageAccessStaticSiteListEntry = {
+      faviconOrigin: firstException.embeddingOrigin,
+      displayName: firstException.embeddingDisplayName,
+      description: firstException.description,
+      resetAriaLabel: expectedFirstReset,
+      origin: storageAccessException.origin,
+      embeddingOrigin: firstException.embeddingOrigin,
+      incognito: firstException.incognito,
+    };
 
+    assertDeepEquals(expectedFirstModel, firstNested.model);
+
+    // Validate that the second nested site entry.
     const secondNested = siteListEntry[1];
     assertTrue(!!secondNested);
+    const secondException = storageAccessException.exceptions[1];
+    assertTrue(!!secondException);
 
-    const secondUrl = secondNested.querySelector('.url-directionality');
-    assertTrue(!!secondUrl);
-    assertEquals(
-        exceptionStorageAccessOrigin.exceptions[1]!.embeddingDisplayName,
-        secondUrl.textContent!.trim());
+    const expectedSecondReset = loadTimeData.getStringF(
+        'storageAccessResetSite', origin, secondException.embeddingDisplayName);
 
-    const secondDescription = secondNested.querySelector('.second-line');
-    assertTrue(!!secondDescription);
-    assertEquals(
-        exceptionStorageAccessOrigin.exceptions[1]!.description,
-        secondDescription.textContent!.trim());
-  });
+    const expectedSecondModel: StorageAccessStaticSiteListEntry = {
+      faviconOrigin: secondException.embeddingOrigin,
+      displayName: secondException.embeddingDisplayName,
+      description: secondException.description,
+      resetAriaLabel: expectedSecondReset,
+      origin: storageAccessException.origin,
+      embeddingOrigin: secondException.embeddingOrigin,
+      incognito: secondException.incognito,
+    };
 
-  test('embedding site rows with incognito', async function() {
-    await setUpEntry(exceptionStorageAccessOriginWithIncognito);
-
-    const collapseChild = testElement.$.originList.get();
-    assertTrue(!!collapseChild);
-    flush();
-
-    // Validate that the embedding origins incognito symbol is shown correctly.
-    const siteListEntry = collapseChild.querySelectorAll('.list-item');
-
-    assertEquals(
-        exceptionStorageAccessOriginWithIncognito.exceptions.length,
-        siteListEntry.length);
-
-    const firstEntry = siteListEntry[0];
-    assertTrue(!!firstEntry);
-    assertTrue(!!firstEntry.querySelector('#incognitoTooltip0'));
-
-    const secondEntry = siteListEntry[1];
-    assertTrue(!!secondEntry);
-    assertFalse(!!secondEntry.querySelector('#incognitoTooltip1'));
+    assertDeepEquals(expectedSecondModel, secondNested.model);
   });
 
   test('reset all permissions with the same origin site', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
+    await setUpEntry(storageAccessException);
 
-    testElement.$.resetAllButton.click();
+    assertTrue(!!testElement.shadowRoot);
+    const resetAllButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('#resetAllButton');
+    assertTrue(!!resetAllButton);
+    resetAllButton.click();
 
     await browserProxy.whenCalled('resetCategoryPermissionForPattern');
     assertEquals(
-        exceptionStorageAccessOrigin.exceptions.length,
+        storageAccessException.exceptions.length,
         browserProxy.getCallCount('resetCategoryPermissionForPattern'));
 
     // Check if the calls were made with the correct arguments.
@@ -198,83 +200,45 @@ suite('StorageAccessSiteListEntry', function() {
     const argsFirstCall = args[0];
     assertEquals(origin, argsFirstCall[0]);
     assertEquals(
-        exceptionStorageAccessOrigin.exceptions[0]!.embeddingOrigin,
+        storageAccessException.exceptions[0]!.embeddingOrigin,
         argsFirstCall[1]);
     assertEquals(ContentSettingsTypes.STORAGE_ACCESS, argsFirstCall[2]);
+    assertEquals(
+        storageAccessException.exceptions[0]!.incognito, argsFirstCall[3]);
 
     const argsSecondCall = args[1];
     assertEquals(origin, argsSecondCall[0]);
     assertEquals(
-        exceptionStorageAccessOrigin.exceptions[1]!.embeddingOrigin,
+        storageAccessException.exceptions[1]!.embeddingOrigin,
         argsSecondCall[1]);
     assertEquals(ContentSettingsTypes.STORAGE_ACCESS, argsSecondCall[2]);
-  });
-
-  test('reset single permissions', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
-
-    const collapseChild = testElement.$.originList.get();
-    assertTrue(!!collapseChild);
-    flush();
-
-    // Click on the reset button for the first inner child.
-    const resetButton =
-        collapseChild.querySelector<HTMLElement>('#resetButton0');
-    assertTrue(!!resetButton);
-    resetButton.click();
-
-    const args =
-        await browserProxy.whenCalled('resetCategoryPermissionForPattern');
-
-    assertEquals(origin, args[0]);
     assertEquals(
-        exceptionStorageAccessOrigin.exceptions[0]!.embeddingOrigin, args[1]);
-    assertEquals(ContentSettingsTypes.STORAGE_ACCESS, args[2]);
+        storageAccessException.exceptions[1]!.incognito, argsSecondCall[3]);
   });
 
   test('reset all aria-label', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
+    await setUpEntry(storageAccessException);
 
-    const resetButton = testElement.$.resetAllButton;
+    assertTrue(!!testElement.shadowRoot);
+    const resetAllButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('#resetAllButton');
+    assertTrue(!!resetAllButton);
+    resetAllButton.click();
 
     // Validate reset button aria-label for top-row.
     const expectedResetAllLabel =
         loadTimeData.getStringF('storageAccessResetAll', origin);
-    assertEquals(expectedResetAllLabel, resetButton.getAttribute('aria-label'));
-  });
-
-  test('reset site aria-label', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
-
-    // Validate reset button aria-label for nested-rows.
-    const collapseChild = testElement.$.originList.get();
-    assertTrue(!!collapseChild);
-    flush();
-
-    const resetFirstButton =
-        collapseChild.querySelector<HTMLElement>('#resetButton0');
-    assertTrue(!!resetFirstButton);
-    const resetSecondButton =
-        collapseChild.querySelector<HTMLElement>('#resetButton1');
-    assertTrue(!!resetSecondButton);
-
-    const expectedResetFirst = loadTimeData.getStringF(
-        'storageAccessResetSite', origin,
-        exceptionStorageAccessOrigin.exceptions[0]!.embeddingDisplayName);
     assertEquals(
-        expectedResetFirst, resetFirstButton.getAttribute('aria-label'));
-
-    const expectedResetSecond = loadTimeData.getStringF(
-        'storageAccessResetSite', origin,
-        exceptionStorageAccessOrigin.exceptions[1]!.embeddingDisplayName);
-    assertEquals(
-        expectedResetSecond, resetSecondButton.getAttribute('aria-label'));
+        expectedResetAllLabel, resetAllButton.getAttribute('aria-label'));
   });
 
   test('expand aria-label', async function() {
-    await setUpEntry(exceptionStorageAccessOrigin);
+    await setUpEntry(storageAccessException);
 
-    const expandButton = testElement.$.expandButton;
+    assertTrue(!!testElement.shadowRoot);
+    const expandButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('#expandButton');
+    assertTrue(!!expandButton);
 
     // Validate expand button aria-label when closed.
     const expectedExpandOpenArialLabel =
@@ -290,4 +254,31 @@ suite('StorageAccessSiteListEntry', function() {
     assertEquals(
         expectedExpandCloseArialLabel, expandButton.getAttribute('aria-label'));
   });
+
+  test(
+      'static entry for exception that applies to everything',
+      async function() {
+        await setUpEntry(storageAccessExceptionAppliesToEverything);
+
+        assertTrue(!!testElement.shadowRoot);
+
+        const staticRow = testElement.shadowRoot.querySelector(
+            'storage-access-static-site-list-entry');
+        assertTrue(!!staticRow);
+
+        const expectedResetAllLabel =
+            loadTimeData.getStringF('storageAccessResetAll', origin);
+
+        const expectedModel: StorageAccessStaticSiteListEntry = {
+          faviconOrigin: storageAccessExceptionAppliesToEverything.origin,
+          displayName: storageAccessExceptionAppliesToEverything.displayName,
+          description: storageAccessExceptionAppliesToEverything.description,
+          resetAriaLabel: expectedResetAllLabel,
+          origin: storageAccessExceptionAppliesToEverything.origin,
+          embeddingOrigin: '',
+          incognito:
+              storageAccessExceptionAppliesToEverything.incognito || false,
+        };
+        assertDeepEquals(expectedModel, staticRow.model);
+      });
 });

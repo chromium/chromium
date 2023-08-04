@@ -710,7 +710,7 @@ std::u16string GetStorageAccessEmbeddingDescription(
   return GetExpirationDescription(embedding_sa_exception.expiration);
 }
 
-// If the given |pattern| represents an individual origin, Isolated Web App, or
+// If the given `pattern` represents an individual origin, Isolated Web App, or
 // extension, retrieve a string to display it as such. If not, return the
 // pattern without wildcards as a string.
 std::string GetStorageAccessDisplayNameForPattern(
@@ -742,6 +742,30 @@ base::Value::Dict GetStorageAccessExceptionForPage(
   base::Value::Dict exception;
   exception.Set(kOrigin, pattern.ToString());
   exception.Set(kDisplayName, display_name);
+  std::string setting_string =
+      content_settings::ContentSettingToString(setting);
+  DCHECK(!setting_string.empty());
+  exception.Set(kSetting, setting_string);
+
+  // If there is only one exception and that exception applies everywhere,
+  // i.e. `secondary_pattern` is empty, then don't return exceptions and a
+  // static row should be displayed. In practice, this only applies to embargoed
+  // sites.
+  if (exceptions.size() == 1 &&
+      exceptions[0].secondary_pattern == ContentSettingsPattern::Wildcard()) {
+    auto& embedding_sa_exception = exceptions[0];
+
+    std::u16string description =
+        GetStorageAccessEmbeddingDescription(embedding_sa_exception);
+    if (!description.empty()) {
+      exception.Set(kDescription, description);
+    }
+
+    exception.Set(kIncognito, embedding_sa_exception.is_incognito);
+    exception.Set(kExceptions, base::Value::List());
+    return exception;
+  }
+
   exception.Set(kCloseDescription,
                 l10n_util::GetPluralStringFUTF16(IDS_DEL_SITE_SETTINGS_COUNTER,
                                                  exceptions.size()));
@@ -751,11 +775,6 @@ base::Value::Dict GetStorageAccessExceptionForPage(
           : IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_SITE_LABEL;
   exception.Set(kOpenDescription,
                 l10n_util::GetStringUTF16(open_description_id));
-
-  std::string setting_string =
-      content_settings::ContentSettingToString(setting);
-  DCHECK(!setting_string.empty());
-  exception.Set(kSetting, setting_string);
 
   base::Value::List embedding_origins;
   for (auto& embedding_sa_exception : exceptions) {
@@ -807,8 +826,8 @@ std::string GetDisplayNameForGURL(Profile* profile,
       GetUrlIdentityForGURL(profile, url, hostname_only).name);
 }
 
-// Fills in |all_patterns_settings| with site exceptions information for the
-// given |type| from |profile|.
+// Fills in `all_patterns_settings` with site exceptions information for the
+// given `type` from `profile`.
 void GetRawExceptionsForContentSettingsType(
     ContentSettingsType type,
     Profile* profile,

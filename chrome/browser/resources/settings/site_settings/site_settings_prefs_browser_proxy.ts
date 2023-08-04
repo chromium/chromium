@@ -115,9 +115,16 @@ export interface SiteException {
 export interface StorageAccessSiteException {
   origin: string;
   displayName: string;
-  closeDescription: string;
-  openDescription: string;
   setting: ContentSetting;
+
+  // Information needed for a static row.
+  description?: string;
+  incognito?: boolean;
+
+  // Information needed for a grouped row.
+  closeDescription?: string;
+  openDescription?: string;
+
   exceptions: StorageAccessEmbeddingException[];
 }
 

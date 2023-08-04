@@ -387,6 +387,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, StartupUrlsPage) {
   RunTest("settings/startup_urls_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, StorageAccessStaticSiteListEntry) {
+  RunTest("settings/storage_access_static_site_list_entry_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, StorageAccessSiteListEntry) {
   RunTest("settings/storage_access_site_list_entry_test.js", "mocha.run()");
 }
