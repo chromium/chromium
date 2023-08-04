@@ -157,8 +157,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
     // Only used when UserBypassUI flag is off.
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {
-        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-            : "This should only be invoked when UserBypassUI is enabled.";
+        assert !PageInfoFeatures.USER_BYPASS_UI.isEnabled()
+            : "This should only be invoked when UserBypassUI is off.";
 
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean enabled = status == CookieControlsStatus.ENABLED;
