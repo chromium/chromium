@@ -895,6 +895,19 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString(
         "keyboardSendFunctionKeysDescription",
         IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION);
+    html_source->AddLocalizedString("sixPackKeyDeleteSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER);
+    html_source->AddLocalizedString("sixPackKeyHomeSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_HOME_LAUNCHER);
+    html_source->AddLocalizedString("sixPackKeyEndSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_END_LAUNCHER);
+    html_source->AddLocalizedString("sixPackKeyPageUpSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_LAUNCHER);
+    html_source->AddLocalizedString(
+        "sixPackKeyPageDownSearch",
+        IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER);
+    html_source->AddLocalizedString("sixPackKeyInsertSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER);
   } else {
     html_source->AddLocalizedString(
         "keyboardBlockMetaFunctionKeyRewrites",
@@ -910,6 +923,18 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString(
         "keyboardSendFunctionKeysDescription",
         IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION);
+    html_source->AddLocalizedString("sixPackKeyDeleteSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH);
+    html_source->AddLocalizedString("sixPackKeyHomeSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH);
+    html_source->AddLocalizedString("sixPackKeyEndSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH);
+    html_source->AddLocalizedString("sixPackKeyPageUpSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH);
+    html_source->AddLocalizedString("sixPackKeyPageDownSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH);
+    html_source->AddLocalizedString("sixPackKeyInsertSearch",
+                                    IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH);
   }
 }
 
@@ -1809,13 +1834,9 @@ void DeviceSection::AddDevicePointersStrings(
       {"sixPackKeyLabelPageUp", IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP},
       {"sixPackKeyLabelPageDown", IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN},
       {"sixPackKeyDeleteAlt", IDS_SETTINGS_SIX_PACK_KEY_DELETE_ALT},
-      {"sixPackKeyDeleteSearch", IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH},
       {"sixPackKeyHomeAlt", IDS_SETTINGS_SIX_PACK_KEY_HOME_ALT},
-      {"sixPackKeyHomeSearch", IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH},
       {"sixPackKeyEndAlt", IDS_SETTINGS_SIX_PACK_KEY_END_ALT},
-      {"sixPackKeyEndSearch", IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH},
       {"sixPackKeyPageUpAlt", IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT},
-      {"sixPackKeyPageUpSearch", IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH},
       {"sixPackKeyPageDownAlt", IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT},
       {"sixPackKeyPageDownSearch", IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH},
       {"sixPackKeyInsertSearch", IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH},

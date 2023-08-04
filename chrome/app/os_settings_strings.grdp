@@ -3183,8 +3183,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     alt + backspace
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the search + backspace option.">
     search + backspace
+  </message>
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + backspace option.">
+    launcher + backspace
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     ctrl + alt + up arrow
@@ -3192,14 +3195,23 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + left arrow
   </message>
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + left arrow option.">
+    launcher + left arrow
+  </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_END_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     ctrl + alt + down arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + right arrow
   </message>
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_END_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + right arrow option.">
+    launcher + right arrow
+  </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + shift + backspace
+  </message>
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + shift + backspace option.">
+    launcher + shift + backspace
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     alt + down arrow
@@ -3207,11 +3219,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + down arrow
   </message>
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + down arrow option.">
+    launcher + down arrow
+  </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     alt + up arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + up arrow
+  </message>
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + up arrow option.">
+    launcher + up arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_OPTION_DISABLED" desc="In the keyboard settings subpage, the dropdown list item for the disabled option.">
     disabled
