@@ -13891,14 +13891,9 @@
             ],
             "experiments": [
                 {
-                    "name": "FindReg_20230609",
+                    "name": "ScopeCache_20230804",
                     "enable_features": [
-                        "ServiceWorkerFetchResponseCallbackUseHighPriority",
-                        "ServiceWorkerMergeFindRegistrationForClientUrl",
-                        "ServiceWorkerRegistrationCache",
-                        "ServiceWorkerScopeCache",
-                        "ServiceWorkerStorageControlOnThreadPool",
-                        "ServiceWorkerStorageControlResponseUseHighPriority"
+                        "ServiceWorkerScopeCache"
                     ]
                 }
             ]
