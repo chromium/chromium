@@ -82,7 +82,8 @@ size_t MaxNumSkSurface() {
 std::unique_ptr<skgpu::graphite::Recorder>
 MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
   skgpu::graphite::RecorderOptions options;
-  options.fImageProvider = sk_make_sp<gpu::GraphiteImageProvider>();
+  options.fImageProvider = sk_make_sp<gpu::GraphiteImageProvider>(
+      gpu::DetermineGraphiteImageProviderCacheLimitFromAvailableMemory());
   return context->makeRecorder(options);
 }
 
