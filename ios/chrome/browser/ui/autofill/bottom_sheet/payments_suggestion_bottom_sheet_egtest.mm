@@ -91,6 +91,11 @@ id<GREYMatcher> SettingToolbarDoneButton() {
   return grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
 }
 
+// Matcher for the toolbar's delete button.
+id<GREYMatcher> SettingToolbarDeleteButton() {
+  return grey_accessibilityID(kSettingsToolbarDeleteButtonId);
+}
+
 // Matcher for the card nickname's text field.
 id<GREYMatcher> NicknameTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_NICKNAME);
@@ -282,6 +287,63 @@ id<GREYMatcher> NicknameTextField() {
       [nickname stringByAppendingString:[_lastDigits substringFromIndex:4]];
   id<GREYMatcher> nicknamedCreditCard = grey_text(nicknameAndCardNumber);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:nicknamedCreditCard];
+}
+
+// Verify that the Payments Bottom Sheet "Manage Payments Methods" button opens
+// the proper menu and allows a credit card to be deleted.
+- (void)testOpenPaymentsBottomSheetPaymentsMethodsDelete {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Long press to open context menu.
+  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
+
+  [[EarlGrey selectElementWithMatcher:creditCardEntry]
+      performAction:grey_longPress()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::ButtonWithAccessibilityLabel(
+                  l10n_util::GetNSString(
+                      IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)),
+              grey_interactable(), nullptr)] performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Delete the credit card
+  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:creditCardEntry]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SettingToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  // Close the context menu.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Try to reopen the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  // With no suggestions left, the keyboard should open instead.
+  WaitForKeyboardToAppear();
+
+  // Make sure the bottom sheet isn't there.
+  [[EarlGrey selectElementWithMatcher:continueButton]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
