@@ -237,6 +237,19 @@ void UpdateLegacyCookieSettings(Profile* profile) {
       settings));
 }
 
+void Update3pcdSettings(Profile* profile) {
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetSettingsForOneType(ContentSettingsType::TPCD_SUPPORT);
+  profile->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](ContentSettingsForOneType settings,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetContentSettingsFor3pcd(settings);
+      },
+      settings));
+}
+
 void UpdateStorageAccessSettings(Profile* profile) {
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     ContentSettingsForOneType settings =
@@ -587,6 +600,9 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   out->settings_for_legacy_cookie_access =
       host_content_settings_map->GetSettingsForOneType(
           ContentSettingsType::LEGACY_COOKIE_ACCESS);
+
+  out->settings_for_3pcd = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::TPCD_SUPPORT);
 
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     out->settings_for_storage_access =
@@ -1058,6 +1074,9 @@ void ProfileNetworkContextService::OnContentSettingChanged(
     case ContentSettingsType::LEGACY_COOKIE_ACCESS:
       UpdateLegacyCookieSettings(profile_);
       break;
+    case ContentSettingsType::TPCD_SUPPORT:
+      Update3pcdSettings(profile_);
+      break;
     case ContentSettingsType::STORAGE_ACCESS:
       UpdateStorageAccessSettings(profile_);
       break;
@@ -1068,6 +1087,7 @@ void ProfileNetworkContextService::OnContentSettingChanged(
       UpdateAntiAbuseSettings(profile_);
       UpdateCookieSettings(profile_);
       UpdateLegacyCookieSettings(profile_);
+      Update3pcdSettings(profile_);
       UpdateAllStorageAccessSettings(profile_);
       break;
     default:

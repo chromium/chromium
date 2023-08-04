@@ -38,12 +38,55 @@
 #else
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#endif
 
 namespace {
 constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
-}
+
+struct TestCase {
+  const char* test_name;
+  bool storage_access_grant_eligible;
+  bool top_level_storage_access_grant_eligible;
+  bool force_allow_third_party_cookies;
+  bool eligible_for_3pcd_support;
+};
+
+static constexpr TestCase kTestCases[] = {
+    {"disable_all", false, false, false, false},
+    {"disable_SAA_disable_TopLevel_default_3PCs_enable_3PCD", false, false,
+     false, true},
+    {"disable_SAA_disable_TopLevel_force_3PCs_disable_3PCD", false, false, true,
+     false},
+    {"disable_SAA_disable_TopLevel_force_3PCs_enable_3PCD", false, false, true,
+     true},
+    {"disable_SAA_enable_TopLevel_default_3PCs_disable_3PCD", false, true,
+     false, false},
+    {"disable_SAA_enable_TopLevel_default_3PCs_enable_3PCD", false, true, false,
+     true},
+    {"disable_SAA_enable_TopLevel_force_3PCs_disable_3PCD", false, true, true,
+     false},
+    {"disable_SAA_enable_TopLevel_force_3PCs_enable_3PCD", false, true, true,
+     true},
+#if !BUILDFLAG(IS_IOS)
+    {"enable_SAA_disable_TopLevel_default_3PCs_disable_3PCD", true, false,
+     false, false},
+    {"enable_SAA_disable_TopLevel_default_3PCs_enable_3PCD", true, false, false,
+     true},
+    {"enable_SAA_disable_TopLevel_force_3PCs_disable_3PCD", true, false, true,
+     false},
+    {"enable_SAA_disable_TopLevel_force_3PCs_enable_3PCD", true, false, true,
+     true},
+    {"enable_SAA_enable_TopLevel_default_3PCs_disable_3PCD", true, true, false,
+     false},
+    {"enable_SAA_enable_TopLevel_default_3PCs_enable_3PCD", true, true, false,
+     true},
+    {"enable_SAA_enable_TopLevel_force_3PCs_disable_3PCD", true, true, true,
+     false},
+    {"enable_all", true, true, true, true},
 #endif
+};
+}  // namespace
 
 namespace content_settings {
 
@@ -73,13 +116,6 @@ class CookieSettingsObserver : public CookieSettings::Observer {
   bool last_value_ = false;
   base::ScopedObservation<CookieSettings, CookieSettings::Observer>
       scoped_observation_{this};
-};
-
-struct TestCase {
-  std::string test_name;
-  bool storage_access_grant_eligible;
-  bool top_level_storage_access_grant_eligible;
-  bool force_allow_third_party_cookies;
 };
 
 class CookieSettingsTest : public testing::TestWithParam<TestCase> {
@@ -114,6 +150,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(
         {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
+    enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back({kImprovedCookieControls, {}});
 #else
@@ -162,6 +199,10 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return GetParam().force_allow_third_party_cookies;
   }
 
+  bool Is3pcdSupportEligible() const {
+    return GetParam().eligible_for_3pcd_support;
+  }
+
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
     if (IsStorageAccessGrantEligible()) {
@@ -174,12 +215,15 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     if (IsForceAllowThirdPartyCookies()) {
       overrides.Put(net::CookieSettingOverride::kForceThirdPartyByUser);
     }
+    if (Is3pcdSupportEligible()) {
+      overrides.Put(net::CookieSettingOverride::k3pcdSupport);
+    }
     return overrides;
   }
 
   // Assumes that cookie access would be blocked if not for a Storage Access API
   // grant or force allow.
-  ContentSetting SettingWithEitherOverride() const {
+  ContentSetting SettingWithForceAllow3pcOrSaaOverride() const {
     return IsStorageAccessGrantEligible() || IsForceAllowThirdPartyCookies()
                ? CONTENT_SETTING_ALLOW
                : CONTENT_SETTING_BLOCK;
@@ -187,12 +231,18 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
   // A version of above that considers Top-Level Storage Access API grant
   // instead of Storage Access API grant, and user force allow.
-  ContentSetting SettingWithEitherOverrideForTopLevel() const {
+  ContentSetting SettingWithForceAllow3pcOrSaaOverrideForTopLevel() const {
     // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
     return (IsStorageAccessGrantEligible() &&
             IsTopLevelStorageAccessGrantEligible()) ||
                    IsForceAllowThirdPartyCookies()
+               ? CONTENT_SETTING_ALLOW
+               : CONTENT_SETTING_BLOCK;
+  }
+
+  ContentSetting SettingWithEither3pcOverride() const {
+    return Is3pcdSupportEligible() || IsForceAllowThirdPartyCookies()
                ? CONTENT_SETTING_ALLOW
                : CONTENT_SETTING_BLOCK;
   }
@@ -205,7 +255,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // The cookie access result would be blocked if not for a Storage Access API
   // grant or force allow.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWithEitherOverride() const {
+  BlockedStorageAccessResultWithForceAllow3pcOrSaaOverride() const {
     if (IsStorageAccessGrantEligible()) {
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
@@ -220,7 +270,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // instead of Storage Access API grant, and user force allow to allow cookie
   // access.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWithTopLevelOverride() const {
+  BlockedStorageAccessResultWithForceAllow3pcOrTopLevelOverride() const {
     // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
     if (IsStorageAccessGrantEligible() &&
@@ -229,6 +279,19 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
       // and the page-level variant.
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
+    }
+    if (IsForceAllowThirdPartyCookies()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
+  }
+
+  // The cookie access result would be blocked if not for a third-party cookie
+  // override.
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWithEither3pcOverride() const {
+    if (Is3pcdSupportEligible()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD;
     }
     if (IsForceAllowThirdPartyCookies()) {
       return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
@@ -1235,11 +1298,13 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAA) {
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride());
+            SettingWithForceAllow3pcOrSaaOverride());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(BlockedStorageAccessResultWithEitherOverride()), 1);
+      static_cast<int>(
+          BlockedStorageAccessResultWithForceAllow3pcOrSaaOverride()),
+      1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.
@@ -1277,11 +1342,13 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverrideForTopLevel());
+            SettingWithForceAllow3pcOrSaaOverrideForTopLevel());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(BlockedStorageAccessResultWithTopLevelOverride()), 1);
+      static_cast<int>(
+          BlockedStorageAccessResultWithForceAllow3pcOrTopLevelOverride()),
+      1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.
@@ -1314,7 +1381,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride());
+            SettingWithForceAllow3pcOrSaaOverride());
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 GURL(kHttpsSubdomainSite), top_level_url,
                 GetCookieSettingOverrides(), nullptr),
@@ -1341,7 +1408,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride());
+            SettingWithForceAllow3pcOrSaaOverride());
   EXPECT_EQ(
       cookie_settings_->GetCookieSetting(url, GURL(kHttpsSubdomainSite),
                                          GetCookieSettingOverrides(), nullptr),
@@ -1391,7 +1458,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   // access should still be blocked.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride());
+            SettingWithForceAllow3pcOrSaaOverride());
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
@@ -1401,6 +1468,45 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
             SettingWithForceAllowThirdPartyCookies());
 }
 #endif
+
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
+  const GURL top_level_url(kFirstPartySite);
+  const GURL url(kAllowedSite);
+  const GURL third_url(kBlockedSite);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::FromURLNoWildcard(top_level_url),
+      ContentSettingsType::TPCD_SUPPORT, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithEither3pcOverride());
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      static_cast<int>(BlockedStorageAccessResultWithEither3pcOverride()), 1);
+
+  // Invalid pair the |top_level_url| granting access to |url| is now
+  // being loaded under |url| as the top level url.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                top_level_url, url, GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+
+  // Invalid pairs where a |third_url| is used.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, third_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+}
 
 TEST_P(CookieSettingsTest, ExtensionsRegularSettings) {
   cookie_settings_->SetCookieSetting(kBlockedSite, CONTENT_SETTING_BLOCK);
@@ -1600,18 +1706,7 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
-    testing::ValuesIn<TestCase>({
-      {"disable_all", false, false, false},
-          {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
-          {"disable_SAA_enable_TopLevel", false, true, false},
-          {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
-#if !BUILDFLAG(IS_IOS)
-          {"enable_SAA_disable_TopLevel", true, false, false},
-          {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
-          {"enable_SAA_enable_TopLevel", true, true, false},
-          {"enable_all", true, true, true},
-#endif
-    }),
+    testing::ValuesIn(kTestCases),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
     });
@@ -1620,16 +1715,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestSandboxV4Enabled,
-    testing::ValuesIn<TestCase>({
-        {"disable_all", false, false, false},
-        {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
-        {"disable_SAA_enable_TopLevel", false, true, false},
-        {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
-        {"enable_SAA_disable_TopLevel", true, false, false},
-        {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
-        {"enable_SAA_enable_TopLevel", true, true, false},
-        {"enable_all", true, true, true},
-    }),
+    testing::ValuesIn(kTestCases),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
     });
@@ -1638,18 +1724,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestUserBypass,
-    testing::ValuesIn<TestCase>({
-      {"disable_all", false, false, false},
-          {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
-          {"disable_SAA_enable_TopLevel", false, true, false},
-          {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
-#if !BUILDFLAG(IS_IOS)
-          {"enable_SAA_disable_TopLevel", true, false, false},
-          {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
-          {"enable_SAA_enable_TopLevel", true, true, false},
-          {"enable_all", true, true, true},
-#endif
-    }),
+    testing::ValuesIn(kTestCases),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
     });

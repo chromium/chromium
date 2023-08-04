@@ -187,6 +187,12 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
   return net::CookieAccessSemantics::UNKNOWN;
 }
 
+bool CookieSettingsBase::ShouldConsider3pcdSupportSettings(
+    net::CookieSettingOverrides overrides) const {
+  return base::FeatureList::IsEnabled(net::features::kTpcdSupportSettings) &&
+         overrides.Has(net::CookieSettingOverride::k3pcdSupport);
+}
+
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
     net::CookieSettingOverrides overrides) const {
   return overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible);
@@ -202,6 +208,9 @@ net::CookieSettingOverrides CookieSettingsBase::SettingOverridesForStorage()
   if (is_storage_partitioned_) {
     overrides.Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
+    // TODO(crbug.com/1466156): Revisit whether the global setting/pref should
+    // be checked here.
+    overrides.Put(net::CookieSettingOverride::k3pcdSupport);
   }
   return overrides;
 }
@@ -275,6 +284,18 @@ CookieSettingsBase::GetCookieSettingInternal(
           net::cookie_util::StorageAccessResult::
               ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT);
     }
+  }
+
+  if (block_third && ShouldConsider3pcdSupportSettings(overrides) &&
+      GetContentSetting(url, first_party_url,
+                        ContentSettingsType::TPCD_SUPPORT) ==
+          CONTENT_SETTING_ALLOW) {
+    // TODO (crbug.com/1466156): Revisit this after a decision has been made on
+    // how an explicit 3PC setting will be differentiated from an experimental
+    // one.
+    block_third = false;
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
   }
 
   if (block_third &&

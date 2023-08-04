@@ -106,6 +106,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void BlockThirdPartyCookies(bool block) override;
   void SetContentSettingsForLegacyCookieAccess(
       const ContentSettingsForOneType& settings) override;
+  void SetContentSettingsFor3pcd(
+      const ContentSettingsForOneType& settings) override;
   void SetStorageAccessGrantSettings(
       const ContentSettingsForOneType& settings,
       SetStorageAccessGrantSettingsCallback callback) override;

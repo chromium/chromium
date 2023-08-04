@@ -97,6 +97,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     settings_for_legacy_cookie_access_ = settings;
   }
 
+  void set_content_settings_for_3pcd(
+      const ContentSettingsForOneType& settings) {
+    settings_for_3pcd_ = settings;
+  }
+
   void set_storage_access_grants(const ContentSettingsForOneType& settings) {
     storage_access_grants_ = settings;
   }
@@ -213,6 +218,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;
   ContentSettingsForOneType settings_for_legacy_cookie_access_;
+  ContentSettingsForOneType settings_for_3pcd_;
   // Used to represent storage access grants provided by the StorageAccessAPI.
   // Will only be populated when the StorageAccessAPI feature is enabled
   // https://crbug.com/989663.

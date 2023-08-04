@@ -318,6 +318,12 @@ void CookieManager::SetContentSettingsForLegacyCookieAccess(
   cookie_settings_.set_content_settings_for_legacy_cookie_access(settings);
 }
 
+void CookieManager::SetContentSettingsFor3pcd(
+    const ContentSettingsForOneType& settings) {
+  OnSettingsWillChange();
+  cookie_settings_.set_content_settings_for_3pcd(settings);
+}
+
 void CookieManager::SetStorageAccessGrantSettings(
     const ContentSettingsForOneType& settings,
     SetStorageAccessGrantSettingsCallback callback) {

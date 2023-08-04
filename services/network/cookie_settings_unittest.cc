@@ -71,6 +71,7 @@ struct TestCase {
   bool storage_access_grant_eligible;
   bool top_level_storage_access_grant_eligible;
   bool force_allow_third_party_cookies;
+  bool eligible_for_3pcd_support;
 };
 
 class CookieSettingsTest : public testing::TestWithParam<TestCase> {
@@ -109,6 +110,10 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return GetParam().force_allow_third_party_cookies;
   }
 
+  bool Is3pcdSupportEligible() const {
+    return GetParam().eligible_for_3pcd_support;
+  }
+
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
     if (IsStorageAccessGrantEligible()) {
@@ -121,13 +126,17 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     if (IsForceAllowThirdPartyCookies()) {
       overrides.Put(net::CookieSettingOverride::kForceThirdPartyByUser);
     }
+    if (Is3pcdSupportEligible()) {
+      overrides.Put(net::CookieSettingOverride::k3pcdSupport);
+    }
     return overrides;
   }
 
   // Assumes that cookie access would be blocked if not for a Storage Access API
   // grant or force allow. The `allow` parameter indicates the setting to be
   // returned if cookie access is expected to be allowed.
-  ContentSetting SettingWithEitherOverride(ContentSetting allow) const {
+  ContentSetting SettingWithForceAllow3pcOrSaaOverride(
+      ContentSetting allow) const {
     DCHECK(allow == CONTENT_SETTING_ALLOW ||
            allow == CONTENT_SETTING_SESSION_ONLY);
     return IsStorageAccessGrantEligible() || IsForceAllowThirdPartyCookies()
@@ -137,7 +146,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
   // A version of above that considers Top-Level Storage Access API grant
   // instead of Storage Access API grant, and user force allow.
-  ContentSetting SettingWithEitherOverrideForTopLevel() const {
+  ContentSetting SettingWithForceAllow3pcOrSaaOverrideForTopLevel() const {
     // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
     return IsTopLevelStorageAccessGrantEligible() ||
@@ -146,9 +155,28 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
                : CONTENT_SETTING_BLOCK;
   }
 
+  ContentSetting SettingWithEither3pcOverride() const {
+    return Is3pcdSupportEligible() || IsForceAllowThirdPartyCookies()
+               ? CONTENT_SETTING_ALLOW
+               : CONTENT_SETTING_BLOCK;
+  }
+
   ContentSetting SettingWithForceAllowThirdPartyCookies() const {
     return IsForceAllowThirdPartyCookies() ? CONTENT_SETTING_ALLOW
                                            : CONTENT_SETTING_BLOCK;
+  }
+
+  // The cookie access result would be blocked if not for a third-party cookie
+  // override.
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWithEither3pcOverride() const {
+    if (Is3pcdSupportEligible()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD;
+    }
+    if (IsForceAllowThirdPartyCookies()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
   net::cookie_util::StorageAccessResult
@@ -161,7 +189,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // The cookie access result would be blocked if not for a Storage Access API
   // grant or force allow.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWithEitherOverride() const {
+  BlockedStorageAccessResultWithForceAllow3pcOrSaaOverride() const {
     if (IsStorageAccessGrantEligible()) {
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
@@ -176,7 +204,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // instead of Storage Access API grant, and user force allow to allow cookie
   // access.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWithEitherOverrideForTopLevel() const {
+  BlockedStorageAccessResultWithForceAllow3pcOrTopLevelOverride() const {
     // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
     if (IsTopLevelStorageAccessGrantEligible()) {
@@ -270,9 +298,10 @@ TEST_P(CookieSettingsTest,
   settings.set_storage_access_grants(
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
-                                      GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride(CONTENT_SETTING_SESSION_ONLY));
+  EXPECT_EQ(
+      settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
+                                GetCookieSettingOverrides(), nullptr),
+      SettingWithForceAllow3pcOrSaaOverride(CONTENT_SETTING_SESSION_ONLY));
 }
 
 TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdPartyWithException) {
@@ -308,10 +337,10 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   // should still be blocked.
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
+            SettingWithForceAllow3pcOrSaaOverride(CONTENT_SETTING_ALLOW));
   histogram_tester.ExpectUniqueSample(
-      kAllowedRequestsHistogram, BlockedStorageAccessResultWithEitherOverride(),
-      1);
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWithForceAllow3pcOrSaaOverride(), 1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.
@@ -324,7 +353,8 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
                                          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
                                      IsStorageAccessGrantEligible() ? 1 : 0);
   histogram_tester.ExpectBucketCount(
-      kAllowedRequestsHistogram, BlockedStorageAccessResultWithEitherOverride(),
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWithForceAllow3pcOrSaaOverride(),
       IsStorageAccessGrantEligible() ? 1 : 2);
 
   // Invalid pairs where a |third_url| is used.
@@ -348,10 +378,10 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
     base::HistogramTester histogram_tester_2;
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                         GetCookieSettingOverrides(), nullptr),
-              SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
+              SettingWithForceAllow3pcOrSaaOverride(CONTENT_SETTING_ALLOW));
     histogram_tester_2.ExpectUniqueSample(
         kAllowedRequestsHistogram,
-        BlockedStorageAccessResultWithEitherOverride(), 1);
+        BlockedStorageAccessResultWithForceAllow3pcOrSaaOverride(), 1);
 
     histogram_tester_2.ExpectUniqueSample(
         kStorageAccessInputStateHistogram,
@@ -402,10 +432,10 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {
   // should still be blocked.
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverrideForTopLevel());
+            SettingWithForceAllow3pcOrSaaOverrideForTopLevel());
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
-      BlockedStorageAccessResultWithEitherOverrideForTopLevel(), 1);
+      BlockedStorageAccessResultWithForceAllow3pcOrTopLevelOverride(), 1);
 
   // Check the cookie setting that does not match the top-level storage access
   // grant--the |top_level_url| granting access to |url| is now being loaded
@@ -423,7 +453,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {
       IsTopLevelStorageAccessGrantEligible() ? 1 : 0);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      BlockedStorageAccessResultWithEitherOverrideForTopLevel(),
+      BlockedStorageAccessResultWithForceAllow3pcOrTopLevelOverride(),
       IsTopLevelStorageAccessGrantEligible() ? 1 : 2);
 
   // Check the cookie setting that does not match the top-level storage access
@@ -441,10 +471,10 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {
     base::HistogramTester histogram_tester_2;
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                         GetCookieSettingOverrides(), nullptr),
-              SettingWithEitherOverrideForTopLevel());
+              SettingWithForceAllow3pcOrSaaOverrideForTopLevel());
     histogram_tester_2.ExpectUniqueSample(
         kAllowedRequestsHistogram,
-        BlockedStorageAccessResultWithEitherOverrideForTopLevel(), 1);
+        BlockedStorageAccessResultWithForceAllow3pcOrTopLevelOverride(), 1);
   }
 
   // If cookies are globally blocked, Top-Level Storage Access grants and 3PC
@@ -478,7 +508,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
 
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
+            SettingWithForceAllow3pcOrSaaOverride(CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(settings.GetCookieSetting(GURL(kSubDomainURL), top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
@@ -501,7 +531,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
 
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
+            SettingWithForceAllow3pcOrSaaOverride(CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(settings.GetCookieSetting(url, GURL(kSubDomainURL),
                                       GetCookieSettingOverrides(), nullptr),
@@ -551,7 +581,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   // should still be blocked.
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
-            SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
+            SettingWithForceAllow3pcOrSaaOverride(CONTENT_SETTING_ALLOW));
   histogram_tester.ExpectUniqueSample(
       kStorageAccessInputStateHistogram,
       IsStorageAccessGrantEligible()
@@ -571,6 +601,146 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
           ? net::cookie_util::StorageAccessInputState::kOptInWithoutGrant
           : net::cookie_util::StorageAccessInputState::kNoOptInNoGrant,
       1);
+}
+
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdUnblocks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          net::features::kTpcdSupportSettings,
+      },
+      {});
+
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+  GURL third_url = GURL(kDomainURL);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  CookieSettings settings;
+  settings.set_content_settings(
+      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
+  settings.set_block_third_party_cookies(true);
+
+  settings.set_content_settings_for_3pcd(
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+
+  // When requesting our setting for the embedder/top-level combination our
+  // grant for access should be allowed. For any other domain pairs access
+  // should still be blocked.
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWithEither3pcOverride());
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWithEither3pcOverride(), 1);
+
+  // Invalid pair the |top_level_url| granting access to |url| is now
+  // being loaded under |url| as the top level url.
+  EXPECT_EQ(settings.GetCookieSetting(top_level_url, url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD,
+      Is3pcdSupportEligible() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWithEither3pcOverride(),
+      Is3pcdSupportEligible() ? 1 : 2);
+
+  // Invalid pairs where a |third_url| is used.
+  EXPECT_EQ(settings.GetCookieSetting(url, third_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(settings.GetCookieSetting(third_url, top_level_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+
+  // If third-party cookies are blocked, 3PCD settings take precedence over
+  // possible override to force allow 3PCs.
+  {
+    settings.set_block_third_party_cookies(true);
+    base::HistogramTester histogram_tester_2;
+    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                        GetCookieSettingOverrides(), nullptr),
+              SettingWithEither3pcOverride());
+    histogram_tester_2.ExpectUniqueSample(
+        kAllowedRequestsHistogram,
+        BlockedStorageAccessResultWithEither3pcOverride(), 1);
+  }
+
+  // If cookies are globally blocked, the 3PC overrides should both be ignored.
+  {
+    settings.set_content_settings(
+        {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
+    settings.set_block_third_party_cookies(true);
+    base::HistogramTester histogram_tester_2;
+    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                        GetCookieSettingOverrides(), nullptr),
+              CONTENT_SETTING_BLOCK);
+    histogram_tester_2.ExpectUniqueSample(
+        kAllowedRequestsHistogram,
+        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
+  }
+}
+
+// Any 3PCD setting should not override an explicit setting to block cookie
+// access.
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdRespectsSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          net::features::kTpcdSupportSettings,
+      },
+      {});
+
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+
+  CookieSettings settings;
+  settings.set_content_settings(
+      {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
+
+  settings.set_content_settings_for_3pcd(
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
+}
+
+// A 3PCD setting should not affect cookie settings when the
+// net::features::kTpcdSupportSettings feature is disabled.
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kTpcdSupportSettings);
+
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+
+  base::HistogramTester histogram_tester;
+
+  CookieSettings settings;
+  settings.set_content_settings(
+      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
+  settings.set_block_third_party_cookies(true);
+
+  settings.set_content_settings_for_3pcd(
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWithForceAllowThirdPartyCookies());
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWithForceAllowThirdPartyCookies(), 1);
 }
 
 TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSettings) {
@@ -1437,30 +1607,82 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<TestCase>({
         {"disable_all", /*storage_access_grant_eligible=*/false,
          /*top_level_storage_access_grant_eligible=*/false,
-         /*force_allow_third_party_cookies=*/false},
-        {"force_3PCs", /*storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/false},
+        {"disable_SAA_disable_TopLevel_default_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/false,
          /*top_level_storage_access_grant_eligible=*/false,
-         /*force_allow_third_party_cookies=*/true},
-        {"enable_TopLevel", /*storage_access_grant_eligible=*/false,
-         /*top_level_storage_access_grant_eligible=*/true,
-         /*force_allow_third_party_cookies=*/false},
-        {"enable_TopLevel_force_3PCs", /*storage_access_grant_eligible=*/false,
-         /*top_level_storage_access_grant_eligible=*/true,
-         /*force_allow_third_party_cookies=*/true},
-        {"enable_StorageAccess", /*storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/true},
+        {"disable_SAA_disable_TopLevel_force_3PCs_disable_3PCD",
+         /*storage_access_grant_eligible=*/false,
          /*top_level_storage_access_grant_eligible=*/false,
-         /*force_allow_third_party_cookies=*/false},
-        {"enable_StorageAccess_force_3PCs",
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/false},
+        {"disable_SAA_disable_TopLevel_force_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/true},
+        {"disable_SAA_enable_TopLevel_default_3PCs_disable_3PCD",
+         /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/false},
+        {"disable_SAA_enable_TopLevel_default_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/true},
+        {"disable_SAA_enable_TopLevel_force_3PCs_disable_3PCD",
+         /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/false},
+        {"disable_SAA_enable_TopLevel_force_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/true},
+        {"enable_SAA_disable_TopLevel_default_3PCs_disable_3PCD",
          /*storage_access_grant_eligible=*/true,
          /*top_level_storage_access_grant_eligible=*/false,
-         /*force_allow_third_party_cookies=*/true},
-        {"enable_StorageAccess_enable_TopLevel",
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/false},
+        {"enable_SAA_disable_TopLevel_default_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/true},
+        {"enable_SAA_disable_TopLevel_force_3PCs_disable_3PCD",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/false},
+        {"enable_SAA_disable_TopLevel_force_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/true},
+        {"enable_SAA_enable_TopLevel_default_3PCs_disable_3PCD",
          /*storage_access_grant_eligible=*/true,
          /*top_level_storage_access_grant_eligible=*/true,
-         /*force_allow_third_party_cookies=*/false},
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/false},
+        {"enable_SAA_enable_TopLevel_default_3PCs_enable_3PCD",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/false,
+         /*eligible_for_3pcd_support=*/true},
+        {"enable_SAA_enable_TopLevel_force_3PCs_disable_3PCD",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/false},
         {"enable_all", /*storage_access_grant_eligible=*/true,
          /*top_level_storage_access_grant_eligible=*/true,
-         /*force_allow_third_party_cookies=*/true},
+         /*force_allow_third_party_cookies=*/true,
+         /*eligible_for_3pcd_support=*/true},
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;

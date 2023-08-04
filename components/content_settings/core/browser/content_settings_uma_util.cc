@@ -116,6 +116,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::MIDI, 102},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, 103},
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, 104},
+    {ContentSettingsType::TPCD_SUPPORT, 105},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

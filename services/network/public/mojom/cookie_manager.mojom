@@ -38,6 +38,11 @@ struct CookieManagerParams {
   array<content_settings.mojom.ContentSettingPatternSource>
       settings_for_legacy_cookie_access;
 
+  // Content settings for 3PCD support.
+  // Note: This does not override `block_third_party_cookies` or `settings`.
+  array<content_settings.mojom.ContentSettingPatternSource>
+      settings_for_3pcd;
+
   // Content settings for which storage access grants have been set using
   // the Storage Access API.
   array<content_settings.mojom.ContentSettingPatternSource>
@@ -467,6 +472,11 @@ interface CookieManager {
   // Sets content settings for which domains are allowed to use legacy cookie
   // access rules.
   SetContentSettingsForLegacyCookieAccess(
+      array<content_settings.mojom.ContentSettingPatternSource> settings);
+
+  // Note: This does not override settings created with SetContentSettings
+  // or BlockThirdPartyCookies.
+  SetContentSettingsFor3pcd(
       array<content_settings.mojom.ContentSettingPatternSource> settings);
 
   // Sets content settings for which storage access grants exist. Will ack

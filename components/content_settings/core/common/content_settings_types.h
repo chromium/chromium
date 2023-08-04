@@ -340,6 +340,9 @@ enum class ContentSettingsType : int32_t {
   // Stores per origin metadata for cookie controls.
   COOKIE_CONTROLS_METADATA,
 
+  // Setting for supporting 3PCD.
+  TPCD_SUPPORT,
+
   NUM_TYPES,
 };
 

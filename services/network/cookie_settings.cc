@@ -261,6 +261,8 @@ const ContentSettingsForOneType& CookieSettings::GetContentSettings(
       return top_level_storage_access_grants_;
     case ContentSettingsType::LEGACY_COOKIE_ACCESS:
       return settings_for_legacy_cookie_access_;
+    case ContentSettingsType::TPCD_SUPPORT:
+      return settings_for_3pcd_;
     default:
       // Only implements types that are actually used by CookieSettings since
       // settings need to be copied to the network service.

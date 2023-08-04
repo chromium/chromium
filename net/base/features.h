@@ -327,6 +327,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kBlockSetCookieHeader);
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 
+// Feature to enable consideration of 3PCD Support settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
+
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
 
