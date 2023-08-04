@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -57,11 +58,15 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
+#include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
+#include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
+#include "components/sync/protocol/password_sharing_recipients.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/browser_context.h"
@@ -82,10 +87,16 @@
 
 using MockReauthCallback = base::MockCallback<
     password_manager::PasswordAccessAuthenticator::ReauthCallback>;
+using extensions::api::passwords_private::FamilyFetchResults;
+using extensions::api::passwords_private::RecipientInfo;
 using password_manager::ReauthPurpose;
 using password_manager::TestPasswordStore;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Ne;
 using ::testing::Return;
@@ -328,7 +339,8 @@ MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
 
 class PasswordsPrivateDelegateImplTest : public WebAppTest {
  public:
-  PasswordsPrivateDelegateImplTest() = default;
+  PasswordsPrivateDelegateImplTest()
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {}
 
   PasswordsPrivateDelegateImplTest(const PasswordsPrivateDelegateImplTest&) =
       delete;
@@ -1640,6 +1652,160 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
       api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT);
   EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
             1);
+}
+
+class PasswordsPrivateDelegateImplFetchFamilyMembersTest
+    : public PasswordsPrivateDelegateImplTest {
+ public:
+  PasswordsPrivateDelegateImplFetchFamilyMembersTest() = default;
+
+  void SetUp() override {
+    PasswordsPrivateDelegateImplTest::SetUp();
+    delegate_ = CreateDelegate();
+    delegate_->SetRecipientsFetcherForTesting(
+        std::make_unique<password_manager::RecipientsFetcherImpl>(
+            version_info::Channel::DEFAULT,
+            profile_url_loader_factory().GetSafeWeakWrapper(),
+            identity_test_env_.identity_manager()));
+    identity_test_env_.MakePrimaryAccountAvailable("test@email.com",
+                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  void TearDown() override {
+    delegate_ = nullptr;
+    PasswordsPrivateDelegateImplTest::TearDown();
+  }
+
+ protected:
+  const std::string kTestUserId = "12345";
+  const std::string kTestUserName = "Theo Tester";
+  const std::string kTestEmail = "theo@example.com";
+  const std::string kTestProfileImageUrl =
+      "https://3837fjsdjaka.image.example.com";
+
+  void SetServerResponse(sync_pb::PasswordSharingRecipientsResponse::
+                             PasswordSharingRecipientsResult result,
+                         net::HttpStatusCode status = net::HTTP_OK) {
+    sync_pb::PasswordSharingRecipientsResponse response;
+    response.set_result(result);
+    if (result == sync_pb::PasswordSharingRecipientsResponse::SUCCESS) {
+      sync_pb::UserInfo* user_info = response.add_recipients();
+      user_info->set_user_id(kTestUserId);
+      user_info->mutable_user_display_info()->set_display_name(kTestUserName);
+      user_info->mutable_user_display_info()->set_email(kTestEmail);
+      user_info->mutable_user_display_info()->set_profile_image_url(
+          kTestProfileImageUrl);
+    }
+    profile_url_loader_factory().AddResponse(
+        password_manager::PasswordSharingRecipientsDownloader::
+            GetPasswordSharingRecipientsURL(version_info::Channel::DEFAULT)
+                .spec(),
+        response.SerializeAsString(), status);
+  }
+
+  PasswordsPrivateDelegateImpl* delegate() { return delegate_.get(); }
+
+ private:
+  signin::IdentityTestEnvironment identity_test_env_;
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate_;
+};
+
+TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
+       FetchFamilyMembersSucceeds) {
+  SetServerResponse(sync_pb::PasswordSharingRecipientsResponse::SUCCESS);
+
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(Field(&FamilyFetchResults::status,
+                      api::passwords_private::FAMILY_FETCH_STATUS_SUCCESS),
+                Field(&FamilyFetchResults::family_members,
+                      ElementsAre(AllOf(
+                          Field(&RecipientInfo::user_id, kTestUserId),
+                          Field(&RecipientInfo::display_name, kTestUserName),
+                          Field(&RecipientInfo::email, kTestEmail),
+                          Field(&RecipientInfo::profile_image_url,
+                                kTestProfileImageUrl)))))));
+
+  delegate()->FetchFamilyMembers(callback.Get());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
+       FetchFamilyMembersFailsWithUnknownError) {
+  SetServerResponse(sync_pb::PasswordSharingRecipientsResponse::UNKNOWN);
+
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(
+          Field(&FamilyFetchResults::status,
+                api::passwords_private::FAMILY_FETCH_STATUS_UNKNOWN_ERROR),
+          Field(&FamilyFetchResults::family_members, IsEmpty()))));
+
+  delegate()->FetchFamilyMembers(callback.Get());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
+       FetchFamilyMembersFailsWithNoFamilyMembersError) {
+  SetServerResponse(
+      sync_pb::PasswordSharingRecipientsResponse::NOT_FAMILY_MEMBER);
+
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(Field(&FamilyFetchResults::status,
+                      api::passwords_private::FAMILY_FETCH_STATUS_NO_MEMBERS),
+                Field(&FamilyFetchResults::family_members, IsEmpty()))));
+
+  delegate()->FetchFamilyMembers(callback.Get());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
+       FetchFamilyMembersFailsWithAnotherRequestInFlight) {
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback1;
+  delegate()->FetchFamilyMembers(callback1.Get());
+
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback2;
+  EXPECT_CALL(
+      callback2,
+      Run(AllOf(
+          Field(&FamilyFetchResults::status,
+                api::passwords_private::FAMILY_FETCH_STATUS_UNKNOWN_ERROR),
+          Field(&FamilyFetchResults::family_members, IsEmpty()))));
+  delegate()->FetchFamilyMembers(callback2.Get());
+
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
+       FetchFamilyMembersFailsWithNetworkError) {
+  profile_url_loader_factory().AddResponse(
+      password_manager::PasswordSharingRecipientsDownloader::
+          GetPasswordSharingRecipientsURL(version_info::Channel::DEFAULT)
+              .spec(),
+      /*content=*/std::string(), net::HTTP_INTERNAL_SERVER_ERROR);
+
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback;
+  FamilyFetchResults family_fetch_results;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(
+          Field(&FamilyFetchResults::status,
+                api::passwords_private::FAMILY_FETCH_STATUS_UNKNOWN_ERROR),
+          Field(&FamilyFetchResults::family_members, IsEmpty()))));
+
+  delegate()->FetchFamilyMembers(callback.Get());
+  task_environment()->RunUntilIdle();
 }
 
 }  // namespace extensions

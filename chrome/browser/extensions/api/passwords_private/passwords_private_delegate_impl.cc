@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -51,6 +52,7 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
@@ -59,6 +61,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -87,6 +90,7 @@ namespace {
 
 using password_manager::CredentialFacet;
 using password_manager::CredentialUIEntry;
+using password_manager::FetchFamilyMembersRequestStatus;
 
 // The error message returned to the UI when Chrome refuses to start multiple
 // exports.
@@ -553,6 +557,41 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
 #endif
 }
 
+void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
+    FetchFamilyResultsCallback callback,
+    std::vector<password_manager::RecipientInfo> family_members,
+    FetchFamilyMembersRequestStatus request_status) {
+  api::passwords_private::FamilyFetchResults results;
+  switch (request_status) {
+    case FetchFamilyMembersRequestStatus::kUnknown:
+    case FetchFamilyMembersRequestStatus::kNetworkError:
+    case FetchFamilyMembersRequestStatus::kPendingRequest:
+      results.status = api::passwords_private::FamilyFetchStatus::
+          FAMILY_FETCH_STATUS_UNKNOWN_ERROR;
+      break;
+    case FetchFamilyMembersRequestStatus::kSuccess:
+      results.status = api::passwords_private::FamilyFetchStatus::
+          FAMILY_FETCH_STATUS_SUCCESS;
+      break;
+    case FetchFamilyMembersRequestStatus::kNoFamily:
+      results.status = api::passwords_private::FamilyFetchStatus::
+          FAMILY_FETCH_STATUS_NO_MEMBERS;
+  }
+  if (request_status == FetchFamilyMembersRequestStatus::kSuccess) {
+    for (const password_manager::RecipientInfo& family_member :
+         family_members) {
+      api::passwords_private::RecipientInfo recipient_info;
+      recipient_info.user_id = family_member.user_id;
+      recipient_info.email = family_member.email;
+      recipient_info.display_name = family_member.user_name;
+      recipient_info.profile_image_url = family_member.profile_image_url;
+
+      results.family_members.push_back(std::move(recipient_info));
+    }
+  }
+  std::move(callback).Run(results);
+}
+
 void PasswordsPrivateDelegateImpl::OsReauthTimeoutCall() {
 #if !BUILDFLAG(IS_LINUX)
   PasswordsPrivateEventRouter* router =
@@ -648,11 +687,17 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
 
 void PasswordsPrivateDelegateImpl::FetchFamilyMembers(
     FetchFamilyResultsCallback callback) {
-  // TODO(crbug/1445526): Call family fetcher service.
-  api::passwords_private::FamilyFetchResults results;
-  results.status = api::passwords_private::FamilyFetchStatus::
-      FAMILY_FETCH_STATUS_UNKNOWN_ERROR;
-  std::move(callback).Run(results);
+  if (!sharing_password_recipients_fetcher_) {
+    sharing_password_recipients_fetcher_ =
+        std::make_unique<password_manager::RecipientsFetcherImpl>(
+            chrome::GetChannel(),
+            profile_->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess(),
+            IdentityManagerFactory::GetForProfile(profile_));
+  }
+  sharing_password_recipients_fetcher_->FetchFamilyMembers(base::BindOnce(
+      &PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PasswordsPrivateDelegateImpl::SharePassword(
