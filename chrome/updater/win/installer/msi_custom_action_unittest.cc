@@ -62,43 +62,6 @@ struct MsiSetTagsTestCase {
   std::string expected_tag_string;
 };
 
-std::vector<MsiSetTagsTestCase> MsiSetTagsTestCases() {
-  return {
-      // single tag parameter.
-      {"GUH-brand-only.msi", "BRAND=QAQA"},
-
-      // single tag parameter ending in an ampersand.
-      {"GUH-ampersand-ending.msi", "BRAND=QAQA"},
-
-      // multiple tag parameters.
-      {"GUH-multiple.msi",
-       "APPGUID={8A69D345-D564-463C-AFF1-A69D9E530F96}&IID={2D8C18E9-8D3A-4EFC-"
-       "6D61-AE23E3530EA2}&LANG=en&BROWSER=4&USAGESTATS=0&APPNAME=Google "
-       "Chrome&NEEDSADMIN=prefers&BRAND=CHMB&INSTALLDATAINDEX=defaultbrowser"},
-
-      // special character in the tag value.
-      {"GUH-special-value.msi", "BRAND=QA*A"},
-
-      // untagged msi.
-      {"GUH-untagged.msi", {}},
-
-      // invalid magic signature "Gact2.0Foo".
-      {"GUH-invalid-marker.msi", {}},
-
-      // invalid characters in the tag key.
-      {"GUH-invalid-key.msi", {}},
-
-      // invalid tag format.
-      {"GUH-bad-format.msi", {}},
-
-      // invalid tag format.
-      {"GUH-bad-format2.msi", {}},
-
-      // untagged.
-      {"GUH-untagged.msi", {}},
-  };
-}
-
 }  // namespace
 
 class MsiSetTagsTest : public TestWithParam<MsiSetTagsTestCase> {};
@@ -131,9 +94,45 @@ TEST_P(MsiSetTagsTest, MsiSetTags) {
   EXPECT_EQ(tag_string, GetParam().expected_tag_string);
 }
 
-INSTANTIATE_TEST_SUITE_P(MsiSetTagsTestCases,
-                         MsiSetTagsTest,
-                         ValuesIn(MsiSetTagsTestCases()));
+INSTANTIATE_TEST_SUITE_P(
+    MsiSetTagsTestCases,
+    MsiSetTagsTest,
+    ValuesIn(std::vector<MsiSetTagsTestCase>{
+        // single tag parameter.
+        {"GUH-brand-only.msi", "BRAND=QAQA"},
+
+        // single tag parameter ending in an ampersand.
+        {"GUH-ampersand-ending.msi", "BRAND=QAQA"},
+
+        // multiple tag parameters.
+        {"GUH-multiple.msi",
+         "APPGUID={8A69D345-D564-463C-AFF1-A69D9E530F96}&IID={2D8C18E9-8D3A-"
+         "4EFC-"
+         "6D61-AE23E3530EA2}&LANG=en&BROWSER=4&USAGESTATS=0&APPNAME=Google "
+         "Chrome&NEEDSADMIN=prefers&BRAND=CHMB&INSTALLDATAINDEX="
+         "defaultbrowser"},
+
+        // special character in the tag value.
+        {"GUH-special-value.msi", "BRAND=QA*A"},
+
+        // untagged msi.
+        {"GUH-untagged.msi", {}},
+
+        // invalid magic signature "Gact2.0Foo".
+        {"GUH-invalid-marker.msi", {}},
+
+        // invalid characters in the tag key.
+        {"GUH-invalid-key.msi", {}},
+
+        // invalid tag format.
+        {"GUH-bad-format.msi", {}},
+
+        // invalid tag format.
+        {"GUH-bad-format2.msi", {}},
+
+        // untagged.
+        {"GUH-untagged.msi", {}},
+    }));
 
 TEST(MsiCustomActionTest, ExtractTagInfoFromInstaller) {
   EXPECT_EQ(ExtractTagInfoFromInstaller(0), static_cast<UINT>(ERROR_SUCCESS));
