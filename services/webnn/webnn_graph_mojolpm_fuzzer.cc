@@ -55,8 +55,7 @@ class WebnnGraphLPMFuzzer {
     const auto& create_graph = action.create_graph();
     auto graph_info_ptr = webnn::mojom::GraphInfo::New();
     mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
-    webnn::WebNNGraphImpl::ValidateAndBuildGraph(base::DoNothing(),
-                                                 std::move(graph_info_ptr));
+    webnn::WebNNGraphImpl::ValidateGraph(std::move(graph_info_ptr));
     ++action_index_;
   }
 

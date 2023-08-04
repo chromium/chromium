@@ -21,8 +21,6 @@ namespace webnn {
 
 namespace {
 
-bool g_is_validation_only_for_testing = false;
-
 // Maps the id to its `mojo::Operand`.
 using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
 
@@ -427,7 +425,13 @@ bool ValidateOperator(const IdToOperandMap& id_to_operand_map,
   NOTREACHED_NORETURN();
 }
 
-bool ValidateGraphInfo(const mojom::GraphInfoPtr& graph_info) {
+}  // namespace
+
+WebNNGraphImpl::WebNNGraphImpl() = default;
+
+WebNNGraphImpl::~WebNNGraphImpl() = default;
+
+bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
   // The input operands of graph can be empty.
   if (graph_info->id_to_operand_map.empty() || graph_info->operators.empty() ||
       graph_info->output_operands.empty()) {
@@ -469,40 +473,6 @@ bool ValidateGraphInfo(const mojom::GraphInfoPtr& graph_info) {
   }
 
   return true;
-}
-
-}  // namespace
-
-WebNNGraphImpl::WebNNGraphImpl() = default;
-
-WebNNGraphImpl::~WebNNGraphImpl() = default;
-
-// static
-void WebNNGraphImpl::SetValidationOnlyForTesting(
-    bool is_validation_only_for_testing) {
-  g_is_validation_only_for_testing = is_validation_only_for_testing;
-}
-
-// static
-bool WebNNGraphImpl::ValidateAndBuildGraph(
-    mojom::WebNNContext::CreateGraphCallback callback,
-    const mojom::GraphInfoPtr& graph_info) {
-  if (!ValidateGraphInfo(graph_info)) {
-    return false;
-  }
-
-  if (g_is_validation_only_for_testing) {
-    std::move(callback).Run(mojo::NullRemote());
-    return true;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  dml::GraphImpl::CreateAndBuild(graph_info, std::move(callback));
-  return true;
-#else
-  std::move(callback).Run(mojo::NullRemote());
-  return true;
-#endif
 }
 
 }  // namespace webnn

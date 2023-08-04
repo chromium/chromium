@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <d3d11.h>
 #include <wrl.h>
 
 #include "base/numerics/safe_conversions.h"
@@ -14,7 +13,6 @@
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
 
@@ -57,14 +55,7 @@ class WebNNCommandRecorderTest : public TestBase {
 void WebNNCommandRecorderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
-  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  ASSERT_NE(d3d11_device.Get(), nullptr);
-  ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  ASSERT_NE(dxgi_adapter.Get(), nullptr);
-  adapter_ = Adapter::Create(dxgi_adapter);
+  adapter_ = Adapter::GetInstance();
   ASSERT_NE(adapter_.get(), nullptr);
 }
 

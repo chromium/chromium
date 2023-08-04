@@ -23,12 +23,18 @@ class WebNNContextImpl : public mojom::WebNNContext {
 
   ~WebNNContextImpl() override;
 
- private:
+ protected:
   void OnConnectionError();
 
   // mojom::WebNNContext
   void CreateGraph(mojom::GraphInfoPtr graph_info,
                    CreateGraphCallback callback) override;
+
+  // This method will be called by `CreateGraph()` after the graph info is
+  // validated. A backend subclass should implement this method to build and
+  // compile a platform specific graph asynchronously.
+  virtual void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
+                               CreateGraphCallback callback) = 0;
 
   mojo::Receiver<mojom::WebNNContext> receiver_;
 

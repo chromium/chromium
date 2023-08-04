@@ -28,14 +28,7 @@ class WebNNGraphBuilderTest : public TestBase {
 void WebNNGraphBuilderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
-  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  ASSERT_NE(d3d11_device.Get(), nullptr);
-  ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  ASSERT_NE(dxgi_adapter.Get(), nullptr);
-  scoped_refptr<Adapter> adapter = Adapter::Create(dxgi_adapter);
+  scoped_refptr<Adapter> adapter = Adapter::GetInstance();
   ASSERT_NE(adapter.get(), nullptr);
   dml_device_ = adapter->dml_device();
   ASSERT_NE(dml_device_.Get(), nullptr);

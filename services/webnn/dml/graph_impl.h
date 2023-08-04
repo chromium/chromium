@@ -19,6 +19,7 @@
 
 namespace webnn::dml {
 
+class CommandQueue;
 class CommandRecorder;
 
 // GraphImpl inherits WebNNGraphImpl to represent a DML graph implementation. It
@@ -33,7 +34,9 @@ class GraphImpl final : public WebNNGraphImpl {
   // wait for the initialization work to be completed on GPU, the GraphImpl
   // instance will only be created and bound to the mojom receiver in
   // GraphImpl::OnWaitForBuildSignal method.
-  static void CreateAndBuild(const mojom::GraphInfoPtr& graph_info,
+  static void CreateAndBuild(scoped_refptr<CommandQueue> command_queue,
+                             Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+                             const mojom::GraphInfoPtr& graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback);
 
   GraphImpl(const GraphImpl&) = delete;

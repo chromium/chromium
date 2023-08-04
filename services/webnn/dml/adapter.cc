@@ -4,12 +4,37 @@
 
 #include "services/webnn/dml/adapter.h"
 
+#include <d3d11.h>
+
 #include "base/logging.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/platform_functions.h"
+#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
+
+// static
+scoped_refptr<Adapter> Adapter::GetInstance() {
+  // If the `Adapter` instance is created, add a reference and return it.
+  if (instance_) {
+    return base::WrapRefCounted(instance_);
+  }
+
+  // Otherwise, create a new one with the adapter queried from ANGLE.
+  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (!d3d11_device) {
+    DLOG(ERROR) << "Failed to query ID3D11Device from ANGLE.";
+    return nullptr;
+  }
+  // A ID3D11Device is always QueryInteface-able to a IDXGIDevice.
+  ComPtr<IDXGIDevice> dxgi_device;
+  CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
+  // All DXGI devices should have adapters.
+  ComPtr<IDXGIAdapter> dxgi_adapter;
+  CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
+  return Adapter::Create(std::move(dxgi_adapter));
+}
 
 // static
 scoped_refptr<Adapter> Adapter::Create(ComPtr<IDXGIAdapter> dxgi_adapter) {
@@ -60,8 +85,16 @@ Adapter::Adapter(ComPtr<IDXGIAdapter> dxgi_adapter,
     : dxgi_adapter_(std::move(dxgi_adapter)),
       d3d12_device_(std::move(d3d12_device)),
       dml_device_(std::move(dml_device)),
-      command_queue_(std::move(command_queue)) {}
+      command_queue_(std::move(command_queue)) {
+  CHECK_EQ(instance_, nullptr);
+  instance_ = this;
+}
 
-Adapter::~Adapter() = default;
+Adapter::~Adapter() {
+  CHECK_EQ(instance_, this);
+  instance_ = nullptr;
+}
+
+Adapter* Adapter::instance_ = nullptr;
 
 }  // namespace webnn::dml

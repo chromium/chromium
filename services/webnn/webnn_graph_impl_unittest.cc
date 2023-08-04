@@ -14,24 +14,12 @@ namespace webnn {
 
 namespace {
 
-bool ValidateAndBuildGraph(const mojom::GraphInfoPtr& graph_info) {
-  return WebNNGraphImpl::ValidateAndBuildGraph(
-      base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<mojom::WebNNGraph> remote) {}),
-      graph_info);
-}
-
 }  // namespace
 
 class WebNNGraphImplTest : public testing::Test {
  public:
   WebNNGraphImplTest(const WebNNGraphImplTest&) = delete;
   WebNNGraphImplTest& operator=(const WebNNGraphImplTest&) = delete;
-
-  void SetUp() override { WebNNGraphImpl::SetValidationOnlyForTesting(true); }
-  void TearDown() override {
-    WebNNGraphImpl::SetValidationOnlyForTesting(false);
-  }
 
  protected:
   WebNNGraphImplTest() = default;
@@ -69,7 +57,7 @@ struct ClampTester {
     builder.BuildOperator(
         mojom::Operator::Kind::kClamp, {input_operand_id}, {output_operand_id},
         mojom::OperatorAttributes::NewClamp(std::move(mojo_attributes)));
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
@@ -183,7 +171,7 @@ struct ElementWiseBinaryTester {
         builder.BuildOutput("output", output.dimensions, output.type);
     builder.BuildOperator(kind, {lhs_operand_id, rhs_operand_id},
                           {output_operand_id});
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
@@ -303,7 +291,7 @@ struct GemmTester {
         mojom::Operator::Kind::kGemm, {a_operand_id, b_operand_id},
         {output_operand_id},
         mojom::OperatorAttributes::NewGemm(std::move(mojo_attributes)));
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
@@ -467,7 +455,7 @@ struct Pool2dTester {
     builder.BuildOperator(
         kind, {input_operand_id}, {output_operand_id},
         mojom::OperatorAttributes::NewPool2d(std::move(mojo_attributes)));
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
@@ -609,7 +597,7 @@ struct ReluTester {
         builder.BuildOutput("output", output.dimensions, output.type);
     builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
                           {output_operand_id});
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
@@ -666,7 +654,7 @@ struct ReshapeTester {
         builder.BuildOutput("output", output.dimensions, output.type);
     builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id},
                           {output_operand_id});
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
@@ -733,7 +721,7 @@ struct SoftmaxTester {
         builder.BuildOutput("output", output.dimensions, output.type);
     builder.BuildOperator(mojom::Operator::Kind::kSoftmax, {input_operand_id},
                           {output_operand_id});
-    EXPECT_EQ(ValidateAndBuildGraph(builder.GetGraphInfo()), expected);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 

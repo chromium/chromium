@@ -4,6 +4,8 @@
 
 #include "services/webnn/webnn_test_utils.h"
 
+#include "base/check_is_test.h"
+
 namespace webnn {
 
 GraphInfoBuilder::GraphInfoBuilder() {
@@ -55,6 +57,11 @@ void GraphInfoBuilder::BuildOperator(
   operation->output_operands = outputs;
   operation->attributes = std::move(operator_attributes);
   graph_info_->operators.push_back(std::move(operation));
+}
+
+mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
+  CHECK_IS_TEST();
+  return graph_info_.Clone();
 }
 
 }  // namespace webnn

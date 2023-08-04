@@ -10,6 +10,11 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/webnn_context_impl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "services/webnn/dml/adapter.h"
+#include "services/webnn/dml/context_impl.h"
+#endif
+
 namespace webnn {
 
 namespace {
@@ -41,11 +46,23 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
 #if BUILDFLAG(IS_WIN)
+  // Get the default `Adapter` instance which is created for the adapter queried
+  // from ANGLE. At the current stage, all `ContextImpl` share this instance.
+  //
+  // TODO(crbug.com/1469755): Support getting `Adapter` instance based on
+  // `options`.
+  scoped_refptr<dml::Adapter> adapter = dml::Adapter::GetInstance();
+  if (!adapter) {
+    std::move(callback).Run(mojom::CreateContextResult::kNotSupported,
+                            mojo::NullRemote());
+    return;
+  }
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
   // The receiver bound to WebNNContextImpl.
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new WebNNContextImpl(
-      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImpl(
+      std::move(adapter), blink_remote.InitWithNewPipeAndPassReceiver(),
+      this)));
   std::move(callback).Run(mojom::CreateContextResult::kOk,
                           std::move(blink_remote));
 #else

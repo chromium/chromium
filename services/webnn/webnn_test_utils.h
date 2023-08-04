@@ -13,9 +13,10 @@
 
 namespace webnn {
 
-// GraphInfoBuilder is a helper class to build a GraphInfoPtr defined by mojom
-// which describes an entire WebNN graph information. It provides methods to
-// create all of the operands and operators for the GraphInfoPtr.
+// GraphInfoBuilder is a helper class for test cases that builds a GraphInfoPtr
+// defined by mojom which describes an entire WebNN graph information. It
+// provides methods to create all of the operands and operators for the
+// GraphInfoPtr.
 class GraphInfoBuilder final {
  public:
   GraphInfoBuilder();
@@ -43,6 +44,14 @@ class GraphInfoBuilder final {
       mojom::OperatorAttributesPtr operator_attributes = nullptr);
 
   const mojom::GraphInfoPtr& GetGraphInfo() const { return graph_info_; }
+
+  // Get a clone of internal graph info. This is used by
+  // `WebNNContextDMLImplTest` because mojom::WebNNContext::CreateGraph()` needs
+  // to take the ownership of graph info.
+  //
+  // Notice cloning of graph info could be expensive and should only be used in
+  // tests.
+  mojom::GraphInfoPtr CloneGraphInfo() const;
 
  private:
   mojom::GraphInfoPtr graph_info_;

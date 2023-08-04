@@ -11,7 +11,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/graph_builder.h"
@@ -123,23 +122,6 @@ void CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
   id_to_node_output_map[output_id] = std::move(relu_output);
 }
 
-scoped_refptr<Adapter> QueryDMLAdapter() {
-  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to query ID3D11Device.";
-    return nullptr;
-  }
-  ComPtr<IDXGIDevice> dxgi_device;
-  CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
-  scoped_refptr<Adapter> adapter = Adapter::Create(std::move(dxgi_adapter));
-  if (!adapter) {
-    DLOG(ERROR) << "Failed to create Adapter.";
-  }
-  return adapter;
-}
-
 }  // namespace
 
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
@@ -155,19 +137,11 @@ GraphImpl::~GraphImpl() = default;
 
 // Static
 void GraphImpl::CreateAndBuild(
+    scoped_refptr<CommandQueue> command_queue,
+    ComPtr<IDMLDevice> dml_device,
     const mojom::GraphInfoPtr& graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  // TODO(crbug.com/1455278): This method would create a new CommandQueue for
-  // each GraphImpl, sharing CommandQueue between GraphImpls created on a same
-  // adapter is needed for optimization.
-  scoped_refptr<Adapter> adapter = QueryDMLAdapter();
-  if (!adapter) {
-    DLOG(ERROR) << "Failed to query the DML Adapter.";
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-  scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
-  ComPtr<IDMLDevice> dml_device(adapter->dml_device());
+  // `CommandRecorder` would keep reference of command queue and DML device.
   std::unique_ptr<CommandRecorder> command_recorder =
       CommandRecorder::Create(command_queue, dml_device);
   if (!command_recorder) {
@@ -197,8 +171,9 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       default:
-        DLOG(ERROR) << "This operator kind " + OpKindToString(operation->kind) +
-                           "is not supported.";
+        DLOG(ERROR) << "This operator kind (" +
+                           OpKindToString(operation->kind) +
+                           ") is not supported.";
         std::move(callback).Run(mojo::NullRemote());
         return;
     }

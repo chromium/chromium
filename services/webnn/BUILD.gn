@@ -24,6 +24,8 @@ source_set("webnn") {
       "dml/command_queue.h",
       "dml/command_recorder.cc",
       "dml/command_recorder.h",
+      "dml/context_impl.cc",
+      "dml/context_impl.h",
       "dml/error.h",
       "dml/graph_builder.cc",
       "dml/graph_builder.h",
@@ -57,7 +59,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "webnn_context_impl_unittest.cc",
+    "webnn_context_provider_impl_unittest.cc",
     "webnn_graph_impl_unittest.cc",
     "webnn_test_utils.cc",
     "webnn_test_utils.h",
@@ -68,6 +70,7 @@ source_set("tests") {
       "dml/adapter_test.cc",
       "dml/command_queue_test.cc",
       "dml/command_recorder_test.cc",
+      "dml/context_impl_test.cc",
       "dml/graph_builder_test.cc",
       "dml/graph_impl_test.cc",
       "dml/platform_functions_test.cc",
