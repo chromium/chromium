@@ -401,7 +401,13 @@
 - (void)updateFormManagers {
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  DCHECK(activeWebState);
+  if (!activeWebState) {
+    // PasswordDetailsCoordinator and other settings coordinators always receive
+    // a normal Browser, even if they are started from incognito. So if only
+    // incognito tabs are open, `activeWebState` is null, causing a crash
+    // (crbug.com/1468506).
+    return;
+  }
   password_manager::PasswordManagerClient* passwordManagerClient =
       PasswordTabHelper::FromWebState(activeWebState)
           ->GetPasswordManagerClient();
