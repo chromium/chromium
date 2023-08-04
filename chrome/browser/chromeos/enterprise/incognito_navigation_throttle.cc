@@ -31,38 +31,39 @@ namespace {
 std::string GetIncognitoNavigationBlockedErrorPage(
     base::Value::List blocking_extension,
     base::Value::List missing_extension) {
-  base::Value::Dict strings;
-  strings.Set("incognitoBlockedPageTitle",
-              l10n_util::GetPluralStringFUTF16(
-                  IDS_INCOGNITO_NAVIGATION_BLOCKED_PAGE_TITLE,
-                  blocking_extension.size()));
-  strings.Set("incognitoBlockedMessage",
-              l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_NAVIGATION_MESSAGE,
-                                               blocking_extension.size()));
-  strings.Set("incognitoBlockedInstructions",
-              l10n_util::GetStringUTF16(IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS));
-  strings.Set(
-      "incognitoBlockedInstructionsStep1",
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_1));
-  strings.Set(
-      "incognitoBlockedInstructionsStep2",
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_2));
-  strings.Set(
-      "incognitoBlockedInstructionsStep3",
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_3));
-  strings.Set(
-      "incognitoBlockedInstructionsStep4",
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_4));
-  strings.Set(
-      "incognitoBlockedMissingExtensionsTitle",
-      l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_NAVIGATION_MISSING_TITLE,
-                                       missing_extension.size()));
-  strings.Set("incognitoBlockedMissingExtensionsMessage",
-              l10n_util::GetPluralStringFUTF16(
-                  IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS,
-                  missing_extension.size()));
-  strings.Set("blockingExtensions", std::move(blocking_extension));
-  strings.Set("missingExtensions", std::move(missing_extension));
+  auto strings =
+      base::Value::Dict()
+          .Set("incognitoBlockedPageTitle",
+               l10n_util::GetPluralStringFUTF16(
+                   IDS_INCOGNITO_NAVIGATION_BLOCKED_PAGE_TITLE,
+                   blocking_extension.size()))
+          .Set("incognitoBlockedMessage",
+               l10n_util::GetPluralStringFUTF16(
+                   IDS_INCOGNITO_NAVIGATION_MESSAGE, blocking_extension.size()))
+          .Set("incognitoBlockedInstructions",
+               l10n_util::GetStringUTF16(IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS))
+          .Set("incognitoBlockedInstructionsStep1",
+               l10n_util::GetStringUTF16(
+                   IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_1))
+          .Set("incognitoBlockedInstructionsStep2",
+               l10n_util::GetStringUTF16(
+                   IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_2))
+          .Set("incognitoBlockedInstructionsStep3",
+               l10n_util::GetStringUTF16(
+                   IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_3))
+          .Set("incognitoBlockedInstructionsStep4",
+               l10n_util::GetStringUTF16(
+                   IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_4))
+          .Set("incognitoBlockedMissingExtensionsTitle",
+               l10n_util::GetPluralStringFUTF16(
+                   IDS_INCOGNITO_NAVIGATION_MISSING_TITLE,
+                   missing_extension.size()))
+          .Set("incognitoBlockedMissingExtensionsMessage",
+               l10n_util::GetPluralStringFUTF16(
+                   IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS,
+                   missing_extension.size()))
+          .Set("blockingExtensions", std::move(blocking_extension))
+          .Set("missingExtensions", std::move(missing_extension));
 
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

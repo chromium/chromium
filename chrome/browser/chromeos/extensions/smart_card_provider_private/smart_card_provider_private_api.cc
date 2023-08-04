@@ -159,8 +159,6 @@ ToSmartCardProviderReaderStateOutVector(
 
 base::Value::Dict ToValue(
     const device::mojom::SmartCardReaderStateFlags& state_flags) {
-  base::Value::Dict to_value_result;
-
   scard_api::ReaderStateFlags result;
 
 #define CONVERT_FLAG(flag) result.flag = state_flags.flag;
@@ -184,13 +182,10 @@ base::Value::Dict ToValue(
 
 base::Value::Dict ToValue(
     const device::mojom::SmartCardReaderStateIn& state_in) {
-  base::Value::Dict to_value_result;
-
-  to_value_result.Set("reader", state_in.reader);
-  to_value_result.Set("currentState", ToValue(*state_in.current_state.get()));
-  to_value_result.Set("currentCount", state_in.current_count);
-
-  return to_value_result;
+  return base::Value::Dict()
+      .Set("reader", state_in.reader)
+      .Set("currentState", ToValue(*state_in.current_state.get()))
+      .Set("currentCount", state_in.current_count);
 }
 
 scard_api::ShareMode ToApiShareMode(
@@ -533,14 +528,13 @@ void SmartCardProviderPrivateAPI::RunOrQueueRequest(ContextId scard_context,
 void SmartCardProviderPrivateAPI::SendReleaseContext(ContextId scard_context) {
   RequestId request_id = request_id_generator_.GenerateNextId();
 
-  base::Value::List event_args;
-  event_args.Append(request_id.GetUnsafeValue());
-  event_args.Append(scard_context.GetUnsafeValue());
-
   auto event = std::make_unique<extensions::Event>(
       extensions::events::
           SMART_CARD_PROVIDER_PRIVATE_ON_RELEASE_CONTEXT_REQUESTED,
-      scard_api::OnReleaseContextRequested::kEventName, std::move(event_args),
+      scard_api::OnReleaseContextRequested::kEventName,
+      base::Value::List()
+          .Append(request_id.GetUnsafeValue())
+          .Append(scard_context.GetUnsafeValue()),
       &*browser_context_);
 
   const std::string provider_extension_id = GetListenerExtensionId(*event);
@@ -1120,9 +1114,6 @@ void SmartCardProviderPrivateAPI::SendListReaders(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
 
-  base::Value::List event_args;
-  event_args.Append(scard_context.GetUnsafeValue());
-
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessListReadersResult,
                      weak_ptr_factory_.GetWeakPtr());
@@ -1132,7 +1123,7 @@ void SmartCardProviderPrivateAPI::SendListReaders(
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnListReadersTimeout,
-      std::move(event_args));
+      base::Value::List().Append(scard_context.GetUnsafeValue()));
 }
 
 void SmartCardProviderPrivateAPI::GetStatusChange(
@@ -1159,9 +1150,6 @@ void SmartCardProviderPrivateAPI::SendGetStatusChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
 
-  base::Value::List event_args;
-  event_args.Append(scard_context.GetUnsafeValue());
-
   const bool finite_timeout =
       !time_delta.is_inf() &&
       time_delta.InMilliseconds() < int64_t(std::numeric_limits<int>::max());
@@ -1170,13 +1158,16 @@ void SmartCardProviderPrivateAPI::SendGetStatusChange(
   if (finite_timeout) {
     timeout.milliseconds = int(time_delta.InMilliseconds());
   }
-  event_args.Append(timeout.ToValue());
 
   base::Value::List reader_states_list;
   for (const auto& reader_state : reader_states) {
     reader_states_list.Append(ToValue(*reader_state.get()));
   }
-  event_args.Append(std::move(reader_states_list));
+
+  auto event_args = base::Value::List()
+                        .Append(scard_context.GetUnsafeValue())
+                        .Append(timeout.ToValue())
+                        .Append(std::move(reader_states_list));
 
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessGetStatusChangeResult,
@@ -1240,11 +1231,11 @@ void SmartCardProviderPrivateAPI::SendConnect(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
 
-  base::Value::List event_args;
-  event_args.Append(scard_context.GetUnsafeValue());
-  event_args.Append(reader);
-  event_args.Append(ToValue(share_mode));
-  event_args.Append(ToValue(*preferred_protocols.get()));
+  auto event_args = base::Value::List()
+                        .Append(scard_context.GetUnsafeValue())
+                        .Append(reader)
+                        .Append(ToValue(share_mode))
+                        .Append(ToValue(*preferred_protocols.get()));
 
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessConnectResult,

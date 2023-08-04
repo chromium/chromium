@@ -327,12 +327,10 @@ using KioskBrowserSessionRestartReasonTest =
     KioskBrowserSessionBaseTest<KioskSessionRestartTestCase>;
 
 TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
-  {
-    base::Value::Dict value;
-    value.Set(kKioskSessionStartTime, base::TimeToValue(base::Time::Now()));
-
-    local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
-  }
+  local_state()->SetDict(
+      prefs::kKioskMetrics,
+      base::Value::Dict().Set(kKioskSessionStartTime,
+                              base::TimeToValue(base::Time::Now())));
 
   StartWebKioskSession();
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
@@ -407,8 +405,8 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
   // Setup local_state with 5 more kiosk sessions happened prior to the current
   // one: {now, 2,3,4,5 days ago}
   {
-    base::Value::List session_list;
-    session_list.Append(base::TimeToValue(base::Time::Now()));
+    auto session_list =
+        base::Value::List().Append(base::TimeToValue(base::Time::Now()));
 
     const size_t kMaxDays = 4;
     for (size_t i = 0; i < kMaxDays; i++) {
@@ -416,14 +414,14 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
           base::TimeToValue(base::Time::Now() - base::Days(i + 2)));
     }
 
-    base::Value::Dict value;
-    value.Set(kKioskSessionLastDayList, std::move(session_list));
-    // Emulates previous session crashes.
-    value.Set(kKioskSessionStartTime,
-              base::TimeToValue(base::Time::Now() -
-                                2 * kKioskSessionDurationHistogramLimit));
-
-    local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
+    local_state()->SetDict(
+        prefs::kKioskMetrics,
+        base::Value::Dict()
+            .Set(kKioskSessionLastDayList, std::move(session_list))
+            // Emulates previous session crashes.
+            .Set(kKioskSessionStartTime,
+                 base::TimeToValue(base::Time::Now() -
+                                   2 * kKioskSessionDurationHistogramLimit)));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -628,10 +626,11 @@ TEST_P(KioskBrowserSessionRestartReasonTest, CrashMetric) {
   const KioskSessionRestartTestCase& test_config = GetParam();
   // Setup `kKioskSessionStartTime` and add a file to the crash directory to
   // emulate previous kiosk session crash.
-  base::Value::Dict value;
-  value.Set(kKioskSessionStartTime,
-            base::TimeToValue(base::Time::Now() - base::Hours(1)));
-  local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
+  local_state()->SetDict(
+      prefs::kKioskMetrics,
+      base::Value::Dict().Set(
+          kKioskSessionStartTime,
+          base::TimeToValue(base::Time::Now() - base::Hours(1))));
   base::FilePath crash_file;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(crash_path(), &crash_file));
   if (test_config.run_with_reboot) {
@@ -650,10 +649,11 @@ TEST_P(KioskBrowserSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
   // Setup `kKioskSessionStartTime` to emulate previous kiosk session stopped
   // correctly, but because of race condition, `kKioskSessionStartTime` was not
   // cleaned.
-  base::Value::Dict value;
-  value.Set(kKioskSessionStartTime,
-            base::TimeToValue(base::Time::Now() - base::Hours(1)));
-  local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
+  local_state()->SetDict(
+      prefs::kKioskMetrics,
+      base::Value::Dict().Set(
+          kKioskSessionStartTime,
+          base::TimeToValue(base::Time::Now() - base::Hours(1))));
   if (test_config.run_with_reboot) {
     EmulateDeviceReboot();
   }

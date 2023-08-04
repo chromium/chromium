@@ -73,11 +73,9 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
     WebAppTestInstallWithOsHooksObserver observer(profile());
     observer.BeginListening();
     {
-      base::Value::Dict app_policy;
-      app_policy.Set(web_app::kUrlKey, install_url);
       ScopedListPrefUpdate update(profile()->GetPrefs(),
                                   prefs::kWebAppInstallForceList);
-      update->Append(std::move(app_policy));
+      update->Append(base::Value::Dict().Set(web_app::kUrlKey, install_url));
     }
     AppId app_id = observer.Wait();
     return app_id;

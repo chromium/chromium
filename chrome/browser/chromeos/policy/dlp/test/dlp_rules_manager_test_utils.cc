@@ -26,9 +26,7 @@ const char kLevel[] = "level";
 }  // namespace
 
 base::Value::Dict CreateSources(base::Value::List urls) {
-  base::Value::Dict srcs;
-  srcs.Set(kUrls, std::move(urls));
-  return srcs;
+  return base::Value::Dict().Set(kUrls, std::move(urls));
 }
 
 base::Value::Dict CreateDestinations(
@@ -46,10 +44,7 @@ base::Value::Dict CreateDestinations(
 
 base::Value::Dict CreateRestrictionWithLevel(const std::string& restriction,
                                              const std::string& level) {
-  base::Value::Dict dict;
-  dict.Set(kClass, restriction);
-  dict.Set(kLevel, level);
-  return dict;
+  return base::Value::Dict().Set(kClass, restriction).Set(kLevel, level);
 }
 
 base::Value::Dict CreateRule(const std::string& name,
@@ -59,16 +54,17 @@ base::Value::Dict CreateRule(const std::string& name,
                              absl::optional<base::Value::List> dst_urls,
                              absl::optional<base::Value::List> dst_components,
                              base::Value::List restrictions) {
-  base::Value::Dict rule;
-  rule.Set(kName, name);
-  rule.Set(kDescription, desc);
+  auto rule =
+      base::Value::Dict()
+          .Set(kName, name)
+          .Set(kDescription, desc)
+          .Set(kSources, CreateSources(std::move(src_urls)))
+          .Set(kDestinations, CreateDestinations(std::move(dst_urls),
+                                                 std::move(dst_components)))
+          .Set(kRestrictions, std::move(restrictions));
   if (!rule_id.empty()) {
     rule.Set(kRuleId, rule_id);
   }
-  rule.Set(kSources, CreateSources(std::move(src_urls)));
-  rule.Set(kDestinations,
-           CreateDestinations(std::move(dst_urls), std::move(dst_components)));
-  rule.Set(kRestrictions, std::move(restrictions));
   return rule;
 }
 
@@ -115,10 +111,8 @@ base::Value::Dict DlpRule::Create() const {
 
   base::Value::List restrictions_list;
   for (const auto& [type, level] : restrictions) {
-    base::Value::Dict class_level_dict;
-    class_level_dict.Set("class", type);
-    class_level_dict.Set("level", level);
-    restrictions_list.Append(std::move(class_level_dict));
+    restrictions_list.Append(
+        base::Value::Dict().Set("class", type).Set("level", level));
   }
 
   return CreateRule(name, description, id, std::move(src_urls_list),
