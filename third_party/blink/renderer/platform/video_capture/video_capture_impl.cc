@@ -589,6 +589,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
         multiplanar_si_format.SetPrefersExternalSampler();
       }
 #endif
+      CHECK_EQ(gpu_memory_buffer_->GetFormat(),
+               gfx::BufferFormat::YUV_420_BIPLANAR);
       buffer_context_->gmb_resources()->mailboxes[plane] =
           create_multiplanar_image
               ? sii->CreateSharedImage(
