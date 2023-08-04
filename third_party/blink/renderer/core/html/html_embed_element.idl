@@ -39,6 +39,6 @@
     [CEReactions, Reflect] attribute DOMString name;
 
     // FIXME: None of these getters and setters are in the spec.
-    [Custom, NotEnumerable] getter Node (DOMString name);
-    [Custom] setter Node (DOMString name, Node value);
+    [NotEnumerable, MeasureAs=HTMLEmbedElementGetter] getter any (DOMString name);
+    [MeasureAs=HTMLEmbedElementSetter] setter any (DOMString name, any value);
 };

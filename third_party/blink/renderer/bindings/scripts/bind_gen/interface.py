@@ -3225,7 +3225,7 @@ def make_named_property_getter_callback(cg_context, function_name):
     # existence by heuristics.
     type = cg_context.return_type.unwrap()
     if type.is_any or type.is_object:
-        not_found_expr = "${return_value}.empty()"
+        not_found_expr = "${return_value}.IsEmpty()"
     elif type.is_string:
         not_found_expr = "${return_value}.IsNull()"
     elif type.is_interface:
@@ -3351,8 +3351,10 @@ if (!is_creating) {
                             EmptyNode(),
                             make_v8_set_return_value(cg_context),
                             TextNode("""\
-% if interface.identifier == "CSSStyleDeclaration":
-// CSSStyleDeclaration is abusing named properties.
+% if interface.identifier == "CSSStyleDeclaration" or \
+     interface.identifier == "HTMLEmbedElement" or \
+     interface.identifier == "HTMLObjectElement":
+// ${interface.identifier} is abusing named properties.
 // Do not intercept if the property is not found.
 % else:
 bindings::V8SetReturnValue(${info}, nullptr);
