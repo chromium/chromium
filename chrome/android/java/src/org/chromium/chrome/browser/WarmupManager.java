@@ -169,8 +169,6 @@ public class WarmupManager {
 
         mSpareTab.destroy();
         mSpareTab = null;
-        // mSpareTabObserver is removed in mSpareTab.destroy().
-        mSpareTabObserver = null;
     }
 
     /**
