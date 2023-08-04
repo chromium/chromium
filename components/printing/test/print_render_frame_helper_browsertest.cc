@@ -1096,6 +1096,10 @@ class PrintRenderFrameHelperPreviewTest
     GetPrintRenderFrameHelper()->OnPrintPreviewDialogClosed();
   }
 
+  void OnPrintForSystemDialog() {
+    GetPrintRenderFrameHelper()->PrintForSystemDialog();
+  }
+
   void VerifyPreviewRequest(bool expect_request) {
     EXPECT_EQ(expect_request, print_manager()->IsSetupScriptedPrintPreview());
   }
@@ -1983,6 +1987,31 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   VerifyPreviewPageCount(1);
 
   OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintForSystemDialog) {
+  LoadHTML(kHelloWorldHTML);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+  VerifyPreviewPageCount(1);
+
+  // No need to call OnClosePrintPreviewDialog(), as OnPrintForSystemDialog()
+  // takes care of the Print Preview to system print dialog transition.
+  OnPrintForSystemDialog();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(true);
 }
 
 class PrintRenderFrameHelperTaggedPreviewTest
