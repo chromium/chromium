@@ -2153,6 +2153,8 @@ InterestGroupAuction::CreateReporter(
       std::move(winner->bid->bid_state->bidder);
   winning_bid_info.render_url = winner->bid->ad_descriptor.url;
   winning_bid_info.ad_components = winner->bid->GetAdComponentUrls();
+  winning_bid_info.allowed_reporting_origins =
+      winner->bid->bid_ad->allowed_reporting_origins;
   // Need the bid from the bidder itself. If the bid was from a component
   // auction, then `top_bid_->bid` will be the bid from the component auction,
   // which the component seller worklet may have modified, and thus the wrong

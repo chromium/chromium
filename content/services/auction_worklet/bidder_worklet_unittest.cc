@@ -489,13 +489,15 @@ class BidderWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
           base::flat_map<std::string, GURL>(),
+      const base::flat_map<std::string, std::string>& expected_ad_macro_map =
+          base::flat_map<std::string, std::string>(),
       PrivateAggregationRequests expected_pa_requests = {},
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     RunReportWinWithJavascriptExpectingResult(
         CreateReportWinScript(function_body), expected_report_url,
-        expected_ad_beacon_map, std::move(expected_pa_requests),
-        expected_errors);
+        expected_ad_beacon_map, std::move(expected_ad_macro_map),
+        std::move(expected_pa_requests), expected_errors);
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
@@ -505,6 +507,8 @@ class BidderWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
           base::flat_map<std::string, GURL>(),
+      const base::flat_map<std::string, std::string>& expected_ad_macro_map =
+          {},
       PrivateAggregationRequests expected_pa_requests = {},
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
@@ -512,6 +516,7 @@ class BidderWorkletTest : public testing::Test {
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
     RunReportWinExpectingResult(expected_report_url, expected_ad_beacon_map,
+                                std::move(expected_ad_macro_map),
                                 std::move(expected_pa_requests),
                                 expected_errors);
   }
@@ -525,6 +530,7 @@ class BidderWorkletTest : public testing::Test {
       mojom::BidderWorklet* bidder_worklet,
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
+      const base::flat_map<std::string, std::string>& expected_ad_macro_map,
       PrivateAggregationRequests expected_pa_requests,
       bool expected_reporting_latency_timeout,
       const std::vector<std::string>& expected_errors,
@@ -545,18 +551,22 @@ class BidderWorkletTest : public testing::Test {
         base::BindOnce(
             [](const absl::optional<GURL>& expected_report_url,
                const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
+               const base::flat_map<std::string, std::string>&
+                   expected_ad_macro_map,
                PrivateAggregationRequests expected_pa_requests,
                bool expected_reporting_latency_timeout,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
                const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
+               const base::flat_map<std::string, std::string>& ad_macro_map,
                PrivateAggregationRequests pa_requests,
                base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_errors, errors);
               EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
+              EXPECT_EQ(expected_ad_macro_map, ad_macro_map);
               EXPECT_EQ(expected_pa_requests, pa_requests);
               if (expected_reporting_latency_timeout) {
                 // We only know that about the time of the timeout should have
@@ -567,8 +577,9 @@ class BidderWorkletTest : public testing::Test {
               std::move(done_closure).Run();
             },
             expected_report_url, expected_ad_beacon_map,
-            std::move(expected_pa_requests), expected_reporting_latency_timeout,
-            expected_errors, std::move(done_closure)));
+            std::move(expected_ad_macro_map), std::move(expected_pa_requests),
+            expected_reporting_latency_timeout, expected_errors,
+            std::move(done_closure)));
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
@@ -577,6 +588,8 @@ class BidderWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
           base::flat_map<std::string, GURL>(),
+      const base::flat_map<std::string, std::string>& expected_ad_macro_map =
+          base::flat_map<std::string, std::string>(),
       PrivateAggregationRequests expected_pa_requests = {},
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
@@ -586,7 +599,7 @@ class BidderWorkletTest : public testing::Test {
     base::RunLoop run_loop;
     RunReportWinExpectingResultAsync(
         bidder_worklet.get(), expected_report_url, expected_ad_beacon_map,
-        std::move(expected_pa_requests),
+        std::move(expected_ad_macro_map), std::move(expected_pa_requests),
         /*expected_reporting_latency_timeout=*/false, expected_errors,
         run_loop.QuitClosure());
     run_loop.Run();
@@ -3694,13 +3707,13 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       data_version_.has_value(),
       /*trace_id=*/1,
       base::BindLambdaForTesting(
-          [&run_loop](const absl::optional<GURL>& report_url,
-                      const base::flat_map<std::string, GURL>& ad_beacon_map,
-                      PrivateAggregationRequests pa_requests,
-                      base::TimeDelta reporting_latency,
-                      const std::vector<std::string>& errors) {
-            run_loop.Quit();
-          }));
+          [&run_loop](
+              const absl::optional<GURL>& report_url,
+              const base::flat_map<std::string, GURL>& ad_beacon_map,
+              const base::flat_map<std::string, std::string>& ad_macro_map,
+              PrivateAggregationRequests pa_requests,
+              base::TimeDelta reporting_latency,
+              const std::vector<std::string>& errors) { run_loop.Quit(); }));
   base::RunLoop().RunUntilIdle();
   AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
               /*charset=*/absl::nullopt, ToyWasm());
@@ -3729,6 +3742,7 @@ TEST_F(BidderWorkletTest, WasmReportWin2) {
   RunReportWinExpectingResultAsync(
       bidder_worklet.get(), GURL("https://foo.test"),
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{},
@@ -5002,6 +5016,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       R"(sendReportTo("http://http.not.allowed.test"))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
@@ -5009,6 +5024,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       R"(sendReportTo("file:///file.not.allowed.test"))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
@@ -5016,6 +5032,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo(""))", /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
@@ -5023,6 +5040,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
       /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
@@ -5032,6 +5050,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
               toString:() => {while(true) {}}
          }))",
       /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/ execution of `reportWin` timed out."});
 }
@@ -5082,13 +5101,16 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       browser_signal_top_level_seller_origin_, data_version_.value_or(0),
       data_version_.has_value(),
       /*trace_id=*/1,
-      base::BindOnce([](const absl::optional<GURL>& report_url,
-                        const base::flat_map<std::string, GURL>& ad_beacon_map,
-                        PrivateAggregationRequests pa_requests,
-                        base::TimeDelta reporting_latency,
-                        const std::vector<std::string>& errors) {
-        ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
-      }));
+      base::BindOnce(
+          [](const absl::optional<GURL>& report_url,
+             const base::flat_map<std::string, GURL>& ad_beacon_map,
+             const base::flat_map<std::string, std::string>& ad_macro_map,
+             PrivateAggregationRequests pa_requests,
+             base::TimeDelta reporting_latency,
+             const std::vector<std::string>& errors) {
+            ADD_FAILURE()
+                << "Callback should not be invoked since worklet deleted";
+          }));
   base::RunLoop().RunUntilIdle();
   bidder_worklet.reset();
   event_handle->Signal();
@@ -5137,6 +5159,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
               [&run_loop, &num_report_win_calls, i](
                   const absl::optional<GURL>& report_url,
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
+                  const base::flat_map<std::string, std::string>& ad_macro_map,
                   PrivateAggregationRequests pa_requests,
                   base::TimeDelta reporting_latency,
                   const std::vector<std::string>& errors) {
@@ -5187,6 +5210,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         base::BindOnce(
             [](const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
+               const base::flat_map<std::string, std::string>& ad_macro_map,
                PrivateAggregationRequests pa_requests,
                base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
@@ -5208,6 +5232,7 @@ TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
       R"(sendReportTo("https://foo.test/" + Date().toString()))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught ReferenceError: Date is not defined."});
 }
@@ -5282,7 +5307,7 @@ TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
     url_loader_factory_.ClearResponses();
     auto run_loop = std::make_unique<base::RunLoop>();
     RunReportWinExpectingResultAsync(
-        bidder_worklet.get(), GURL("https://foo.test/"), {}, {},
+        bidder_worklet.get(), GURL("https://foo.test/"), {}, {}, {},
         /*expected_reporting_latency_timeout=*/false, {},
         run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
@@ -5608,11 +5633,13 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         data_version_.has_value(),
         /*trace_id=*/1,
         base::BindLambdaForTesting(
-            [&run_loop](const absl::optional<GURL>& report_url,
-                        const base::flat_map<std::string, GURL>& ad_beacon_map,
-                        PrivateAggregationRequests pa_requests,
-                        base::TimeDelta reporting_latency,
-                        const std::vector<std::string>& errors) {
+            [&run_loop](
+                const absl::optional<GURL>& report_url,
+                const base::flat_map<std::string, GURL>& ad_beacon_map,
+                const base::flat_map<std::string, std::string>& ad_macro_map,
+                PrivateAggregationRequests pa_requests,
+                base::TimeDelta reporting_latency,
+                const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
               EXPECT_TRUE(errors.empty());
               run_loop.Quit();
@@ -6045,7 +6072,7 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
   // Now ask for reporting. This should hit the other breakpoint.
   base::RunLoop run_loop;
   RunReportWinExpectingResultAsync(
-      worklet.get(), GURL("https://foo.test/"), {}, {},
+      worklet.get(), GURL("https://foo.test/"), {}, {}, {},
       /*expected_reporting_latency_timeout=*/false, {}, run_loop.QuitClosure());
 
   TestDevToolsAgentClient::Event breakpoint_hit2 =
@@ -6369,13 +6396,15 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       browser_signal_top_level_seller_origin_, data_version_.value_or(0),
       data_version_.has_value(),
       /*trace_id=*/1,
-      base::BindOnce([](const absl::optional<GURL>& report_url,
-                        const base::flat_map<std::string, GURL>& ad_beacon_map,
-                        PrivateAggregationRequests pa_requests,
-                        base::TimeDelta reporting_latency,
-                        const std::vector<std::string>& errors) {
-        ADD_FAILURE() << "Callback should not be invoked.";
-      }));
+      base::BindOnce(
+          [](const absl::optional<GURL>& report_url,
+             const base::flat_map<std::string, GURL>& ad_beacon_map,
+             const base::flat_map<std::string, std::string>& ad_macro_map,
+             PrivateAggregationRequests pa_requests,
+             base::TimeDelta reporting_latency,
+             const std::vector<std::string>& errors) {
+            ADD_FAILURE() << "Callback should not be invoked.";
+          }));
 
   // Spin the event loop to let the signals negotiation go through. This is
   // for this thread only since the V8 thread is wedged, but it's enough since
@@ -6679,6 +6708,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       registerAdBeacon())",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:15 Uncaught TypeError: registerAdBeacon may be "
        "called at most once."});
@@ -6708,6 +6738,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       R"(registerAdBeacon())",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon requires 1 "
        "object parameter."});
@@ -6717,6 +6748,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       R"(registerAdBeacon("foo"))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon requires 1 "
        "object parameter."});
@@ -6726,6 +6758,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       R"(registerAdBeacon("foo"))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon requires 1 "
        "object parameter."});
@@ -6738,6 +6771,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       }))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon object "
        "attributes must be strings."});
@@ -6750,6 +6784,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       }))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon invalid "
        "reporting url for key 'view': 'gopher://view.example.com/'."});
@@ -6762,6 +6797,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       }))",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon invalid "
        "reporting url for key 'view': 'http://view.example.com/'."});
@@ -6800,7 +6836,8 @@ TEST_F(BidderWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
         sharedStorage.clear();
       )",
       /*expected_report_url =*/absl::nullopt,
-      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
       /*expected_errors=*/
       {"https://url.test/:12 Uncaught ReferenceError: sharedStorage is not "
        "defined."});
@@ -6933,7 +6970,8 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           sharedStorage.clear();
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
         /*expected_errors=*/{});
 
     // Make sure the shared storage mojom methods are invoked as they use a
@@ -6982,7 +7020,8 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           sharedStorage.clear();
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught TypeError: The \"shared-storage\" "
          "Permissions Policy denied the method on sharedStorage."});
@@ -7006,7 +7045,8 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           });
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
         /*expected_errors=*/
         {"https://url.test/ execution of `reportWin` timed out."});
   }
@@ -7479,7 +7519,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 
@@ -7495,7 +7536,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught TypeError: The \"private-aggregation\" "
          "Permissions Policy denied the method on privateAggregation."});
@@ -7517,7 +7559,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
               {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 
@@ -7540,7 +7583,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
               "reserved.win", {bucket: 18446744073709551616n, value: 2});
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 
@@ -7556,7 +7600,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           error;
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/
         {"https://url.test/:13 Uncaught ReferenceError: error is not "
          "defined."});
@@ -7586,7 +7631,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
                 "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_report_url=*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 
@@ -7614,7 +7660,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
                 {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_report_url=*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 
@@ -7631,7 +7678,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
               "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 }
@@ -7671,7 +7719,8 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, ReportWin) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
       /*expected_report_url =*/absl::nullopt,
-      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
       /*expected_errors=*/
       {"https://url.test/:12 Uncaught ReferenceError: privateAggregation is "
        "not defined."});
@@ -8202,6 +8251,7 @@ TEST_F(BidderWorkletTest, ReportWinLatency) {
       bidder_worklet.get(),
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
@@ -8860,6 +8910,97 @@ TEST_F(BidderWorkletTest,
   RunGenerateBidExpectingExpressionIsTrue(R"(
     !browserSignals.hasOwnProperty('requestedSize');
   )");
+}
+
+class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletAdMacroReportingEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAdAuctionReportingWithMacroApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('campaign', '111');
+        registerAdMacro('', '111');
+        registerAdMacro('empty_value', '');
+        )",
+      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      {{"campaign", "111"}, {"", "111"}, {"empty_value", ""}});
+
+  // Any additional arguments after the first 2 are ignored.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('campaign', '111', ['https://test.example'], 'a');)",
+      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      {{"campaign", "111"}});
+
+  // Key is case sensitive.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('campaign', '111');
+        registerAdMacro('CAMPAIGN', '111');
+        )",
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {{"campaign", "111"}, {"CAMPAIGN", "111"}});
+
+  // Value is case sensitive.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('uppercase', 'ABC');
+        registerAdMacro('lowercase', 'abc');
+      )",
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {{"uppercase", "ABC"}, {"lowercase", "abc"}});
+
+  // When called multiple times for a macro name, use the last valid call's
+  // value.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('campaign', '123');
+        registerAdMacro('campaign', '111');
+        registerAdMacro('publisher', 'abc');
+        )",
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {{"campaign", "111"}, {"publisher", "abc"}});
+
+  // If the error is caught, do not clear other successful calls data.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('campaign', '111');
+        try { registerAdMacro('campaign', 123) }
+        catch (e) {}
+        registerAdMacro('publisher', 'abc');)",
+      /*expected_report_url=*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {{"campaign", "111"}, {"publisher", "abc"}});
+}
+
+TEST_F(BidderWorkletAdMacroReportingEnabledTest,
+       ReportWinRegisterAdMacroInvalidArgs) {
+  std::vector<std::string> kTestCases = {
+      // Less than 2 parameters.
+      R"(registerAdMacro();)",
+      R"(registerAdMacro('123');)",
+      // Invalid first argument.
+      R"(registerAdMacro(123, '456');)",
+      R"(registerAdMacro(null, '456');)",
+      // Invalid second argument.
+      R"(registerAdMacro('123', 456);)",
+      R"(registerAdMacro('123', null);)",
+  };
+  for (const auto& test_case : kTestCases) {
+    RunReportWinWithFunctionBodyExpectingResult(
+        test_case,
+        /*expected_report_url=*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{},
+        /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
+        {"https://url.test/:11 Uncaught TypeError: registerAdMacro requires 2 "
+         "string parameters."});
+  }
 }
 
 }  // namespace

@@ -288,13 +288,14 @@ void MockBidderWorklet::WaitForReportWin() {
 void MockBidderWorklet::InvokeReportWinCallback(
     absl::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
+    base::flat_map<std::string, std::string> ad_macro_map,
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
         pa_requests,
     std::vector<std::string> errors) {
   DCHECK(report_win_callback_);
   std::move(report_win_callback_)
-      .Run(report_url, ad_beacon_map, std::move(pa_requests),
-           reporting_latency_, std::move(errors));
+      .Run(report_url, std::move(ad_beacon_map), std::move(ad_macro_map),
+           std::move(pa_requests), reporting_latency_, std::move(errors));
 }
 
 void MockBidderWorklet::Flush() {

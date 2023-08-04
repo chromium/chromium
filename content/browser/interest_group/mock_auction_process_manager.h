@@ -163,6 +163,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   void InvokeReportWinCallback(
       absl::optional<GURL> report_url = absl::nullopt,
       base::flat_map<std::string, GURL> ad_beacon_map = {},
+      base::flat_map<std::string, std::string> ad_macro_map = {},
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests = {},
       std::vector<std::string> errors = {});

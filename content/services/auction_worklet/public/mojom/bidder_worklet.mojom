@@ -552,6 +552,9 @@ interface BidderWorklet {
   // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
   //  reporting.
   //
+  // `ad_macro_map` The map of ad macro names to macro values for macro support
+  //  in third party ad tracking.
+  //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
   // `reporting_latency` How long it took to run the JavaScript for
@@ -589,6 +592,7 @@ interface BidderWorklet {
       uint64 trace_id) => (
           url.mojom.Url? report_url,
           map<string, url.mojom.Url> ad_beacon_map,
+          map<string, string> ad_macro_map,
           array<PrivateAggregationRequest> pa_requests,
           mojo_base.mojom.TimeDelta reporting_latency,
           array<string> errors);

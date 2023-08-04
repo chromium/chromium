@@ -37,6 +37,8 @@ namespace features {
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAcceleratedStaticBitmapImageSerialization);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionReportingWithMacroApi);
+
 // Runtime flag that changes default Permissions Policy for features
 // join-ad-interest-group and run-ad-auction to a more restricted EnableForSelf.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

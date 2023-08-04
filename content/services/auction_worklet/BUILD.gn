@@ -58,6 +58,8 @@ source_set("auction_worklet") {
     "private_aggregation_bindings.h",
     "register_ad_beacon_bindings.cc",
     "register_ad_beacon_bindings.h",
+    "register_ad_macro_bindings.cc",
+    "register_ad_macro_bindings.h",
     "report_bindings.cc",
     "report_bindings.h",
     "seller_worklet.cc",

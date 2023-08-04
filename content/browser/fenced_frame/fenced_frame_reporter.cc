@@ -199,13 +199,15 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     bool direct_seller_is_seller,
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
-    const url::Origin& winner_origin) {
+    const url::Origin& winner_origin,
+    const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins) {
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(),
           PrivacySandboxInvokingAPI::kProtectedAudience,
           std::move(url_loader_factory), browser_context,
-          private_aggregation_manager, main_frame_origin, winner_origin);
+          private_aggregation_manager, main_frame_origin, winner_origin,
+          allowed_reporting_origins);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -226,7 +228,8 @@ FencedFrameReporter::FencedFrameReporter(
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
     const absl::optional<url::Origin>& main_frame_origin,
-    const absl::optional<url::Origin>& winner_origin)
+    const absl::optional<url::Origin>& winner_origin,
+    const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins)
     : url_loader_factory_(std::move(url_loader_factory)),
       attribution_manager_(
           AttributionManager::FromBrowserContext(browser_context)),
@@ -234,6 +237,7 @@ FencedFrameReporter::FencedFrameReporter(
       private_aggregation_manager_(private_aggregation_manager),
       main_frame_origin_(main_frame_origin),
       winner_origin_(winner_origin),
+      allowed_reporting_origins_(allowed_reporting_origins),
       invoking_api_(invoking_api) {
   DCHECK(url_loader_factory_);
   DCHECK(browser_context_);
@@ -253,12 +257,15 @@ FencedFrameReporter::~FencedFrameReporter() {
 
 void FencedFrameReporter::OnUrlMappingReady(
     blink::FencedFrame::ReportingDestination reporting_destination,
-    ReportingUrlMap reporting_url_map) {
+    ReportingUrlMap reporting_url_map,
+    absl::optional<ReportingMacroMap> reporting_ad_macro_map) {
   auto it = reporting_metadata_.find(reporting_destination);
   DCHECK(it != reporting_metadata_.end());
   DCHECK(!it->second.reporting_url_map);
+  DCHECK(!it->second.reporting_ad_macro_map);
 
   it->second.reporting_url_map = std::move(reporting_url_map);
+  it->second.reporting_ad_macro_map = std::move(reporting_ad_macro_map);
   auto pending_events = std::exchange(it->second.pending_events, {});
   for (const auto& pending_event : pending_events) {
     std::string ignored_error_message;
@@ -617,6 +624,20 @@ FencedFrameReporter::GetAdBeaconMapForTesting() {
     if (reporting_metadata.second.reporting_url_map) {
       out.emplace(reporting_metadata.first,
                   *reporting_metadata.second.reporting_url_map);
+    }
+  }
+  return out;
+}
+
+base::flat_map<blink::FencedFrame::ReportingDestination,
+               FencedFrameReporter::ReportingMacroMap>
+FencedFrameReporter::GetAdMacroMapForTesting() {
+  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacroMap>
+      out;
+  for (const auto& reporting_metadata : reporting_metadata_) {
+    if (reporting_metadata.second.reporting_ad_macro_map) {
+      out.emplace(reporting_metadata.first,
+                  *reporting_metadata.second.reporting_ad_macro_map);
     }
   }
   return out;

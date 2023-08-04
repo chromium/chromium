@@ -12,6 +12,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
+#include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
@@ -85,6 +86,13 @@ void ContextRecycler::AddRegisterAdBeaconBindings() {
   register_ad_beacon_bindings_ =
       std::make_unique<RegisterAdBeaconBindings>(v8_helper_);
   AddBindings(register_ad_beacon_bindings_.get());
+}
+
+void ContextRecycler::AddRegisterAdMacroBindings() {
+  DCHECK(!register_ad_macro_bindings_);
+  register_ad_macro_bindings_ =
+      std::make_unique<RegisterAdMacroBindings>(v8_helper_);
+  AddBindings(register_ad_macro_bindings_.get());
 }
 
 void ContextRecycler::AddReportBindings() {

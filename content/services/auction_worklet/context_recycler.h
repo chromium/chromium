@@ -25,6 +25,7 @@ class ForDebuggingOnlyBindings;
 class PrivateAggregationBindings;
 class SharedStorageBindings;
 class RegisterAdBeaconBindings;
+class RegisterAdMacroBindings;
 class ReportBindings;
 class SetBidBindings;
 class SetPriorityBindings;
@@ -129,6 +130,11 @@ class CONTENT_EXPORT ContextRecycler {
     return register_ad_beacon_bindings_.get();
   }
 
+  void AddRegisterAdMacroBindings();
+  RegisterAdMacroBindings* register_ad_macro_bindings() {
+    return register_ad_macro_bindings_.get();
+  }
+
   void AddReportBindings();
   ReportBindings* report_bindings() { return report_bindings_.get(); }
 
@@ -175,6 +181,7 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<PrivateAggregationBindings> private_aggregation_bindings_;
   std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
   std::unique_ptr<RegisterAdBeaconBindings> register_ad_beacon_bindings_;
+  std::unique_ptr<RegisterAdMacroBindings> register_ad_macro_bindings_;
   std::unique_ptr<ReportBindings> report_bindings_;
   std::unique_ptr<SetBidBindings> set_bid_bindings_;
   std::unique_ptr<SetPriorityBindings> set_priority_bindings_;

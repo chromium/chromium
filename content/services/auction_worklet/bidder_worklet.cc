@@ -35,6 +35,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
+#include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
@@ -702,8 +703,9 @@ void BidderWorklet::V8State::ReportWin(
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
-                                      /*ad_beacon_map=*/{}, /*pa_requests=*/{},
-                                      base::TimeDelta(),
+                                      /*ad_beacon_map=*/{},
+                                      /*ad_macro_map=*/{},
+                                      /*pa_requests=*/{}, base::TimeDelta(),
                                       /*errors=*/std::vector<std::string>());
     return;
   }
@@ -793,6 +795,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{},
+                                      /*ad_macro_map=*/{},
                                       /*pa_requests=*/{}, base::TimeDelta(),
                                       /*errors=*/std::vector<std::string>());
     return;
@@ -815,7 +818,8 @@ void BidderWorklet::V8State::ReportWin(
       !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
-                                      /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      /*ad_beacon_map=*/{},
+                                      /*ad_macro_map=*/{}, /*pa_requests=*/{},
                                       base::TimeDelta(),
                                       /*errors=*/std::move(errors_out));
     return;
@@ -839,13 +843,15 @@ void BidderWorklet::V8State::ReportWin(
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/absl::nullopt,
-        /*ad_beacon_map=*/{},
+        /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
         /*pa_requests=*/{}, elapsed_timer.Elapsed(), std::move(errors_out));
     return;
   }
 
   context_recycler.AddReportBindings();
   context_recycler.AddRegisterAdBeaconBindings();
+  context_recycler.AddRegisterAdMacroBindings();
+
   context_recycler.AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed);
 
@@ -869,7 +875,7 @@ void BidderWorklet::V8State::ReportWin(
     // detect script timeout or failures.
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/absl::nullopt,
-        /*ad_beacon_map=*/{},
+        /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         elapsed_timer.Elapsed(), std::move(errors_out));
@@ -881,6 +887,7 @@ void BidderWorklet::V8State::ReportWin(
   PostReportWinCallbackToUserThread(
       std::move(callback), context_recycler.report_bindings()->report_url(),
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+      context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
       elapsed_timer.Elapsed(), std::move(errors_out));
@@ -1461,15 +1468,16 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
     ReportWinCallbackInternal callback,
     const absl::optional<GURL>& report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
+    base::flat_map<std::string, std::string> ad_macro_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(report_url),
-                     std::move(ad_beacon_map), std::move(pa_requests),
-                     reporting_latency, std::move(errors)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(report_url),
+                                std::move(ad_beacon_map),
+                                std::move(ad_macro_map), std::move(pa_requests),
+                                reporting_latency, std::move(errors)));
 }
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
@@ -1990,6 +1998,7 @@ void BidderWorklet::DeliverReportWinOnUserThread(
     ReportWinTaskList::iterator task,
     absl::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
+    base::flat_map<std::string, std::string> ad_macro_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
     std::vector<std::string> errors) {
@@ -1998,7 +2007,8 @@ void BidderWorklet::DeliverReportWinOnUserThread(
                 load_code_error_msgs_.end());
   std::move(task->callback)
       .Run(std::move(report_url), std::move(ad_beacon_map),
-           std::move(pa_requests), reporting_latency, std::move(errors));
+           std::move(ad_macro_map), std::move(pa_requests), reporting_latency,
+           std::move(errors));
   report_win_tasks_.erase(task);
 }
 

@@ -187,7 +187,8 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           !component_seller_winning_bid_info.has_value(),
           private_aggregation_manager_,
           main_frame_origin_,
-          winning_bid_info_.storage_interest_group->interest_group.owner)),
+          winning_bid_info_.storage_interest_group->interest_group.owner,
+          winning_bid_info_.allowed_reporting_origins)),
       browser_context_(browser_context) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
@@ -247,7 +248,8 @@ void InterestGroupAuctionReporter::InitializeFromServerResponse(
     // Ignore return value - there's nothing we can do at this point if the
     // server did something wrong beyond logging the error.
     AddReportWinResult(buyer_reporting.reporting_url,
-                       buyer_reporting.beacon_urls, errors_);
+                       buyer_reporting.beacon_urls,
+                       /*bidder_ad_macro_map=*/absl::nullopt, errors_);
   }
 }
 
@@ -759,6 +761,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
                             /*highest_scoring_other_bid=*/0.0,
                             /*bidder_report_url=*/absl::nullopt,
                             /*bidder_ad_beacon_map=*/{},
+                            /*bidder_ad_macro_map=*/{},
                             /*pa_requests=*/{},
                             /*reporting_latency=*/base::TimeDelta(), errors);
 }
@@ -768,6 +771,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     double highest_scoring_other_bid,
     const absl::optional<GURL>& bidder_report_url,
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+    const base::flat_map<std::string, std::string>& bidder_ad_macro_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
     const std::vector<std::string>& errors) {
@@ -821,7 +825,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
   std::vector<std::string> validation_errors;
   if (!AddReportWinResult(bidder_report_url, bidder_ad_beacon_map,
-                          validation_errors)) {
+                          bidder_ad_macro_map, validation_errors)) {
     for (const auto& error : validation_errors) {
       mojo::ReportBadMessage(error);
     }
@@ -837,6 +841,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 bool InterestGroupAuctionReporter::AddReportWinResult(
     const absl::optional<GURL>& bidder_report_url,
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+    const absl::optional<base::flat_map<std::string, std::string>>&
+        bidder_ad_macro_map,
     std::vector<std::string>& errors_out) {
   // This will be cleared if any beacons are invalid.
   base::flat_map<std::string, GURL> validated_bidder_ad_beacon_map =
@@ -855,7 +861,8 @@ bool InterestGroupAuctionReporter::AddReportWinResult(
   }
   fenced_frame_reporter_->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      std::move(validated_bidder_ad_beacon_map));
+      std::move(validated_bidder_ad_beacon_map),
+      std::move(bidder_ad_macro_map));
 
   if (bidder_report_url) {
     if (!IsEventLevelReportingUrlValid(*bidder_report_url)) {

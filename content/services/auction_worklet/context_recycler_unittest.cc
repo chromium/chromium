@@ -20,6 +20,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
+#include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
@@ -3090,6 +3091,55 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests.size(), 1u);
+  }
+}
+
+class ContextRecyclerAdMacroReportingEnabledTest : public ContextRecyclerTest {
+ public:
+  ContextRecyclerAdMacroReportingEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAdAuctionReportingWithMacroApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Exercise RegisterAdMacroBindings, and make sure they reset properly.
+TEST_F(ContextRecyclerAdMacroReportingEnabledTest, RegisterAdMacroBindings) {
+  const char kScript[] = R"(
+    function test(prefix) {
+      registerAdMacro(prefix + "_name", prefix + "_value");
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddRegisterAdMacroBindings();
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), std::string("first")));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_THAT(context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
+                ElementsAre(Pair("first_name", "first_value")));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), std::string("second")));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_THAT(context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
+                ElementsAre(Pair("second_name", "second_value")));
   }
 }
 

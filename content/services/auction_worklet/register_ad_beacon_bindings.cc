@@ -15,6 +15,7 @@
 #include "gin/converter.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+#include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"

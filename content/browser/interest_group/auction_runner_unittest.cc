@@ -467,6 +467,7 @@ std::string MakeBidScript(const url::Origin& seller,
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*bid,
       });
+      registerAdMacro("campaign", "" + 2*bid);
       privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
       privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + bid});
@@ -1386,6 +1387,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     base::flat_map<blink::FencedFrame::ReportingDestination,
                    FencedFrameReporter::ReportingUrlMap>
         ad_beacon_map;
+    base::flat_map<blink::FencedFrame::ReportingDestination,
+                   FencedFrameReporter::ReportingMacroMap>
+        ad_macro_map;
     std::map<std::string, PrivateAggregationRequests>
         private_aggregation_event_map;
     std::vector<blink::InterestGroupKey> interest_groups_that_bid;
@@ -1416,6 +1420,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     } else {
       disabled_features.push_back(blink::features::kPrivateAggregationApi);
     }
+
+    enabled_features.push_back(
+        {blink::features::kAdAuctionReportingWithMacroApi, {}});
 
     kanon_mode_ = kanon_mode;
     switch (kanon_mode) {
@@ -1810,6 +1817,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         InterestGroupManagerImpl::ReportType::kSendReportTo);
     result_.ad_beacon_map =
         reporter_->fenced_frame_reporter()->GetAdBeaconMapForTesting();
+    result_.ad_macro_map =
+        reporter_->fenced_frame_reporter()->GetAdMacroMapForTesting();
     result_.debug_loss_report_urls =
         interest_group_manager_->TakeReportUrlsOfType(
             InterestGroupManagerImpl::ReportType::kDebugLoss);
@@ -3301,6 +3310,11 @@ TEST_F(AuctionRunnerTest, Basic) {
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
 
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "4")))));
+
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -3656,6 +3670,10 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
                 ReportingDestination::kBuyer,
                 testing::ElementsAre(testing::Pair(
                     "click", GURL("https://buyer-reporting.example.com/4"))))));
+    EXPECT_THAT(result_.ad_macro_map,
+                testing::UnorderedElementsAre(testing::Pair(
+                    ReportingDestination::kBuyer,
+                    testing::ElementsAre(testing::Pair("campaign", "4")))));
     EXPECT_THAT(
         private_aggregation_manager_.TakePrivateAggregationRequests(),
         testing::UnorderedElementsAre(
@@ -3745,6 +3763,10 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "4")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -3829,6 +3851,10 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "4")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -3897,6 +3923,10 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "4")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -4538,6 +4568,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
+      registerAdMacro("campaign", "" + 2*browserSignals.bid);
       privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
       privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + browserSignals.bid});
@@ -4614,6 +4645,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/6"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "6")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -4766,6 +4801,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -5158,6 +5197,10 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -5261,6 +5304,10 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -5363,6 +5410,10 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -5486,6 +5537,10 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -5570,6 +5625,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -5887,6 +5946,10 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/2"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "2")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -6250,6 +6313,9 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
           testing::Pair(ReportingDestination::kComponentSeller,
                         testing::ElementsAre()),
           testing::Pair(ReportingDestination::kBuyer, testing::ElementsAre())));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer, testing::ElementsAre())));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -6321,6 +6387,10 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
   EXPECT_THAT(result_.ad_beacon_map,
               testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer, testing::ElementsAre())));
+
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -8580,6 +8650,10 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
                   testing::ElementsAre(testing::Pair(
                       "click",
                       GURL("https://buyer-reporting.example.com/4"))))));
+      EXPECT_THAT(result_.ad_macro_map,
+                  testing::UnorderedElementsAre(testing::Pair(
+                      ReportingDestination::kBuyer,
+                      testing::ElementsAre(testing::Pair("campaign", "4")))));
       EXPECT_THAT(
           private_aggregation_manager_.TakePrivateAggregationRequests(),
           testing::UnorderedElementsAre(
@@ -8796,6 +8870,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                   testing::ElementsAre(testing::Pair(
                       "click",
                       GURL("https://buyer-reporting.example.com/4"))))));
+      EXPECT_THAT(result_.ad_macro_map,
+                  testing::UnorderedElementsAre(testing::Pair(
+                      ReportingDestination::kBuyer,
+                      testing::ElementsAre(testing::Pair("campaign", "4")))));
       EXPECT_THAT(
           private_aggregation_manager_.TakePrivateAggregationRequests(),
           testing::UnorderedElementsAre(
@@ -9009,6 +9087,10 @@ TEST_F(AuctionRunnerTest,
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
+  EXPECT_THAT(result_.ad_macro_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair("campaign", "4")))));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -13636,7 +13718,8 @@ TEST_F(AuctionRunnerTest,
   bidder1_worklet->WaitForReportWin();
   bidder1_worklet->InvokeReportWinCallback(
       /*report_url=*/absl::nullopt,
-      /*ad_beacon_map=*/{}, /*pa_requests=*/std::move(report_win_pa_requests));
+      /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
+      /*pa_requests=*/std::move(report_win_pa_requests));
   auction_run_loop_->Run();
 
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
@@ -13768,7 +13851,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
   winning_bidder_worklet->SetReportingLatency(base::Milliseconds(250));
   winning_bidder_worklet->InvokeReportWinCallback(
       /*report_url=*/absl::nullopt,
-      /*ad_beacon_map=*/{}, std::move(bidder_report_pa_requests));
+      /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
+      std::move(bidder_report_pa_requests));
   auction_run_loop_->Run();
 
   EXPECT_THAT(
@@ -13971,7 +14055,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
   winning_bidder_worklet->SetReportingLatency(base::Milliseconds(300));
   winning_bidder_worklet->InvokeReportWinCallback(
       /*report_url=*/absl::nullopt,
-      /*ad_beacon_map=*/{}, std::move(bidder_report_pa_requests));
+      /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
+      std::move(bidder_report_pa_requests));
   auction_run_loop_->Run();
 
   EXPECT_THAT(

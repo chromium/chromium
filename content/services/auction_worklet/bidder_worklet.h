@@ -341,12 +341,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::TimeDelta bidding_latency,
         mojom::RejectReason reject_reason,
         std::vector<std::string> error_msgs)>;
-    using ReportWinCallbackInternal =
-        base::OnceCallback<void(absl::optional<GURL> report_url,
-                                base::flat_map<std::string, GURL> ad_beacon_map,
-                                PrivateAggregationRequests pa_requests,
-                                base::TimeDelta reporting_latency,
-                                std::vector<std::string> errors)>;
+    using ReportWinCallbackInternal = base::OnceCallback<void(
+        absl::optional<GURL> report_url,
+        base::flat_map<std::string, GURL> ad_beacon_map,
+        base::flat_map<std::string, std::string> ad_macro_map,
+        PrivateAggregationRequests pa_requests,
+        base::TimeDelta reporting_latency,
+        std::vector<std::string> errors)>;
 
     // Matches GenerateBidCallbackInternal, but with only one
     // BidderWorkletBidPtr.
@@ -492,6 +493,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         ReportWinCallbackInternal callback,
         const absl::optional<GURL>& report_url,
         base::flat_map<std::string, GURL> ad_beacon_map,
+        base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
         std::vector<std::string> errors);
@@ -626,6 +628,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       ReportWinTaskList::iterator task,
       absl::optional<GURL> report_url,
       base::flat_map<std::string, GURL> ad_beacon_map,
+      base::flat_map<std::string, std::string> ad_macro_map,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
       std::vector<std::string> errors);

@@ -34,6 +34,11 @@ BASE_FEATURE(kAcceleratedStaticBitmapImageSerialization,
              "AcceleratedStaticBitmapImageSerialization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable the Protected Audience's reporting with ad macro API.
+BASE_FEATURE(kAdAuctionReportingWithMacroApi,
+             "AdAuctionReportingWithMacroApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Changes default Permissions Policy for features join-ad-interest-group and
 // run-ad-auction to a more restricted EnableForSelf.
