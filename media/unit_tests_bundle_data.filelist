@@ -374,6 +374,7 @@
 //media/test/data/layout_change.wav
 //media/test/data/licenses/AOM-LICENSE
 //media/test/data/load_many_videos.html
+//media/test/data/media_foundation_fallback.html
 //media/test/data/media_source_player.html
 //media/test/data/media_suspend_test.html
 //media/test/data/midstream_config_change.mp3

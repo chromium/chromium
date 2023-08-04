@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "chrome/browser/media/media_foundation_service_monitor.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/win/mf_feature_checks.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -329,6 +330,11 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       RegisterMediaFoundationClearKeyCdm(enabled_features);
       enabled_features.push_back(
           {media::kHardwareSecureDecryptionExperiment, {}});
+
+      base::FieldTrialParams fallback_params;
+      fallback_params["per_site"] = "true";
+      enabled_features.emplace_back(media::kHardwareSecureDecryptionFallback,
+                                    fallback_params);
 
       // To enable MediaFoundation playback, tests should run on a hardware GPU
       // other than use a software OpenGL implementation. This can be configured
@@ -1251,5 +1257,23 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
       kDefaultEmePlayer, "bear-av1-cenc.mp4", /*codecs="av01.0.04M.08"*/
       media::kMediaFoundationClearKeyKeySystem, SrcType::MSE, kNoSessionToLoad,
       false, PlayCount::ONCE, kEmeNotSupportedError);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       FallbackTest_KeySystemNotSupported) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP();
+  }
+
+  // MediaFoundationServiceMonitor gets lazily initialized in
+  // media_foundation_widevine_cdm_component_installer which is not call by the
+  // browser tests. Lazily initialize it here.
+  MediaFoundationServiceMonitor::GetInstance();
+
+  const char* fallback_expected_title = media::kEndedTitle;
+
+  RunMediaTestPage("media_foundation_fallback.html",
+                   {{"keySystem", media::kMediaFoundationClearKeyKeySystem}},
+                   fallback_expected_title, /*http=*/true);
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)

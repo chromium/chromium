@@ -362,6 +362,7 @@ data/id3_test.mp3
 data/layout_change.wav
 data/licenses/AOM-LICENSE
 data/load_many_videos.html
+data/media_foundation_fallback.html
 data/media_source_player.html
 data/media_suspend_test.html
 data/midstream_config_change.mp3
