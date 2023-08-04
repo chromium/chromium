@@ -472,7 +472,7 @@ bool SystemProxyManager::CanUsePolicyCredentials(
     return false;
   }
   if (!LoginState::IsInitialized() ||
-      (!LoginState::Get()->IsPublicSessionUser() &&
+      (!LoginState::Get()->IsManagedGuestSessionUser() &&
        !LoginState::Get()->IsKioskSession())) {
     VLOG(1) << "Only kiosk app and MGS can reuse the policy provided proxy "
                "credentials for authentication";

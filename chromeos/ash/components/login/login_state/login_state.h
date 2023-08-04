@@ -74,8 +74,8 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState
   // Returns true if logged in to a guest session.
   bool IsGuestSessionUser() const;
 
-  // Returns true if logged in to a public session.
-  bool IsPublicSessionUser() const;
+  // Returns true if logged in to a managed guest session.
+  bool IsManagedGuestSessionUser() const;
 
   // Returns true if logged in as a kiosk session.
   bool IsKioskSession() const;

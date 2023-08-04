@@ -279,7 +279,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 bool IsManagedGuestSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::LoginState::IsInitialized() &&
-         ash::LoginState::Get()->IsPublicSessionUser();
+         ash::LoginState::Get()->IsManagedGuestSessionUser();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kPublicSession;

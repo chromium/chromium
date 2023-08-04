@@ -123,7 +123,7 @@ bool LoginState::IsGuestSessionUser() const {
   return logged_in_user_type_ == LOGGED_IN_USER_GUEST;
 }
 
-bool LoginState::IsPublicSessionUser() const {
+bool LoginState::IsManagedGuestSessionUser() const {
   return logged_in_user_type_ == LOGGED_IN_USER_PUBLIC_ACCOUNT;
 }
 
@@ -138,7 +138,7 @@ bool LoginState::IsChildUser() const {
 bool LoginState::UserHasNetworkProfile() const {
   if (!IsUserLoggedIn())
     return false;
-  return !IsPublicSessionUser();
+  return !IsManagedGuestSessionUser();
 }
 
 bool LoginState::IsUserAuthenticated() const {
