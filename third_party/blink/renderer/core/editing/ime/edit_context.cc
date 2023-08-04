@@ -423,8 +423,6 @@ bool EditContext::SetCompositionFromExistingText(
       std::min(composition_start, static_cast<int>(text_.length()));
   composition_end = std::min(composition_end, static_cast<int>(text_.length()));
   String update_text(text_.Substring(composition_start, composition_end));
-  text_ =
-      text_.Substring(0, composition_start) + text_.Substring(composition_end);
   if (composition_range_start_ == 0 && composition_range_end_ == 0) {
     composition_range_start_ = composition_start;
     composition_range_end_ = composition_end;
@@ -436,9 +434,6 @@ bool EditContext::SetCompositionFromExistingText(
   DispatchTextFormatEvent(ime_text_spans);
   DispatchCharacterBoundsUpdateEvent(composition_range_start_,
                                      composition_range_end_);
-  // Update the selection range.
-  selection_start_ = composition_start;
-  selection_end_ = composition_start;
   return true;
 }
 
@@ -599,10 +594,13 @@ bool EditContext::FinishComposingText(
     text = text_.Substring(selection_start_, selection_end_);
   }
 
+  if (selection_behavior == kDoNotKeepSelection) {
+    selection_start_ = selection_start_ + text.length();
+    selection_end_ = selection_end_ + text.length();
+  }
+
   // TODO(snianu): also need to fire formatupdate here to remove formats from
   // the previous compositions?
-  selection_start_ = selection_start_ + text.length();
-  selection_end_ = selection_end_ + text.length();
   ClearCompositionState();
   return true;
 }

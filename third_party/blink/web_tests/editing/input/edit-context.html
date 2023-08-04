@@ -3,6 +3,9 @@
 <title>This tests the new EditContext APIs while in composition</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 </head>
 <body>
 <div id="test"></div>
@@ -361,6 +364,37 @@ test(function() {
   textInputController.insertText("t");
   assert_equals(editContext.text, "bat");
 }, 'Testing EditContext SetCompositionFromExistingText');
+
+promise_test(async function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.editContext = editContext;
+  test.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "FOO");
+  textInputController.insertText("foo");
+  assert_equals(editContext.text, "foo", "EditContext's text should have been updated");
+  assert_equals(editContext.selectionStart, 3, "EditContext's selectionStart should have been placed after inserted text");
+  assert_equals(editContext.selectionEnd, 3, "EditContext's selectionEnd should have been placed after inserted text");
+
+  textInputController.setMarkedTextFromExistingText(0, 3);
+  assert_equals(editContext.text, "foo", "SetCompositionFromExistingText should not change EditContext's text");
+  assert_equals(editContext.selectionStart, 3, "SetCompositionFromExistingText should not change EditContext's text");
+  assert_equals(editContext.selectionEnd, 3, "SetCompositionFromExistingText should not change EditContext's text");
+
+  await test_driver.send_keys(test, 'a');
+  assert_equals(editContext.text, "fooa", "Normal typing should be inserted at selection position, not composition position");
+  assert_equals(test.innerHTML, "FOOA",  "Normal typing should be inserted at selection position, not composition position");
+}, 'Testing EditContext SetCompositionFromExistingText followed by non-composition typing');
 
 test(function() {
   const editContext = new EditContext();
