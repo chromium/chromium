@@ -2858,6 +2858,10 @@ are declared in tools/grit/grit_rule.gni.
         desc="Let the user know the download is suspicious and may need additional safety checks">
         Suspicious
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNED_FAILED_UPDATED"
+        desc="Let the user know the deep scanning failed, and they should be cautious">
+        Scan failed
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS"
                desc="The label on the checkbox with which the user chooses to bypass blocked download.">
         I understand this download will harm my computer
@@ -2917,6 +2921,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_RETRY"
                desc="Label for the button prompting to retry a failed download.">
         Try again
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_ANYWAY"
+               desc="Label for the button prompting to open a download despite suspicion.">
+        Open anyway
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_DISK_FULL"
                desc="Status text for a download item that was interrupted because there is not enough room on the disk to download this file.">
@@ -3229,6 +3237,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_RETRY_MAIN_BUTTON_ACCESSIBILITY"
             desc="Accessibility label for retry button.">
         Retry <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for open anyway button.">
+        Open <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> anyway
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW" desc="Text shown on the download bubble to allow users to never show the bubble at download completion">
         Don't show when downloads finish

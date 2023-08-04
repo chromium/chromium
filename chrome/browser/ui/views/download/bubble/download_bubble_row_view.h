@@ -104,14 +104,13 @@ class DownloadBubbleRowView : public views::View,
                                   float new_device_scale_factor) override;
 
  private:
-  views::MdTextButton* AddMainPageButton(DownloadCommands::Command command,
-                                         const std::u16string& button_string);
+  void AddMainPageButton(DownloadCommands::Command command,
+                         const std::u16string& button_string);
   views::ImageButton* AddQuickAction(DownloadCommands::Command command);
   views::ImageButton* GetActionButtonForCommand(
       DownloadCommands::Command command);
   std::u16string GetAccessibleNameForQuickAction(
       DownloadCommands::Command command);
-  views::MdTextButton* GetMainPageButton(DownloadCommands::Command command);
   std::u16string GetAccessibleNameForMainPageButton(
       DownloadCommands::Command command);
 
@@ -175,14 +174,8 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<views::Label> secondary_label_ = nullptr;
 
   // Buttons on the main page.
-  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
-  raw_ptr<views::MdTextButton> discard_button_ = nullptr;
-  raw_ptr<views::MdTextButton> keep_button_ = nullptr;
-  raw_ptr<views::MdTextButton> scan_button_ = nullptr;
-  raw_ptr<views::MdTextButton> open_now_button_ = nullptr;
-  raw_ptr<views::MdTextButton> resume_button_ = nullptr;
-  raw_ptr<views::MdTextButton> review_button_ = nullptr;
-  raw_ptr<views::MdTextButton> retry_button_ = nullptr;
+  base::flat_map<DownloadCommands::Command, raw_ptr<views::MdTextButton>>
+      main_page_buttons_;
 
   // Quick Actions on the main page.
   raw_ptr<views::ImageButton> resume_action_ = nullptr;

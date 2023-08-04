@@ -463,29 +463,24 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   }
 
   main_button_holder_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  cancel_button_ =
-      AddMainPageButton(DownloadCommands::CANCEL,
-                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_CANCEL));
-  discard_button_ =
-      AddMainPageButton(DownloadCommands::DISCARD,
-                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE));
-  keep_button_ = AddMainPageButton(
-      DownloadCommands::KEEP, l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD));
-  scan_button_ =
-      AddMainPageButton(DownloadCommands::DEEP_SCAN,
-                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN));
-  open_now_button_ = AddMainPageButton(
-      DownloadCommands::BYPASS_DEEP_SCANNING,
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_NOW));
-  resume_button_ =
-      AddMainPageButton(DownloadCommands::RESUME,
-                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME));
-  review_button_ =
-      AddMainPageButton(DownloadCommands::REVIEW,
-                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_REVIEW));
-  retry_button_ =
-      AddMainPageButton(DownloadCommands::RETRY,
-                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RETRY));
+  AddMainPageButton(DownloadCommands::CANCEL,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_CANCEL));
+  AddMainPageButton(DownloadCommands::DISCARD,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE));
+  AddMainPageButton(DownloadCommands::KEEP,
+                    l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD));
+  AddMainPageButton(DownloadCommands::DEEP_SCAN,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN));
+  AddMainPageButton(DownloadCommands::BYPASS_DEEP_SCANNING,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_NOW));
+  AddMainPageButton(DownloadCommands::RESUME,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME));
+  AddMainPageButton(DownloadCommands::REVIEW,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_REVIEW));
+  AddMainPageButton(DownloadCommands::RETRY,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RETRY));
+  AddMainPageButton(DownloadCommands::OPEN_WHEN_COMPLETE,
+                    l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_ANYWAY));
 
   // Note that the addition order of these quick actions matches the visible
   // order, i.e. buttons added first will appear first (left in LTR)
@@ -683,7 +678,8 @@ void DownloadBubbleRowView::Layout() {
 }
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
-  if (!bubble_controller_ || !navigation_handler_) {
+  if (!bubble_controller_ || !navigation_handler_ ||
+      !ui_info_.main_button_enabled) {
     return;
   }
   bubble_controller_->RecordDownloadBubbleInteraction();
@@ -723,17 +719,13 @@ void DownloadBubbleRowView::UpdateButtons() {
     action_button->SetVisible(true);
   }
 
-  cancel_button_->SetVisible(false);
-  discard_button_->SetVisible(false);
-  keep_button_->SetVisible(false);
-  scan_button_->SetVisible(false);
-  open_now_button_->SetVisible(false);
-  resume_button_->SetVisible(false);
-  review_button_->SetVisible(false);
-  retry_button_->SetVisible(false);
+  for (const auto& [command, button] : main_page_buttons_) {
+    button->SetVisible(false);
+  }
+
   if (ui_info_.primary_button_command) {
     views::MdTextButton* main_button =
-        GetMainPageButton(ui_info_.primary_button_command.value());
+        main_page_buttons_[*ui_info_.primary_button_command];
     main_button->SetAccessibleName(GetAccessibleNameForMainPageButton(
         ui_info_.primary_button_command.value()));
     main_button->SetVisible(true);
@@ -844,7 +836,7 @@ void DownloadBubbleRowView::OnDownloadDestroyed(const ContentId& id) {
   }
 }
 
-views::MdTextButton* DownloadBubbleRowView::AddMainPageButton(
+void DownloadBubbleRowView::AddMainPageButton(
     DownloadCommands::Command command,
     const std::u16string& button_string) {
   // base::Unretained is fine as DownloadBubbleRowView owns the discard button
@@ -863,7 +855,8 @@ views::MdTextButton* DownloadBubbleRowView::AddMainPageButton(
   if (features::IsChromeRefresh2023()) {
     button->SetStyle(ui::ButtonStyle::kText);
   }
-  return button;
+
+  main_page_buttons_[command] = button;
 }
 
 views::ImageButton* DownloadBubbleRowView::AddQuickAction(
@@ -930,30 +923,6 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
   }
 }
 
-views::MdTextButton* DownloadBubbleRowView::GetMainPageButton(
-    DownloadCommands::Command command) {
-  switch (command) {
-    case DownloadCommands::CANCEL:
-      return cancel_button_;
-    case DownloadCommands::RESUME:
-      return resume_button_;
-    case DownloadCommands::DISCARD:
-      return discard_button_;
-    case DownloadCommands::KEEP:
-      return keep_button_;
-    case DownloadCommands::DEEP_SCAN:
-      return scan_button_;
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
-      return open_now_button_;
-    case DownloadCommands::REVIEW:
-      return review_button_;
-    case DownloadCommands::RETRY:
-      return retry_button_;
-    default:
-      return nullptr;
-  }
-}
-
 std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
     DownloadCommands::Command command) {
   switch (command) {
@@ -988,6 +957,10 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
     case DownloadCommands::RETRY:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_RETRY_MAIN_BUTTON_ACCESSIBILITY,
+          model_->GetFileNameToReportUser().LossyDisplayName());
+    case DownloadCommands::OPEN_WHEN_COMPLETE:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_OPEN_MAIN_BUTTON_ACCESSIBILITY,
           model_->GetFileNameToReportUser().LossyDisplayName());
     default:
       NOTREACHED_NORETURN();

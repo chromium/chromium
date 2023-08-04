@@ -193,6 +193,12 @@ class DownloadUIModel {
     // why Chrome blocks some downloads".
     absl::optional<LabelWithLink> learn_more_link;
 
+    // Whether the main button should be enabled. When true, the main button
+    // will either:
+    // - Open the subpage, if it exists
+    // - Open the download, if no subpage exists
+    bool main_button_enabled = true;
+
     BubbleUIInfo();
     ~BubbleUIInfo();
     BubbleUIInfo(const BubbleUIInfo&);
@@ -225,6 +231,7 @@ class DownloadUIModel {
     BubbleUIInfo& AddLearnMoreLink(int label_text_id,
                                    int link_text_id,
                                    DownloadCommands::Command command);
+    BubbleUIInfo& DisableMainButton();
 
     // Set common characteristics for dangerous or suspicious downloads.
     static BubbleUIInfo DangerousUiPattern(

@@ -93,8 +93,11 @@ bool ShouldOpenPrimaryDialog(DownloadCommands::Command command) {
 bool ShouldReturnToPrimaryDialog(download::DownloadDangerType danger_type) {
   // The only non-terminal danger type where the security subpage view shows is
   // `DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING`. We should then return to the row
-  // view for safe deep scans.
-  return danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
+  // view when the deep scan completes and is in a state that doesn't have a
+  // security subpage. Specificaly, that's both safe and failed deep scans, but
+  // not scans that find malware.
+  return danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE ||
+         danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
 }
 
 }  // namespace
