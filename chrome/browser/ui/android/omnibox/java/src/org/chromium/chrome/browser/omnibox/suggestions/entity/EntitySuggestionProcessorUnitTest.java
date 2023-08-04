@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -35,10 +36,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -64,6 +68,8 @@ public class EntitySuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Bitmap mBitmap;
+    private @Mock BookmarkState mBookmarkState;
+    private @Mock UrlBarEditingTextStateProvider mTextProvider;
 
     private EntitySuggestionProcessor mProcessor;
 
@@ -110,8 +116,9 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mProcessor = new EntitySuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, mImageSupplier);
+        mProcessor = new EntitySuggestionProcessor(ContextUtils.getApplicationContext(),
+                mSuggestionHost, mTextProvider, mImageSupplier, mBookmarkState);
+        doReturn("").when(mTextProvider).getTextWithoutAutocomplete();
     }
 
     @Test
@@ -119,10 +126,10 @@ public class EntitySuggestionProcessorUnitTest {
     public void contentTest_basicContent() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertEquals(
-                "subject", suggHelper.mModel.get(EntitySuggestionViewProperties.SUBJECT_TEXT));
-        Assert.assertEquals(
-                "details", suggHelper.mModel.get(EntitySuggestionViewProperties.DESCRIPTION_TEXT));
+        Assert.assertEquals("subject",
+                suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
+        Assert.assertEquals("details",
+                suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
     }
 
     @Test
@@ -192,8 +199,8 @@ public class EntitySuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void fetchImage_withoutSupplier() {
-        mProcessor = new EntitySuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, /*imageSupplier=*/null);
+        mProcessor = new EntitySuggestionProcessor(ContextUtils.getApplicationContext(),
+                mSuggestionHost, mTextProvider, /*imageSupplier=*/null, mBookmarkState);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
         verifyNoMoreInteractions(mImageSupplier);

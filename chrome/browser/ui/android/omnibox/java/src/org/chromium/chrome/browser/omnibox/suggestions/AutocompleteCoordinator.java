@@ -225,7 +225,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         adapter.registerType(
             OmniboxSuggestionUiType.ENTITY_SUGGESTION,
             parent -> new BaseSuggestionView<View>(
-                parent.getContext(), R.layout.omnibox_entity_suggestion),
+                parent.getContext(), R.layout.omnibox_basic_suggestion),
             new BaseSuggestionViewBinder<View>(EntitySuggestionViewBinder::bind));
 
         adapter.registerType(

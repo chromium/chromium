@@ -100,7 +100,8 @@ class DropdownItemViewInfoListBuilder {
                 new ClipboardSuggestionProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
                 context, host, textProvider, mImageSupplier, mBookmarkState));
-        registerSuggestionProcessor(new EntitySuggestionProcessor(context, host, mImageSupplier));
+        registerSuggestionProcessor(new EntitySuggestionProcessor(
+                context, host, textProvider, mImageSupplier, mBookmarkState));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
         registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new BasicSuggestionProcessor(

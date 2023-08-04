@@ -8,31 +8,37 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class that handles model and view creation for the Entity suggestions. */
-public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
-    /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
-     * @param imageSupplier Supplier used to retrieve suggestion images.
-     */
-    public EntitySuggestionProcessor(
-            Context context, SuggestionHost suggestionHost, OmniboxImageSupplier imageSupplier) {
-        super(context, suggestionHost, imageSupplier);
+public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
+    public EntitySuggestionProcessor(@NonNull Context context,
+            @NonNull SuggestionHost suggestionHost,
+            @NonNull UrlBarEditingTextStateProvider editingTextProvider,
+            @Nullable OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
+        super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
     }
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+        // TODO(ender): Expand with Categorical Suggestions once these get their dedicated type:
+        // - Confirm whether custom handling applicable to Entities should also be applied to
+        //   Categorical Suggestions,
+        // - Return null upon call to getSuggestionDescription(), unless Categorical Suggestions
+        //   make proper use of the description text. Do not show <Search with X>.
         return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY;
     }
 
@@ -61,10 +67,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
-        model.set(EntitySuggestionViewProperties.SUBJECT_TEXT, suggestion.getDisplayText());
-        model.set(EntitySuggestionViewProperties.DESCRIPTION_TEXT, suggestion.getDescription());
-        setTabSwitchOrRefineAction(model, suggestion, position);
+    protected @Nullable SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {
+        return new SuggestionSpannable(match.getDescription());
     }
 }

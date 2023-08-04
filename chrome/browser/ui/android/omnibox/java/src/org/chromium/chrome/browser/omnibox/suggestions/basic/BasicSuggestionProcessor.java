@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
@@ -117,8 +118,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                         str, suggestion.getDisplayTextClassifications());
                 textLine2 = str;
             }
-        } else if (suggestionType == OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE) {
-            textLine2 = new SuggestionSpannable(suggestion.getDescription());
+        } else {
+            textLine2 = getSuggestionDescription(suggestion);
         }
 
         final SuggestionSpannable textLine1 =
@@ -136,6 +137,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                     suggestion.getDisplayText())) {
             setTabSwitchOrRefineAction(model, suggestion, position);
         }
+    }
+
+    protected @Nullable SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {
+        return null;
     }
 
     /**
