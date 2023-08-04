@@ -81,9 +81,10 @@ constexpr int kImageIconCornerRadius = 4;
 constexpr int kMultiLineLimit = 3;
 
 // For the progress bar.
-constexpr int kProgressBarWidth = 540;
-constexpr int kProgressBarHeight = 9;
-constexpr int kBarChartAnswerCardVerticalOffset = 5;
+constexpr int kProgressBarWidth = 536;
+constexpr int kProgressBarHeight = 8;
+constexpr int kBarChartAnswerCardVerticalUpperOffset = 8;
+constexpr int kBarChartAnswerCardVerticalLowerOffset = 4;
 
 // Flex layout orders detailing how container views are prioritized.
 constexpr int kSeparatorOrder = 1;
@@ -510,8 +511,8 @@ SearchResultView::SearchResultView(
   progress_bar_container_->SetOrientation(
       views::LayoutOrientation::kHorizontal);
   progress_bar_container_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kBarChartAnswerCardVerticalOffset, 0,
-                        kBarChartAnswerCardVerticalOffset, 0)));
+      gfx::Insets::TLBR(kBarChartAnswerCardVerticalUpperOffset, 0,
+                        kBarChartAnswerCardVerticalLowerOffset, 0)));
 
   system_details_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
