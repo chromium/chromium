@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
+#include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -128,71 +129,43 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
     CredentialMediationRequirement mediation,
     bool include_passwords,
     const std::vector<GURL>& request_federations,
-    StoresToQuery stores_to_query)
+    PasswordFormDigest form_digest)
     : delegate_(delegate),
       send_callback_(std::move(callback)),
       mediation_(mediation),
       origin_(delegate_->GetOrigin()),
-      include_passwords_(include_passwords) {
+      include_passwords_(include_passwords),
+      form_fetcher_(std::make_unique<FormFetcherImpl>(
+          std::move(form_digest),
+          delegate_->client(),
+          /*should_migrate_http_passwords=*/true)) {
   CHECK(!net::IsCertStatusError(delegate_->client()->GetMainFrameCertStatus()));
-  switch (stores_to_query) {
-    case StoresToQuery::kProfileStore:
-      expected_stores_to_respond_ = 1;
-      break;
-    case StoresToQuery::kProfileAndAccountStores:
-      expected_stores_to_respond_ = 2;
-      break;
-  }
+
+  form_fetcher_->Fetch();
+  form_fetcher_->AddConsumer(this);
 
   for (const GURL& federation : request_federations)
     federations_.insert(
         url::Origin::Create(federation.DeprecatedGetOriginAsURL()).Serialize());
 }
 
-CredentialManagerPendingRequestTask::~CredentialManagerPendingRequestTask() =
-    default;
-
-void CredentialManagerPendingRequestTask::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
-  // method that also receives the originating store), so the store-less version
-  // never gets called.
-  NOTREACHED();
+CredentialManagerPendingRequestTask::~CredentialManagerPendingRequestTask() {
+  form_fetcher_->RemoveConsumer(this);
 }
 
-void CredentialManagerPendingRequestTask::OnGetPasswordStoreResultsFrom(
-    PasswordStoreInterface* store,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // localhost is a secure origin but not https.
-  if (results.empty() && origin_.scheme() == url::kHttpsScheme) {
-    // Try to migrate the HTTP passwords and process them later.
-    http_migrators_[store] = std::make_unique<HttpPasswordStoreMigrator>(
-        origin_, store, delegate_->client()->GetNetworkContext(), this);
-    return;
-  }
-  AggregatePasswordStoreResults(std::move(results));
-}
-
-base::WeakPtr<PasswordStoreConsumer>
-CredentialManagerPendingRequestTask::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void CredentialManagerPendingRequestTask::ProcessMigratedForms(
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
-  AggregatePasswordStoreResults(std::move(forms));
-}
-
-void CredentialManagerPendingRequestTask::AggregatePasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // Store the results.
-  for (auto& form : results)
-    partial_results_.push_back(std::move(form));
-
-  // If we're still awaiting more results, nothing else to do.
-  if (--expected_stores_to_respond_ > 0)
-    return;
-  ProcessForms(std::move(partial_results_));
+void CredentialManagerPendingRequestTask::OnFetchCompleted() {
+  std::vector<std::unique_ptr<PasswordForm>> all_matches;
+  base::ranges::transform(form_fetcher_->GetFederatedMatches(),
+                          std::back_inserter(all_matches),
+                          [](const PasswordForm* form) {
+                            return std::make_unique<PasswordForm>(*form);
+                          });
+  base::ranges::transform(form_fetcher_->GetAllRelevantMatches(),
+                          std::back_inserter(all_matches),
+                          [](const PasswordForm* form) {
+                            return std::make_unique<PasswordForm>(*form);
+                          });
+  ProcessForms(std::move(all_matches));
 }
 
 void CredentialManagerPendingRequestTask::ProcessForms(
@@ -204,22 +177,22 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
     return;
   }
-  // Get rid of the blocked credentials.
-  base::EraseIf(results, [](const std::unique_ptr<PasswordForm>& form) {
-    return form->blocked_by_user;
+  // Get rid of the irrelevant credentials.
+  base::EraseIf(results, [this](const std::unique_ptr<PasswordForm>& form) {
+    if (form->federation_origin.opaque()) {
+      // Remove passwords if they shouldn't be included.
+      return !include_passwords_;
+    } else {
+      // Ensure that the form we're looking at matches federation filters
+      // provided.
+      return !federations_.contains(form->federation_origin.Serialize());
+    }
   });
 
   std::vector<std::unique_ptr<PasswordForm>> local_results;
   std::vector<std::unique_ptr<PasswordForm>> psl_results;
   for (auto& form : results) {
-    // Ensure that the form we're looking at matches the password and
-    // federation filters provided.
-    if (!((form->federation_origin.opaque() && include_passwords_) ||
-          (!form->federation_origin.opaque() &&
-           federations_.count(form->federation_origin.Serialize())))) {
-      continue;
-    }
-
+    CHECK(!form->blocked_by_user);
     // PasswordFrom and GURL have different definition of origin.
     // PasswordForm definition: scheme, host, port and path.
     // GURL definition: scheme, host, and port.

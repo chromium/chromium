@@ -141,20 +141,9 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
         metrics_util::CredentialManagerGetResult::kNoneZeroClickOff, mediation);
     return;
   }
-  StoresToQuery stores_to_query = GetAccountPasswordStore()
-                                      ? StoresToQuery::kProfileAndAccountStores
-                                      : StoresToQuery::kProfileStore;
   pending_request_ = std::make_unique<CredentialManagerPendingRequestTask>(
       this, base::BindOnce(&RunGetCallback, std::move(callback)), mediation,
-      include_passwords, federations, stores_to_query);
-  // This will result in a callback to
-  // PendingRequestTask::OnGetPasswordStoreResults().
-  GetProfilePasswordStore()->GetLogins(GetSynthesizedFormForOrigin(),
-                                       pending_request_->GetWeakPtr());
-  if (GetAccountPasswordStore()) {
-    GetAccountPasswordStore()->GetLogins(GetSynthesizedFormForOrigin(),
-                                         pending_request_->GetWeakPtr());
-  }
+      include_passwords, federations, GetSynthesizedFormForOrigin());
 }
 
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
