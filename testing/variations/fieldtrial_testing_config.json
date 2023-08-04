@@ -11528,6 +11528,21 @@
             ]
         }
     ],
+    "PrintWithReducedRasterization": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrintWithReducedRasterization"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrioritizeCompositingAfterDelay": [
         {
             "platforms": [
