@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/graph/graph_impl_operations.h"
 
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 
 namespace performance_manager {

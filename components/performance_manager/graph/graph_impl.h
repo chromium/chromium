@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
@@ -45,6 +46,11 @@ class GraphImpl : public Graph {
   // implement the whole interface, and have the compiler enforce that as new
   // methods are added.
   using Observer = GraphObserver;
+
+  using FrameNodeImplVisitor = base::FunctionRef<bool(FrameNodeImpl*)>;
+  using PageNodeImplVisitor = base::FunctionRef<bool(PageNodeImpl*)>;
+  using ProcessNodeImplVisitor = base::FunctionRef<bool(ProcessNodeImpl*)>;
+  using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
 
   using NodeSet = std::unordered_set<NodeBase*>;
 
@@ -83,6 +89,11 @@ class GraphImpl : public Graph {
   std::vector<const FrameNode*> GetAllFrameNodes() const override;
   std::vector<const PageNode*> GetAllPageNodes() const override;
   std::vector<const WorkerNode*> GetAllWorkerNodes() const override;
+  bool VisitAllProcessNodes(ProcessNodeVisitor visitor) const override;
+  bool VisitAllFrameNodes(FrameNodeVisitor visitor) const override;
+  bool VisitAllPageNodes(PageNodeVisitor visitor) const override;
+  bool VisitAllWorkerNodes(WorkerNodeVisitor visitor) const override;
+
   bool HasOnlySystemNode() const override;
   ukm::UkmRecorder* GetUkmRecorder() const override;
   NodeDataDescriberRegistry* GetNodeDataDescriberRegistry() const override;
@@ -118,6 +129,11 @@ class GraphImpl : public Graph {
   std::vector<FrameNodeImpl*> GetAllFrameNodeImpls() const;
   std::vector<PageNodeImpl*> GetAllPageNodeImpls() const;
   std::vector<WorkerNodeImpl*> GetAllWorkerNodeImpls() const;
+  bool VisitAllProcessNodeImpls(ProcessNodeImplVisitor visitor) const;
+  bool VisitAllFrameNodeImpls(FrameNodeImplVisitor visitor) const;
+  bool VisitAllPageNodeImpls(PageNodeImplVisitor visitor) const;
+  bool VisitAllWorkerNodeImpls(WorkerNodeImplVisitor visitor) const;
+
   const NodeSet& nodes() { return nodes_; }
 
   // Retrieves the process node with PID |pid|, if any.
@@ -218,6 +234,10 @@ class GraphImpl : public Graph {
 
   template <typename NodeType, typename ReturnNodeType>
   std::vector<ReturnNodeType> GetAllNodesOfType() const;
+
+  template <typename NodeType, typename VisitedNodeType>
+  bool VisitAllNodesOfType(
+      base::FunctionRef<bool(VisitedNodeType)> visitor) const;
 
   void CreateSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ReleaseSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);

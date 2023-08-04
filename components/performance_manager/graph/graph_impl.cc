@@ -311,6 +311,22 @@ std::vector<const WorkerNode*> GraphImpl::GetAllWorkerNodes() const {
   return GetAllNodesOfType<WorkerNodeImpl, const WorkerNode*>();
 }
 
+bool GraphImpl::VisitAllProcessNodes(ProcessNodeVisitor visitor) const {
+  return VisitAllNodesOfType<ProcessNodeImpl, const ProcessNode*>(visitor);
+}
+
+bool GraphImpl::VisitAllFrameNodes(FrameNodeVisitor visitor) const {
+  return VisitAllNodesOfType<FrameNodeImpl, const FrameNode*>(visitor);
+}
+
+bool GraphImpl::VisitAllPageNodes(PageNodeVisitor visitor) const {
+  return VisitAllNodesOfType<PageNodeImpl, const PageNode*>(visitor);
+}
+
+bool GraphImpl::VisitAllWorkerNodes(WorkerNodeVisitor visitor) const {
+  return VisitAllNodesOfType<WorkerNodeImpl, const WorkerNode*>(visitor);
+}
+
 bool GraphImpl::HasOnlySystemNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nodes_.size() == 1 && *nodes_.begin() == GetSystemNodeImpl();
@@ -405,6 +421,22 @@ std::vector<PageNodeImpl*> GraphImpl::GetAllPageNodeImpls() const {
 
 std::vector<WorkerNodeImpl*> GraphImpl::GetAllWorkerNodeImpls() const {
   return GetAllNodesOfType<WorkerNodeImpl, WorkerNodeImpl*>();
+}
+
+bool GraphImpl::VisitAllProcessNodeImpls(ProcessNodeImplVisitor visitor) const {
+  return VisitAllNodesOfType<ProcessNodeImpl, ProcessNodeImpl*>(visitor);
+}
+
+bool GraphImpl::VisitAllFrameNodeImpls(FrameNodeImplVisitor visitor) const {
+  return VisitAllNodesOfType<FrameNodeImpl, FrameNodeImpl*>(visitor);
+}
+
+bool GraphImpl::VisitAllPageNodeImpls(PageNodeImplVisitor visitor) const {
+  return VisitAllNodesOfType<PageNodeImpl, PageNodeImpl*>(visitor);
+}
+
+bool GraphImpl::VisitAllWorkerNodeImpls(WorkerNodeImplVisitor visitor) const {
+  return VisitAllNodesOfType<WorkerNodeImpl, WorkerNodeImpl*>(visitor);
 }
 
 size_t GraphImpl::GetNodeAttachedDataCountForTesting(const Node* node,
@@ -668,6 +700,22 @@ std::vector<ReturnNodeType> GraphImpl::GetAllNodesOfType() const {
       ret.push_back(NodeType::FromNodeBase(node));
   }
   return ret;
+}
+
+template <typename NodeType, typename VisitedNodeType>
+bool GraphImpl::VisitAllNodesOfType(
+    base::FunctionRef<bool(VisitedNodeType)> visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto type = NodeType::Type();
+  for (auto* node : nodes_) {
+    if (node->type() == type) {
+      VisitedNodeType visited_node = NodeType::FromNodeBase(node);
+      if (!visitor(visited_node)) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 void GraphImpl::CreateSystemNode() {

@@ -36,8 +36,8 @@ struct GraphOperations {
   // children next (level 1), all the way down to the deepest leaf frames.
   static std::vector<const FrameNode*> GetFrameNodes(const PageNode* page);
 
-  // Traverse the frame tree of a |page| in the given order, invoking the
-  // provided |callable| for each frame node in the tree. If the visitor returns
+  // Traverse the frame tree of a `page` in the given order, invoking the
+  // provided `visitor` for each frame node in the tree. If the visitor returns
   // false then then the iteration is halted. Returns true if all calls to the
   // visitor returned true, false otherwise.
   static bool VisitFrameTreePreOrder(const PageNode* page,

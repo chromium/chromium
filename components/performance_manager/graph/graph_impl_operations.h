@@ -7,11 +7,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
-#include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/graph/page_node_impl.h"
 
 namespace performance_manager {
 
+class FrameNodeImpl;
+class PageNodeImpl;
 class ProcessNodeImpl;
 
 // A collection of utilities for performing common queries and traversals on a
