@@ -35,6 +35,7 @@ suite('AllBuilds', function() {
       // the setting is completely removed.
       driveSuggestAvailable: true,
       driveSuggestNoSetting: false,
+      driveSuggestNoSyncRequirement: false,
       signinAvailable: true,
       changePriceEmailNotificationsEnabled: true,
     });
@@ -100,6 +101,25 @@ suite('AllBuilds', function() {
     buildTestElement();
 
     assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
+  });
+
+  test('DriveSearchSuggestControlNoSyncRequirement', function() {
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.REAUTHENTICATE,
+    };
+    flush();
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
+
+    loadTimeData.overrideValues({'driveSuggestNoSyncRequirement': true});
+    buildTestElement();
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.REAUTHENTICATE,
+    };
+    flush();
+
+    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
   });
 
   // <if expr="not is_chromeos">

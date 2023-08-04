@@ -1928,6 +1928,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "driveSuggestNoSetting",
       base::FeatureList::IsEnabled(omnibox::kDocumentProviderNoSetting));
+  html_source->AddBoolean("driveSuggestNoSyncRequirement",
+                          base::FeatureList::IsEnabled(
+                              omnibox::kDocumentProviderNoSyncRequirement));
 
   bool show_secure_dns = IsSecureDnsAvailable();
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();

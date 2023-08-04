@@ -257,10 +257,20 @@ export class SettingsPersonalizationOptionsElement extends
   // </if><!-- _google_chrome -->
 
   private shouldShowDriveSuggest_(): boolean {
-    return loadTimeData.getBoolean('driveSuggestAvailable') &&
-        !!this.syncStatus && !!this.syncStatus.signedIn &&
-        this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE &&
-        !loadTimeData.getBoolean('driveSuggestNoSetting');
+    if (loadTimeData.getBoolean('driveSuggestNoSetting')) {
+      return false;
+    }
+
+    if (!loadTimeData.getBoolean('driveSuggestAvailable')) {
+      return false;
+    }
+
+    if (loadTimeData.getBoolean('driveSuggestNoSyncRequirement')) {
+      return true;
+    }
+
+    return !!this.syncStatus && !!this.syncStatus.signedIn &&
+        this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
   }
 
   private onSigninAllowedChange_() {
