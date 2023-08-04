@@ -404,6 +404,33 @@ WebContents* MaybeOpenApplicationForLaunchTypeMultipleClients(
   return web_contents;
 }
 
+// Launch type is defined in the manifest. It's `single-client` by default,
+// which makes all files available in the single tab. `multiple-client` opens a
+// new tab for each file.
+WebContents* CheckForMultiClientLaunchSupport(
+    const Extension* extension,
+    Profile* profile,
+    const apps::AppLaunchParams& params) {
+  auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
+  if (!handlers) {
+    return nullptr;
+  }
+
+  // Find a matching manifest file handler action for the intent. If there's a
+  // match, return early with the last web_contents opened.
+  WebContents* web_contents = nullptr;
+  for (const auto& handler : *handlers) {
+    web_contents = MaybeOpenApplicationForLaunchTypeMultipleClients(
+        handler, params, profile, *extension);
+    if (web_contents) {
+      return web_contents;
+    }
+  }
+
+  // Multi-client wasn't detected, so this is treated as single-client.
+  return nullptr;
+}
+
 WebContents* OpenEnabledApplication(Profile* profile,
                                     const apps::AppLaunchParams& params) {
   const Extension* extension = GetExtension(profile, params);
@@ -417,24 +444,15 @@ WebContents* OpenEnabledApplication(Profile* profile,
   }
 #endif
 
-  // Support for multiple-clients in Web File Handlers. Launch if this is a
-  // multi-client launch. Otherwise fallback to `OpenEnabledApplicationHelper`.
   if (extensions::WebFileHandlers::SupportsWebFileHandlers(
           extension->manifest_version())) {
-    auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
-    if (!handlers) {
-      return nullptr;
-    }
-
-    // Find a matching manifest file handler action for the intent. If there's a
-    // match, return early with the last web_contents opened.
-    WebContents* web_contents = nullptr;
-    for (const auto& handler : *handlers) {
-      web_contents = MaybeOpenApplicationForLaunchTypeMultipleClients(
-          handler, params, profile, *extension);
-      if (web_contents) {
-        return web_contents;
-      }
+    // Support for multiple-clients in Web File Handlers. Launch if this is a
+    // multi-client launch. Otherwise fallthrough to
+    // `OpenEnabledApplicationHelper`.
+    WebContents* web_contents =
+        CheckForMultiClientLaunchSupport(extension, profile, params);
+    if (web_contents) {
+      return web_contents;
     }
   }
 
