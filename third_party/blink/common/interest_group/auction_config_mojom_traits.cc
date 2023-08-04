@@ -282,6 +282,12 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     }
   }
 
+  // Should not have `expects_additional_bids` on non-leaf auctions.
+  if (!out->non_shared_params.component_auctions.empty() &&
+      out->expects_additional_bids) {
+    return false;
+  }
+
   // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
   // share the seller's origin, and must be HTTPS. Need to explicitly check the
   // scheme because some non-HTTPS URLs may have HTTPS origins (e.g., blob

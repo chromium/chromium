@@ -5078,6 +5078,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })"));
 }
 
+// It's invalid for an auction with component auctions to specify
+// "additionalBids" on top-level (even an empty array, since we can't tell
+// synchronously anyway).
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidAdditionalBidsTopLevel) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Auctions "
+      "may only specify 'additionalBids' if they do not have  "
+      "'componentAuctions'.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      additionalBids: [],
+      componentAuctions: [{
+          seller: 'https://test.com',
+          decisionLogicUrl: 'https://test.com',
+          interestGroupBuyers: ['https://test.com']
+      }]
+  })"));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidComponentAuctionsArray) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));

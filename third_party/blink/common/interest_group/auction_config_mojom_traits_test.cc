@@ -441,6 +441,8 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionSuccessMultipleFull) {
   auction_config.direct_from_seller_signals.mutable_value_for_testing()
       .value()
       .per_buyer_signals.clear();
+  // Or additional bids.
+  auction_config.expects_additional_bids = false;
 
   auction_config.non_shared_params.component_auctions.emplace_back(
       CreateFullConfig());
@@ -452,6 +454,10 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionSuccessMultipleFull) {
   }
 
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  // Turning `expects_additional_bids` on at top-level makes it fail.
+  auction_config.expects_additional_bids = true;
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest,

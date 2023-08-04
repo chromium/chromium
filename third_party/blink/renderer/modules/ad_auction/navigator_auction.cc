@@ -2060,6 +2060,14 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       return mojom::blink::AuctionAdConfigPtr();
     }
 
+    if (config.componentAuctions().size() > 0 &&
+        mojo_config->expects_additional_bids) {
+      exception_state.ThrowTypeError(
+          "Auctions may only specify 'additionalBids' if they do not have  "
+          "'componentAuctions'.");
+      return mojom::blink::AuctionAdConfigPtr();
+    }
+
     for (uint32_t pos = 0; pos < config.componentAuctions().size(); ++pos) {
       const auto& idl_component_auction = config.componentAuctions()[pos];
       // Component auctions may not have their own nested component auctions.
