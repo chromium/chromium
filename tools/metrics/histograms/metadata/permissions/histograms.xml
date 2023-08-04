@@ -686,8 +686,10 @@ chromium-metrics-reviews@google.com.
     Logs granting, revocation, and expiry behaviors of one time permissions.
     Starting with M116, the lifetime limit is enforced actively instead of
     lazily, and expiration is accurately captured in &quot;Expired after maximum
-    lifetime&quot;. Note that this bucket is only recorded for clients &gt;=
-    M116.
+    lifetime&quot;. M116 also added the functionality to expire on suspend. This
+    event is also captured in the new enum value &quot;Expired because the
+    device was suspended&quot;. Note that these buckets are only recorded for
+    clients &gt;= M116.
 
     Warning: &quot;Revoked one time grant manually&quot; is only recorded
     correctly for clients &gt;= M116 (and should be ignored for previous major

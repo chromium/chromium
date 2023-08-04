@@ -7,7 +7,7 @@
 #include <memory>
 #include <set>
 
-#include "base/check_is_test.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -32,9 +32,17 @@ OneTimePermissionProvider::OneTimePermissionProvider(
     : one_time_permissions_tracker_(one_time_permissions_tracker),
       clock_(base::DefaultClock::GetInstance()) {
   one_time_permissions_tracker_->AddObserver(this);
+
+  // The PowerMonitor is initialized in content_main_runner_impl.cc before the
+  // main function for the browser process is run (which initializes the HCSM).
+  // For this reason, the PowerMonitor is always initialized before the observer
+  // is added here.
+  base::PowerMonitor::AddPowerSuspendObserver(this);
 }
 
-OneTimePermissionProvider::~OneTimePermissionProvider() = default;
+OneTimePermissionProvider::~OneTimePermissionProvider() {
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+}
 
 std::unique_ptr<content_settings::RuleIterator>
 OneTimePermissionProvider::GetRuleIterator(ContentSettingsType content_type,
@@ -185,6 +193,30 @@ void OneTimePermissionProvider::ExpireWebsiteSetting(
       content_settings_type,
       permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME);
   NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
+}
+
+void OneTimePermissionProvider::OnSuspend() {
+  std::vector<ContentSettingEntry> patterns_to_delete;
+  auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
+
+  for (const auto* info : *registry) {
+    auto setting_type = info->website_settings_info()->type();
+    if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(setting_type)) {
+      std::unique_ptr<content_settings::RuleIterator> rule_iterator(
+          value_map_.GetRuleIterator(setting_type));
+
+      while (rule_iterator && rule_iterator->HasNext()) {
+        auto rule = rule_iterator->Next();
+        patterns_to_delete.emplace_back(setting_type, rule->primary_pattern,
+                                        rule->secondary_pattern);
+        permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
+            setting_type,
+            permissions::OneTimePermissionEvent::EXPIRED_ON_SUSPEND);
+      }
+    }
+  }
+
+  DeleteEntriesAndNotify(patterns_to_delete);
 }
 
 // All tabs with the given origin have either been closed or navigated away

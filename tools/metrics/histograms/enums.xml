@@ -78456,6 +78456,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Expired due to tab closure or discards"/>
   <int value="3" label="Expired in the background due to non-usage"/>
   <int value="4" label="Expired after maximum lifetime"/>
+  <int value="5" label="Expired because the device was suspended"/>
 </enum>
 
 <enum name="OnServiceConnectedTimedOutResult">

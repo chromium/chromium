@@ -334,6 +334,64 @@ class OneTimePermissionProviderExpiryTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_F(OneTimePermissionProviderTest, SuspendExpiresAllGrants) {
+  base::HistogramTester histograms;
+  one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints());
+
+  one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::MEDIASTREAM_MIC, base::Value(CONTENT_SETTING_ALLOW),
+      one_time_constraints());
+
+  one_time_permission_provider_->OnSuspend();
+
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::MEDIASTREAM_CAMERA, false));
+
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), other_url, secondary_url,
+                ContentSettingsType::MEDIASTREAM_MIC, false));
+
+  histograms.ExpectTotalCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      2);
+  histograms.ExpectTotalCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
+      2);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
+      1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::EXPIRED_ON_SUSPEND),
+      1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
+      1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::EXPIRED_ON_SUSPEND),
+      1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          OneTimePermissionProviderExpiryTest,
                          testing::Bool());
