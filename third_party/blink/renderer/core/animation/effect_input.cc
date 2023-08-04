@@ -525,7 +525,7 @@ StringKeyframeVector ConvertArrayForm(Element* element,
     double numeric_offset = offset->relative_offset;
     if (numeric_offset < previous_offset) {
       exception_state.ThrowTypeError(
-          "Offsets must be montonically non-decreasing.");
+          "Offsets must be monotonically non-decreasing.");
       return {};
     }
     previous_offset = numeric_offset;
