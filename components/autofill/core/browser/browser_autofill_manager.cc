@@ -2200,6 +2200,9 @@ void BrowserAutofillManager::Reset() {
   ProcessPendingFormForUpload();
   FlushPendingLogQualityAndVotesUploadCallbacks();
   DCHECK(!pending_form_data_);
+  // `credit_card_access_manager_` needs to be reset before resetting
+  // `credit_card_form_event_logger_`, since it keeps a raw pointer to it.
+  credit_card_access_manager_.reset();
   // {address, credit_card}_form_event_logger_ need to be reset before
   // AutofillManager::Reset() because ~FormEventLoggerBase() uses
   // form_interactions_ukm_logger_ that is created and assigned in

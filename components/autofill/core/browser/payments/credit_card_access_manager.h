@@ -439,17 +439,15 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   const raw_ptr<AutofillClient> client_;
 
   // Client to interact with Payments servers.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   // Weak reference.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // For logging metrics.
-  raw_ptr<autofill_metrics::CreditCardFormEventLogger,
-          AcrossTasksDanglingUntriaged>
-      form_event_logger_;
+  const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;
 
   // Timestamp used for preflight call metrics.
   absl::optional<base::TimeTicks> preflight_call_timestamp_;
