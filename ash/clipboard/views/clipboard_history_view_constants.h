@@ -25,6 +25,9 @@ constexpr int kFooterContentV2ChildSpacing = 6;
 // The icon size for footer content v2.
 constexpr int kFooterContentV2IconSize = 20;
 
+// The inline icon size for footer content v2.
+constexpr int kFooterContentV2InlineIconSize = 16;
+
 // The insets for footer content v2.
 constexpr auto kFooterContentV2Insets = gfx::Insets(8);
 

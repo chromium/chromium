@@ -4,12 +4,15 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include <string>
+
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -19,11 +22,13 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -36,12 +41,15 @@ using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
 using crosapi::mojom::ClipboardHistoryControllerShowSource;
 
 namespace {
+
+// Helpers ---------------------------------------------------------------------
 
 ClipboardHistoryControllerImpl* GetClipboardHistoryController() {
   return Shell::Get()->clipboard_history_controller();
@@ -66,7 +74,20 @@ void FlushMessageLoop() {
   run_loop.Run();
 }
 
+// Matchers --------------------------------------------------------------------
+
+template <typename ViewType, typename MatcherType>
+auto GetViewById(int id, MatcherType m) {
+  return ResultOf(
+      [id](const auto* arg) {
+        return views::AsViewClass<ViewType>(arg->GetViewByID(id));
+      },
+      m);
+}
+
 }  // namespace
+
+// ClipboardHistoryMenuModelAdapterRefreshTest ---------------------------------
 
 // Base class for `ClipboardHistoryMenuModelAdapter` tests whose only required
 // parameterization is whether the clipboard history refresh is enabled.
@@ -321,7 +342,20 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       Conditional(IsClipboardHistoryRefreshEnabled(), IsNull(), NotNull()));
   EXPECT_THAT(
       footer->GetViewByID(clipboard_history_util::kFooterContentV2ViewID),
-      Conditional(IsClipboardHistoryRefreshEnabled(), NotNull(), IsNull()));
+      Conditional(
+          IsClipboardHistoryRefreshEnabled(),
+          GetViewById<views::StyledLabel>(
+              clipboard_history_util::kFooterContentV2LabelID,
+              Property(
+                  &views::StyledLabel::GetText,
+                  Conditional(
+                      IsClipboardHistoryLongpressEnabled(),
+                      l10n_util::GetStringUTF16(
+                          IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER),
+                      l10n_util::GetStringFUTF16(
+                          IDS_ASH_CLIPBOARD_HISTORY_FOOTER,
+                          clipboard_history_util::GetShortcutKeyName())))),
+          IsNull()));
 }
 
 }  // namespace ash

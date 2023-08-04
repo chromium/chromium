@@ -146,6 +146,10 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;
 
+  // The source which opened the menu, absent until the menu is `Run()`.
+  absl::optional<crosapi::mojom::ClipboardHistoryControllerShowSource>
+      menu_show_source_;
+
   // The mapping between the command ids and items that are copied from
   // `clipboard_history_` when the menu is created. It is used to solve the
   // possible inconsistency between the menu model data and the clipboard

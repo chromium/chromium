@@ -57,6 +57,11 @@ namespace ash {
 
 namespace {
 
+// Returns a font list resolved from the specified `typography_token`.
+gfx::FontList Resolve(TypographyToken typography_token) {
+  return TypographyProvider::Get()->ResolveTypographyToken(typography_token);
+}
+
 // Returns whether the clipboard history menu requires a header.
 bool IsHeaderRequired() {
   return chromeos::features::IsClipboardHistoryRefreshEnabled();
@@ -94,10 +99,74 @@ void InsertHeaderContent(views::MenuItemView* container) {
 }
 
 // TODO(http://b/267694412): Add pixel test.
-// Populates `container` with education content to appear at the bottom of the
+// Populates `styled_label` with educational text to appear at the bottom of the
 // clipboard history menu. This method may only be called when clipboard history
 // refresh is enabled.
-void InsertFooterContentV2(views::MenuItemView* container) {
+void InsertFooterContentV2LabelStyledText(
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    views::StyledLabel* styled_label) {
+  CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
+
+  // Create text style.
+  views::StyledLabel::RangeStyleInfo text_style;
+  text_style.custom_font = Resolve(TypographyToken::kCrosAnnotation1);
+  text_style.override_color_id = cros_tokens::kCrosSysOnSurfaceVariant;
+
+  // When the clipboard history menu is shown from a Ctrl+V long press event, a
+  // specific educational text is used which does not require inline icons.
+  using crosapi::mojom::ClipboardHistoryControllerShowSource;
+  if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {
+    styled_label->SetText(l10n_util::GetStringUTF16(
+        IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER));
+    styled_label->AddStyleRange(gfx::Range(0u, styled_label->GetText().size()),
+                                std::move(text_style));
+    return;
+  }
+
+  // When the clipboard history menu is *not* shown from a Ctrl+V long press
+  // event, set text based on keyboard layout, caching the offset where an
+  // inline icon should be inserted.
+  size_t inline_icon_offset;
+  const auto& shortcut_key = clipboard_history_util::GetShortcutKeyName();
+  styled_label->SetText(l10n_util::GetStringFUTF16(
+      IDS_ASH_CLIPBOARD_HISTORY_FOOTER, shortcut_key, &inline_icon_offset));
+  inline_icon_offset += shortcut_key.size();
+
+  // Set text styles.
+  styled_label->AddStyleRange(gfx::Range(0u, inline_icon_offset), text_style);
+  styled_label->AddStyleRange(
+      gfx::Range(inline_icon_offset + 1u, styled_label->GetText().size()),
+      std::move(text_style));
+
+  // Create inline icon.
+  auto inline_icon =
+      views::Builder<views::ImageView>()
+          .SetBorder(views::CreateEmptyBorder(
+              ClipboardHistoryViews::kInlineIconMargins))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              clipboard_history_util::GetShortcutKeyIcon(),
+              cros_tokens::kCrosSysOnSurfaceVariant,
+              ClipboardHistoryViews::kFooterContentV2InlineIconSize))
+          .Build();
+
+  // Insert inline icon.
+  views::StyledLabel::RangeStyleInfo inline_icon_style;
+  inline_icon_style.custom_view = inline_icon.get();
+  styled_label->AddStyleRange(
+      gfx::Range(inline_icon_offset, inline_icon_offset + 1u),
+      std::move(inline_icon_style));
+
+  // Transfer inline icon ownership.
+  styled_label->AddCustomView(std::move(inline_icon));
+}
+
+// TODO(http://b/267694412): Add pixel test.
+// Populates `container` with educational content to appear at the bottom of the
+// clipboard history menu. This method may only be called when clipboard history
+// refresh is enabled.
+void InsertFooterContentV2(
+    views::MenuItemView* container,
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
   CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
 
   // Cache `menu_padding`.
@@ -132,38 +201,25 @@ void InsertFooterContentV2(views::MenuItemView* container) {
                       ClipboardHistoryViews::kFooterContentV2IconSize)),
               views::Builder<views::StyledLabel>()
                   .SetAutoColorReadabilityEnabled(false)
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER))
+                  .SetID(clipboard_history_util::kFooterContentV2LabelID)
                   .SizeToFit(
                       footer_width -
                       ClipboardHistoryViews::kFooterContentV2Insets.width() -
                       ClipboardHistoryViews::kFooterContentV2IconSize -
                       ClipboardHistoryViews::kFooterContentV2ChildSpacing)
-                  .CustomConfigure(
-                      base::BindOnce([](views::StyledLabel* label) {
-                        views::StyledLabel::RangeStyleInfo style;
-
-                        style.custom_font =
-                            TypographyProvider::Get()->ResolveTypographyToken(
-                                TypographyToken::kCrosAnnotation1);
-
-                        style.override_color_id =
-                            cros_tokens::kCrosSysOnSurfaceVariant;
-
-                        // NOTE: `SetText()` must precede `AddStyleRange()`.
-                        label->AddStyleRange(
-                            gfx::Range(0u, label->GetText().size()),
-                            std::move(style));
-                      })))
+                  .CustomConfigure(base::BindOnce(
+                      &InsertFooterContentV2LabelStyledText, show_source)))
           .Build());
 }
 
 // TODO(http://b/267694412): Add pixel test.
 // Populates `container` with educational content to appear at the bottom of the
 // clipboard history menu.
-void InsertFooterContent(views::MenuItemView* container) {
+void InsertFooterContent(
+    views::MenuItemView* container,
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    InsertFooterContentV2(container);
+    InsertFooterContentV2(container, show_source);
     return;
   }
 
@@ -286,6 +342,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
   run_before_ = true;
 
   menu_open_time_ = base::TimeTicks::Now();
+  menu_show_source_ = show_source;
 
   int command_id = clipboard_history_util::kFirstItemCommandId;
   const auto& items = clipboard_history_->GetItems();
@@ -642,7 +699,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
     InsertHeaderContent(container);
   } else if (footer_index_ == index) {
     CHECK_EQ(model->GetTypeAt(index), ui::MenuModel::ItemType::TYPE_TITLE);
-    InsertFooterContent(container);
+    InsertFooterContent(container, menu_show_source_.value());
   } else {
     CHECK_EQ(model->GetTypeAt(index), ui::MenuModel::ItemType::TYPE_COMMAND);
     std::unique_ptr<ClipboardHistoryItemView> item_view =
