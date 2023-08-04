@@ -37,6 +37,10 @@ enum class GlanceablesViewId {
   kTasksBubbleListContainer,
   kTasksBubbleAddNewButton,
   kTasksBubbleListFooter,
+
+  // `GlanceablesErrorMessageView`
+  kGlanceablesErrorMessageLabel,
+  kGlanceablesErrorMessageButton,
 };
 
 }  // namespace ash

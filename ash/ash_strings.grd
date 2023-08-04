@@ -6862,6 +6862,9 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL" desc="Tasks glanceable displays non-completed tasks fetched from Google Tasks API. This text in displayed on the button, which allows creating new tasks (currently it redirects to Tasks Web UI).">
         Add new task
       </message>
+      <message name="IDS_GLANCEABLES_ERROR_DISMISS" desc="A glanceables bubble (classroom or tasks) displays a notification with an error message when an error occurs during any action within said glaceables bubble. This is the text that is displayed on the button within said notification in order to dismiss it.">
+        Dismiss
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
