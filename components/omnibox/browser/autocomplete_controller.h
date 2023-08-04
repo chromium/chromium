@@ -238,6 +238,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // match into the result set, currently still needed only by iOS.
   size_t InjectAdHocMatch(AutocompleteMatch match);
 
+  // Sets the position of the omnibox when it's in steady state (unfocused).
+  // Only used on iOS for logging purposes.
+  void SetSteadyStateOmniboxPosition(
+      metrics::OmniboxEventProto::OmniboxPosition position);
+
  private:
   friend class AutocompleteControllerTest;
   friend class FakeAutocompleteController;
@@ -528,6 +533,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<TemplateURLService> template_url_service_;
 
   raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
+
+  // The preferred steady state (unfocused) omnibox position.
+  metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
 
   // Combined, used to cancel model execution requests sent to
   // `AutocompleteScoringModelService` and to prevent its callbacks from being
