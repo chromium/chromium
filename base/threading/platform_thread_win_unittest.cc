@@ -33,7 +33,7 @@ TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_NORMAL);
 
   // Set the process priority to IDLE.
-  // Note: Do not use Process::SetProcessBackgrounded() because it uses
+  // Note: Do not use Process::SetPriority() because it uses
   // PROCESS_MODE_BACKGROUND_BEGIN instead of IDLE_PRIORITY_CLASS when
   // the target is the current process.
   EXPECT_EQ(::GetPriorityClass(Process::Current().Handle()),
