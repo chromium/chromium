@@ -694,6 +694,7 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataType,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
+     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
      "EnablePasswordsAccountStorage,"
      "EnableBookmarksAccountStorage,"
      "EnablePreferencesAccountStorage,"
