@@ -63,7 +63,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5209g",
+          "15a5195m",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -94,7 +94,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_15a5209g",
+              "name": "xcode_ios_15a5195m",
               "path": "Xcode.app"
             },
             {
@@ -119,7 +119,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5209g",
+          "15a5195m",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -150,7 +150,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_15a5209g",
+              "name": "xcode_ios_15a5195m",
               "path": "Xcode.app"
             },
             {
@@ -175,7 +175,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5209g",
+          "15a5195m",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -206,7 +206,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_15a5209g",
+              "name": "xcode_ios_15a5195m",
               "path": "Xcode.app"
             },
             {
@@ -231,7 +231,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5209g",
+          "15a5195m",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -262,7 +262,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_15a5209g",
+              "name": "xcode_ios_15a5195m",
               "path": "Xcode.app"
             },
             {
