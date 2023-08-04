@@ -809,7 +809,7 @@ void AXObject::SetParent(AXObject* new_parent) const {
               << "\n  LayoutObject=" << node->GetLayoutObject();
       if (AXObject* obj = AXObjectCache().Get(node))
         message << "\n  " << obj->ToString(true, true);
-      if (!IsConnectedIncludingShadowHosts(node)) {
+      if (!node->isConnected()) {
         break;
       }
     }
@@ -947,7 +947,7 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return nullptr;
   }
 
-  DCHECK(IsConnectedIncludingShadowHosts(node))
+  DCHECK(node->isConnected())
       << "Should not call with disconnected node: " << node;
 
   // A document's parent should be the page popup owner, if any, otherwise null.
@@ -1007,18 +1007,6 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   }
 
   return CanComputeAsNaturalParent(parent) ? parent : nullptr;
-}
-
-// static
-bool AXObject::IsConnectedIncludingShadowHosts(const Node* node) {
-  DCHECK(node);
-  if (!node->isConnected()) {
-    return false;
-  }
-  if (node->OwnerShadowHost()) {
-    return IsConnectedIncludingShadowHosts(node->OwnerShadowHost());
-  }
-  return true;
 }
 
 // static
@@ -6756,7 +6744,7 @@ bool AXObject::InternalClearAccessibilityFocusAction() {
 
 LayoutObject* AXObject::GetLayoutObjectForNativeScrollAction() const {
   Node* node = GetNode();
-  if (!node || !IsConnectedIncludingShadowHosts(node)) {
+  if (!node || !node->isConnected()) {
     return nullptr;
   }
 
@@ -7512,7 +7500,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
           string_builder = string_builder + " isPopup";
         }
       }
-      if (!IsConnectedIncludingShadowHosts(GetNode())) {
+      if (!GetNode()->isConnected()) {
         // TODO(accessibility) Do we have a handy helper for determining whether
         // a node is still in the flat tree? That would be useful to log.
         string_builder = string_builder + " nodeDisconnected";

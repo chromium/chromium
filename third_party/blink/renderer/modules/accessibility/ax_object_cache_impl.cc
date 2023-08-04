@@ -621,7 +621,7 @@ AXObjectType DetermineAXObjectType(const Node* node,
   bool is_node_relevant = false;
 
   if (node) {
-    if (!AXObject::IsConnectedIncludingShadowHosts(node)) {
+    if (!node->isConnected()) {
       return kPruneSubtree;
     }
 
@@ -1351,7 +1351,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 #if DCHECK_IS_ON()
   if (node) {
     DCHECK(layout_object || ax_type != kAXLayoutObject);
-    DCHECK(AXObject::IsConnectedIncludingShadowHosts(node));
+    DCHECK(node->isConnected());
     DCHECK(node->GetDocument().GetFrame())
         << "Creating AXObject in a dead document: " << node;
     DCHECK(node->IsElementNode() || node->IsTextNode() ||
@@ -1784,7 +1784,7 @@ void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node) {
 }
 
 void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node, bool remove_root) {
-  if (!node || !AXObject::IsConnectedIncludingShadowHosts(node)) {
+  if (!node || !node->isConnected()) {
     return;
   }
   if (AXObject::CanSafelyUseFlatTreeTraversalNow(node->GetDocument())) {
@@ -2335,7 +2335,7 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
 
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     Node* node) {
-  if (!node || !AXObject::IsConnectedIncludingShadowHosts(node)) {
+  if (!node || !node->isConnected()) {
     return;
   }
 
@@ -3132,8 +3132,7 @@ bool AXObjectCacheImpl::IsTreeUpdateRelevant(Document& document,
                                              TreeUpdateParams* tree_update) {
   if (tree_update->node) {
     Document& tree_update_document = tree_update->node->GetDocument();
-    return document == tree_update_document &&
-           AXObject::IsConnectedIncludingShadowHosts(tree_update->node);
+    return document == tree_update_document && tree_update->node->isConnected();
   }
 
   if (!tree_update->axid) {
@@ -3147,8 +3146,7 @@ bool AXObjectCacheImpl::IsTreeUpdateRelevant(Document& document,
     return false;
   }
 
-  if (ax_obj->GetNode() &&
-      !AXObject::IsConnectedIncludingShadowHosts(ax_obj->GetNode())) {
+  if (ax_obj->GetNode() && !ax_obj->GetNode()->isConnected()) {
     return false;
   }
 
@@ -3176,12 +3174,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       return;  // AXObject was destroyed before we got to the event.
     }
 
-    Node* node = ax_object->GetNode();
-    if (node) {
-      if (!AXObject::IsConnectedIncludingShadowHosts(node)) {
-        return;
-      }
-    }
+    CHECK(!ax_object->GetNode() || ax_object->GetNode()->isConnected());
 
     // Update cached attributes for all changed nodes before serialization,
     // because updating ignored/included can cause tree structure changes, and
@@ -3217,10 +3210,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
   // This is a Node Event.
   Node* node = tree_update->node;
   DCHECK(node);
-
-  if (!AXObject::IsConnectedIncludingShadowHosts(tree_update->node)) {
-    return;
-  }
+  CHECK(node->isConnected());
 
   AXObject* ax_object = GetOrCreate(tree_update->node);
   if (!ax_object) {
