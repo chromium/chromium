@@ -240,6 +240,10 @@ public class NewTabPageLayout extends LinearLayout {
             // box: one row of MV tiles in portrait mode.
             mSearchBoxTwoSideMargin =
                     getResources().getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2;
+        } else if (mIsSurfacePolishEnabled) {
+            mSearchBoxTwoSideMargin = getResources().getDimensionPixelSize(
+                                              R.dimen.mvt_container_lateral_margin_polish)
+                    * 2;
         }
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(profile, lifecycleDispatcher, tileGroupDelegate,
@@ -590,46 +594,36 @@ public class NewTabPageLayout extends LinearLayout {
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
 
+        if (mIsSurfacePolishEnabled) {
+            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                    R.dimen.mvt_container_bottom_margin_polish);
+            return;
+        }
+
         if (isScrollableMvtEnabled()) {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
             setClipToPadding(false);
             if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
-                int lateralPaddingsForNTP = mIsSurfacePolishEnabled
-                        ? getResources().getDimensionPixelSize(
-                                R.dimen.mvt_container_lateral_margin_ntp_polish)
-                        : -getResources().getDimensionPixelSize(
-                                R.dimen.ntp_header_lateral_paddings_v2);
+                int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
+                        R.dimen.ntp_header_lateral_paddings_v2);
                 marginLayoutParams.leftMargin = lateralPaddingsForNTP;
                 marginLayoutParams.rightMargin = lateralPaddingsForNTP;
             }
-            if (mIsSurfacePolishEnabled) {
-                marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
-                        R.dimen.mvt_container_bottom_margin_polish);
-            } else {
-                marginLayoutParams.topMargin = getResources().getDimensionPixelSize(shouldShowLogo()
-                                ? R.dimen.tile_grid_layout_top_margin
-                                : R.dimen.tile_grid_layout_no_logo_top_margin);
-                marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
-                        R.dimen.tile_carousel_layout_bottom_margin);
-            }
+            marginLayoutParams.topMargin = getResources().getDimensionPixelSize(shouldShowLogo()
+                            ? R.dimen.tile_grid_layout_top_margin
+                            : R.dimen.tile_grid_layout_no_logo_top_margin);
+            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                    R.dimen.tile_carousel_layout_bottom_margin);
         } else {
             // Set a bit more top padding on the tile grid if there is no logo.
             ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            if (mIsSurfacePolishEnabled) {
-                int lateralPaddingsForNTP = getResources().getDimensionPixelSize(
-                        R.dimen.mvt_container_lateral_margin_ntp_polish);
-                marginLayoutParams.leftMargin = lateralPaddingsForNTP;
-                marginLayoutParams.rightMargin = lateralPaddingsForNTP;
-                marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
-                        R.dimen.mvt_container_bottom_margin_polish);
-            } else {
-                marginLayoutParams.topMargin = getGridMvtTopMargin();
-                marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
-            }
+            marginLayoutParams.topMargin = getGridMvtTopMargin();
+            marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
         }
+
         if (mIsNtpAsHomeSurfaceEnabled) {
             marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
                     R.dimen.mvt_container_bottom_margin_tablet);
@@ -935,7 +929,8 @@ public class NewTabPageLayout extends LinearLayout {
     private void unifyElementWidths() {
         View searchBoxView = getSearchBoxView();
         if (mMvTilesContainerLayout.getVisibility() != GONE) {
-            final int width = getMeasuredWidth() - mTileGridLayoutBleed;
+            final int width =
+                    getMeasuredWidth() - (mIsSurfacePolishEnabled ? 0 : mTileGridLayoutBleed);
             if (!isScrollableMvtEnabled()) {
                 measureExactly(searchBoxView, width - mSearchBoxTwoSideMargin,
                         searchBoxView.getMeasuredHeight());
@@ -946,7 +941,8 @@ public class NewTabPageLayout extends LinearLayout {
                 int searchBoxTwoSideMargin = mSearchBoxTwoSideMargin;
                 if (mSearchBoxTwoSideMargin != 0
                         && getResources().getConfiguration().orientation
-                                == Configuration.ORIENTATION_PORTRAIT) {
+                                == Configuration.ORIENTATION_PORTRAIT
+                        && !mIsSurfacePolishEnabled) {
                     searchBoxTwoSideMargin = 0;
                 }
 

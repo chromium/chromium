@@ -19,12 +19,15 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 public class SearchBoxContainerView extends LinearLayout {
     private final boolean mIsSurfacePolishEnabled;
     private final int mEndPadding;
+    private final int mLateralMargin;
 
     /** Constructor for inflating from XML. */
     public SearchBoxContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mEndPadding = getResources().getDimensionPixelSize(R.dimen.fake_search_box_end_padding);
+        mLateralMargin =
+                getResources().getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish);
     }
 
     @Override
@@ -33,6 +36,10 @@ public class SearchBoxContainerView extends LinearLayout {
         if (mIsSurfacePolishEnabled) {
             int startPadding = getPaddingStart();
             setPaddingRelative(startPadding, 0, mEndPadding, 0);
+
+            MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+            params.leftMargin = mLateralMargin;
+            params.rightMargin = mLateralMargin;
         }
     }
 
