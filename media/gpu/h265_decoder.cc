@@ -949,21 +949,24 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
 }
 
 H265Decoder::H265Accelerator::Status H265Decoder::FinishPrevFrameIfPresent() {
-  // If we already have a frame waiting to be decoded, decode it and finish.
-  if (curr_pic_) {
-    H265Accelerator::Status result = DecodePicture();
-    if (result != H265Accelerator::Status::kOk)
-      return result;
+  // If we don't already have a frame waiting to be decoded, do nothing.
+  if (!curr_pic_) {
+    return H265Accelerator::Status::kOk;
+  }
 
-    // If current picture set this should exist.
-    std::unique_ptr<H265SliceHeader> slice_hdr(std::move(last_slice_hdr_));
-    DCHECK(slice_hdr);
+  // If there is no slice header (eg. because the last one was dropped due to
+  // a missing PPS), this picture can't be decoded.
+  if (!last_slice_hdr_) {
+    return H265Accelerator::Status::kFail;
+  }
 
-    bool finish_picture_succeeded =
-        FinishPicture(std::move(curr_pic_), std::move(slice_hdr));
-    if (!finish_picture_succeeded) {
-      return H265Accelerator::Status::kFail;
-    }
+  H265Accelerator::Status result = DecodePicture();
+  if (result != H265Accelerator::Status::kOk) {
+    return result;
+  }
+
+  if (!FinishPicture(std::move(curr_pic_), std::move(last_slice_hdr_))) {
+    return H265Accelerator::Status::kFail;
   }
 
   return H265Accelerator::Status::kOk;
