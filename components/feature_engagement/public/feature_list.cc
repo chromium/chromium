@@ -217,7 +217,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHScalableIphUnlockedBasedEightFeature,
     &kIPHScalableIphUnlockedBasedNineFeature,
     &kIPHScalableIphUnlockedBasedTenFeature,
-    &kIPHScalableIphHelpAppBasedTriggerFeature,
+    &kIPHScalableIphHelpAppBasedNudgeFeature,
     &kIPHScalableIphHelpAppBasedOneFeature,
     &kIPHScalableIphHelpAppBasedTwoFeature,
     &kIPHScalableIphHelpAppBasedThreeFeature,

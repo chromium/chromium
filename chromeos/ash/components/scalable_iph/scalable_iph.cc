@@ -106,7 +106,7 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
           &feature_engagement::kIPHScalableIphUnlockedBasedNineFeature,
           &feature_engagement::kIPHScalableIphUnlockedBasedTenFeature,
           // Help App based.
-          &feature_engagement::kIPHScalableIphHelpAppBasedTriggerFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedNudgeFeature,
           &feature_engagement::kIPHScalableIphHelpAppBasedOneFeature,
           &feature_engagement::kIPHScalableIphHelpAppBasedTwoFeature,
           &feature_engagement::kIPHScalableIphHelpAppBasedThreeFeature,

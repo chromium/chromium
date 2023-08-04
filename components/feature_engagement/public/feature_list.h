@@ -389,8 +389,8 @@ DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedNineFeature,
                        "IPH_ScalableIphUnlockedBasedNine");
 DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedTenFeature,
                        "IPH_ScalableIphUnlockedBasedTen");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTriggerFeature,
-                       "IPH_ScalableIphHelpAppBasedTrigger");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedNudgeFeature,
+                       "IPH_ScalableIphHelpAppBasedNudge");
 DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedOneFeature,
                        "IPH_ScalableIphHelpAppBasedOne");
 DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTwoFeature,
@@ -616,7 +616,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHScalableIphUnlockedBasedEightFeature),
         VARIATION_ENTRY(kIPHScalableIphUnlockedBasedNineFeature),
         VARIATION_ENTRY(kIPHScalableIphUnlockedBasedTenFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTriggerFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedNudgeFeature),
         VARIATION_ENTRY(kIPHScalableIphHelpAppBasedOneFeature),
         VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTwoFeature),
         VARIATION_ENTRY(kIPHScalableIphHelpAppBasedThreeFeature),

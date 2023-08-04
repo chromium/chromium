@@ -601,8 +601,8 @@ BASE_FEATURE(kIPHScalableIphUnlockedBasedNineFeature,
 BASE_FEATURE(kIPHScalableIphUnlockedBasedTenFeature,
              "IPH_ScalableIphUnlockedBasedTen",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHScalableIphHelpAppBasedTriggerFeature,
-             "IPH_ScalableIphHelpAppBasedTrigger",
+BASE_FEATURE(kIPHScalableIphHelpAppBasedNudgeFeature,
+             "IPH_ScalableIphHelpAppBasedNudge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHScalableIphHelpAppBasedOneFeature,
              "IPH_ScalableIphHelpAppBasedOne",

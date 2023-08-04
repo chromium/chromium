@@ -38903,6 +38903,8 @@ should be able to be added at any place in this file.
       label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedNine"
       label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphHelpAppBasedNudge"
+      label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedOne"
       label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedSeven"
@@ -38912,8 +38914,6 @@ should be able to be added at any place in this file.
   <suffix name="ScalableIphHelpAppBasedTen"
       label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedThree"
-      label="For a variant of Scalable Iph feature."/>
-  <suffix name="ScalableIphHelpAppBasedTrigger"
       label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedTwo"
       label="For a variant of Scalable Iph feature."/>

@@ -324,6 +324,8 @@ chromium-metrics-reviews@google.com.
       summary="A variant of help app based scalable iph"/>
   <variant name="IPH_ScalableIphHelpAppBasedNine"
       summary="A variant of help app based scalable iph"/>
+  <variant name="IPH_ScalableIphHelpAppBasedNudge"
+      summary="A variant of help app based scalable iph"/>
   <variant name="IPH_ScalableIphHelpAppBasedOne"
       summary="A variant of help app based scalable iph"/>
   <variant name="IPH_ScalableIphHelpAppBasedSeven"
@@ -333,8 +335,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ScalableIphHelpAppBasedTen"
       summary="A variant of help app based scalable iph"/>
   <variant name="IPH_ScalableIphHelpAppBasedThree"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedTrigger"
       summary="A variant of help app based scalable iph"/>
   <variant name="IPH_ScalableIphHelpAppBasedTwo"
       summary="A variant of help app based scalable iph"/>
