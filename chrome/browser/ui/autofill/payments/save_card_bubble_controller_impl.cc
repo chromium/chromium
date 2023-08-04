@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
@@ -59,6 +60,9 @@ SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
   personal_data_manager_ =
       PersonalDataManagerFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+
+  sync_service_ = SyncServiceFactory::GetInstance()->GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 }
 
 SaveCardBubbleControllerImpl::~SaveCardBubbleControllerImpl() = default;
@@ -386,7 +390,7 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     } else {
       autofill_metrics::LogSaveCardPromptResultMetric(
           metric, is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
-          GetSyncState());
+          personal_data_manager_->GetSyncSigninState());
     }
   }
 
@@ -447,8 +451,12 @@ BubbleType SaveCardBubbleControllerImpl::GetBubbleType() const {
   return current_bubble_type_;
 }
 
-AutofillSyncSigninState SaveCardBubbleControllerImpl::GetSyncState() const {
-  return personal_data_manager_->GetSyncSigninState();
+bool SaveCardBubbleControllerImpl::
+    IsPaymentsSyncTransportEnabledWithoutSyncFeature() const {
+  // TODO(crbug.com/1464264): Migrate away from IsSyncFeatureEnabled() when the
+  // API returns false on desktop.
+  return personal_data_manager_->IsPaymentsDownloadActive() &&
+         !sync_service_->IsSyncFeatureEnabled();
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
@@ -525,7 +533,8 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::LOCAL_SAVE:
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
-          is_reshow_, options_, GetSecurityLevel(), GetSyncState());
+          is_reshow_, options_, GetSecurityLevel(),
+          personal_data_manager_->GetSyncSigninState());
       break;
     case BubbleType::LOCAL_CVC_SAVE:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
@@ -601,7 +610,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
-          GetSyncState());
+          personal_data_manager_->GetSyncSigninState());
       break;
     case BubbleType::LOCAL_CVC_SAVE:
       autofill_metrics::LogSaveCvcPromptOfferMetric(

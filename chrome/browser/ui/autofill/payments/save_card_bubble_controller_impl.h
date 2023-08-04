@@ -15,10 +15,13 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace autofill {
 
@@ -133,7 +136,7 @@ class SaveCardBubbleControllerImpl
   const LegalMessageLines& GetLegalMessageLines() const override;
   bool IsUploadSave() const override;
   BubbleType GetBubbleType() const override;
-  AutofillSyncSigninState GetSyncState() const override;
+  bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override;
 
   // SavePaymentIconController:
   std::u16string GetSavePaymentIconTooltipText() const override;
@@ -182,6 +185,9 @@ class SaveCardBubbleControllerImpl
 
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  // Should outlive this object.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;

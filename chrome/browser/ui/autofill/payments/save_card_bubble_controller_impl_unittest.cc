@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -76,8 +75,8 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
     return security_level_;
   }
 
-  AutofillSyncSigninState GetSyncState() const override {
-    return AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
+  bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override {
+    return false;
   }
 
  private:

@@ -704,6 +704,13 @@ absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
   return absl::nullopt;
 }
 
+bool PersonalDataManager::IsPaymentsDownloadActive() const {
+  return GetSyncSigninState() ==
+             AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled ||
+         GetSyncSigninState() ==
+             AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
+}
+
 AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
   // Check if the user is signed out.
   if (!sync_service_ || !identity_manager_ ||

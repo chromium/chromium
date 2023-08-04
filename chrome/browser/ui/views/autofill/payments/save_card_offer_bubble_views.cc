@@ -236,8 +236,7 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     // active. Otherwise, this tooltip's info will appear in CreateExtraView()'s
     // tooltip.
     if (!prefilled_name.empty() &&
-        controller()->GetSyncState() !=
-            AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled) {
+        !controller()->IsPaymentsSyncTransportEnabledWithoutSyncFeature()) {
       constexpr int kTooltipIconSize = 12;
       std::unique_ptr<views::TooltipIcon> cardholder_name_tooltip =
           std::make_unique<views::TooltipIcon>(
@@ -381,8 +380,7 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
   // Only show the (i) info icon for upload saves using implicit sync.
   // GetLegalMessageLines() being empty denotes a local save.
   if (controller()->GetLegalMessageLines().empty() ||
-      controller()->GetSyncState() !=
-          AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled) {
+      !controller()->IsPaymentsSyncTransportEnabledWithoutSyncFeature()) {
     return nullptr;
   }
 

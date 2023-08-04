@@ -64,7 +64,6 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -893,11 +892,7 @@ void AddOnStartupStrings(content::WebUIDataSource* html_source) {
 bool IsFidoAuthenticationAvailable(autofill::PersonalDataManager* personal_data,
                                    content::WebContents* web_contents) {
   // Don't show toggle switch if user is unable to downstream cards.
-  if (personal_data->GetSyncSigninState() !=
-          autofill::AutofillSyncSigninState::
-              kSignedInAndWalletSyncTransportEnabled &&
-      personal_data->GetSyncSigninState() !=
-          autofill::AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
+  if (!personal_data->IsPaymentsDownloadActive()) {
     return false;
   }
 

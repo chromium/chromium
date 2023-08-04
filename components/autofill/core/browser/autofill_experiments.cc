@@ -254,19 +254,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   if (!payments::HasGooglePaymentsAccount(personal_data_manager))
     return false;
 
-  switch (personal_data_manager->GetSyncSigninState()) {
-    case AutofillSyncSigninState::kSignedOut:
-    case AutofillSyncSigninState::kSignedIn:
-    case AutofillSyncSigninState::kSyncPaused:
-      return false;
-    case AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled:
-    case AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled:
-      return true;
-    case AutofillSyncSigninState::kNumSyncStates:
-      break;
-  }
-  NOTREACHED();
-  return false;
+  return personal_data_manager->IsPaymentsDownloadActive();
 }
 
 bool IsInAutofillSuggestionsDisabledExperiment() {

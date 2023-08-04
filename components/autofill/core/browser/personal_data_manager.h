@@ -168,6 +168,9 @@ class PersonalDataManager : public KeyedService,
   // the user is not signed-in or the identity manager is not available.
   absl::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
 
+  // Returns whether credit card download is active (sync as a transport).
+  bool IsPaymentsDownloadActive() const;
+
   // Returns the current sync status.
   virtual AutofillSyncSigninState GetSyncSigninState() const;
 

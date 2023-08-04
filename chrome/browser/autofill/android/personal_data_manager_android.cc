@@ -39,7 +39,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -755,10 +754,7 @@ jboolean PersonalDataManagerAndroid::HasCreditCards(JNIEnv* env) {
 jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
     JNIEnv* env) {
   // Don't show toggle switch if user is unable to downstream cards.
-  if (personal_data_manager_->GetSyncSigninState() !=
-          AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled &&
-      personal_data_manager_->GetSyncSigninState() !=
-          AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
+  if (!personal_data_manager_->IsPaymentsDownloadActive()) {
     return false;
   }
   // Show the toggle switch only if FIDO authentication is available.
