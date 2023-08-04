@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
 
+#include <functional>
+#include <memory>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -258,17 +262,18 @@ class FormForest {
   // The |field_type_map| should contain the field types of the fields in
   // |browser_form|.
   //
-  // A field is *safe to fill* iff at least one of the conditions (1–3) and
-  // additionally condition (4) hold:
+  // A field is *safe to fill* iff at least one of the conditions (1–4) and
+  // additionally condition (5) hold:
   //
-  // (1) The field's origin is the |triggered_origin|.
-  // (2) The field's origin is the main origin, the field's type in
+  // (1) `AllOriginsAreSafe{}` is passed as the `triggered_origin`.
+  // (2) The field's origin is the |triggered_origin|.
+  // (3) The field's origin is the main origin, the field's type in
   //     |field_type_map| is not sensitive (see IsSensitiveFieldType()), and the
   //     policy-controlled feature shared-autofill is enabled in the field's
   //     frame.
-  // (3) The |triggered_origin| is the main origin and the policy-controlled
+  // (4) The |triggered_origin| is the main origin and the policy-controlled
   //     feature shared-autofill is enabled in the field's frame.
-  // (4) The field is in the same frame tree as the field on which Autofill was
+  // (5) The field is in the same frame tree as the field on which Autofill was
   //     triggered.
   //
   // The *origin of a field* is the origin of the frame that contains the
@@ -279,9 +284,11 @@ class FormForest {
   // The "allow" attribute of the <iframe> element controls whether the
   // *policy-controlled feature shared-autofill* is enabled in a document
   // (see https://www.w3.org/TR/permissions-policy-1/).
+  struct AllOriginsAreSafe {};
   RendererForms GetRendererFormsOfBrowserForm(
       const FormData& browser_form,
-      const url::Origin& triggered_origin,
+      absl::variant<std::reference_wrapper<const url::Origin>,
+                    AllOriginsAreSafe> triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       const;
 

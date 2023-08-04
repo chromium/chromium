@@ -4,6 +4,11 @@
 
 #include "components/autofill/content/browser/form_forest.h"
 
+#include <functional>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -19,6 +24,8 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::internal {
 
@@ -501,7 +508,8 @@ FormForest::RendererForms::~RendererForms() = default;
 
 FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     const FormData& browser_form,
-    const url::Origin& triggered_origin,
+    absl::variant<std::reference_wrapper<const url::Origin>, AllOriginsAreSafe>
+        triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
     const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -537,9 +545,12 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     auto IsSafeToFill = [&mutable_this, &browser_form, &renderer_form,
                          &triggered_origin,
                          &field_type_map](const FormFieldData& field) {
-      // Non-sensitive values may be filled into fields that belong to the main
-      // frame's origin. This is independent of the origin of the field that
-      // triggered the autofill, |triggered_origin|.
+      if (absl::holds_alternative<AllOriginsAreSafe>(triggered_origin)) {
+        return true;
+      }
+      // Non-sensitive values may be filled into fields that belong to the
+      // main frame's origin. This is independent of the origin of the
+      // field that triggered the autofill, |triggered_origin|.
       auto IsSensitiveFieldType = [](ServerFieldType field_type) {
         switch (field_type) {
           case CREDIT_CARD_TYPE:
@@ -558,22 +569,25 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       };
       // Fields whose document enables the policy-controlled feature
       // shared-autofill may be safe to fill.
-      auto HasSharedAutofillPermission = [&mutable_this](
-                                             LocalFrameToken frame_token) {
-        FrameData* frame = mutable_this.GetFrameData(frame_token);
-        return frame && frame->driver &&
-               frame->driver->HasSharedAutofillPermission();
-      };
+      auto HasSharedAutofillPermission =
+          [&mutable_this](LocalFrameToken frame_token) {
+            FrameData* frame = mutable_this.GetFrameData(frame_token);
+            return frame && frame->driver &&
+                   frame->driver->HasSharedAutofillPermission();
+          };
 
       const url::Origin& main_origin = browser_form.main_frame_origin;
+      const url::Origin& triggered_origin_unwrapped =
+          absl::get<std::reference_wrapper<const url::Origin>>(triggered_origin)
+              .get();
       auto it = field_type_map.find(field.global_id());
       ServerFieldType field_type =
           it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
-      return field.origin == triggered_origin ||
+      return field.origin == triggered_origin_unwrapped ||
              (field.origin == main_origin &&
               !IsSensitiveFieldType(field_type) &&
               HasSharedAutofillPermission(renderer_form->host_frame)) ||
-             (triggered_origin == main_origin &&
+             (triggered_origin_unwrapped == main_origin &&
               HasSharedAutofillPermission(renderer_form->host_frame));
     };
 

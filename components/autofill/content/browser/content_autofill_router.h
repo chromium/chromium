@@ -349,6 +349,13 @@ class ContentAutofillRouter {
                        const FieldRendererId& field,
                        const mojom::AutofillState state));
 
+  // Returns the underlying renderer forms of `browser_form`.
+  // Note that this function is intended for use outside of the `autofill`
+  // component to ensure compatibility with callers whose concept of a form
+  // does not include frame-transcending forms. It returns the constituent
+  // renderer forms regardless of their frames' origins and the field types.
+  std::vector<FormData> GetRendererForms(const FormData& browser_form) const;
+
  private:
   friend class ContentAutofillRouterTestApi;
 

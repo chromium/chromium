@@ -32,6 +32,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
@@ -181,13 +182,6 @@ FormData WithValues(FormData& form, Profile profile = Profile(0)) {
 
 // Utility functions and constants.
 
-// Use strings for non-opaque origins and URLs because constructors must not be
-// called before the test is set up.
-const std::string kMainUrl("https://main.frame.com/");
-const std::string kIframeUrl("https://iframe.frame.com/");
-const std::string kOtherUrl("https://other.frame.com/");
-const url::Origin kOpaqueOrigin;
-
 url::Origin Origin(const GURL& url) {
   return url::Origin::Create(url);
 }
@@ -195,6 +189,13 @@ url::Origin Origin(const GURL& url) {
 url::Origin Origin(base::StringPiece url) {
   return Origin(GURL(url));
 }
+
+// Use strings for non-opaque origins and URLs because constructors must not be
+// called before the test is set up.
+const std::string kMainUrl("https://main.frame.com/");
+const std::string kIframeUrl("https://iframe.frame.com/");
+const std::string kOtherUrl("https://other.frame.com/");
+const url::Origin kOpaqueOrigin;
 
 LocalFrameToken Token(content::RenderFrameHost* rfh) {
   return LocalFrameToken(rfh->GetFrameToken().value());
@@ -1437,11 +1438,22 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
   // The subject of this test fixture.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
       base::StringPiece form_name,
-      const url::Origin& triggered_origin,
+      absl::variant<url::Origin, FormForest::AllOriginsAreSafe>
+          triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+    // The slightly different signature allows passing prvalues for
+    // `triggered_origin`, e.g. `Origin("...")`.
+    using OriginOrAllOriginsAreSafe =
+        absl::variant<std::reference_wrapper<const url::Origin>,
+                      FormForest::AllOriginsAreSafe>;
+    OriginOrAllOriginsAreSafe origin(
+        absl::holds_alternative<FormForest::AllOriginsAreSafe>(triggered_origin)
+            ? OriginOrAllOriginsAreSafe(FormForest::AllOriginsAreSafe{})
+            : OriginOrAllOriginsAreSafe(
+                  absl::get<url::Origin>(triggered_origin)));
     return flattened_forms_
         .GetRendererFormsOfBrowserForm(WithValues(GetFlattenedForm(form_name)),
-                                       triggered_origin, field_type_map)
+                                       origin, field_type_map)
         .renderer_forms;
   }
 
@@ -1534,6 +1546,24 @@ TEST_F(FormForestTestUnflatten, SameOriginPolicy) {
       WithoutValues(GetMockedForm("child1")),
       WithValues(GetMockedForm("child2"), Profile(2))};
   EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kIframeUrl), {}),
+              UnorderedArrayEquals(expectation));
+}
+
+// Tests that (only) frames from the same origin are filled.
+TEST_F(FormForestTestUnflatten, SameOriginPolicyNoValuesErased) {
+  MockFormForest(
+      {.url = kMainUrl,
+       .forms = {
+           {.name = "main",
+            .frames = {{.url = kOtherUrl, .forms = {{.name = "child1"}}},
+                       {.url = kIframeUrl, .forms = {{.name = "child2"}}}}}}});
+  MockFlattening({{"main"}, {"child1"}, {"child2"}});
+  std::vector<FormData> expectation = {
+      WithValues(GetMockedForm("main"), Profile(0)),
+      WithValues(GetMockedForm("child1"), Profile(1)),
+      WithValues(GetMockedForm("child2"), Profile(2))};
+  EXPECT_THAT(GetRendererFormsOfBrowserForm(
+                  "main", FormForest::AllOriginsAreSafe{}, {}),
               UnorderedArrayEquals(expectation));
 }
 

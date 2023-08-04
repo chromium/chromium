@@ -666,4 +666,13 @@ void ContentAutofillRouter::RendererShouldSetSuggestionAvailability(
   }
 }
 
+std::vector<FormData> ContentAutofillRouter::GetRendererForms(
+    const FormData& browser_form) const {
+  return form_forest_
+      .GetRendererFormsOfBrowserForm(browser_form,
+                                     internal::FormForest::AllOriginsAreSafe{},
+                                     /*field_type_map=*/{})
+      .renderer_forms;
+}
+
 }  // namespace autofill
