@@ -701,22 +701,27 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     int resource_id,
     ResourceScaleFactor scale_factor,
     ResourceScaleFactor* loaded_scale_factor) const {
-  base::StringPiece data;
-  if (delegate_ &&
-      delegate_->GetRawDataResource(resource_id, scale_factor, &data)) {
-    if (loaded_scale_factor)
-      *loaded_scale_factor = scale_factor;
-    return data;
+  if (delegate_) {
+    base::StringPiece data;
+    if (delegate_->GetRawDataResource(resource_id, scale_factor, &data)) {
+      if (loaded_scale_factor) {
+        *loaded_scale_factor = scale_factor;
+      }
+      return data;
+    }
   }
 
   if (scale_factor != ui::k100Percent) {
     for (const auto& resource_handle : resource_handles_) {
-      if (resource_handle->GetResourceScaleFactor() == scale_factor &&
-          resource_handle->GetStringPiece(static_cast<uint16_t>(resource_id),
-                                          &data)) {
-        if (loaded_scale_factor)
-          *loaded_scale_factor = scale_factor;
-        return data;
+      if (resource_handle->GetResourceScaleFactor() == scale_factor) {
+        if (auto data = resource_handle->GetStringPiece(
+                static_cast<uint16_t>(resource_id));
+            data.has_value()) {
+          if (loaded_scale_factor) {
+            *loaded_scale_factor = scale_factor;
+          }
+          return data.value();
+        }
       }
     }
   }
@@ -725,12 +730,15 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     if ((resource_handle->GetResourceScaleFactor() == ui::k100Percent ||
          resource_handle->GetResourceScaleFactor() == ui::k200Percent ||
          resource_handle->GetResourceScaleFactor() == ui::k300Percent ||
-         resource_handle->GetResourceScaleFactor() == ui::kScaleFactorNone) &&
-        resource_handle->GetStringPiece(static_cast<uint16_t>(resource_id),
-                                        &data)) {
-      if (loaded_scale_factor)
-        *loaded_scale_factor = resource_handle->GetResourceScaleFactor();
-      return data;
+         resource_handle->GetResourceScaleFactor() == ui::kScaleFactorNone)) {
+      if (auto data = resource_handle->GetStringPiece(
+              static_cast<uint16_t>(resource_id));
+          data.has_value()) {
+        if (loaded_scale_factor) {
+          *loaded_scale_factor = resource_handle->GetResourceScaleFactor();
+        }
+        return data.value();
+      }
     }
   }
   if (loaded_scale_factor)
@@ -761,17 +769,18 @@ std::string ResourceBundle::LoadDataResourceStringForScale(
 std::string ResourceBundle::LoadLocalizedResourceString(int resource_id) const {
   base::AutoLock lock_scope(*locale_resources_data_lock_);
   base::StringPiece data;
-  if (!(locale_resources_data_.get() &&
-        locale_resources_data_->GetStringPiece(
-            static_cast<uint16_t>(resource_id), &data) &&
-        !data.empty())) {
-    if (secondary_locale_resources_data_.get() &&
-        secondary_locale_resources_data_->GetStringPiece(
-            static_cast<uint16_t>(resource_id), &data) &&
-        !data.empty()) {
-    } else {
-      data = GetRawDataResource(resource_id);
-    }
+  if (locale_resources_data_.get()) {
+    data = locale_resources_data_
+               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               .value_or(base::StringPiece());
+  }
+  if (data.empty() && secondary_locale_resources_data_.get()) {
+    data = secondary_locale_resources_data_
+               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               .value_or(base::StringPiece());
+  }
+  if (data.empty()) {
+    data = GetRawDataResource(resource_id);
   }
   std::string output;
   DecompressIfNeeded(data, &output);
@@ -813,20 +822,21 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     int resource_id) const {
   {
     base::AutoLock lock_scope(*locale_resources_data_lock_);
-    base::StringPiece data;
 
-    if (locale_resources_data_.get() &&
-        locale_resources_data_->GetStringPiece(
-            static_cast<uint16_t>(resource_id), &data) &&
-        !data.empty()) {
-      return new base::RefCountedStaticMemory(data.data(), data.length());
+    if (locale_resources_data_.get()) {
+      if (auto data = locale_resources_data_->GetStringPiece(
+              static_cast<uint16_t>(resource_id));
+          data.has_value() && !data->empty()) {
+        return new base::RefCountedStaticMemory(data->data(), data->length());
+      }
     }
 
-    if (secondary_locale_resources_data_.get() &&
-        secondary_locale_resources_data_->GetStringPiece(
-            static_cast<uint16_t>(resource_id), &data) &&
-        !data.empty()) {
-      return new base::RefCountedStaticMemory(data.data(), data.length());
+    if (secondary_locale_resources_data_.get()) {
+      if (auto data = secondary_locale_resources_data_->GetStringPiece(
+              static_cast<uint16_t>(resource_id));
+          data.has_value() && !data->empty()) {
+        return new base::RefCountedStaticMemory(data->data(), data->length());
+      }
     }
   }
   // Release lock_scope and fall back to main data pack.
@@ -1180,21 +1190,23 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
     return std::u16string();
   }
 
-  base::StringPiece data;
+  absl::optional<base::StringPiece> data;
   ResourceHandle::TextEncodingType encoding =
       locale_resources_data_->GetTextEncodingType();
-  if (!locale_resources_data_->GetStringPiece(
-          static_cast<uint16_t>(resource_id), &data)) {
+  if (!(data = locale_resources_data_->GetStringPiece(
+            static_cast<uint16_t>(resource_id)))
+           .has_value()) {
     if (secondary_locale_resources_data_.get() &&
-        secondary_locale_resources_data_->GetStringPiece(
-            static_cast<uint16_t>(resource_id), &data)) {
+        (data = secondary_locale_resources_data_->GetStringPiece(
+             static_cast<uint16_t>(resource_id)))
+            .has_value()) {
       // Fall back on the secondary locale pak if it exists.
       encoding = secondary_locale_resources_data_->GetTextEncodingType();
     } else {
       // Fall back on the main data pack (shouldn't be any strings here except
       // in unittests).
       data = GetRawDataResource(resource_id);
-      CHECK(!data.empty())
+      CHECK(!data->empty())
           << "Unable to find resource: " << resource_id
           << ". If this happens in a browser test running on Windows, it may "
              "be that dead-code elimination stripped out the code that uses the"
@@ -1211,11 +1223,11 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // Data pack encodes strings as either UTF8 or UTF16.
   std::u16string msg;
   if (encoding == ResourceHandle::UTF16) {
-    msg.assign(reinterpret_cast<const char16_t*>(data.data()),
-               data.length() / 2);
+    msg.assign(reinterpret_cast<const char16_t*>(data->data()),
+               data->length() / 2);
   } else if (encoding == ResourceHandle::UTF8) {
     // Best-effort conversion.
-    base::UTF8ToUTF16(data.data(), data.size(), &msg);
+    base::UTF8ToUTF16(data->data(), data->size(), &msg);
   }
   return MaybeMangleLocalizedString(msg);
 }

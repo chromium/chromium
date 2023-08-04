@@ -72,18 +72,20 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
 // Return nil if none is found.
 NSString* GetStringFromDataPack(const ui::DataPack& data_pack,
                                 uint16_t resource_id) {
-  base::StringPiece data;
-  if (!data_pack.GetStringPiece(resource_id, &data))
+  absl::optional<base::StringPiece> data =
+      data_pack.GetStringPiece(resource_id);
+  if (!data.has_value()) {
     return nil;
+  }
 
   // Data pack encodes strings as either UTF8 or UTF16.
   if (data_pack.GetTextEncodingType() == ui::DataPack::UTF8) {
-    return [[NSString alloc] initWithBytes:data.data()
-                                    length:data.length()
+    return [[NSString alloc] initWithBytes:data->data()
+                                    length:data->length()
                                   encoding:NSUTF8StringEncoding];
   } else if (data_pack.GetTextEncodingType() == ui::DataPack::UTF16) {
-    return [[NSString alloc] initWithBytes:data.data()
-                                    length:data.length()
+    return [[NSString alloc] initWithBytes:data->data()
+                                    length:data->length()
                                   encoding:NSUTF16LittleEndianStringEncoding];
   }
   return nil;

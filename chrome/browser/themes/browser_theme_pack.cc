@@ -760,11 +760,13 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  base::StringPiece pointer;
-  if (!data_pack->GetStringPiece(kHeaderID, &pointer))
+  absl::optional<base::StringPiece> pointer =
+      data_pack->GetStringPiece(kHeaderID);
+  if (!pointer) {
     return nullptr;
-  pack->header_ = reinterpret_cast<BrowserThemePackHeader*>(const_cast<char*>(
-      pointer.data()));
+  }
+  pack->header_ = reinterpret_cast<BrowserThemePackHeader*>(
+      const_cast<char*>(pointer->data()));
 
   if (pack->header_->version != kThemePackVersion) {
     DLOG(ERROR) << "BuildFromDataPack failure! Version mismatch!";
@@ -779,30 +781,40 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  if (!data_pack->GetStringPiece(kTintsID, &pointer))
+  pointer = data_pack->GetStringPiece(kTintsID);
+  if (!pointer) {
     return nullptr;
-  pack->tints_ = reinterpret_cast<TintEntry*>(const_cast<char*>(
-      pointer.data()));
+  }
+  pack->tints_ =
+      reinterpret_cast<TintEntry*>(const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kColorsID, &pointer))
+  pointer = data_pack->GetStringPiece(kColorsID);
+  if (!pointer) {
     return nullptr;
+  }
   pack->colors_ =
-      reinterpret_cast<ColorPair*>(const_cast<char*>(pointer.data()));
+      reinterpret_cast<ColorPair*>(const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kDisplayPropertiesID, &pointer))
+  pointer = data_pack->GetStringPiece(kDisplayPropertiesID);
+  if (!pointer) {
     return nullptr;
+  }
   pack->display_properties_ = reinterpret_cast<DisplayPropertyPair*>(
-      const_cast<char*>(pointer.data()));
+      const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kSourceImagesID, &pointer))
+  pointer = data_pack->GetStringPiece(kSourceImagesID);
+  if (!pointer) {
     return nullptr;
-  pack->source_images_ = reinterpret_cast<int*>(
-      const_cast<char*>(pointer.data()));
+  }
+  pack->source_images_ =
+      reinterpret_cast<int*>(const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kScaleFactorsID, &pointer))
+  pointer = data_pack->GetStringPiece(kScaleFactorsID);
+  if (!pointer) {
     return nullptr;
+  }
 
-  if (!InputScalesValid(pointer, pack->scale_factors_)) {
+  if (!InputScalesValid(pointer.value(), pack->scale_factors_)) {
     DLOG(ERROR) << "BuildFromDataPack failure! The pack scale factors differ "
                 << "from those supported by platform.";
     return nullptr;

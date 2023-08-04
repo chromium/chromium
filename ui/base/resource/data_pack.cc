@@ -366,8 +366,8 @@ base::StringPiece DataPack::GetStringPieceFromOffset(
   return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
-bool DataPack::GetStringPiece(uint16_t resource_id,
-                              base::StringPiece* data) const {
+absl::optional<base::StringPiece> DataPack::GetStringPiece(
+    uint16_t resource_id) const {
   // It won't be hard to make this endian-agnostic, but it's not worth
   // bothering to do right now.
 #if !defined(ARCH_CPU_LITTLE_ENDIAN)
@@ -376,7 +376,7 @@ bool DataPack::GetStringPiece(uint16_t resource_id,
 
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
-    return false;
+    return absl::nullopt;
 
   const Entry* next_entry = target + 1;
   // If the next entry points beyond the end of the file this data pack's entry
@@ -390,22 +390,20 @@ bool DataPack::GetStringPiece(uint16_t resource_id,
     LOG(ERROR) << "Entry #" << entry_index << " in data pack points off end "
                << "of file. This should have been caught when loading. Was the "
                << "file modified?";
-    return false;
+    return absl::nullopt;
   }
 
   MaybePrintResourceId(resource_id);
-  *data = GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
-                                   data_source_->GetData());
-  return true;
+  return GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
+                                  data_source_->GetData());
 }
 
 base::RefCountedStaticMemory* DataPack::GetStaticMemory(
     uint16_t resource_id) const {
-  base::StringPiece piece;
-  if (!GetStringPiece(resource_id, &piece))
-    return NULL;
-
-  return new base::RefCountedStaticMemory(piece.data(), piece.length());
+  if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
+    return new base::RefCountedStaticMemory(piece->data(), piece->length());
+  }
+  return nullptr;
 }
 
 ResourceHandle::TextEncodingType DataPack::GetTextEncodingType() const {

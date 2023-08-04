@@ -62,6 +62,7 @@ component("ui_data_pack") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [

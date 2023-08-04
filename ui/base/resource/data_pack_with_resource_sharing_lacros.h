@@ -85,8 +85,8 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPackWithResourceSharing
 
   // ResourceHandle implementation:
   bool HasResource(uint16_t resource_id) const override;
-  bool GetStringPiece(uint16_t resource_id,
-                      base::StringPiece* data) const override;
+  absl::optional<base::StringPiece> GetStringPiece(
+      uint16_t resource_id) const override;
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;

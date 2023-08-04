@@ -44,17 +44,17 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
                                    const std::string& data_pack_lang,
                                    uint32_t resource_id,
                                    const char* resource_id_str) {
-  base::StringPiece data;
-  CHECK(data_pack->GetStringPiece(resource_id, &data))
-      << "failed to load string " << resource_id_str << " for lang "
-      << data_pack_lang;
+  absl::optional<base::StringPiece> data =
+      data_pack->GetStringPiece(resource_id);
+  CHECK(data.has_value()) << "failed to load string " << resource_id_str
+                          << " for lang " << data_pack_lang;
 
   // Data pack encodes strings as either UTF8 or UTF16.
   if (data_pack->GetTextEncodingType() == ui::DataPack::UTF8)
-    return (std::string)data;
+    return std::string(data.value());
   if (data_pack->GetTextEncodingType() == ui::DataPack::UTF16) {
     return base::UTF16ToUTF8(std::u16string(
-        reinterpret_cast<const char16_t*>(data.data()), data.length() / 2));
+        reinterpret_cast<const char16_t*>(data->data()), data->length() / 2));
   }
 
   LOG(FATAL) << "requested string " << resource_id_str

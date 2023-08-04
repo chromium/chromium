@@ -224,23 +224,21 @@ bool DataPackWithResourceSharing::HasResource(uint16_t resource_id) const {
   return fallback_data_pack_->HasResource(resource_id);
 }
 
-bool DataPackWithResourceSharing::GetStringPiece(
-    uint16_t resource_id,
-    base::StringPiece* data) const {
+absl::optional<base::StringPiece> DataPackWithResourceSharing::GetStringPiece(
+    uint16_t resource_id) const {
   absl::optional<uint16_t> ash_resource_id = LookupMappingTable(resource_id);
   if (ash_resource_id.has_value())
-    return ash_data_pack_->GetStringPiece(ash_resource_id.value(), data);
+    return ash_data_pack_->GetStringPiece(ash_resource_id.value());
 
-  return fallback_data_pack_->GetStringPiece(resource_id, data);
+  return fallback_data_pack_->GetStringPiece(resource_id);
 }
 
 base::RefCountedStaticMemory* DataPackWithResourceSharing::GetStaticMemory(
     uint16_t resource_id) const {
-  base::StringPiece piece;
-  if (!GetStringPiece(resource_id, &piece))
-    return nullptr;
-
-  return new base::RefCountedStaticMemory(piece.data(), piece.length());
+  if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
+    return new base::RefCountedStaticMemory(piece->data(), piece->length());
+  }
+  return nullptr;
 }
 
 ResourceHandle::TextEncodingType
@@ -511,21 +509,23 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
     } else if (mapping_table[mapping_idx].lacros_resource_id < resource_id) {
       ++mapping_idx;
     } else {
-      lacros_data_pack->GetStringPiece(
-          resource_id,
-          &fallback_resources[lacros_data_pack
-                                  ->GetAliasByAliasTableIndex(alias_idx)
-                                  ->resource_id]);
+      if (auto piece = lacros_data_pack->GetStringPiece(resource_id); piece) {
+        fallback_resources[lacros_data_pack
+                               ->GetAliasByAliasTableIndex(alias_idx)
+                               ->resource_id] = piece.value();
+      }
       ++alias_idx;
     }
   }
 
   for (; alias_idx < lacros_data_pack->GetAliasTableSize(); ++alias_idx) {
-    lacros_data_pack->GetStringPiece(
-        lacros_data_pack->GetAliasByAliasTableIndex(alias_idx)->resource_id,
-        &fallback_resources[lacros_data_pack
-                                ->GetAliasByAliasTableIndex(alias_idx)
-                                ->resource_id]);
+    if (auto piece = lacros_data_pack->GetStringPiece(
+            lacros_data_pack->GetAliasByAliasTableIndex(alias_idx)
+                ->resource_id);
+        piece) {
+      fallback_resources[lacros_data_pack->GetAliasByAliasTableIndex(alias_idx)
+                             ->resource_id] = piece.value();
+    }
   }
 
   // Build a list of final resource aliases, and an alias map at the same time.
