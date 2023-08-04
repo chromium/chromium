@@ -17,10 +17,12 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -1080,7 +1082,21 @@ void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
 void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {
-    user->SetProfileIsCreated();
+    if (user->is_profile_created()) {
+      // This happens sometimes in browser_tests.
+      // See also kIgnoreUserProfileMappingForTests and its uses.
+      // TODO(b/294452567): Consider how to remove this workaround for testing.
+      CHECK_IS_TEST();
+    } else {
+      CHECK(!user->GetProfilePrefs());
+      user->SetProfileIsCreated();
+      user->SetProfilePrefs(profile->GetPrefs());
+      auto observation =
+          std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
+              this);
+      observation->Observe(profile);
+      profile_observations_.push_back(std::move(observation));
+    }
 
     for (auto& observer : observer_list_) {
       observer.OnUserProfileCreated(*user);
@@ -1099,6 +1115,17 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
   if (GetPendingUserSwitchID().is_valid()) {
     SwitchActiveUser(GetPendingUserSwitchID());
     SetPendingUserSwitchId(EmptyAccountId());
+  }
+}
+
+void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK(base::EraseIf(profile_observations_, [profile](auto& observation) {
+    return observation->IsObservingSource(profile);
+  }));
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  if (user && user->is_profile_created()) {
+    CHECK_EQ(user->GetProfilePrefs(), profile->GetPrefs());
+    user->SetProfilePrefs(nullptr);
   }
 }
 

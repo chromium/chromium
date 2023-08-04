@@ -17,6 +17,8 @@
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
 
+class PrefService;
+
 namespace ash {
 class ChromeUserManagerImpl;
 class FakeChromeUserManager;
@@ -130,6 +132,12 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // True if the user is a kiosk.
   bool IsKioskType() const;
+
+  // Returns PrefService of the Profile corresponding this User.
+  // If Profile and its PrefService is not yet ready, or it is already
+  // destroyed, this API returns nullptr.
+  PrefService* GetProfilePrefs() { return profile_prefs_.get(); }
+  const PrefService* GetProfilePrefs() const { return profile_prefs_.get(); }
 
   // The displayed user name.
   std::u16string display_name() const { return display_name_; }
@@ -290,6 +298,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   void SetProfileIsCreated();
 
+  void SetProfilePrefs(PrefService* prefs) { profile_prefs_ = prefs; }
+
   virtual void SetAffiliation(bool is_affiliated);
 
  private:
@@ -336,6 +346,9 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // True if user Profile is created
   bool profile_is_created_ = false;
+
+  // Owned by Profile.
+  raw_ptr<PrefService> profile_prefs_ = nullptr;
 
   // True if the user is affiliated to the device.
   absl::optional<bool> is_affiliated_;
