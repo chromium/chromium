@@ -18,6 +18,8 @@ void DefaultUnwrapForExtractionHook(uintptr_t address) {}
 void DefaultUnwrapForComparisonHook(uintptr_t address) {}
 void DefaultAdvanceHook(uintptr_t old_address, uintptr_t new_address) {}
 void DefaultDuplicateHook(uintptr_t address) {}
+void DefaultWrapPtrForDuplicationHook(uintptr_t address) {}
+void DefaultUnsafelyUnwrapForDuplicationHook(uintptr_t address) {}
 
 constexpr RawPtrHooks default_hooks = {
     DefaultWrapPtrHook,
@@ -27,6 +29,8 @@ constexpr RawPtrHooks default_hooks = {
     DefaultUnwrapForComparisonHook,
     DefaultAdvanceHook,
     DefaultDuplicateHook,
+    DefaultWrapPtrForDuplicationHook,
+    DefaultUnsafelyUnwrapForDuplicationHook,
 };
 
 }  // namespace

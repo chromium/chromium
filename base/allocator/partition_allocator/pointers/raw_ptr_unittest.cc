@@ -2271,7 +2271,9 @@ namespace {
   F(safely_unwrap_for_extraction)     \
   F(unsafely_unwrap_for_comparison)   \
   F(advance)                          \
-  F(duplicate)
+  F(duplicate)                        \
+  F(wrap_ptr_for_duplication)         \
+  F(unsafely_unwrap_for_duplication)
 
 // Can't use gMock to count the number of invocations because
 // gMock itself triggers raw_ptr<T> operations.
@@ -2386,6 +2388,19 @@ TEST_F(HookableRawPtrImplTest, Duplicate) {
     delete ptr;
   }
   EXPECT_EQ(CountingHooks::Get()->duplicate_count, 1u);
+}
+
+TEST_F(HookableRawPtrImplTest, CrossKindCopyConstruction) {
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    raw_ptr<int> non_dangling_ptr = ptr;
+    raw_ptr<int, RawPtrTraits::kMayDangle> dangling_ptr(non_dangling_ptr);
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->duplicate_count, 0u);
+  EXPECT_EQ(CountingHooks::Get()->wrap_ptr_for_duplication_count, 1u);
+  EXPECT_EQ(CountingHooks::Get()->unsafely_unwrap_for_duplication_count, 1u);
 }
 
 #endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
