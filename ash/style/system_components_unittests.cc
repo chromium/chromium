@@ -97,6 +97,29 @@ std::unique_ptr<views::Widget> CreateWidgetWithComponent(
 
 using SystemComponentsTest = AshTestBase;
 
+// Tests if the tooltip text of PillButton is same with the button text, unless
+// the tooltip text is explicitly set.
+TEST_F(SystemComponentsTest, PillButtonTooltip) {
+  // Create a PillButton object.
+  auto pill_button =
+      std::make_unique<PillButton>(PillButton::PressedCallback(), u"Default");
+
+  // The tooltip text should be same with initial button text.
+  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Default");
+
+  // Changing button text will also update the tooltip text.
+  pill_button->SetText(u"New Text");
+  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"New Text");
+
+  // If the tooltip text is explicitly set, the tooltip text will always be use.
+  pill_button->SetTooltipText(u"Tooltip");
+  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
+
+  // Updating button text won't change the preset tooltip text.
+  pill_button->SetText(u"Foo");
+  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
+}
+
 // TODO(crbug/1384370): Disable for constant failure.
 TEST_F(SystemComponentsTest,
        DISABLED_IconButtonWithBackgroundColorIdDoesNotCrash) {

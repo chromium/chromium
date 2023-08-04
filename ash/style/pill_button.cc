@@ -194,7 +194,6 @@ PillButton::PillButton(PressedCallback callback,
                                    /*background_color=*/
                                    gfx::kPlaceholderColor);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-  SetTooltipText(text);
 
   // Initialize image and icon spacing.
   SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);
@@ -304,6 +303,11 @@ views::PropertyEffects PillButton::UpdateStyleToIndicateDefaultStatus() {
   // Override the method defined in LabelButton to avoid style changes when the
   // `is_default_` flag is updated.
   return views::kPropertyEffectsNone;
+}
+
+std::u16string PillButton::GetTooltipText(const gfx::Point& p) const {
+  const auto& tooltip = views::LabelButton::GetTooltipText(p);
+  return tooltip.empty() ? GetText() : tooltip;
 }
 
 void PillButton::SetBackgroundColor(const SkColor background_color) {
