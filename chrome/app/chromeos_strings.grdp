@@ -6873,7 +6873,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Choose more features to set up
   </message>
   <message name="IDS_OOBE_CHOOBE_DESCRIPTION" desc="Subitle of the CHOOBE screen.">
-    You can also find these options in Settings after you finish setting up your Chromebook
+    You can select all that apply. You can also find these options in Settings after you finish setting up your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_OOBE_CHOOBE_SKIP_BUTTON" desc="Skip button for the CHOOBE screen">
     Skip
