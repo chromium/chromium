@@ -190,8 +190,7 @@ class ExistingUserController : public content::NotificationObserver,
   // that the diversion to a resume flow did not occur, indicating either no
   // hibernation image was present, the resume was cancelled/aborted, or
   // hibernate is simply not supported.
-  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context,
-                                             bool resume_call_success);
+  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context);
 
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
