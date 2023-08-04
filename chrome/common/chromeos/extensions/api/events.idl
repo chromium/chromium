@@ -229,8 +229,49 @@ namespace os.events {
         UsbEvent? event;
     };
 
+    // An enumeration of display input type.
+    enum DisplayInputType {
+      // Unknown enum value.
+      unknown,
+      // Digital input.
+      digital,
+      // Analog input.
+      analog
+    };
+
+    dictionary ExternalDisplayInfo {
+      // Display width in millimeters.
+      long? displayWidth;
+      // Display height in millimeters.
+      long? displayHeight;
+      // Horizontal resolution.
+      long? resolutionHorizontal;
+      // Vertical resolution.
+      long? resolutionVertical;
+      // Refresh rate.
+      double? refreshRate;
+      // Three letter manufacturer ID.
+      DOMString? manufacturer;
+      // Manufacturer product code.
+      long? modelId;
+      // 32 bits serial number.
+      long? serialNumber;
+      // Week of manufacture.
+      long? manufactureWeek;
+      // Year of manufacture.
+      long? manufactureYear;
+      // EDID version.
+      DOMString? edidVersion;
+      // Digital or analog input.
+      DisplayInputType inputType;
+      // Name of display product.
+      DOMString? displayName;
+    };
+
+
     dictionary ExternalDisplayEventInfo {
         ExternalDisplayEvent? event;
+        ExternalDisplayInfo? displayInfo;
     };
 
     dictionary SdCardEventInfo {

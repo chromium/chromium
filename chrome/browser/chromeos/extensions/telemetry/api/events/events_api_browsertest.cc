@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
@@ -665,6 +666,23 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
         external_display_info->state =
             crosapi::TelemetryExternalDisplayEventInfo::State::kAdd;
 
+        auto display_info = crosapi::ProbeExternalDisplayInfo::New();
+        display_info->display_width = 1;
+        display_info->display_height = 2;
+        display_info->resolution_horizontal = 3;
+        display_info->resolution_vertical = 4;
+        display_info->refresh_rate = 5;
+        display_info->manufacturer = "manufacturer";
+        display_info->model_id = 6;
+        display_info->serial_number = 7;
+        display_info->manufacture_week = 8;
+        display_info->manufacture_year = 9;
+        display_info->edid_version = "1.4";
+        display_info->input_type = crosapi::ProbeDisplayInputType::kAnalog;
+        display_info->display_name = "display";
+
+        external_display_info->display_info = std::move(display_info);
+
         GetFakeService()->EmitEventForCategory(
             crosapi::TelemetryEventCategoryEnum::kExternalDisplay,
             crosapi::TelemetryEventInfo::NewExternalDisplayEventInfo(
@@ -676,7 +694,22 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onExternalDisplayEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            displayInfo: {
+                "displayHeight": 2,
+                "displayName": "display",
+                "displayWidth": 1,
+                "edidVersion": "1.4",
+                "inputType": "analog",
+                "manufactureWeek": 8,
+                "manufactureYear": 9,
+                "manufacturer": "manufacturer",
+                "modelId": 6,
+                "refreshRate": 5,
+                "resolutionHorizontal": 3,
+                "resolutionVertical": 4,
+                "serialNumber": 7
+              }
           });
 
           chrome.test.succeed();

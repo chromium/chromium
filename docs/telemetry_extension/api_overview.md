@@ -362,6 +362,7 @@ and **events**.
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | event | ExternalDisplayEvent | The event that occurred |
+| display_info | ExternalDisplayInfo | The information related to the plugged in external display |
 
 ### Enum SdCardEvent
 | Property Name |

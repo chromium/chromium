@@ -6,6 +6,7 @@
 
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -225,6 +226,17 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbState) {
 
   EXPECT_EQ(Convert(crosapi::TelemetryUsbEventInfo::State::kRemove),
             cx_events::UsbEvent::kDisconnected);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertDisplayInputType) {
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField),
+            cx_events::DisplayInputType::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kDigital),
+            cx_events::DisplayInputType::kDigital);
+
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kAnalog),
+            cx_events::DisplayInputType::kAnalog);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,
@@ -527,12 +539,66 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbEventInfo) {
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,
      ConvertExternalDisplayEventInfo) {
+  constexpr uint32_t kDisplayWidth = 0;
+  constexpr uint32_t kDisplayHeight = 1;
+  constexpr uint32_t kResolutionHorizontal = 2;
+  constexpr uint32_t kResolutionVertical = 3;
+  constexpr double kRefreshRate = 4.4;
+  constexpr char kManufacturer[] = "manufacturer";
+  constexpr uint16_t kModelId = 5;
+  constexpr uint32_t kSerialNumber = 6;
+  constexpr uint8_t kManufactureWeek = 7;
+  constexpr uint16_t kManufactureYear = 8;
+  constexpr char kEdidVersion[] = "1.4";
+  constexpr crosapi::ProbeDisplayInputType kInputType =
+      crosapi::ProbeDisplayInputType::kDigital;
+  constexpr char kDisplayName[] = "display";
+
   auto input = crosapi::TelemetryExternalDisplayEventInfo::New();
   input->state = crosapi::TelemetryExternalDisplayEventInfo::State::kAdd;
+  input->display_info = crosapi::ProbeExternalDisplayInfo::New(
+      kDisplayWidth, kDisplayHeight, kResolutionHorizontal, kResolutionVertical,
+      kRefreshRate, std::string(kManufacturer), kModelId, kSerialNumber,
+      kManufactureWeek, kManufactureYear, std::string(kEdidVersion), kInputType,
+      std::string(kDisplayName));
 
   auto result = ConvertStructPtr(std::move(input));
 
   EXPECT_EQ(result.event, cx_events::ExternalDisplayEvent::kConnected);
+
+  ASSERT_TRUE(result.display_info.has_value());
+  const auto& display_info = result.display_info.value();
+
+  ASSERT_TRUE(display_info.display_width.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(display_info.display_width.value()),
+            kDisplayWidth);
+  ASSERT_TRUE(display_info.display_height.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(display_info.display_height.value()),
+            kDisplayHeight);
+  ASSERT_TRUE(display_info.resolution_horizontal.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(display_info.resolution_horizontal.value()),
+            kResolutionHorizontal);
+  ASSERT_TRUE(display_info.resolution_vertical.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(display_info.resolution_vertical.value()),
+            kResolutionVertical);
+  ASSERT_TRUE(display_info.refresh_rate.has_value());
+  EXPECT_EQ(static_cast<double>(display_info.refresh_rate.value()),
+            kRefreshRate);
+  EXPECT_EQ(display_info.manufacturer, kManufacturer);
+  ASSERT_TRUE(display_info.model_id.has_value());
+  EXPECT_EQ(static_cast<uint16_t>(display_info.model_id.value()), kModelId);
+  ASSERT_TRUE(display_info.serial_number.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(display_info.serial_number.value()),
+            kSerialNumber);
+  ASSERT_TRUE(display_info.manufacture_week.has_value());
+  EXPECT_EQ(static_cast<uint8_t>(display_info.manufacture_week.value()),
+            kManufactureWeek);
+  ASSERT_TRUE(display_info.manufacture_year.has_value());
+  EXPECT_EQ(static_cast<uint16_t>(display_info.manufacture_year.value()),
+            kManufactureYear);
+  EXPECT_EQ(display_info.edid_version, kEdidVersion);
+  EXPECT_EQ(display_info.input_type, Convert(kInputType));
+  EXPECT_EQ(display_info.display_name, kDisplayName);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardEventInfo) {

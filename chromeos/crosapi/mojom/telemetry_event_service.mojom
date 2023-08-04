@@ -19,6 +19,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
 import "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom";
 import "chromeos/crosapi/mojom/nullable_primitives.mojom";
@@ -120,6 +121,8 @@ struct TelemetryExternalDisplayEventInfo {
   };
 
   State state@0;
+  // On external display event, also report information about the display.
+  [MinVersion=1] ProbeExternalDisplayInfo? display_info@1;
 };
 
 // SD card event info. This is emitted when a SD card is plugged in or plugged

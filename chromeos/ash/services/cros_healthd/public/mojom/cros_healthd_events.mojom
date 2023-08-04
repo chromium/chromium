@@ -11,6 +11,7 @@
 module ash.cros_healthd.mojom;
 
 import "ash/system/diagnostics/mojom/input.mojom";
+import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -391,6 +392,8 @@ struct ExternalDisplayEventInfo {
   };
 
   State state@0;
+  // On external display event, also report information about the display.
+  [MinVersion=1] ExternalDisplayInfo? display_info@1;
 };
 
 // Emitted when new touch points are updated.

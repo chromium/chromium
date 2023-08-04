@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -102,6 +103,28 @@ cx_events::ExternalDisplayEventInfo UncheckedConvertPtr(
   cx_events::ExternalDisplayEventInfo result;
 
   result.event = Convert(ptr->state);
+  result.display_info = ConvertStructPtr(std::move(ptr->display_info));
+
+  return result;
+}
+
+cx_events::ExternalDisplayInfo UncheckedConvertPtr(
+    crosapi::ProbeExternalDisplayInfoPtr input) {
+  cx_events::ExternalDisplayInfo result;
+
+  result.display_width = std::move(input->display_width);
+  result.display_height = std::move(input->display_height);
+  result.resolution_horizontal = std::move(input->resolution_horizontal);
+  result.resolution_vertical = std::move(input->resolution_vertical);
+  result.refresh_rate = std::move(input->refresh_rate);
+  result.manufacturer = std::move(input->manufacturer);
+  result.model_id = std::move(input->model_id);
+  result.serial_number = std::move(input->serial_number);
+  result.manufacture_week = std::move(input->manufacture_week);
+  result.manufacture_year = std::move(input->manufacture_year);
+  result.edid_version = std::move(input->edid_version);
+  result.input_type = Convert(input->input_type);
+  result.display_name = (input->display_name);
 
   return result;
 }
@@ -504,6 +527,18 @@ cx_events::InputTouchButtonState Convert(
       return cx_events::InputTouchButtonState::kPressed;
     case crosapi::TelemetryTouchpadButtonEventInfo_State::kReleased:
       return cx_events::InputTouchButtonState::kReleased;
+  }
+  NOTREACHED();
+}
+
+cx_events::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
+  switch (input) {
+    case crosapi::ProbeDisplayInputType::kUnmappedEnumField:
+      return cx_events::DisplayInputType::kUnknown;
+    case crosapi::ProbeDisplayInputType::kDigital:
+      return cx_events::DisplayInputType::kDigital;
+    case crosapi::ProbeDisplayInputType::kAnalog:
+      return cx_events::DisplayInputType::kAnalog;
   }
   NOTREACHED();
 }

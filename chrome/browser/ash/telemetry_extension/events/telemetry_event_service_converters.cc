@@ -9,8 +9,10 @@
 
 #include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
@@ -78,7 +80,8 @@ crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryExternalDisplayEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::ExternalDisplayEventInfoPtr input) {
   return crosapi::mojom::TelemetryExternalDisplayEventInfo::New(
-      Convert(input->state));
+      Convert(input->state), ash::converters::telemetry::ConvertProbePtr(
+                                 std::move(input->display_info)));
 }
 
 crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(

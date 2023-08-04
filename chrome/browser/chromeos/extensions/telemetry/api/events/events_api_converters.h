@@ -11,6 +11,7 @@
 
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,6 +37,9 @@ api::os_events::UsbEventInfo UncheckedConvertPtr(
 
 api::os_events::ExternalDisplayEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryExternalDisplayEventInfoPtr ptr);
+
+api::os_events::ExternalDisplayInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeExternalDisplayInfoPtr input);
 
 api::os_events::SdCardEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetrySdCardEventInfoPtr ptr);
@@ -119,6 +123,9 @@ api::os_events::InputTouchButton Convert(
 
 api::os_events::InputTouchButtonState Convert(
     crosapi::mojom::TelemetryTouchpadButtonEventInfo::State state);
+
+api::os_events::DisplayInputType Convert(
+    crosapi::mojom::ProbeDisplayInputType input);
 
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);

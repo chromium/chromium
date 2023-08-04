@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "ash/system/diagnostics/mojom/input.mojom.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
@@ -587,14 +589,47 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
 
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryExternalDisplayEventInfoPtr) {
+  constexpr uint32_t kDisplayWidth = 0;
+  constexpr uint32_t kDisplayHeight = 1;
+  constexpr uint32_t kResolutionHorizontal = 2;
+  constexpr uint32_t kResolutionVertical = 3;
+  constexpr double kRefreshRate = 4.4;
+  constexpr char kManufacturer[] = "manufacturer";
+  constexpr uint16_t kModelId = 5;
+  constexpr uint32_t kSerialNumber = 6;
+  constexpr uint8_t kManufactureWeek = 7;
+  constexpr uint16_t kManufactureYear = 8;
+  constexpr char kEdidVersion[] = "1.4";
+  constexpr cros_healthd::mojom::DisplayInputType kInputType =
+      cros_healthd::mojom::DisplayInputType::kDigital;
+  constexpr char kDisplayName[] = "external_display_1";
+
   auto input = cros_healthd::mojom::ExternalDisplayEventInfo::New();
   input->state = cros_healthd::mojom::ExternalDisplayEventInfo::State::kAdd;
+  input->display_info = cros_healthd::mojom::ExternalDisplayInfo::New(
+      cros_healthd::mojom::NullableUint32::New(kDisplayWidth),
+      cros_healthd::mojom::NullableUint32::New(kDisplayHeight),
+      cros_healthd::mojom::NullableUint32::New(kResolutionHorizontal),
+      cros_healthd::mojom::NullableUint32::New(kResolutionVertical),
+      cros_healthd::mojom::NullableDouble::New(kRefreshRate),
+      std::string(kManufacturer),
+      cros_healthd::mojom::NullableUint16::New(kModelId),
+      cros_healthd::mojom::NullableUint32::New(kSerialNumber),
+      cros_healthd::mojom::NullableUint8::New(kManufactureWeek),
+      cros_healthd::mojom::NullableUint16::New(kManufactureYear),
+      std::string(kEdidVersion), kInputType, std::string(kDisplayName));
 
   EXPECT_EQ(
       ConvertStructPtr(std::move(input)),
       crosapi::mojom::TelemetryExternalDisplayEventInfo::New(
-          crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd));
+          crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd,
+          crosapi::mojom::ProbeExternalDisplayInfo::New(
+              kDisplayWidth, kDisplayHeight, kResolutionHorizontal,
+              kResolutionVertical, kRefreshRate, kManufacturer, kModelId,
+              kSerialNumber, kManufactureWeek, kManufactureYear, kEdidVersion,
+              ash::converters::telemetry::Convert(kInputType), kDisplayName)));
 }
+
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetrySdCardEventInfoPtr) {
   auto input = cros_healthd::mojom::SdCardEventInfo::New();
   input->state = cros_healthd::mojom::SdCardEventInfo::State::kAdd;
