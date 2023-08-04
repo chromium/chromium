@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -664,7 +665,8 @@ SkColor PictureInPictureBrowserFrameView::GetIconLabelBubbleBackgroundColor()
 ///////////////////////////////////////////////////////////////////////////////
 // ContentSettingImageView::Delegate implementations:
 
-bool PictureInPictureBrowserFrameView::ShouldHideContentSettingImage() {
+bool PictureInPictureBrowserFrameView::ShouldHideContentSettingImage(
+    ImageType type) {
   return false;
 }
 

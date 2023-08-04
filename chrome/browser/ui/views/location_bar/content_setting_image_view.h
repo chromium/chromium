@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/user_education/common/help_bubble.h"
@@ -45,7 +46,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   class Delegate {
    public:
     // Delegate should return true if the content setting icon should be hidden.
-    virtual bool ShouldHideContentSettingImage() = 0;
+    virtual bool ShouldHideContentSettingImage(ImageType type) = 0;
 
     // Gets the web contents the ContentSettingImageView is for.
     virtual content::WebContents* GetContentSettingWebContents() = 0;

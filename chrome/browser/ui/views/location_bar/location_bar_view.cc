@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -76,6 +77,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -956,9 +958,55 @@ SkColor LocationBarView::GetIconLabelBubbleBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorLocationBarBackground);
 }
 
-bool LocationBarView::ShouldHideContentSettingImage() {
+bool LocationBarView::ShouldHideContentSettingImage(ImageType type) {
   // Content setting icons are hidden at the same time as page action icons.
-  return ShouldHidePageActionIcons();
+  if (ShouldHidePageActionIcons()) {
+    return true;
+  }
+
+  auto* web_contents = GetWebContents();
+  if (web_contents) {
+    auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
+    switch (type) {
+      case ImageType::COOKIES:
+      case ImageType::IMAGES:
+      case ImageType::JAVASCRIPT:
+      case ImageType::POPUPS:
+        break;
+      case ImageType::GEOLOCATION: {
+        ContentSetting value =
+            hcsm->GetContentSetting(web_contents->GetLastCommittedURL(), GURL(),
+                                    ContentSettingsType::GEOLOCATION);
+        return value == CONTENT_SETTING_ASK;
+      }
+      case ImageType::MIXEDSCRIPT:
+      case ImageType::PROTOCOL_HANDLERS:
+        break;
+      case ImageType::MEDIASTREAM: {
+        ContentSetting mic_value =
+            hcsm->GetContentSetting(web_contents->GetLastCommittedURL(), GURL(),
+                                    ContentSettingsType::MEDIASTREAM_MIC);
+
+        ContentSetting camera_value =
+            hcsm->GetContentSetting(web_contents->GetLastCommittedURL(), GURL(),
+                                    ContentSettingsType::MEDIASTREAM_CAMERA);
+        return mic_value == CONTENT_SETTING_ASK &&
+               camera_value == CONTENT_SETTING_ASK;
+      }
+      case ImageType::ADS:
+      case ImageType::AUTOMATIC_DOWNLOADS:
+      case ImageType::MIDI_SYSEX:
+      case ImageType::SOUND:
+      case ImageType::FRAMEBUST:
+      case ImageType::SENSORS:
+      case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+      case ImageType::CLIPBOARD_READ_WRITE:
+      case ImageType::STORAGE_ACCESS:
+      case ImageType::NUM_IMAGE_TYPES:
+        break;
+    }
+  }
+  return false;
 }
 
 content::WebContents* LocationBarView::GetContentSettingWebContents() {

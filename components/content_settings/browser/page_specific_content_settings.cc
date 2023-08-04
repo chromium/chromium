@@ -1199,8 +1199,16 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::GEOLOCATION: {
       ContentSetting geolocation_setting =
           map_->GetContentSetting(current_url, current_url, content_type);
-      if (geolocation_setting == CONTENT_SETTING_ALLOW)
+      if (geolocation_setting == CONTENT_SETTING_ALLOW) {
         geolocation_was_just_granted_on_site_level_ = true;
+      } else if (geolocation_setting == CONTENT_SETTING_ASK) {
+        // On manual permission revocation as well as automatic permission
+        // revocation (e.g. due to content setting expiry), the content setting
+        // icon for the permission needs to be hidden, hence a location bar
+        // update may be required.
+        MaybeUpdateLocationBar();
+      }
+
       [[fallthrough]];
     }
     case ContentSettingsType::IMAGES:
