@@ -44,6 +44,8 @@ namespace {
 constexpr int kFrequentReloadThreshold = 3;
 
 constexpr char kEntryPointAnimatedKey[] = "entry_point_animated";
+constexpr char kLastExpirationKey[] = "last_expiration";
+constexpr char kLastVisitedActiveException[] = "last_visited_active_exception";
 
 base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
                               const GURL& url) {
@@ -60,6 +62,19 @@ bool WasEntryPointAlreadyAnimated(const base::Value::Dict& metadata) {
   absl::optional<bool> entry_point_animated =
       metadata.FindBool(kEntryPointAnimatedKey);
   return entry_point_animated.has_value() && entry_point_animated.value();
+}
+
+bool HasExceptionExpiredSinceLastVisit(const base::Value::Dict& metadata) {
+  auto last_expiration = base::ValueToTime(metadata.Find(kLastExpirationKey))
+                             .value_or(base::Time());
+  auto last_visited =
+      base::ValueToTime(metadata.Find(kLastVisitedActiveException))
+          .value_or(base::Time());
+
+  return !last_expiration.is_null()  // Exception should have an expiration,
+         && last_expiration < base::Time::Now()  // that has already expired,
+         && !last_visited.is_null()              // from a previous visit,
+         && last_visited < last_expiration;      // with no visit since.
 }
 
 void ApplyMetadataChanges(HostContentSettingsMap* settings_map,
@@ -202,9 +217,6 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
       break;
   }
 
-  // TODO(crbug.com/1446230): Check if the exception has expired since the last
-  // page visit.
-
   // If no 3P sites have attempted to access site data:
   // (taking into account both allow and blocked counts, since the breakage
   // might be related to storage partitioning. Partitioned site will be allowed
@@ -220,8 +232,17 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kMedium;
   }
 
-  // Only high confidence signals from now on. Check if the entry point was
-  // already animated for the site and return medium confidence in that case.
+  // If the user is returning to the site after their previous exception has
+  // expired, return high confidence. The order of this check is important,
+  // as the site may now be using SAA / FedCM instead of relying on 3PC. It
+  // should also come before any check for whether the entrypoint was already
+  // animated.
+  if (has_exception_expired_since_last_visit_) {
+    return CookieControlsBreakageConfidenceLevel::kHigh;
+  }
+
+  // Check if the entry point was already animated for the site and return
+  // medium confidence in that case.
   if (WasEntryPointAlreadyAnimated(GetMetadata(settings_map_, url))) {
     return CookieControlsBreakageConfidenceLevel::kMedium;
   }
@@ -235,30 +256,43 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
 
+  // Default to a medium confidence level, as by this point the site has
+  // accessed 3P storage, but there is no signal that would give us high
+  // confidence.
   return CookieControlsBreakageConfidenceLevel::kMedium;
 }
 
 void CookieControlsController::OnCookieBlockingEnabledForSite(
     bool block_third_party_cookies) {
+  const GURL& url = GetWebContents()->GetLastCommittedURL();
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     should_reload_ = false;
-    cookie_settings_->ResetThirdPartyCookieSetting(
-        GetWebContents()->GetLastCommittedURL());
-  } else {
-    base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-    should_reload_ = true;
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kUserBypassUI)) {
-      cookie_settings_->SetCookieSettingForUserBypass(
-          GetWebContents()->GetLastCommittedURL());
-      RecordActivationMetrics();
-    } else {
-      cookie_settings_->SetThirdPartyCookieSetting(
-          GetWebContents()->GetLastCommittedURL(),
-          ContentSetting::CONTENT_SETTING_ALLOW);
-    }
+    cookie_settings_->ResetThirdPartyCookieSetting(url);
+    return;
   }
+
+  CHECK(!block_third_party_cookies);
+  base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
+  should_reload_ = true;
+
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kUserBypassUI)) {
+    cookie_settings_->SetThirdPartyCookieSetting(
+        url, ContentSetting::CONTENT_SETTING_ALLOW);
+    return;
+  }
+
+  CHECK(
+      base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI));
+  cookie_settings_->SetCookieSettingForUserBypass(url);
+  RecordActivationMetrics();
+
+  // Record expiration metadata for the newly created exception.
+  base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  metadata.Set(kLastExpirationKey,
+               base::TimeToValue(GetStatus(GetWebContents()).expiration));
+  ApplyMetadataChanges(settings_map_, url, std::move(metadata));
 }
 
 void CookieControlsController::OnEntryPointAnimated() {
@@ -376,9 +410,28 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
     return;
   }
 
+  // Cache whether the expiration has expired since last visit before updating
+  // the last visited metadata.
+  const GURL& url = GetWebContents()->GetLastCommittedURL();
+  has_exception_expired_since_last_visit_ =
+      HasExceptionExpiredSinceLastVisit(GetMetadata(settings_map_, url));
+
+  // We only care about visits with active expirations, if there is an active
+  // exception, update the last visited time, otherwise clear it.
+  base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  if (status.status == CookieControlsStatus::kDisabledForSite) {
+    metadata.Set(kLastVisitedActiveException,
+                 base::TimeToValue(base::Time::Now()));
+  } else {
+    metadata.Remove(kLastVisitedActiveException);
+  }
+  ApplyMetadataChanges(settings_map_, url, std::move(metadata));
+
   recent_reloads_count_ = recent_reloads_count;
-  // Only inform the observers if the reload count is higher than the threshold.
-  if (recent_reloads_count_ < kFrequentReloadThreshold) {
+
+  // Only inform the observers if there is a potential confidence level change.
+  if (recent_reloads_count_ < kFrequentReloadThreshold &&
+      !has_exception_expired_since_last_visit_) {
     return;
   }
 

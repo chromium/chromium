@@ -178,6 +178,8 @@ class CookieControlsController
   // The number of page reloads in last 30 seconds.
   int recent_reloads_count_ = 0;
 
+  bool has_exception_expired_since_last_visit_ = false;
+
   bool waiting_for_page_load_finish_ = false;
 
   // Record the initial control status when the page was navigated to, to allow
