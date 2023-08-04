@@ -45,10 +45,12 @@ suite('<customize-button-row>', () => {
   test('Initialize customize button row', async () => {
     await initializeCustomizeButtonRow();
     customizeButtonRow.set(
-        'buttonRemappingList', fakeGraphicsTablets[0]!.tabletButtonRemappings);
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
     customizeButtonRow.set('remappingIndex', 0);
     await flushTasks();
-    let expectedRemapping = fakeGraphicsTablets[0]!.tabletButtonRemappings[0];
+    let expectedRemapping =
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[0];
     assertDeepEquals(
         customizeButtonRow.get('buttonRemapping_'), expectedRemapping);
     assertEquals(
@@ -61,10 +63,12 @@ suite('<customize-button-row>', () => {
 
     // Change buttonRemapping data to display.
     customizeButtonRow.set(
-        'buttonRemappingList', fakeGraphicsTablets[1]!.tabletButtonRemappings);
+        'buttonRemappingList',
+        fakeGraphicsTablets[1]!.settings.tabletButtonRemappings);
     customizeButtonRow.set('remappingIndex', 1);
     await flushTasks();
-    expectedRemapping = fakeGraphicsTablets[1]!.tabletButtonRemappings[1];
+    expectedRemapping =
+        fakeGraphicsTablets[1]!.settings.tabletButtonRemappings[1];
     assertEquals(
         customizeButtonRow.shadowRoot!.querySelector(
                                           '#buttonLabel')!.textContent,

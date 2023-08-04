@@ -65,6 +65,10 @@ export interface GraphicsTablet {
   deviceKey: string;
   id: number;
   name: string;
+  settings: GraphicsTabletSettings;
+}
+
+export interface GraphicsTabletSettings {
   tabletButtonRemappings: ButtonRemapping[];
   penButtonRemappings: ButtonRemapping[];
 }
