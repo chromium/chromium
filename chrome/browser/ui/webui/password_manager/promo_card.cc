@@ -168,7 +168,7 @@ PasswordCheckupPromo::PasswordCheckupPromo(
     extensions::PasswordsPrivateDelegate* delegate)
     : PromoCardInterface(kCheckupPromoId, prefs) {
   CHECK(delegate);
-  delegate_ = delegate;
+  delegate_ = delegate->AsWeakPtr();
 }
 
 PasswordCheckupPromo::~PasswordCheckupPromo() = default;
@@ -184,7 +184,7 @@ bool PasswordCheckupPromo::ShouldShowPromo() const {
     return false;
   }
   // Don't show promo if there are no saved passwords.
-  if (delegate_->GetCredentialGroups().empty()) {
+  if (!delegate_ || delegate_->GetCredentialGroups().empty()) {
     return false;
   }
   // If promo card was dismissed or shown already for kPromoDisplayLimit times,

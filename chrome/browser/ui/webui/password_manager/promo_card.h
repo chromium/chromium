@@ -86,7 +86,7 @@ class PasswordCheckupPromo : public PromoCardInterface {
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;
 
-  raw_ptr<extensions::PasswordsPrivateDelegate> delegate_ = nullptr;
+  base::WeakPtr<extensions::PasswordsPrivateDelegate> delegate_;
 };
 
 // Promoting web version of Password Manager. Has a link to the website in the

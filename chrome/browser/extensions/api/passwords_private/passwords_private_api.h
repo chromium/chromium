@@ -124,7 +124,6 @@ class PasswordsPrivateGetSavedPasswordListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void GetList();
   void GotList(const PasswordsPrivateDelegate::UiEntries& entries);
 };
 
@@ -153,7 +152,6 @@ class PasswordsPrivateGetPasswordExceptionListFunction
   ResponseAction Run() override;
 
  private:
-  void GetList();
   void GotList(const PasswordsPrivateDelegate::ExceptionEntries& entries);
 };
 
