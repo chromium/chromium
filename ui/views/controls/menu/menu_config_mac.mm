@@ -19,8 +19,6 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->minimum_text_item_height = 28;
   config->minimum_container_item_height = 40;
   config->arrow_to_edge_padding = 16;
-  config->check_width = 16;
-  config->check_height = 16;
   config->separator_height = 9;
   config->separator_lower_height = 4;
   config->separator_upper_height = 4;

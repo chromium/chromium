@@ -122,7 +122,7 @@ void SubmenuView::UpdateMenuPartSizes() {
                type == MenuItemView::Type::kRadio;
       },
       &MenuItemView::GetType);
-  icon_area_width_ = has_checks_or_radios ? config.check_width : 0;
+  icon_area_width_ = has_checks_or_radios ? kMenuCheckSize : 0;
   int max_icon_width = 0;
   if (parent_menu_item_->GetRootMenuItem()->has_icons() &&
       !menu_items.empty()) {

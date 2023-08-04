@@ -8,7 +8,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/controls/menu/menu_image_util.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/views_export.h"
@@ -17,6 +16,9 @@ namespace views {
 
 class MenuController;
 class MenuItemView;
+
+constexpr int kMenuCheckSize = 16;
+constexpr int kSubmenuArrowSize = 8;
 
 // Layout type information for menu items. Use the instance() method to obtain
 // the MenuConfig for the current platform.
@@ -83,11 +85,6 @@ struct VIEWS_EXPORT MenuConfig {
   // Padding between the arrow and the edge.
   int arrow_to_edge_padding = 8;
 
-  // The space reserved for the check. The actual size of the image may be
-  // different.
-  int check_width = kMenuCheckSize;
-  int check_height = kMenuCheckSize;
-
   // Height of a normal separator (ui::NORMAL_SEPARATOR).
   int separator_height = 11;
 
@@ -142,9 +139,6 @@ struct VIEWS_EXPORT MenuConfig {
   // True if submenu arrows should get their own column, separate from minor
   // text.
   bool reserve_dedicated_arrow_column = true;
-
-  // True if the context menu's should be offset from the cursor position.
-  bool offset_context_menus = false;
 
   // True if the scroll container should add a border stroke around the menu.
   bool use_outer_border = true;

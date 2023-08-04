@@ -58,6 +58,7 @@ void MenuConfig::InitCR2023() {
       style::CONTEXT_MENU, style::STYLE_BODY_3_EMPHASIS);
   reserve_dedicated_arrow_column = false;
   separator_height = 17;
+  separator_spacing_height = 4;
   item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
   InitPlatformCR2023();

@@ -1317,8 +1317,9 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         AddMenuItem(parent, menu_index, model, i, model->GetTypeAt(i));
 
 #if BUILDFLAG(IS_CHROMEOS)
-    if (model->GetCommandIdAt(i) == IDC_EDIT_MENU ||
-        model->GetCommandIdAt(i) == IDC_ZOOM_MENU) {
+    if (!features::IsChromeRefresh2023() &&
+        (model->GetCommandIdAt(i) == IDC_EDIT_MENU ||
+         model->GetCommandIdAt(i) == IDC_ZOOM_MENU)) {
       // ChromeOS adds extra vertical space for the menu buttons.
       const MenuConfig& config = views::MenuConfig::instance();
       item->set_vertical_margin(config.item_vertical_margin * 2 +

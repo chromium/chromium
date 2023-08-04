@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -46,7 +47,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
-#include "ui/views/controls/menu/menu_image_util.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -569,7 +569,7 @@ int MenuItemView::GetHeightForWidth(int width) const {
   const gfx::Insets margins = GetContainerMargins();
   int height = children().front()->GetHeightForWidth(width - margins.width());
   if (!icon_view_ && GetRootMenuItem()->has_icons_) {
-    height = std::max(height, MenuConfig::instance().check_height);
+    height = std::max(height, kMenuCheckSize);
   }
 
   height += margins.height();
@@ -1257,7 +1257,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   // Adjust item content height if menu has both items with and without icons.
   // This way all menu items will have the same height.
   if (!icon_view_ && GetRootMenuItem()->has_icons_) {
-    dimensions.height = std::max(dimensions.height, config.check_height);
+    dimensions.height = std::max(dimensions.height, kMenuCheckSize);
   }
 
   dimensions.height += vertical_margin() * 2;
@@ -1399,13 +1399,14 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   last_paint_as_selected_ = paint_as_selected;
   const Colors colors = CalculateColors(paint_as_selected);
   if (submenu_arrow_image_view_) {
-    submenu_arrow_image_view_->SetImage(
-        GetSubmenuArrowImage(colors.icon_color));
+    submenu_arrow_image_view_->SetImage(gfx::CreateVectorIcon(
+        vector_icons::kSubmenuArrowIcon, colors.icon_color));
   }
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&
       delegate->IsItemChecked(GetCommand())) {
-    radio_check_image_view_->SetImage(GetMenuCheckImage(colors.icon_color));
+    radio_check_image_view_->SetImage(
+        gfx::CreateVectorIcon(kMenuCheckIcon, colors.icon_color));
   } else if (type_ == Type::kRadio) {
     const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
     const gfx::VectorIcon& radio_icon =
