@@ -226,8 +226,8 @@ interface CompanionPageHandler {
   // were considered to be shown in the page.
   // 'child_element_shown_count` is the number of children that were actually
   // shown.
-  RecordUiSurfaceShown(UiSurface ui_surface, uint32 ui_surface_position,
-      uint32 child_element_available_count, uint32 child_element_shown_count);
+  RecordUiSurfaceShown(UiSurface ui_surface, int32 ui_surface_position,
+      int32 child_element_available_count, int32 child_element_shown_count);
 
   // For metrics only. Called to record that the user clicked on the given UI
   // surface on the companion page. These clicks are actual clicks on the

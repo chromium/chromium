@@ -356,9 +356,9 @@ void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
 
 void CompanionPageHandler::RecordUiSurfaceShown(
     side_panel::mojom::UiSurface ui_surface,
-    uint32_t ui_surface_position,
-    uint32_t child_element_available_count,
-    uint32_t child_element_shown_count) {
+    int32_t ui_surface_position,
+    int32_t child_element_available_count,
+    int32_t child_element_shown_count) {
   if (full_load_start_time_) {
     base::UmaHistogramTimes("Companion.FullLoad.Latency",
                             base::TimeTicks::Now() - *full_load_start_time_);

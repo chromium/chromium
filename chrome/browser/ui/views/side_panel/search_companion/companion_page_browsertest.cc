@@ -1047,9 +1047,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ReloadWillRefreshCompanion) {
 
   CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceShown);
   builder2.ui_surface = UiSurface::kRelQr;
-  builder.ui_surface_position = 3;
-  builder.child_element_available_count = 8;
-  builder.child_element_shown_count = 5;
+  builder2.ui_surface_position = 3;
+  builder2.child_element_available_count = 8;
+  builder2.child_element_shown_count = 5;
   EXPECT_TRUE(ExecJs(builder2.Build()));
   WaitForHistogram("Companion.RelQr.Shown");
   histogram_tester_->ExpectTotalCount("Companion.FullLoad.Latency", 1);

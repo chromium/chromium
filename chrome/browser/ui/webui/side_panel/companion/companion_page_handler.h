@@ -56,9 +56,9 @@ class CompanionPageHandler
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) override;
   void OnOpenInNewTabButtonURLChanged(const GURL& url_to_open) override;
   void RecordUiSurfaceShown(side_panel::mojom::UiSurface ui_surface,
-                            uint32_t ui_surface_position,
-                            uint32_t child_element_available_count,
-                            uint32_t child_element_shown_count) override;
+                            int32_t ui_surface_position,
+                            int32_t child_element_available_count,
+                            int32_t child_element_shown_count) override;
   void RecordUiSurfaceClicked(side_panel::mojom::UiSurface ui_surface,
                               int32_t click_position) override;
   void OnCqCandidatesAvailable(
