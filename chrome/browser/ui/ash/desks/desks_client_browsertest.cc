@@ -2737,6 +2737,24 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchEmptyDeskWithDefaultName) {
   waiter.Wait();
 }
 
+IN_PROC_BROWSER_TEST_P(DesksClientTest, UndoLaunchedDesk) {
+  auto* desks_controller = ash::DesksController::Get();
+
+  // Launch a new desk
+  ash::NewDesk();
+  EXPECT_EQ(2, desks_controller->GetNumberOfDesks());
+
+  // Remove the desk with option to undo
+  ash::Desk* testDesk = desks_controller->GetDeskAtIndex(1);
+  DesksClient::Get()->RemoveDesk(testDesk->uuid(),
+                                 ash::DeskCloseType::kCloseAllWindowsAndWait);
+  EXPECT_EQ(1, desks_controller->GetNumberOfDesks());
+
+  // Undo the removal
+  desks_controller->MaybeCancelDeskRemoval();
+  EXPECT_EQ(2, desks_controller->GetNumberOfDesks());
+}
+
 // Tests setting first window to show on all desk and then unset it.
 IN_PROC_BROWSER_TEST_P(DesksClientTest, SetWindowProperties) {
   // Create a new browser window.

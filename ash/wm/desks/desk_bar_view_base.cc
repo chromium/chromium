@@ -1399,7 +1399,7 @@ void DeskBarViewBase::FinalizeDragDesk() {
   drag_proxy_.reset();
 }
 
-void DeskBarViewBase::OnDeskAdded(const Desk* desk) {
+void DeskBarViewBase::OnDeskAdded(const Desk* desk, bool from_undo) {
   DeskNameView::CommitChanges(GetWidget());
 
   if (chromeos::features::IsJellyrollEnabled()) {

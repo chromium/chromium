@@ -621,7 +621,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   }
 
   for (auto& observer : observers_)
-    observer.OnDeskAdded(new_desk);
+    observer.OnDeskAdded(new_desk, /*from_undo=*/false);
 
   if (!is_first_ever_desk) {
     if (features::IsDeskButtonEnabled()) {
@@ -1987,8 +1987,9 @@ void DesksController::UndoDeskRemoval() {
   desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
       user_to_active_desk_index_[GetPrimaryUserAccountId()]);
 
-  for (auto& observer : observers_)
-    observer.OnDeskAdded(readded_desk_ptr);
+  for (auto& observer : observers_) {
+    observer.OnDeskAdded(readded_desk_ptr, /*from_undo=*/true);
+  }
 
   // If the desk was active, we reactivate it.
   if (readded_desk_data->was_active()) {

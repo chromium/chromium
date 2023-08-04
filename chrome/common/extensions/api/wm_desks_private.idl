@@ -131,7 +131,7 @@ namespace wmDesksPrivate {
 
   interface Events {
     // Fires when new desks is added.
-    static void OnDeskAdded(DOMString deskId);
+    static void OnDeskAdded(DOMString deskId, boolean fromUndo);
 
     // Fires when desk removal is finalized.
     static void OnDeskRemoved(DOMString deskId);

@@ -61,7 +61,7 @@ class DeskAsh : public mojom::Desk {
                    GetDeskByIDCallback callback) override;
   void AddDeskEventObserver(
       mojo::PendingRemote<crosapi::mojom::DeskEventObserver> observer) override;
-  void NotifyDeskAdded(const base::Uuid& uuid);
+  void NotifyDeskAdded(const base::Uuid& uuid, bool from_undo = false);
   void NotifyDeskRemoved(const base::Uuid& uuid);
   void NotifyDeskSwitched(const base::Uuid& current_id,
                           const base::Uuid& previous_id);

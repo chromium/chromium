@@ -292,7 +292,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   void FinalizeDragDesk();
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskAdded(const Desk* desk, bool from_undo) override;
   void OnDeskRemoved(const Desk* desk) override;
   void OnDeskReordered(int old_index, int new_index) override;
   void OnDeskActivationChanged(const Desk* activated,

@@ -308,10 +308,10 @@ void DeskAsh::AddDeskEventObserver(
   remote_desk_event_observers_.Add(std::move(remote));
 }
 
-void DeskAsh::NotifyDeskAdded(const base::Uuid& uuid) {
+void DeskAsh::NotifyDeskAdded(const base::Uuid& uuid, bool from_undo) {
   // If there is listener in lacros-chrome, dispatch events.
   for (auto& client : remote_desk_event_observers_) {
-    client->OnDeskAdded(uuid);
+    client->OnDeskAdded(uuid, from_undo);
   }
 }
 

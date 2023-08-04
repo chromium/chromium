@@ -35,7 +35,7 @@ class WMDesksEventsRouter : public crosapi::mojom::DeskEventObserver {
   ~WMDesksEventsRouter() override;
 
   // mojom::DeskEventObserver override
-  void OnDeskAdded(const base::Uuid& desk_id) override;
+  void OnDeskAdded(const base::Uuid& desk_id, bool from_undo = false) override;
   void OnDeskRemoved(const base::Uuid& desk_id) override;
   void OnDeskSwitched(const base::Uuid& activated,
                       const base::Uuid& deactivated) override;

@@ -25,16 +25,19 @@ WMDesksEventsRouter::WMDesksEventsRouter(Profile* profile)
 
 WMDesksEventsRouter::~WMDesksEventsRouter() = default;
 
-void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id) {
+void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id,
+                                      bool from_undo) {
   if (!event_router_) {
     CHECK_IS_TEST();
     return;
   }
 
   auto event = std::make_unique<Event>(
-      events::DESK_EVENTS_ON_DESK_ADDED,
+      from_undo ? events::DESK_EVENTS_ON_DESK_REMOVAL_UNDONE
+                : events::DESK_EVENTS_ON_DESK_ADDED,
       api::wm_desks_private::OnDeskAdded::kEventName,
-      base::Value::List().Append(desk_id.AsLowercaseString()));
+      base::Value::List()
+          .Append(desk_id.AsLowercaseString()));
   event_router_->BroadcastEvent(std::move(event));
 }
 

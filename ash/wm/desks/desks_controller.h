@@ -74,8 +74,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
    public:
     // Called when `desk` has been created and added to
     // `DesksController::desks_`. It's important to note that `desk` can be
-    // added at any position in `DesksController::desks_`.
-    virtual void OnDeskAdded(const Desk* desk) {}
+    // added at any position in `DesksController::desks_`.  Is also called
+    // when a desk is added from undoing a desk removal, in which case
+    // `from_undo` is true.
+    virtual void OnDeskAdded(const Desk* desk, bool from_undo) {}
 
     // Called when `desk` has been removed from `DesksController::desks_`.
     // However `desk` is kept alive temporarily and will be destroyed after all
@@ -83,7 +85,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
     virtual void OnDeskRemoved(const Desk* desk) {}
 
     // Called when `desk` has been been removed from `DesksController::desks_`
-    // and past the buffer so that it can no longer be revivied.
+    // and past the buffer so that it can no longer be revived.
     virtual void OnDeskRemovalFinalized(const base::Uuid& uuid) {}
 
     // Called when the desk at |old_index| is reordered to |new_index|.

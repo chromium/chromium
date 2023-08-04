@@ -261,10 +261,10 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
   // ScopedObservation handles stopping observing in destruction.
   ~DeskEventObserver() override = default;
 
-  void OnDeskAdded(const ash::Desk* desk) override {
+  void OnDeskAdded(const ash::Desk* desk, bool from_undo) override {
     // If there is listener in ash-chrome, dispatch events.
     if (auto* desk_events_router = GetDeskEventsRouter()) {
-      desk_events_router->OnDeskAdded(desk->uuid());
+      desk_events_router->OnDeskAdded(desk->uuid(), from_undo);
     }
 
     // CrosapiManager is always constructed even if lacros flag is disabled but
@@ -273,7 +273,7 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
       return;
     }
     crosapi::CrosapiManager::Get()->crosapi_ash()->desk_ash()->NotifyDeskAdded(
-        desk->uuid());
+        desk->uuid(), from_undo);
   }
 
   void OnDeskRemovalFinalized(const base::Uuid& uuid) override {

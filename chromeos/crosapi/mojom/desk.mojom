@@ -153,12 +153,17 @@ union GetDeskByIDResult {
 };
 
 // Implemented by lacros-chrome for consuming events.
+
+// next version: 2
+// next method id: 3
 [Stable]
 interface DeskEventObserver {
   // Fired when desk switch event dispatched.
   OnDeskSwitched@0(GUID new_desk_id, GUID previous_desk_id);
-  // Fired when desk add event dispatched.
-  OnDeskAdded@1(GUID new_desk_id);
+  // Fired when desk add event dispatched. If from_undo is true, sends event
+  // stating that desk is from removal retrieval. If false, sends event that
+  // desk is very newly being launched.
+  OnDeskAdded@1(GUID new_desk_id, [MinVersion=1] bool from_undo);
   // Fired when desk removal event dispatched.
   OnDeskRemoved@2(GUID removed_desk_id);
 };

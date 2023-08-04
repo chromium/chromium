@@ -289,7 +289,7 @@ class TestObserver : public DesksController::Observer {
   }
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override {
+  void OnDeskAdded(const Desk* desk, bool from_undo) override {
     const size_t new_desk_index = DesksController::Get()->GetDeskIndex(desk);
     if (new_desk_index > desks_.size()) {
       desks_.emplace_back(desk);

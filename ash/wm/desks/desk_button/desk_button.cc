@@ -345,7 +345,7 @@ views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
   return tooltip_handler->GetEnabled() ? tooltip_handler : this;
 }
 
-void DeskButton::OnDeskAdded(const Desk* desk) {
+void DeskButton::OnDeskAdded(const Desk* desk, bool from_undo) {
   MaybeUpdateDeskSwitchButtonVisibility(
       SwitchButtonUpdateSource::kDeskButtonUpdate);
 }

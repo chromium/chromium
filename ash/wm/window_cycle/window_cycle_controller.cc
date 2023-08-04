@@ -424,7 +424,7 @@ void WindowCycleController::OnActiveUserPrefServiceChanged(
   InitFromUserPrefs();
 }
 
-void WindowCycleController::OnDeskAdded(const Desk* desk) {
+void WindowCycleController::OnDeskAdded(const Desk* desk, bool from_undo) {
   CancelCycling();
 }
 

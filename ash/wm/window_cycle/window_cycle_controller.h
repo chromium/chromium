@@ -152,7 +152,7 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskAdded(const Desk* desk, bool from_undo) override;
   void OnDeskRemoved(const Desk* desk) override;
 
  private:

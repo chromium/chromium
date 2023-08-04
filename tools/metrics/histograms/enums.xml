@@ -35188,6 +35188,7 @@ Called by update_extension_histograms.py.-->
   <int value="533" label="OS_EVENTS_ON_STYLUS_CONNECTED_EVENT"/>
   <int value="534"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_CONTEXT_MENU_CLICKED"/>
+  <int value="535" label="DESK_EVENTS_ON_DESK_REMOVAL_UNDONE"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

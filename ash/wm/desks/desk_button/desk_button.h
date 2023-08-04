@@ -108,7 +108,7 @@ class ASH_EXPORT DeskButton : public views::Button,
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskAdded(const Desk* desk, bool from_undo) override;
   void OnDeskRemoved(const Desk* desk) override;
   void OnDeskReordered(int old_index, int new_index) override;
   void OnDeskActivationChanged(const Desk* activated,

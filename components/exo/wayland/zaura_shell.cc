@@ -1212,7 +1212,9 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   void OnTabletModeEnded() override {}
 
   // ash::DesksController::Observer:
-  void OnDeskAdded(const ash::Desk* desk) override { OnDesksChanged(); }
+  void OnDeskAdded(const ash::Desk* desk, bool from_undo) override {
+    OnDesksChanged();
+  }
   void OnDeskRemoved(const ash::Desk* desk) override { OnDesksChanged(); }
   void OnDeskReordered(int old_index, int new_index) override {
     OnDesksChanged();

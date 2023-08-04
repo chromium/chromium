@@ -366,6 +366,8 @@ class EventRouter : public KeyedService,
                            DispatchEventOnDeskRemoved);
   FRIEND_TEST_ALL_PREFIXES(WMDesksPrivateEventsUnitTest,
                            DispatchEventOnDeskSwitched);
+  FRIEND_TEST_ALL_PREFIXES(WMDesksPrivateEventsUnitTest,
+                           DispatchEventOnDeskRemovalUndone);
 
   enum class RegisteredEventType {
     kLazy,
