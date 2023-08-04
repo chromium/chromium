@@ -8,10 +8,14 @@ source_set("password_sharing") {
     "family_picker_coordinator.mm",
     "password_picker_coordinator.h",
     "password_picker_coordinator.mm",
+    "password_sharing_coordinator.h",
+    "password_sharing_coordinator.mm",
   ]
   deps = [
     ":password_sharing_ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
   ]
 }
 
@@ -21,6 +25,8 @@ source_set("password_sharing_ui") {
     "family_picker_view_controller.mm",
     "password_picker_view_controller.h",
     "password_picker_view_controller.mm",
+    "password_sharing_view_controller.h",
+    "password_sharing_view_controller.mm",
     "recipient_info.h",
     "recipient_info.mm",
   ]
@@ -28,11 +34,14 @@ source_set("password_sharing_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
   ]
 }
