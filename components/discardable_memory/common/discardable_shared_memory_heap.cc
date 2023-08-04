@@ -409,12 +409,21 @@ void DiscardableSharedMemoryHeap::InsertIntoFreeList(
   DCHECK(!IsInFreeList(span.get()));
   size_t index = std::min(span->length_, std::size(free_spans_)) - 1;
 
+  recordreplay::Assert(
+      "[RUN-1877-2453] DiscardableSharedMemoryHeap::InsertIntoFreeList %d %zu",
+      recordreplay::PointerId(span->shared_memory()), index);
+
   free_spans_[index].Append(span.release());
 }
 
 std::unique_ptr<DiscardableSharedMemoryHeap::Span>
 DiscardableSharedMemoryHeap::RemoveFromFreeList(Span* span) {
   DCHECK(IsInFreeList(span));
+
+  recordreplay::Assert(
+      "[RUN-1877-2453] DiscardableSharedMemoryHeap::RemoveFromFreeList %d",
+      recordreplay::PointerId(span->shared_memory()));
+
   span->RemoveFromList();
   return base::WrapUnique(span);
 }

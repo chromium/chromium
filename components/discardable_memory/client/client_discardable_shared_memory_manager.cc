@@ -282,6 +282,14 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     // Search free lists for suitable span.
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> free_span =
         heap_->SearchFreeLists(pages, slack);
+
+    recordreplay::Assert(
+        "[RUN-1877-2453] "
+        "ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory "
+        "A %d %zu %zu",
+        free_span ? recordreplay::PointerId(free_span->shared_memory()) : -1,
+        pages, slack);
+
     if (!free_span)
       break;
 

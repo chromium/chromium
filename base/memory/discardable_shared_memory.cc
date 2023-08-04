@@ -230,8 +230,7 @@ bool DiscardableSharedMemory::Unmap() {
 
 DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
     size_t offset, size_t length) {
-  // https://linear.app/replay/issue/BAC-2426
-  recordreplay::Assert("DiscardableSharedMemory::Lock Start %d %zu",
+  recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Lock Start %d %zu",
                        recordreplay::PointerId(this),
                        locked_page_count_);
 
@@ -243,14 +242,15 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 
   DCHECK(shared_memory_mapping_.IsValid());
 
+  recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Lock A %zu %d",
+                       locked_page_count_, !last_known_usage_.is_null());
+
   // We need to successfully acquire the platform independent lock before
   // individual pages can be locked.
   if (!locked_page_count_) {
     // Return false when instance has been purged or not initialized properly
     // by checking if |last_known_usage_| is NULL.
     if (last_known_usage_.is_null()) {
-      // https://linear.app/replay/issue/BAC-2426
-      recordreplay::Assert("DiscardableSharedMemory::Lock #1");
       return FAILED;
     }
 
@@ -262,15 +262,14 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
     if (recordreplay::RecordReplayValue("DiscardableSharedMemory::Lock",
                                         result.value.u != old_state.value.u)) {
       // https://linear.app/replay/issue/BAC-2426
-      recordreplay::Assert("DiscardableSharedMemory::Lock #2");
+      recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Lock B");
       // Update |last_known_usage_| in case the above CAS failed because of
       // an incorrect timestamp.
       last_known_usage_ = result.GetTimestamp();
       return FAILED;
     }
 
-    // https://linear.app/replay/issue/BAC-2426
-    recordreplay::Assert("DiscardableSharedMemory::Lock #3");
+    recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Lock C");
   }
 
   // Zero for length means "everything onward".
@@ -294,15 +293,15 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   DCHECK_EQ(locked_pages_.size(), locked_page_count_);
 #endif
 
+  recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Lock D %zu", length);
+
   // Always behave as if memory was purged when trying to lock a 0 byte segment.
   if (!length) {
     // https://linear.app/replay/issue/BAC-2426
-    recordreplay::Assert("DiscardableSharedMemory::Lock #4");
     return PURGED;
   }
 
-  // https://linear.app/replay/issue/BAC-2426
-  recordreplay::Assert("DiscardableSharedMemory::Lock Done");
+  recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Lock Done");
 
 #if BUILDFLAG(IS_ANDROID)
   // Ensure that the platform won't discard the required pages.
@@ -407,6 +406,9 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
   SharedState result(subtle::Acquire_CompareAndSwap(
       &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i,
       old_state.value.i, new_state.value.i));
+
+  recordreplay::Assert("[RUN-1877-2453] DiscardableSharedMemory::Purge A %d",
+                       result.value.u != old_state.value.u);
 
   // Update |last_known_usage_| to |current_time| if the memory is locked. This
   // allows the caller to determine if purging failed because last known usage
