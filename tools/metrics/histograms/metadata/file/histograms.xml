@@ -541,6 +541,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenStage"
+    enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-08-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The stage the bulk pinning feature was at when the CHOOBE (CHoose your own
+    Out-Of-Box Experience) manager asked if the drive pinning screen should be
+    skipped or not. The screen will only show if the stage is
+    &quot;Success&quot;, all other stages will cause the screen to be skipped.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.Enabled"
     enum="BooleanEnabled" expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>

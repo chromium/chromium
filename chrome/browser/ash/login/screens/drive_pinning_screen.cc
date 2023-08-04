@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
@@ -46,6 +47,11 @@ PinManager* GetPinManager() {
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
   return service && service->IsMounted() ? service->GetPinManager() : nullptr;
+}
+
+void RecordOOBEScreenSkippedMetric(drivefs::pinning::Stage stage) {
+  base::UmaHistogramEnumeration(
+      "FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenStage", stage);
 }
 
 }  // namespace
@@ -93,7 +99,8 @@ bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
     return true;
   }
 
-  if (!drive_pinning_available_) {
+  RecordOOBEScreenSkippedMetric(drive_pinning_stage_);
+  if (drive_pinning_stage_ != drivefs::pinning::Stage::kSuccess) {
     return true;
   }
 
@@ -135,8 +142,8 @@ void DrivePinningScreen::OnProgressForTest(
 }
 
 void DrivePinningScreen::OnProgress(const Progress& progress) {
+  drive_pinning_stage_ = progress.stage;
   if (progress.stage == drivefs::pinning::Stage::kSuccess) {
-    drive_pinning_available_ = true;
     std::u16string free_space = ui::FormatBytes(progress.free_space);
     std::u16string required_space = ui::FormatBytes(progress.required_space);
     view_->SetRequiredSpaceInfo(required_space, free_space);

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 
 class Profile;
 
@@ -71,9 +72,11 @@ class DrivePinningScreen : public BaseScreen,
 
   void OnNext(bool drive_pinning);
 
+  drivefs::pinning::Stage drive_pinning_stage_ =
+      drivefs::pinning::Stage::kStopped;
+
   base::WeakPtr<DrivePinningScreenView> view_;
   ScreenExitCallback exit_callback_;
-  bool drive_pinning_available_ = false;
 };
 
 }  // namespace ash
