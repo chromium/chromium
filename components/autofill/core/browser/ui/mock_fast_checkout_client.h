@@ -9,6 +9,8 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace autofill {
+
 class MockFastCheckoutClient : public FastCheckoutClient {
  public:
   MockFastCheckoutClient();
@@ -36,5 +38,7 @@ class MockFastCheckoutClient : public FastCheckoutClient {
               (const override));
   MOCK_METHOD(bool, IsNotShownYet, (), (const override));
 };
+
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_FAST_CHECKOUT_CLIENT_H_

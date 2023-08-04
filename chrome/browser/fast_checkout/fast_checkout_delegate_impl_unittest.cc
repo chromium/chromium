@@ -46,7 +46,7 @@ class FastCheckoutDelegateImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  testing::NiceMock<MockFastCheckoutClient> fast_checkout_client_;
+  testing::NiceMock<autofill::MockFastCheckoutClient> fast_checkout_client_;
   std::unique_ptr<FastCheckoutDelegateImpl> fast_checkout_delegate_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;

@@ -11,10 +11,10 @@
 class GURL;
 
 namespace autofill {
+
 class AutofillManager;
 struct FormData;
 struct FormFieldData;
-}  // namespace autofill
 
 // Abstract interface for handling a fast checkout run.
 class FastCheckoutClient {
@@ -54,5 +54,7 @@ class FastCheckoutClient {
  protected:
   FastCheckoutClient() = default;
 };
+
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_CLIENT_H_

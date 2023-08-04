@@ -64,15 +64,15 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&CreateFakeResponse));
     ASSERT_TRUE(embedded_test_server()->Start());
-    mock_fast_checkout_client_ = static_cast<MockFastCheckoutClient*>(
+    mock_fast_checkout_client_ = static_cast<autofill::MockFastCheckoutClient*>(
         autofill_client().GetFastCheckoutClient());
   }
 
  protected:
   MockFastCheckoutCapabilitiesFetcher* fetcher() { return fetcher_; }
 
-  MockFastCheckoutClient* fast_checkout_client() {
-    return static_cast<MockFastCheckoutClient*>(
+  autofill::MockFastCheckoutClient* fast_checkout_client() {
+    return static_cast<autofill::MockFastCheckoutClient*>(
         autofill_client().GetFastCheckoutClient());
   }
 
@@ -93,7 +93,8 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
 
  private:
   raw_ptr<MockFastCheckoutCapabilitiesFetcher> fetcher_ = nullptr;
-  raw_ptr<MockFastCheckoutClient, DanglingUntriaged> mock_fast_checkout_client_;
+  raw_ptr<autofill::MockFastCheckoutClient, DanglingUntriaged>
+      mock_fast_checkout_client_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
 };

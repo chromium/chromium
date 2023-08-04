@@ -28,7 +28,7 @@ class LogManager;
 }
 
 class FastCheckoutClientImpl
-    : public FastCheckoutClient,
+    : public autofill::FastCheckoutClient,
       public FastCheckoutControllerImpl::Delegate,
       public autofill::PersonalDataManagerObserver,
       public autofill::AutofillManager::Observer,

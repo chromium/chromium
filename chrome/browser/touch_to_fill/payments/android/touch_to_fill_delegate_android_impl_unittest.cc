@@ -33,30 +33,6 @@ namespace autofill {
 
 namespace {
 
-class MockFastCheckoutClient : public FastCheckoutClient {
- public:
-  MockFastCheckoutClient() = default;
-  ~MockFastCheckoutClient() override = default;
-  MOCK_METHOD(bool,
-              TryToStart,
-              (const GURL&,
-               const autofill::FormData&,
-               const autofill::FormFieldData&,
-               base::WeakPtr<autofill::AutofillManager>),
-              (override));
-  MOCK_METHOD(void, Stop, (bool), (override));
-  MOCK_METHOD(bool, IsRunning, (), (const, override));
-  MOCK_METHOD(bool, IsShowing, (), (const, override));
-  MOCK_METHOD(void, OnNavigation, (const GURL&, bool), (override));
-  MOCK_METHOD(bool,
-              IsSupported,
-              (const autofill::FormData&,
-               const autofill::FormFieldData&,
-               const autofill::AutofillManager&),
-              (const override));
-  MOCK_METHOD(bool, IsNotShownYet, (), (const, override));
-};
-
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -198,8 +174,8 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
             delegate->OnDismissed(/*dismissed_by_user=*/false);
           }
         });
-    MockFastCheckoutClient* fast_checkout_client =
-        static_cast<MockFastCheckoutClient*>(
+    autofill::MockFastCheckoutClient* fast_checkout_client =
+        static_cast<autofill::MockFastCheckoutClient*>(
             autofill_client_.GetFastCheckoutClient());
     ON_CALL(*fast_checkout_client, IsNotShownYet)
         .WillByDefault(testing::Return(true));
@@ -515,8 +491,8 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kFastCheckout);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  MockFastCheckoutClient* fast_checkout_client =
-      static_cast<MockFastCheckoutClient*>(
+  autofill::MockFastCheckoutClient* fast_checkout_client =
+      static_cast<autofill::MockFastCheckoutClient*>(
           autofill_client_.GetFastCheckoutClient());
   EXPECT_CALL(*fast_checkout_client, IsNotShownYet).WillOnce(Return(false));
 
