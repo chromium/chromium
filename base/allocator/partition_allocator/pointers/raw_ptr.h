@@ -377,13 +377,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
 
-// Constexpr destructors were introduced in C++20. PartitionAlloc's minimum
-// supported C++ version is C++17.
-#if defined(__cpp_constexpr) && __cpp_constexpr >= 201907L
-  PA_ALWAYS_INLINE constexpr ~raw_ptr() noexcept {
-#else
-  PA_ALWAYS_INLINE ~raw_ptr() noexcept {
-#endif
+  PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     // Work around external issues where raw_ptr is used after destruction.
     if constexpr (kZeroOnDestruct) {
@@ -546,6 +540,36 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Avoid using. The goal of raw_ptr is to be as close to raw pointer as
   // possible, so use it only if absolutely necessary (e.g. for const_cast).
   PA_ALWAYS_INLINE constexpr T* get() const { return GetForExtraction(); }
+
+  // You may use |raw_ptr<T>::AsEphemeralRawAddr()| to obtain |T**| or |T*&|
+  // from |raw_ptr<T>|, as long as you follow these requirements:
+  // - DO NOT carry T**/T*& obtained via AsEphemeralRawAddr() out of
+  //   expression.
+  // - DO NOT use raw_ptr or T**/T*& multiple times within an expression.
+  //
+  // https://chromium.googlesource.com/chromium/src/+/main/base/memory/raw_ptr.md#in_out-arguments-need-to-be-refactored
+  class EphemeralRawAddr {
+   public:
+    EphemeralRawAddr(const EphemeralRawAddr&) = delete;
+    EphemeralRawAddr& operator=(const EphemeralRawAddr&) = delete;
+    void* operator new(size_t) = delete;
+    void* operator new(size_t, void*) = delete;
+    PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~EphemeralRawAddr() { original = copy; }
+
+    PA_ALWAYS_INLINE constexpr T** operator&() && { return &copy; }
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    PA_ALWAYS_INLINE constexpr operator T*&() && { return copy; }
+
+   private:
+    friend class raw_ptr;
+    PA_ALWAYS_INLINE constexpr explicit EphemeralRawAddr(raw_ptr& ptr)
+        : copy(ptr.get()), original(ptr) {}
+    T* copy;
+    raw_ptr& original;  // Original pointer.
+  };
+  PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR EphemeralRawAddr AsEphemeralRawAddr() & {
+    return EphemeralRawAddr(*this);
+  }
 
   PA_ALWAYS_INLINE constexpr explicit operator bool() const {
     return !!wrapped_ptr_;

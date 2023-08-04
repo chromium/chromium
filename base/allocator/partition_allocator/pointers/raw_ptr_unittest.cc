@@ -7,6 +7,7 @@
 #include <climits>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -134,6 +135,9 @@ static_assert([]() constexpr {
     r->i += 1;                                  // operator->()
     [[maybe_unused]] Int* i2 = r;               // operator T*()
     [[maybe_unused]] IntBase* i3 = r;           // operator Convertible*()
+
+    [[maybe_unused]] Int** i4 = &r.AsEphemeralRawAddr();
+    [[maybe_unused]] Int*& i5 = r.AsEphemeralRawAddr();
 
     Int* array = new Int[3]();
     {
@@ -1499,6 +1503,48 @@ TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
   int* raw = nullptr;
   raw_ptr<int> miracle = raw;
   EXPECT_EQ(base::to_address(raw), base::to_address(miracle));
+}
+
+void InOutParamFuncWithPointer(int* in, int** out) {
+  *out = in;
+}
+
+TEST_F(RawPtrTest, EphemeralRawAddrPointerPointer) {
+  int v1 = 123;
+  int v2 = 456;
+  raw_ptr<int> ptr = &v1;
+  // Pointer pointer should point to a pointer other than one inside raw_ptr.
+  EXPECT_NE(&ptr.AsEphemeralRawAddr(),
+            reinterpret_cast<int**>(std::addressof(ptr)));
+  // But inner pointer should point to the same address.
+  EXPECT_EQ(*&ptr.AsEphemeralRawAddr(), &v1);
+
+  // Inner pointer can be rewritten via the pointer pointer.
+  *&ptr.AsEphemeralRawAddr() = &v2;
+  EXPECT_EQ(ptr.get(), &v2);
+  InOutParamFuncWithPointer(&v1, &ptr.AsEphemeralRawAddr());
+  EXPECT_EQ(ptr.get(), &v1);
+}
+
+void InOutParamFuncWithReference(int* in, int*& out) {
+  out = in;
+}
+
+TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
+  int v1 = 123;
+  int v2 = 456;
+  raw_ptr<int> ptr = &v1;
+  // Pointer reference should refer to a pointer other than one inside raw_ptr.
+  EXPECT_NE(&static_cast<int*&>(ptr.AsEphemeralRawAddr()),
+            reinterpret_cast<int**>(std::addressof(ptr)));
+  // But inner pointer should point to the same address.
+  EXPECT_EQ(static_cast<int*&>(ptr.AsEphemeralRawAddr()), &v1);
+
+  // Inner pointer can be rewritten via the pointer pointer.
+  static_cast<int*&>(ptr.AsEphemeralRawAddr()) = &v2;
+  EXPECT_EQ(ptr.get(), &v2);
+  InOutParamFuncWithReference(&v1, ptr.AsEphemeralRawAddr());
+  EXPECT_EQ(ptr.get(), &v1);
 }
 
 }  // namespace

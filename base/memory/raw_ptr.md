@@ -378,6 +378,60 @@ raw_ptr<SomeClass>& GetPtr() {
 }
 ```
 
+
+In case you cannot refactor the in-out arguments (e.g. third party library), you
+may use `raw_ptr.AsEphemeralRawAddr()` to obtain *extremely* short-lived
+`T**` or `T*&`. You should not treat `T**` obtained via
+`raw_ptr.AsEphemeralRawAddr()` as a normal pointer pointer, and must follow
+these requirements.
+
+- Do NOT store `T**` or `T*&` anywhere, even as a local variable.
+  - It will become invalid very quickly and can cause dangling pointer issue
+- Do NOT use `raw_ptr<T>`, `T**` or `T*&` multiple times within an expression.
+  - The implementation assumes raw_ptr<T> is never accessed when `T**` or `T*&`
+    is alive.
+
+```cpp
+void GetSomeClassPtr(SomeClass** out_arg) {
+  *out_arg = ...;
+}
+void FillPtr(SomeClass*& out_arg) {
+  out_arg = ...;
+}
+void Foo() {
+  raw_ptr<SomeClass> ptr;
+  GetSomeClassPtr(&ptr.AsEphemeralRawAddr());
+  FillPtr(ptr.AsEphemeralRawAddr()); // Implicitly converted into |SomeClass*&|.
+}
+```
+
+Technically, `raw_ptr.AsEphemeralRawAddr()` generates a temporary instance of
+`raw_ptr<T>::EphemeralRawAddr`, which holds a temporary copy of `T*`.
+`T**` and `T*&` points to a copied version of the original pointer and
+any modification made via `T**` or `T*&` is written back on destruction of
+`EphemeralRawAddr` instance.
+C++ guarantees a temporary object returned by `raw_ptr.AsEphemeralRawAddr()`
+lives until completion of evaluation of "full-expression" (i.e. the outermost
+expression). This makes it possible to use `T**` and `T*&` within single
+expression like in-out param.
+
+```cpp
+struct EphemeralRawAddr {
+  EphemeralRawAddr(raw_ptr& ptr): copy(ptr.get()), original(ptr) {}
+  ~EphemeralRawAddr() {
+    original = copy;
+    copy = nullptr;
+  }
+
+  T** operator&() { return &copy; }
+  operator T*&() { return copy; }
+
+  T* copy;
+  raw_ptr& original;  // Original pointer.
+};
+```
+
+
 ### Modern |nullptr| is required
 
 As recommended by the Google C++ Style Guide,
