@@ -6,10 +6,13 @@
 
   :host-context([chrome-refresh-2023]) {
     --cr-icon-button-margin-start: 0px;
-    --pill-height_: 28px;
-    --icon-radius_: calc(var(--pill-height_) / 2);
-    --button-size: calc(var(--pill-height_) + 2px);
-    --button-position: calc(var(--icon-radius_) - 4px);
+    --gradient-start: 64px;
+    --horizontal-carousel-pagination-button-center:
+            calc(var(--horizontal-carousel-pagination-button-size) / 2
+            + var(--horizontal-carousel-pagination-button-margin));
+    /* 16px cluster padding - 2px margin */
+    --horizontal-carousel-pagination-button-margin: 14px;
+    --horizontal-carousel-pagination-button-size: 28px;
     position: relative;
   }
 
@@ -17,55 +20,46 @@
     display: block;
   }
 
-  :host-context([chrome-refresh-2023]):host(:hover) #carouselContainer {
-    border-radius: var(--pill-height_);
-  }
-
   :host-context([chrome-refresh-2023]):host([show-back-button_]:hover)
-    #carouselContainer {
+      #carouselContainer {
     -webkit-mask-image: linear-gradient(to right,
-        transparent var(--button-position), black 40px);
+        transparent var(--horizontal-carousel-pagination-button-center), black var(--gradient-start));
   }
 
   :host-context([chrome-refresh-2023]):host([show-forward-button_]:hover)
-    #carouselContainer {
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px),
-        transparent  calc(100% - var(--button-position)));
+      #carouselContainer {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--gradient-start)),
+        transparent  calc(100% - var(--horizontal-carousel-pagination-button-center)));
   }
 
-  :host-context([chrome-refresh-2023])
-  :host([show-back-button_][show-forward-button_]:hover) #carouselContainer {
+  :host-context([chrome-refresh-2023]):host([show-back-button_][show-forward-button_]:hover)
+      #carouselContainer {
     -webkit-mask-image: linear-gradient(to right,
-        transparent var(--button-position), black 40px,
-        black calc(100% - 40px),
-        transparent calc(100% - var(--button-position)));
+        transparent var(--horizontal-carousel-pagination-button-center), black var(--gradient-start),
+        black calc(100% - var(--gradient-start)),
+        transparent calc(100% - var(--horizontal-carousel-pagination-button-center)));
   }
 
   :host-context([chrome-refresh-2023]) .carousel-button-container {
-    /* Add 2px to cover focus outline */
-    --cr-icon-button-size: var(--button-size);
+    --cr-icon-button-size: var(--horizontal-carousel-pagination-button-size);
     background-color: var(--color-button-background-tonal);
     border-radius: 50%;
     display: none;
     margin: 0;
     position: absolute;
-    /* To center button given 2px remaining outline from increased size */
-    top: 1px;
+    top: 50%;
+    transform: translateY(-50%);
     /* Set z-index so the buttons hide the overflowing text that have z-index
-       of 1 and the fade which has a z-index of 2. */
-    z-index: 3;
+       of 0. */
+    z-index: 1;
   }
 
   :host-context([chrome-refresh-2023]) #carouselForwardButton {
-    /* Shift to right to account for 2px padding and mismatching
-       border radii */
-    right: -4px;
+    right: var(--horizontal-carousel-pagination-button-margin);
   }
 
   :host-context([chrome-refresh-2023]) #carouselBackButton {
-    /* Shift to left to account for 2px padding and mismatching
-       border radii */
-    left: -4px;
+    left: var(--horizontal-carousel-pagination-button-margin);
   }
 
   #carouselContainer {
@@ -88,28 +82,28 @@
   :host-context([chrome-refresh-2023]) .hover-layer {
     background: var(--cr-hover-background-color);
     border-radius: 50%;
-    content: '';
-    height: var(--button-size);
-    width: var(--button-size);
+    height: var(--horizontal-carousel-pagination-button-size);
+    width: var(--horizontal-carousel-pagination-button-size);
     pointer-events: none;
     position: absolute;
-    top: 1px;
-    z-index: 4;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
   }
 
   #hoverLayerForward {
-    right: -4px;
+    right: var(--horizontal-carousel-pagination-button-margin);
   }
 
-  #carouselForwardButton:hover ~ #hover-layer-forward {
+  #carouselForwardButton:hover ~ #hoverLayerForward {
     display: block;
   }
 
   #hoverLayerBack {
-    left: -4px;
+    left: var(--horizontal-carousel-pagination-button-margin);
   }
 
-  #carouselBackButton:hover ~ #hover-layer-back {
+  #carouselBackButton:hover ~ #hoverLayerBack {
     display: block;
   }
 </style>

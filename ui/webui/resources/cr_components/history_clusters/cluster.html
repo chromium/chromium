@@ -111,7 +111,13 @@
   }
 
   :host-context([chrome-refresh-2023]) #related-searches {
-    margin: 16px;
+    margin: 16px var(--cluster-padding-horizontal) 0px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) #related-searches {
+    /* 2px left and right margin so related searches don't overlap container
+     * focus indicator. */
+    margin: 16px 2px;
   }
 
   /*TODO(mfacey): Figure out appropriate non side panel color to show carousel
@@ -123,6 +129,10 @@
 
   search-query:not(:last-of-type) {
     margin-inline-end: var(--search-query-margin);
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) search-query:first-of-type {
+    margin-inline-start: 16px;
   }
 
   :host-context(html:not([chrome-refresh-2023])) search-query {
