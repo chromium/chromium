@@ -13,12 +13,15 @@
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_piece_forward.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/label.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -135,14 +138,22 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
                                  weak_ptr_factory_.GetWeakPtr());
   switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
     case StudentAssignmentsListType::kAssigned:
+      empty_list_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DUE_LIST));
       return client->GetStudentAssignmentsWithApproachingDueDate(
           std::move(callback));
     case StudentAssignmentsListType::kNoDueDate:
+      empty_list_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DUE_LIST));
       return client->GetStudentAssignmentsWithoutDueDate(std::move(callback));
     case StudentAssignmentsListType::kMissing:
+      empty_list_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_MISSING_LIST));
       return client->GetStudentAssignmentsWithMissedDueDate(
           std::move(callback));
     case StudentAssignmentsListType::kDone:
+      empty_list_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DONE_LIST));
       return client->GetCompletedStudentAssignments(std::move(callback));
   }
 }

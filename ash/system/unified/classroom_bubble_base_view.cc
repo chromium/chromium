@@ -15,6 +15,7 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -27,6 +28,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -93,6 +95,19 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
           views::BoxLayout::Orientation::kVertical));
   layout->set_between_child_spacing(2);
 
+  const auto* const typography_provider = TypographyProvider::Get();
+  empty_list_label_ = AddChildView(
+      views::Builder<views::Label>()
+          .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(24, 0, 32, 0))
+          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetFontList(typography_provider->ResolveTypographyToken(
+              TypographyToken::kCrosButton2))
+          .SetLineHeight(typography_provider->ResolveLineHeight(
+              TypographyToken::kCrosButton2))
+          .SetID(base::to_underlying(
+              GlanceablesViewId::kClassroomBubbleEmptyListLabel))
+          .Build());
+
   list_footer_view_ = AddChildView(
       std::make_unique<GlanceablesListFooterView>(base::BindRepeating(
           &ClassroomBubbleBaseView::OnSeeAllPressed, base::Unretained(this))));
@@ -133,6 +148,11 @@ void ClassroomBubbleBaseView::OnGetAssignments(
   }
   list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
                                       assignments.size());
+
+  const bool is_list_empty = list_container_view_->children().size() == 0;
+  empty_list_label_->SetVisible(is_list_empty);
+  list_footer_view_->SetVisible(!is_list_empty);
+
   if (list_container_view_->children().size() != old_item_count) {
     PreferredSizeChanged();
   }

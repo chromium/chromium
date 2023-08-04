@@ -13,6 +13,7 @@ class GURL;
 
 namespace views {
 class Combobox;
+class Label;
 }
 
 namespace ui {
@@ -59,6 +60,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> empty_list_label_ = nullptr;
 
   base::WeakPtrFactory<ClassroomBubbleBaseView> weak_ptr_factory_{this};
 };

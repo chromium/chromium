@@ -21,6 +21,7 @@ enum class GlanceablesViewId {
   // `ClassroomBubbleBaseView`.
   kClassroomBubbleComboBox,
   kClassroomBubbleListContainer,
+  kClassroomBubbleEmptyListLabel,
   kClassroomBubbleListFooter,
 
   // `GlanceablesClassroomItemView`.
