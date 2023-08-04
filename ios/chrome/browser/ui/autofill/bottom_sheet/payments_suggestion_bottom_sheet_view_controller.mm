@@ -345,9 +345,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // Calculate the full height of the bottom sheet with the minimized height
   // constraint disabled.
   if (@available(iOS 16, *)) {
-    CGFloat fullHeight = [self fullHeight:_creditCardData.count];
+    __typeof(self) __weak weakSelf = self;
     auto fullHeightBlock = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
+      CGFloat fullHeight = [weakSelf detentForPreferredHeightInContext:context
+                                                        andIsContained:NO];
       self.expandSizeTooLarge = (fullHeight > context.maximumDetentValue);
       return self.expandSizeTooLarge ? context.maximumDetentValue : fullHeight;
     };
@@ -356,7 +358,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
             customDetentWithIdentifier:kCustomDetentIdentifier
                               resolver:fullHeightBlock];
     [currentDetents addObject:customDetentExpand];
-    presentationController.detents = [currentDetents copy];
+    presentationController.detents = currentDetents;
     presentationController.selectedDetentIdentifier =
         useMinimizedState ? kCustomMinimizedDetentIdentifier
                           : kCustomDetentIdentifier;
@@ -469,16 +471,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 - (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
     (UISheetPresentationController*)sheetPresentationController
     API_AVAILABLE(ios(16)) {
-  if (sheetPresentationController.selectedDetentIdentifier ==
-      kCustomDetentIdentifier) {
-    // Enable the table view scrolling and show gradient view if needed.
-    [self setTableViewScrollAndGradientViewEnabled:self.expandSizeTooLarge];
-  } else if (sheetPresentationController.selectedDetentIdentifier ==
-             kCustomMinimizedDetentIdentifier) {
-    // Show gradient view when the user is in minimized state to show that the
-    // view can be scrolled.
-    [self displayGradientView:YES];
-  }
+  // Show the gradient view to let the user know that the view can be scrolled
+  // when the bottom sheet is in minimized state or if the expanded state takes
+  // more space than the screen.
+  NSString* selectedDetentIdentifier =
+      sheetPresentationController.selectedDetentIdentifier;
+  [self displayGradientView:selectedDetentIdentifier ==
+                                kCustomMinimizedDetentIdentifier ||
+                            (selectedDetentIdentifier ==
+                                 kCustomDetentIdentifier &&
+                             self.expandSizeTooLarge)];
 }
 
 @end

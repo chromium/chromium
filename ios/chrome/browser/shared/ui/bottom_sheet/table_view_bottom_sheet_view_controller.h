@@ -42,13 +42,6 @@
 // Returns the initial height of the bottom sheet while showing a single row.
 - (CGFloat)initialHeight;
 
-// Returns the desired height for the bottom sheet (can be larger than the
-// screen).
-- (CGFloat)fullHeight:(NSInteger)numberOfRows;
-
-// Enables scrolling of the table view and updates gradient view accordingly.
-- (void)setTableViewScrollAndGradientViewEnabled:(BOOL)enabled;
-
 // Returns the initial number of cells the user sees.
 - (CGFloat)initialNumberOfVisibleCells;
 

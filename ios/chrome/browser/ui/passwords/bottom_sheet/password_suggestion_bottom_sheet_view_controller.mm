@@ -99,19 +99,25 @@
   }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [self.view layoutIfNeeded];
-  // When this is called (when the view appears), the table view is minimized,
-  // and its height is the (dynamic) height of just one cell.
-  CGFloat effectiveRowHeight = [self tableViewContentSizeHeight];
-  if (effectiveRowHeight > 0 &&
-      effectiveRowHeight != [self tableViewEstimatedRowHeight]) {
-    // Update height constraints for the table view.
-    _minimizedHeightConstraint.constant = effectiveRowHeight;
-    _fullHeightConstraint.constant = effectiveRowHeight * _suggestions.count;
-  }
+- (void)viewIsAppearing:(BOOL)animated {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
+  [super viewIsAppearing:animated];
+#endif
 
-  [super viewWillAppear:animated];
+  if (_suggestions.count) {
+    [self.view layoutIfNeeded];
+    // Update height constraints for the table view.
+    CGFloat fullHeight =
+        [self computeTableViewHeightForCellCount:_suggestions.count];
+    if (fullHeight > 0) {
+      _fullHeightConstraint.constant = fullHeight;
+    }
+    CGFloat minimizedHeight = [self
+        computeTableViewHeightForCellCount:[self initialNumberOfVisibleCells]];
+    if (minimizedHeight > 0) {
+      _minimizedHeightConstraint.constant = minimizedHeight;
+    }
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -193,7 +199,8 @@
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return _tableViewIsMinimized ? 1 : _suggestions.count;
+  return _tableViewIsMinimized ? [self initialNumberOfVisibleCells]
+                               : _suggestions.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView {
@@ -204,46 +211,9 @@
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewURLCell* cell =
       [tableView dequeueReusableCellWithIdentifier:@"cell"];
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-  // Note that both the credentials and URLs will use middle truncation, as it
-  // generally makes it easier to differentiate between different ones, without
-  // having to resort to displaying multiple lines to show the full username
-  // and URL.
-  cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.URLLabel.text = _domain;
-  cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.URLLabel.hidden = NO;
-
-  cell.userInteractionEnabled = YES;
-
-  // Make separator invisible on last cell
-  CGFloat separatorLeftMargin =
-      (_tableViewIsMinimized || [self isLastRow:indexPath])
-          ? tableView.bounds.size.width
-          : kTableViewHorizontalSpacing;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
-
-  [cell
-      setFaviconContainerBackgroundColor:
-          (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
-              ? [UIColor colorNamed:kSeparatorColor]
-              : [UIColor colorNamed:kPrimaryBackgroundColor]];
-  [cell setFaviconContainerBorderColor:UIColor.clearColor];
-  cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-
-  if (_tableViewIsMinimized && (_suggestions.count > 1)) {
-    // The table view is showing a single suggestion and the chevron down
-    // symbol, which can be tapped in order to expand the list of suggestions.
-    cell.accessoryView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolTemplateWithPointSize(
-                          kChevronDownSymbol, kSymbolAccessoryPointSize)];
-    cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
-  }
-  [self loadFaviconAtIndexPath:indexPath forCell:cell];
-  return cell;
+  return [self layoutCell:cell
+        forTableViewWidth:tableView.frame.size.width
+              atIndexPath:indexPath];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -294,7 +264,8 @@
       forCellReuseIdentifier:@"cell"];
 
   _minimizedHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight]];
+      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
+                                [self initialNumberOfVisibleCells]];
   _minimizedHeightConstraint.active = YES;
 
   _fullHeightConstraint = [tableView.heightAnchor
@@ -399,6 +370,70 @@
                           image:infoIcon
                      identifier:nil
                         handler:showDetailsButtonTapHandler];
+}
+
+// Mocks the cells to calculate the real table view height.
+- (CGFloat)computeTableViewHeightForCellCount:(NSUInteger)count {
+  CGFloat height = 0;
+  for (NSUInteger i = 0; i < count; i++) {
+    TableViewURLCell* cell = [[TableViewURLCell alloc] init];
+    // Setup UI same as real cell.
+    cell = [self layoutCell:cell
+          forTableViewWidth:[self tableViewWidth]
+                atIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+    CGFloat cellHeight =
+        [cell systemLayoutSizeFittingSize:CGSizeMake([self tableViewWidth], 1)]
+            .height;
+    height += cellHeight;
+  }
+  return height;
+}
+
+// Layouts the cell for the table view with the password form suggestion at the
+// specific index path.
+- (TableViewURLCell*)layoutCell:(TableViewURLCell*)cell
+              forTableViewWidth:(CGFloat)tableViewWidth
+                    atIndexPath:(NSIndexPath*)indexPath {
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+  // Note that both the credentials and URLs will use middle truncation, as it
+  // generally makes it easier to differentiate between different ones, without
+  // having to resort to displaying multiple lines to show the full username
+  // and URL.
+  cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
+  cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  cell.URLLabel.text = _domain;
+  cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  cell.URLLabel.hidden = NO;
+
+  cell.userInteractionEnabled = YES;
+
+  // Make separator invisible on last cell
+  CGFloat separatorLeftMargin =
+      (_tableViewIsMinimized || [self isLastRow:indexPath])
+          ? tableViewWidth
+          : kTableViewHorizontalSpacing;
+  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
+
+  [cell
+      setFaviconContainerBackgroundColor:
+          (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
+              ? [UIColor colorNamed:kSeparatorColor]
+              : [UIColor colorNamed:kPrimaryBackgroundColor]];
+  [cell setFaviconContainerBorderColor:UIColor.clearColor];
+  cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  if (_tableViewIsMinimized && (_suggestions.count > 1)) {
+    // The table view is showing a single suggestion and the chevron down
+    // symbol, which can be tapped in order to expand the list of suggestions.
+    cell.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultSymbolTemplateWithPointSize(
+                          kChevronDownSymbol, kSymbolAccessoryPointSize)];
+    cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+  }
+  [self loadFaviconAtIndexPath:indexPath forCell:cell];
+  return cell;
 }
 
 @end
