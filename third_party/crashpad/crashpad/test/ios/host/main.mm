@@ -16,10 +16,6 @@
 
 #import "test/ios/host/cptest_application_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 int main(int argc, char* argv[]) {
   NSString* appDelegateClassName;
   @autoreleasepool {

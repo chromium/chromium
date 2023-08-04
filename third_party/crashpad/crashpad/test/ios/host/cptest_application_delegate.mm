@@ -50,10 +50,6 @@
 #include "util/ios/raw_logging.h"
 #include "util/thread/thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using OperationStatus = crashpad::CrashReportDatabase::OperationStatus;
 using Report = crashpad::CrashReportDatabase::Report;
 

@@ -20,9 +20,9 @@ if (crashpad_is_in_chromium) {
 }
 
 if (crashpad_is_apple) {
-  if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
+  if (crashpad_is_in_chromium) {
     import("//build/config/sysroot.gni")
-  } else {
+  } else if (!crashpad_is_in_fuchsia) {
     import("$mini_chromium_import_root/build/sysroot.gni")
   }
 
@@ -563,11 +563,12 @@ crashpad_static_library("util") {
       "fuchsia/scoped_task_suspend.cc",
       "fuchsia/scoped_task_suspend.h",
       "fuchsia/traits.h",
-      "misc/capture_context_fuchsia.S",
       "misc/paths_fuchsia.cc",
       "process/process_memory_fuchsia.cc",
       "process/process_memory_fuchsia.h",
     ]
+
+    sources -= [ "misc/capture_context.h" ]
   }
 
   public_configs = [ "..:crashpad_config" ]
@@ -877,7 +878,10 @@ source_set("util_test") {
   }
 
   if (crashpad_is_fuchsia) {
-    sources += [ "misc/capture_context_test_util_fuchsia.cc" ]
+    sources -= [
+      "misc/capture_context_test.cc",
+      "misc/capture_context_test_util.h",
+    ]
   }
 
   if (crashpad_is_win) {

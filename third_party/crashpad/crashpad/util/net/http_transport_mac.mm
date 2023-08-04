@@ -28,10 +28,6 @@
 #include "util/misc/metrics.h"
 #include "util/net/http_body.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // An implementation of NSInputStream that reads from a
 // crashpad::HTTPBodyStream.
 @interface CrashpadHTTPBodyStreamTransport : NSInputStream {

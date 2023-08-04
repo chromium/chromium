@@ -23,8 +23,6 @@
 #include <windows.h>
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <ucontext.h>
-#elif BUILDFLAG(IS_FUCHSIA)
-#include <signal.h>
 #endif  // BUILDFLAG(IS_APPLE)
 
 namespace crashpad {
@@ -37,8 +35,7 @@ using NativeCPUContext = arm_unified_thread_state;
 #endif
 #elif BUILDFLAG(IS_WIN)
 using NativeCPUContext = CONTEXT;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 using NativeCPUContext = ucontext_t;
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -57,6 +54,9 @@ using NativeCPUContext = ucontext_t;
 //! `RtlCaptureContext()` capture only the state of the integer registers,
 //! ignoring floating-point and vector state.
 //!
+//! CaptureContext isn't used on Fuchsia, nor does a concept of `ucontext_t`
+//! exist on Fuchsia.
+//!
 //! \param[out] cpu_context The structure to store the context in.
 //!
 //! \note The ABI may require that this function's argument is passed by
@@ -66,7 +66,7 @@ using NativeCPUContext = ucontext_t;
 //!     OS                  | Architecture | Register
 //!     --------------------|--------------|---------
 //!     Win                 | x86_64       | `%%rcx`
-//!     macOS/Linux/Fuchsia | x86_64       | `%%rdi`
+//!     macOS/Linux         | x86_64       | `%%rdi`
 //!     Linux               | ARM/ARM64    | `r0`/`x0`
 //!     Linux               | MIPS/MIPS64  | `$a0`
 //!     Linux               | RISCV64      | `a0`

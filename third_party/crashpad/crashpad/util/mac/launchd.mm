@@ -23,10 +23,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "util/misc/implicit_cast.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace crashpad {
 
 launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {

@@ -14,7 +14,6 @@
 
 #include "util/misc/lexing.h"
 
-#include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -23,6 +22,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 
 namespace crashpad {
 
@@ -55,7 +55,7 @@ bool AdvancePastNumber(const char** input, T* value) {
   if (std::numeric_limits<T>::is_signed && **input == '-') {
     ++length;
   }
-  while (isdigit((*input)[length])) {
+  while (base::IsAsciiDigit((*input)[length])) {
     ++length;
   }
   bool success =
