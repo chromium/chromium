@@ -81,6 +81,13 @@ std::u16string FirstRunServiceBrowserTestBase::GetProfileName() const {
       ->GetLocalProfileName();
 }
 
+bool FirstRunServiceBrowserTestBase::IsUsingDefaultProfileName() const {
+  return g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile()->GetPath())
+      ->IsUsingDefaultName();
+}
+
 bool FirstRunServiceBrowserTestBase::IsProfileNameDefault() const {
   auto& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();

@@ -7,15 +7,17 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -26,9 +28,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
@@ -305,12 +307,27 @@ void FirstRunFlowControllerDice::Init(
 }
 
 void FirstRunFlowControllerDice::CancelPostSignInFlow() {
-  // TODO(crbug.com/1465779): If on enterprise profile welcome, sign the user
-  // out and continue with a local profile. Probably would just consist in
-  // aborting the TSOH's flow, which should remove the account. Maybe we'd need
-  // to advance to a separate step to allow deleting all the objects and getting
-  // the account fully removed before opening the browser?
-  NOTIMPLEMENTED();
+  // Called when the user declines enterprise management. Unfortunately, for
+  // some technical and historical reasons, management is already marked as
+  // accepted before we show the prompt. So here we need to revert it.
+  // Currently we remove the account to match the behaviour from the profile
+  // creation flow.
+  // TODO(crbug.com/1465779): Refactor ProfilePickerSignedInFlowController
+  // to split the lacros and dice behaviours more and remove the need for such
+  // hacky workarounds. Look into letting the user keep their account.
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  DCHECK(!primary_account_id.empty());  // Cancelling the post-sign in flow
+                                        // implies we must already be signed in.
+
+  policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+      ->ShutdownCloudPolicyManager();
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, false);
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 
   HandleIdentityStepsCompleted(PostHostClearedCallback());
 }

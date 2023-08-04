@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include <set>
@@ -12,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -31,6 +31,7 @@
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -195,60 +196,6 @@ class BrowserAddedWaiter : public BrowserListObserver {
   const size_t total_count_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_ = nullptr;
   base::RunLoop run_loop_;
-};
-
-// Fake user policy signin service immediately invoking the callbacks.
-class FakeUserPolicySigninService : public policy::UserPolicySigninService {
- public:
-  static std::unique_ptr<KeyedService> Build(content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return std::make_unique<FakeUserPolicySigninService>(
-        profile, IdentityManagerFactory::GetForProfile(profile), std::string(),
-        std::string());
-  }
-
-  static std::unique_ptr<KeyedService> BuildForEnterprise(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    // Non-empty dm token & client id means enterprise account.
-    return std::make_unique<FakeUserPolicySigninService>(
-        profile, IdentityManagerFactory::GetForProfile(profile), "foo", "bar");
-  }
-
-  FakeUserPolicySigninService(Profile* profile,
-                              signin::IdentityManager* identity_manager,
-                              const std::string& dm_token,
-                              const std::string& client_id)
-      : UserPolicySigninService(profile,
-                                nullptr,
-                                nullptr,
-                                nullptr,
-                                identity_manager,
-                                nullptr),
-        dm_token_(dm_token),
-        client_id_(client_id) {}
-
-  // policy::UserPolicySigninService:
-  void RegisterForPolicyWithAccountId(
-      const std::string& username,
-      const CoreAccountId& account_id,
-      PolicyRegistrationCallback callback) override {
-    std::move(callback).Run(dm_token_, client_id_);
-  }
-
-  // policy::UserPolicySigninServiceBase:
-  void FetchPolicyForSignedInUser(
-      const AccountId& account_id,
-      const std::string& dm_token,
-      const std::string& client_id,
-      scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
-      PolicyFetchCallback callback) override {
-    std::move(callback).Run(true);
-  }
-
- private:
-  std::string dm_token_;
-  std::string client_id_;
 };
 
 class TestTabDialogs : public TabDialogs {
@@ -441,7 +388,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   virtual void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) {
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&FakeUserPolicySigninService::Build));
+        context,
+        base::BindRepeating(&policy::FakeUserPolicySigninService::Build));
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestTracker));
 
@@ -1773,8 +1721,8 @@ class ProfilePickerEnterpriseCreationFlowBrowserTest
     ProfilePickerCreationFlowBrowserTest::OnWillCreateBrowserContextServices(
         context);
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(&FakeUserPolicySigninService::BuildForEnterprise));
+        context, base::BindRepeating(
+                     &policy::FakeUserPolicySigninService::BuildForEnterprise));
   }
 };
 

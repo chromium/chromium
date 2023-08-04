@@ -48,6 +48,7 @@ class FirstRunServiceBrowserTestBase : public InProcessBrowserTest {
   // -- Utilities for checks on the profile state after the first run ----------
 
   std::u16string GetProfileName() const;
+  bool IsUsingDefaultProfileName() const;
 
   // Returns whether the profile's name is the default one (e.g. "Person 1").
   // Also asserts that the name is marked as default (`IsUsingDefaultName`)
