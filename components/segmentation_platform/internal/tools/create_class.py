@@ -116,6 +116,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatform{clas});
 // Model to predict whether the user belongs to {clas} segment.
 class {clas} : public DefaultModelProvider {{
  public:
+  static constexpr char k{clas}Key[] = "{segmentation_key}";
+  static constexpr char k{clas}UmaName[] = "{clas}";
+
   {clas}();
   ~{clas}() override = default;
 
@@ -154,14 +157,13 @@ namespace {namespace} {{
 
 BASE_FEATURE(kSegmentationPlatform{clas},
              "SegmentationPlatform{clas}",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {{
 using proto::SegmentId;
 
 // Default parameters for {clas} model.
-constexpr SegmentId kSegmentId =
-    SegmentId::{segment_id};
+constexpr SegmentId kSegmentId = SegmentId::{segment_id};
 constexpr int64_t kModelVersion = 1;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
@@ -223,11 +225,11 @@ std::unique_ptr<DefaultModelProvider::ModelConfig> {clas}::GetModelConfig() {{
       kSignalStorageLength);
 
   // Set output config.
-  const char kNegativeLabel[] = "Not_{clas}";
+  const char kNot{clas}Label[] = "Not{clas}";
   writer.AddOutputConfigForBinaryClassifier(
       0.5,
       /*positive_label=*/k{clas}UmaName,
-      kNegativeLabel);
+      kNot{clas}Label);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{{}},
       /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
@@ -339,6 +341,11 @@ def _GetClassNameFromFile(header):
     return class_name
 
 
+def _GetSegmentationKeyFromFile(header):
+    """Gets the segmentation key based on the header file."""
+    return os.path.basename(header).replace('.h', '')
+
+
 def _GetHeader(args):
     """Parses the args and returns path to the header file."""
     if args.header:
@@ -349,10 +356,20 @@ def _GetHeader(args):
         return args.header
 
     if args.segment_id:
+        _PREFIXES_TO_REMOVE = [
+            'OPTIMIZATION_TARGET_SEGMENTATION_', 'OPTIMIZATION_TARGET_'
+        ]
         _GetLogger().info('Creating default model for %s', args.segment_id)
+        model_name = args.segment_id
+        for prefix in _PREFIXES_TO_REMOVE:
+            print(prefix, model_name, model_name.startswith(prefix))
+            if model_name.startswith(prefix):
+                model_name = model_name[len(prefix):]
+                break
+        print(model_name)
         return (
             'components/segmentation_platform/embedder/default_model/%s.h' %
-            args.segment_id.lower())
+            model_name.lower())
 
     raise ValueError('Required either --header or --segment_id argument.')
 
@@ -379,6 +396,7 @@ def _CreateFilesForClass(args):
         header.replace('/', '_').replace('.', '_').upper() + '_')
     format_args['clas'] = _GetClassNameFromFile(header)
     format_args['segment_id'] = args.segment_id
+    format_args['segmentation_key'] = _GetSegmentationKeyFromFile(header)
     format_args['namespace'] = args.namespace
     format_args['test_class'] = format_args['clas'] + 'Test'
 
