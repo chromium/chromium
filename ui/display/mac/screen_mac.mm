@@ -131,7 +131,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
                                                gfx::BufferFormat::RGBA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
-      if (display_color_spaces != display.color_spaces()) {
+      if (display_color_spaces != display.GetColorSpaces()) {
         LOG(FATAL) << "The display's color space does not match the color "
                       "space that was forced by the command line. This will "
                       "cause pixel tests to fail.";
@@ -147,7 +147,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       }
       display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_lum_relative);
     }
-    display.set_color_spaces(display_color_spaces);
+    display.SetColorSpaces(display_color_spaces);
   }
   display_color_spaces.SetSDRMaxLuminanceNits(
       gfx::ColorSpace::kDefaultSDRWhiteLevel);

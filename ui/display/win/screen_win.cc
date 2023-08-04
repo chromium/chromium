@@ -336,7 +336,7 @@ Display CreateDisplayFromDisplayInfo(
     display.set_color_depth(Display::kHDR10BitsPerPixel);
     display.set_depth_per_component(Display::kHDR10BitsPerComponent);
   }
-  display.set_color_spaces(color_spaces);
+  display.SetColorSpaces(color_spaces);
   return display;
 }
 
@@ -938,10 +938,11 @@ void ScreenWin::OnColorProfilesChanged() {
   // color profile was sRGB was indeed correct. Avoid doing an update in these
   // cases.
   if (base::ranges::any_of(displays_, [this](const auto& display) {
-        return display.color_spaces().GetRasterColorSpace() !=
+        return display.GetColorSpaces().GetRasterColorSpace() !=
                color_profile_reader_->GetDisplayColorSpace(display.id());
-      }))
+      })) {
     UpdateAllDisplaysAndNotify();
+  }
 }
 
 void ScreenWin::UpdateAllDisplaysAndNotify() {

@@ -359,7 +359,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
       if (bits_per_component > 8 && !color_space.IsValid())
         color_space = display::GetColorSpaceFromEdid(edid_parser);
 
-      display.set_color_spaces(
+      display.SetColorSpaces(
           gfx::DisplayColorSpaces(color_space, gfx::BufferFormat::BGRA_8888));
     }
 

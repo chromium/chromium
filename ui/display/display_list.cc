@@ -84,10 +84,10 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
     local_display->set_device_scale_factor(display.device_scale_factor());
     changed_values |= DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR;
   }
-  if (local_display->color_spaces() != display.color_spaces() ||
+  if (local_display->GetColorSpaces() != display.GetColorSpaces() ||
       local_display->depth_per_component() != display.depth_per_component() ||
       local_display->color_depth() != display.color_depth()) {
-    local_display->set_color_spaces(display.color_spaces());
+    local_display->SetColorSpaces(display.GetColorSpaces());
     local_display->set_depth_per_component(display.depth_per_component());
     local_display->set_color_depth(display.color_depth());
     changed_values |= DisplayObserver::DISPLAY_METRIC_COLOR_SPACE;

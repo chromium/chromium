@@ -1209,7 +1209,7 @@ const Display& DisplayManager::GetFakePrimaryDisplay() {
     // https://crbug.com/1057501
     gfx::DisplayColorSpaces display_color_spaces(
         gfx::ColorSpace::CreateSRGB(), DisplaySnapshot::PrimaryFormat());
-    fake_display->set_color_spaces(display_color_spaces);
+    fake_display->SetColorSpaces(display_color_spaces);
   }
   return *fake_display;
 }
@@ -2113,7 +2113,7 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.set_panel_rotation(display_info.GetLogicalActiveRotation());
   new_display.set_touch_support(display_info.touch_support());
   new_display.set_maximum_cursor_size(display_info.maximum_cursor_size());
-  new_display.set_color_spaces(display_info.display_color_spaces());
+  new_display.SetColorSpaces(display_info.display_color_spaces());
   new_display.set_display_frequency(display_info.refresh_rate());
   new_display.set_label(display_info.name());
   new_display.SetDRMFormatsAndModifiers(

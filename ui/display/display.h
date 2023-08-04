@@ -231,9 +231,8 @@ class DISPLAY_EXPORT Display final {
   }
 
   // The color spaces used by the display.
-  // TODO(b/226163383): Rename to SetColorSpaces
-  const gfx::DisplayColorSpaces& color_spaces() const { return color_spaces_; }
-  void set_color_spaces(const gfx::DisplayColorSpaces& color_spaces);
+  const gfx::DisplayColorSpaces& GetColorSpaces() const;
+  void SetColorSpaces(const gfx::DisplayColorSpaces& color_spaces);
 
   // Return true if the display orientation is landscape.
   bool is_landscape() const { return bounds_.width() >= bounds_.height(); }

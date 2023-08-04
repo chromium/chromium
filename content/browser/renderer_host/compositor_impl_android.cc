@@ -669,7 +669,7 @@ void CompositorImpl::OnGpuChannelEstablished(
   constexpr bool support_grcontext = true;
   display_color_spaces_ = display::Screen::GetScreen()
                               ->GetDisplayNearestWindow(root_window_)
-                              .color_spaces();
+                              .GetColorSpaces();
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
@@ -824,7 +824,7 @@ void CompositorImpl::OnDisplayMetricsChanged(const display::Display& display,
 
   if (changed_metrics &
       display::DisplayObserver::DisplayMetric::DISPLAY_METRIC_COLOR_SPACE) {
-    display_color_spaces_ = display.color_spaces();
+    display_color_spaces_ = display.GetColorSpaces();
     if (display_private_) {
       display_private_->SetDisplayColorSpaces(display_color_spaces_);
     }

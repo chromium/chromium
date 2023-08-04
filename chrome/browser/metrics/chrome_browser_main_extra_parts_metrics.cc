@@ -890,7 +890,7 @@ void RecordAppCompatMetrics() {
 
 void RecordDisplayHDRStatus(const display::Display& display) {
   base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
-                            display.color_spaces().SupportsHDR());
+                            display.GetColorSpaces().SupportsHDR());
 }
 
 // Called on a background thread, with low priority to avoid slowing down

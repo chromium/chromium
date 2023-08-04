@@ -84,7 +84,7 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
   }
 
   static gfx::DisplayColorSpaces color_spaces(const display::Display& display) {
-    return display.color_spaces();
+    return display.GetColorSpaces();
   }
 
   static int32_t color_depth(const display::Display& display) {

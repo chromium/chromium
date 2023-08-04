@@ -179,15 +179,7 @@ Display::Display(int64_t id, const gfx::Rect& bounds)
   if (HasForceDisplayColorProfile())
     color_space = GetForcedDisplayColorProfile();
 #endif
-  color_spaces_ = gfx::DisplayColorSpaces(color_space);
-  if (color_spaces_.SupportsHDR()) {
-    color_depth_ = kHDR10BitsPerPixel;
-    depth_per_component_ = kHDR10BitsPerComponent;
-  } else {
-    color_depth_ = kDefaultBitsPerPixel;
-    depth_per_component_ = kDefaultBitsPerComponent;
-  }
-
+  SetColorSpaces(gfx::DisplayColorSpaces(color_space));
 #if defined(USE_AURA)
   if (!bounds.IsEmpty())
     SetScaleAndBounds(device_scale_factor_, bounds);
@@ -218,7 +210,11 @@ int Display::RotationAsDegree() const {
   return 0;
 }
 
-void Display::set_color_spaces(const gfx::DisplayColorSpaces& color_spaces) {
+const gfx::DisplayColorSpaces& Display::GetColorSpaces() const {
+  return color_spaces_;
+}
+
+void Display::SetColorSpaces(const gfx::DisplayColorSpaces& color_spaces) {
   color_spaces_ = color_spaces;
   if (color_spaces.SupportsHDR()) {
     color_depth_ = kHDR10BitsPerPixel;
@@ -336,7 +332,7 @@ bool Display::operator==(const Display& rhs) const {
          rotation_ == rhs.rotation_ && touch_support_ == rhs.touch_support_ &&
          accelerometer_support_ == rhs.accelerometer_support_ &&
          maximum_cursor_size_ == rhs.maximum_cursor_size_ &&
-         color_spaces_ == rhs.color_spaces_ &&
+         GetColorSpaces() == rhs.GetColorSpaces() &&
          color_depth_ == rhs.color_depth_ &&
          depth_per_component_ == rhs.depth_per_component_ &&
          is_monochrome_ == rhs.is_monochrome_ &&

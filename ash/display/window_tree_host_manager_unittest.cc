@@ -1101,9 +1101,9 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
           ->GetHost()
           ->compositor();
 
-  EXPECT_EQ(swapped_primary.color_spaces(),
+  EXPECT_EQ(swapped_primary.GetColorSpaces(),
             swapped_primary_compositor->display_color_spaces());
-  EXPECT_EQ(swapped_secondary.color_spaces(),
+  EXPECT_EQ(swapped_secondary.GetColorSpaces(),
             swapped_secondary_compositor->display_color_spaces());
 
   // Calling the same ID don't do anything.
