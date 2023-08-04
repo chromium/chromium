@@ -174,7 +174,7 @@ void PriceInsightsIconView::OnExecuting(
       commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
-  tab_helper->ShowShoppingInsightsSidePanel();
+  tab_helper->OnPriceInsightsIconClicked();
   base::UmaHistogramEnumeration(
       "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown",
       last_shown_label_type_);

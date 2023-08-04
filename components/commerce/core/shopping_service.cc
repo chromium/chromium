@@ -938,7 +938,8 @@ void ShoppingService::HandleOptGuidePriceInsightsInfoResponse(
   commerce::PriceInsightsData insights_data = parsed_any.value();
 
   if (!parsed_any.has_value() || !insights_data.IsInitialized() ||
-      !insights_data.has_product_cluster_id()) {
+      !insights_data.has_product_cluster_id() ||
+      insights_data.product_cluster_id() == 0) {
     std::move(callback).Run(url, absl::nullopt);
     return;
   }
@@ -948,7 +949,9 @@ void ShoppingService::HandleOptGuidePriceInsightsInfoResponse(
 
   info->product_cluster_id = insights_data.product_cluster_id();
 
-  if (insights_data.has_price_range()) {
+  bool has_range = insights_data.has_price_range() &&
+                   !insights_data.price_range().currency_code().empty();
+  if (has_range) {
     info->currency_code = insights_data.price_range().currency_code();
     info->typical_low_price_micros =
         insights_data.price_range().lowest_typical_price_micros();
@@ -956,14 +959,16 @@ void ShoppingService::HandleOptGuidePriceInsightsInfoResponse(
         insights_data.price_range().highest_typical_price_micros();
   }
 
-  if (insights_data.has_price_history()) {
+  if (insights_data.has_price_history() &&
+      !insights_data.price_history().currency_code().empty()) {
     bool currency_code_match =
-        insights_data.has_price_range()
-            ? insights_data.price_history().currency_code() ==
-                  insights_data.price_range().currency_code()
-            : true;
+        has_range ? insights_data.price_history().currency_code() ==
+                        insights_data.price_range().currency_code()
+                  : true;
     if (currency_code_match) {
       const commerce::PriceHistory history = insights_data.price_history();
+
+      info->currency_code = history.currency_code();
 
       if (history.has_attributes()) {
         info->catalog_attributes = history.attributes();
@@ -975,7 +980,7 @@ void ShoppingService::HandleOptGuidePriceInsightsInfoResponse(
             history.price_points(i).min_price_micros());
       }
 
-      if (history.has_jackpot_url()) {
+      if (history.has_jackpot_url() && !history.jackpot_url().empty()) {
         info->jackpot_url = GURL(history.jackpot_url());
       }
     }

@@ -225,9 +225,7 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceInsightsResponse(
 
   PriceInsightsData price_insights_data;
 
-  if (product_cluster_id != 0) {
-    price_insights_data.set_product_cluster_id(product_cluster_id);
-  }
+  price_insights_data.set_product_cluster_id(product_cluster_id);
 
   PriceRange* price_range = price_insights_data.mutable_price_range();
   price_range->set_currency_code(price_range_currency_code);

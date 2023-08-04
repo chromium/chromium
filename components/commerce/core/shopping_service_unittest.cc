@@ -966,4 +966,50 @@ TEST_F(ShoppingServiceTest, TestPriceInsightsInfoResponse_EmptyClusterId) {
   run_loop.Run();
 }
 
+TEST_F(ShoppingServiceTest, TestPriceInsightsInfoResponse_EmptyRange) {
+  test_features_.InitAndEnableFeature(kPriceInsights);
+
+  std::vector<std::tuple<std::string, int64_t>> history_prices;
+  history_prices.emplace_back("2021-01-01", 100);
+  history_prices.emplace_back("2021-01-02", 200);
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceInsightsResponse(
+      kClusterId, "", 0, 0, kCurrencyCode, kAttributes, history_prices, "",
+      PriceBucket::kHighPrice, true);
+
+  opt_guide_->SetResponse(GURL(kPriceInsightsUrl),
+                          OptimizationType::PRICE_INSIGHTS,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetPriceInsightsInfoForUrl(
+      GURL(kPriceInsightsUrl),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const absl::optional<PriceInsightsInfo>& info) {
+            ASSERT_EQ(kPriceInsightsUrl, url.spec());
+            ASSERT_TRUE(info.has_value());
+
+            ASSERT_EQ(kClusterId, info->product_cluster_id);
+            ASSERT_EQ(kCurrencyCode, info->currency_code);
+            ASSERT_EQ(absl::nullopt, info->typical_low_price_micros);
+            ASSERT_EQ(absl::nullopt, info->typical_high_price_micros);
+            ASSERT_EQ(kAttributes, info->catalog_attributes);
+            ASSERT_EQ(2, (int)(info->catalog_history_prices.size()));
+            ASSERT_EQ("2021-01-01",
+                      std::get<0>(info->catalog_history_prices[0]));
+            ASSERT_EQ("2021-01-02",
+                      std::get<0>(info->catalog_history_prices[1]));
+            ASSERT_EQ(100, std::get<1>(info->catalog_history_prices[0]));
+            ASSERT_EQ(200, std::get<1>(info->catalog_history_prices[1]));
+            ASSERT_EQ(absl::nullopt, info->jackpot_url);
+            ASSERT_EQ(PriceBucket::kHighPrice, info->price_bucket);
+            ASSERT_EQ(true, info->has_multiple_catalogs);
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
 }  // namespace commerce
