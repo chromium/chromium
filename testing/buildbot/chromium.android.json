@@ -234,7 +234,7 @@
       },
       {
         "args": [
-          "--disable-field-trials",
+          "--disable-field-trial-config",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -595,7 +595,7 @@
       },
       {
         "args": [
-          "--disable-field-trials",
+          "--disable-field-trial-config",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -954,7 +954,7 @@
       },
       {
         "args": [
-          "--disable-field-trials",
+          "--disable-field-trial-config",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
