@@ -17,10 +17,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -44,14 +44,6 @@
 namespace fakedms {
 
 namespace {
-
-void DownloadedToString(base::OnceClosure callback,
-                        std::unique_ptr<std::string> response_body) {
-  CHECK(callback);
-  if (response_body)
-    LOG(INFO) << "response body: " << *response_body;
-  std::move(callback).Run();
-}
 
 constexpr base::StringPiece kRawExtensionPolicyPayload =
     R"({
@@ -137,11 +129,13 @@ class FakeDMServerTest : public testing::Test {
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
 
-    base::RunLoop run_loop;
+    base::test::TestFuture<std::unique_ptr<std::string>> test_future;
     url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory.get(),
-        base::BindOnce(&DownloadedToString, run_loop.QuitClosure()));
-    run_loop.Run();
+        url_loader_factory.get(), test_future.GetCallback());
+    const std::unique_ptr<std::string> response_body = test_future.Take();
+    if (response_body) {
+      LOG(INFO) << "Response body: " << *response_body;
+    }
     return url_loader->ResponseInfo()->headers->response_code();
   }
 

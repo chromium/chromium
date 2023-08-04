@@ -11,10 +11,12 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/usb_midi_device.h"
@@ -102,10 +104,11 @@ class FakeUsbMidiDevice : public UsbMidiDevice {
 
 class FakeMidiManagerClient : public MidiManagerClient {
  public:
-  explicit FakeMidiManagerClient(Logger* logger)
-      : complete_start_session_(false),
-        result_(Result::NOT_SUPPORTED),
-        logger_(logger) {}
+  explicit FakeMidiManagerClient(Logger* logger,
+                                 base::OnceClosure on_session_start_cb)
+      : result_(Result::NOT_SUPPORTED),
+        logger_(logger),
+        on_session_start_cb_(std::move(on_session_start_cb)) {}
 
   FakeMidiManagerClient(const FakeMidiManagerClient&) = delete;
   FakeMidiManagerClient& operator=(const FakeMidiManagerClient&) = delete;
@@ -125,8 +128,9 @@ class FakeMidiManagerClient : public MidiManagerClient {
   void SetOutputPortState(uint32_t port_index, PortState state) override {}
 
   void CompleteStartSession(Result result) override {
-    complete_start_session_ = true;
+    DCHECK(on_session_start_cb_);
     result_ = result;
+    std::move(on_session_start_cb_).Run();
   }
 
   void ReceiveMidiData(uint32_t port_index,
@@ -150,13 +154,13 @@ class FakeMidiManagerClient : public MidiManagerClient {
 
   void Detach() override {}
 
-  bool complete_start_session_;
   Result result_;
   std::vector<mojom::PortInfo> input_ports_;
   std::vector<mojom::PortInfo> output_ports_;
 
  private:
   raw_ptr<Logger> logger_;
+  base::OnceClosure on_session_start_cb_;
 };
 
 class TestUsbMidiDeviceFactory : public UsbMidiDevice::Factory {
@@ -243,8 +247,7 @@ class MidiManagerUsbTest : public ::testing::Test {
 
   ~MidiManagerUsbTest() override {
     service_->Shutdown();
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     std::string leftover_logs = logger_.TakeLog();
     if (!leftover_logs.empty()) {
@@ -254,25 +257,21 @@ class MidiManagerUsbTest : public ::testing::Test {
 
  protected:
   void Initialize() {
-    client_ = std::make_unique<FakeMidiManagerClient>(&logger_);
+    client_ = std::make_unique<FakeMidiManagerClient>(
+        &logger_, test_future_.GetCallback());
     service_->StartSession(client_.get());
   }
 
   void Finalize() { service_->EndSession(client_.get()); }
 
-  bool IsInitializationCallbackInvoked() {
-    return client_->complete_start_session_;
-  }
+  bool IsInitializationCallbackInvoked() { return test_future_.IsReady(); }
 
   Result GetInitializationResult() { return client_->result_; }
 
   void RunCallbackUntilCallbackInvoked(
       bool result, UsbMidiDevice::Devices* devices) {
     std::move(factory_->device_factory()->callback_).Run(result, devices);
-    while (!client_->complete_start_session_) {
-      base::RunLoop run_loop;
-      run_loop.RunUntilIdle();
-    }
+    ASSERT_TRUE(test_future_.Wait());
   }
 
   const std::vector<mojom::PortInfo>& input_ports() {
@@ -288,9 +287,10 @@ class MidiManagerUsbTest : public ::testing::Test {
   Logger logger_;
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TestFuture<void> test_future_;
   std::unique_ptr<MidiService> service_;  // Must outlive `factory_`.
   raw_ptr<MidiManagerFactoryForTesting> factory_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 

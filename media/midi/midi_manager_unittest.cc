@@ -12,10 +12,12 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/system/system_monitor.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
@@ -111,7 +113,8 @@ class FakeMidiManagerFactory : public MidiService::ManagerFactory {
 
 class FakeMidiManagerClient : public MidiManagerClient {
  public:
-  FakeMidiManagerClient() = default;
+  explicit FakeMidiManagerClient(base::OnceClosure on_session_start_cb)
+      : on_session_start_cb_(std::move(on_session_start_cb)) {}
 
   FakeMidiManagerClient(const FakeMidiManagerClient&) = delete;
   FakeMidiManagerClient& operator=(const FakeMidiManagerClient&) = delete;
@@ -124,9 +127,9 @@ class FakeMidiManagerClient : public MidiManagerClient {
   void SetInputPortState(uint32_t port_index, PortState state) override {}
   void SetOutputPortState(uint32_t port_index, PortState state) override {}
   void CompleteStartSession(Result result) override {
-    EXPECT_TRUE(wait_for_result_);
+    CHECK(on_session_start_cb_);
     result_ = result;
-    wait_for_result_ = false;
+    std::move(on_session_start_cb_).Run();
   }
   void ReceiveMidiData(uint32_t port_index,
                        const uint8_t* data,
@@ -137,17 +140,9 @@ class FakeMidiManagerClient : public MidiManagerClient {
 
   Result result() const { return result_; }
 
-  Result WaitForResult() {
-    while (wait_for_result_) {
-      base::RunLoop run_loop;
-      run_loop.RunUntilIdle();
-    }
-    return result();
-  }
-
  private:
   Result result_ = Result::NOT_SUPPORTED;
-  bool wait_for_result_ = true;
+  base::OnceClosure on_session_start_cb_;
 };
 
 class MidiManagerTest : public ::testing::Test {
@@ -164,8 +159,7 @@ class MidiManagerTest : public ::testing::Test {
 
   ~MidiManagerTest() override {
     service_->Shutdown();
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
+    env_.RunUntilIdle();
   }
 
  protected:
@@ -220,11 +214,6 @@ class MidiManagerTest : public ::testing::Test {
     return true;
   }
 
-  void RunLoopUntilIdle() {
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
-  }
-
   base::WeakPtr<FakeMidiManagerFactory> factory() { return factory_; }
 
  private:
@@ -234,40 +223,50 @@ class MidiManagerTest : public ::testing::Test {
 };
 
 TEST_F(MidiManagerTest, StartAndEndSession) {
+  base::test::TestFuture<void> test_future;
   std::unique_ptr<FakeMidiManagerClient> client =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(test_future.GetCallback());
 
   StartTheFirstSession(client.get());
   EXPECT_TRUE(CompleteInitialization(Result::OK));
-  EXPECT_EQ(Result::OK, client->WaitForResult());
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_EQ(Result::OK, client->result());
   EndSession(client.get(), 1U, 0U);
 }
 
 TEST_F(MidiManagerTest, StartAndEndSessionWithError) {
+  base::test::TestFuture<void> test_future;
   std::unique_ptr<FakeMidiManagerClient> client =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(test_future.GetCallback());
 
   StartTheFirstSession(client.get());
   EXPECT_TRUE(CompleteInitialization(Result::INITIALIZATION_ERROR));
-  EXPECT_EQ(Result::INITIALIZATION_ERROR, client->WaitForResult());
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_EQ(Result::INITIALIZATION_ERROR, client->result());
   EndSession(client.get(), 1U, 0U);
 }
 
 TEST_F(MidiManagerTest, StartMultipleSessions) {
+  base::test::TestFuture<void> future1;
   std::unique_ptr<FakeMidiManagerClient> client1 =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(future1.GetCallback());
+  base::test::TestFuture<void> future2;
   std::unique_ptr<FakeMidiManagerClient> client2 =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(future2.GetCallback());
+  base::test::TestFuture<void> future3;
   std::unique_ptr<FakeMidiManagerClient> client3 =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(future3.GetCallback());
 
   StartTheFirstSession(client1.get());
   StartTheNthSession(client2.get(), 2);
   StartTheNthSession(client3.get(), 3);
   EXPECT_TRUE(CompleteInitialization(Result::OK));
-  EXPECT_EQ(Result::OK, client1->WaitForResult());
-  EXPECT_EQ(Result::OK, client2->WaitForResult());
-  EXPECT_EQ(Result::OK, client3->WaitForResult());
+  ASSERT_TRUE(future1.Wait());
+  EXPECT_EQ(Result::OK, client1->result());
+  ASSERT_TRUE(future2.Wait());
+  EXPECT_EQ(Result::OK, client2->result());
+  ASSERT_TRUE(future3.Wait());
+  EXPECT_EQ(Result::OK, client3->result());
   EndSession(client1.get(), 3U, 2U);
   EndSession(client2.get(), 2U, 1U);
   EndSession(client3.get(), 1U, 0U);
@@ -275,12 +274,18 @@ TEST_F(MidiManagerTest, StartMultipleSessions) {
 
 TEST_F(MidiManagerTest, TooManyPendingSessions) {
   // Push as many client requests for starting session as possible.
-  std::vector<std::unique_ptr<FakeMidiManagerClient>> many_existing_clients;
-  many_existing_clients.resize(MidiManager::kMaxPendingClientCount);
-  many_existing_clients[0] = std::make_unique<FakeMidiManagerClient>();
+  std::unique_ptr<base::test::TestFuture<void>>
+      test_futures[MidiManager::kMaxPendingClientCount];
+  std::unique_ptr<FakeMidiManagerClient>
+      many_existing_clients[MidiManager::kMaxPendingClientCount];
+  test_futures[0] = std::make_unique<base::test::TestFuture<void>>();
+  many_existing_clients[0] =
+      std::make_unique<FakeMidiManagerClient>(test_futures[0]->GetCallback());
   StartTheFirstSession(many_existing_clients[0].get());
   for (size_t i = 1; i < MidiManager::kMaxPendingClientCount; ++i) {
-    many_existing_clients[i] = std::make_unique<FakeMidiManagerClient>();
+    test_futures[i] = std::make_unique<base::test::TestFuture<void>>();
+    many_existing_clients[i] =
+        std::make_unique<FakeMidiManagerClient>(test_futures[i]->GetCallback());
     StartTheNthSession(many_existing_clients[i].get(), i + 1);
   }
   ASSERT_TRUE(factory()->manager());
@@ -288,31 +293,35 @@ TEST_F(MidiManagerTest, TooManyPendingSessions) {
 
   // Push the last client that should be rejected for too many pending requests.
   std::unique_ptr<FakeMidiManagerClient> additional_client =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(base::DoNothing());
   StartSession(additional_client.get());
   EXPECT_EQ(Result::INITIALIZATION_ERROR, additional_client->result());
 
   // Other clients still should not receive a result.
-  RunLoopUntilIdle();
-  for (size_t i = 0; i < many_existing_clients.size(); ++i)
-    EXPECT_EQ(Result::NOT_SUPPORTED, many_existing_clients[i]->result());
+  for (const auto& existing_client : many_existing_clients) {
+    EXPECT_EQ(Result::NOT_SUPPORTED, existing_client->result());
+  }
 
   // The Result::OK should be distributed to other clients.
   EXPECT_TRUE(CompleteInitialization(Result::OK));
-  for (size_t i = 0; i < many_existing_clients.size(); ++i)
-    EXPECT_EQ(Result::OK, many_existing_clients[i]->WaitForResult());
+  for (size_t i = 0; i < MidiManager::kMaxPendingClientCount; ++i) {
+    ASSERT_TRUE(test_futures[i]->Wait());
+    EXPECT_EQ(Result::OK, many_existing_clients[i]->result());
+  }
 
   // Close all successful sessions in FIFO order.
-  size_t sessions = many_existing_clients.size();
-  for (size_t i = 0; i < many_existing_clients.size(); ++i, --sessions)
+  size_t sessions = MidiManager::kMaxPendingClientCount;
+  for (size_t i = 0; i < MidiManager::kMaxPendingClientCount; ++i, --sessions) {
     EndSession(many_existing_clients[i].get(), sessions, sessions - 1);
+  }
 }
 
 TEST_F(MidiManagerTest, AbortSession) {
   // A client starting a session can be destructed while an asynchronous
   // initialization is performed.
+  base::test::TestFuture<void> test_future;
   std::unique_ptr<FakeMidiManagerClient> client =
-      std::make_unique<FakeMidiManagerClient>();
+      std::make_unique<FakeMidiManagerClient>(test_future.GetCallback());
 
   StartTheFirstSession(client.get());
   EndSession(client.get(), 0, 0);
@@ -320,32 +329,30 @@ TEST_F(MidiManagerTest, AbortSession) {
 
   // Following function should not call the destructed |client| function.
   EXPECT_FALSE(CompleteInitialization(Result::OK));
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
+  EXPECT_FALSE(test_future.IsReady());
 }
 
 class PlatformMidiManagerTest : public ::testing::Test {
  public:
   PlatformMidiManagerTest()
-      : client_(std::make_unique<FakeMidiManagerClient>()),
-        service_(std::make_unique<MidiService>()) {
-    //
-  }
+      : client_(std::make_unique<FakeMidiManagerClient>(
+            test_future_.GetCallback())),
+        service_(std::make_unique<MidiService>()) {}
 
   PlatformMidiManagerTest(const PlatformMidiManagerTest&) = delete;
   PlatformMidiManagerTest& operator=(const PlatformMidiManagerTest&) = delete;
 
   ~PlatformMidiManagerTest() override {
     service_->Shutdown();
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
+    env_.RunUntilIdle();
   }
 
   MidiService* service() { return service_.get(); }
+  FakeMidiManagerClient* client() { return client_.get(); }
+  base::test::TestFuture<void>* future() { return &test_future_; }
 
   void StartSession() { service_->StartSession(client_.get()); }
   void EndSession() { service_->EndSession(client_.get()); }
-  Result WaitForResult() { return client_->WaitForResult(); }
 
   // This #ifdef needs to be identical to the one in media/midi/midi_manager.cc.
   // Do not change the condition for disabling this test.
@@ -364,6 +371,7 @@ class PlatformMidiManagerTest : public ::testing::Test {
 
   base::test::TaskEnvironment env_;
 
+  base::test::TestFuture<void> test_future_;
   std::unique_ptr<FakeMidiManagerClient> client_;
   std::unique_ptr<MidiService> service_;
 };
@@ -376,7 +384,8 @@ class PlatformMidiManagerTest : public ::testing::Test {
 #endif
 TEST_F(PlatformMidiManagerTest, MAYBE_CreatePlatformMidiManager) {
   StartSession();
-  Result result = WaitForResult();
+  ASSERT_TRUE(future()->Wait());
+  Result result = client()->result();
 
 #if defined(USE_ALSA)
   // Temporary until http://crbug.com/371230 is resolved.
@@ -393,9 +402,10 @@ TEST_F(PlatformMidiManagerTest, InstanceIdOverflow) {
 #endif  // BUILDFLAG(IS_WIN)
 
   StartSession();
+  ASSERT_TRUE(future()->Wait());
   EXPECT_EQ(
       IsSupported() ? Result::INITIALIZATION_ERROR : Result::NOT_SUPPORTED,
-      WaitForResult());
+      client()->result());
 
   EndSession();
 }
