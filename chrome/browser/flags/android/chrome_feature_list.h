@@ -27,6 +27,7 @@ BASE_DECLARE_FEATURE(kAndroidSearchEngineChoiceNotification);
 BASE_DECLARE_FEATURE(kAndroidImprovedBookmarks);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAppMenuMobileSiteOption);
+BASE_DECLARE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing);
 BASE_DECLARE_FEATURE(kBackGestureActivityTabProvider);
 BASE_DECLARE_FEATURE(kBackGestureRefactorActivityAndroid);
 BASE_DECLARE_FEATURE(kBackGestureRefactorAndroid);

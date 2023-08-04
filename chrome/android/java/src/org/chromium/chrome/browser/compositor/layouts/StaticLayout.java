@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -321,7 +322,13 @@ public class StaticLayout extends Layout {
     }
 
     private void requestFocus(Tab tab) {
-        // TODO(crbug/1395495): Investigate removing this behavior. It may no longer be relevant.
+        // TODO(crbug/1395495): Investigating guarded removal of this behavior (requesting focus on
+        // a tab) since it may no longer be relevant.
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)) {
+            return;
+        }
+
         if (mIsActive && tab.getView() != null) tab.getView().requestFocus();
     }
 

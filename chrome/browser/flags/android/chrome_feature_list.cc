@@ -169,6 +169,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidImprovedBookmarks,
     &kAnimatedImageDragShadow,
     &kAppMenuMobileSiteOption,
+    &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackGestureActivityTabProvider,
     &kBackGestureRefactorActivityAndroid,
     &kBackGestureRefactorAndroid,
@@ -451,6 +452,10 @@ BASE_FEATURE(kAdvancedPeripheralsSupportTabStrip,
 
 BASE_FEATURE(kAllowNewIncognitoTabIntents,
              "AllowNewIncognitoTabIntents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing,
+             "AvoidSelectedTabFocusOnLayoutDoneShowing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFocusOmniboxInIncognitoTabIntents,
