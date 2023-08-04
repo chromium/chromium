@@ -13,12 +13,6 @@ export UPDATE_EXPECTATIONS="${UPDATE_EXPECTATIONS:-true}"
 
 if [[ -n "$*" ]]; then
     for test in "$@"; do
-        test="${test//wpt-metadata\//}"
-        test="${test//mapper\/headless\//}"
-        test="${test//mapper\/headful\//}"
-        test="${test//chromedriver\/headless\//}"
-        test="${test//.ini/}"
-
         CHROMEDRIVER=true npm run wpt -- "$test"
         HEADLESS=false npm run wpt -- "$test"
         HEADLESS=true npm run wpt -- "$test"

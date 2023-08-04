@@ -146,8 +146,15 @@ if (CHROMEDRIVER === 'true') {
 }
 
 const restArgs = process.argv.slice(2);
-const test =
-  restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
+let test = restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
+
+// Canonicalize the test path.
+test = test
+  .replace('wpt-metadata/', '')
+  .replace('mapper/headless/', '')
+  .replace('mapper/headful/', '')
+  .replace('chromedriver/headless/', '')
+  .replace('.ini', '');
 
 log(`Running "${test}" with "${BROWSER_BIN}"...`);
 
