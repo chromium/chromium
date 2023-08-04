@@ -89,7 +89,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -125,7 +125,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -161,7 +161,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -195,7 +195,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 32,
@@ -229,7 +229,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -274,7 +274,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -510,7 +510,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -543,7 +543,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -575,7 +575,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
@@ -607,7 +607,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -636,7 +636,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
@@ -1418,7 +1418,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
@@ -1449,7 +1449,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,

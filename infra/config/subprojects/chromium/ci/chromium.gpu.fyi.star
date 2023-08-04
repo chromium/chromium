@@ -102,7 +102,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -181,7 +181,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -424,7 +424,7 @@ ci.gpu.linux_builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
-                "download_vr_test_apks",
+                "download_xr_test_apks",
             ],
             target_platform = builder_config.target_platform.ANDROID,
         ),

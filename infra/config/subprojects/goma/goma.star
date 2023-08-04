@@ -135,7 +135,7 @@ fyi_goma_rbe_canary_builder(
             config = "android",
             apply_configs = [
                 "mb",
-                "download_vr_test_apks",
+                "download_xr_test_apks",
                 "goma_canary",
             ],
             build_config = builder_config.build_config.DEBUG,
@@ -159,7 +159,7 @@ fyi_goma_rbe_canary_builder(
             config = "android",
             apply_configs = [
                 "mb",
-                "download_vr_test_apks",
+                "download_xr_test_apks",
                 "goma_canary",
             ],
             build_config = builder_config.build_config.DEBUG,
