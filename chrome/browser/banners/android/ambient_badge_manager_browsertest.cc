@@ -160,7 +160,8 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
   virtual void SetUpFeatureList() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kBlockInstallPromptIfIgnoreRecently},
-        /*disabled_features=*/{features::kAmbientBadgeSuppressFirstVisit});
+        /*disabled_features=*/{features::kAmbientBadgeSuppressFirstVisit,
+                               features::kInstallPromptSegmentation});
   }
 
   void ResetEngagementForUrl(const GURL& url, double score) {
@@ -274,8 +275,9 @@ class AmbientBadgeManagerSecondVisitTest
   ~AmbientBadgeManagerSecondVisitTest() override = default;
 
   void SetUpFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAmbientBadgeSuppressFirstVisit);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAmbientBadgeSuppressFirstVisit},
+        /*disabled_features=*/{features::kInstallPromptSegmentation});
   }
 };
 
