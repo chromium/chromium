@@ -28,6 +28,7 @@
 #include "base/functional/bind.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
+#include "components/user_manager/user_type.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -315,9 +316,14 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     }
 
     // Welcome Tour is not supported for managed accounts.
-    if (const auto* const session_controller =
-            Shell::Get()->session_controller();
-        session_controller && session_controller->IsActiveAccountManaged()) {
+    const auto* const session_controller = Shell::Get()->session_controller();
+    if (session_controller && session_controller->IsActiveAccountManaged()) {
+      return;
+    }
+
+    // Welcome Tour is supported for regular users only.
+    if (const auto user_type = session_controller->GetUserType();
+        user_type != user_manager::UserType::USER_TYPE_REGULAR) {
       return;
     }
   }

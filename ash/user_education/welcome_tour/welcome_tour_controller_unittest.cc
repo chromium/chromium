@@ -42,6 +42,7 @@
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/tutorial_description.h"
+#include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -548,15 +549,17 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
 
 // Base class for tests of the `WelcomeTourController` which are concerned with
 // user eligibility, parameterized by:
-// (a) whether to force user eligibility via feature flag, and
-// (b) whether the user should be considered "new", "existing" or "unknown", and
-// (c) whether the user is managed.
+// (a) whether to force user eligibility via feature flag
+// (b) whether the user should be considered "new", "existing" or "unknown"
+// (c) whether the user is managed
+// (d) the user type.
 class WelcomeTourControllerUserEligibilityTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<std::tuple<
           /*force_user_eligibility=*/bool,
           /*is_new_user=*/absl::optional<bool>,
-          /*is_managed_user=*/bool>> {
+          /*is_managed_user=*/bool,
+          user_manager::UserType>> {
  public:
   WelcomeTourControllerUserEligibilityTest() {
     // Conditionally force user eligibility based on test parameterization.
@@ -566,6 +569,9 @@ class WelcomeTourControllerUserEligibilityTest
 
   // Returns whether user eligibility is forced based on test parameterization.
   bool ForceUserEligibility() const { return std::get<0>(GetParam()); }
+
+  // Returns the user type based on test parameterization.
+  user_manager::UserType GetUserType() const { return std::get<3>(GetParam()); }
 
   // Returns whether the user is managed based on test parameterization.
   bool IsManagedUser() const { return std::get<2>(GetParam()); }
@@ -586,10 +592,11 @@ class WelcomeTourControllerUserEligibilityTest
     ON_CALL(*user_education_delegate(), IsNewUser)
         .WillByDefault(ReturnRefOfCopy(IsNewUser()));
 
-    // Add a user that is managed based on test parameterization.
+    // Add a user with the specified type and management state, as defined by
+    // test parameterization.
     TestSessionControllerClient* const session = GetSessionControllerClient();
     constexpr char kUserEmail[] = "primary@test";
-    session->AddUserSession(kUserEmail, user_manager::USER_TYPE_REGULAR,
+    session->AddUserSession(kUserEmail, GetUserType(),
                             /*provide_pref_service=*/true,
                             /*is_new_profile=*/false,
                             /*given_name=*/std::string(), IsManagedUser());
@@ -601,15 +608,24 @@ class WelcomeTourControllerUserEligibilityTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WelcomeTourControllerUserEligibilityTest,
-                         ::testing::Combine(
-                             /*force_user_eligibility=*/::testing::Bool(),
-                             /*is_new_user=*/
-                             ::testing::Values(absl::make_optional(true),
-                                               absl::make_optional(false),
-                                               absl::nullopt),
-                             /*is_managed_user=*/::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WelcomeTourControllerUserEligibilityTest,
+    ::testing::Combine(
+        /*force_user_eligibility=*/::testing::Bool(),
+        /*is_new_user=*/
+        ::testing::Values(absl::make_optional(true),
+                          absl::make_optional(false),
+                          absl::nullopt),
+        /*is_managed_user=*/::testing::Bool(),
+        ::testing::Values(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
+                          user_manager::UserType::USER_TYPE_ARC_KIOSK_APP,
+                          user_manager::UserType::USER_TYPE_CHILD,
+                          user_manager::UserType::USER_TYPE_GUEST,
+                          user_manager::UserType::USER_TYPE_KIOSK_APP,
+                          user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
+                          user_manager::UserType::USER_TYPE_REGULAR,
+                          user_manager::UserType::USER_TYPE_WEB_KIOSK_APP)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -619,10 +635,12 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   // (a) user eligibility is being explicitly forced, or
   // (b) the user satisfies the following conditions:
   //     (1) known to be "new" on session activation, and
-  //     (2) not a managed user.
+  //     (2) not a managed user, and
+  //     (3) a regular user.
   const bool is_user_eligibility_expected =
       ForceUserEligibility() ||
-      (IsNewUser().value_or(false) && !IsManagedUser());
+      (IsNewUser().value_or(false) && !IsManagedUser() &&
+       GetUserType() == user_manager::USER_TYPE_REGULAR);
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(*user_education_delegate(),
