@@ -323,6 +323,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         getAppBrowserControlsVisibilityDelegate().addDelegate(
                 browserControlsManager.getBrowserVisibilityDelegate());
         mRootUiTabObserver = new RootUiTabObserver(tabProvider);
+        mGestureNavLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
+            @Override
+            public void onStartedShowing(int layoutType) {
+                if (layoutType == LayoutType.TAB_SWITCHER) mHistoryNavigationCoordinator.reset();
+            }
+        };
     }
 
     @Override
@@ -494,12 +500,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 },
                 mCompositorViewHolderSupplier.get()::addTouchEventObserver,
                 mCompositorViewHolderSupplier.get()::removeTouchEventObserver, mLayoutManager);
-        mGestureNavLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onStartedShowing(int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER) mHistoryNavigationCoordinator.reset();
-            }
-        };
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
