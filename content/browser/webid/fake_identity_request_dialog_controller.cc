@@ -58,6 +58,10 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
         .Run(identity_provider_data[0].idp_metadata.config_url,
              *selected_account_,
              /* is_sign_in= */ true);
+  } else if (sign_in_mode == IdentityRequestAccount::SignInMode::kAuto) {
+    std::move(on_selected)
+        .Run(identity_provider_data[0].idp_metadata.config_url,
+             identity_provider_data[0].accounts[0].id, /* is_sign_in= */ true);
   }
 }
 
