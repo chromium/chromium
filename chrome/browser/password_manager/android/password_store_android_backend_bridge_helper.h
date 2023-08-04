@@ -34,6 +34,9 @@ class PasswordStoreAndroidBackendBridgeHelper {
   // would return false.
   static bool CanCreateBackend();
 
+  // Returns true if GMS Core supports new GetAffiliatedPasswordsAPI API.
+  virtual bool CanUseGetAffiliatedPasswordsAPI() = 0;
+
   // Sets the `consumer` that is notified on job completion as defined in
   // `PasswordStoreAndroidBackendReceiverBridge::Consumer`.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;

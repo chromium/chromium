@@ -38,6 +38,7 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   ~PasswordStoreAndroidBackendBridgeHelperImpl() override;
 
   // PasswordStoreAndroidBackendBridgeHelper implementation
+  bool CanUseGetAffiliatedPasswordsAPI() override;
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   [[nodiscard]] JobId GetAllLogins(Account account) override;
   [[nodiscard]] JobId GetAutofillableLogins(Account account) override;

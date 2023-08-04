@@ -111,6 +111,9 @@ class PasswordStoreAndroidBackendDispatcherBridge {
   // fulfilled. E.g. if the backend requires a minimum GMS version this method
   // would return false.
   static bool CanCreateBackend();
+
+  // Returns true if GMS Core supports new GetAffiliatedPasswordsAPI API.
+  static bool CanUseGetAffiliatedPasswordsAPI();
 };
 
 }  // namespace password_manager

@@ -194,12 +194,22 @@ void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
         break;
       case MatchResult::PSL_MATCH:
       case MatchResult::FEDERATED_PSL_MATCH:
+        // PSL match is only possible if form was marked as grouped match.
         CHECK(form->match_type.has_value());
-        form->match_type =
-            form->match_type.value() | PasswordForm::MatchType::kPSL;
+        form->match_type |= PasswordForm::MatchType::kPSL;
         break;
     }
   }
+
+  // Remove grouped only matches if filling across groups is disabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kFillingAcrossGroupedSites)) {
+    base::EraseIf(
+        absl::get<LoginsResult>(logins_or_error), [](const auto& form) {
+          return form->match_type == PasswordForm::MatchType::kGrouped;
+        });
+  }
+
   std::move(callback).Run(std::move(logins_or_error));
 }
 
@@ -694,9 +704,7 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
 void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     LoginsOrErrorReply callback) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kFillingAcrossAffiliatedWebsitesAndroid)) {
+  if (bridge_helper_->CanUseGetAffiliatedPasswordsAPI()) {
     JobId job_id = bridge_helper_->GetAffiliatedLoginsForSignonRealm(
         form_digest.signon_realm, GetAccount(GetSyncingAccount(sync_service_)));
     QueueNewJob(job_id,

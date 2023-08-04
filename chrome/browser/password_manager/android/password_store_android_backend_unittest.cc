@@ -170,6 +170,7 @@ std::string ApiErrorMetricName(const std::string& method_name) {
 class MockPasswordStoreAndroidBackendBridgeHelper
     : public PasswordStoreAndroidBackendBridgeHelper {
  public:
+  MOCK_METHOD(bool, CanUseGetAffiliatedPasswordsAPI, (), (override));
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (Account), (override));
   MOCK_METHOD(JobId, GetAutofillableLogins, (Account), (override));
@@ -1484,6 +1485,9 @@ TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
                                  GURL(TestURL1));
 
+  EXPECT_CALL(*bridge_helper(), CanUseGetAffiliatedPasswordsAPI)
+      .WillOnce(Return(false));
+
   std::vector<std::string> affiliated_android_realms;
   affiliated_android_realms.push_back(kTestAndroidRealm);
   mock_affiliated_match_helper.ExpectCallToGetAffiliatedAndGrouped(
@@ -1517,9 +1521,6 @@ TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
-  base::test::ScopedFeatureList feature_list(
-      features::kFillingAcrossAffiliatedWebsitesAndroid);
-
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
                         PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
@@ -1528,6 +1529,8 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
                                  GURL(TestURL1));
 
+  EXPECT_CALL(*bridge_helper(), CanUseGetAffiliatedPasswordsAPI)
+      .WillOnce(Return(true));
   EXPECT_CALL(*bridge_helper(), GetAffiliatedLoginsForSignonRealm(TestURL1, _))
       .WillOnce(Return(kJobId));
   backend().GetGroupedMatchingLoginsAsync(form_digest, mock_reply.Get());
@@ -1554,9 +1557,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
       GURL(u"https://m.example.com/"),
       PasswordForm::MatchType::kGrouped | PasswordForm::MatchType::kPSL));
-  expected_logins.push_back(CreateEntry(
-      "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-      GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
+  // Grouped only match is filtered.
 
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   consumer().OnCompleteWithLogins(kJobId,

@@ -78,6 +78,12 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
   DCHECK(will_delete);
 }
 
+bool PasswordStoreAndroidBackendBridgeHelperImpl::
+    CanUseGetAffiliatedPasswordsAPI() {
+  return PasswordStoreAndroidBackendDispatcherBridge::
+      CanUseGetAffiliatedPasswordsAPI();
+}
+
 void PasswordStoreAndroidBackendBridgeHelperImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
