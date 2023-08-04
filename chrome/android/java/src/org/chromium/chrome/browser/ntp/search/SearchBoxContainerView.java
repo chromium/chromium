@@ -10,13 +10,30 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.LinearLayout;
 
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 /**
  * Provides the additional capabilities needed for the SearchBox container layout.
  */
 public class SearchBoxContainerView extends LinearLayout {
+    private final boolean mIsSurfacePolishEnabled;
+    private final int mEndPadding;
+
     /** Constructor for inflating from XML. */
     public SearchBoxContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mEndPadding = getResources().getDimensionPixelSize(R.dimen.fake_search_box_end_padding);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        if (mIsSurfacePolishEnabled) {
+            int startPadding = getPaddingStart();
+            setPaddingRelative(startPadding, 0, mEndPadding, 0);
+        }
     }
 
     @Override

@@ -88,7 +88,6 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -219,6 +218,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private float mLocationBarNtpOffsetLeft;
     private float mLocationBarNtpOffsetRight;
+
+    /**
+     * Offset applied to the URL actions container due to the end padding of the fake search box on
+     * NTP.
+     */
+    private float mUrlActionsNtpEndOffset;
 
     private final Rect mNtpSearchBoxBounds = new Rect();
     protected final Point mNtpSearchBoxTranslation = new Point();
@@ -1163,9 +1168,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         if (isRtl) {
-            urlActionsTranslationX += mLocationBarNtpOffsetLeft - mLocationBarNtpOffsetRight;
+            urlActionsTranslationX += mLocationBarNtpOffsetLeft - mLocationBarNtpOffsetRight
+                    + mUrlActionsNtpEndOffset;
         } else {
-            urlActionsTranslationX += mLocationBarNtpOffsetRight - mLocationBarNtpOffsetLeft;
+            urlActionsTranslationX += mLocationBarNtpOffsetRight - mLocationBarNtpOffsetLeft
+                    - mUrlActionsNtpEndOffset;
         }
 
         return urlActionsTranslationX;
@@ -1249,8 +1256,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     locationBarTranslationY);
             float urlExpansionFractionComplement = 1.f - mUrlExpansionFraction;
             int verticalInset;
-            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                    && ChromeFeatureList.sSurfacePolish.isEnabled()
+            if (ChromeFeatureList.sSurfacePolish.isEnabled()
                     && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue()) {
                 verticalInset = (int) (((float) (getResources().getDimensionPixelSize(
                                                          R.dimen.modern_toolbar_background_size)
@@ -1258,6 +1264,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                                                         R.dimen.ntp_search_box_height_polish))
                                                / 2)
                         * urlExpansionFractionComplement);
+                mUrlActionsNtpEndOffset =
+                        getResources().getDimensionPixelSize(R.dimen.fake_search_box_end_padding)
+                        * shrinkage;
             } else {
                 verticalInset = (int) (getResources().getDimensionPixelSize(
                                                R.dimen.ntp_search_box_bounds_vertical_inset_modern)

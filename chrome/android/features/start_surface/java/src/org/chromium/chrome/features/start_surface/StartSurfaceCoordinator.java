@@ -1026,7 +1026,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         int realHeight = getPixelSize(R.dimen.toolbar_height_no_shadow) - realVerticalMargin * 2;
         int fakeAndRealHeightDiff = fakeHeight - realHeight;
 
-        int fakeEndPadding = getPixelSize(R.dimen.search_box_end_padding);
+        int fakeEndPadding = mIsSurfacePolishEnabled
+                ? getPixelSize(R.dimen.fake_search_box_end_padding)
+                : getPixelSize(R.dimen.search_box_end_padding);
         // realEndPadding is 0;
 
         // fakeTranslationX is 0;
@@ -1035,11 +1037,14 @@ public class StartSurfaceCoordinator implements StartSurface {
                 + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
                         - getPixelSize(R.dimen.search_box_start_padding));
 
-        int fakeButtonSize = getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
+        int fakeButtonSize = mIsSurfacePolishEnabled
+                ? getPixelSize(R.dimen.location_bar_action_icon_width)
+                : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
         int realButtonSize = getPixelSize(R.dimen.location_bar_action_icon_width);
 
-        int fakeLensButtonStartMargin =
-                getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
+        int fakeLensButtonStartMargin = mIsSurfacePolishEnabled
+                ? 0
+                : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
         // realLensButtonStartMargin is 0;
 
         mOffsetChangedListenerToGenerateScrollEvents = (appBarLayout, verticalOffset) -> {
