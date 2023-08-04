@@ -164,20 +164,41 @@ absl::optional<const base::Value::Dict*> GetConfigForGuest(
   return GetConfigWithEnabledLevel(profile, config_id, enabled_level);
 }
 
-absl::optional<std::string> GetFirstVmNameFromPolicy(Profile* profile) {
+absl::optional<std::string> GetOverallVmName(Profile* profile) {
+  // First see if the name is explicitly set in policy.
+  const auto& installer_config =
+      profile->GetPrefs()->GetDict(prefs::kBruschettaInstallerConfiguration);
+  const auto* display_name =
+      installer_config.FindString(prefs::kPolicyDisplayNameKey);
+  if (display_name) {
+    return *display_name;
+  }
+
+  // If not, pick the name of the first VM in configuration.
   std::vector<bruschetta::InstallableConfig> configs =
       bruschetta::GetInstallableConfigs(profile).extract();
-  if (configs.empty()) {
-    return absl::nullopt;
+  if (!configs.empty()) {
+    SortInstallableConfigs(&configs);
+    const base::Value::Dict& first_vm = configs[0].second;
+    const auto* name = first_vm.FindString(prefs::kPolicyNameKey);
+    if (name) {
+      return *name;
+    }
+    // Config exists but no name, use the key as its name.
+    return configs[0].first;
   }
-  SortInstallableConfigs(&configs);
-  const base::Value::Dict& first_vm = configs[0].second;
-  const std::string* name = first_vm.FindString(prefs::kPolicyNameKey);
-  if (name) {
-    return *name;
+  return absl::nullopt;
+}
+
+GURL GetLearnMoreUrl(Profile* profile) {
+  // First see if the name is explicitly set in policy.
+  const auto& installer_config =
+      profile->GetPrefs()->GetDict(prefs::kBruschettaInstallerConfiguration);
+  const auto* url = installer_config.FindString(prefs::kPolicyLearnMoreUrlKey);
+  if (url) {
+    return GURL(*url);
   }
-  // Fall back to key.
-  return configs[0].first;
+  return GURL();
 }
 
 std::string GetDisplayName(Profile* profile, guest_os::GuestId guest) {

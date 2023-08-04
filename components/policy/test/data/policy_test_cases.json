@@ -12465,6 +12465,27 @@
       }
     ]
   },
+  "BruschettaInstallerConfiguration": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BruschettaInstallerConfiguration": {
+            "display_name": "Name",
+            "learn_more_url": "http://example.com/learn_more"
+          }
+        },
+        "prefs": {
+          "bruschetta.installer_configuration": {
+            "display_name": "Name",
+            "learn_more_url": "http://example.com/learn_more"
+          }
+        }
+      }
+    ]
+  },
   "ReportCrostiniUsageEnabled": {
     "os": [
       "chromeos_ash"

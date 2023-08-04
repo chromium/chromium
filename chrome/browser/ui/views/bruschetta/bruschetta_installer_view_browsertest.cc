@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +49,7 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
   BruschettaInstallerViewBrowserTest& operator=(
       const BruschettaInstallerViewBrowserTest&) = delete;
 
-  void SetUpOnMainThread() override {
+  void SetBruschettaVMConfigurationPref() {
     base::Value::Dict pref;
 
     base::Value::Dict config;
@@ -58,6 +60,21 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
     pref.Set("test-config", std::move(config));
     browser()->profile()->GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
                                               std::move(pref));
+  }
+
+  void SetBruschettaInstallerConfigurationPref() {
+    browser()->profile()->GetPrefs()->SetDict(
+        prefs::kBruschettaInstallerConfiguration, base::test::ParseJsonDict(R"(
+      {
+        "display_name": "Display name",
+        "learn_more_url": "https://example.com/learn_more"
+      }
+    )"));
+  }
+
+  void SetUpOnMainThread() override {
+    SetBruschettaVMConfigurationPref();
+    SetBruschettaInstallerConfigurationPref();
   }
 
   void ShowUi(const std::string& name) override {
@@ -92,6 +109,29 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, Show) {
   ShowUi("default");
   EXPECT_NE(nullptr, view_->GetOkButton());
   EXPECT_NE(nullptr, view_->GetCancelButton());
+  EXPECT_NE(std::u16string::npos,
+            view_->GetWindowTitle().find(u"Display name"));
+
+  EXPECT_EQ(view_->GetLinkLabelForTesting()->GetDisplayTextForTesting(),
+            l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  EXPECT_EQ(
+      view_->GetPrimaryMessage(),
+      l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE));
+}
+
+IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
+                       ShowWithNoLearnMoreUrl) {
+  // We set the learn_more link for test cases by default as that's the most
+  // common case, but unset it here for this specific test.
+  browser()->profile()->GetPrefs()->SetDict(
+      prefs::kBruschettaInstallerConfiguration, base::Value::Dict());
+  ShowUi("default");
+  EXPECT_NE(nullptr, view_->GetOkButton());
+  EXPECT_NE(nullptr, view_->GetCancelButton());
+  EXPECT_NE(std::u16string::npos, view_->GetWindowTitle().find(u"Config name"));
+
+  // No text, because it's invisible.
+  EXPECT_EQ(view_->GetLinkLabelForTesting()->GetDisplayTextForTesting(), u"");
   EXPECT_EQ(
       view_->GetPrimaryMessage(),
       l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE));

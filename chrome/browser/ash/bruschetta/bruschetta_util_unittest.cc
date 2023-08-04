@@ -16,7 +16,7 @@ namespace bruschetta {
 
 namespace {
 
-void SetPolicy(Profile* profile) {
+void SetVMConfigPref(Profile* profile) {
   profile->GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
                                base::test::ParseJsonDict(R"(
     {
@@ -33,12 +33,22 @@ void SetPolicy(Profile* profile) {
   )"));
 }
 
+void SetInstallerConfigPref(Profile* profile) {
+  profile->GetPrefs()->SetDict(prefs::kBruschettaInstallerConfiguration,
+                               base::test::ParseJsonDict(R"(
+    {
+      "display_name": "Display name",
+      "learn_more_url": "https://example.com/learn_more"
+    }
+  )"));
+}
+
 }  // namespace
 
 TEST(BruschettaUtilTest, SortInstallableConfigs) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  SetPolicy(&profile);
+  SetVMConfigPref(&profile);
   std::vector<InstallableConfig> configs =
       GetInstallableConfigs(&profile).extract();
   ASSERT_EQ(2U, configs.size());
@@ -47,12 +57,22 @@ TEST(BruschettaUtilTest, SortInstallableConfigs) {
   EXPECT_EQ("vm_config_def", configs[0].first);
 }
 
-TEST(BruschettaUtilTest, GetFirstVmNameFromPolicy) {
+TEST(BruschettaUtilTest, GetOverallVmNameFromPolicy) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  EXPECT_EQ(GetFirstVmNameFromPolicy(&profile), absl::nullopt);
-  SetPolicy(&profile);
-  EXPECT_EQ(GetFirstVmNameFromPolicy(&profile), "def");
+  EXPECT_EQ(GetOverallVmName(&profile), absl::nullopt);
+  SetVMConfigPref(&profile);
+  EXPECT_EQ(GetOverallVmName(&profile), "def");
+  SetInstallerConfigPref(&profile);
+  EXPECT_EQ(GetOverallVmName(&profile), "Display name");
+}
+
+TEST(BruschettaUtilTest, GetLearnMoreUrl) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  EXPECT_FALSE(GetLearnMoreUrl(&profile).is_valid());
+  SetInstallerConfigPref(&profile);
+  EXPECT_EQ(GetLearnMoreUrl(&profile), GURL("https://example.com/learn_more"));
 }
 
 TEST(BruschettaUtilTest, GetDisplayNameNotInPrefs) {

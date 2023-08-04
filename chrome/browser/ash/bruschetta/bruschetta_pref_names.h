@@ -12,6 +12,11 @@ namespace bruschetta::prefs {
 // Set to true if Bruschetta is installed.
 extern const char kBruschettaInstalled[];
 
+// Mapped pref for the enterprise policy BruschettaInstallerConfiguration.
+extern const char kBruschettaInstallerConfiguration[];
+extern const char kPolicyDisplayNameKey[];
+extern const char kPolicyLearnMoreUrlKey[];
+
 // Mapped pref for the enterprise policy BruschettaVMConfiguration.
 extern const char kBruschettaVMConfiguration[];
 extern const char kPolicyNameKey[];

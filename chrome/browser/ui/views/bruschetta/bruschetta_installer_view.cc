@@ -43,7 +43,7 @@ constexpr int kWindowWidth = 768;
 constexpr int kWindowHeight = 636;
 
 std::u16string GetVmName(Profile* profile) {
-  const auto maybe_vm_name = bruschetta::GetFirstVmNameFromPolicy(profile);
+  const auto maybe_vm_name = bruschetta::GetOverallVmName(profile);
   if (maybe_vm_name.has_value()) {
     return base::UTF8ToUTF16(maybe_vm_name.value());
   }
@@ -157,8 +157,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   // Add "Learn More" link.
   link_label_ = new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   link_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO(b/293531015): Get the "Learn More" link from the policy and populate
-  // learn_more_url_.
+  learn_more_url_ = bruschetta::GetLearnMoreUrl(profile_);
   link_label_->SetCallback(base::BindRepeating(
       [](GURL url) {
         ash::NewWindowDelegate::GetPrimary()->OpenUrl(

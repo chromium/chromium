@@ -751,6 +751,8 @@ source_set("ash") {
     "bruschetta/bruschetta_installer.h",
     "bruschetta/bruschetta_installer_impl.cc",
     "bruschetta/bruschetta_installer_impl.h",
+    "bruschetta/bruschetta_installer_policy_handler.cc",
+    "bruschetta/bruschetta_installer_policy_handler.h",
     "bruschetta/bruschetta_launcher.cc",
     "bruschetta/bruschetta_launcher.h",
     "bruschetta/bruschetta_mount_provider.cc",

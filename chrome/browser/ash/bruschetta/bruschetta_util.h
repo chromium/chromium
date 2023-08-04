@@ -81,9 +81,15 @@ absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
 
 std::string GetVmUsername(const Profile* profile);
 
-// Returns the first (by display order) VM name from the policy, or
-// absl::nullopt if the policy is not available.
-absl::optional<std::string> GetFirstVmNameFromPolicy(Profile* profile);
+// Gets the overall VM Name (i.e. *not* the name of a specific installed VM or
+// configuration which we more commonly use throughout the UI), to be used for
+// e.g. the installer UI before we know which configuration will be installed.
+// Returns `absl::nullopt` if it can't come up with one
+absl::optional<std::string> GetOverallVmName(Profile* profile);
+
+// Gets a URL to learn more about the feature, supplied in policy so an
+// enterprise can document their specific VM. Returns an empty GURL if not set.
+GURL GetLearnMoreUrl(Profile* profile);
 
 // Gets the display name of the specified `guest` running under `profile`.
 std::string GetDisplayName(Profile* profile, guest_os::GuestId guest);
