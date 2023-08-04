@@ -26,6 +26,11 @@ namespace net {
 
 namespace {
 
+// The number of bytes to reserve for the raw headers string to avoid having to
+// do reallocations most of the time. Equal to the 99th percentile of header
+// sizes in ricea@'s cache on 3 Aug 2023.
+constexpr size_t kExpectedRawHeaderSize = 4035;
+
 void AddSpdyHeader(const std::string& name,
                    const std::string& value,
                    spdy::Http2HeaderBlock* headers) {
@@ -48,8 +53,13 @@ int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
     return ERR_INCOMPLETE_HTTP2_HEADERS;
 
   const auto status = it->second;
+
+  // TODO(ricea): Add a constructor to HttpResponseHeaders like (HttpVersion,
+  // int response_code, std::span<const std::pair<std::string_view,
+  // std::string_view>>) so that this function can be made efficient.
   std::string raw_headers =
       base::StrCat({"HTTP/1.1 ", status, base::StringPiece("\0", 1)});
+  raw_headers.reserve(kExpectedRawHeaderSize);
   for (const auto& [name, value] : headers) {
     DCHECK_GT(name.size(), 0u);
     if (name[0] == ':') {
