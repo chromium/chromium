@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_CONCEPT_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_CONCEPT_H_
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/mojom/search_result_icon.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 
 namespace ash::settings {
 

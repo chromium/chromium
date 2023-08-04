@@ -17,7 +17,7 @@ import pathlib
 import sys
 
 # Path of the <chromium>/src directory.
-CHROMIUM_SRC_PATH = pathlib.Path(__file__).parents[7].resolve(strict=True)
+CHROMIUM_SRC_PATH = pathlib.Path(__file__).parents[5].resolve(strict=True)
 if CHROMIUM_SRC_PATH.name != 'src':
     raise AssertionError(
         f'CHROMIUM_SRC_PATH "{CHROMIUM_SRC_PATH}" should end in "src".')
@@ -51,10 +51,10 @@ def main(args):
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CONSTANTS_ROUTES_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CONSTANTS_ROUTES_H_
+#ifndef ASH_WEBUI_SETTINGS_PUBLIC_CONSTANTS_ROUTES_H_
+#define ASH_WEBUI_SETTINGS_PUBLIC_CONSTANTS_ROUTES_H_
 
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 
 namespace chromeos::settings {{
 
@@ -67,7 +67,7 @@ inline const char* const kPaths[] = {{
 
 }  // namespace chromeos::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CONSTANTS_ROUTES_H_
+#endif  // ASH_WEBUI_SETTINGS_PUBLIC_CONSTANTS_ROUTES_H_
 '''
     output_path = os.path.join(parsed_args.gen_dir, 'routes.h')
     with open(output_path, 'w') as f:

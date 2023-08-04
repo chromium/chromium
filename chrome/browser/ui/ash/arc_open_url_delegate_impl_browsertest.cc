@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

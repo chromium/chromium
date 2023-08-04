@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/webui/settings/ash/crostini_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"

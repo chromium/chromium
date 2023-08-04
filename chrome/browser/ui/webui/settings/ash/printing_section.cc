@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/webui/settings/ash/printing_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/settings/ash/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"

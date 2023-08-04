@@ -45,7 +45,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #endif
 
 namespace settings {

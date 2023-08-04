@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
