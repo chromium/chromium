@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/prefs/pref_service.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace safe_browsing {
@@ -36,16 +36,21 @@ TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 KeyedService* TailoredSecurityServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = static_cast<Profile*>(context);
-  return new ChromeTailoredSecurityService(profile);
+  return new ChromeTailoredSecurityService(
+      Profile::FromBrowserContext(context));
 }
 
 bool TailoredSecurityServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  return true;
+}
+
+bool TailoredSecurityServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 

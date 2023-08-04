@@ -18,8 +18,11 @@ namespace safe_browsing {
 
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(
     ChromeBrowserState* browser_state,
-    signin::IdentityManager* identity_manager)
-    : TailoredSecurityService(identity_manager, browser_state->GetPrefs()),
+    signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service)
+    : TailoredSecurityService(identity_manager,
+                              sync_service,
+                              browser_state->GetPrefs()),
       browser_state_(browser_state) {
   base::WeakPtr<ChromeTailoredSecurityService> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();

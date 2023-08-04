@@ -14,6 +14,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace syncer {
+class SyncService;
+}
+
 namespace safe_browsing {
 
 // TailoredSecurityService for iOS. This class is used to bridge
@@ -24,7 +28,8 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
  public:
   explicit ChromeTailoredSecurityService(
       ChromeBrowserState* state,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service);
   ~ChromeTailoredSecurityService() override;
 
  protected:

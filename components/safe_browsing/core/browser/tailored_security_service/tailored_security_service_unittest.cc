@@ -43,11 +43,13 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
   explicit TestingTailoredSecurityService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* prefs)
-      // NOTE: Simply pass null object for IdentityManager.
+      // NOTE: Simply pass null object for IdentityManager and SyncService.
       // TailoredSecurityService's only usage of this object is to fetch access
       // tokens via RequestImpl, and TestingTailoredSecurityService deliberately
       // replaces this flow with TestRequest.
-      : TailoredSecurityService(nullptr, prefs),
+      : TailoredSecurityService(/*identity_manager=*/nullptr,
+                                /*sync_service=*/nullptr,
+                                prefs),
         url_loader_factory_(url_loader_factory) {}
   ~TestingTailoredSecurityService() override = default;
 

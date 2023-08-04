@@ -26,12 +26,16 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace signin {
 class IdentityManager;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
+namespace syncer {
+class SyncService;
 }
 
 namespace safe_browsing {
@@ -80,6 +84,7 @@ class TailoredSecurityService : public KeyedService {
   using CompletionCallback = base::OnceCallback<void(Request*, bool success)>;
 
   TailoredSecurityService(signin::IdentityManager* identity_manager,
+                          syncer::SyncService* sync_service,
                           PrefService* prefs);
   ~TailoredSecurityService() override;
 
@@ -174,9 +179,13 @@ class TailoredSecurityService : public KeyedService {
                            RetryDisabledStateRemainsUnset);
   friend class TailoredSecurityTabHelperTest;
 
-  // Stores pointer to IdentityManager instance. It must outlive the
-  // TailoredSecurityService and can be null during tests.
-  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  // Stores pointer to `IdentityManager` instance. It must outlive the
+  // `TailoredSecurityService` and can be null during tests.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Stores pointer to `SyncService` instance. It must outlive the
+  // `TailoredSecurityService` and can be null during tests.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Pending TailoredSecurity queries to be canceled if not complete by
   // profile shutdown.

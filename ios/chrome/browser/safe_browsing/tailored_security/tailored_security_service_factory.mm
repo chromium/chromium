@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 // static
 safe_browsing::TailoredSecurityService*
@@ -29,6 +30,7 @@ TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()
           "TailoredSecurityService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -38,5 +40,6 @@ TailoredSecurityServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::ChromeTailoredSecurityService>(
       chrome_browser_state,
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      SyncServiceFactory::GetForBrowserState(chrome_browser_state));
 }
