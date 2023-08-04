@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug109187Test) {
 }
 
 // TODO(crbug.com/1469760): Disabled due to timeout failures.
-#if defined(LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Bug941965Test DISABLED_Bug941965Test
 #else
 #define MAYBE_Bug941965Test Bug941965Test
