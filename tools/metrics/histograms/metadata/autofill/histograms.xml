@@ -4099,6 +4099,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Settings.ToggleUseThirdPartyFilling" enum="Boolean"
+    expires_after="2024-01-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records true whenever the user opts into the third party autofill
+    experience. Records false whenever they switch back to the default,
+    Chrome-provided autofill experience. Recorded when the user flips the toggle
+    in the autofill options settings.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SettingsPage.ButtonClicked.{CardType}.{Button}"
     enum="BooleanAttempted" expires_after="2023-12-01">
   <owner>vishwasuppoor@chromium.org</owner>
