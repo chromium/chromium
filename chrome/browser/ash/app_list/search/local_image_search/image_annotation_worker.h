@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -64,10 +65,8 @@ class ImageAnnotationWorker {
  private:
   void OnFileChange(const base::FilePath& path, bool error);
 
-  // Gets an annotations from the `image_path`.
-  void ProcessImage(base::FilePath image_path,
-                    std::unique_ptr<base::File::Info> file_info,
-                    std::vector<ImageInfo> stored_annotations_with_this_path);
+  // Processes the next image from the `images_being_processed_`.
+  void ProcessNextImage();
 
   // Removes deleted images from the annotation storage.
   void FindAndRemoveDeletedImages(const std::vector<ImageInfo> images);
@@ -75,9 +74,8 @@ class ImageAnnotationWorker {
   void ConnectToImageAnnotator();
   void RunImageAnnotator(ImageInfo image_info,
                          base::MappedReadOnlyRegion mapped_region);
-  // For testing.
-  void RunFakeImageAnnotator(ImageInfo image_info,
-                             base::MappedReadOnlyRegion mapped_region);
+  // For testing. File name annotator.
+  void RunFakeImageAnnotator(ImageInfo image_info);
 
   void EnsureIcaAnnotatorIsConnected();
   void EnsureOcrAnnotatorIsConnected();
@@ -85,6 +83,7 @@ class ImageAnnotationWorker {
   // Initializes the `file_watcher_` and does initial data checks.
   void OnDlcInstalled();
 
+  void CallIca(ImageInfo image_info);
   void OnPerformIca(
       ImageInfo image_info,
       chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr);
@@ -113,8 +112,7 @@ class ImageAnnotationWorker {
   const bool use_ica_;
   const bool use_ocr_;
   bool ica_dlc_initialized_ = false;
-  base::flat_set<base::FilePath> ica_being_processed_images;
-  base::flat_set<base::FilePath> ocr_being_processed_images;
+  base::queue<base::FilePath> images_being_processed_;
 
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

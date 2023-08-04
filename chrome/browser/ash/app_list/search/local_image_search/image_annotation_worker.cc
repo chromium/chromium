@@ -233,171 +233,101 @@ void ImageAnnotationWorker::ConnectToImageAnnotator() {
 void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
                                          bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (DirectoryExists(path) || !IsImage(path) ||
-      ica_being_processed_images.contains(path) ||
-      ocr_being_processed_images.contains(path) || error) {
+  DVLOG(1) << "OnFileChange: " << path;
+  if (DirectoryExists(path) || !IsImage(path) || error) {
     return;
   }
 
-  auto file_info = std::make_unique<base::File::Info>();
-  if (!base::GetFileInfo(path, file_info.get())) {
-    annotation_storage_->Remove(path);
-    return;
+  DVLOG(1) << "Adding to a queue";
+  images_being_processed_.push(std::move(path));
+  if (images_being_processed_.size() == 1) {
+    ProcessNextImage();
   }
-
-  DCHECK(file_info);
-
-  // Ignore images bigger than the threshold.
-  if (file_info->size > kMaxFileSizeBytes) {
-    // TODO(b/260646344): Add a histogram for file sizes.
-    return;
-  }
-
-  if (file_info->size == 0) {
-    annotation_storage_->Remove(path);
-    return;
-  }
-
-  auto stored_annotations = annotation_storage_->FindImagePath(path);
-  ProcessImage(path, std::move(file_info), std::move(stored_annotations));
 }
 
-void ImageAnnotationWorker::ProcessImage(
-    base::FilePath image_path,
-    std::unique_ptr<base::File::Info> file_info,
-    std::vector<ImageInfo> stored_annotations_with_this_path) {
+void ImageAnnotationWorker::ProcessNextImage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "ProcessNextImage";
 
-  if (!stored_annotations_with_this_path.empty()) {
-    DVLOG(1) << "CompareModifiedTime: "
-             << stored_annotations_with_this_path.size() << " same? "
+  if (images_being_processed_.empty()) {
+    DVLOG(1) << "The queue is empty.";
+    return;
+  }
+
+  base::FilePath image_path = images_being_processed_.front();
+
+  auto file_info = std::make_unique<base::File::Info>();
+  if (!base::GetFileInfo(image_path, file_info.get()) || file_info->size == 0 ||
+      file_info->size > kMaxFileSizeBytes) {
+    annotation_storage_->Remove(image_path);
+    images_being_processed_.pop();
+    return ProcessNextImage();
+  }
+  DCHECK(file_info);
+
+  auto stored_annotations = annotation_storage_->FindImagePath(image_path);
+  if (!stored_annotations.empty()) {
+    DVLOG(1) << "CompareModifiedTime: " << stored_annotations.size()
+             << " same? "
              << (file_info->last_modified ==
-                 stored_annotations_with_this_path[0].last_modified)
-             << " is_ignored: "
-             << stored_annotations_with_this_path[0].is_ignored;
+                 stored_annotations.front().last_modified)
+             << " is_ignored: " << stored_annotations.front().is_ignored;
     // Annotations are updated on a file change and have the file's last
     // modified time. So skip inserting the image annotations if the file
     // has not changed since the last update.
-    if (stored_annotations_with_this_path[0].is_ignored ||
-        file_info->last_modified ==
-            stored_annotations_with_this_path[0].last_modified) {
-      return;
+    if (stored_annotations.front().is_ignored ||
+        file_info->last_modified == stored_annotations.front().last_modified) {
+      images_being_processed_.pop();
+      return ProcessNextImage();
     }
   }
 
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
+  annotation_storage_->Remove(image_path);
   ImageInfo image_info({}, image_path, file_info->last_modified,
                        /*is_ignored=*/0);
 
-  if (use_ica_) {
-    ica_being_processed_images.insert(image_path);
-  }
-  if (use_ocr_) {
-    ocr_being_processed_images.insert(image_path);
-  }
-
-  auto run_image_annotator =
-      use_ica_ || use_ocr_
-          ? base::BindOnce(&ImageAnnotationWorker::RunImageAnnotator,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(image_info))
-          : base::BindOnce(&ImageAnnotationWorker::RunFakeImageAnnotator,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(image_info));
-
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath image_path) -> base::MappedReadOnlyRegion {
-            DVLOG(1) << "Making a MemoryMappedFile.";
-            base::MemoryMappedFile data;
-            if (!data.Initialize(image_path)) {
-              LOG(ERROR) << "Could not create a memory mapped file for an "
-                            "image file to generate annotations";
-            }
-            base::MappedReadOnlyRegion mapped_region =
-                base::ReadOnlySharedMemoryRegion::Create(data.length());
-            memcpy(mapped_region.mapping.memory(), data.data(), data.length());
-            DCHECK(mapped_region.IsValid());
-            DCHECK(mapped_region.region.IsValid());
-            return mapped_region;
-          },
-          image_path),
-      std::move(run_image_annotator));
-}
-
-void ImageAnnotationWorker::RunImageAnnotator(
-    ImageInfo image_info,
-    base::MappedReadOnlyRegion mapped_region) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(mapped_region.IsValid());
-  DCHECK(mapped_region.region.IsValid());
-
-  annotation_storage_->Remove(image_info.path);
-
-  if (use_ocr_) {
-    EnsureOcrAnnotatorIsConnected();
+  if (use_ocr_ || use_ica_) {
     ash::image_util::DecodeImageFile(
         base::BindOnce(&ImageAnnotationWorker::OnDecodeImageFile,
                        weak_ptr_factory_.GetWeakPtr(), image_info),
         image_info.path);
+  } else {
+    RunFakeImageAnnotator(std::move(image_info));
   }
-
-  if (use_ica_) {
-    EnsureIcaAnnotatorIsConnected();
-    image_content_annotator_->AnnotateEncodedImage(
-        std::move(mapped_region.region),
-        base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
-  }
-}
-
-void ImageAnnotationWorker::OnPerformIca(
-    ImageInfo image_info,
-    chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr) {
-  DVLOG(1) << "Status: " << ptr->status << " Size: " << ptr->annotations.size();
-  for (const auto& a : ptr->annotations) {
-    if (a->confidence < kConfidenceThreshold) {
-      break;
-    }
-    DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
-             << " Confidence: " << (int)a->confidence
-             << " Name: " << a->name.value_or("null");
-    if (a->name.has_value() && !a->name->empty()) {
-      image_info.annotations.insert(a->name.value());
-    }
-  }
-  if (!image_info.annotations.empty()) {
-    annotation_storage_->Insert(image_info);
-    ica_being_processed_images.erase(image_info.path);
-  }
-}
-
-void ImageAnnotationWorker::FindAndRemoveDeletedImages(
-    const std::vector<ImageInfo> images) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "FindAndRemoveDeletedImages.";
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetDeletedPaths, std::move(images)),
-      base::BindOnce(
-          [](AnnotationStorage* const annotation_storage,
-             std::set<base::FilePath> paths) {
-            std::for_each(paths.begin(), paths.end(),
-                          [&](auto path) { annotation_storage->Remove(path); });
-          },
-          annotation_storage_));
 }
 
 void ImageAnnotationWorker::OnDecodeImageFile(
     ImageInfo image_info,
     const gfx::ImageSkia& image_skia) {
-  DVLOG(1) << "Is decoded " << !image_skia.size().IsEmpty();
-  screen_ai_annotator_->PerformOcrAndReturnAnnotation(
-      *image_skia.bitmap(),
-      base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
+  DVLOG(1) << "OnDecodeImageFile. Is decoded " << !image_skia.size().IsEmpty();
+  if (use_ocr_ && use_ica_) {
+    EnsureOcrAnnotatorIsConnected();
+    screen_ai_annotator_->PerformOcrAndReturnAnnotation(
+        *image_skia.bitmap(),
+        base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
+                       weak_ptr_factory_.GetWeakPtr(), image_info)
+            .Then(base::BindOnce(&ImageAnnotationWorker::CallIca,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(image_info))));
+    return;
+  }
+
+  if (use_ocr_) {
+    EnsureOcrAnnotatorIsConnected();
+    screen_ai_annotator_->PerformOcrAndReturnAnnotation(
+        *image_skia.bitmap(),
+        base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
+    return;
+  }
+
+  if (use_ica_) {
+    CallIca(std::move(image_info));
+    return;
+  }
+  NOTREACHED();
 }
 
 void ImageAnnotationWorker::OnPerformOcr(
@@ -415,20 +345,85 @@ void ImageAnnotationWorker::OnPerformOcr(
     }
   }
   if (!image_info.annotations.empty()) {
-    annotation_storage_->Insert(image_info);
-    ocr_being_processed_images.erase(image_info.path);
+    annotation_storage_->Insert(std::move(image_info));
+  }
+
+  // OCR is the first in the pipeline.
+  if (!use_ica_) {
+    images_being_processed_.pop();
+    ProcessNextImage();
   }
 }
 
-void ImageAnnotationWorker::RunFakeImageAnnotator(
+void ImageAnnotationWorker::CallIca(ImageInfo image_info) {
+  DVLOG(1) << "Making a MemoryMappedFile.";
+  base::MemoryMappedFile data;
+  if (!data.Initialize(image_info.path)) {
+    LOG(ERROR) << "Could not create a memory mapped file for an "
+                  "image file to generate annotations";
+  }
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(data.length());
+  memcpy(mapped_region.mapping.memory(), data.data(), data.length());
+  DCHECK(mapped_region.IsValid());
+  DCHECK(mapped_region.region.IsValid());
+
+  EnsureIcaAnnotatorIsConnected();
+  image_content_annotator_->AnnotateEncodedImage(
+      std::move(mapped_region.region),
+      base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
+}
+
+void ImageAnnotationWorker::OnPerformIca(
     ImageInfo image_info,
-    base::MappedReadOnlyRegion mapped_region) {
+    chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr) {
+  DVLOG(1) << "OnPerformIca. Status: " << ptr->status
+           << " Size: " << ptr->annotations.size();
+  for (const auto& a : ptr->annotations) {
+    if (a->confidence < kConfidenceThreshold) {
+      break;
+    }
+    DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
+             << " Confidence: " << (int)a->confidence
+             << " Name: " << a->name.value_or("null");
+    if (a->name.has_value() && !a->name->empty()) {
+      image_info.annotations.insert(a->name.value());
+    }
+  }
+  if (!image_info.annotations.empty()) {
+    annotation_storage_->Insert(image_info);
+  }
+
+  // ICA is the last in the pipeline.
+  images_being_processed_.pop();
+  ProcessNextImage();
+}
+
+void ImageAnnotationWorker::FindAndRemoveDeletedImages(
+    const std::vector<ImageInfo> images) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "FindAndRemoveDeletedImages.";
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetDeletedPaths, std::move(images)),
+      base::BindOnce(
+          [](AnnotationStorage* const annotation_storage,
+             std::set<base::FilePath> paths) {
+            std::for_each(paths.begin(), paths.end(),
+                          [&](auto path) { annotation_storage->Remove(path); });
+          },
+          annotation_storage_));
+}
+
+void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "Run FilePathAnnotator.";
   const std::string annotation =
       image_info.path.BaseName().RemoveFinalExtension().value();
-  image_info.annotations.insert(annotation);
-  annotation_storage_->Remove(image_info.path);
-  annotation_storage_->Insert(image_info);
+  image_info.annotations.insert(std::move(annotation));
+  annotation_storage_->Insert(std::move(image_info));
+  images_being_processed_.pop();
+  ProcessNextImage();
 }
 
 void ImageAnnotationWorker::TriggerOnFileChangeForTests(
