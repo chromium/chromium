@@ -108,9 +108,7 @@ bool ExtensionCreator::ValidateManifest(const base::FilePath& extension_dir,
     create_flags |= Extension::REQUIRE_MODERN_MANIFEST_VERSION;
 
   scoped_refptr<Extension> extension(file_util::LoadExtension(
-      extension_dir, extension_id,
-      run_flags & kSystemApp ? mojom::ManifestLocation::kExternalComponent
-                             : mojom::ManifestLocation::kInternal,
+      extension_dir, extension_id, mojom::ManifestLocation::kInternal,
       create_flags, &error_message_));
   return !!extension.get();
 }

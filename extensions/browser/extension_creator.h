@@ -36,13 +36,12 @@ class ExtensionCreator {
   ExtensionCreator& operator=(const ExtensionCreator&) = delete;
 
   // Settings to specify treatment of special or ignorable error conditions.
+  // TODO(tjudkins): We should get rid of these flags and instead use explicit
+  // boolean parameters in their place if they are still needed.
   enum RunFlags {
     kNoRunFlags = 0,
     kOverwriteCRX = 1 << 0,
     kRequireModernManifestVersion = 1 << 1,
-    // DEPRECATED.
-    // kBookmarkApp = 1 << 2,
-    kSystemApp = 1 << 3,
   };
 
   // Categories of error that may need special handling on the UI end.
