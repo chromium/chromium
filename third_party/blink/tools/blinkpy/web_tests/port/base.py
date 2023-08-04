@@ -202,12 +202,6 @@ class Port(object):
 
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
-    # The following is used for concetenating WebDriver test names.
-    WEBDRIVER_SUBTEST_SEPARATOR = '>>'
-
-    # The following is used for concetenating WebDriver test names in pytest format.
-    WEBDRIVER_SUBTEST_PYTEST_SEPARATOR = '::'
-
     # The following two constants must match. When adding a new WPT root, also
     # remember to update configurations in:
     #     //third_party/blink/web_tests/external/wpt/config.json
@@ -2081,7 +2075,6 @@ class Port(object):
         """
         return filter(None, [
             self.path_to_generic_test_expectations_file(),
-            self.path_to_webdriver_expectations_file(),
             self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
             self._filesystem.join(self.web_tests_dir(),
                                   'StaleTestExpectations'),
@@ -2116,11 +2109,6 @@ class Port(object):
     @memoized
     def path_to_generic_test_expectations_file(self):
         return self._filesystem.join(self.web_tests_dir(), 'TestExpectations')
-
-    @memoized
-    def path_to_webdriver_expectations_file(self):
-        return self._filesystem.join(self.web_tests_dir(),
-                                     'WebDriverExpectations')
 
     def path_to_flag_specific_expectations_file(self, flag_specific):
         return self._filesystem.join(self.web_tests_dir(),
@@ -2692,57 +2680,6 @@ class Port(object):
                 raise TestRunException(exit_codes.SYS_DEPS_EXIT_STATUS,
                                        message)
         return result
-
-    @staticmethod
-    def split_webdriver_test_name(test_name):
-        """Splits a WebDriver test name into a filename and a subtest name and
-        returns both of them. E.g.
-
-        test.py>>foo.html -> (test.py, foo.html)
-        test.py           -> (test.py, None)
-        """
-        separator_index = test_name.find(Port.WEBDRIVER_SUBTEST_SEPARATOR)
-        if separator_index == -1:
-            return (test_name, None)
-        webdriver_test_name = test_name[:separator_index]
-        separator_len = len(Port.WEBDRIVER_SUBTEST_SEPARATOR)
-        subtest_suffix = test_name[separator_index + separator_len:]
-        return (webdriver_test_name, subtest_suffix)
-
-    @staticmethod
-    def add_webdriver_subtest_suffix(test_name, subtest_name):
-        """Appends a subtest name to a WebDriver test name. E.g.
-
-        (test.py, foo.html) -> test.py>>foo.html
-        (test.py, None)     -> test.py
-        """
-        if subtest_name:
-            return test_name + Port.WEBDRIVER_SUBTEST_SEPARATOR + subtest_name
-        return test_name
-
-    @staticmethod
-    def split_webdriver_subtest_pytest_name(test_name):
-        """Splits a WebDriver test name in pytest format into a filename and a subtest name and
-        returns both of them. E.g.
-
-        test.py::foo.html -> (test.py, foo.html)
-        test.py           -> (test.py, None)
-        """
-        names_after_split = test_name.split(
-            Port.WEBDRIVER_SUBTEST_PYTEST_SEPARATOR)
-
-        assert len(names_after_split) <= 2, \
-            "%s has a length greater than 2 after split by ::" % (test_name)
-        if len(names_after_split) == 1:
-            return (names_after_split[0], None)
-
-        return (names_after_split[0], names_after_split[1])
-
-    @staticmethod
-    def add_webdriver_subtest_pytest_suffix(test_name, subtest_name):
-        if subtest_name is None:
-            return test_name
-        return test_name + Port.WEBDRIVER_SUBTEST_PYTEST_SEPARATOR + subtest_name
 
 
 class VirtualTestSuite(object):

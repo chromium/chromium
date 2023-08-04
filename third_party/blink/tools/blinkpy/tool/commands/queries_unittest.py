@@ -120,7 +120,6 @@ class PrintExpectationsTest(unittest.TestCase):
     def test_paths(self):
         self.run_test([],
                       (WEB_TESTS_LAST_COMPONENT + '/TestExpectations\n' +
-                       WEB_TESTS_LAST_COMPONENT + '/WebDriverExpectations\n' +
                        WEB_TESTS_LAST_COMPONENT + '/NeverFixTests\n' +
                        WEB_TESTS_LAST_COMPONENT + '/StaleTestExpectations\n' +
                        WEB_TESTS_LAST_COMPONENT + '/SlowTests\n'),

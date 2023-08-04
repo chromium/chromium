@@ -86,6 +86,8 @@ class WPTServe(server_base.ServerBase):
             'third_party', 'wpt_tools')
         path_to_wpt_root = fs.join(self.path_to_wpt_support, 'wpt')
         wpt_script = fs.join(path_to_wpt_root, 'wpt')
+        path_to_ws_handlers = finder.path_from_wpt_tests(
+            'websockets', 'handlers')
         start_cmd = [
             self._port_obj.python3_command(),
             '-u',
@@ -95,14 +97,9 @@ class WPTServe(server_base.ServerBase):
             self._config_file,
             '--doc_root',
             finder.path_from_wpt_tests(),
+            '--ws_doc_root',
+            path_to_ws_handlers,
         ]
-
-        # TODO(crbug.com/1414565): Always add `--ws_doc_root` once
-        # `webdriver_tests_suite` uses wptrunner.
-        path_to_ws_handlers = finder.path_from_wpt_tests(
-            'websockets', 'handlers')
-        if self._port_obj.host.filesystem.exists(path_to_ws_handlers):
-            start_cmd += ['--ws_doc_root', path_to_ws_handlers]
 
         if six.PY3:
             self._mappings.append({

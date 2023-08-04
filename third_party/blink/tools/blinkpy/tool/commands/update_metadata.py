@@ -594,8 +594,6 @@ class MetadataUpdater:
                         wpt_dir += '/'
                         if base_test.startswith(wpt_dir):
                             test_id = base_test.replace(wpt_dir, url_prefix, 1)
-                            test_id, _, _ = test_id.partition(
-                                Port.WEBDRIVER_SUBTEST_SEPARATOR)
                             # Ensure that `comment_buffers` is only added once
                             # for a block listing the same test multiple times.
                             if not set(comments_buffer) <= set(

@@ -333,17 +333,6 @@ external/wpt/html/semantics/forms/the-textarea-element/textarea-select-event-man
 external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-novalue-manual.html [ Skip ]
 external/wpt/html/webappapis/scripting/event-loops/task_microtask_ordering-manual.html [ Skip ]
 
-# TODO(crbug.com/974254): Remove the following once we can handle spaces in test names.
-external/wpt/webdriver/tests/classic/element_clear/clear.py [ Skip ]
-external/wpt/webdriver/tests/classic/element_click/interactability.py [ Skip ]
-external/wpt/webdriver/tests/classic/find_element/find.py [ Skip ]
-external/wpt/webdriver/tests/classic/find_element_from_element/find.py [ Skip ]
-external/wpt/webdriver/tests/classic/find_elements/find.py [ Skip ]
-external/wpt/webdriver/tests/classic/find_elements_from_element/find.py [ Skip ]
-external/wpt/webdriver/tests/classic/new_session/invalid_capabilities.py [ Skip ]
-external/wpt/webdriver/tests/classic/new_session/response.py [ Skip ]
-external/wpt/webdriver/tests/classic/send_alert_text/send.py [ Skip ]
-
 # Skip all bidi tests for now: crbug.com/1281421
 external/wpt/webdriver/tests/bidi [ Skip ]
 
@@ -388,9 +377,3 @@ external/wpt/css/css-page/page-size-009.xht [ Skip ]
 external/wpt/css/css-page/page-size-010.xht [ Skip ]
 external/wpt/css/css-page/page-size-011.xht [ Skip ]
 external/wpt/css/css-page/page-size-012.xht [ Skip ]
-
-# This test includes arbitrary html in unit test names (via parametrize) which
-# is currently not well handled in WebDriverExpectations, and causes Lint error
-# crbug.com/1167318
-external/wpt/webdriver/tests/find_element_from_shadow_root/find.py [ Skip ]
-external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Skip ]

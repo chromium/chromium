@@ -13,7 +13,7 @@ import copy
 import logging
 import re
 from collections import defaultdict, namedtuple
-from typing import ClassVar, List, Optional, Set
+from typing import List, Optional, Set
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import GitCL
@@ -42,7 +42,6 @@ DesktopConfig = namedtuple('DesktopConfig', ['port_name'])
 class WPTExpectationsUpdater:
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
     UMBRELLA_BUG = 'crbug.com/626703'
-    WEBDRIVER_SUITE: ClassVar[str] = 'webdriver_tests_suite'
 
     def __init__(self, host, args=None, wpt_manifests=None):
         self.host = host
@@ -191,9 +190,6 @@ class WPTExpectationsUpdater:
                 # (e.g., experimental build). This is good enough in practice.
                 not self.options.include_unexpected_pass)
             results.append(suite_results)
-            # TODO(crbug.com/1412527): After switching `webdriver_tests_suite`
-            # to ResultDB, use `get_failing_results_dict` instead with
-            # `min_attempts_for_update=1` to get failing webdriver results.
 
         results = self._make_results_for_update(results)
         test_expectations = {}
@@ -236,11 +232,7 @@ class WPTExpectationsUpdater:
     ) -> List[WebTestResults]:
         completed_results, missing_results = [], []
         for suite_results in results:
-            if suite_results.step_name().startswith(self.WEBDRIVER_SUITE):
-                suite_results = self.filter_results_for_update(
-                    suite_results, min_attempts_for_update=1)
-                completed_results.append(suite_results)
-            elif len(suite_results) == 0:
+            if len(suite_results) == 0:
                 missing_results.append(suite_results)
             else:
                 completed_results.append(
@@ -739,11 +731,7 @@ class WPTExpectationsUpdater:
             elif root_file in renamed_files:
                 self._test_expectations.remove_expectations(path, [line])
                 new_file_name = renamed_files[root_file]
-                if self.finder.is_webdriver_test_path(line.test):
-                    _, subtest_suffix = self.port.split_webdriver_test_name(line.test)
-                    line.test = self.port.add_webdriver_subtest_suffix(
-                        new_file_name, subtest_suffix)
-                elif self.port.is_wpt_test(line.test):
+                if self.port.is_wpt_test(line.test):
                     # Based on logic in Base._wpt_test_urls_matching_paths
                     line.test = line.test.replace(
                         re.sub(r'\.js$', '.', root_file),
@@ -763,9 +751,8 @@ class WPTExpectationsUpdater:
 
         If a test is a WPT test then it will look in each of the WPT manifests
         for the physical file. If test name cannot be found in any of the manifests
-        then the test no longer exists and the function will return None. If a file
-        is webdriver test then it will strip all subtest arguments and return the
-        file path. If a test is a legacy web test then it will return the test name.
+        then the test no longer exists and the function will return None. If a
+        test is a legacy web test then it will return the test name.
 
         Args:
             test_name: Test name which may include test arguments.
@@ -774,11 +761,7 @@ class WPTExpectationsUpdater:
             Returns the path of the physical file that backs
             up a test. The path is relative to the web_tests directory.
         """
-        if self.finder.is_webdriver_test_path(test_name):
-            root_test_file, _ = (
-                self.port.split_webdriver_test_name(test_name))
-            return root_test_file
-        elif self.port.is_wpt_test(test_name):
+        if self.port.is_wpt_test(test_name):
             for wpt_manifest in self.wpt_manifests:
                 if test_name.startswith(wpt_manifest.wpt_dir):
                     wpt_test = test_name[len(wpt_manifest.wpt_dir) + 1:]
@@ -790,8 +773,8 @@ class WPTExpectationsUpdater:
             # the test does not exist. So we will return None in this case.
             return None
         else:
-            # Non WPT and non webdriver tests have no file parameters, and
-            # the physical file path is the actual name of the test.
+            # Non WPT tests have no file parameters, and the physical file path
+            # is the actual name of the test.
             return test_name
 
     def _relative_to_web_test_dir(self, path_relative_to_repo_root):
@@ -916,17 +899,11 @@ class WPTExpectationsUpdater:
             return False
         if any(x in result.actual for x in ('CRASH', 'TIMEOUT', 'MISSING')):
             return False
-        if self.is_webdriver_test(test_name):
-            return False
         return True
 
     def is_reference_test(self, test_name):
         """Checks whether a given test is a reference test."""
         return bool(self.port.reference_files(test_name))
-
-    def is_webdriver_test(self, test_name):
-        """Checks whether a given test is a WebDriver test."""
-        return self.finder.is_webdriver_test_path(test_name)
 
     @memoized
     def _get_try_bots(self, flag_specific: Optional[str] = None):

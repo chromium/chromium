@@ -41,9 +41,7 @@ class MockTestResultsFetcher(TestResultsFetcher):
         super().__init__(web, luci_auth)
         self._canned_results = {}
         self._canned_retry_summary_json = {}
-        self._webdriver_results = {}
         self.fetched_builds = []
-        self.fetched_webdriver_builds = []
 
     def set_results(self, build, results, step_name=None):
         step_name = step_name or results.step_name()
