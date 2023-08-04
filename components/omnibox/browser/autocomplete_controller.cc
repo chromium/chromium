@@ -128,9 +128,7 @@ bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
     return true;
   }
   return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE ||
-         match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
-         match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
+         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
 }
 
 // Returns which rich autocompletion type, if any, had (or would have had for
