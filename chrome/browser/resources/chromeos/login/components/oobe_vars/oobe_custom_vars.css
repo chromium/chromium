@@ -288,6 +288,24 @@
       --oobe-marketing-opt-in-legal-info-line-height:
           var(--oobe-default-line-height);
 
+      --oobe-apps-list-app-title-font-family:
+          var(--cros-button-1-font-family);
+      --oobe-apps-list-app-title-font-size:
+          var(--cros-button-1-font-size);
+      --oobe-apps-list-app-title-font-weight:
+          var(--cros-button-1-font-weight);
+      --oobe-apps-list-app-title-line-height:
+          var(--cros-button-1-line-height);
+
+      --oobe-apps-list-secondary-text-font-family:
+          var(--cros-annotation-1-font-family);
+      --oobe-apps-list-secondary-text-font-size:
+          var(--cros-annotation-1-font-size);
+      --oobe-apps-list-secondary-text-font-weight:
+          var(--cros-annotation-1-font-weight);
+      --oobe-apps-list-secondary-text-line-height:
+          var(--cros-annotation-1-line-height);
+
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 48px;
       --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);

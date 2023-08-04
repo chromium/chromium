@@ -24,6 +24,8 @@ found in the LICENSE file.
 
   #appsList {
     height: 100%;
+    /* Bug(b/294443311): Add logic to apply bottom border to the container only
+    if there is an overflow. */
     overflow-y: auto;
   }
 
@@ -45,8 +47,11 @@ found in the LICENSE file.
     border-top: 1px solid var(--cros-color-primary-dark);
   }
 
+  :host-context(.jelly-enabled) #appsListContainer .app-item:not(:first-child) {
+    border-top: 1px solid var(--cros-sys-separator);
+  }
+
   cr-checkbox {
-    --cr-checkbox-checked-box-background-color: none;
     --cr-checkbox-mark-color: var(--cr-checked-color);
     --cr-checkbox-size: var(--checkbox-size);
   }
@@ -65,6 +70,10 @@ found in the LICENSE file.
     );
     position: absolute;
     width: 10px;
+  }
+
+  :host-context(.jelly-enabled) #unselectAll {
+    border-bottom: solid 2px var(--cros-sys-primary);
   }
 
   cr-checkbox.some-selected {
@@ -96,12 +105,27 @@ found in the LICENSE file.
     line-height: 22px;
   }
 
+  :host-context(.jelly-enabled) .app-title {
+    font-family: var(--oobe-apps-list-app-title-font-family);
+    font-size: var(--oobe-apps-list-app-title-font-size);
+    font-weight: var(--oobe-apps-list-app-title-font-weight);
+    line-height: var(--oobe-apps-list-app-title-line-height);
+  }
+
   .secondary-text {
     color: var(--oobe-text-color);
     font-family: var(--oobe-default-font-family);
     font-size: 12px;
     font-weight: var(--oobe-default-font-weight);
     line-height: 18px;
+  }
+
+  :host-context(.jelly-enabled) .secondary-text {
+    color: var(--oobe-subheader-text-color);
+    font-family: var(--oobe-apps-list-secondary-text-font-family);
+    font-size: var(--oobe-apps-list-secondary-text-font-size);
+    font-weight: var(--oobe-apps-list-secondary-text-font-weight);
+    line-height: var(--oobe-apps-list-secondary-text-line-height);
   }
 
   .app-tags {
@@ -122,6 +146,10 @@ found in the LICENSE file.
     content: '|' / '';
     margin-inline-end: 6px;
     margin-inline-start: 6px;
+  }
+
+  :host-context(.jelly-enabled) .app-tags ul > li::before {
+    color: var(--cros-sys-separator);
   }
 
   .app-tags ul > li:first-of-type::before {
