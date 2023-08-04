@@ -13,7 +13,6 @@ import static androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -97,7 +96,7 @@ public class HomeFragmentTest {
 
     private void launchHomeFragment() {
         mRule.launchActivity(null);
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.fragment_home)));
+        ViewUtils.waitForVisibleView(withId(R.id.fragment_home));
         // Only start recording intents after launching the MainActivity.
         Intents.init();
 
@@ -252,7 +251,7 @@ public class HomeFragmentTest {
         String expectedErrorMessage = String.format(Locale.US,
                 WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
                 WebViewPackageHelper.loadLabel(context));
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.main_error_view)));
+        ViewUtils.waitForVisibleView(withId(R.id.main_error_view));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
         // Since the current provider is set to a fake package not an actual installed WebView

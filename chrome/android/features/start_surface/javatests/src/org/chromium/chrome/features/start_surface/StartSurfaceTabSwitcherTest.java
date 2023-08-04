@@ -23,7 +23,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.S
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -70,6 +69,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -246,7 +246,8 @@ public class StartSurfaceTabSwitcherTest {
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
-                .check(waitForView(allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
+                .check(ViewUtils.isEventuallyVisible(
+                        allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
         onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(3));
         assertEquals(1, filter.getTabGroupCount());
@@ -263,7 +264,8 @@ public class StartSurfaceTabSwitcherTest {
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
-                .check(waitForView(allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
+                .check(ViewUtils.isEventuallyVisible(
+                        allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
         onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
@@ -296,7 +298,8 @@ public class StartSurfaceTabSwitcherTest {
         // Returns to the Start surface.
         StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        waitForView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withParent(withId(R.id.tab_switcher_module_container)),
                 withId(R.id.tab_list_view)));
 
         RecyclerView recyclerView =
@@ -368,7 +371,9 @@ public class StartSurfaceTabSwitcherTest {
         int parentViewId = TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)
                 ? R.id.compositor_view_holder
                 : R.id.secondary_tasks_surface_view;
-        waitForView(allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_view)));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_view)));
 
         RecyclerView recyclerView = cta.findViewById(parentViewId).findViewById(R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());

@@ -34,7 +34,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.g
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -105,6 +104,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -215,8 +215,10 @@ public class StartSurfaceTest {
 
         StartSurfaceTestUtils.clickMoreTabs(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        waitForView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                withId(R.id.tab_list_view)));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                        withId(R.id.tab_list_view)));
 
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
@@ -767,7 +769,8 @@ public class StartSurfaceTest {
         Tab tab = cta.getActivityTab();
         StartSurfaceTestUtils.pressHomePageButton(cta);
 
-        waitForView(withId(R.id.primary_tasks_surface_view));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withId(R.id.primary_tasks_surface_view));
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
         TestThreadUtils.runOnUiThreadBlocking(

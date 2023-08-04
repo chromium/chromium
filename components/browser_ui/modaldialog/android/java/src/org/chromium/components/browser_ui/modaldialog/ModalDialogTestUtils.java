@@ -4,11 +4,7 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -25,6 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.List;
 
@@ -139,7 +136,7 @@ public class ModalDialogTestUtils {
             @ModalDialogType int dialogType, boolean waitForShow) {
         TestThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
         if (waitForShow) {
-            onView(isRoot()).check(waitForView(withId(R.id.modal_dialog_view)));
+            ViewUtils.waitForVisibleView(withId(R.id.modal_dialog_view));
         }
     }
 

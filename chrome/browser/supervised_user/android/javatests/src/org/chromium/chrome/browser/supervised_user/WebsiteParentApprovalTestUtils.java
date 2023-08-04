@@ -7,7 +7,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -32,8 +31,8 @@ class WebsiteParentApprovalTestUtils {
 
     private static void checkParentApprovalBottomSheetVisible(
             BottomSheetTestSupport bottomSheetTestSupport) {
-        onView(isRoot()).check(ViewUtils.waitForView(
-                withId(R.id.local_parent_approval_layout), ViewUtils.VIEW_VISIBLE));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.local_parent_approval_layout), ViewUtils.VIEW_VISIBLE);
         // Ensure all animations have ended before allowing interaction with the view.
         TestThreadUtils.runOnUiThreadBlocking(() -> { bottomSheetTestSupport.endAllAnimations(); });
     }

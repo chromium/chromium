@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -92,6 +91,7 @@ import org.chromium.ui.DropdownItem;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
@@ -593,7 +593,7 @@ public class KeyboardAccessoryModernViewTest {
         View mainDecorView = mActivityTestRule.getActivity().getWindow().getDecorView();
         return onView(isRoot())
                 .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
-                .check(waitForView(matcher));
+                .check(ViewUtils.isEventuallyVisible(matcher));
     }
 
     private void rotateActivityToLandscape() {

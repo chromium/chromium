@@ -8,7 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.actionWithAssertions;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -340,21 +339,21 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        onView(isRoot()).check(ViewUtils.waitForView(allOf(withText("Dark"), isDisplayed())));
+        ViewUtils.waitForVisibleView(allOf(withText("Dark"), isDisplayed()));
         onView(withText("Dark")).perform(click());
         Espresso.pressBack();
         waitForBackgroundColor(tab, "\"rgb(32, 33, 36)\"");
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        onView(isRoot()).check(ViewUtils.waitForView(allOf(withText("Sepia"), isDisplayed())));
+        ViewUtils.waitForVisibleView(allOf(withText("Sepia"), isDisplayed()));
         onView(withText("Sepia")).perform(click());
         Espresso.pressBack();
         waitForBackgroundColor(tab, "\"rgb(254, 247, 224)\"");
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        onView(isRoot()).check(ViewUtils.waitForView(allOf(withText("Light"), isDisplayed())));
+        ViewUtils.waitForVisibleView(allOf(withText("Light"), isDisplayed()));
         onView(withText("Light")).perform(click());
         Espresso.pressBack();
         waitForBackgroundColor(tab, "\"rgb(255, 255, 255)\"");
@@ -367,7 +366,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        onView(isRoot()).check(ViewUtils.waitForView(allOf(withId(R.id.font_size), isDisplayed())));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.font_size), isDisplayed()));
         // Max is 200% font size.
         onView(withId(R.id.font_size))
                 .perform(actionWithAssertions(new GeneralClickAction(
@@ -377,7 +376,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        onView(isRoot()).check(ViewUtils.waitForView(allOf(withId(R.id.font_size), isDisplayed())));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.font_size), isDisplayed()));
         // Min is 50% font size.
         onView(withId(R.id.font_size))
                 .perform(actionWithAssertions(new GeneralClickAction(

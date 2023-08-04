@@ -9,8 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
-
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,6 +39,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -110,11 +109,14 @@ public class ContinuousSearchFullUiTest {
                 () -> { ContinuousNavigationUserData.getForTab(tab).updateData(metadata, mUrl); });
 
         // Ensure all the view information is shown. This automatically checks for visible.
-        waitForView(allOf(withParent(withId(R.id.continuous_search_container_stub)),
-                withId(org.chromium.chrome.browser.continuous_search.R.id.container_view)));
-        waitForView(withId(org.chromium.chrome.browser.continuous_search.R.id
-                                   .continuous_search_provider_label));
-        waitForView(withId(org.chromium.chrome.browser.continuous_search.R.id.button_dismiss));
+        // TODO(crbug.com/1469988): These are no-ops, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withParent(withId(R.id.continuous_search_container_stub)),
+                        withId(org.chromium.chrome.browser.continuous_search.R.id.container_view)));
+        ViewUtils.isEventuallyVisible(withId(org.chromium.chrome.browser.continuous_search.R.id
+                                                     .continuous_search_provider_label));
+        ViewUtils.isEventuallyVisible(
+                withId(org.chromium.chrome.browser.continuous_search.R.id.button_dismiss));
 
         // Check the items in the carousel exist.
         RecyclerView carousel = (RecyclerView) sActivityTestRule.getActivity().findViewById(

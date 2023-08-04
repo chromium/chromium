@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -29,7 +28,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -211,15 +209,15 @@ public class AccessorySheetViewTest {
             mModel.set(TOP_SHADOW_VISIBLE, false);
             mModel.set(VISIBLE, true);
         }); // Render view.
-        onView(isRoot()).check(
-                waitForView(withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, true));
         onView(withId(R.id.accessory_sheet_shadow)).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, false));
-        onView(isRoot()).check(
-                waitForView(withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE);
     }
 
     @Test

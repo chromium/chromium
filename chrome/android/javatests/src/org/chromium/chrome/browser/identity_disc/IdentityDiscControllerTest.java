@@ -19,8 +19,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
-
 import android.view.View;
 
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -73,6 +71,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Instrumentation test for Identity Disc.
@@ -141,7 +140,8 @@ public class IdentityDiscControllerTest {
     public void testIdentityDiscWithNavigation() {
         // User is signed in.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
 
         // Identity Disc should be hidden on navigation away from NTP.
         leaveNTP();
@@ -169,11 +169,13 @@ public class IdentityDiscControllerTest {
         // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
         //  is implemented.
         TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(R.string.accessibility_toolbar_btn_identity_disc)));
 
         mSigninTestRule.signOut();
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 
@@ -182,7 +184,8 @@ public class IdentityDiscControllerTest {
     @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
     public void testIdentityDiscSignedOut_identityStatusConsistencyEnabled() {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(
                         R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
 
@@ -210,7 +213,8 @@ public class IdentityDiscControllerTest {
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
 
         // When user is signed out, a signed-out avatar should be visible on the NTP.
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(
                         R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
 
@@ -232,10 +236,12 @@ public class IdentityDiscControllerTest {
         String expectedContentDescription = mActivityTestRule.getActivity().getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email, FULL_NAME,
                 EMAIL);
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(expectedContentDescription)));
         mSigninTestRule.signOut();
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(
                         R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
     }
@@ -252,11 +258,13 @@ public class IdentityDiscControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription = mActivityTestRule.getActivity().getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, FULL_NAME);
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(expectedContentDescription)));
 
         mSigninTestRule.signOut();
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(
                         R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
     }
@@ -276,12 +284,14 @@ public class IdentityDiscControllerTest {
 
         // Identity Disc should be shown on sign-in state change without NTP refresh.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withContentDescription(R.string.accessibility_toolbar_btn_identity_disc),
                 isDisplayed()));
 
         mSigninTestRule.signOut();
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 
@@ -294,11 +304,13 @@ public class IdentityDiscControllerTest {
         String expectedContentDescription = mActivityTestRule.getActivity().getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email, FULL_NAME,
                 EMAIL);
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withContentDescription(expectedContentDescription), isDisplayed()));
 
         mSigninTestRule.signOut();
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withContentDescription(R.string.accessibility_toolbar_btn_signed_out_identity_disc),
                 isDisplayed()));
     }
@@ -314,11 +326,13 @@ public class IdentityDiscControllerTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
         String expectedContentDescription = mActivityTestRule.getActivity().getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, FULL_NAME);
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withContentDescription(expectedContentDescription), isDisplayed()));
 
         mSigninTestRule.signOut();
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withContentDescription(R.string.accessibility_toolbar_btn_signed_out_identity_disc),
                 isDisplayed()));
     }
@@ -327,11 +341,13 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithSwitchToIncognito() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
 
         // Identity Disc should not be visible, when switched from sign in state to incognito NTP.
         mActivityTestRule.newIncognitoTabFromMenu();
-        waitForView(allOf(withId(R.id.optional_toolbar_button),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 

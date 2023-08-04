@@ -13,7 +13,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -143,11 +142,11 @@ public class FlagsFragmentTest {
         // Espresso is normally configured to automatically wait for the main thread to go idle, but
         // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
         // hierarchy to inflate.
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.navigation_flags_ui)));
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.navigation_home)));
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.flag_search_bar)));
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.flags_list)));
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.reset_flags_button)));
+        ViewUtils.waitForVisibleView(withId(R.id.navigation_flags_ui));
+        ViewUtils.waitForVisibleView(withId(R.id.navigation_home));
+        ViewUtils.waitForVisibleView(withId(R.id.flag_search_bar));
+        ViewUtils.waitForVisibleView(withId(R.id.flags_list));
+        ViewUtils.waitForVisibleView(withId(R.id.reset_flags_button));
 
         // Always close the soft keyboard when the activity is launched which is sometimes shown
         // because flags search TextView has input focus by default. The keyboard may cover up some

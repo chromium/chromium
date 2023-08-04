@@ -16,7 +16,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.S
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
 import android.view.View;
@@ -66,6 +65,7 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -262,10 +262,12 @@ public class StartSurfaceBackButtonTest {
         }
 
         // Enters the tab switcher, and choose the new tab. After the tab is opening, press back.
-        waitForView(withId(R.id.tab_switcher_button));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withId(R.id.tab_switcher_button));
         TabUiTestHelper.enterTabSwitcher(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        waitForView(withId(R.id.tab_list_view));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withId(R.id.tab_list_view));
         onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));

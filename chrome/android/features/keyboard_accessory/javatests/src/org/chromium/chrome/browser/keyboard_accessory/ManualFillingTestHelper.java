@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -73,6 +72,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.concurrent.TimeoutException;
@@ -569,7 +569,7 @@ public class ManualFillingTestHelper {
     }
 
     public static void waitToBeHidden(Matcher<View> matcher) {
-        onView(isRoot()).check(waitForView(matcher, VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE));
+        ViewUtils.waitForViewCheckingState(matcher, VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE);
     }
 
     public String getAttribute(String node, String attribute)

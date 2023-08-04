@@ -39,7 +39,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.ViewGroup;
 
@@ -81,6 +80,7 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -236,8 +236,9 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        waitForView(allOf(withId(R.id.tab_list_view), isDescendantOfA(withId(R.id.bottom_controls)),
-                isCompletelyDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.tab_list_view),
+                isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
 
         // The strip should be hidden when omnibox is focused.
         onView(withId(R.id.url_bar)).perform(click());
@@ -275,8 +276,9 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        waitForView(allOf(withId(R.id.tab_list_view), isDescendantOfA(withId(R.id.bottom_controls)),
-                isCompletelyDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.tab_list_view),
+                isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
         assertTrue(isTabStripIphShowing(cta));
 
         // Show a bottom sheet, and the IPH should be hidden.

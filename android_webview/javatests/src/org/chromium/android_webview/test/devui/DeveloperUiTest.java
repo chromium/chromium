@@ -20,7 +20,6 @@ import static androidx.test.espresso.intent.matcher.UriMatchers.hasScheme;
 import static androidx.test.espresso.matcher.ViewMatchers.hasTextColor;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -88,7 +87,7 @@ public class DeveloperUiTest {
 
     private void launchHomeFragment() {
         mRule.launchActivity(null);
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.fragment_home)));
+        ViewUtils.waitForVisibleView(withId(R.id.fragment_home));
 
         // Only start recording intents after launching the MainActivity.
         Intents.init();
@@ -107,7 +106,7 @@ public class DeveloperUiTest {
         // Using a text matcher since IDs are not available in the options_menu once rendered.
         onData(anything())
                 .atPosition(0)
-                .check(ViewUtils.waitForView(withText("Change WebView Provider")));
+                .check(ViewUtils.isEventuallyVisible(withText("Change WebView Provider")));
     }
 
     @Before

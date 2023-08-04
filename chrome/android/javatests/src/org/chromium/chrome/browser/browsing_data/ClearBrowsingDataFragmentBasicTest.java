@@ -11,8 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
-
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -44,6 +42,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -205,7 +204,8 @@ public class ClearBrowsingDataFragmentBasicTest {
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
                             .getRootView();
-        waitForView(withText("Frees up"));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withText("Frees up"));
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
 

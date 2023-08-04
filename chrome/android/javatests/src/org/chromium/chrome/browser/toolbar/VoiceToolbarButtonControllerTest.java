@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -20,7 +18,6 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
@@ -111,10 +108,10 @@ public final class VoiceToolbarButtonControllerTest {
     }
 
     private void assertButtonMissingOrNonVoice() {
-        onView(isRoot()).check(
-                waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
-                                    withContentDescription(mButtonString)),
-                        ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(
+                allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
+                        withContentDescription(mButtonString)),
+                ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 
     @Test
@@ -122,8 +119,8 @@ public final class VoiceToolbarButtonControllerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledOnNTP() {
         // Ensure the button starts visible.
-        onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
-                isDisplayed(), isEnabled(), withContentDescription(mButtonString))));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                isEnabled(), withContentDescription(mButtonString)));
 
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
@@ -146,8 +143,8 @@ public final class VoiceToolbarButtonControllerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonDisabledOnIncognito() {
         // Ensure the button starts visible.
-        onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
-                isDisplayed(), isEnabled(), withContentDescription(mButtonString))));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                isEnabled(), withContentDescription(mButtonString)));
 
         sActivityTestRule.newIncognitoTabFromMenu();
 
@@ -159,8 +156,8 @@ public final class VoiceToolbarButtonControllerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledDuringModal() {
         // Ensure the button starts visible.
-        onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
-                isDisplayed(), isEnabled(), withContentDescription(mButtonString))));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                isEnabled(), withContentDescription(mButtonString)));
 
         // Get a reference to the button before the modal is opened as it's harder to get after.
         View button = sActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button);
@@ -191,8 +188,8 @@ public final class VoiceToolbarButtonControllerTest {
             sActivityTestRule.getActivity().getModalDialogManager().dismissDialog(
                     dialogModel, DialogDismissalCause.UNKNOWN);
         });
-        onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
-                isDisplayed(), isEnabled(), withContentDescription(mButtonString))));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                isEnabled(), withContentDescription(mButtonString)));
     }
 
     @Test

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -130,8 +128,8 @@ public class WebsiteParentApprovalTest {
         // Ensure all animations have ended. Otherwise the following check may fail.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBottomSheetTestSupport.endAllAnimations(); });
-        onView(isRoot()).check(ViewUtils.waitForView(withId(R.id.local_parent_approval_layout),
-                ViewUtils.VIEW_INVISIBLE | ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(withId(R.id.local_parent_approval_layout),
+                ViewUtils.VIEW_INVISIBLE | ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 
     @Test

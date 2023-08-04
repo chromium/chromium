@@ -62,7 +62,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.w
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -140,6 +139,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -605,7 +605,9 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
     }
 
     @Test
@@ -1406,7 +1408,9 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1451,7 +1455,9 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1488,7 +1494,9 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);

@@ -333,9 +333,11 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
         });
-        ViewUtils.waitForView(withText(R.string.continue_button));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withText(R.string.continue_button));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
-        ViewUtils.waitForView(withId(R.id.signin_fre_footer));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withId(R.id.signin_fre_footer));
     }
 
     @Test
@@ -1293,9 +1295,10 @@ public class SigninFirstRunFragmentTest {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
         });
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
-        ViewUtils.waitForView(withId(R.id.fre_browser_managed_by));
-        ViewUtils.waitForView(withText(R.string.continue_button));
-        ViewUtils.waitForView(withId(R.id.signin_fre_footer));
+        // TODO(crbug.com/1469988): These are no-ops, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(withId(R.id.fre_browser_managed_by));
+        ViewUtils.isEventuallyVisible(withText(R.string.continue_button));
+        ViewUtils.isEventuallyVisible(withId(R.id.signin_fre_footer));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
@@ -1323,7 +1326,9 @@ public class SigninFirstRunFragmentTest {
                     SemanticColorUtils.getDefaultBgColor(mFragment.getContext())));
         });
 
-        ViewUtils.waitForView(allOf(withId(R.id.signin_fre_continue_button), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withId(R.id.signin_fre_continue_button), isDisplayed()));
     }
 
     /**

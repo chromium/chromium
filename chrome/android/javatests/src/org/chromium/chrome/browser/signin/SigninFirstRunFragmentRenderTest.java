@@ -532,7 +532,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
         // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
         // spinner is not displayed before grabbing a screenshot.
-        ViewUtils.waitForView(withId(R.id.signin_fre_continue_button), ViewUtils.VIEW_VISIBLE);
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withId(R.id.signin_fre_continue_button), ViewUtils.VIEW_VISIBLE);
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(not(isDisplayed())));
     }

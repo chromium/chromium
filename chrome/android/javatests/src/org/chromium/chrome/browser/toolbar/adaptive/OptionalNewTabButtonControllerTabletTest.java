@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.res.Configuration;
 
@@ -89,8 +85,8 @@ public class OptionalNewTabButtonControllerTabletTest {
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
 
-        onView(isRoot()).check(waitForView(
-                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 
     @Test
@@ -100,7 +96,7 @@ public class OptionalNewTabButtonControllerTabletTest {
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
         sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
 
-        onView(isRoot()).check(waitForView(
-                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 }

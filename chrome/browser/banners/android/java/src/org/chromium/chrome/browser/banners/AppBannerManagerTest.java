@@ -15,7 +15,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -120,6 +119,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
@@ -1161,14 +1161,14 @@ public class AppBannerManagerTest {
         View mainDecorView = mTabbedActivityTestRule.getActivity().getWindow().getDecorView();
         return onView(isRoot())
                 .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
-                .check(waitForView(matcher));
+                .check(ViewUtils.isEventuallyVisible(matcher));
     }
 
     private void assertNoHelpBubble(Matcher<View> matcher) {
         View mainDecorView = mTabbedActivityTestRule.getActivity().getWindow().getDecorView();
         onView(isRoot())
                 .inRoot(RootMatchers.withDecorView(isDisplayed()))
-                .check(waitForView(matcher, VIEW_NULL));
+                .check(ViewUtils.withEventualExpectedViewState(matcher, VIEW_NULL));
     }
 
     @Test
