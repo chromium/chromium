@@ -33,7 +33,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isCrostiniSupported} from '../common/load_time_booleans.js';
+import {isCrostiniSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -230,6 +230,14 @@ class OsAboutPageElement extends OsAboutPageBase {
           Setting.kFirmwareUpdates,
         ]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readonly: true,
+      },
     };
   }
 
@@ -269,6 +277,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   private showTPMFirmwareUpdateDialog_: boolean;
   private updateInfo_?: AboutPageUpdateInfo;
   private isPendingOsUpdateDeepLink_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
 
   private aboutBrowserProxy_: AboutPageBrowserProxy;
 
@@ -721,6 +730,39 @@ class OsAboutPageElement extends OsAboutPageBase {
       return true;
     }
     return this.showUpdateStatus_;
+  }
+
+  private getShowReleaseNotesSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('aboutShowReleaseNotesDescription') :
+        null;
+  }
+
+  private getHelpUsingChromeOsSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('aboutGetHelpDescription') :
+        null;
+  }
+
+  private getReportIssueSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('aboutSendFeedbackDescription') :
+        null;
+  }
+
+  private getDiagnosticsSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('aboutDiagnosticseDescription') :
+        null;
+  }
+
+  private getFirmwareSublabel_(): string|null {
+    if (this.isRevampWayfindingEnabled_) {
+      return this.firmwareUpdateCount_ > 0 ?
+          this.i18n('aboutFirmwareUpdateAvailableDescription') :
+          this.i18n('aboutFirmwareUpToDateDescription');
+    }
+    return null;
   }
 }
 

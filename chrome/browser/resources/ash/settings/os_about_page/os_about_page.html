@@ -176,6 +176,7 @@
           <cr-link-row class="hr" id="releaseNotesOnline"
               on-click="onReleaseNotesClick_"
               label="$i18n{aboutShowReleaseNotes}"
+              sub-label="[[getShowReleaseNotesSublabel_()]]"
               external
               deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
           </cr-link-row>
@@ -191,6 +192,7 @@
         </template>
         <cr-link-row class="hr" id="help" on-click="onHelpClick_"
             label="$i18n{aboutGetHelpUsingChromeOs}"
+            sub-label="[[getHelpUsingChromeOsSublabel_()]]"
             external
             deep-link-focus-id$="[[Setting.kGetHelpWithChromeOs]]">
         </cr-link-row>
@@ -199,6 +201,7 @@
             on-click="onReportIssueClick_"
             hidden="[[!prefs.feedback_allowed.value]]"
             label="[[getReportIssueLabel_()]]"
+            sub-label="[[getReportIssueSublabel_()]]"
             external
             deep-link-focus-id$="[[Setting.kReportAnIssue]]">
         </cr-link-row>
@@ -206,12 +209,14 @@
         <cr-link-row class="hr" id="diagnostics"
             on-click="onDiagnosticsClick_"
             label="$i18n{aboutDiagnostics}"
+            sub-label="[[getDiagnosticsSublabel_()]]"
             external
             deep-link-focus-id$="[[Setting.kDiagnostics]]">
         </cr-link-row>
         <cr-link-row class="hr" id="firmwareUpdates"
             on-click="onFirmwareUpdatesClick_"
             label="$i18n{aboutFirmwareUpdates}"
+            sub-label="[[getFirmwareSublabel_(firmwareUpdateCount_)]]"
             external
             using-slotted-label
             deep-link-focus-id$="[[Setting.kFirmwareUpdates]]">
