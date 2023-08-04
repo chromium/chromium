@@ -2521,45 +2521,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
           grey_accessibilityID(kTableViewActivityIndicatorHeaderFooterViewId)];
 }
 
-// Checks that tabs are sorted by their recency when the feature is enabled.
-- (void)testRecencySort {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The RecencyTab Grid Recency Sort"
-                           @"feature is only supported on iPhone.");
-  }
-
-  [self relaunchAppWithTabGridRecencySortEnabled];
-  [self loadTestURLsInNewTabs];
-  [ChromeEarlGreyUI openTabGrid];
-
-  [self verifyVisibleTabsCount:4];
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Third tab has no title by design in this test class, so its URL is its
-  // fallback title. But since it depends on the port of the HTTP server
-  // underneath, it is not easily computable and checkable. So, don't check for
-  // it directly.
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle4, 3)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Open the second tab.
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 1)]
-      performAction:grey_tap()];
-
-  // Check that the order changed in the tab grid: 1, 3, 4, 2.
-  [ChromeEarlGreyUI openTabGrid];
-
-  [self verifyVisibleTabsCount:4];
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle4, 2)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 3)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests that closing a tab works successfully in incognito search results.
 - (void)testLastIncognitoTabCloses {
   [ChromeEarlGrey openNewIncognitoTab];
@@ -2751,14 +2712,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
       kTabInactivityThresholdParameterName + "/" +
       kTabInactivityThresholdImmediateDemoParam);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
-// Relaunches the app with tab-grid-recency-sort enabled.
-- (void)relaunchAppWithTabGridRecencySortEnabled {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kTabGridRecencySort);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

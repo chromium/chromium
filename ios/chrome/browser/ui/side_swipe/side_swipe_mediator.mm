@@ -263,11 +263,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 }
 
 - (void)handleiPadTabSwipe:(SideSwipeGestureRecognizer*)gesture {
-  // Don't handle swipe when tabs are sorted by recency.
-  if (IsTabGridSortedByRecency()) {
-    return;
-  }
-
   // Don't handle swipe when there are no tabs.
   int count = self.webStateList->count();
   if (count == 0) {
@@ -450,11 +445,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 
 // Show horizontal swipe stack view for iPhone.
 - (void)handleiPhoneTabSwipe:(SideSwipeGestureRecognizer*)gesture {
-  // Don't handle swipe when tabs are sorted by recency.
-  if (IsTabGridSortedByRecency()) {
-    return;
-  }
-
   if (gesture.state == UIGestureRecognizerStateBegan) {
     _inSwipe = YES;
 

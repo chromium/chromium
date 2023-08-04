@@ -1303,10 +1303,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // Don't support dropping items if the drag&drop handler is not set.
     return NO;
   }
-  if (IsTabGridSortedByRecency() && self.localDragActionInProgress) {
-    // Don't support dropping local items when sorting by recency.
-    return NO;
-  }
   // Prevent dropping tabs into grid while displaying search results.
   return (_mode != TabGridModeSearch);
 }

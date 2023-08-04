@@ -943,10 +943,6 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableSessionSerializationOptimizationsName[];
 extern const char kEnableSessionSerializationOptimizationsDescription[];
 
-// Title and description for the flag to sort the tab by recency in the TabGrid.
-extern const char kTabGridRecencySortName[];
-extern const char kTabGridRecencySortDescription[];
-
 // Title and description for the tab grid refactoring flag.
 extern const char kTabGridRefactoringName[];
 extern const char kTabGridRefactoringDescription[];

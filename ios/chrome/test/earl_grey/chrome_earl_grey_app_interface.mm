@@ -1184,10 +1184,6 @@ NSString* SerializedValue(const base::Value* value) {
   return IsUIButtonConfigurationEnabled();
 }
 
-+ (BOOL)isSortingTabsByRecency {
-  return IsTabGridSortedByRecency();
-}
-
 + (BOOL)isBottomOmniboxSteadyStateEnabled {
   return IsBottomOmniboxSteadyStateEnabled();
 }

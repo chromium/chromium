@@ -72,38 +72,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 namespace {
 
-// Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
-// last active time.
-NSArray<TabSwitcherItem*>* CreateItemsOrderedByLastActiveTime(
-    WebStateList* web_state_list) {
-  DCHECK(IsTabGridSortedByRecency());
-  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
-  std::vector<web::WebState*> web_states;
-
-  int first_index = web_state_list->GetIndexOfFirstNonPinnedWebState();
-  DCHECK(first_index == 0 || IsPinnedTabsEnabled());
-
-  for (int i = first_index; i < web_state_list->count(); i++) {
-    DCHECK(!web_state_list->IsWebStatePinnedAt(i));
-    web_states.push_back(web_state_list->GetWebStateAt(i));
-  }
-  std::sort(web_states.begin(), web_states.end(),
-            [](web::WebState* a, web::WebState* b) -> bool {
-              return a->GetLastActiveTime() < b->GetLastActiveTime();
-            });
-
-  for (web::WebState* web_state : web_states) {
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
-  }
-  return items;
-}
-
-// Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
-// index.
-NSArray<TabSwitcherItem*>* CreateItemsOrderedByIndex(
-    WebStateList* web_state_list) {
-  DCHECK(!IsTabGridSortedByRecency());
+// Constructs an array of TabSwitcherItems from a `web_state_list`.
+NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
 
   int first_index = web_state_list->GetIndexOfFirstNonPinnedWebState();
@@ -116,14 +86,6 @@ NSArray<TabSwitcherItem*>* CreateItemsOrderedByIndex(
         addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
   return items;
-}
-
-// Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
-  if (IsTabGridSortedByRecency()) {
-    return CreateItemsOrderedByLastActiveTime(web_state_list);
-  }
-  return CreateItemsOrderedByIndex(web_state_list);
 }
 
 void LogPriceDropMetrics(web::WebState* web_state) {
@@ -209,11 +171,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
             _webStateObserverBridge.get());
   }
   return self;
-}
-
-- (void)prepareToShowTabGrid {
-  DCHECK(IsTabGridSortedByRecency());
-  [self resetToAllItems];
 }
 
 #pragma mark - Public properties

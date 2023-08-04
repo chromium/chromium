@@ -7747,7 +7747,7 @@
             ],
             "experiments": [
                 {
-                    "name": "NoCount-Creation-TwoWeeks",
+                    "name": "NoCount-TwoWeeks",
                     "params": {
                         "variant": "tab-inactivity-threshold-two-weeks"
                     },
@@ -7755,8 +7755,7 @@
                         "TabInactivityThreshold"
                     ],
                     "disable_features": [
-                        "ShowInactiveTabsCount",
-                        "TabGridRecencySort"
+                        "ShowInactiveTabsCount"
                     ]
                 }
             ]

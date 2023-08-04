@@ -1382,10 +1382,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
 }
 
-- (BOOL)isSortingTabsByRecency {
-  return [ChromeEarlGreyAppInterface isSortingTabsByRecency];
-}
-
 - (BOOL)isBottomOmniboxSteadyStateEnabled {
   return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled];
 }

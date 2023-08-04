@@ -543,9 +543,6 @@
 // Returns whether UIButtonConfiguration changes are enabled.
 + (BOOL)isUIButtonConfigurationEnabled;
 
-// Returns whether TabGrid is sorted by recency (#tab-grid-recency-sort).
-+ (BOOL)isSortingTabsByRecency;
-
 // Returns whether the bottom omnibox steady state feature is enabled.
 + (BOOL)isBottomOmniboxSteadyStateEnabled;
 

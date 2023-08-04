@@ -1090,10 +1090,6 @@ const char kEnableSessionSerializationOptimizationsDescription[] =
     "and the ability to load only the minimum amount of data when restoring "
     "the session from disk.";
 
-const char kTabGridRecencySortName[] = "Change TabGrid sorting";
-const char kTabGridRecencySortDescription[] =
-    "When enabled, the tabs in the Tab Grid are sorted differently.";
-
 const char kTabGridRefactoringName[] = "Enable tab grid refactoring";
 const char kTabGridRefactoringDescription[] =
     "When enabled, the Tab Grid use the refactored version, it should not have "

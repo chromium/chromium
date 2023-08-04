@@ -152,12 +152,6 @@ BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 // Feature flag to enable Apple Calendar event in experience kit.
 BASE_DECLARE_FEATURE(kEnableExpKitAppleCalendar);
 
-// When enabled sort tab by last usage in the TabGrid.
-BASE_DECLARE_FEATURE(kTabGridRecencySort);
-
-// Whether the tab grid tabs should be sorted by recency.
-bool IsTabGridSortedByRecency();
-
 // When enabled uses new transitions in the TabGrid.
 BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 
