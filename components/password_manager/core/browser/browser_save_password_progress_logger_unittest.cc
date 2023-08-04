@@ -94,11 +94,12 @@ TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormData) {
   EXPECT_TRUE(logger.LogsContainSubstring("Form name: form_name"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form with form tag: true"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form fields:"));
-  EXPECT_TRUE(
-      logger.LogsContainSubstring("password: type=password, renderer_id = 10, "
-                                  "visible, empty, autocomplete=new-password"));
   EXPECT_TRUE(logger.LogsContainSubstring(
-      "email: type=text, renderer_id = 42, invisible, non-empty"));
+      "password: signature=2051817934, type=password, renderer_id=10, "
+      "visible, empty, autocomplete=new-password"));
+  EXPECT_TRUE(
+      logger.LogsContainSubstring("email: signature=420638584, type=text, "
+                                  "renderer_id=42, invisible, non-empty"));
 }
 
 TEST_F(BrowserSavePasswordProgressLoggerTest,
@@ -121,11 +122,11 @@ TEST_F(BrowserSavePasswordProgressLoggerTest,
   EXPECT_TRUE(logger.LogsContainSubstring("Action: http://m.myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form fields:"));
   EXPECT_TRUE(logger.LogsContainSubstring(
-      "password: 2051817934, type=password, renderer_id = 10, "
-      "autocomplete=new-password, Server Type: NEW_PASSWORD, "
-      "All Server Predictions: [NEW_PASSWORD]"));
+      "password: signature=2051817934, type=password, renderer_id=10, "
+      "visible, empty, autocomplete=new-password, Server Type= NEW_PASSWORD, "
+      "All Server Predictions= [NEW_PASSWORD]"));
   EXPECT_TRUE(logger.LogsContainSubstring(
-      "email: 420638584, type=text, renderer_id = 42"));
+      "email: signature=420638584, type=text, renderer_id=42"));
 }
 
 TEST(SavePasswordProgressLoggerTest, LogPasswordForm) {

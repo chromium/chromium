@@ -180,6 +180,9 @@ class SavePasswordProgressLogger {
   void LogNumber(StringID label, size_t unsigned_number);
   void LogMessage(StringID message);
 
+  // Returns a log string representing `field`.
+  static std::string GetFormFieldDataLogString(const FormFieldData& field);
+
   // Removes privacy sensitive parts of `url` (currently all but host and
   // scheme).
   static std::string ScrubURL(const GURL& url);

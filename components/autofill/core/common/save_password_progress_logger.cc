@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/common/signatures.h"
@@ -70,19 +71,7 @@ void SavePasswordProgressLogger::LogFormData(
   // Log fields.
   message += GetStringFromID(STRING_FIELDS) + ": " + "\n";
   for (const auto& field : form_data.fields) {
-    std::string is_visible = field.is_focusable ? "visible" : "invisible";
-    std::string is_empty = field.value.empty() ? "empty" : "non-empty";
-    std::string autocomplete =
-        field.autocomplete_attribute.empty()
-            ? std::string()
-            : (", autocomplete=" +
-               ScrubElementID(field.autocomplete_attribute));
-    std::string field_info =
-        ScrubElementID(field.name) +
-        ": type=" + ScrubElementID(field.form_control_type) +
-        ", renderer_id = " + NumberToString(field.unique_renderer_id.value()) +
-        ", " + is_visible + ", " + is_empty + autocomplete + "\n";
-    message += field_info;
+    message += GetFormFieldDataLogString(field) + "\n";
   }
   message += "}";
   SendLog(message);
@@ -125,6 +114,24 @@ void SavePasswordProgressLogger::LogNumber(
 void SavePasswordProgressLogger::LogMessage(
     SavePasswordProgressLogger::StringID message) {
   LogValue(STRING_MESSAGE, Value(GetStringFromID(message)));
+}
+
+// static
+std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
+    const FormFieldData& field) {
+  const char* const is_visible = field.is_focusable ? "visible" : "invisible";
+  const char* const is_empty = field.value.empty() ? "empty" : "non-empty";
+  std::string autocomplete =
+      field.autocomplete_attribute.empty()
+          ? std::string()
+          : (", autocomplete=" + ScrubElementID(field.autocomplete_attribute));
+  return base::StringPrintf(
+      "%s: signature=%s, type=%s, renderer_id=%s, %s, %s%s",
+      ScrubElementID(field.name).c_str(),
+      base::NumberToString(*CalculateFieldSignatureForField(field)).c_str(),
+      ScrubElementID(field.form_control_type).c_str(),
+      NumberToString(*field.unique_renderer_id).c_str(), is_visible, is_empty,
+      autocomplete.c_str());
 }
 
 // static

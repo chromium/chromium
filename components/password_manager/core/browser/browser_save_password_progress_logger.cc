@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_printer.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -41,14 +42,6 @@ using base::NumberToString;
 namespace password_manager {
 
 namespace {
-
-// Replaces all non-digits in |str| by spaces.
-std::string ScrubNonDigit(std::string str) {
-  std::replace_if(
-      str.begin(), str.end(), [](char c) { return !base::IsAsciiDigit(c); },
-      ' ');
-  return str;
-}
 
 std::string GenerationTypeToString(
     AutofillUploadContents::Field::PasswordGenerationType type) {
@@ -120,26 +113,11 @@ BrowserSavePasswordProgressLogger::StringID FormSchemeToStringID(
   return BrowserSavePasswordProgressLogger::STRING_INVALID;
 }
 
-// TODO(crbug.com/1466435): Combine with or re-use the methods in
-// `SavePasswordProgressLogger`.
 // Returns a log string describing `field`.
-std::string GetFormFieldDataLogString(const FormFieldData& field) {
+std::string GetFormFieldDataWithPropertiesMaskLogString(
+    const FormFieldData& field) {
   std::string field_info =
-      BrowserSavePasswordProgressLogger::ScrubElementID(field.name) + ": " +
-      ScrubNonDigit(base::NumberToString(
-          *autofill::CalculateFieldSignatureForField(field))) +
-      ", type=" +
-      BrowserSavePasswordProgressLogger::ScrubElementID(
-          field.form_control_type);
-
-  field_info +=
-      ", renderer_id = " + NumberToString(field.unique_renderer_id.value());
-
-  if (!field.autocomplete_attribute.empty()) {
-    field_info +=
-        ", autocomplete=" + BrowserSavePasswordProgressLogger::ScrubElementID(
-                                field.autocomplete_attribute);
-  }
+      autofill::SavePasswordProgressLogger::GetFormFieldDataLogString(field);
 
   if (field.properties_mask) {
     field_info += ", properties=";
@@ -173,7 +151,7 @@ std::string GetFormDataFieldsAndPredictionsLogString(
                 BrowserSavePasswordProgressLogger::STRING_FIELDS) +
             ": " + "\n";
   for (const FormFieldData& field : form.fields) {
-    std::string field_info = GetFormFieldDataLogString(field);
+    std::string field_info = GetFormFieldDataWithPropertiesMaskLogString(field);
 
     if (!predictions.contains(field.global_id())) {
       result += field_info + "\n";
@@ -184,7 +162,7 @@ std::string GetFormDataFieldsAndPredictionsLogString(
 
     if (prediction.server_type() != autofill::NO_SERVER_DATA) {
       base::StrAppend(&field_info,
-                      {", Server Type: ",
+                      {", Server Type= ",
                        FieldTypeToStringPiece(prediction.server_type())});
 
       std::vector<std::string> all_predictions;
@@ -194,7 +172,7 @@ std::string GetFormDataFieldsAndPredictionsLogString(
       }
 
       base::StrAppend(&field_info,
-                      {", All Server Predictions: [",
+                      {", All Server Predictions= [",
                        base::JoinString(all_predictions, ", "), "]"});
     }
 
@@ -308,7 +286,8 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
   std::string result;
   result += GetStringFromID(STRING_FIELDS) + ": " + "\n";
   for (const auto& field : form_structure) {
-    std::string field_info = GetFormFieldDataLogString(*field);
+    std::string field_info =
+        GetFormFieldDataWithPropertiesMaskLogString(*field);
 
     if (field->server_type() != autofill::NO_SERVER_DATA) {
       base::StrAppend(
