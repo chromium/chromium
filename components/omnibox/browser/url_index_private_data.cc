@@ -207,7 +207,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     // re-scored. Do not discard matches by resizing. These will have a zero
     // relevance score, so it's ok to not sort anything past `first_pass_size`.
     bool skip_resize =
-        OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled();
+        OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled();
     if (!skip_resize) {
       scored_items.resize(first_pass_size);
     }

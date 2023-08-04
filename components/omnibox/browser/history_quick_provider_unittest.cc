@@ -1010,7 +1010,7 @@ TEST_F(HistoryQuickProviderTest, MaxMatches) {
       /*enabled_features=*/
       {{omnibox::kUrlScoringModel, {}},
        {omnibox::kMlUrlScoring,
-        {{"MlUrlScoringIncreaseNumCandidates", "true"}}}},
+        {{"MlUrlScoringUnlimitedNumCandidates", "true"}}}},
       /*disabled_features=*/{});
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
 
@@ -1028,6 +1028,14 @@ TEST_F(HistoryQuickProviderTest, MaxMatches) {
     EXPECT_TRUE(matches[i].culled_by_provider);
     EXPECT_EQ(matches[i].relevance, 0);
   }
+
+  // Unlimited matches should ignore the provider max matches, even if the
+  // `kMlUrlScoringMaxMatchesByProvider` param is set.
+  scoped_ml_config.GetMLConfig().ml_url_scoring_max_matches_by_provider = "*:6";
+
+  provider().Start(input, false);
+  matches = provider().matches();
+  EXPECT_EQ(matches.size(), 8u);
 }
 
 class HQPDomainSuggestionsTest : public HistoryQuickProviderTest {

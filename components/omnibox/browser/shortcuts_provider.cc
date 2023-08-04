@@ -350,7 +350,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
                    : elem1.relevance > elem2.relevance;
       });
   bool ignore_provider_limit =
-      OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled();
+      OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled();
   if (!ignore_provider_limit &&
       shortcut_matches.size() > provider_max_matches_) {
     shortcut_matches.erase(shortcut_matches.begin() + provider_max_matches_,

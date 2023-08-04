@@ -127,7 +127,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   // already be resized in the above call to `HistoryItemsForTerms()`.
   ResizeMatches(
       max_matches,
-      OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled());
+      OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled());
 
   // Add suggestions from the user's highly visited domains bypassing
   // `provider_max_matches_`.

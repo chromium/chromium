@@ -144,7 +144,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
                     matches_.end(), AutocompleteMatch::MoreRelevant);
   ResizeMatches(
       num_matches,
-      OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled());
+      OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled());
 }
 
 query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(

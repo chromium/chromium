@@ -787,7 +787,7 @@ TEST_F(ShortcutsProviderTest, DoAutocomplete) {
         /*enabled_features=*/
         {{omnibox::kUrlScoringModel, {}},
          {omnibox::kMlUrlScoring,
-          {{"MlUrlScoringIncreaseNumCandidates", "true"}}}},
+          {{"MlUrlScoringUnlimitedNumCandidates", "true"}}}},
         /*disabled_features=*/{});
 
     OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
@@ -805,6 +805,15 @@ TEST_F(ShortcutsProviderTest, DoAutocomplete) {
     // marked as such and have a zero relevance score.
     EXPECT_TRUE(matches[3].culled_by_provider);
     EXPECT_EQ(matches[3].relevance, 0);
+
+    // Unlimited matches should ignore the provider max matches, even if the
+    // `kMlUrlScoringMaxMatchesByProvider` param is set.
+    scoped_ml_config.GetMLConfig().ml_url_scoring_max_matches_by_provider =
+        "*:2";
+
+    provider_->Start(input, false);
+    const auto& new_matches = provider_->matches();
+    EXPECT_EQ(new_matches.size(), 4u);
   }
 }
 

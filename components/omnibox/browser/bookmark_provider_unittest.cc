@@ -617,6 +617,45 @@ TEST_F(BookmarkProviderTest, MaxMatches) {
 
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), provider_->provider_max_matches_in_keyword_mode());
+
+  // The provider should not limit the number of suggestions when ML scoring
+  // w/increased candidates is enabled. Any matches beyond the limit should be
+  // marked as culled_by_provider and have a relevance of 0.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+  input.set_prefer_keyword(false);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{omnibox::kUrlScoringModel, {}},
+       {omnibox::kMlUrlScoring,
+        {{"MlUrlScoringUnlimitedNumCandidates", "true"}}}},
+      /*disabled_features=*/{});
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+
+  provider_->Start(input, false);
+  matches = provider_->matches();
+  EXPECT_EQ(matches.size(), 9u);
+  // Matches below the `max_matches` limit.
+  for (size_t i = 0; i < provider_->provider_max_matches(); i++) {
+    EXPECT_FALSE(matches[i].culled_by_provider);
+    EXPECT_GT(matches[i].relevance, 0);
+  }
+  // "Extra" matches above the `max_matches` limit. Should have 0 relevance and
+  // be marked as `culled_by_provider`.
+  for (size_t i = provider_->provider_max_matches(); i < matches.size(); i++) {
+    EXPECT_TRUE(matches[i].culled_by_provider);
+    EXPECT_EQ(matches[i].relevance, 0);
+  }
+
+  // Unlimited matches should ignore the provider max matches, even if the
+  // `kMlUrlScoringMaxMatchesByProvider` param is set.
+  scoped_ml_config.GetMLConfig().ml_url_scoring_max_matches_by_provider = "*:6";
+
+  provider_->Start(input, false);
+  matches = provider_->matches();
+  EXPECT_EQ(matches.size(), 9u);
 }
 
 TEST_F(BookmarkProviderTest, AccountBookmarkModel) {

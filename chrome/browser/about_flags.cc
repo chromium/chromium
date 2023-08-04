@@ -1564,9 +1564,14 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringPreserveDefault[] = {
 const FeatureEntry::FeatureParam kOmniboxMlIndividualUrlScoring[] = {
     {"MlBatchUrlScoring", "false"},
 };
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringIncreaseNumCandidates[] = {
-    {"MlUrlScoringIncreaseNumCandidates", "true"},
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringUnlimitedNumCandidates[] =
+    {
+        {"MlUrlScoringUnlimitedNumCandidates", "true"},
 };
+// Sets Bookmark(1), History Quick(4), History URL(8), Shortcuts(64), and
+// History Fuzzy(65536) providers max matches to 10.
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
+    {{"MlUrlScoringMaxMatchesByProvider", "1:10,4:10,8:10,64:10,65536:10"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
     {"Run the model but do not rescore or rerank the matches (counterfactual)",
@@ -1582,9 +1587,12 @@ const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
      std::size(kOmniboxMlUrlScoringPreserveDefault), nullptr},
     {"Run the model on individual matches", kOmniboxMlIndividualUrlScoring,
      std::size(kOmniboxMlIndividualUrlScoring), nullptr},
-    {"Run the model on additional suggestion candidates",
-     kOmniboxMlUrlScoringIncreaseNumCandidates,
-     std::size(kOmniboxMlUrlScoringIncreaseNumCandidates), nullptr},
+    {"Run the model with unlimited suggestion candidates",
+     kOmniboxMlUrlScoringUnlimitedNumCandidates,
+     std::size(kOmniboxMlUrlScoringUnlimitedNumCandidates), nullptr},
+    {"Increase provider max limit to 10",
+     kOmniboxMlUrlScoringMaxMatchesByProvider10,
+     std::size(kOmniboxMlUrlScoringMaxMatchesByProvider10), nullptr},
 };
 const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
     {
