@@ -151,6 +151,12 @@ signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()
   return adaptor_->identity_test_env();
 }
 
+void SupervisionMixin::InitFeatures() {
+  if (embedded_test_server_setup_mixin_.has_value()) {
+    embedded_test_server_setup_mixin_->InitFeatures();
+  }
+}
+
 std::ostream& operator<<(std::ostream& stream,
                          const SupervisionMixin::SignInMode& sign_in_mode) {
   switch (sign_in_mode) {

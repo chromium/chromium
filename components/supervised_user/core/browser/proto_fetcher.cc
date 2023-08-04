@@ -96,7 +96,7 @@ constexpr StringPiece kSystemParameters("alt=proto");
 // parameter that configures the remote endpoint to respond with a protocol
 // buffer message.
 GURL CreateRequestUrl(const FetcherConfig& config) {
-  return GURL(config.service_endpoint)
+  return GURL(config.service_endpoint.Get())
       .Resolve(base::StrCat({config.service_path, "?", kSystemParameters}));
 }
 

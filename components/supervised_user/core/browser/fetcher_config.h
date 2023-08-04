@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/backoff_entry.h"
@@ -14,6 +16,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
+
+BASE_DECLARE_FEATURE(kSupervisedUserProtoFetcherConfig);
 
 namespace annotations {
 // Traffic annotations can only live in cc/mm files.
@@ -26,9 +30,10 @@ net::NetworkTrafficAnnotationTag CreatePermissionRequestTag();
 struct FetcherConfig {
   enum class Method { kUndefined, kGet, kPost };
 
-  // Primary endpoint of the fetcher.
-  base::StringPiece service_endpoint{
-      "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/"};
+  // Primary endpoint of the fetcher. May be overridden with feature flags.
+  base::FeatureParam<std::string> service_endpoint{
+      &kSupervisedUserProtoFetcherConfig, "service_endpoint",
+      "https://kidsmanagement-pa.googleapis.com"};
 
   // Path of the service. See the service specification at
   // google3/google/internal/kids/chrome/v1/kidschromemanagement.proto for
@@ -53,7 +58,7 @@ struct FetcherConfig {
 };
 
 constexpr FetcherConfig kClassifyUrlConfig = {
-    .service_path = "people/me:classifyUrl",
+    .service_path = "/kidsmanagement/v1/people/me:classifyUrl",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
     .method = FetcherConfig::Method::kPost,
@@ -62,7 +67,7 @@ constexpr FetcherConfig kClassifyUrlConfig = {
 };
 
 constexpr FetcherConfig kListFamilyMembersLegacyConfig{
-    .service_path = "families/mine/members",
+    .service_path = "/kidsmanagement/v1/families/mine/members",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
     .method = FetcherConfig::Method::kGet,
@@ -71,7 +76,7 @@ constexpr FetcherConfig kListFamilyMembersLegacyConfig{
 };
 
 constexpr FetcherConfig kListFamilyMembersConfig{
-    .service_path = "families/mine/members",
+    .service_path = "/kidsmanagement/v1/families/mine/members",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
     .method = FetcherConfig::Method::kGet,
@@ -107,7 +112,7 @@ constexpr FetcherConfig kListFamilyMembersConfig{
 };
 
 constexpr FetcherConfig kCreatePermissionRequestConfig = {
-    .service_path = "people/me/permissionRequests",
+    .service_path = "/kidsmanagement/v1/people/me/permissionRequests",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
     .method = FetcherConfig::Method::kPost,

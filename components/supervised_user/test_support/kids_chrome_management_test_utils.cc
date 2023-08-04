@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_chrome_management_test_utils.h"
+#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 
 #include <utility>
 

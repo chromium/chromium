@@ -28,13 +28,25 @@ static_library("list_family_members_service") {
   ]
 
   deps = [
+    ":fetcher",
+    ":fetcher_config",
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common:features",
+  ]
+}
+
+static_library("fetcher_config") {
+  sources = [
+    "fetcher_config.cc",
+    "fetcher_config.h",
+  ]
+  deps = [
+    "//google_apis",
+    "//net/traffic_annotation",
   ]
 }
 
@@ -42,12 +54,11 @@ static_library("fetcher") {
   sources = [
     "api_access_token_fetcher.cc",
     "api_access_token_fetcher.h",
-    "fetcher_config.cc",
-    "fetcher_config.h",
     "proto_fetcher.cc",
     "proto_fetcher.h",
   ]
   deps = [
+    ":fetcher_config",
     "//base",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser/proto",
@@ -113,6 +124,7 @@ static_library("browser") {
 
   deps = [
     ":fetcher",
+    ":fetcher_config",
     ":list_family_members_service",
     ":supervised_user_preferences",
     "//base",
@@ -133,25 +145,6 @@ static_library("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//ui/base",
-    "//url",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "kids_chrome_management_test_utils.cc",
-    "kids_chrome_management_test_utils.h",
-  ]
-  deps = [
-    ":fetcher",
-    "//base",
-    "//components/safe_search_api",
-    "//components/signin/public/identity_manager",
-    "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/browser/proto",
-    "//net/traffic_annotation",
-    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -180,9 +173,9 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":fetcher",
+    ":fetcher_config",
     ":list_family_members_service",
     ":supervised_user_preferences",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",
@@ -196,6 +189,8 @@ source_set("unit_tests") {
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
+    "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//services/network:test_support",

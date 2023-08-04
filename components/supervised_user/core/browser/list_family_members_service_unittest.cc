@@ -7,7 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_test_utils.h"
+#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"

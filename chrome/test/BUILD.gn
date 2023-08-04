@@ -450,9 +450,9 @@ static_library("test_support") {
     public_deps += [
       "//chrome/browser/supervised_user:test_support",
       "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser:test_support",
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
+      "//components/supervised_user/test_support",
     ]
   }
 
@@ -2600,6 +2600,10 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    if (enable_supervised_users) {
+      deps += [ "//components/supervised_user/test_support" ]
+    }
 
     if (enable_search_engine_choice) {
       sources += [
@@ -9797,11 +9801,6 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/system",
     ]
-    if (enable_supervised_users) {
-      public_deps += [
-        "//components/supervised_user/core/browser:supervised_user_preferences",
-      ]
-    }
 
     deps = [
       "//build:chromeos_buildflags",
@@ -9880,6 +9879,13 @@ if (!is_android) {
       "//ui/views:test_support",
       "//ui/views/controls/webview",
     ]
+
+    if (enable_supervised_users) {
+      deps += [ "//components/supervised_user/test_support" ]
+      public_deps += [
+        "//components/supervised_user/core/browser:supervised_user_preferences",
+      ]
+    }
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]

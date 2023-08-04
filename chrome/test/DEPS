@@ -82,6 +82,7 @@ include_rules = [
   "+components/federated_learning",
   "+components/supervised_user/core/browser",
   "+components/supervised_user/core/common",
+  "+components/supervised_user/test_support",
   "+components/sync/test",
   "+components/sync_preferences",
   "+components/unified_consent",

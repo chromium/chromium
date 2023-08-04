@@ -69,6 +69,7 @@ class SupervisedUserRegionalURLFilterTest
     feature_list_.InitWithFeatures(
         GetEnabledFeatures(),
         /*disabled_features=*/{features::kHttpsUpgrades});
+    supervision_mixin_.InitFeatures();
   }
 
  protected:

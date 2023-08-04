@@ -14,11 +14,15 @@
 #include "base/strings/string_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 
 namespace supervised_user {
 
 namespace {
+
+constexpr base::StringPiece kKidsManagementServiceEndpoint{
+    "kidsmanagement.googleapis.com"};
 
 std::string CreateResolverRule(base::StringPiece host,
                                base::StringPiece target) {
@@ -28,6 +32,11 @@ std::string CreateResolverRule(base::StringPiece host,
 std::vector<std::string> SplitHostList(base::StringPiece host_list) {
   return base::SplitString(host_list, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
+}
+
+inline void AddKidsManagementHostToResolve(
+    std::vector<std::string>& resolver_list) {
+  resolver_list.emplace_back(kKidsManagementServiceEndpoint);
 }
 }  // namespace
 
@@ -40,11 +49,13 @@ EmbeddedTestServerSetupMixin::EmbeddedTestServerSetupMixin(
       resolver_rules_map_host_list_(
           SplitHostList(options.resolver_rules_map_host_list)) {
   CHECK(server) << "This mixin requires an embedded test server";
+  AddKidsManagementHostToResolve(resolver_rules_map_host_list_);
 }
 
 EmbeddedTestServerSetupMixin::~EmbeddedTestServerSetupMixin() = default;
 
 void EmbeddedTestServerSetupMixin::SetUp() {
+  api_mock_.InstallOn(embedded_test_server_);
   CHECK(embedded_test_server_->InitializeAndListen());
 }
 
@@ -71,6 +82,11 @@ void EmbeddedTestServerSetupMixin::SetUpOnMainThread() {
 
 void EmbeddedTestServerSetupMixin::TearDownOnMainThread() {
   CHECK(embedded_test_server_->ShutdownAndWaitUntilComplete());
+}
+
+void EmbeddedTestServerSetupMixin::InitFeatures() {
+  SetHttpEndpointsForKidsManagementApis(feature_list_,
+                                        kKidsManagementServiceEndpoint);
 }
 
 }  // namespace supervised_user

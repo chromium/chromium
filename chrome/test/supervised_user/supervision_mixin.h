@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -70,6 +69,11 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   void SetUpOnMainThread() override;
 
   signin::IdentityTestEnvironment* GetIdentityTestEnvironment() const;
+
+  // ScopedFeatureList can be nested, but they must be destroyed in the reverse
+  // order of initialization (not declaration). The features are typically
+  // enabled by calling ScopedFeatureList::Init*() methods, expose this as well.
+  void InitFeatures();
 
  private:
   void SetUpTestServer();

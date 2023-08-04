@@ -14,12 +14,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/test.pb.h"
+#include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_errors.h"
@@ -51,8 +53,7 @@ using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
 
 constexpr FetcherConfig kTestGetConfig{
-    .service_endpoint = "http://example.com",
-    .service_path = "superviser/user:get",
+    .service_path = "/superviser/user:get",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope =
         "https://www.googleapis.com/auth/kid.permission",  // Real scope
@@ -66,8 +67,7 @@ constexpr FetcherConfig kTestGetConfig{
 };
 
 constexpr FetcherConfig kTestPostConfig{
-    .service_endpoint = "http://example.com",
-    .service_path = "superviser/user:post",
+    .service_path = "/superviser/user:post",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope =
         "https://www.googleapis.com/auth/kid.permission",  // Real scope
@@ -81,8 +81,7 @@ constexpr FetcherConfig kTestPostConfig{
 };
 
 constexpr FetcherConfig kTestRetryConfig{
-    .service_endpoint = "http://example.com",
-    .service_path = "superviser/user:retry",
+    .service_path = "/superviser/user:retry",
     // TODO(b/284523446): Refer to GaiaConstants rather than literal.
     .oauth2_scope =
         "https://www.googleapis.com/auth/kid.permission",  // Real scope
@@ -142,6 +141,10 @@ class Receiver {
 class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
  protected:
   using Fetcher = DeferredProtoFetcher<Response>;
+
+  void SetUp() override {
+    SetHttpEndpointsForKidsManagementApis(feature_list_, "example.com");
+  }
 
   const FetcherConfig& GetConfig() const { return GetParam(); }
 
@@ -207,6 +210,7 @@ class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
   IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
@@ -220,7 +224,7 @@ TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
       test_url_loader_factory_.GetPendingRequest(0);
 
   GURL expected_url =
-      GURL("http://example.com/" + std::string(GetConfig().service_path) +
+      GURL("http://example.com" + std::string(GetConfig().service_path) +
            "?alt=proto");
   EXPECT_EQ(pending_request->request.url, expected_url);
   EXPECT_EQ(pending_request->request.method, GetConfig().GetHttpMethod());

@@ -135,11 +135,11 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

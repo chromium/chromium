@@ -6,11 +6,16 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace supervised_user {
+
+BASE_FEATURE(kSupervisedUserProtoFetcherConfig,
+             "SupervisedUserProtoFetcherConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace annotations {
 
