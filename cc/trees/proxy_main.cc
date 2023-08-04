@@ -359,7 +359,13 @@ void ProxyMain::BeginMainFrame(
   bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
 
   // If updating the layers resulted in a content update, we need a commit.
-  if (updated)
+  //
+  // [RecordReplay] Scroll events do not always perform a paint commit, however
+  // one is necessary for paint events to be properly collected during scrolling.
+  // Force commits if we're recording or replaying.
+  //
+  // See #RUN-2434 (https://linear.app/replay/issue/RUN-2434)
+  if (updated || recordreplay::IsRecordingOrReplaying("notify-paints"))
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
   commit_trace_ = std::make_unique<devtools_instrumentation::ScopedCommitTrace>(
