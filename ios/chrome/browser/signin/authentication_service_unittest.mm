@@ -302,11 +302,6 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .email.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -329,11 +324,6 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .email.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -356,11 +346,6 @@ TEST_F(AuthenticationServiceTest,
 
   // User is signed out (no corresponding identity), and reauth prompt is not
   // set since the user was not syncing.
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .email.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -741,6 +726,8 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
   EXPECT_EQ(invocation_counter, 1u);
 }
 
+// TODO(crbug.com/1462552): Remove this test after kSync users are migrated in
+// phase 3. See ConsentLevel::kSync documentation for details.
 TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
   SetExpectationsForSignIn();
@@ -801,11 +788,6 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .gaia.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_EQ(1, observer_test.GetOnPrimaryAccountRestrictedCounter());
