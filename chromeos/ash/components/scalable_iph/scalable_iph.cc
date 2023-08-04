@@ -311,6 +311,21 @@ BubbleParams ParseBubbleParams(const base::Feature& feature) {
   return param;
 }
 
+bool ValidateVersionNumber(const base::Feature& feature) {
+  std::string version_number_value =
+      GetParamValue(feature, kCustomParamsVersionNumberParamName);
+  if (version_number_value.empty()) {
+    return false;
+  }
+
+  int version_number = 0;
+  if (!base::StringToInt(version_number_value, &version_number)) {
+    return false;
+  }
+
+  return version_number == kCurrentVersionNumber;
+}
+
 }  // namespace
 
 ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
@@ -480,7 +495,17 @@ void ScalableIph::CheckTriggerConditions() {
   DCHECK(tracker_->IsInitialized());
 
   for (const base::Feature* feature : GetFeatureList()) {
-    // TODO(b/289267799): Check our custom extension version number.
+    if (!base::FeatureList::IsEnabled(*feature)) {
+      continue;
+    }
+
+    if (!ValidateVersionNumber(*feature)) {
+      DLOG(WARNING) << "Version number does not match with the current version "
+                       "number. Skipping a config: "
+                    << feature->name;
+      continue;
+    }
+
     if (CheckCustomConditions(*feature) &&
         tracker_->ShouldTriggerHelpUI(*feature)) {
       UiType ui_type = ParseUiType(*feature);

@@ -76,6 +76,12 @@ constexpr char kEventNameUnlocked[] = "ScalableIphUnlocked";
 // IPH.
 constexpr char kEventNameAppListShown[] = "ScalableIphAppListShown";
 
+// All Scalable Iph configs must have version number fields. Scalable Iph
+// ignores a config if it does not have a field with a supported version number.
+// For now, we guarantee nothing about forward or backward compatibility.
+constexpr char kCustomParamsVersionNumberParamName[] = "x_CustomVersionNumber";
+constexpr int kCurrentVersionNumber = 1;
+
 // Constants for custom conditions.
 // Naming convention:
 // Camel case starting with a capital letter. Note that param names must start

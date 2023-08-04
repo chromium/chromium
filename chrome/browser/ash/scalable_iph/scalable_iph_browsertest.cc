@@ -55,10 +55,37 @@ void SendSuspendDone() {
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 }
 
+class ScalableIphBrowserTestVersionNumberNoValue
+    : public ScalableIphBrowserTest {
+ protected:
+  void AppendVersionNumber(base::FieldTrialParams& params) override {}
+};
+
+class ScalableIphBrowserTestVersionNumberIncorrect
+    : public ScalableIphBrowserTest {
+ protected:
+  void AppendVersionNumber(base::FieldTrialParams& params) override {
+    params[FullyQualified(TestIphFeature(),
+                          scalable_iph::kCustomParamsVersionNumberParamName)] =
+        base::NumberToString(scalable_iph::kCurrentVersionNumber - 1);
+  }
+};
+
+class ScalableIphBrowserTestVersionNumberInvalid
+    : public ScalableIphBrowserTest {
+ protected:
+  void AppendVersionNumber(base::FieldTrialParams& params) override {
+    params[FullyQualified(TestIphFeature(),
+                          scalable_iph::kCustomParamsVersionNumberParamName)] =
+        "Invalid";
+  }
+};
+
 class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
+    AppendVersionNumber(params);
     AppendFakeUiParamsNotification(params);
     params[FullyQualified(
         TestIphFeature(),
@@ -88,6 +115,7 @@ class ScalableIphBrowserTestClientAgeBase : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
+    AppendVersionNumber(params);
     AppendFakeUiParamsNotification(params);
     params[FullyQualified(
         TestIphFeature(),
@@ -193,6 +221,7 @@ class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
+    AppendVersionNumber(params);
     AppendFakeUiParamsBubble(params);
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
@@ -433,6 +462,46 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
   ash::AppListController* app_list_controller = ash::AppListController::Get();
   CHECK(app_list_controller);
   app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestVersionNumberNoValue, NoValue) {
+  EnableTestIphFeature();
+
+  // No trigger condition check should happen if it fails to validate a version
+  // number as the config gets skipped.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestVersionNumberIncorrect,
+                       Incorrect) {
+  EnableTestIphFeature();
+
+  // No trigger condition check should happen if it fails to validate a version
+  // number as the config gets skipped.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestVersionNumberInvalid, Invalid) {
+  EnableTestIphFeature();
+
+  // No trigger condition check should happen if it fails to validate a version
+  // number as the config gets skipped.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnection, Online) {
