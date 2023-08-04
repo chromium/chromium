@@ -12,7 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/configure_displays_task.h"
 #include "ui/display/manager/display_configurator.h"
@@ -135,9 +134,6 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   std::vector<DisplaySnapshot*> cached_unassociated_displays_;
 
   std::unique_ptr<ConfigureDisplaysTask> configure_task_;
-
-  // The timestamp when Run() was called. Null if the task is not running.
-  absl::optional<base::TimeTicks> start_timestamp_;
 
   base::WeakPtrFactory<UpdateDisplayConfigurationTask> weak_ptr_factory_{this};
 };

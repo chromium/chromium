@@ -94,7 +94,6 @@ UpdateDisplayConfigurationTask::~UpdateDisplayConfigurationTask() {
 }
 
 void UpdateDisplayConfigurationTask::Run() {
-  start_timestamp_ = base::TimeTicks::Now();
   requesting_displays_ = true;
   delegate_->GetDisplays(
       base::BindOnce(&UpdateDisplayConfigurationTask::OnDisplaysUpdated,
@@ -207,13 +206,8 @@ void UpdateDisplayConfigurationTask::OnEnableSoftwareMirroring(
 }
 
 void UpdateDisplayConfigurationTask::FinishConfiguration(bool success) {
-  DCHECK(start_timestamp_);
-  base::UmaHistogramTimes(
-      "DisplayManager.UpdateDisplayConfigurationTask.ExecutionTime",
-      base::TimeTicks::Now() - *start_timestamp_);
   base::UmaHistogramBoolean(
       "DisplayManager.UpdateDisplayConfigurationTask.Success", success);
-  start_timestamp_.reset();
 
   std::move(callback_).Run(success, cached_displays_,
                            cached_unassociated_displays_, new_display_state_,

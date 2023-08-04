@@ -4899,16 +4899,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DisplayManager.UpdateDisplayConfigurationTask.ExecutionTime"
-    units="ms" expires_after="2022-12-04">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Records the execution time to update the display configuration. Emitted when
-    the update-display-configuration task finishes, successfully or not.
-  </summary>
-</histogram>
-
 <histogram name="DisplayManager.UpdateDisplayConfigurationTask.Success"
     enum="BooleanSuccess" expires_after="2024-06-11">
   <owner>zentaro@chromium.org</owner>
