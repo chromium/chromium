@@ -739,11 +739,6 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  // TODO(crbug.com/1448657) Chrome no longer supports versions of QUIC which
-  // send the quic_user_agent_id. We should remove quic_user_agent_id from
-  // Chrome completely.
-  network_context_params->quic_user_agent_id = "";
-
   // TODO(eroman): Figure out why this doesn't work in single-process mode,
   // or if it does work, now.
   // Should be possible now that a private isolate is used.

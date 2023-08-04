@@ -234,19 +234,10 @@ void IOSIOThread::Init() {
   params_.ignore_certificate_errors = false;
   params_.enable_user_alternate_protocol_ports = false;
 
-  std::string quic_user_agent_id = GetChannelString();
-  if (!quic_user_agent_id.empty())
-    quic_user_agent_id.push_back(' ');
-  quic_user_agent_id.append(
-      version_info::GetProductNameAndVersionForUserAgent());
-  quic_user_agent_id.push_back(' ');
-  quic_user_agent_id.append(web::BuildOSCpuInfo());
-
   // Set up field trials, ignoring debug command line options.
   network_session_configurator::ParseCommandLineAndFieldTrials(
       base::CommandLine(base::CommandLine::NO_PROGRAM),
-      /*is_quic_force_disabled=*/false, quic_user_agent_id, &params_,
-      &quic_params_);
+      /*is_quic_force_disabled=*/false, &params_, &quic_params_);
 
   globals_->system_request_context = ConstructSystemRequestContext();
 }

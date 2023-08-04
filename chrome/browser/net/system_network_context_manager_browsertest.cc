@@ -367,17 +367,6 @@ class SystemNetworkContextManagerFreezeQUICUaBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
-                       QUICUaConfig) {
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-
-  std::string quic_ua = network_context_params->quic_user_agent_id;
-
-  EXPECT_EQ("", quic_ua);
-}
-
 class SystemNetworkContextManagerWPADQuickCheckBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
       public testing::WithParamInterface<bool> {

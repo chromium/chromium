@@ -2602,7 +2602,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   auto quic_context = std::make_unique<net::QuicContext>();
   network_session_configurator::ParseCommandLineAndFieldTrials(
       *base::CommandLine::ForCurrentProcess(), is_quic_force_disabled,
-      params_->quic_user_agent_id, &session_params, quic_context->params());
+      &session_params, quic_context->params());
 
   session_params.disable_idle_sockets_close_on_memory_pressure =
       params_->disable_idle_sockets_close_on_memory_pressure;

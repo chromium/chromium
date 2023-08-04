@@ -97,8 +97,6 @@ struct NET_EXPORT QuicParams {
   // Versions of QUIC which may be used.
   quic::ParsedQuicVersionVector supported_versions =
       DefaultSupportedQuicVersions();
-  // User agent description to send in the QUIC handshake.
-  std::string user_agent_id;
   // Limit on the size of QUIC packets.
   size_t max_packet_length = quic::kDefaultMaxPacketSize;
   // Maximum number of server configs that are to be stored in

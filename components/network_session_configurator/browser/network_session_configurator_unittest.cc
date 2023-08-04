@@ -31,8 +31,7 @@ namespace network_session_configurator {
 
 class NetworkSessionConfiguratorTest : public testing::Test {
  public:
-  NetworkSessionConfiguratorTest()
-      : quic_user_agent_id_("Chrome/52.0.2709.0 Linux x86_64") {
+  NetworkSessionConfiguratorTest() {
     scoped_feature_list_.Init();
     variations::testing::ClearAllVariationParams();
   }
@@ -40,8 +39,7 @@ class NetworkSessionConfiguratorTest : public testing::Test {
   void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line) {
     network_session_configurator::ParseCommandLineAndFieldTrials(
         command_line,
-        /*is_quic_force_disabled=*/false, quic_user_agent_id_, &params_,
-        &quic_params_);
+        /*is_quic_force_disabled=*/false, &params_, &quic_params_);
   }
 
   void ParseFieldTrials() {
@@ -49,7 +47,6 @@ class NetworkSessionConfiguratorTest : public testing::Test {
         base::CommandLine(base::CommandLine::NO_PROGRAM));
   }
 
-  std::string quic_user_agent_id_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::HttpNetworkSessionParams params_;
   net::QuicParams quic_params_;
@@ -98,7 +95,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
   EXPECT_FALSE(params_.enable_quic_proxies_for_https_urls);
-  EXPECT_EQ("Chrome/52.0.2709.0 Linux x86_64", quic_params_.user_agent_id);
   EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_FALSE(
       quic_params_.initial_delay_for_broken_alternative_service.has_value());

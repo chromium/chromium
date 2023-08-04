@@ -2358,7 +2358,6 @@ QuicStreamFactory::CreateCryptoConfigHandle(
           std::make_unique<quic::QuicClientSessionCache>(), this);
 
   quic::QuicCryptoClientConfig* crypto_config = crypto_config_owner->config();
-  crypto_config->set_user_agent_id(params_.user_agent_id);
   crypto_config->AddCanonicalSuffix(".c.youtube.com");
   crypto_config->AddCanonicalSuffix(".ggpht.com");
   crypto_config->AddCanonicalSuffix(".googlevideo.com");
