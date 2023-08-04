@@ -782,6 +782,44 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   TabletModeControllerTestApi().LeaveTabletMode();
 }
 
+// Test that the window is created on the target window. This can crash if
+// ET_SCROLL_FLING_START is sent quickly enough after ET_GESTURE_SCROLL_UPDATE,
+// causing the controller to create the menu on the split view divider
+// (b/293954921).
+TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  UpdateDisplay("1600x1000");
+  auto window = CreateAppWindow();
+  PressPartialPrimary(*window);
+
+  // Start dragging on the menu.
+  const gfx::Point center_point(window->bounds().CenterPoint().x(), 0);
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouchId(/*touch_id=*/0, center_point);
+  event_generator->MoveTouchIdBy(/*touch_id=*/0, 0, 100);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Without releasing the first finger, start a fling on the divider and close
+  // the menu (this can happen when it loses focus from the second touch).
+  GetMultitaskMenu()->Reset();
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  auto* split_view_divider = split_view_controller->split_view_divider();
+  const gfx::Point divider_center =
+      split_view_divider->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint();
+  event_generator->PressTouchId(/*touch_id=*/1, divider_center);
+  event_generator->MoveTouchIdBy(/*touch_id=*/1, -10, 0);
+  event_generator->ReleaseTouchId(/*touch_id=*/1);
+
+  // Test that, even though the target window is the divider, we don't try to
+  // create the menu on the split view divider.
+  CHECK_EQ(GetMultitaskMenuController()->target_window_for_test(),
+           split_view_divider->divider_widget()->GetNativeWindow());
+  EXPECT_FALSE(GetMultitaskMenu());
+}
+
 TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
   auto window = CreateAppWindow();
   ShowMultitaskMenu(*window);

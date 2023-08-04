@@ -81,7 +81,9 @@ bool TabletModeMultitaskMenuController::CanShowMenu(aura::Window* window) {
 void TabletModeMultitaskMenuController::ShowMultitaskMenu(
     aura::Window* window) {
   MaybeCreateMultitaskMenu(window);
-  multitask_menu_->Animate(/*show=*/true);
+  if (multitask_menu_) {
+    multitask_menu_->Animate(/*show=*/true);
+  }
 }
 
 void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
@@ -127,6 +129,7 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
       reserved_for_gesture_sent_ = false;
       if (details.scroll_y_hint() > 0 && HitTestRect(window, screen_location)) {
         // We may need to recreate `multitask_menu_` on the new target window.
+        target_window_for_test_ = window;
         multitask_menu_ =
             std::make_unique<TabletModeMultitaskMenu>(this, window);
         multitask_cue_controller_->OnMenuOpened(window);
@@ -171,9 +174,12 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
       // Normally ET_GESTURE_SCROLL_BEGIN will fire first and have already
       // created the multitask menu, however occasionally ET_SCROLL_FLING_START
       // may fire first (https://crbug.com/821237).
+      target_window_for_test_ = window;
       MaybeCreateMultitaskMenu(window);
-      multitask_menu_->Animate(details.velocity_y() > 0);
-      event->SetHandled();
+      if (multitask_menu_) {
+        multitask_menu_->Animate(details.velocity_y() > 0);
+        event->SetHandled();
+      }
       break;
     default:
       if (is_drag_active_ && multitask_menu_) {
@@ -186,7 +192,7 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
 
 void TabletModeMultitaskMenuController::MaybeCreateMultitaskMenu(
     aura::Window* window) {
-  if (!multitask_menu_) {
+  if (!multitask_menu_ && CanShowMenu(window)) {
     multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(this, window);
     multitask_cue_controller_->OnMenuOpened(window);
   }
