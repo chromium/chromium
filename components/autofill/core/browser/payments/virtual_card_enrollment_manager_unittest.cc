@@ -212,6 +212,11 @@ TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
           make_image_present,
           state->virtual_card_enrollment_fields.card_art_image != nullptr);
       EXPECT_TRUE(state->risk_data.has_value());
+
+      // Reset to avoid that state keeps track of card art images that will be
+      // invalidated at the start of the next loop.
+      virtual_card_enrollment_manager_
+          ->ResetVirtualCardEnrollmentProcessState();
     }
   }
 }
@@ -372,6 +377,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
                   AutofillClient::PaymentsRpcResult::kSuccess),
           /*sample=*/5, make_image_present ? 1 : 2);
 
+      // Avoid dangling pointers to artwork.
+      virtual_card_enrollment_manager_
+          ->ResetVirtualCardEnrollmentProcessState();
       if (!make_image_present) {
         ui::ResourceBundle::CleanupSharedInstance();
         ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle);

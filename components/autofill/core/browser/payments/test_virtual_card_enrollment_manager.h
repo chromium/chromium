@@ -56,6 +56,10 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
     return &state_;
   }
 
+  void ResetVirtualCardEnrollmentProcessState() {
+    state_ = VirtualCardEnrollmentProcessState();
+  }
+
   void SetAutofillClient(AutofillClient* autofill_client) {
     autofill_client_ = autofill_client;
   }
