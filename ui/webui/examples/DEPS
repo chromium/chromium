@@ -17,6 +17,9 @@ include_rules = [
   # Sandbox is part of the main initialization.
   "+sandbox",
 
+  # The renderer support code uses Blink public APIs.
+  "+third_party/blink/public",
+
   # The WebUI examples uses Chromium's UI libraries.
   "+ui/aura",
   "+ui/display",
@@ -26,4 +29,7 @@ include_rules = [
   # The WebUI examples is an embedder so it must work with resource bundles.
   "+ui/base/l10n",
   "+ui/base/resource",
+
+  # The renderer support code uses V8.
+  "+v8/include",
 ]

@@ -5,3 +5,21 @@
 html, body {
   height: 100%;
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+ }
+
+#navbar {
+  display: flex;
+  flex: none;
+}
+
+#navbar #address {
+  flex: 1;
+}
+
+webview {
+  flex: 1;
+}

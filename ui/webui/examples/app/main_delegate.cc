@@ -11,6 +11,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/examples/browser/content_browser_client.h"
 #include "ui/webui/examples/common/content_client.h"
+#include "ui/webui/examples/renderer/content_renderer_client.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/webui/examples/app/mac_init.h"
@@ -51,6 +52,11 @@ absl::optional<int> MainDelegate::PreBrowserMain() {
   MacPreBrowserMain();
 #endif
   return content::ContentMainDelegate::PreBrowserMain();
+}
+
+content::ContentRendererClient* MainDelegate::CreateContentRendererClient() {
+  content_renderer_client_ = std::make_unique<ContentRendererClient>();
+  return content_renderer_client_.get();
 }
 
 }  // namespace webui_examples

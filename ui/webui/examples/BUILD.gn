@@ -35,6 +35,10 @@ static_library("webui_examples_lib") {
     "browser/webui_controller_factory.h",
     "common/content_client.cc",
     "common/content_client.h",
+    "renderer/content_renderer_client.cc",
+    "renderer/content_renderer_client.h",
+    "renderer/render_frame_observer.cc",
+    "renderer/render_frame_observer.h",
   ]
 
   deps = [
@@ -45,13 +49,16 @@ static_library("webui_examples_lib") {
     "//chrome/browser/resources/webui_gallery:resources",
     "//content/public/app",
     "//content/public/browser",
+    "//content/public/renderer",
     "//ipc",
     "//net",
+    "//third_party/blink/public:blink",
     "//ui/base",
     "//ui/display",
     "//ui/platform_window",
     "//ui/webui",
     "//url",
+    "//v8:v8_headers",
   ]
 
   data_deps = [ "//tools/v8_context_snapshot" ]
