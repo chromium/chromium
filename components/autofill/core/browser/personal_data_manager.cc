@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -161,16 +162,25 @@ const T& Deref(const T& x) {
   return x;
 }
 
-template <typename C, typename StringType>
-typename C::const_iterator FindElementByGUID(const C& container,
-                                             const StringType& guid) {
+template <typename T>
+typename base::span<T>::iterator FindElementByGUID(base::span<T> container,
+                                                   std::string_view guid) {
   return base::ranges::find(container, guid, [](const auto& element) {
     return Deref(element).guid();
   });
 }
 
-template <typename C, typename StringType>
-bool FindByGUID(const C& container, const StringType& guid) {
+template <typename T>
+typename std::vector<T>::const_iterator FindElementByGUID(
+    const std::vector<T>& container,
+    std::string_view guid) {
+  return base::ranges::find(container, guid, [](const auto& element) {
+    return Deref(element).guid();
+  });
+}
+
+template <typename C>
+bool FindByGUID(const C& container, std::string_view guid) {
   return FindElementByGUID(container, guid) != container.end();
 }
 
