@@ -125,7 +125,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   NSLayoutConstraint* _returnToRecentTabWidthAnchor;
   UIScrollView* _magicStackScrollView;
   UIStackView* _magicStack;
-  BOOL _shouldShowMagicStack;
+  BOOL _magicStackRankReceived;
   NSMutableArray<NSNumber*>* _magicStackModuleOrder;
   NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
   NSArray<SetUpListItemViewData*>* _savedSetUpListItems;
@@ -203,7 +203,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
   if (self.shortcutsViews) {
     self.shortcutsStackView = [self createShortcutsStackView];
-    if (!_shouldShowMagicStack) {
+    if (!IsMagicStackEnabled()) {
       [self addUIElement:self.shortcutsStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
       CGFloat width =
@@ -219,8 +219,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
   }
 
-  if (_shouldShowMagicStack) {
-    CHECK(IsMagicStackEnabled());
+  // Only Create Magic Stack if the ranking has been received. It can be delayed
+  // to after -viewDidLoad if fecthing from Segmentation Platform.
+  if (IsMagicStackEnabled() && _magicStackRankReceived) {
     [self createMagicStack];
   }
 }
@@ -409,8 +410,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
   CHECK([order count] > 0);
-  _shouldShowMagicStack = YES;
+  _magicStackRankReceived = YES;
   _magicStackModuleOrder = [order mutableCopy];
+  if (self.viewLoaded) {
+    [self createMagicStack];
+  }
 }
 
 - (void)scrollToNextMagicStackModuleForCompletedModule:
@@ -632,7 +636,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                   .height +
               kMostVisitedBottomMargin;
   }
-  if (_shouldShowMagicStack) {
+  if (IsMagicStackEnabled()) {
     height += _magicStackScrollView.contentSize.height;
   } else {
     if ([self.shortcutsViews count] > 0) {

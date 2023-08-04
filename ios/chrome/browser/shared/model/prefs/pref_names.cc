@@ -170,6 +170,16 @@ const char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
 const char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[] =
     "ios.magic_stack_segmentation.most_visited_sites_freshness";
 
+// Integer representing the number of impressions of Shortcuts since a freshness
+// signal.
+const char kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.shortcuts_freshness";
+
+// Integer representing the number of impressions of Safety Check since a
+// freshness signal.
+const char kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.safety_check_freshness";
+
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom
 // sheet or from the keyboard accessory.

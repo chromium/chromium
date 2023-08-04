@@ -276,6 +276,15 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // since a freshness signal of the Most Visited Sites.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
+  // Pref used to store the number of impressions of Shortcuts in the Home
+  // Surface since a Shortcuts freshness signal.
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, -1);
+  // Pref used to store the number of impressions of Safety Check in the Home
+  // Surface since a Safety Check freshness signal.
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+      -1);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(

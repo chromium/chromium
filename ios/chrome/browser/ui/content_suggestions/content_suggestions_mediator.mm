@@ -27,6 +27,9 @@
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/search_terms_data.h"
 #import "components/search_engines/template_url.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
@@ -174,6 +177,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // The SetUpList, a list of tasks a new user might want to complete.
 @property(nonatomic, strong) SetUpList* setUpList;
 
+// For testing-only
+@property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
+
 @end
 
 @implementation ContentSuggestionsMediator {
@@ -300,7 +306,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return;
   }
   if (IsMagicStackEnabled()) {
-    [self.consumer setMagicStackOrder:[self magicStackOrder]];
+    if (base::FeatureList::IsEnabled(
+            segmentation_platform::features::
+                kSegmentationPlatformIosModuleRanker)) {
+      [self fetchMagicStackModuleRankingFromSegmentationPlatform];
+    } else {
+      [self.consumer setMagicStackOrder:[self magicStackOrder]];
+    }
   }
   if (self.returnToRecentTabItem) {
     [self.consumer
@@ -782,21 +794,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (NSArray<NSNumber*>*)magicStackOrder {
   NSMutableArray* magicStackModules = [NSMutableArray array];
   if ([self shouldShowSetUpList]) {
-    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
-      [magicStackModules
-          addObject:@(int(ContentSuggestionsModuleType::kCompactedSetUpList))];
-    } else {
-      if ([self.setUpList allItemsComplete]) {
-        [magicStackModules
-            addObject:@(int(ContentSuggestionsModuleType::kSetUpListAllSet))];
-      } else {
-        for (SetUpListItem* model in self.setUpList.items) {
-          [magicStackModules
-              addObject:@(int(
-                            SetUpListModuleTypeForSetUpListType(model.type)))];
-        }
-      }
-    }
+    [self addSetUpListToMagicStackOrder:magicStackModules];
   }
   if (ShouldPutMostVisitedSitesInMagicStack()) {
     [magicStackModules
@@ -806,6 +804,78 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
 
   return magicStackModules;
+}
+
+- (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
+  auto input_context =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  int mvt_freshness_impression_count = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kMostVisitedTilesFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          mvt_freshness_impression_count));
+  int shortcuts_freshness_impression_count = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kShortcutsFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          shortcuts_freshness_impression_count));
+  int safety_check_freshness_impression_count = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSafetyCheckFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          safety_check_freshness_impression_count));
+  __weak ContentSuggestionsMediator* weakSelf = self;
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = true;
+  self.segmentationService->GetClassificationResult(
+      segmentation_platform::kIosModuleRankerKey, options, input_context,
+      base::BindOnce(
+          ^(const segmentation_platform::ClassificationResult& result) {
+            weakSelf.hasReceivedMagicStackResponse = YES;
+            [weakSelf didReceiveSegmentationServiceResult:result];
+          }));
+}
+
+- (void)didReceiveSegmentationServiceResult:
+    (const segmentation_platform::ClassificationResult&)result {
+  CHECK(IsMagicStackEnabled());
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    return;
+  }
+
+  NSMutableArray* magicStackOrder = [NSMutableArray array];
+  // Always add Set Up List at the front.
+  if ([self shouldShowSetUpList]) {
+    [self addSetUpListToMagicStackOrder:magicStackOrder];
+  }
+  for (const std::string& label : result.ordered_labels) {
+    if (label == segmentation_platform::kMostVisitedTiles) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kMostVisited))];
+    } else if (label == segmentation_platform::kShortcuts) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
+    }
+  }
+  [self.consumer setMagicStackOrder:magicStackOrder];
+}
+
+- (void)addSetUpListToMagicStackOrder:(NSMutableArray*)order {
+  if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
+    [order addObject:@(int(ContentSuggestionsModuleType::kCompactedSetUpList))];
+  } else {
+    if ([self.setUpList allItemsComplete]) {
+      [order addObject:@(int(ContentSuggestionsModuleType::kSetUpListAllSet))];
+    } else {
+      for (SetUpListItem* model in self.setUpList.items) {
+        [order
+            addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
+      }
+    }
+  }
 }
 
 // Returns YES if the conditions are right to display the Set Up List.
@@ -892,6 +962,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [self.feedDelegate contentSuggestionsWasUpdated];
   }];
 }
+
 #pragma mark - Properties
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {

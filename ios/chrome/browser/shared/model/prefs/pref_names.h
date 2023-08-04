@@ -48,6 +48,10 @@ extern const char kIosDiscoverFeedLastRefreshTime[];
 extern const char kIosDiscoverFeedLastUnseenRefreshTime[];
 extern const char kIosLatestMostVisitedSites[];
 extern const char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[];
+extern const char
+    kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[];
+extern const char
+    kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[];
 extern const char kIosPasswordBottomSheetDismissCount[];
 extern const char kIosPreRestoreAccountInfo[];
 extern const char kIosPromosManagerActivePromos[];

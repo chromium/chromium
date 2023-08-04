@@ -23,6 +23,10 @@ namespace ntp_tiles {
 class MostVisitedSites;
 }
 
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}
+
 namespace signin {
 class IdentityManager;
 }
@@ -101,6 +105,12 @@ class WebStateList;
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+
+// TODO(crbug.com/1462664): Move to initializer param once
+// kSegmentationPlatformIosModuleRanker is launched. Segmentation Platform
+// Service.
+@property(nonatomic, assign)
+    segmentation_platform::SegmentationPlatformService* segmentationService;
 
 // Disconnects the mediator.
 - (void)disconnect;

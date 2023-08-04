@@ -13,6 +13,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -194,6 +196,12 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMediator.promosManager = promosManager;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
+  if (base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationPlatformIosModuleRanker)) {
+    self.contentSuggestionsMediator.segmentationService =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetForBrowserState(self.browser->GetBrowserState());
+  }
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.contentSuggestionsMediator.dispatcher =
