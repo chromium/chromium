@@ -38,8 +38,10 @@
 #include "base/mac/mach_port_rendezvous.h"
 #endif
 
-// On POSIX, the fd is shared using the mapping in GlobalDescriptors.
 #if BUILDFLAG(IS_POSIX) && BUILDFLAG(USE_BLINK)
+#include <unistd.h>  // For getppid().
+#include "base/threading/platform_thread.h"
+// On POSIX, the fd is shared using the mapping in GlobalDescriptors.
 #include "base/posix/global_descriptors.h"
 #endif
 
@@ -172,6 +174,26 @@ void OnOutOfMemory(size_t size) {
 }
 
 #if BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(IS_POSIX)
+// Exits the process gracefully if the parent process is dead. We've seen cases
+// where the child will still be executing after its parent process has died.
+// In those cases, if we hit an error that would otherwise result in a CHECK,
+// this function can be used to exit gracefully instead of producing a crash
+// report. Note: This function calls Sleep() so should not be called in a code
+// path that wouldn't otherwise result in a CHECK().
+void ExitGracefullyIfParentProcessIsDead() {
+  // The parent process crash may not be visible immediately so loop for 100ms.
+  for (int i = 0; i < 100; i++) {
+    // If the parent process has died, getppid() will return 1, meaning we were
+    // orphaned and parented to init.
+    if (getppid() == 1) {
+      base::Process::TerminateCurrentProcessImmediately(0);
+    }
+    PlatformThread::Sleep(base::Milliseconds(1));
+  }
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
 // Returns whether the operation succeeded.
 bool DeserializeGUIDFromStringPieces(StringPiece first,
                                      StringPiece second,
@@ -649,6 +671,13 @@ void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line,
     std::string switch_value =
         cmd_line.GetSwitchValueASCII(switches::kFieldTrialHandle);
     bool result = CreateTrialsFromSwitchValue(switch_value, fd_key);
+#if BUILDFLAG(IS_POSIX)
+    if (!result) {
+      // This may be an error mapping the shared memory segment if the parent
+      // process just died. Exit gracefully in this case.
+      ExitGracefullyIfParentProcessIsDead();
+    }
+#endif  // BUILDFLAG(IS_POSIX)
     CHECK(result);
   }
 #endif  // BUILDFLAG(USE_BLINK)
@@ -1123,8 +1152,9 @@ bool FieldTrialList::CreateTrialsFromSwitchValue(
 #endif  // BUILDFLAG(IS_POSIX)
   ReadOnlySharedMemoryRegion shm =
       DeserializeSharedMemoryRegionMetadata(switch_value, fd);
-  if (!shm.IsValid())
+  if (!shm.IsValid()) {
     return false;
+  }
   return FieldTrialList::CreateTrialsFromSharedMemoryRegion(shm);
 }
 
