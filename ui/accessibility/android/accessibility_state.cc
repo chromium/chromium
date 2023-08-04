@@ -6,12 +6,25 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/no_destructor.h"
 #include "ui/accessibility/ax_jni_headers/AccessibilityState_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 
 namespace ui {
+
+namespace {
+
+// Returns the static vector of Delegates.
+std::vector<AccessibilityState::Delegate*>& GetDelegates() {
+  static base::NoDestructor<std::vector<AccessibilityState::Delegate*>>
+      delegates;
+  return *delegates;
+}
+
+}  // namespace
+
 // static
 void JNI_AccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
   AccessibilityState::NotifyAnimatorDurationScaleObservers();
@@ -32,9 +45,8 @@ void AccessibilityState::RegisterAnimatorDurationScaleDelegate(
 // static
 void AccessibilityState::UnregisterAnimatorDurationScaleDelegate(
     Delegate* delegate) {
-  std::vector<Delegate*> delegates = GetDelegates();
-  auto it = std::find(delegates.begin(), delegates.end(), delegate);
-  delegates.erase(it);
+  auto& delegates = GetDelegates();
+  delegates.erase(std::find(delegates.begin(), delegates.end(), delegate));
 }
 
 // static
@@ -87,4 +99,5 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
   AppendJavaStringArrayToStringVector(env, j_service_ids, &service_ids);
   return service_ids;
 }
+
 }  // namespace ui

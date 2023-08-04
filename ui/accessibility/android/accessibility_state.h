@@ -6,7 +6,6 @@
 #define UI_ACCESSIBILITY_ANDROID_ACCESSIBILITY_STATE_H_
 
 #include <vector>
-#include "base/no_destructor.h"
 
 namespace ui {
 
@@ -55,13 +54,6 @@ class AccessibilityState {
 
   // Returns a vector containing the IDs of all running accessibility services.
   static std::vector<std::string> GetAccessibilityServiceIds();
-
- private:
-  // Returns the static vector of Delegates.
-  static std::vector<Delegate*> GetDelegates() {
-    static base::NoDestructor<std::vector<Delegate*>> delegates;
-    return *delegates;
-  }
 };
 
 }  // namespace ui
