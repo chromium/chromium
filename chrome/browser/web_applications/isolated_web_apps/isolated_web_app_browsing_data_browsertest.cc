@@ -23,6 +23,7 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -196,14 +197,10 @@ class IsolatedWebAppBrowsingDataClearingTest
   }
 
   bool SetCookie(
-      const IsolatedWebAppUrlInfo& url_info,
+      content::StoragePartition* storage_partition,
       const GURL& url,
       const std::string& cookie_line,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
-    content::StoragePartition* storage_partition =
-        profile()->GetStoragePartition(
-            url_info.storage_partition_config(profile()));
-
     mojo::Remote<network::mojom::CookieManager> cookie_manager;
     storage_partition->GetNetworkContext()->GetCookieManager(
         cookie_manager.BindNewPipeAndPassReceiver());
@@ -219,11 +216,7 @@ class IsolatedWebAppBrowsingDataClearingTest
     return future.Take().status.IsInclude();
   }
 
-  net::CookieList GetAllCookies(const IsolatedWebAppUrlInfo& url_info) {
-    content::StoragePartition* storage_partition =
-        profile()->GetStoragePartition(
-            url_info.storage_partition_config(profile()));
-
+  net::CookieList GetAllCookies(content::StoragePartition* storage_partition) {
     mojo::Remote<network::mojom::CookieManager> cookie_manager;
     storage_partition->GetNetworkContext()->GetCookieManager(
         cookie_manager.BindNewPipeAndPassReceiver());
@@ -268,31 +261,105 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
+  auto cache_test_server = std::make_unique<net::EmbeddedTestServer>();
+  cache_test_server->AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+  ASSERT_TRUE(cache_test_server->Start());
+
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
 
-  // IWA installation creates cache data.
-  EXPECT_GT(GetCacheSize(url_info), 0);
+  // Create both a persistent and a non-persistent partitions.
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      cache_test_server->GetURL("/page_with_cached_subresource.html"),
+      "persist:partition_name_0"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      cache_test_server->GetURL("/page_with_cached_subresource.html"),
+      "partition_name_1"));
 
-  // TODO(crbug.com/1453520): Clear cache data.
-  // EXPECT_EQ(GetCacheSize(url_info), 0);
+  std::vector<content::StoragePartitionConfig> storage_partition_configs{
+      url_info.storage_partition_config(profile()),
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_0", /*in_memory=*/false),
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_1", /*in_memory=*/true)};
+
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    ASSERT_GT(GetCacheSize(url_info), 0);
+  }
+
+  ClearData(url_info);
+
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    EXPECT_EQ(GetCacheSize(url_info), 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
 
-  // Unpartitioned Cookie
-  ASSERT_TRUE(SetCookie(url_info, GURL("http://a.com"), "A=0", absl::nullopt));
+  // Create both a persistent and a non-persistent partitions.
+  ASSERT_TRUE(CreateControlledFrame(web_contents,
+                                    dev_server()->GetURL("/empty_title.html"),
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(CreateControlledFrame(web_contents,
+                                    dev_server()->GetURL("/empty_title.html"),
+                                    "partition_name_1"));
 
-  // Partitioned Cookie
-  ASSERT_TRUE(SetCookie(
-      url_info, GURL("https://c.com"), "A=0; secure; partitioned",
-      net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
+  std::vector<content::StoragePartitionConfig> storage_partition_configs{
+      url_info.storage_partition_config(profile()),
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_0", /*in_memory=*/false),
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_1", /*in_memory=*/true)};
 
-  EXPECT_EQ(GetAllCookies(url_info).size(), 2UL);
+  // Set a partitioned and an unpartitioned cookie for each storage partition.
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // Unpartitioned Cookie
+    ASSERT_TRUE(
+        SetCookie(partition, GURL("http://a.com"), "A=0", absl::nullopt));
+    // Partitioned Cookie
+    ASSERT_TRUE(SetCookie(
+        partition, GURL("https://c.com"), "A=0; secure; partitioned",
+        net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
+  }
+
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
+  }
 
   ClearData(url_info);
 
-  EXPECT_EQ(GetAllCookies(url_info).size(), 0UL);
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    EXPECT_EQ(GetAllCookies(partition).size(), 0UL);
+  }
 }
 
 }  // namespace web_app

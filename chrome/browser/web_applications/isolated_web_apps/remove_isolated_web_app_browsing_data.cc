@@ -51,6 +51,10 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter->AddOrigin(iwa_origin);
 
+  chrome_browsing_data_remover::DataType removal_mask =
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+  removal_mask |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
+
   // BrowsingDataRemover doesn't support clearing cookies if origins are
   // present in the filter because cookies aren't origin-scoped. This is dealt
   // with in ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData by making a
@@ -66,9 +70,8 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
   // and ChromeBrowsingDataRemoverDelegate will translate the
   // DATA_TYPE_ISOLATED_WEB_APP_COOKIES flag to DATA_TYPE_COOKIES when clearing
   // data in IWA-owned StoragePartitions.
-  chrome_browsing_data_remover::DataType removal_mask =
-      (chrome_browsing_data_remover::DATA_TYPE_SITE_DATA &
-       ~content::BrowsingDataRemover::DATA_TYPE_COOKIES) |
+  removal_mask &= ~content::BrowsingDataRemover::DATA_TYPE_COOKIES;
+  removal_mask |=
       chrome_browsing_data_remover::DATA_TYPE_ISOLATED_WEB_APP_COOKIES;
 
   profile->GetBrowsingDataRemover()->RemoveWithFilterAndReply(
