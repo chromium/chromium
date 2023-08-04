@@ -151,6 +151,9 @@ public class PaymentRequestService
     @Nullable
     private PaymentApp mInvokedPaymentApp;
 
+    /** True if a show() call is rejected for lack of a user activation. */
+    private boolean mRejectShowForUserActivation;
+
     /**
      * An observer interface injected when running tests to allow them to observe events.
      * This interface holds events that should be passed back to the native C++ test
@@ -416,6 +419,7 @@ public class PaymentRequestService
         mDelegate = delegate;
         mHasClosed = false;
         mPaymentAppServiceBridgeSupplier = paymentAppServiceBridgeSupplier;
+        mRejectShowForUserActivation = false;
     }
 
     /**
@@ -639,18 +643,19 @@ public class PaymentRequestService
         Log.d(TAG, debugMessage);
         if (mClient != null) {
             // Secure Payment Confirmation must make it indistinguishable to the merchant page as to
-            // whether an error is caused by user aborting or lack of credentials. There are two
+            // whether an error is caused by user aborting or lack of credentials. There are three
             // exceptions:
             //
             //   1. Erroring due to icon download failure; this happens before checking for
             //      credential matching and so is not a privacy leak.
             //   2. Handling the 'opt out' error - this error can be produced by both the matching
             //      and non-matching credential UXs, and so is not a privacy leak.
+            //   3. Erroring due to a lack of user activation when it is not allowed.
             boolean obscureRealError = PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                                                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
                     && mSpec != null && mSpec.isSecurePaymentConfirmationRequested()
                     && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
-                    && reason != PaymentErrorReason.USER_OPT_OUT;
+                    && reason != PaymentErrorReason.USER_OPT_OUT && !mRejectShowForUserActivation;
             mClient.onError(obscureRealError ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
                     obscureRealError ? ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED
                                      : debugMessage);
@@ -877,7 +882,10 @@ public class PaymentRequestService
                 // preserve user privacy. An exception is failure to download the card art icon -
                 // because we download it in all cases, revealing a failure doesn't leak any
                 // information about the user to the site.
-                && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED) {
+                && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
+                // Another exception is if the show() request is being denied for lack of a user
+                // gesture.
+                && !mRejectShowForUserActivation) {
             mJourneyLogger.setNoMatchingCredentialsShown();
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
@@ -1222,8 +1230,6 @@ public class PaymentRequestService
     /**
      * The component part of the {@link PaymentRequest#show} implementation. Check {@link
      * PaymentRequest#show} for the parameters' specification.
-     * TOOD(crbug.com/1454204): Enforce one activationless show per navigation based on
-     * hadUserActivation.
      */
     /* package */ void show(boolean waitForUpdatedDetails, boolean hadUserActivation) {
         if (mBrowserPaymentRequest == null) return;
@@ -1246,6 +1252,19 @@ public class PaymentRequestService
             onShowFailed(NotShownReason.CONCURRENT_REQUESTS, ErrorStrings.ANOTHER_UI_SHOWING,
                     PaymentErrorReason.ALREADY_SHOWING);
             return;
+        }
+        if (!hadUserActivation) {
+            PaymentRequestWebContentsData paymentRequestWebContentsData =
+                    PaymentRequestWebContentsData.from(mWebContents);
+            if (paymentRequestWebContentsData.hadActivationlessShow()) {
+                // Reject the call to show(), because only one activationless show is allowed per
+                // page.
+                mRejectShowForUserActivation = true;
+                onShowFailed(NotShownReason.OTHER, ErrorStrings.CANNOT_SHOW_WITHOUT_USER_ACTIVATION,
+                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                return;
+            }
+            paymentRequestWebContentsData.recordActivationlessShow();
         }
         sShowingPaymentRequest = this;
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);

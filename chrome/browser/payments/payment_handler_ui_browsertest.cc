@@ -58,15 +58,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUiBrowserTest,
 
 // Test that the PaymentRequestAllowOneActivationlessShow feature allows one
 // call to show() without a user activation.
-// TODO(crbug.com/1440453): Not yet implemented on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_PaymentRequestActivationlessShowTest \
-  DISABLED_PaymentRequestActivationlessShowTest
-#else
-#define MAYBE_PaymentRequestActivationlessShowTest \
-  PaymentRequestActivationlessShowTest
-#endif  // BUILDFLAG(IS_ANDROID)
-class MAYBE_PaymentRequestActivationlessShowTest
+class PaymentRequestActivationlessShowTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -76,7 +68,7 @@ class MAYBE_PaymentRequestActivationlessShowTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestActivationlessShowTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
                        ActivationlessShow) {
   std::string payment_method =
       https_server()->GetURL("a.com", "/orenpay.test/pay").spec();

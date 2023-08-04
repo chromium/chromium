@@ -393,15 +393,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 
 // Test that the SecurePaymentConfirmationAllowOneActivationlessShow feature
 // allows one call to show() without a user activation.
-// TODO(crbug.com/1440453): Not yet implemented on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SecurePaymentConfirmationActivationlessShowTest \
-  DISABLED_SecurePaymentConfirmationActivationlessShowTest
-#else
-#define MAYBE_SecurePaymentConfirmationActivationlessShowTest \
-  SecurePaymentConfirmationActivationlessShowTest
-#endif  // BUILDFLAG(IS_ANDROID)
-class MAYBE_SecurePaymentConfirmationActivationlessShowTest
+class SecurePaymentConfirmationActivationlessShowTest
     : public SecurePaymentConfirmationTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -412,7 +404,7 @@ class MAYBE_SecurePaymentConfirmationActivationlessShowTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SecurePaymentConfirmationActivationlessShowTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
                        ActivationlessShow) {
   test_controller()->SetHasAuthenticator(true);
 
@@ -442,6 +434,37 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SecurePaymentConfirmationActivationlessShowTest,
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE)
           .ExtractString(),
       ::testing::HasSubstr(errors::kCannotShowWithoutUserActivation));
+}
+
+// TODO(crbug.com/1440453): This test does not work on Android as it is
+// difficult to wait for the bottom sheet to finish showing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShowAfterActivationlessShow DISABLED_ShowAfterActivationlessShow
+#else
+#define MAYBE_ShowAfterActivationlessShow ShowAfterActivationlessShow
+#endif  // BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
+                       MAYBE_ShowAfterActivationlessShow) {
+  test_controller()->SetHasAuthenticator(true);
+
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+  webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "a.com", std::move(user_id)),
+              /*consumer=*/this);
+
+  // The first call to show() without a user gesture succeeds.
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  ExecuteScriptAsyncWithoutUserGesture(GetActiveWebContents(),
+                                       "getSecurePaymentConfirmationStatus()");
+  WaitForObservedEvent();
+  test_controller()->CloseDialog();
 
   // A following call to show() with a user gesture succeeds.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
