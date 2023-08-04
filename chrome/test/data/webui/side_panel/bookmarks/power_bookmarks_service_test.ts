@@ -217,6 +217,15 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(searchBookmarks.length, 3);
   });
 
+  test('FiltersByFolderAndSearchQuery', () => {
+    const folder = service.findBookmarkWithId('5');
+    const primaryList = service.filterBookmarks(folder, 0, 'http', []);
+    const secondaryList =
+        service.filterBookmarks(undefined, 0, 'http', [], folder);
+    assertEquals(primaryList.length, 1);
+    assertEquals(secondaryList.length, 2);
+  });
+
   test('FiltersByPriceTracking', () => {
     const searchBookmarks = service.filterBookmarks(
         undefined, 0, undefined,

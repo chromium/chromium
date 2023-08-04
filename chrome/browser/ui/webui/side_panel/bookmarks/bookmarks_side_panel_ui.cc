@@ -156,6 +156,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"checkboxA11yLabel", IDS_BOOKMARKS_CHECKBOX_LABEL},
       {"editInvalidUrl", IDS_BOOKMARK_MANAGER_INVALID_URL},
       {"bookmarkFolderChildCount", IDS_BOOKMARK_FOLDER_CHILD_COUNT},
+      {"primaryFilterHeading", IDS_BOOKMARKS_PRIMARY_FILTER_HEADING},
+      {"secondaryFilterHeading", IDS_BOOKMARKS_SECONDARY_FILTER_HEADING},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

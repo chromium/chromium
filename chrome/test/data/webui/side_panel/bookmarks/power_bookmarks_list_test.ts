@@ -75,30 +75,30 @@ suite('SidePanelPowerBookmarksListTest', () => {
     },
   ];
 
-  function getBookmarks(root: HTMLElement):
+  function getBookmarks() {
+    return getBookmarksInList(0).concat(getBookmarksInList(1));
+  }
+
+  function getBookmarksInList(listIndex: number):
       chrome.bookmarks.BookmarkTreeNode[] {
-    const ironList = root.shadowRoot!.querySelector<IronListElement>(
-        '#shownBookmarksIronList');
+    const ironList =
+        powerBookmarksList.shadowRoot!.querySelector<IronListElement>(
+            `#shownBookmarksIronList${listIndex}`);
     if (!ironList || !ironList.items) {
       return [];
     }
     return ironList.items!;
   }
 
-  function getBookmarkWithId(root: HTMLElement, id: string):
-      chrome.bookmarks.BookmarkTreeNode|undefined {
-    const ironList = root.shadowRoot!.querySelector<IronListElement>(
-        '#shownBookmarksIronList');
-    if (!ironList || !ironList.items) {
-      return undefined;
-    }
-    return ironList.items!.find((bookmark) => bookmark.id === id);
+  function getBookmarkWithId(id: string): chrome.bookmarks.BookmarkTreeNode|
+      undefined {
+    return getBookmarks().find((bookmark) => bookmark.id === id);
   }
 
-  function getCrUrlListItemElementWithId(
-      root: HTMLElement, id: string): CrUrlListItemElement|undefined {
+  function getCrUrlListItemElementWithId(id: string): CrUrlListItemElement|
+      undefined {
     const powerBookmarkRowElement =
-        root.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
             `#bookmark-${id}`);
     if (!powerBookmarkRowElement) {
       return undefined;
@@ -108,6 +108,24 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   function isHidden(element: HTMLElement): boolean {
     return element.matches('[hidden], [hidden] *');
+  }
+
+  async function performSearch(query: string) {
+    const searchField = powerBookmarksList.shadowRoot!.querySelector(
+        'cr-toolbar-search-field')!;
+    searchField.$.searchInput.value = query;
+    searchField.onSearchTermInput();
+    searchField.onSearchTermSearch();
+
+    await flushTasks();
+  }
+
+  async function openBookmark(id: string) {
+    const bookmark = getBookmarkWithId(id);
+    assertTrue(!!bookmark);
+    powerBookmarksList.clickBookmarkRowForTests(bookmark);
+
+    await flushTasks();
   }
 
   setup(async () => {
@@ -154,13 +172,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   test('GetsAndShowsTopLevelBookmarks', () => {
     assertEquals(1, bookmarksApi.getCallCount('getFolders'));
-    assertEquals(
-        folders[1]!.children!.length + 1,
-        getBookmarks(powerBookmarksList).length);
+    assertEquals(folders[1]!.children!.length + 1, getBookmarks().length);
   });
 
   test('DefaultsToSortByNewest', () => {
-    const bookmarks = getBookmarks(powerBookmarksList);
+    const bookmarks = getBookmarks();
     assertEquals(4, bookmarks.length);
     // All folders should come first
     assertEquals('1', bookmarks[0]!.id);
@@ -171,6 +187,26 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals('3', bookmarks[3]!.id);
   });
 
+  test('FiltersBookmarks', async () => {
+    await openBookmark('5');
+    await performSearch('bookmark');
+
+    // One bookmark matches the query and is in the active folder.
+    assertEquals(1, getBookmarksInList(0).length);
+    // Three bookmarks match the query but are not in the active folder.
+    assertEquals(3, getBookmarksInList(1).length);
+
+    await performSearch('nested');
+
+    assertEquals(1, getBookmarksInList(0).length);
+    assertEquals(0, getBookmarksInList(1).length);
+
+    await performSearch('child');
+
+    assertEquals(0, getBookmarksInList(0).length);
+    assertEquals(2, getBookmarksInList(1).length);
+  });
+
   test('UpdatesChangedBookmarks', () => {
     const changedBookmark = folders[1]!.children![0]!;
     bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
@@ -179,17 +215,41 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmark = getBookmarkWithId(powerBookmarksList, '3');
+    const bookmark = getBookmarkWithId('3');
     assertTrue(!!bookmark);
 
     assertEquals('New title', bookmark.title);
     assertEquals('http://new/url', bookmark.url);
 
-    const crUrlListItemElement =
-        getCrUrlListItemElementWithId(powerBookmarksList, '3');
+    const crUrlListItemElement = getCrUrlListItemElementWithId('3');
     assertTrue(!!crUrlListItemElement);
 
     assertEquals('New title', crUrlListItemElement.title);
+  });
+
+  test('UpdatesChangedBookmarksWithFilter', async () => {
+    await performSearch('abc');
+
+    assertEquals(0, getBookmarks().length);
+
+    const changedBookmark = folders[1]!.children![0]!;
+    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
+      title: 'abcdef',
+      url: 'http://new/url',
+    });
+    flush();
+
+    // Bookmark matches search term and should display.
+    assertEquals(1, getBookmarks().length);
+
+    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
+      title: 'New title',
+      url: 'http://new/url',
+    });
+    flush();
+
+    // Bookmark no longer matches search term and should not display.
+    assertEquals(0, getBookmarks().length);
   });
 
   test('AddsCreatedBookmark', async () => {
@@ -202,7 +262,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarks = getBookmarks(powerBookmarksList);
+    const bookmarks = getBookmarks();
     assertEquals(5, bookmarks.length);
   });
 
@@ -226,13 +286,65 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarks = getBookmarks(powerBookmarksList);
+    const bookmarks = getBookmarks();
     assertEquals(5, bookmarks.length);
 
-    const newFolder = getBookmarkWithId(powerBookmarksList, '1000');
+    const newFolder = getBookmarkWithId('1000');
     assertTrue(!!newFolder);
 
     assertEquals(1, newFolder.children!.length);
+  });
+
+  test('AddsCreatedBookmarkWithFilter', async () => {
+    await openBookmark('5');
+    await performSearch('bookmark');
+
+    assertEquals(1, getBookmarksInList(0).length);
+    assertEquals(3, getBookmarksInList(1).length);
+
+    bookmarksApi.callbackRouter.onCreated.callListeners('123', {
+      id: '123',
+      title: 'New bookmark',
+      index: 0,
+      parentId: '5',
+      url: 'http://new/bookmark',
+    });
+    flush();
+
+    // New bookmark matches search term and is under active folder, gets
+    // displayed in primary list
+    assertTrue(!!getBookmarkWithId('123'));
+    assertEquals(2, getBookmarksInList(0).length);
+    assertEquals(3, getBookmarksInList(1).length);
+
+    bookmarksApi.callbackRouter.onCreated.callListeners('456', {
+      id: '456',
+      title: 'foo',
+      index: 0,
+      parentId: folders[1]!.id,
+      url: 'http://foo',
+    });
+    flush();
+
+    // New bookmark does not match search term, doesn't get displayed
+    assertFalse(!!getBookmarkWithId('456'));
+    assertEquals(2, getBookmarksInList(0).length);
+    assertEquals(3, getBookmarksInList(1).length);
+
+    bookmarksApi.callbackRouter.onCreated.callListeners('789', {
+      id: '789',
+      title: 'Bookmark',
+      index: 0,
+      parentId: folders[1]!.id,
+      url: 'http://bookmark',
+    });
+    flush();
+
+    // New bookmark matches search term and is not under active folder, gets
+    // displayed in secondary list
+    assertTrue(!!getBookmarkWithId('789'));
+    assertEquals(2, getBookmarksInList(0).length);
+    assertEquals(4, getBookmarksInList(1).length);
   });
 
   test('MovesBookmarks', () => {
@@ -245,10 +357,10 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const bookmarks = getBookmarks(powerBookmarksList);
+    const bookmarks = getBookmarks();
     assertEquals(5, bookmarks.length);
 
-    const childFolder = getBookmarkWithId(powerBookmarksList, '5');
+    const childFolder = getBookmarkWithId('5');
     assertTrue(!!childFolder);
     assertEquals(0, childFolder.children!.length);
   });
@@ -272,14 +384,62 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
     flush();
 
-    const newFolder = getBookmarkWithId(powerBookmarksList, '1000');
+    const newFolder = getBookmarkWithId('1000');
     assertTrue(!!newFolder);
 
     assertEquals(1, newFolder.children!.length);
   });
 
+  test('MovesBookmarkWithFilter', async () => {
+    await openBookmark('5');
+    await performSearch('bookmark');
+
+    assertEquals(1, getBookmarksInList(0).length);
+    assertEquals(3, getBookmarksInList(1).length);
+
+    const movedBookmark = getBookmarkWithId('6');
+    assertTrue(!!movedBookmark);
+    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
+      index: 0,
+      parentId: folders[1]!.id,                   // Moving to other bookmarks.
+      oldParentId: folders[1]!.children![2]!.id,  // Moving from child folder.
+      oldIndex: 0,
+    });
+    flush();
+
+    // Moved bookmark is no longer in active folder, should move from primary
+    // to secondary list.
+    assertEquals(0, getBookmarksInList(0).length);
+    assertEquals(4, getBookmarksInList(1).length);
+
+    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
+      index: 0,
+      parentId: folders[1]!.children![2]!.id,  // Moving to child folder.
+      oldParentId: folders[1]!.id,             // Moving from other bookmarks.
+      oldIndex: 0,
+    });
+    flush();
+
+    // Moved bookmark is now in active folder, should move from secondary
+    // to primary list.
+    assertEquals(1, getBookmarksInList(0).length);
+    assertEquals(3, getBookmarksInList(1).length);
+  });
+
+  test('RemovesBookmark', () => {
+    const originalShownBookmarkCount = getBookmarks().length;
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('3');
+    flush();
+
+    const removedBookmark = getBookmarkWithId('3');
+    assertTrue(!removedBookmark);
+
+    assertEquals(originalShownBookmarkCount - 1, getBookmarks().length);
+  });
+
   test('SetsCompactDescription', async () => {
-    const folder = getBookmarkWithId(powerBookmarksList, '5');
+    const folder = getBookmarkWithId('5');
     assertTrue(!!folder);
 
     assertEquals(
@@ -291,7 +451,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
         powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
     viewButton.click();
 
-    const folder = getBookmarkWithId(powerBookmarksList, '4');
+    const folder = getBookmarkWithId('4');
     assertTrue(!!folder);
 
     assertEquals(
@@ -303,15 +463,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
         powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
     viewButton.click();
 
-    const searchField = powerBookmarksList.shadowRoot!.querySelector(
-        'cr-toolbar-search-field')!;
-    searchField.$.searchInput.value = 'child bookmark';
-    searchField.onSearchTermInput();
-    searchField.onSearchTermSearch();
+    await performSearch('child bookmark');
 
-    await flushTasks();
-
-    const folder = getBookmarkWithId(powerBookmarksList, '4');
+    const folder = getBookmarkWithId('4');
     assertTrue(!!folder);
 
     assertEquals(
@@ -326,13 +480,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     flush();
 
-    const bookmarksBarFolderElement =
-        getCrUrlListItemElementWithId(powerBookmarksList, '1');
+    const bookmarksBarFolderElement = getCrUrlListItemElementWithId('1');
     assertTrue(!!bookmarksBarFolderElement);
     assertEquals(0, bookmarksBarFolderElement.imageUrls.length);
 
-    const childFolderElement =
-        getCrUrlListItemElementWithId(powerBookmarksList, '5');
+    const childFolderElement = getCrUrlListItemElementWithId('5');
     assertTrue(!!childFolderElement);
     assertNotEquals(0, childFolderElement.imageUrls.length);
   });
@@ -359,11 +511,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertFalse(isHidden(footer));
 
     // Opening an empty folder.
-    const bookmarkBar = getBookmarkWithId(powerBookmarksList, '1');
-    assertTrue(!!bookmarkBar);
-    powerBookmarksList.clickBookmarkRowForTests(bookmarkBar);
+    await openBookmark('1');
 
-    await flushTasks();
     assertFalse(isHidden(search));
     assertTrue(isHidden(filterChips));
     assertFalse(isHidden(heading));

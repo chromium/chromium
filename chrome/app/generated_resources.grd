@@ -8338,6 +8338,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_CHECKBOX_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the checkbox in the bookmarks side panel bulk edit mode">
         Select
       </message>
+      <message name="IDS_BOOKMARKS_PRIMARY_FILTER_HEADING" desc="Header for bookmark filter/search results found inside the active folder">
+        Results found in <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph>
+      </message>
+      <message name="IDS_BOOKMARKS_SECONDARY_FILTER_HEADING" desc="Header for bookmark filter/search results found outside the active folder">
+        In other folders
+      </message>
 
       <!-- Reading mode strings -->
       <if expr="use_titlecase">
