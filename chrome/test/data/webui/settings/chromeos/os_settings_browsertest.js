@@ -724,8 +724,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_settings_ui/os_settings_ui_page_availability_test.js',
  ],
  [
-   'OsSettingsUiPageVisibility',
-   'os_settings_ui/os_settings_ui_page_visibility_test.js',
+   'OsSettingsUiPageVisibilityRevamp',
+   'os_settings_ui/os_settings_ui_page_visibility_revamp_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [

@@ -4,22 +4,22 @@
 
 /**
  * @fileoverview
- * Suite of tests for page visibility in the CrOS Settings UI. These tests
- * expect the OsSettingsRevampWayfinding feature flag to be enabled.
- * Separated into a separate file to mitigate test timeouts.
+ * Suite of tests for page visibility in the CrOS Settings UI.
+ *
+ * - These tests expect the OsSettingsRevampWayfinding feature flag to be
+ *   enabled.
+ * - This suite is separated into a dedicated file to mitigate test timeouts
+ *   since the element is very large.
  */
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsUiElement, Router, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, Router, routes, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
-
-const {Section} = routesMojom;
-type SectionName = keyof typeof Section;
 
 suite('<os-settings-ui> page visibility', () => {
   let ui: OsSettingsUiElement;
@@ -63,14 +63,15 @@ suite('<os-settings-ui> page visibility', () => {
 
   /**
    * Asserts the following:
-   * - The page with |sectionName| is the only page marked active
-   * - The page with |sectionName| is the only page visible
+   * - The page for |section| is the only page marked active
+   * - The page for |section| is the only page visible
    */
-  function assertIsOnlyActiveAndVisiblePage(sectionName: SectionName): void {
+  function assertIsOnlyActiveAndVisiblePage(section: routesMojom.Section):
+      void {
     const pages =
         mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
     for (const page of pages) {
-      if (page.section === Section[sectionName]) {
+      if (page.section === section) {
         assertTrue(page.active);
         assertTrue(isVisible(page));
       } else {
@@ -81,17 +82,19 @@ suite('<os-settings-ui> page visibility', () => {
   }
 
   /**
-   * Asserts the page with the given |sectionName| is focused.
+   * Asserts the page with the given |section| is focused.
    */
-  function assertPageIsFocused(sectionName: SectionName): void {
+  function assertPageIsFocused(section: routesMojom.Section): void {
     const page = mainPageContainer.shadowRoot!.querySelector(
-        `page-displayer[section="${Section[sectionName]}"`);
+        `page-displayer[section="${section}"`);
     assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
   }
 
   suiteSetup(async () => {
+    assertTrue(
+        loadTimeData.getBoolean('isRevampWayfindingEnabled'),
+        'This suite expects OsSettingsRevampWayfinding to be enabled.');
     loadTimeData.overrideValues({
-      isRevampWayfindingEnabled: true,
       isKerberosEnabled: true,  // Simulate kerberos route exists
     });
 
@@ -112,74 +115,43 @@ suite('<os-settings-ui> page visibility', () => {
   });
 
   test('Network page should be the default visible page', () => {
-    assertIsOnlyActiveAndVisiblePage('kNetwork');
+    assertIsOnlyActiveAndVisiblePage(routesMojom.Section.kNetwork);
   });
 
-  interface MenuItemData {
-    sectionName: SectionName;
-    href: string;
-  }
-
-  const menuItemData: MenuItemData[] = [
-    // Basic pages
-    {
-      sectionName: 'kNetwork',
-      href: `/${routesMojom.NETWORK_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kBluetooth',
-      href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kMultiDevice',
-      href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kPeople',
-      href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kKerberos',
-      href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kDevice',
-      href: `/${routesMojom.DEVICE_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kPersonalization',
-      href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kPrivacyAndSecurity',
-      href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kApps',
-      href: `/${routesMojom.APPS_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kAccessibility',
-      href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
-    },
-    // TODO(b/292678609) Include test for kSystemPreferences Section once there
-    // is a corresponding L1 page.
+  // Sort by order of menu items
+  // TODO(b/292678609) Include test for kSystemPreferences Section once there
+  // is a corresponding L1 page.
+  const routeNames: Array<keyof OsSettingsRoutes> = [
+    'INTERNET',
+    'BLUETOOTH',
+    'MULTIDEVICE',
+    'OS_PEOPLE',
+    'KERBEROS',
+    'DEVICE',
+    'PERSONALIZATION',
+    'OS_PRIVACY',
+    'APPS',
+    'OS_ACCESSIBILITY',
+    'ABOUT',
   ];
-
-  for (const {sectionName, href} of menuItemData) {
+  for (const routeName of routeNames) {
     test(
-        `Clicking menu item for ${sectionName} page should show only that page`,
+        `Clicking menu item for route ${routeName} should show that page only`,
         async () => {
-          const menuItem = queryMenuItemByHref(href);
-          assert(menuItem);
+          const route = routes[routeName];
+
+          const menuItem = queryMenuItemByHref(route.path);
+          assert(menuItem, `Menu item with href="${route.path}" not found.`);
 
           const pageReadyPromise = eventToPromise('show-container', window);
           menuItem.click();
           flush();
           await pageReadyPromise;
 
-          assertIsOnlyActiveAndVisiblePage(sectionName);
-          assertPageIsFocused(sectionName);
+          const section = route.section;
+          assert(section !== null);  // Value can be 0 (valid enum value)
+          assertIsOnlyActiveAndVisiblePage(section);
+          assertPageIsFocused(section);
         });
   }
 });
