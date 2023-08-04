@@ -10641,6 +10641,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-labs-overview-scroll-layout-for-clamshell",
+     flag_descriptions::kOverviewScrollLayoutForClamshellName,
+     flag_descriptions::kOverviewScrollLayoutForClamshellDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOverviewScrollLayoutForClamshell)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"speak-on-mute-opt-in-nudge-prefs-reset",
      flag_descriptions::kSpeakOnMuteOptInNudgePrefsResetName,
      flag_descriptions::kSpeakOnMuteOptInNudgePrefsResetDescription, kOsCrOS,

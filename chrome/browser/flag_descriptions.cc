@@ -6698,6 +6698,13 @@ const char kShowTouchHudDescription[] =
     "Ctrl-Alt-I shows a heads-up display view in the top-left corner. Helps "
     "debug hardware issues that generate spurious touch events.";
 
+const char kOverviewScrollLayoutForClamshellName[] =
+    "Scrollable overview layout for clamshell";
+const char kOverviewScrollLayoutForClamshellDescription[] =
+    "Shows a new overview mode layout on clamshell when a large number of "
+    "windows are on the display. Improves the performance of overview mode and "
+    "prevents the screen from getting too cluttered";
+
 const char kSpeakOnMuteOptInNudgePrefsResetName[] =
     "Reset Speak-on-mute detection opt-in nudge prefs";
 const char kSpeakOnMuteOptInNudgePrefsResetDescription[] =

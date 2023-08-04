@@ -63112,6 +63112,7 @@ from previous Chrome versions.
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
   <int value="-460062351" label="VariationsGoogleGroupFiltering:disabled"/>
+  <int value="-459999278" label="OverviewScrollLayoutForClamshell:enabled"/>
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
   <int value="-458726025" label="WebApkInstallFailureNotification:disabled"/>
@@ -65581,6 +65582,7 @@ from previous Chrome versions.
   <int value="803877391" label="NotificationsRefresh:enabled"/>
   <int value="803982925" label="CellularForbidAttachApn:disabled"/>
   <int value="804037091" label="(Obsolete) TranslateAssistContent:disabled"/>
+  <int value="804103264" label="OverviewScrollLayoutForClamshell:disabled"/>
   <int value="804119864"
       label="AutofillEnableRankingAddressFormulaProfiles:enabled"/>
   <int value="804551127" label="ArcKeyboardShortcutHelperIntegration:disabled"/>

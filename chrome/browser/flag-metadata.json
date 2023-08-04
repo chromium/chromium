@@ -1388,6 +1388,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "cros-labs-overview-scroll-layout-for-clamshell",
+    "owners": [ "sammiequon", "chromeos-wm-corexp@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cros-labs-window-cycle-shortcut",
     "owners": [ "andp", "benbecker", "nupurjain" ],
     "expiry_milestone": 120
