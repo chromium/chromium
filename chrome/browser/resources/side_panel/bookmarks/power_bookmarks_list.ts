@@ -1000,6 +1000,10 @@ export class PowerBookmarksListElement extends PolymerElement {
         SearchAction.COUNT);
   }
 
+  private onContextMenuShown_(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    this.contextMenuBookmark_ = bookmark;
+  }
+
   private onShowContextMenuClicked_(
       event: CustomEvent<
           {bookmark: chrome.bookmarks.BookmarkTreeNode, event: MouseEvent}>) {
@@ -1008,15 +1012,15 @@ export class PowerBookmarksListElement extends PolymerElement {
     const priceTracked = this.isPriceTracked(event.detail.bookmark);
     const priceTrackingEligible =
         this.isPriceTrackingEligible_(event.detail.bookmark);
-    this.contextMenuBookmark_ = event.detail.bookmark;
+    const bookmark = event.detail.bookmark;
     if (event.detail.event.button === 0) {
       this.$.contextMenu.showAt(
-          event.detail.event, [this.contextMenuBookmark_], priceTracked,
-          priceTrackingEligible);
+          event.detail.event, [bookmark], priceTracked, priceTrackingEligible,
+          this.onContextMenuShown_.bind(this, bookmark));
     } else {
       this.$.contextMenu.showAtPosition(
-          event.detail.event, [this.contextMenuBookmark_], priceTracked,
-          priceTrackingEligible);
+          event.detail.event, [bookmark], priceTracked, priceTrackingEligible,
+          this.onContextMenuShown_.bind(this, bookmark));
     }
   }
 
