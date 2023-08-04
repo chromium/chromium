@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/cors/cors.h"
 
-#include <cctype>
 #include <set>
 #include <vector>
 
@@ -21,6 +20,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -43,13 +43,14 @@ bool IsSimilarToDoubleABNF(const std::string& header_value) {
   if (header_value.empty())
     return false;
   char first_char = header_value.at(0);
-  if (!isdigit(first_char))
+  if (!absl::ascii_isdigit(static_cast<unsigned char>(first_char))) {
     return false;
+  }
 
   bool period_found = false;
   bool digit_found_after_period = false;
   for (char ch : header_value) {
-    if (isdigit(ch)) {
+    if (absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       if (period_found) {
         digit_found_after_period = true;
       }
@@ -74,8 +75,9 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
     return false;
 
   for (char ch : header_value) {
-    if (!isdigit(ch))
+    if (!absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       return false;
+    }
   }
   return true;
 }
