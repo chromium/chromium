@@ -408,6 +408,26 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   }
 }
 
+TEST_F(iCloudKeychainTest, FetchCredentialMetadataNoPermission) {
+  if (@available(macOS 13.3, *)) {
+    fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+
+    test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
+                               FidoRequestHandlerBase::RecognizedCredential>
+        callback;
+    CtapGetAssertionRequest request("example.com", "{}");
+    CtapGetAssertionOptions options;
+
+    CHECK(authenticator_);
+    authenticator_->GetPlatformCredentialInfoForRequest(request, options,
+                                                        callback.callback());
+    callback.WaitForCallback();
+    auto result = callback.TakeResult();
+    EXPECT_EQ(std::get<1>(result),
+              FidoRequestHandlerBase::RecognizedCredential::kUnknown);
+  }
+}
+
 }  // namespace
 
 }  // namespace device::fido::icloud_keychain

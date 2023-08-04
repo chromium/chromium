@@ -138,7 +138,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
             << "iCKC: cannot query credentials because of lack of permission";
         std::move(callback).Run(
             {}, FidoRequestHandlerBase::RecognizedCredential::kUnknown);
-        break;
+        return;
       case SystemInterface::kAuthAuthorized:
         break;
     }
