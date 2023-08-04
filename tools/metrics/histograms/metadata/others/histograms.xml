@@ -9808,19 +9808,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PushMessaging.ReceivedMessageInBackground" enum="Boolean"
-    expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Whenever a Service Worker receives a push message, this records whether
-    Chrome is completely running in the background. A successful report means
-    that the message was received when Chrome was in complete background mode,
-    without UI, while a failure means it was in some other state: in background
-    with some apps running, showing browser windows, etc.
-  </summary>
-</histogram>
-
 <histogram name="PushMessaging.RegistrationStatus"
     enum="PushRegistrationStatus" expires_after="2022-06-19">
   <owner>peter@chromium.org</owner>
@@ -9840,28 +9827,6 @@ chromium-metrics-reviews@google.com.
     foreground, it is persisted on disk until next time Chrome is in the
     foreground. This histogram measures the time spent in reading and replaying
     persisted messages when Chrome goes to the foreground.
-  </summary>
-</histogram>
-
-<histogram name="PushMessaging.UnregistrationGCMResult" enum="GCMClientResult"
-    expires_after="2022-04-24">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When unregistering a legacy non-InstanceID push messaging subscription, this
-    records the result returned by the GCMDriver (note that exceeding the
-    maximum number of retries due to network errors is logged as SERVER_ERROR).
-  </summary>
-</histogram>
-
-<histogram name="PushMessaging.UnregistrationIIDResult" enum="InstanceIDResult"
-    expires_after="2022-04-24">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When unregistering an InstanceID push messaging subscription, this records
-    the result returned from deleting the InstanceID (note that exceeding the
-    maximum number of retries due to network errors is logged as SERVER_ERROR).
   </summary>
 </histogram>
 

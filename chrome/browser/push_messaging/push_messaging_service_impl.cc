@@ -154,14 +154,6 @@ void RecordUnsubscribeReason(blink::mojom::PushUnregistrationReason reason) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationReason", reason);
 }
 
-void RecordUnsubscribeGCMResult(gcm::GCMClient::Result result) {
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationGCMResult", result);
-}
-
-void RecordUnsubscribeIIDResult(InstanceID::Result result) {
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationIIDResult", result);
-}
-
 void UnregisterCallbackToClosure(
     base::OnceClosure closure,
     blink::mojom::PushUnregistrationStatus status) {
@@ -355,12 +347,6 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
     return;
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  if (g_browser_process->background_mode_manager()) {
-    UMA_HISTOGRAM_BOOLEAN("PushMessaging.ReceivedMessageInBackground",
-                          g_browser_process->background_mode_manager()
-                              ->IsBackgroundWithoutWindows());
-  }
-
   if (!in_flight_keep_alive_) {
     in_flight_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
@@ -1310,14 +1296,12 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
 
 void PushMessagingServiceImpl::DidUnregister(bool was_subscribed,
                                              gcm::GCMClient::Result result) {
-  RecordUnsubscribeGCMResult(result);
   DidUnsubscribe(std::string() /* app_id_when_instance_id */, was_subscribed);
 }
 
 void PushMessagingServiceImpl::DidDeleteID(const std::string& app_id,
                                            bool was_subscribed,
                                            InstanceID::Result result) {
-  RecordUnsubscribeIIDResult(result);
   // DidUnsubscribe must be run asynchronously when passing a non-empty
   // |app_id_when_instance_id|, since it calls
   // InstanceIDDriver::RemoveInstanceID which deletes the InstanceID itself.
