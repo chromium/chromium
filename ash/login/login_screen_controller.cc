@@ -501,7 +501,12 @@ void LoginScreenController::OnSystemTrayBubbleShown() {
 }
 
 void LoginScreenController::OnLockScreenDestroyed() {
-  DCHECK_EQ(authentication_stage_, AuthenticationStage::kIdle);
+  // TODO(b/280250064): Make sure allowing this condition won't break
+  // LoginScreenController logic.
+  if (authentication_stage_ != AuthenticationStage::kIdle) {
+    LOG(WARNING) << "Lock screen is destroyed while the authentication stage: "
+                 << authentication_stage_;
+  }
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
   authentication_stage_ = AuthenticationStage::kIdle;
@@ -513,6 +518,18 @@ void LoginScreenController::NotifyLoginScreenShown() {
     return;
   }
   client_->OnLoginScreenShown();
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         LoginScreenController::AuthenticationStage stage) {
+  switch (stage) {
+    case LoginScreenController::AuthenticationStage::kIdle:
+      return ostream << "kIdle";
+    case LoginScreenController::AuthenticationStage::kDoAuthenticate:
+      return ostream << "kDoAuthenticate";
+    case LoginScreenController::AuthenticationStage::kUserCallback:
+      return ostream << "kUserCallback";
+  }
 }
 
 }  // namespace ash

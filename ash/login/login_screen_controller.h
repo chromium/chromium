@@ -172,6 +172,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   base::WeakPtrFactory<LoginScreenController> weak_factory_{this};
 };
 
+std::ostream& operator<<(std::ostream&,
+                         LoginScreenController::AuthenticationStage);
+
 }  // namespace ash
 
 #endif  // ASH_LOGIN_LOGIN_SCREEN_CONTROLLER_H_
