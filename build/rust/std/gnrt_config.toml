@@ -16,6 +16,9 @@ root = "sysroot"
 # issue is fixed.
 remove_crates = ['allocator-api2']
 
+[gn]
+build_file_template = "BUILD.gn.hbs"
+
 [all-crates]
 # std crates should have metadata applied to them. This would avoid any symbol
 # conflicts between std dependencies and third_party/rust crates.

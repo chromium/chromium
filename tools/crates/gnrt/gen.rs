@@ -16,6 +16,7 @@ use std::path::{Path, PathBuf};
 use std::process;
 
 use anyhow::{bail, ensure, format_err, Context, Result};
+use handlebars::handlebars_helper;
 
 pub fn generate(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.get_one::<String>("for-std").is_some() {
@@ -26,6 +27,10 @@ pub fn generate(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result
 }
 
 fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+    let template_path = paths.third_party.join("BUILD.gn.hbs");
+
+    let handlebars = init_handlebars(&template_path)?;
+
     // Traverse our third-party directory to collect the set of vendored crates.
     // Used to generate Cargo.toml [patch] sections, and later to check against
     // `cargo metadata`'s dependency resolution to ensure we have all the crates
@@ -216,16 +221,36 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             None => panic!("missing build data for {crate_id}"),
         };
 
-        write_build_file(&build_file_path, build_file_data).unwrap();
+        let gn_str = handlebars.render("template", &build_file_data)?;
+        write_build_file(&build_file_path, gn_str).unwrap();
     }
 
     Ok(())
+}
+
+fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
+    let mut handlebars = handlebars::Handlebars::new();
+
+    // Don't escape output strings; the default is to escape for HTML output. Do
+    // not auto-escape for GN either, so that non-string GN may also be passed.
+    handlebars.register_escape_fn(handlebars::no_escape);
+    handlebars.register_template_file("template", template_path).context("loading gn template")?;
+
+    // Install helper to escape inputs pasted in GN `".."` strings.
+    handlebars_helper!(gn_escape: |x: String| gn::escape_for_handlebars(&x));
+    handlebars.register_helper("gn_escape", Box::new(gn_escape));
+    Ok(handlebars)
 }
 
 fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
     let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+
+    let template_path =
+        paths.std_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
+
+    let handlebars = init_handlebars(&template_path)?;
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
@@ -310,15 +335,14 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
 
         for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
             kind.retain(|dep_of_dep| {
-                conf.remove_deps.iter().find(|r| **r == dep_of_dep.package_name).is_none()
+                !conf.remove_deps.iter().any(|r| **r == dep_of_dep.package_name)
             });
         }
     }
 
     // Remove any excluded dep entries.
-    dependencies.retain(|dep| {
-        config.resolve.remove_crates.iter().find(|r| **r == dep.package_name).is_none()
-    });
+    dependencies
+        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
 
     // Remove dev dependencies since tests aren't run. Also remove build deps
     // since we configure flags and env vars manually. Include the root
@@ -394,10 +418,11 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
 
     let build_file =
         gn::build_file_from_std_deps(dependencies.iter(), paths, &config, |crate_id| {
-            // A missing crate should have been detected above, so unwrap.
             crate_inputs.get(crate_id).unwrap()
         });
-    write_build_file(&paths.std_build.join("BUILD.gn"), &build_file).unwrap();
+
+    let gn_str = handlebars.render("template", &build_file)?;
+    write_build_file(&paths.std_build.join("BUILD.gn"), gn_str).unwrap();
 
     Ok(())
 }
@@ -410,7 +435,10 @@ fn build_file_path(crate_id: &VendoredCrate, paths: &paths::ChromiumPaths) -> Pa
     path
 }
 
-fn write_build_file(path: &Path, build_file: &gn::BuildFile) -> Result<()> {
+fn write_build_file<BuildFile: std::fmt::Display>(
+    path: &Path,
+    build_file: BuildFile,
+) -> Result<()> {
     let cmd_name = "gn format";
     let output_handle = fs::File::create(path)
         .with_context(|| format!("Could not create GN output file {}", path.to_string_lossy()))?;
@@ -426,7 +454,7 @@ fn write_build_file(path: &Path, build_file: &gn::BuildFile) -> Result<()> {
         cmd_name,
     )?;
 
-    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", build_file.display())
+    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", build_file)
         .context("Failed to write to GN format process")?;
     check_exit_ok(&check_wait_with_output(child, cmd_name)?, cmd_name)
 }

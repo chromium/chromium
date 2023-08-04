@@ -50,6 +50,8 @@ pub fn do_concat_field<
 #[serde(default, deny_unknown_fields)]
 pub struct BuildConfig {
     pub resolve: ResolveConfig,
+    #[serde(rename = "gn")]
+    pub gn_config: GnConfig,
     /// Configuration that applies to all crates
     #[serde(rename = "all-crates")]
     pub all_config: CrateConfig,
@@ -57,6 +59,15 @@ pub struct BuildConfig {
     /// name. Config is additive with `all_config`.
     #[serde(rename = "crate")]
     pub per_crate_config: BTreeMap<String, CrateConfig>,
+}
+
+/// Configures GN output for this session.
+#[derive(Clone, Debug, Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct GnConfig {
+    /// Path to a handlebars template for an output GN build file. The path is
+    /// relative to the config file.
+    pub build_file_template: std::path::PathBuf,
 }
 
 /// Influences dependency resolution for a session.

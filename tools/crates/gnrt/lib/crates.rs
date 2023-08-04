@@ -353,8 +353,10 @@ impl ThirdPartySource {
                 let crate_path = epoch_dir.path().join("crate");
 
                 let Some(crate_id) = get_vendored_crate_id(&crate_path)? else {
-                    warn!("directory name parsed as valid epoch but contained no Cargo.toml: {}",
-                          crate_path.to_string_lossy());
+                    warn!(
+                        "directory name parsed as valid epoch but contained no Cargo.toml: {}",
+                        crate_path.to_string_lossy()
+                    );
                     continue;
                 };
 
@@ -476,8 +478,10 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
         }
 
         let Some(crate_id) = get_vendored_crate_id(&vendored_crate.path())? else {
-            error!("Cargo.toml not found at {}. cargo vendor would not do that to us.",
-                   vendored_crate.path().to_string_lossy());
+            error!(
+                "Cargo.toml not found at {}. cargo vendor would not do that to us.",
+                vendored_crate.path().to_string_lossy()
+            );
             panic!()
         };
 
