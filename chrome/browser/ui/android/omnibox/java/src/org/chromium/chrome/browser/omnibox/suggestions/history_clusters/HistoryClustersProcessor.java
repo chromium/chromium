@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.base;
+package org.chromium.chrome.browser.omnibox.suggestions.history_clusters;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,8 +14,10 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -33,7 +34,6 @@ import java.util.List;
  */
 public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     private final OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
-    private final Context mContext;
     private int mJourneysActionShownPosition = -1;
 
     /** Delegate for HistoryClusters-related logic that omnibox code can't perform for itself. */
@@ -51,7 +51,6 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
             @NonNull OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
         super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
         mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
-        mContext = context;
     }
 
     @Override
@@ -67,10 +66,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
         if (!OmniboxFeatures.isJourneysRowUiEnabled()) {
             return false;
         }
-        HistoryClustersAction action = getHistoryClustersAction(suggestion);
-        if (action == null) return false;
-        assert !TextUtils.isEmpty(action.query);
-        return true;
+        return getHistoryClustersAction(suggestion) != null;
     }
 
     @Override
@@ -80,12 +76,14 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
-        HistoryClustersAction action = getHistoryClustersAction(suggestion);
-        if (action == null) return;
+    protected SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {
+        return new SuggestionSpannable(getHistoryClustersAction(match).hint);
+    }
 
-        super.populateModel(suggestion, model, position);
-        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(action.hint));
+    @Override
+    public void populateModel(AutocompleteMatch match, PropertyModel model, int position) {
+        HistoryClustersAction action = getHistoryClustersAction(match);
+        super.populateModel(match, model, position);
         model.set(BaseSuggestionViewProperties.ON_CLICK,
                 () -> onJourneysSuggestionClicked(action, position));
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,

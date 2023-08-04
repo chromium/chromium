@@ -2,25 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.base;
+package org.chromium.chrome.browser.omnibox.styles;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ScaleXSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
+import android.view.ContextThemeWrapper;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.test.R;
 
@@ -28,14 +34,16 @@ import org.chromium.chrome.browser.omnibox.test.R;
  * Tests for {@link SuggestionSpannable}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SuggestionSpannableUnitTest {
-    private Activity mActivity;
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    private Context mContext;
+    private @Mock ColorStateList mColor1;
+    private @Mock ColorStateList mColor2;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContext = new ContextThemeWrapper(
+                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test
@@ -249,14 +257,79 @@ public class SuggestionSpannableUnitTest {
     }
 
     @Test
+    public void spannableEquals_fontFamilyDifferent() {
+        SuggestionSpannable c1 = new SuggestionSpannable("test string");
+        SuggestionSpannable c2 = new SuggestionSpannable("test string");
+
+        c1.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan("B", 0, 0, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertFalse(c1.equals(c2));
+    }
+
+    @Test
+    public void spannableEquals_fontStyleDifferent() {
+        SuggestionSpannable c1 = new SuggestionSpannable("test string");
+        SuggestionSpannable c2 = new SuggestionSpannable("test string");
+
+        c1.setSpan(new TextAppearanceSpan("A", 1, 0, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan("A", 2, 0, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertFalse(c1.equals(c2));
+    }
+
+    @Test
+    public void spannableEquals_fontSizeDifferent() {
+        SuggestionSpannable c1 = new SuggestionSpannable("test string");
+        SuggestionSpannable c2 = new SuggestionSpannable("test string");
+
+        c1.setSpan(new TextAppearanceSpan("A", 0, 1, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan("A", 0, 2, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertFalse(c1.equals(c2));
+    }
+
+    @Test
+    public void spannableEquals_fontColorDifferent() {
+        SuggestionSpannable c1 = new SuggestionSpannable("test string");
+        SuggestionSpannable c2 = new SuggestionSpannable("test string");
+
+        c1.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan("A", 0, 0, mColor2, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertFalse(c1.equals(c2));
+    }
+
+    @Test
+    public void spannableEquals_fontLinkDifferent() {
+        SuggestionSpannable c1 = new SuggestionSpannable("test string");
+        SuggestionSpannable c2 = new SuggestionSpannable("test string");
+
+        c1.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor1), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor2), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertFalse(c1.equals(c2));
+    }
+
+    @Test
     public void spannableEquals_textAppearanceSpansSame() {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan(mActivity, R.style.TextAppearance_TextLarge_Primary), 3,
-                5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan(mActivity, R.style.TextAppearance_TextLarge_Primary), 3,
-                5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c1.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary), 3, 5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertTrue(c1.equals(c2));
     }
@@ -266,10 +339,32 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan(mActivity, R.style.TextAppearance_TextSmall_Disabled), 3,
+        c1.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextSmall_Disabled), 3,
                 5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan(mActivity, R.style.TextAppearance_TextMedium_Secondary),
-                3, 5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary), 3,
+                5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertFalse(c1.equals(c2));
+    }
+
+    @Test
+    public void spannableEquals_emptyStringsAreConsideredSame() {
+        SuggestionSpannable c1 = new SuggestionSpannable("");
+        SuggestionSpannable c2 = new SuggestionSpannable("");
+
+        c1.setSpan(new ScaleXSpan(1.0f), 0, 0, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new ScaleXSpan(1.1f), 0, 0, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        assertTrue(c1.equals(c2));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void spannableEquals_customSpansTriggerAssertionError() {
+        SuggestionSpannable c1 = new SuggestionSpannable("test string");
+        SuggestionSpannable c2 = new SuggestionSpannable("test string");
+
+        c1.setSpan(new ScaleXSpan(1.0f), 3, 5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(new ScaleXSpan(1.0f), 3, 5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
     }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.base;
+package org.chromium.chrome.browser.omnibox.suggestions.history_clusters;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,8 +13,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,16 +32,18 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.ShadowGURL;
 
 import java.util.Arrays;
 
@@ -52,20 +51,16 @@ import java.util.Arrays;
  * Tests for {@link HistoryClustersProcessor}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class HistoryClustersProcessorTest {
-    @Rule
-    public final TestRule mFeaturesProcessor = new Features.JUnitProcessor();
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    public final @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock SuggestionHost mSuggestionHost;
+    private @Mock OmniboxAction mMockAction;
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
     private @Mock OmniboxImageSupplier mImageSupplier;
-    @Mock
-    private BookmarkState mBookmarkState;
-    @Mock
-    private HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
+    private @Mock BookmarkState mBookmarkState;
+    private @Mock HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
 
     private HistoryClustersProcessor mProcessor;
 
@@ -78,26 +73,22 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
     public void doesProcessSuggestion_featureOff() {
         assertFalse(mProcessor.doesProcessSuggestion(createHistoryClustersSuggestion("foobar"), 1));
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
     public void doesProcessSuggestion() {
         assertTrue(mProcessor.doesProcessSuggestion(createHistoryClustersSuggestion("foobar"), 1));
-        assertFalse(mProcessor.doesProcessSuggestion(createSearchSuggestion("foobar"), 1));
+        assertFalse(mProcessor.doesProcessSuggestion(
+                createSearchSuggestionBuilder("foobar").build(), 1));
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
     public void testPopulateModel() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("Omnibox.ResumeJourneyShown", 2);
         PropertyModel propertyModel = mProcessor.createModel();
         AutocompleteMatch suggestion = createHistoryClustersSuggestion("foobar");
         mProcessor.populateModel(suggestion, propertyModel, 2);
@@ -109,16 +100,34 @@ public class HistoryClustersProcessorTest {
         assertNotNull(sds);
         assertEquals(R.drawable.action_journeys, shadowOf(sds.drawable).getCreatedFromResId());
 
+        HistogramWatcher noRecordsWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords("Omnibox.ResumeJourneyShown").build();
+        mProcessor.onUrlFocusChange(true);
+        noRecordsWatcher.assertExpected();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Omnibox.ResumeJourneyShown", 2);
         mProcessor.onUrlFocusChange(false);
         watcher.assertExpected();
-
-        propertyModel = mProcessor.createModel();
-        mProcessor.populateModel(createSearchSuggestion("foobar"), propertyModel, 0);
-        assertEquals(0, propertyModel.getAllSetProperties().size());
     }
 
     @Test
-    @SmallTest
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    public void doesProcessSuggestion_suggestionWithNoActions() {
+        assertFalse(mProcessor.doesProcessSuggestion(
+                createSearchSuggestionBuilder("foobar").build(), 0));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    public void doesProcessSuggestion_suggestionWithNoHistoryClusterActions() {
+        assertFalse(mProcessor.doesProcessSuggestion(createSearchSuggestionBuilder("foobar")
+                                                             .setActions(Arrays.asList(mMockAction))
+                                                             .build(),
+                0));
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
     public void testOnClick() {
         HistogramWatcher watcher =
@@ -132,19 +141,46 @@ public class HistoryClustersProcessorTest {
         watcher.assertExpected();
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    public void testOnClick_noDelegate() {
+        mProcessor = new HistoryClustersProcessor(/*openHistoryClustersDelegate=*/null,
+                ContextUtils.getApplicationContext(), mSuggestionHost, mUrlBarText, mImageSupplier,
+                mBookmarkState);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectNoRecords("Omnibox.SuggestionUsed.ResumeJourney")
+                                           .build();
+        PropertyModel propertyModel = mProcessor.createModel();
+        AutocompleteMatch suggestion = createHistoryClustersSuggestion("foobar");
+        mProcessor.populateModel(suggestion, propertyModel, 2);
+        propertyModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    public void testOnLongClick() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Omnibox.SuggestionUsed.ResumeJourney", 2);
+        PropertyModel propertyModel = mProcessor.createModel();
+        AutocompleteMatch suggestion = createHistoryClustersSuggestion("foobar");
+        mProcessor.populateModel(suggestion, propertyModel, 2);
+        propertyModel.get(BaseSuggestionViewProperties.ON_LONG_CLICK).run();
+
+        verify(mOpenHistoryClustersDelegate).openHistoryClustersUi("foobar");
+        watcher.assertExpected();
+    }
+
     private AutocompleteMatch createHistoryClustersSuggestion(String query) {
-        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
-                .setDisplayText(query)
-                .setIsSearch(true)
+        return createSearchSuggestionBuilder(query)
                 .setActions(
                         Arrays.asList(new HistoryClustersAction(0, "hint", "accessibility", query)))
                 .build();
     }
 
-    private AutocompleteMatch createSearchSuggestion(String query) {
+    private AutocompleteMatchBuilder createSearchSuggestionBuilder(String query) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
                 .setDisplayText(query)
-                .setIsSearch(true)
-                .build();
+                .setIsSearch(true);
     }
 }

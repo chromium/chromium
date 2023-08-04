@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.base;
+package org.chromium.chrome.browser.omnibox.styles;
 
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -14,15 +14,14 @@ import android.text.style.UpdateAppearance;
 
 /**
  * SpannableString that supplies .equals method for content comparison.
- * TODO(ender): This code assumes the use of a limited subset of span types in suggestion text
+ * This code assumes the use of a limited subset of span types in suggestion text
  * and may need revisiting if/when the scope of these types expands (eg. different colors are
  * introduced). With the limited set of Span features we use this code is working well.
- * When this is done, consider sharing this with UrlBarMediator#isNewTextEquivalentToExitingText.
+ * When this is done, consider sharing this with UrlBarMediator#isNewTextEquivalentToExistingText.
  */
 public class SuggestionSpannable extends SpannableString {
     public SuggestionSpannable(CharSequence text) {
         super(text);
-        assert text != null;
     }
 
     /**
