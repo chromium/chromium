@@ -16943,21 +16943,6 @@
             ]
         }
     ],
-    "WebViewSafeBrowsingSafeMode": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "WebViewSafeBrowsingSafeMode",
-                    "enable_features": [
-                        "WebViewSafeBrowsingSafeMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewSurfaceControl": [
         {
             "platforms": [

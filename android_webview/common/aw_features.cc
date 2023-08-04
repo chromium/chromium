@@ -122,7 +122,7 @@ BASE_FEATURE(kWebViewRestrictSensitiveContent,
 // a safe browsing check.
 BASE_FEATURE(kWebViewSafeBrowsingSafeMode,
              "WebViewSafeBrowsingSafeMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
