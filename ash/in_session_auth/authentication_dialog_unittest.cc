@@ -4,8 +4,6 @@
 
 #include "ash/in_session_auth/authentication_dialog.h"
 
-#include <cctype>
-
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/test/mock_in_session_auth_token_provider.h"
 #include "ash/test/ash_test_base.h"
@@ -23,6 +21,7 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -102,7 +101,7 @@ class AuthenticationDialogTest : public AshTestBase {
     generator->ClickLeftButton();
 
     for (char c : password) {
-      EXPECT_TRUE(std::isalpha(c));
+      EXPECT_TRUE(absl::ascii_isalpha(static_cast<unsigned char>(c)));
       generator->PressAndReleaseKey(
           static_cast<ui::KeyboardCode>(ui::KeyboardCode::VKEY_A + (c - 'a')),
           ui::EF_NONE);
