@@ -39,10 +39,8 @@ class WebBundleParserFactoryTest : public testing::Test {
       : factory_(std::make_unique<WebBundleParserFactory>()) {}
 
   std::unique_ptr<mojom::BundleDataSource> CreateFileDataSource(
-      mojo::PendingReceiver<mojom::BundleDataSource> receiver,
       base::File file) {
-    return factory_->CreateFileDataSourceForTesting(std::move(receiver),
-                                                    std::move(file));
+    return factory_->CreateFileDataSourceForTesting(std::move(file));
   }
 
   void GetParserForFile(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
@@ -82,9 +80,7 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
             file.Read(file_length - test_length,
                       reinterpret_cast<char*>(last16b.data()), last16b.size()));
 
-  mojo::PendingRemote<mojom::BundleDataSource> remote;
-  auto data_source = CreateFileDataSource(
-      remote.InitWithNewPipeAndPassReceiver(), std::move(file));
+  auto data_source = CreateFileDataSource(std::move(file));
 
   {
     base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;

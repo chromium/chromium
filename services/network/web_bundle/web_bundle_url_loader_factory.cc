@@ -593,9 +593,10 @@ void WebBundleURLLoaderFactory::SetBundleStream(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&WebBundleURLLoaderFactory::OnDataCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
-  // WebBundleParser will self-destruct on remote mojo ends' disconnection.
-  new web_package::WebBundleParser(parser_.BindNewPipeAndPassReceiver(),
-                                   std::move(data_source), bundle_url_);
+
+  mojo::MakeSelfOwnedReceiver(std::make_unique<web_package::WebBundleParser>(
+                                  std::move(data_source), bundle_url_),
+                              parser_.BindNewPipeAndPassReceiver());
 
   parser_->ParseMetadata(
       /*offset=*/absl::nullopt,

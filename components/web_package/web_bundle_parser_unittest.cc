@@ -101,9 +101,7 @@ ParseSignedBundleIntegrityBlockResult ParseSignedBundleIntegrityBlock(
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
-  mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
-  WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                              std::move(source_remote), base_url);
+  WebBundleParser parser_impl(std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
   base::test::TestFuture<mojom::BundleIntegrityBlockPtr,
@@ -127,9 +125,7 @@ ParseUnsignedBundleResult ParseUnsignedBundle(
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
-  mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
-  WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                              std::move(source_remote), base_url);
+  WebBundleParser parser_impl(std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
   base::test::TestFuture<mojom::BundleMetadataPtr,
@@ -165,9 +161,7 @@ mojom::BundleResponsePtr ParseResponse(
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
-  mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
-  WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                              std::move(source_remote), base_url);
+  WebBundleParser parser_impl(std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
   base::test::TestFuture<mojom::BundleResponsePtr,
@@ -944,9 +938,7 @@ TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {
     mojo::PendingRemote<mojom::BundleDataSource> source_remote;
     data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
-    mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
-    WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                                std::move(source_remote), GURL());
+    WebBundleParser parser_impl(std::move(source_remote), GURL());
     mojom::WebBundleParser& parser = parser_impl;
 
     parser.ParseMetadata(/*offset=*/absl::nullopt, future.GetCallback());
@@ -979,9 +971,7 @@ TEST_F(WebBundleParserTest, DisconnectWhileParsingResponse) {
     mojo::PendingRemote<mojom::BundleDataSource> source_remote;
     data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
-    mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
-    WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                                std::move(source_remote), GURL());
+    WebBundleParser parser_impl(std::move(source_remote), GURL());
     mojom::WebBundleParser& parser = parser_impl;
 
     parser.ParseResponse(location->offset, location->length,

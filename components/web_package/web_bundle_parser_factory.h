@@ -26,7 +26,6 @@ class WebBundleParserFactory : public mojom::WebBundleParserFactory {
   ~WebBundleParserFactory() override;
 
   std::unique_ptr<mojom::BundleDataSource> CreateFileDataSourceForTesting(
-      mojo::PendingReceiver<mojom::BundleDataSource> receiver,
       base::File file);
 
  private:
