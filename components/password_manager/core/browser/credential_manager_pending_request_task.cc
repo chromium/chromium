@@ -66,59 +66,47 @@ auto MakeFlatSet(KeyGetter key_getter) {
 }
 
 // Remove duplicates in |forms| before displaying them in the account chooser.
-void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
+void FilterDuplicatesInFederatedCredentials(
+    std::vector<std::unique_ptr<PasswordForm>>& forms) {
   auto federated_forms_with_unique_username =
       MakeFlatSet(/*key_getter=*/[](const auto& form) {
         return std::make_pair(form->username_value, form->federation_origin);
       });
 
-  std::vector<const PasswordForm*> all_non_federated_forms;
-  for (auto& form : *forms) {
-    if (!form->federation_origin.opaque()) {
-      // |forms| contains credentials from both the profile and account stores.
-      // Therefore, it could potentially contains duplicate federated
-      // credentials. In case of duplicates, favor the account store version.
-      InsertOrReplaceIf(federated_forms_with_unique_username, std::move(form),
-                        [](const auto& old_form, const auto& new_form) {
-                          return new_form->IsUsingAccountStore();
-                        });
-    } else {
-      all_non_federated_forms.push_back(form.get());
-    }
+  for (auto& form : forms) {
+    CHECK(!form->federation_origin.opaque());
+    // |forms| contains credentials from both the profile and account stores.
+    // Therefore, it could potentially contains duplicate federated
+    // credentials. In case of duplicates, favor the account store version.
+    InsertOrReplaceIf(federated_forms_with_unique_username, std::move(form),
+                      [](const auto& old_form, const auto& new_form) {
+                        return new_form->IsUsingAccountStore();
+                      });
   }
 
-  std::vector<const PasswordForm*> other_matches;
-  std::vector<const PasswordForm*> best_matches;
-  password_manager_util::FindBestMatches(all_non_federated_forms,
-                                         PasswordForm::Scheme::kHtml,
-                                         &other_matches, &best_matches);
-
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  for (const PasswordForm* best_match : best_matches) {
-    auto it = base::ranges::find(*forms, best_match,
-                                 &std::unique_ptr<PasswordForm>::get);
-    DCHECK(it != forms->end());
-    result.push_back(std::move(*it));
-  }
-
-  *forms = std::move(result);
-
-  std::vector<std::unique_ptr<PasswordForm>> federated_forms =
-      std::move(federated_forms_with_unique_username).extract();
-  std::move(federated_forms.begin(), federated_forms.end(),
-            std::back_inserter(*forms));
+  forms = std::move(federated_forms_with_unique_username).extract();
 }
 
-// Sift |forms| for the account chooser so it doesn't have empty usernames or
-// duplicates.
-void FilterDuplicatesAndEmptyUsername(
-    std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  // Remove empty usernames from the list.
-  base::EraseIf(*forms, [](const std::unique_ptr<PasswordForm>& form) {
-    return form->username_value.empty();
-  });
+void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
+                           bool include_passwords,
+                           const std::set<std::string>& federations) {
+  // Get rid of the irrelevant credentials.
+  base::EraseIf(forms, [include_passwords, &federations](
+                           const std::unique_ptr<PasswordForm>& form) {
+    // Remove empty usernames from the list.
+    if (form->username_value.empty()) {
+      return true;
+    }
 
-  FilterDuplicates(forms);
+    if (form->federation_origin.opaque()) {
+      // Remove passwords if they shouldn't be included.
+      return !include_passwords;
+    }
+
+    // Ensure that the form we're looking at matches federation filters
+    // provided.
+    return !federations.contains(form->federation_origin.Serialize());
+  });
 }
 
 }  // namespace
@@ -160,11 +148,14 @@ void CredentialManagerPendingRequestTask::OnFetchCompleted() {
                           [](const PasswordForm* form) {
                             return std::make_unique<PasswordForm>(*form);
                           });
-  base::ranges::transform(form_fetcher_->GetAllRelevantMatches(),
+  // GetFederatedMatches() comes with duplicates, filter them immediately.
+  FilterDuplicatesInFederatedCredentials(all_matches);
+  base::ranges::transform(form_fetcher_->GetBestMatches(),
                           std::back_inserter(all_matches),
                           [](const PasswordForm* form) {
                             return std::make_unique<PasswordForm>(*form);
                           });
+  FilterIrrelevantForms(all_matches, include_passwords_, federations_);
   ProcessForms(std::move(all_matches));
 }
 
@@ -177,17 +168,6 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
     return;
   }
-  // Get rid of the irrelevant credentials.
-  base::EraseIf(results, [this](const std::unique_ptr<PasswordForm>& form) {
-    if (form->federation_origin.opaque()) {
-      // Remove passwords if they shouldn't be included.
-      return !include_passwords_;
-    } else {
-      // Ensure that the form we're looking at matches federation filters
-      // provided.
-      return !federations_.contains(form->federation_origin.Serialize());
-    }
-  });
 
   std::vector<std::unique_ptr<PasswordForm>> local_results;
   std::vector<std::unique_ptr<PasswordForm>> psl_results;
@@ -204,8 +184,6 @@ void CredentialManagerPendingRequestTask::ProcessForms(
       local_results.push_back(std::move(form));
     }
   }
-
-  FilterDuplicatesAndEmptyUsername(&local_results);
 
   // We only perform zero-click sign-in when it is not forbidden via the
   // mediation requirement and the result is completely unambigious.
@@ -273,7 +251,6 @@ void CredentialManagerPendingRequestTask::ProcessForms(
   // should list the PSL matches.
   if (local_results.empty()) {
     local_results = std::move(psl_results);
-    FilterDuplicatesAndEmptyUsername(&local_results);
   }
 
   if (local_results.empty()) {
