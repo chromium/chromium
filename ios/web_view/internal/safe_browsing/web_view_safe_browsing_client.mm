@@ -28,6 +28,12 @@ WebViewSafeBrowsingClient::GetRealTimeUrlLookupService() {
   return nullptr;
 }
 
+safe_browsing::HashRealTimeService*
+WebViewSafeBrowsingClient::GetHashRealTimeService() {
+  // ios/web_view does not support hash-real-time lookups.
+  return nullptr;
+}
+
 bool WebViewSafeBrowsingClient::ShouldBlockUnsafeResource(
     const security_interstitials::UnsafeResource& resource) const {
   return false;

@@ -25,6 +25,11 @@ FakeSafeBrowsingClient::GetRealTimeUrlLookupService() {
   return lookup_service_;
 }
 
+safe_browsing::HashRealTimeService*
+FakeSafeBrowsingClient::GetHashRealTimeService() {
+  return nullptr;
+}
+
 bool FakeSafeBrowsingClient::ShouldBlockUnsafeResource(
     const security_interstitials::UnsafeResource& resource) const {
   return should_block_unsafe_resource_;

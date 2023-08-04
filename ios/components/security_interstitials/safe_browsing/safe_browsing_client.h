@@ -9,6 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace safe_browsing {
+class HashRealTimeService;
 class RealTimeUrlLookupService;
 }  // namespace safe_browsing
 
@@ -33,6 +34,8 @@ class SafeBrowsingClient : public KeyedService {
   // Gets the real time url look up service. Clients may return nullptr.
   virtual safe_browsing::RealTimeUrlLookupService*
   GetRealTimeUrlLookupService() = 0;
+  // Gets the hash-real-time service factory. Client may return nulltpr.
+  virtual safe_browsing::HashRealTimeService* GetHashRealTimeService() = 0;
   // Returns whether or not `resource` should be blocked from loading.
   virtual bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const = 0;

@@ -18,6 +18,7 @@ class WebViewSafeBrowsingClient : public SafeBrowsingClient {
   SafeBrowsingService* GetSafeBrowsingService() override;
   safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
       override;
+  safe_browsing::HashRealTimeService* GetHashRealTimeService() override;
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
   void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
