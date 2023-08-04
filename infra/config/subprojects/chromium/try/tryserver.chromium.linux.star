@@ -279,6 +279,8 @@ try_.orchestrator_builder(
         "ci/Linux Release (NVIDIA)",
     ],
     try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -354,6 +356,8 @@ try_.orchestrator_builder(
         "ci/Linux Tests (Wayland)",
     ],
     try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -366,7 +370,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
@@ -512,6 +516,8 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Tests (1)",
     ],
     try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -525,7 +531,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
 )
 

@@ -46,7 +46,8 @@
           "builder": "chromeos-amd64-generic-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "is_compile_only": true
     }
   },
   "$build/flakiness": {

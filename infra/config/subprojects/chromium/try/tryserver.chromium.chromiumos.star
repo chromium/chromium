@@ -85,6 +85,10 @@ try_.compilator_builder(
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-siso-rel",
     mirrors = ["ci/chromeos-amd64-generic-rel"],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     check_for_flakiness = True,
     compilator = "chromeos-amd64-generic-siso-rel-compilator",
     experiments = {
@@ -302,6 +306,10 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/linux-chromeos-rel",
     ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     check_for_flakiness = True,
     compilator = "linux-chromeos-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
@@ -312,7 +320,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
@@ -366,13 +374,17 @@ try_.orchestrator_builder(
         "ci/linux-lacros-builder-rel",
         "ci/linux-lacros-tester-rel",
     ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     check_for_flakiness = True,
     compilator = "linux-lacros-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )

@@ -162,6 +162,10 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     compilator = "fuchsia-x64-cast-receiver-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -172,7 +176,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )

@@ -94,6 +94,8 @@ try_.orchestrator_builder(
         "ci/android-12-x64-rel",
     ],
     try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -106,7 +108,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_java_coverage = True,
 )
@@ -176,6 +178,8 @@ try_.orchestrator_builder(
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
     ],
     try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -189,7 +193,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
@@ -423,6 +427,8 @@ try_.orchestrator_builder(
         "ci/android-nougat-x86-rel",
     ],
     try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -437,7 +443,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_java_coverage = True,
 )

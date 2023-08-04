@@ -77,6 +77,10 @@
         {
           "builder": "linux-wayland-siso-rel",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-wayland-siso-rel",
+          "group": "tryserver.chromium.linux"
         }
       ]
     }

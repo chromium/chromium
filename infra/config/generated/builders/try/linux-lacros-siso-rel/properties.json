@@ -82,7 +82,8 @@
           "builder": "linux-lacros-tester-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "is_compile_only": true
     }
   },
   "$build/code_coverage": {

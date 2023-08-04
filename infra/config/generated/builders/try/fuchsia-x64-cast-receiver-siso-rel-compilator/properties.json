@@ -38,7 +38,8 @@
           "builder": "fuchsia-x64-cast-receiver-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "is_compile_only": true
     }
   },
   "$build/code_coverage": {
