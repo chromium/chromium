@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/fill_layout.h"
@@ -178,6 +179,12 @@ LoginPinInputView::LoginPinInputView() : length_(kDefaultLength) {
 }
 
 LoginPinInputView::~LoginPinInputView() = default;
+
+void LoginPinInputView::OnImplicitAnimationsCompleted() {
+  Reset();
+  SetVisible(false);
+  StopObservingImplicitAnimations();
+}
 
 bool LoginPinInputView::IsAutosubmitSupported(int length) {
   return features::IsPinAutosubmitFeatureEnabled() &&

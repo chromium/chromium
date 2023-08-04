@@ -186,6 +186,33 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
       view));
 }
 
+template <typename T>
+void AnimateOpacity(T* view, bool towards_visible, bool observe_completion) {
+  float opacity_start = 0, opacity_end = 1;
+  if (!towards_visible) {
+    std::swap(opacity_start, opacity_end);
+  }
+  if (view->layer() == nullptr) {
+    view->SetPaintToLayer();
+  }
+  view->layer()->SetOpacity(opacity_start);
+
+  {
+    ui::ScopedLayerAnimationSettings settings(view->layer()->GetAnimator());
+    settings.SetTransitionDuration(
+        base::Milliseconds(login::kChangeUserAnimationDurationMs));
+    settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
+    if constexpr (std::is_base_of<ui::ImplicitAnimationObserver, T>::value) {
+      if (observe_completion) {
+        settings.AddObserver(view);
+      }
+    } else {
+      CHECK(!observe_completion);
+    }
+    view->layer()->SetOpacity(opacity_end);
+  }
+}
+
 }  // namespace
 
 // Consists of challenge-response icon view and a label.
@@ -818,47 +845,29 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   // Fade the password view if it is being hidden or shown.
 
   if (current_state.has_password != previous_state_->has_password) {
-    float opacity_start = 0, opacity_end = 1;
-    if (!current_state.has_password) {
-      std::swap(opacity_start, opacity_end);
-    }
+    AnimateOpacity<LoginPasswordView>(
+        password_view_, /*towards_visible=*/current_state.has_password,
+        /*observe_completion=*/previous_state_->has_password &&
+            !current_state.has_password);
+  }
 
-    password_view_->layer()->SetOpacity(opacity_start);
+  ////////
+  // Fade the pin input view if it is being hidden or shown.
 
-    {
-      ui::ScopedLayerAnimationSettings settings(
-          password_view_->layer()->GetAnimator());
-      settings.SetTransitionDuration(
-          base::Milliseconds(login::kChangeUserAnimationDurationMs));
-      settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
-      if (previous_state_->has_password && !current_state.has_password) {
-        settings.AddObserver(password_view_);
-      }
-
-      password_view_->layer()->SetOpacity(opacity_end);
-    }
+  if (current_state.has_pin_input != previous_state_->has_pin_input) {
+    AnimateOpacity<LoginPinInputView>(
+        pin_input_view_, /*towards_visible=*/current_state.has_pin_input,
+        /*observe_completion=*/previous_state_->has_pin_input &&
+            !current_state.has_pin_input);
   }
 
   ////////
   // Fade the pin/pwd toggle if its being hidden or shown.
   if (previous_state_->has_toggle != current_state.has_toggle) {
-    float opacity_start = 0, opacity_end = 1;
-    if (!current_state.has_toggle) {
-      std::swap(opacity_start, opacity_end);
-    }
-
-    pin_password_toggle_->layer()->SetOpacity(opacity_start);
-
-    {
-      ui::ScopedLayerAnimationSettings settings(
-          pin_password_toggle_->layer()->GetAnimator());
-      settings.SetTransitionDuration(
-          base::Milliseconds(login::kChangeUserAnimationDurationMs));
-      settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
-      pin_password_toggle_->layer()->SetOpacity(opacity_end);
-    }
+    AnimateOpacity<PillButton>(pin_password_toggle_,
+                               /*towards_visible=*/current_state.has_toggle,
+                               /*observe_completion=*/false);
   }
-
   ////////
   // Grow/shrink the PIN keyboard if it is being hidden or shown.
 
