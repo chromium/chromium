@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,11 +59,11 @@
 #endif
 
 using autofill::ACCOUNT_CREATION_PASSWORD;
+using autofill::CalculateFormSignature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
-using autofill::FormStructure;
 using autofill::NEW_PASSWORD;
 using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;
@@ -1202,7 +1203,10 @@ void PasswordManager::MaybeSavePasswordHash(
 
 void PasswordManager::ProcessAutofillPredictions(
     PasswordManagerDriver* driver,
-    const std::vector<FormStructure*>& forms) {
+    base::span<const autofill::FormData* const> forms,
+    const base::flat_map<autofill::FieldGlobalId,
+                         autofill::AutofillType::ServerPrediction>&
+        predictions) {
   // Don't do anything if Password store is not available.
   if(!client_->GetProfilePasswordStore())
     return;
@@ -1213,30 +1217,31 @@ void PasswordManager::ProcessAutofillPredictions(
         client_->GetLogManager());
   }
 
-  for (const FormStructure* form : forms) {
-    // |driver| might be empty in tests.
+  for (const FormData* form : forms) {
+    // `driver` might be null in tests.
     int driver_id = driver ? driver->GetId() : 0;
-    predictions_[form->form_signature()] =
-        ConvertToFormPredictions(driver_id, *form);
+    predictions_[CalculateFormSignature(*form)] =
+        ConvertToFormPredictions(driver_id, *form, predictions);
   }
 
-  // Create form managers for non-password forms if |predictions_| has evidence
+  // Create form managers for non-password forms if `predictions_` has evidence
   // that these forms are password related.
-  for (const FormStructure* form : forms) {
-    if (logger)
-      logger->LogFormStructure(Logger::STRING_SERVER_PREDICTIONS, *form);
+  for (const FormData* form : forms) {
+    if (logger) {
+      logger->LogFormDataWithServerPredictions(
+          Logger::STRING_SERVER_PREDICTIONS, *form, predictions);
+    }
 
-    const FormData& form_data = form->ToFormData();
     // If the renderer recognizes `form` as a credential form, then we will be
     // informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
-    if (util::IsRendererRecognizedCredentialForm(form_data)) {
+    if (util::IsRendererRecognizedCredentialForm(*form)) {
       continue;
     }
 
     const FormPredictions* form_predictions =
-        &predictions_[form->form_signature()];
-    // Skip the form if it contains neither a field for a username first flow
-    // nor a clear-text password field.
+        &predictions_[CalculateFormSignature(*form)];
+    // Do not skip the form if it either contains a field for the Username
+    // first flow or a clear-text password field.
     if (!(HasSingleUsernameVote(*form_predictions) ||
           HasNewPasswordVote(*form_predictions))) {
       continue;
@@ -1244,18 +1249,18 @@ void PasswordManager::ProcessAutofillPredictions(
 
     if (PasswordFormManager* manager =
             GetMatchedManager(driver, form->global_id().renderer_id)) {
-      if (!HasObservedFormChanged(form_data, *manager)) {
+      if (!HasObservedFormChanged(*form, *manager)) {
         continue;
       }
 
       // If the observed form has changed, update the manager and trigger
       // filling.
-      manager->UpdateFormManagerWithFormChanges(form_data, predictions_);
+      manager->UpdateFormManagerWithFormChanges(*form, predictions_);
       manager->Fill();
       continue;
     }
 
-    CreateFormManager(driver, form_data);
+    CreateFormManager(driver, *form);
   }
 
   // TODO(crbug.com/1468274): Avoid the loop over all managers - only update the
@@ -1266,7 +1271,8 @@ void PasswordManager::ProcessAutofillPredictions(
   PasswordGenerationFrameHelper* password_generation_manager =
       driver ? driver->GetPasswordGenerationHelper() : nullptr;
   if (password_generation_manager) {
-    password_generation_manager->ProcessPasswordRequirements(forms);
+    password_generation_manager->ProcessPasswordRequirements(forms,
+                                                             predictions);
   }
 }
 

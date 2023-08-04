@@ -6,24 +6,28 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::ACCOUNT_CREATION_PASSWORD;
-using autofill::AutofillField;
+using autofill::AutofillType;
+using autofill::CalculateFieldSignatureForField;
+using autofill::CalculateFormSignature;
 using autofill::CONFIRMATION_PASSWORD;
 using autofill::CREDIT_CARD_VERIFICATION_CODE;
 using autofill::EMAIL_ADDRESS;
+using autofill::FieldGlobalId;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::FormStructure;
 using autofill::NEW_PASSWORD;
 using autofill::NO_SERVER_DATA;
 using autofill::PASSWORD;
@@ -73,37 +77,34 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
   };
 
   FormData form_data;
+  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+      autofill_predictions;
   for (size_t i = 0; i < std::size(test_fields); ++i) {
     FormFieldData field;
     field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
     field.name = ASCIIToUTF16(test_fields[i].name);
     field.form_control_type = test_fields[i].form_control_type;
-    form_data.fields.push_back(field);
-  }
 
-  FormStructure form_structure(form_data);
-  // Set server predictions and create expected votes.
-  for (size_t i = 0; i < std::size(test_fields); ++i) {
-    AutofillField* field = form_structure.field(i);
-
-    std::vector<FieldPrediction> predictions;
-    predictions.push_back(CreateFieldPrediction(test_fields[i].input_type));
-
+    AutofillType::ServerPrediction prediction;
+    prediction.server_predictions.push_back(
+        CreateFieldPrediction(test_fields[i].input_type));
     for (ServerFieldType type : test_fields[i].additional_types) {
-      predictions.push_back(CreateFieldPrediction(type));
+      prediction.server_predictions.push_back(CreateFieldPrediction(type));
     }
-    field->set_server_predictions(predictions);
-    field->set_may_use_prefilled_placeholder(
-        test_fields[i].may_use_prefilled_placeholder);
+    prediction.may_use_prefilled_placeholder =
+        test_fields[i].may_use_prefilled_placeholder;
+    autofill_predictions.insert({field.global_id(), std::move(prediction)});
+    form_data.fields.push_back(std::move(field));
   }
 
   constexpr int driver_id = 1000;
   FormPredictions actual_predictions =
-      ConvertToFormPredictions(driver_id, form_structure);
+      ConvertToFormPredictions(driver_id, form_data, autofill_predictions);
 
   // Check whether actual predictions are equal to expected ones.
   EXPECT_EQ(driver_id, actual_predictions.driver_id);
-  EXPECT_EQ(form_structure.form_signature(), actual_predictions.form_signature);
+  EXPECT_EQ(CalculateFormSignature(form_data),
+            actual_predictions.form_signature);
   EXPECT_EQ(std::size(test_fields), actual_predictions.fields.size());
 
   for (size_t i = 0; i < std::size(test_fields); ++i) {
@@ -112,7 +113,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     EXPECT_EQ(test_fields[i].expected_type, actual_prediction.type);
     EXPECT_EQ(test_fields[i].may_use_prefilled_placeholder,
               actual_prediction.may_use_prefilled_placeholder);
-    EXPECT_EQ(form_structure.field(i)->GetFieldSignature(),
+    EXPECT_EQ(CalculateFieldSignatureForField(form_data.fields[i]),
               actual_prediction.signature);
   }
 }
@@ -150,24 +151,25 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
 
   for (const std::vector<TestField>& test_form : kTestForms) {
     FormData form_data;
+    base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+        autofill_predictions;
     for (size_t i = 0; i < test_form.size(); ++i) {
       FormFieldData field;
       field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
       field.name = ASCIIToUTF16(test_form[i].name);
       field.form_control_type = test_form[i].form_control_type;
-      form_data.fields.push_back(field);
+
+      AutofillType::ServerPrediction new_prediction;
+      new_prediction.server_predictions = {
+          CreateFieldPrediction(test_form[i].input_type)};
+      autofill_predictions.insert(
+          {field.global_id(), std::move(new_prediction)});
+
+      form_data.fields.push_back(std::move(field));
     }
 
-    FormStructure form_structure(form_data);
-    // Set server predictions and create expected votes.
-    for (size_t i = 0; i < test_form.size(); ++i) {
-      AutofillField* field = form_structure.field(i);
-      field->set_server_predictions(
-          {CreateFieldPrediction(test_form[i].input_type)});
-    }
-
-    FormPredictions actual_predictions =
-        ConvertToFormPredictions(0 /*driver_id*/, form_structure);
+    FormPredictions actual_predictions = ConvertToFormPredictions(
+        /*driver_id=*/0, form_data, autofill_predictions);
 
     for (size_t i = 0; i < form_data.fields.size(); ++i) {
       SCOPED_TRACE(testing::Message()

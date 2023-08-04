@@ -180,16 +180,9 @@ class SavePasswordProgressLogger {
   void LogNumber(StringID label, size_t unsigned_number);
   void LogMessage(StringID message);
 
-  // Removes privacy sensitive parts of |url| (currently all but host and
+  // Removes privacy sensitive parts of `url` (currently all but host and
   // scheme).
   static std::string ScrubURL(const GURL& url);
-
- protected:
-  // Sends |log| immediately for display.
-  virtual void SendLog(const std::string& log) = 0;
-
-  // Converts |log| and its |label| to a string and calls SendLog on the result.
-  void LogValue(StringID label, const base::Value& log);
 
   // Replaces all characters satisfying IsUnwantedInElementID with a ' '.
   // This damages some valid HTML element IDs or names, but it is likely that it
@@ -203,6 +196,13 @@ class SavePasswordProgressLogger {
 
   // Translates the StringID values into the corresponding strings.
   static std::string GetStringFromID(SavePasswordProgressLogger::StringID id);
+
+ protected:
+  // Sends `log` immediately for display.
+  virtual void SendLog(const std::string& log) = 0;
+
+  // Converts `log` and its `label` to a string and calls SendLog on the result.
+  void LogValue(StringID label, const base::Value& log);
 };
 
 }  // namespace autofill

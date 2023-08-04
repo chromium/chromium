@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -23,7 +24,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -71,11 +72,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ServerPrediction = autofill::AutofillType::ServerPrediction;
+using autofill::FieldGlobalId;
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormRendererId;
-using autofill::FormStructure;
 using autofill::NO_SERVER_DATA;
 using autofill::NOT_USERNAME;
 using autofill::PasswordFormFillData;
@@ -343,6 +345,23 @@ class FailingPasswordStoreBackend : public FakePasswordStoreBackend {
         FROM_HERE, base::BindOnce(std::move(completion), /*success=*/false));
   }
 };
+
+// Creates a set map of `ServerPrediction`s for `form` according to the
+// specified `types`. `types` is a map of the fields index in `form.fields` to
+// the `ServerFieldType`.
+base::flat_map<FieldGlobalId, ServerPrediction> CreateServerPredictions(
+    const FormData& form,
+    const base::flat_map<size_t, ServerFieldType>& types) {
+  base::flat_map<FieldGlobalId, ServerPrediction> result;
+  for (size_t i = 0; i < form.fields.size(); ++i) {
+    ServerPrediction prediction;
+    if (auto it = types.find(i); it != types.end()) {
+      prediction.server_predictions = {CreateFieldPrediction(it->second)};
+    }
+    result.insert({form.fields[i].global_id(), std::move(prediction)});
+  }
+  return result;
+}
 
 }  // namespace
 
@@ -2902,18 +2921,18 @@ TEST_F(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
 // server predictions are not ignored and used for filling.
 TEST_F(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 
   PasswordForm form(MakeSimpleForm());
   store_->AddLogin(form);
 
   // Server predictions says that this is a sign-in form. Since they have higher
   // priority than autocomplete attributes then the form should be filled.
-  FormStructure form_structure(form.form_data);
-  form_structure.field(1)->set_server_predictions(
-      {CreateFieldPrediction(autofill::PASSWORD)});
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form.form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(form.form_data,
+                              {{1, ServerFieldType::PASSWORD}}));
 
   EXPECT_CALL(driver_, SetPasswordFillData);
 
@@ -2937,10 +2956,11 @@ TEST_F(PasswordManagerTest,
   PasswordForm form(MakeSimpleFormWithOnlyUsernameField());
   store_->AddLogin(form);
 
-  FormStructure form_structure(form.form_data);
-  form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form.form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
 
   EXPECT_CALL(driver_, SetPasswordFillData);
 
@@ -2964,13 +2984,14 @@ TEST_F(PasswordManagerTest,
 
   // The renderer would detect the autocomplete attribute below.
   form.form_data.fields[0].autocomplete_attribute = "username";
-  FormStructure form_structure(form.form_data);
-  form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
 
   // No fill call is sent to the renderer during prediction processing.
   EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form.form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
   Mock::VerifyAndClearExpectations(&driver_);
 
   // But once the renderer notifies `PasswordManager` that the forms have been
@@ -2994,13 +3015,13 @@ TEST_F(PasswordManagerTest,
 
   // The first time we see the form, it has a password field and is therefore
   // recognized by the renderer (which calls `OnPasswordFormsParsed`).
-  FormStructure form_structure(form.form_data);
-  form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(autofill::USERNAME)});
-  form_structure.field(1)->set_server_predictions(
-      {CreateFieldPrediction(autofill::PASSWORD)});
   EXPECT_CALL(driver_, SetPasswordFillData);
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form.form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(
+          form.form_data,
+          {{0, ServerFieldType::USERNAME}, {1, ServerFieldType::PASSWORD}}));
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
   task_environment_.RunUntilIdle();
   Mock::VerifyAndClearExpectations(&driver_);
@@ -3009,12 +3030,13 @@ TEST_F(PasswordManagerTest,
   // now be a `SINGLE_USERNAME` field in a "Forgot password?" flow.
   FormData modified_form_data = form.form_data;
   modified_form_data.fields.pop_back();
-  FormStructure modified_form_structure{modified_form_data};
-  modified_form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
 
   EXPECT_CALL(driver_, SetPasswordFillData);
-  manager()->ProcessAutofillPredictions(&driver_, {&modified_form_structure});
+  std::vector<const FormData*> modified_forms = {&modified_form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, modified_forms,
+      CreateServerPredictions(modified_form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
 
   task_environment_.RunUntilIdle();
 }
@@ -3032,17 +3054,15 @@ TEST_F(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
   PasswordForm form2(MakeSimpleForm());
   store_->AddLogin(form2);
 
-  FormStructure form_structure1(form1.form_data);
-  form_structure1.field(0)->set_server_predictions(
-      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
-  // Server predictions says that this is a sign-in form. Since they have higher
-  // priority than autocomplete attributes then the form should be filled.
-  FormStructure form_structure2(form2.form_data);
-  form_structure2.field(1)->set_server_predictions(
-      {CreateFieldPrediction(autofill::PASSWORD)});
-
-  manager()->ProcessAutofillPredictions(&driver_,
-                                        {&form_structure1, &form_structure2});
+  std::vector<const FormData*> forms = {&form1.form_data, &form2.form_data};
+  auto predictions1 = CreateServerPredictions(
+      form1.form_data, {{0, ServerFieldType::SINGLE_USERNAME}});
+  // Server predictions say that this is a sign-in form. Since they have higher
+  // priority than autocomplete attributes, the form should be filled.
+  auto predictions2 = CreateServerPredictions(form2.form_data,
+                                              {{1, ServerFieldType::PASSWORD}});
+  predictions1.insert(predictions2.begin(), predictions2.end());
+  manager()->ProcessAutofillPredictions(&driver_, forms, predictions1);
 #if !BUILDFLAG(IS_IOS)
   // Both forms should be filled.
   EXPECT_CALL(driver_, SetPasswordFillData).Times(2);
@@ -3643,14 +3663,13 @@ TEST_F(PasswordManagerTest, FillSingleUsername) {
   field.unique_renderer_id = field_id;
   form_data.fields.push_back(field);
 
-  // Set SINGLE_USERNAME predictions for the field.
-  FormStructure form_structure(form_data);
-  form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(SINGLE_USERNAME)});
-
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(form_id, fill_data.form_renderer_id);
   EXPECT_EQ(saved_match.username_value,
@@ -3690,15 +3709,14 @@ TEST_F(PasswordManagerTest,
   password_field.unique_renderer_id = password_field_id;
   form_data.fields.push_back(password_field);
 
-  // Set ACCOUNT_CREATION_PASSWORD predictions for the field.
-  FormStructure form_structure(form_data);
-  form_structure.field(1)->set_server_predictions(
-      {CreateFieldPrediction(autofill::ACCOUNT_CREATION_PASSWORD)});
-
   autofill::PasswordFormGenerationData form_generation_data;
-  EXPECT_CALL(driver_, FormEligibleForGenerationFound(_))
+  EXPECT_CALL(driver_, FormEligibleForGenerationFound)
       .WillOnce(SaveArg<0>(&form_generation_data));
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(
+          form_data, {{1, ServerFieldType::ACCOUNT_CREATION_PASSWORD}}));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(password_field_id, form_generation_data.new_password_renderer_id);
 }
@@ -3722,11 +3740,12 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
       /*autocomplete_attribute_has_username=*/false);
   task_environment_.RunUntilIdle();
 
-  // Setup a server prediction for the single username field.
-  FormStructure form_structure(username_form.form_data);
-  form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(SINGLE_USERNAME)});
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  // Set up a server prediction for the single username field.
+  std::vector<const FormData*> forms = {&username_form.form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(*forms[0],
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
   task_environment_.RunUntilIdle();
 
   // Simulate that a form which contains only 1 password field is added
@@ -3830,10 +3849,11 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
 
   // Setup a server prediction for the single username field to
   // allow using possible username value for pending credentials.
-  FormStructure form_structure(username_form.form_data);
-  form_structure.field(0)->set_server_predictions(
-      {CreateFieldPrediction(SINGLE_USERNAME)});
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&username_form.form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(*forms[0],
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
 
   // Simulate navigation to a single password form that cannot be a result of a
   // form submisison.
@@ -3962,12 +3982,12 @@ TEST_F(PasswordManagerTest, GenerationOnChangedForm) {
   form_data.fields.push_back(confirm_password_field);
 
   // Server predictions may arrive before the form is parsed by PasswordManager.
-  FormStructure form_structure(form_data);
-  form_structure.field(1)->set_server_predictions(
-      {CreateFieldPrediction(autofill::ACCOUNT_CREATION_PASSWORD)});
-  form_structure.field(2)->set_server_predictions(
-      {CreateFieldPrediction(autofill::CONFIRMATION_PASSWORD)});
-  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  std::vector<const FormData*> forms = {&form_data};
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(*forms[0],
+                              {{1, ServerFieldType::ACCOUNT_CREATION_PASSWORD},
+                               {2, ServerFieldType::CONFIRMATION_PASSWORD}}));
 
   autofill::PasswordFormGenerationData form_generation_data;
   EXPECT_CALL(driver_, FormEligibleForGenerationFound)
@@ -4598,11 +4618,12 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
           base::UTF16ToUTF8(test_form_password_element_);
       break;
     case PredictionSource::SERVER:
-      FormStructure form_structure(one_time_code_form.form_data);
-      form_structure.field(otp_form_has_username)
-          ->set_server_predictions(
-              {CreateFieldPrediction(autofill::NOT_PASSWORD)});
-      manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+      std::vector<const FormData*> forms = {&one_time_code_form.form_data};
+      manager()->ProcessAutofillPredictions(
+          &driver_, forms,
+          CreateServerPredictions(*forms[0],
+                                  {{otp_form_has_username ? 1 : 0,
+                                    ServerFieldType::NOT_PASSWORD}}));
       break;
   }
 

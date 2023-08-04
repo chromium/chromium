@@ -53,8 +53,9 @@
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
 #import "net/base/mac/url_conversions.h"
 
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormData;
+using autofill::FormRendererId;
 using UserDecision =
     autofill::AutofillClient::SaveAddressProfileOfferUserDecision;
 
@@ -408,7 +409,17 @@ using UserDecision =
   if (!driver) {
     return;
   }
-  _passwordManager->ProcessAutofillPredictions(driver, forms);
+  // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
+  // transitions to events that will already have this signature.
+  autofill::FormDataAndServerPredictions args =
+      autofill::GetFormDataAndServerPredictions(forms);
+  std::vector<const FormData*> form_pointers;
+  form_pointers.reserve(args.form_datas.size());
+  for (const FormData& form : args.form_datas) {
+    form_pointers.push_back(&form);
+  }
+  _passwordManager->ProcessAutofillPredictions(driver, form_pointers,
+                                               args.predictions);
 }
 
 - (void)

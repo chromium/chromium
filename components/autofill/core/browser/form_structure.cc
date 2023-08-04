@@ -1948,4 +1948,39 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
   return buffer;
 }
 
+FormDataAndServerPredictions::FormDataAndServerPredictions() = default;
+
+FormDataAndServerPredictions::FormDataAndServerPredictions(
+    const FormDataAndServerPredictions&) = default;
+
+FormDataAndServerPredictions& FormDataAndServerPredictions::operator=(
+    const FormDataAndServerPredictions&) = default;
+
+FormDataAndServerPredictions::FormDataAndServerPredictions(
+    FormDataAndServerPredictions&&) = default;
+
+FormDataAndServerPredictions& FormDataAndServerPredictions::operator=(
+    FormDataAndServerPredictions&&) = default;
+
+FormDataAndServerPredictions::~FormDataAndServerPredictions() = default;
+
+FormDataAndServerPredictions GetFormDataAndServerPredictions(
+    base::span<const FormStructure* const> form_structures) {
+  FormDataAndServerPredictions result;
+  result.form_datas.reserve(form_structures.size());
+  std::vector<std::pair<FieldGlobalId, AutofillType::ServerPrediction>>
+      predictions;
+  for (const FormStructure* form_structure : form_structures) {
+    result.form_datas.push_back(form_structure->ToFormData());
+    for (const std::unique_ptr<AutofillField>& field : *form_structure) {
+      predictions.emplace_back(field->global_id(),
+                               AutofillType::ServerPrediction(*field));
+    }
+  }
+  result.predictions =
+      base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>(
+          std::move(predictions));
+  return result;
+}
+
 }  // namespace autofill

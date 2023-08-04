@@ -6,16 +6,15 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_PASSWORD_FIELD_PREDICTION_H_
 
 #include <stdint.h>
+
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-
-namespace autofill {
-class FormStructure;
-}  // namespace autofill
 
 namespace password_manager {
 
@@ -56,10 +55,13 @@ struct FormPredictions {
   std::vector<PasswordFieldPrediction> fields;
 };
 
-// Extracts all password related server predictions from |form_structure|.
+// Extracts password related server predictions from `form` and `predictions`.
 FormPredictions ConvertToFormPredictions(
     int driver_id,
-    const autofill::FormStructure& form_structure);
+    const autofill::FormData& form,
+    const base::flat_map<autofill::FieldGlobalId,
+                         autofill::AutofillType::ServerPrediction>&
+        predictions);
 
 }  // namespace password_manager
 

@@ -17,6 +17,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -476,7 +477,16 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictions(
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_,
                                                                frame);
 
-  password_manager_->ProcessAutofillPredictions(password_manager_driver, forms);
+  // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
+  // transitions to events that will already have this signature.
+  FormDataAndServerPredictions args = GetFormDataAndServerPredictions(forms);
+  std::vector<const FormData*> form_pointers;
+  form_pointers.reserve(args.form_datas.size());
+  for (const FormData& form : args.form_datas) {
+    form_pointers.push_back(&form);
+  }
+  password_manager_->ProcessAutofillPredictions(
+      password_manager_driver, form_pointers, args.predictions);
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewForm(

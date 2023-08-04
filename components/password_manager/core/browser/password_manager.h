@@ -11,11 +11,14 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
@@ -41,7 +44,6 @@ class PrefRegistrySyncable;
 
 namespace autofill {
 struct FormData;
-class FormStructure;
 }  // namespace autofill
 
 namespace password_manager {
@@ -168,7 +170,10 @@ class PasswordManager : public PasswordManagerInterface {
 
   void ProcessAutofillPredictions(
       PasswordManagerDriver* driver,
-      const std::vector<autofill::FormStructure*>& forms);
+      base::span<const autofill::FormData* const> forms,
+      const base::flat_map<autofill::FieldGlobalId,
+                           autofill::AutofillType::ServerPrediction>&
+          field_predictions);
 
   // Causes all |pending_login_managers_| to query the password store again.
   // Results in updating the fill information on the page.
