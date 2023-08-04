@@ -9,16 +9,17 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 _cros_components_ts_files = [
+  "async_helpers/async_helpers.ts",
   "button/button.ts",
   "checkbox/checkbox.ts",
-  "radio/radio.ts",
-  "switch/switch.ts",
   "helpers/helpers.ts",
-  "async_helpers/async_helpers.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",
   "lottie_renderer/event_binders.ts",
+  "radio/radio.ts",
   "slider/slider.ts",
+  "switch/switch.ts",
+  "tag/tag.ts",
 ]
 
 ts_library("cros_components__ts_library") {
