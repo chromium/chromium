@@ -112,10 +112,13 @@ export class SettingsAddressEditDialogElement extends
    * it is a referce for soft (or "dont make it worse") validation, which
    * basically means skipping validation for fields that are already invalid.
    */
-  private originalAddress_?: AddressEntry;
   private title_: string;
   private validationError_?: string;
   private countries_: CountryEntry[];
+  private addressFields_:
+      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
+  private originalAddressFields_?:
+      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
   private countryCode_: string|undefined;
   private components_: uiComponents.AddressComponentUi[][] = [];
   private canSave_: boolean;
@@ -128,6 +131,24 @@ export class SettingsAddressEditDialogElement extends
     super.connectedCallback();
 
     assert(this.address);
+    // TODO(crbug.com/1441904): remove this temporary explicit field mapping
+    // once fields are stored in the map.
+    this.addressFields_ = new Map([
+      [ServerFieldType.NAME_FULL, this.address.fullName],
+      [ServerFieldType.NAME_HONORIFIC_PREFIX, this.address.honorific],
+      [ServerFieldType.COMPANY_NAME, this.address.companyName],
+      [ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, this.address.addressLines],
+      [ServerFieldType.ADDRESS_HOME_STATE, this.address.addressLevel1],
+      [ServerFieldType.ADDRESS_HOME_CITY, this.address.addressLevel2],
+      [
+        ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+        this.address.addressLevel3,
+      ],
+      [ServerFieldType.ADDRESS_HOME_ZIP, this.address.postalCode],
+      [ServerFieldType.ADDRESS_HOME_SORTING_CODE, this.address.sortingCode],
+      [ServerFieldType.PHONE_HOME_WHOLE_NUMBER, this.address.phoneNumber],
+      [ServerFieldType.EMAIL_ADDRESS, this.address.emailAddress],
+    ]);
 
     this.countryInfo_.getCountryList().then(countryList => {
       if (this.address.guid && this.address.metadata !== undefined &&
@@ -143,8 +164,8 @@ export class SettingsAddressEditDialogElement extends
       const isEditingExistingAddress = !!this.address.guid;
       this.title_ = this.i18n(
           isEditingExistingAddress ? 'editAddressTitle' : 'addAddressTitle');
-      this.originalAddress_ =
-          isEditingExistingAddress ? structuredClone(this.address) : undefined;
+      this.originalAddressFields_ =
+          isEditingExistingAddress ? new Map(this.addressFields_) : undefined;
 
       microTask.run(() => {
         if (Object.keys(this.address).length === 0 && countryList.length > 0) {
@@ -189,15 +210,16 @@ export class SettingsAddressEditDialogElement extends
         if (row.row[0].field === ServerFieldType.NAME_FULL &&
             this.showHonorific_) {
           this.components_.push([new uiComponents.AddressComponentUi(
-              this.address, this.originalAddress_,
+              this.addressFields_, this.originalAddressFields_,
               ServerFieldType.NAME_HONORIFIC_PREFIX,
               this.i18n('honorificLabel'), 'long')]);
         }
 
         this.components_.push(row.row.map(
             component => new uiComponents.AddressComponentUi(
-                this.address, this.originalAddress_, component.field,
-                component.fieldName, component.isLongField ? 'long' : '',
+                this.addressFields_, this.originalAddressFields_,
+                component.field, component.fieldName,
+                component.isLongField ? 'long' : '',
                 component.field === ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
                 skipValidation, component.isRequired)));
       }
@@ -206,12 +228,13 @@ export class SettingsAddressEditDialogElement extends
       // should be editable and saveable in the resulting address.
       this.components_.push([
         new uiComponents.AddressComponentUi(
-            this.address, this.originalAddress_,
+            this.addressFields_, this.originalAddressFields_,
             ServerFieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
             'last-row'),
         new uiComponents.AddressComponentUi(
-            this.address, this.originalAddress_, ServerFieldType.EMAIL_ADDRESS,
-            this.i18n('addressEmail'), 'long last-row'),
+            this.addressFields_, this.originalAddressFields_,
+            ServerFieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
+            'long last-row'),
       ]);
 
       // Because of potentially added honorific field the resulting components
@@ -261,7 +284,6 @@ export class SettingsAddressEditDialogElement extends
 
     this.updateCanSave_();
   }
-
 
   /**
    * Notifies all components validity (see notifyComponentValidity_()).
@@ -383,6 +405,30 @@ export class SettingsAddressEditDialogElement extends
     if (!this.address.countryCode) {
       this.address.countryCode = this.countries_[0].countryCode;
     }
+
+    // TODO(crbug.com/1441904): remove this temporary explicit field-by-field
+    // data dumping once address fields are stored in the map.
+    this.address.fullName = this.addressFields_.get(ServerFieldType.NAME_FULL);
+    this.address.honorific =
+        this.addressFields_.get(ServerFieldType.NAME_HONORIFIC_PREFIX);
+    this.address.companyName =
+        this.addressFields_.get(ServerFieldType.COMPANY_NAME);
+    this.address.addressLines =
+        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
+    this.address.addressLevel1 =
+        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_STATE);
+    this.address.addressLevel2 =
+        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_CITY);
+    this.address.addressLevel3 = this.addressFields_.get(
+        ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
+    this.address.postalCode =
+        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_ZIP);
+    this.address.sortingCode =
+        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
+    this.address.phoneNumber =
+        this.addressFields_.get(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
+    this.address.emailAddress =
+        this.addressFields_.get(ServerFieldType.EMAIL_ADDRESS);
 
     this.fire_('save-address', this.address);
     this.$.dialog.close();

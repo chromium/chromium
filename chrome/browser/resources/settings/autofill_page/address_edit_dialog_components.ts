@@ -2,20 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-
-type AddressEntry = chrome.autofillPrivate.AddressEntry;
-
-/**
- * Utility type for taking a subset of property keys, whose value type
- * meets certain criteria.
- */
-type KeySubset<T, ValueT> = keyof {
-  [key in keyof T as T[key] extends ValueT ? key : never]: T[key];
-};
-
-function isValueNonEmpty(value: string|undefined): boolean {
-  return value !== undefined && value !== '';
+function isValueEmpty(value: string|undefined): boolean {
+  return value === undefined || value === '';
 }
 
 /**
@@ -23,10 +11,12 @@ function isValueNonEmpty(value: string|undefined): boolean {
  * property, which is how interface controls (e.g. input) communicate with it.
  */
 export class AddressComponentUi {
-  private readonly address_: AddressEntry;
-  private readonly originalAddress_?: AddressEntry;
-  private readonly property_: KeySubset<AddressEntry, string|undefined>;
+  private readonly fieldType_: chrome.autofillPrivate.ServerFieldType;
+  private readonly originalValue_?: string;
+  private readonly existingAddress_: boolean;
   private readonly skipValidation_: boolean;
+  private addressFields_:
+      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
   private isValidatable_: boolean;
   readonly isTextarea: boolean;
   readonly isRequired: boolean;
@@ -34,8 +24,11 @@ export class AddressComponentUi {
   readonly additionalClassName: string;
 
   constructor(
-      address: AddressEntry,
-      originalAddress: AddressEntry|undefined,
+      addressFields:
+          Map<chrome.autofillPrivate.ServerFieldType, string|undefined>,
+      originalFields:
+          Map<chrome.autofillPrivate.ServerFieldType, string|undefined>|
+      undefined,
       fieldType: chrome.autofillPrivate.ServerFieldType,
       label: string,
       additionalClassName: string = '',
@@ -43,9 +36,12 @@ export class AddressComponentUi {
       skipValidation: boolean = false,
       isRequired: boolean = false,
   ) {
-    this.address_ = address;
-    this.originalAddress_ = originalAddress;
-    this.property_ = this.getProperty(fieldType);
+    this.addressFields_ = addressFields;
+    this.existingAddress_ = originalFields !== undefined;
+    if (this.existingAddress_) {
+      this.originalValue_ = originalFields?.get(fieldType);
+    }
+    this.fieldType_ = fieldType;
     this.label = label;
     this.additionalClassName = additionalClassName;
     this.isTextarea = isTextarea;
@@ -74,13 +70,12 @@ export class AddressComponentUi {
     if (this.skipValidation_) {
       return true;
     }
-    if (this.originalAddress_) {
+    if (this.existingAddress_) {
       // "dont make it worse" validation for existing addresses:
       // consider a field valid as long as it is equal to the original value,
-      // wheather it is valid or not.
-      if (this.getValue(this.originalAddress_) ===
-              this.getValue(this.address_) ||
-          (!this.hasValue_(this.originalAddress_) && !this.hasValue_())) {
+      // whether it is valid or not.
+      if (this.originalValue_ === this.value ||
+          (isValueEmpty(this.originalValue_) && isValueEmpty(this.value))) {
         return true;
       }
     }
@@ -88,74 +83,22 @@ export class AddressComponentUi {
   }
 
   get value(): string|undefined {
-    return this.getValue(this.address_);
+    return this.addressFields_.get(this.fieldType_);
   }
 
   set value(value: string|undefined) {
     const changed = value !== this.value;
-    this.setValue(value, this.address_);
+    this.addressFields_.set(this.fieldType_, value);
     if (changed) {
       this.onValueUpdateListener?.();
     }
   }
 
   get hasValue(): boolean {
-    return this.hasValue_();
+    return !isValueEmpty(this.value);
   }
 
   makeValidatable(): void {
     this.isValidatable_ = true;
-  }
-
-  // TODO(crbug.com/1441904): remove this switch case in favour of field
-  // mapping in AddressEntry.
-  protected getProperty(fieldType: chrome.autofillPrivate.ServerFieldType):
-      KeySubset<AddressEntry, string|undefined> {
-    switch (fieldType) {
-      case chrome.autofillPrivate.ServerFieldType.NAME_FULL:
-        return 'fullName';
-      case chrome.autofillPrivate.ServerFieldType.NAME_HONORIFIC_PREFIX:
-        return 'honorific';
-      case chrome.autofillPrivate.ServerFieldType.COMPANY_NAME:
-        return 'companyName';
-      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
-        return 'addressLines';
-      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_STATE:
-        return 'addressLevel1';
-      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_CITY:
-        return 'addressLevel2';
-      case chrome.autofillPrivate.ServerFieldType
-          .ADDRESS_HOME_DEPENDENT_LOCALITY:
-        return 'addressLevel3';
-      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_ZIP:
-        return 'postalCode';
-      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_SORTING_CODE:
-        return 'sortingCode';
-      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_COUNTRY:
-        return 'countryCode';
-      case chrome.autofillPrivate.ServerFieldType.PHONE_HOME_WHOLE_NUMBER:
-        return 'phoneNumber';
-      case chrome.autofillPrivate.ServerFieldType.EMAIL_ADDRESS:
-        return 'emailAddress';
-    }
-    assertNotReached('Unsupported field type: ' + fieldType);
-  }
-
-  /**
-   * Gets the value from the address that's associated with this component.
-   */
-  protected getValue(address: AddressEntry): string|undefined {
-    return address[this.property_];
-  }
-
-  /**
-   * Sets the value in the address that's associated with this component.
-   */
-  protected setValue(value: string|undefined, address: AddressEntry): void {
-    address[this.property_] = value;
-  }
-
-  private hasValue_(address = this.address_): boolean {
-    return isValueNonEmpty(this.getValue(address));
   }
 }
