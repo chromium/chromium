@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/ml_model_tokenizer.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 
 #include <stddef.h>
 #include <string>
@@ -19,23 +19,23 @@ namespace autofill {
 
 namespace {
 
-constexpr AutofillMLModelTokenizer::TokenId kUnknownTokenId =
-    AutofillMLModelTokenizer::TokenId(1);
+constexpr AutofillModelVectorizer::TokenId kUnknownTokenId =
+    AutofillModelVectorizer::TokenId(1);
 
 }  // namespace
 
-AutofillMLModelTokenizer::AutofillMLModelTokenizer(
+AutofillModelVectorizer::AutofillModelVectorizer(
     std::vector<std::pair<std::u16string, TokenId>> entries)
     : token_to_id_(
           base::MakeFlatMap<std::u16string, TokenId>(std::move(entries))) {}
 
-AutofillMLModelTokenizer::AutofillMLModelTokenizer(
-    const AutofillMLModelTokenizer& tokenizer) = default;
-AutofillMLModelTokenizer::~AutofillMLModelTokenizer() = default;
+AutofillModelVectorizer::AutofillModelVectorizer(
+    const AutofillModelVectorizer& vectorizer) = default;
+AutofillModelVectorizer::~AutofillModelVectorizer() = default;
 
 // static
-std::unique_ptr<AutofillMLModelTokenizer>
-AutofillMLModelTokenizer::CreateTokenizer(
+std::unique_ptr<AutofillModelVectorizer>
+AutofillModelVectorizer::CreateVectorizer(
     const base::FilePath& dictionary_filepath) {
   std::string dictionary_content;
   if (!base::ReadFileToString(dictionary_filepath, &dictionary_content)) {
@@ -54,17 +54,17 @@ AutofillMLModelTokenizer::CreateTokenizer(
   // if the word "last" is not in the dictionary, then its token index is 1.
   CHECK(tokens[1] == "[UNK]");
   for (const std::string& token : tokens) {
-    AutofillMLModelTokenizer::TokenId id(entries.size());
+    AutofillModelVectorizer::TokenId id(entries.size());
     entries.emplace_back(base::UTF8ToUTF16(token), id);
   }
-  return base::WrapUnique(new AutofillMLModelTokenizer(std::move(entries)));
+  return base::WrapUnique(new AutofillModelVectorizer(std::move(entries)));
 }
 
-size_t AutofillMLModelTokenizer::GetDictionarySize() const {
+size_t AutofillModelVectorizer::GetDictionarySize() const {
   return token_to_id_.size();
 }
 
-AutofillMLModelTokenizer::TokenId AutofillMLModelTokenizer::TokenToId(
+AutofillModelVectorizer::TokenId AutofillModelVectorizer::TokenToId(
     std::u16string_view token) const {
   auto match = token_to_id_.find(token);
   if (match == token_to_id_.end()) {
@@ -73,9 +73,9 @@ AutofillMLModelTokenizer::TokenId AutofillMLModelTokenizer::TokenToId(
   return match->second;
 }
 
-std::array<AutofillMLModelTokenizer::TokenId,
-           AutofillMLModelTokenizer::kOutputSequenceLength>
-AutofillMLModelTokenizer::Vectorize(std::u16string_view input) const {
+std::array<AutofillModelVectorizer::TokenId,
+           AutofillModelVectorizer::kOutputSequenceLength>
+AutofillModelVectorizer::Vectorize(std::u16string_view input) const {
   std::u16string standardized_input = base::ToLowerASCII(input);
   base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
   std::vector<std::u16string> split_string =

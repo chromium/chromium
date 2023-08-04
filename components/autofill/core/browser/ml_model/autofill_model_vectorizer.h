@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_ML_MODEL_TOKENIZER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_ML_MODEL_TOKENIZER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_VECTORIZER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_VECTORIZER_H_
 
 #include <stdint.h>
 #include <memory>
@@ -16,11 +16,12 @@
 
 namespace autofill {
 
-// The tokenizer performs tokenization for on device autofill field type
-// prediction ML model. It maps raw strings to tokens, and tokens to
-// IDs accepted by the ML model based on the given dictionary file.
-// Empty strings map to value 0 and unknown words map to value 1.
-class AutofillMLModelTokenizer {
+// The Vectorizer performs vectorization for on-device Autofill field type
+// prediction ML model. It changes the string input for preprocessing by
+// standardizing and tokenizing it. Tokenization maps raw strings to tokens,
+// and tokens to IDs based on the given dictionary. Empty Strings map to
+// value 0 and unknown words map to value 1.
+class AutofillModelVectorizer {
  public:
   using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
 
@@ -30,13 +31,13 @@ class AutofillMLModelTokenizer {
   static constexpr char16_t kSpecialChars[] =
       uR"(!"#$%&()\*+,-./:;<=>?@[]^_`{|}~')";
 
-  // Factory function returns instance of the tokenizer if initialized.
+  // Factory function returns instance of the vectorizer if initialized.
   // If dictionary file path is not found, initialization fails and
   // a nullptr is returned instead.
-  static std::unique_ptr<AutofillMLModelTokenizer> CreateTokenizer(
+  static std::unique_ptr<AutofillModelVectorizer> CreateVectorizer(
       const base::FilePath& dictionary_filepath);
 
-  ~AutofillMLModelTokenizer();
+  ~AutofillModelVectorizer();
 
   // Standardize the field label by changing it lower case and stripping
   // punctuation. Then vectorize by splitting it into substrings split by
@@ -49,13 +50,13 @@ class AutofillMLModelTokenizer {
   size_t GetDictionarySize() const;
 
  private:
-  explicit AutofillMLModelTokenizer(
+  explicit AutofillModelVectorizer(
       std::vector<std::pair<std::u16string, TokenId>> entries);
-  AutofillMLModelTokenizer(const AutofillMLModelTokenizer& tokenizer);
+  AutofillModelVectorizer(const AutofillModelVectorizer& vectorizer);
 
   const base::flat_map<std::u16string, TokenId> token_to_id_;
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_ML_MODEL_TOKENIZER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_VECTORIZER_H_
