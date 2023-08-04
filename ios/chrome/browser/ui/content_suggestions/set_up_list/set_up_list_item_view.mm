@@ -112,7 +112,7 @@ struct ViewConfig {
       // Normal ViewConfig.
       int syncString = base::FeatureList::IsEnabled(
                            syncer::kReplaceSyncPromosWithSignInPromos)
-                           ? IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL
+                           ? IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL
                            : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
       _config = {
           NO,

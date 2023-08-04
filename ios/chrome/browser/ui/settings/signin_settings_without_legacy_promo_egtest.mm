@@ -121,9 +121,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   [ChromeEarlGreyUI openSettingsMenu];
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -140,9 +140,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 - (void)testSigninRowOpensAuthActivityIfSignedOutAndNoDeviceAccounts {
   [ChromeEarlGreyUI openSettingsMenu];
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -188,9 +188,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // bottom sheet.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]

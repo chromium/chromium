@@ -720,7 +720,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // TODO(crbug.com/1447010): Make detailText private when the feature is
     // launched.
     signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL);
+        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
   } else if (!HasManagedSyncDataType(syncService)) {
     signInTextItem.detailText =
         l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);

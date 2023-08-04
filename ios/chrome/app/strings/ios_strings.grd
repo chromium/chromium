@@ -1324,7 +1324,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL" desc="The content description for a toolbar button displaying the signed-out avatar. Tapping on this button opens the sign-in sheet [iOS only].">
         Signed out. Opens options to sign in.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL" desc="Text in the sheet that offers the user to sign-in to Chrome [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL" desc="Text in the sheet that offers the user to sign-in to Chrome [iOS only].">
         Get your bookmarks, passwords, and more on all your devices.
       </message>
       <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO" desc="Text in the sheet that offers the user to sign-in to Chrome, when the sheet is opened from one of the NTP feed promos [iOS only].">
