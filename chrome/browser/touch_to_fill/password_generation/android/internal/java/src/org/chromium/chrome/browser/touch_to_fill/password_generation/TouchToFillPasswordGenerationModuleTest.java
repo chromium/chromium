@@ -10,7 +10,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,44 +26,57 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
 public class TouchToFillPasswordGenerationModuleTest {
-    private TouchToFillPasswordGenerationBridge mBridge;
+    private TouchToFillPasswordGenerationCoordinator mCoordinator;
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
-    private TouchToFillPasswordGenerationBridge.Natives mBridgeJniMock;
+    private TouchToFillPasswordGenerationCoordinator.Delegate mDelegate;
 
-    private static final long sDummyNativePointer = 1;
     private static final String sTestEmailAddress = "test@email.com";
     private static final String sGeneratedPassword = "Strong generated password";
+    private View mContent;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mJniMocker.mock(TouchToFillPasswordGenerationBridgeJni.TEST_HOOKS, mBridgeJniMock);
-        setUpBottomSheetController();
-        mBridge = new TouchToFillPasswordGenerationBridge(sDummyNativePointer,
-                Robolectric.buildActivity(Activity.class).get(), mBottomSheetController);
+
+        mActivityScenarioRule.getScenario().onActivity(activity -> {
+            setUpBottomSheetController();
+            mContent = LayoutInflater.from(activity).inflate(
+                    R.layout.touch_to_fill_password_generation, null);
+            TouchToFillPasswordGenerationView touchToFillPasswordGenerationView =
+                    new TouchToFillPasswordGenerationView(activity, mContent);
+            activity.setContentView(mContent);
+            mCoordinator = new TouchToFillPasswordGenerationCoordinator(
+                    mBottomSheetController, touchToFillPasswordGenerationView, mDelegate);
+        });
     }
 
     private void setUpBottomSheetController() {
@@ -69,7 +86,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void showsAndHidesBottomSheet() {
-        mBridge.show(sGeneratedPassword, sTestEmailAddress);
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
 
@@ -80,11 +97,30 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testBottomSheetForceHide() {
-        mBridge.show(sGeneratedPassword, sTestEmailAddress);
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
-        mBridge.hide();
+        mCoordinator.hide();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
-        verify(mBridgeJniMock).onDismissed(sDummyNativePointer);
+        verify(mDelegate).onDismissed();
+    }
+
+    @Test
+    public void testGeneratedPasswordAcceptedCalled() {
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+
+        Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
+        acceptPasswordButton.performClick();
+        verify(mDelegate).onGeneratedPasswordAccepted(sGeneratedPassword);
+    }
+
+    @Test
+    public void testBottomSheetIsHiddenAfterAcceptingPassword() {
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+
+        Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
+        acceptPasswordButton.performClick();
+        verify(mBottomSheetController).hideContent(any(), anyBoolean());
+        verify(mDelegate).onDismissed();
     }
 }

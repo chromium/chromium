@@ -27,3 +27,7 @@ void FakeTouchToFillPasswordGenerationBridge::Hide() {
 void FakeTouchToFillPasswordGenerationBridge::OnDismissed(JNIEnv* env) {
   delegate_->OnDismissed();
 }
+
+void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordAccepted(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& password) {}

@@ -30,6 +30,10 @@ class TouchToFillPasswordGenerationBridgeImpl
 
   void OnDismissed(JNIEnv* env) override;
 
+  void OnGeneratedPasswordAccepted(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& password) override;
+
  private:
   // The corresponding Java TouchToFillCreditCardViewBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

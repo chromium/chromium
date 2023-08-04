@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.ACCOUNT_EMAIL;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.GENERATED_PASSWORD;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.PASSWORD_ACCEPTED_CALLBACK;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,6 +28,8 @@ class TouchToFillPasswordGenerationViewBinder {
             view.setSheetSubtitle(model.get(ACCOUNT_EMAIL));
         } else if (propertyKey == GENERATED_PASSWORD) {
             view.setGeneratedPassword(model.get(GENERATED_PASSWORD));
+        } else if (propertyKey == PASSWORD_ACCEPTED_CALLBACK) {
+            view.setPasswordAcceptedCallback(model.get(PASSWORD_ACCEPTED_CALLBACK));
         }
     }
 }

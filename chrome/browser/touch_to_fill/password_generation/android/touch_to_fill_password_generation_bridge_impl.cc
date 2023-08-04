@@ -62,3 +62,11 @@ void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(JNIEnv* env) {
   CHECK(delegate_);
   delegate_->OnDismissed();
 }
+
+void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordAccepted(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& password) {
+  CHECK(delegate_);
+  delegate_->OnGeneratedPasswordAccepted(
+      base::android::ConvertJavaStringToUTF16(env, password));
+}

@@ -8,6 +8,7 @@
 #include <string>
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/password_manager/android/password_generation_element_data.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_delegate.h"
 #include "content/public/browser/render_widget_host.h"
@@ -30,6 +31,7 @@ class TouchToFillPasswordGenerationController
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           frame_driver,
       content::WebContents* web_contents,
+      PasswordGenerationElementData generation_element_data,
       std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
       OnDismissedCallback on_dismissed_callback);
   TouchToFillPasswordGenerationController(
@@ -39,10 +41,11 @@ class TouchToFillPasswordGenerationController
   ~TouchToFillPasswordGenerationController() override;
 
   // Shows the password generation bottom sheet.
-  bool ShowTouchToFill(std::u16string generated_password,
-                       std::string account_display_name);
+  bool ShowTouchToFill(std::string account_display_name);
 
   void OnDismissed() override;
+
+  void OnGeneratedPasswordAccepted(const std::u16string& password) override;
 
  private:
   // Suppressing IME input is necessary for Touch-To-Fill.
@@ -56,6 +59,7 @@ class TouchToFillPasswordGenerationController
   // triggered.
   base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
   base::raw_ptr<content::WebContents> web_contents_;
+  PasswordGenerationElementData generation_element_data_;
   std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge_;
   OnDismissedCallback on_dismissed_callback_;
 

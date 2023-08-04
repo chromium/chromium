@@ -8,6 +8,7 @@ source_set("public") {
   deps = [
     ":android",
     "//base",
+    "//chrome/browser/password_manager/android:password_generation_utils",
     "//components/password_manager/content/browser:browser",
     "//content/public/browser",
   ]
@@ -61,6 +62,7 @@ source_set("unit_tests") {
     ":public",
     ":test_support",
     "//base",
+    "//chrome/browser/password_manager/android:password_generation_utils",
     "//chrome/test:test_support",
     "//components/password_manager/content/browser:browser",
     "//content/test:test_support",

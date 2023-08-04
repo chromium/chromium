@@ -6,14 +6,15 @@ package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -24,11 +25,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 class TouchToFillPasswordGenerationView implements BottomSheetContent {
     private final View mContent;
     private final Context mContext;
+    private TextView mPasswordView;
 
-    TouchToFillPasswordGenerationView(Context context) {
+    TouchToFillPasswordGenerationView(Context context, View content) {
         mContext = context;
-        mContent = LayoutInflater.from(context).inflate(
-                R.layout.touch_to_fill_password_generation, null);
+        mContent = content;
+
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
@@ -37,6 +39,7 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         sheetSubtitle.setText(
                 String.format(context.getString(R.string.password_generation_bottom_sheet_subtitle),
                         "elisa.becket@gmail.com"));
+        mPasswordView = mContent.findViewById(R.id.password);
     }
 
     void setSheetSubtitle(String accountEmail) {
@@ -50,9 +53,14 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     }
 
     void setGeneratedPassword(String generatedPassword) {
-        TextView passwordView = mContent.findViewById(R.id.password);
-        passwordView.setTypeface(Typeface.MONOSPACE);
-        passwordView.setText(generatedPassword);
+        mPasswordView.setTypeface(Typeface.MONOSPACE);
+        mPasswordView.setText(generatedPassword);
+    }
+
+    void setPasswordAcceptedCallback(Callback<String> callback) {
+        Button passwordAcceptedButton = mContent.findViewById(R.id.use_password_button);
+        passwordAcceptedButton.setOnClickListener(
+                (v) -> callback.onResult(mPasswordView.getText().toString()));
     }
 
     @Override

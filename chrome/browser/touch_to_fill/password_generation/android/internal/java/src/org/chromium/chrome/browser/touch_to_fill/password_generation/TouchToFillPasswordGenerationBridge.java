@@ -27,14 +27,14 @@ class TouchToFillPasswordGenerationBridge
                 BottomSheetControllerProvider.from(windowAndroid);
         Context context = windowAndroid.getContext().get();
         return new TouchToFillPasswordGenerationBridge(
-                nativeTouchToFillPasswordGenerationBridge, context, bottomSheetController);
+                nativeTouchToFillPasswordGenerationBridge, bottomSheetController, context);
     }
 
     public TouchToFillPasswordGenerationBridge(long nativeTouchToFillPasswordGenerationBridge,
-            Context context, BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController, Context context) {
         mNativeTouchToFillPasswordGenerationBridge = nativeTouchToFillPasswordGenerationBridge;
         mCoordinator =
-                new TouchToFillPasswordGenerationCoordinator(context, bottomSheetController, this);
+                new TouchToFillPasswordGenerationCoordinator(bottomSheetController, context, this);
     }
 
     @CalledByNative
@@ -55,8 +55,18 @@ class TouchToFillPasswordGenerationBridge
                 mNativeTouchToFillPasswordGenerationBridge);
     }
 
+    @Override
+    public void onGeneratedPasswordAccepted(String password) {
+        if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
+
+        TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordAccepted(
+                mNativeTouchToFillPasswordGenerationBridge, password);
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(long nativeTouchToFillPasswordGenerationBridge);
+        void onGeneratedPasswordAccepted(
+                long nativeTouchToFillPasswordGenerationBridge, String password);
     }
 }

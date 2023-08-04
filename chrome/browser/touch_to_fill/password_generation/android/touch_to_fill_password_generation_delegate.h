@@ -18,6 +18,10 @@ class TouchToFillPasswordGenerationDelegate
   // Handles the bottom sheet dismissal. It's called in every execution path no
   // matter how the bottom sheet is dismissed.
   virtual void OnDismissed() = 0;
+
+  // Called if the user accepts the proposed generated password. Here the
+  // password should be saved and filled into the form.
+  virtual void OnGeneratedPasswordAccepted(const std::u16string& password) = 0;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_

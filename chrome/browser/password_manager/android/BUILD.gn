@@ -425,6 +425,14 @@ android_library("public_impl_java") {
   resources_package = "org.chromium.chrome.browser.password_manager"
 }
 
+source_set("password_generation_utils") {
+  deps = [ "//components/autofill/core/common" ]
+  sources = [
+    "password_generation_element_data.cc",
+    "password_generation_element_data.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -458,6 +466,7 @@ source_set("unit_tests") {
   deps = [
     ":backend",
     ":backend_public",
+    ":password_generation_utils",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",

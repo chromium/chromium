@@ -19,6 +19,7 @@
 class ManualFillingController;
 class PasswordGenerationDialogViewInterface;
 class TouchToFillPasswordGenerationController;
+struct PasswordGenerationElementData;
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
@@ -99,10 +100,6 @@ class PasswordGenerationControllerImpl
   explicit PasswordGenerationControllerImpl(content::WebContents* web_contents);
 
  private:
-  // Data including the form and field for which generation was requested,
-  // their signatures and the maximum password size.
-  struct GenerationElementData;
-
   enum class TouchToFillState {
     kNone,
     kIsShowing,
@@ -155,7 +152,7 @@ class PasswordGenerationControllerImpl
   const raw_ptr<password_manager::PasswordManagerClient> client_;
 
   // Data for the generation element used to generate the password.
-  std::unique_ptr<GenerationElementData> generation_element_data_;
+  std::unique_ptr<PasswordGenerationElementData> generation_element_data_;
 
   // Password manager driver for the currently active frame. This is set
   // when a password field focus event arrives from the renderer and unset
