@@ -29,6 +29,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment_win.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
@@ -134,6 +136,9 @@ class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
   void SetUpInProcessBrowserTestFixture() override {
     test::DeviceTrustBrowserTestBase::SetUpInProcessBrowserTestFixture();
 #if BUILDFLAG(IS_WIN)
+    if (!::IsUserAnAdmin()) {
+      GTEST_SKIP() << "This test requires running as administrator.";
+    }
     device_trust_test_environment_win_.emplace();
     device_trust_test_environment_win_->SetExpectedDMToken(kBrowserDmToken);
     device_trust_test_environment_win_->SetExpectedClientID(kBrowserClientId);
