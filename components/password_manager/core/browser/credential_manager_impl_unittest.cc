@@ -1555,9 +1555,8 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithPSLAndNormalCredentials) {
   store_->AddLogin(subdomain_form_);
 
   std::vector<GURL> federations = {GURL("https://google.com/")};
-  ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
-                               federations,
-                               CredentialType::CREDENTIAL_TYPE_FEDERATED);
+  ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
+                               federations);
 }
 
 TEST_P(CredentialManagerImplTest, ZeroClickAfterMigratingHttpCredential) {

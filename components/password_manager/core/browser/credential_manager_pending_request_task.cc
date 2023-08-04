@@ -17,7 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
-#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -32,6 +32,9 @@
 
 namespace password_manager {
 namespace {
+
+using password_manager_util::GetLoginMatchType;
+using password_manager_util::GetMatchType;
 
 // Inserts `form` into `set` if no equally comparing element exists yet, or
 // replaces an existing `old_form` if `pred(old_form, form)` evaluates to true.
@@ -109,6 +112,18 @@ void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
   });
 }
 
+bool IsFormValidForAutoSignIn(const PasswordForm* form) {
+  GetLoginMatchType match_type = GetMatchType(*form);
+  // Only exactly matching form, or affiliated android app can be used for auto
+  // sign in.
+  if (match_type == GetLoginMatchType::kExact ||
+      (match_type == GetLoginMatchType::kAffiliated &&
+       IsValidAndroidFacetURI(form->signon_realm))) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
@@ -169,38 +184,22 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     return;
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> local_results;
-  std::vector<std::unique_ptr<PasswordForm>> psl_results;
-  for (auto& form : results) {
-    CHECK(!form->blocked_by_user);
-    // PasswordFrom and GURL have different definition of origin.
-    // PasswordForm definition: scheme, host, port and path.
-    // GURL definition: scheme, host, and port.
-    // So we can't compare them directly.
-    if (password_manager_util::GetMatchType(*form) ==
-        password_manager_util::GetLoginMatchType::kPSL) {
-      psl_results.push_back(std::move(form));
-    } else {
-      local_results.push_back(std::move(form));
-    }
-  }
-
   // We only perform zero-click sign-in when it is not forbidden via the
-  // mediation requirement and the result is completely unambigious.
-  // If there is one and only one entry, and zero-click is
-  // enabled for that entry, return it.
+  // mediation requirement and the result is completely unambiguous.
+  // If there is one and only one entry originated for this website, and
+  // zero-click is enabled for that entry, return it.
   //
   // Moreover, we only return such a credential if the user has opted-in via the
   // first-run experience.
   const bool can_use_autosignin =
       mediation_ != CredentialMediationRequirement::kRequired &&
-      local_results.size() == 1u && delegate_->IsZeroClickAllowed();
-  if (can_use_autosignin && !local_results[0]->skip_zero_click &&
+      results.size() == 1u && delegate_->IsZeroClickAllowed() &&
+      IsFormValidForAutoSignIn(results[0].get());
+  if (can_use_autosignin && !results[0]->skip_zero_click &&
       !password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
           delegate_->client()->GetPrefs())) {
-    auto info = PasswordFormToCredentialInfo(*local_results[0]);
-    delegate_->client()->NotifyUserAutoSignin(std::move(local_results),
-                                              origin_);
+    auto info = PasswordFormToCredentialInfo(*results[0]);
+    delegate_->client()->NotifyUserAutoSignin(std::move(results), origin_);
     base::RecordAction(base::UserMetricsAction("CredentialManager_Autosignin"));
     LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kAutoSignIn, mediation_);
@@ -210,20 +209,21 @@ void CredentialManagerPendingRequestTask::ProcessForms(
 
   if (mediation_ == CredentialMediationRequirement::kSilent) {
     metrics_util::CredentialManagerGetResult get_result;
-    if (local_results.empty())
+    if (results.empty()) {
       get_result = metrics_util::CredentialManagerGetResult::kNoneEmptyStore;
-    else if (!can_use_autosignin)
+    } else if (results.size() > 1) {
       get_result =
           metrics_util::CredentialManagerGetResult::kNoneManyCredentials;
-    else if (local_results[0]->skip_zero_click)
+    } else if (results[0]->skip_zero_click) {
       get_result = metrics_util::CredentialManagerGetResult::kNoneSignedOut;
-    else
+    } else {
       get_result = metrics_util::CredentialManagerGetResult::kNoneFirstRun;
+    }
 
-    if (!local_results.empty()) {
+    if (!results.empty()) {
       std::vector<const PasswordForm*> non_federated_matches;
       std::vector<const PasswordForm*> federated_matches;
-      for (const auto& result : local_results) {
+      for (const auto& result : results) {
         if (result->IsFederatedCredential()) {
           federated_matches.emplace_back(result.get());
         } else {
@@ -239,21 +239,14 @@ void CredentialManagerPendingRequestTask::ProcessForms(
       // site, or was prevented from doing so by lack of zero-click (or the
       // first-run experience). So, notify the client that we could potentially
       // have used zero-click.
-      delegate_->client()->NotifyUserCouldBeAutoSignedIn(
-          std::move(local_results[0]));
+      delegate_->client()->NotifyUserCouldBeAutoSignedIn(std::move(results[0]));
     }
     LogCredentialManagerGetResult(get_result, mediation_);
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
     return;
   }
 
-  // Time to show the account chooser. If |local_results| is empty then it
-  // should list the PSL matches.
-  if (local_results.empty()) {
-    local_results = std::move(psl_results);
-  }
-
-  if (local_results.empty()) {
+  if (results.empty()) {
     LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kNoneEmptyStore, mediation_);
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
@@ -262,7 +255,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
 
   auto split_send_callback = base::SplitOnceCallback(std::move(send_callback_));
   if (!delegate_->client()->PromptUserToChooseCredentials(
-          std::move(local_results), origin_,
+          std::move(results), origin_,
           base::BindOnce(
               &CredentialManagerPendingRequestTaskDelegate::SendPasswordForm,
               base::Unretained(delegate_), std::move(split_send_callback.first),

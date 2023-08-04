@@ -12,6 +12,10 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,11 +91,15 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
     account_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
 
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kWasAutoSignInFirstRunExperienceShown, true);
+
     client_ = std::make_unique<MockPasswordManagerClient>();
     ON_CALL(*client_, GetProfilePasswordStore)
         .WillByDefault(Return(profile_store_.get()));
     ON_CALL(*client_, GetAccountPasswordStore)
         .WillByDefault(Return(account_store_.get()));
+    ON_CALL(*client_, GetPrefs()).WillByDefault(Return(&prefs_));
 
     GURL url("http://www.example.com/");
     ON_CALL(delegate_mock_, client).WillByDefault(Return(client_.get()));
@@ -124,6 +132,7 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
       delegate_mock_;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
+  TestingPrefServiceSimple prefs_;
   PasswordForm form_;
 
  private:
@@ -234,6 +243,83 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
       &delegate_mock_, /*callback=*/base::DoNothing(),
       CredentialMediationRequirement::kOptional, /*include_passwords=*/false,
       {federation_url}, GetFormDigest());
+  RunAllPendingTasks();
+}
+
+TEST_F(CredentialManagerPendingRequestTaskTest,
+       AutosigninForExactlyMatchingForm) {
+  profile_store_->AddLogin(form_);
+  RunAllPendingTasks();
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  form_.in_store = PasswordForm::Store::kProfileStore;
+  expected_forms.push_back(std::make_unique<PasswordForm>(form_));
+
+  EXPECT_CALL(*client(),
+              NotifyUserAutoSignin(
+                  UnorderedPasswordFormElementsAre(&expected_forms), _));
+  EXPECT_CALL(*client(), PromptUserToChooseCredentials).Times(0);
+  EXPECT_CALL(delegate_mock_, IsZeroClickAllowed).WillOnce(Return(true));
+
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+      /*request_federations=*/{}, GetFormDigest());
+  RunAllPendingTasks();
+}
+
+TEST_F(CredentialManagerPendingRequestTaskTest, NoAutosigninForPSLMatches) {
+  EXPECT_CALL(delegate_mock_, IsZeroClickAllowed).WillOnce(Return(true));
+
+  PasswordForm psl_form = form_;
+  psl_form.signon_realm = "http://m.example.com/";
+
+  profile_store_->AddLogin(psl_form);
+  RunAllPendingTasks();
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  psl_form.match_type = PasswordForm::MatchType::kPSL;
+  psl_form.in_store = PasswordForm::Store::kProfileStore;
+  expected_forms.push_back(std::make_unique<PasswordForm>(psl_form));
+
+  EXPECT_CALL(*client(), NotifyUserAutoSignin).Times(0);
+  EXPECT_CALL(*client(),
+              PromptUserToChooseCredentials(
+                  UnorderedPasswordFormElementsAre(&expected_forms), _, _));
+
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+      /*request_federations=*/{}, GetFormDigest());
+  RunAllPendingTasks();
+}
+
+TEST_F(CredentialManagerPendingRequestTaskTest,
+       NoAutosigninIfExactAndPSLMatch) {
+  PasswordForm psl_form = form_;
+  psl_form.username_value = u"admin";
+  psl_form.signon_realm = "http://m.example.com/";
+
+  profile_store_->AddLogin(form_);
+  profile_store_->AddLogin(psl_form);
+  RunAllPendingTasks();
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  form_.in_store = PasswordForm::Store::kProfileStore;
+  expected_forms.push_back(std::make_unique<PasswordForm>(form_));
+  psl_form.match_type = PasswordForm::MatchType::kPSL;
+  psl_form.in_store = PasswordForm::Store::kProfileStore;
+  expected_forms.push_back(std::make_unique<PasswordForm>(psl_form));
+
+  EXPECT_CALL(*client(), NotifyUserAutoSignin).Times(0);
+  EXPECT_CALL(*client(),
+              PromptUserToChooseCredentials(
+                  UnorderedPasswordFormElementsAre(&expected_forms), _, _));
+
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+      /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }
 
