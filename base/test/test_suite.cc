@@ -260,7 +260,7 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 
  private:
   bool IsProcessBackgrounded() const {
-    return Process::Current().IsProcessBackgrounded();
+    return Process::Current().GetPriority() == Process::Priority::kBestEffort;
   }
 };
 #endif  // !BUILDFLAG(IS_APPLE)
