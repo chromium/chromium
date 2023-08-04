@@ -250,7 +250,18 @@ void AddRefColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
     // The default value for schemes is Tonal Spot.
     auto variant = key.scheme_variant.value_or(
         ColorProviderKey::SchemeVariant::kTonalSpot);
-    AddGeneratedPalette(provider, key.user_color.value(), variant);
+
+    // If the user color is set to black libmonet will default to a pink primary
+    // color. This results in an unexpected user experience where all other
+    // shades of gray result in the default blue primary color. To avoid this
+    // edge case set the user_color one step above black to ensure the primary
+    // blue is used, see crbug.com/1457314.
+    SkColor user_color = key.user_color.value();
+    if (user_color == SK_ColorBLACK) {
+      user_color = SkColorSetRGB(0x01, 0x01, 0x01);
+    }
+
+    AddGeneratedPalette(provider, user_color, variant);
   }
 }
 
