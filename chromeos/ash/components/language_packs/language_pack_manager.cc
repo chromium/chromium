@@ -193,7 +193,7 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
   PackResult result = ConvertDlcInstallResultToPackResult(dlc_result);
   result.language_code = locale;
 
-  const bool success = result.operation_error == PackResult::kErrorNone;
+  const bool success = result.operation_error == PackResult::ErrorCode::kNone;
   if (!success) {
     if (feature_id == kHandwritingFeatureId) {
       base::UmaHistogramEnumeration(
@@ -220,9 +220,9 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
 
   const bool success = err == dlcservice::kErrorNone;
   if (success) {
-    result.pack_state = PackResult::NOT_INSTALLED;
+    result.pack_state = PackResult::StatusCode::kNotInstalled;
   } else {
-    result.pack_state = PackResult::UNKNOWN;
+    result.pack_state = PackResult::StatusCode::kUnknown;
   }
 
   base::UmaHistogramBoolean("ChromeOS.LanguagePacks.UninstallComplete.Success",
@@ -243,7 +243,7 @@ void OnGetDlcState(GetPackStateCallback callback,
     result = ConvertDlcStateToPackResult(dlc_state);
   } else {
     result.operation_error = ConvertDlcErrorToErrorCode(err);
-    result.pack_state = PackResult::UNKNOWN;
+    result.pack_state = PackResult::StatusCode::kUnknown;
   }
 
   result.language_code = locale;
@@ -256,7 +256,7 @@ void OnGetDlcState(GetPackStateCallback callback,
 ///////////////////////////////////////////////////////////
 // PackResult constructors and destructors.
 PackResult::PackResult() {
-  this->pack_state = PackResult::UNKNOWN;
+  this->pack_state = PackResult::StatusCode::kUnknown;
 }
 
 PackResult::~PackResult() = default;

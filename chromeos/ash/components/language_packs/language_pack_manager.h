@@ -65,18 +65,24 @@ struct PackResult {
   ~PackResult();
   PackResult(const PackResult&);
 
-  enum StatusCode { UNKNOWN = 0, NOT_INSTALLED, IN_PROGRESS, INSTALLED };
+  enum class StatusCode {
+    kUnknown = 0,
+    kNotInstalled,
+    kInProgress,
+    kInstalled
+  };
 
-  enum ErrorCode {
-    kErrorNone = 0,
-    kErrorOther,
-    kErrorWrongId,
-    kErrorNeedReboot,
-    kErrorAllocation
+  enum class ErrorCode {
+    kNone = 0,
+    kOther,
+    kWrongId,
+    kNeedReboot,
+    kAllocation
   };
 
   // The code that indicates the current state of the Pack.
-  // INSTALLED means that the Pack is ready to be used.
+  // kInstalled means that the Pack is ready to be used.
+  // If there's any error during the operation, we set status to kUnknown.
   StatusCode pack_state;
 
   // If there is any error in the operation that is requested, it is indicated

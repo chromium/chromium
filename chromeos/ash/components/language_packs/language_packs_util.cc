@@ -99,8 +99,8 @@ DlcErrorTypeEnum GetDlcErrorTypeForUma(const std::string& error_str) {
 
 PackResult CreateInvalidDlcPackResult() {
   PackResult result;
-  result.operation_error = PackResult::kErrorWrongId;
-  result.pack_state = PackResult::UNKNOWN;
+  result.operation_error = PackResult::ErrorCode::kWrongId;
+  result.pack_state = PackResult::StatusCode::kUnknown;
   return result;
 }
 
@@ -109,17 +109,17 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
 
   switch (dlc_state.state()) {
     case dlcservice::DlcState_State_INSTALLED:
-      result.pack_state = PackResult::INSTALLED;
+      result.pack_state = PackResult::StatusCode::kInstalled;
       result.path = dlc_state.root_path();
       break;
     case dlcservice::DlcState_State_INSTALLING:
-      result.pack_state = PackResult::IN_PROGRESS;
+      result.pack_state = PackResult::StatusCode::kInProgress;
       break;
     case dlcservice::DlcState_State_NOT_INSTALLED:
-      result.pack_state = PackResult::NOT_INSTALLED;
+      result.pack_state = PackResult::StatusCode::kNotInstalled;
       break;
     default:
-      result.pack_state = PackResult::UNKNOWN;
+      result.pack_state = PackResult::StatusCode::kUnknown;
       break;
   }
 
@@ -135,11 +135,11 @@ PackResult ConvertDlcInstallResultToPackResult(
 
   result.operation_error = ConvertDlcErrorToErrorCode(install_result.error);
 
-  if (result.operation_error == PackResult::kErrorNone) {
-    result.pack_state = PackResult::INSTALLED;
+  if (result.operation_error == PackResult::ErrorCode::kNone) {
+    result.pack_state = PackResult::StatusCode::kInstalled;
     result.path = install_result.root_path;
   } else {
-    result.pack_state = PackResult::UNKNOWN;
+    result.pack_state = PackResult::StatusCode::kUnknown;
   }
 
   return result;
@@ -147,18 +147,18 @@ PackResult ConvertDlcInstallResultToPackResult(
 
 PackResult::ErrorCode ConvertDlcErrorToErrorCode(std::string_view err) {
   if (err.empty() || err == dlcservice::kErrorNone) {
-    return PackResult::kErrorNone;
+    return PackResult::ErrorCode::kNone;
   } else if (err == dlcservice::kErrorInvalidDlc) {
-    return PackResult::kErrorWrongId;
+    return PackResult::ErrorCode::kWrongId;
   } else if (err == dlcservice::kErrorNeedReboot) {
-    return PackResult::kErrorNeedReboot;
+    return PackResult::ErrorCode::kNeedReboot;
   } else if (err == dlcservice::kErrorAllocation) {
-    return PackResult::kErrorAllocation;
+    return PackResult::ErrorCode::kAllocation;
   } else {
     // We use INTERNAL for all remaining errors thrown by DLC Service because
     // there's nothing we or the client can do about it.
     // Error code BUSY is never returned.
-    return PackResult::kErrorOther;
+    return PackResult::ErrorCode::kOther;
   }
 }
 

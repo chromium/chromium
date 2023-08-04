@@ -37,11 +37,11 @@ absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
 
 PackState GetPackStateFromStatusCode(const PackResult::StatusCode status_code) {
   switch (status_code) {
-    case PackResult::NOT_INSTALLED:
+    case PackResult::StatusCode::kNotInstalled:
       return PackState::NOT_INSTALLED;
-    case PackResult::IN_PROGRESS:
+    case PackResult::StatusCode::kInProgress:
       return PackState::INSTALLING;
-    case PackResult::INSTALLED:
+    case PackResult::StatusCode::kInstalled:
       return PackState::INSTALLED;
     // Catch all remaining cases as error.
     default:
@@ -54,15 +54,15 @@ ErrorCode GetMojoErrorFromPackError(const PackResult::ErrorCode pack_error) {
   // This conversion is exhaustive. We don't use a default: case so that we can
   // catch missing values at compile time.
   switch (pack_error) {
-    case PackResult::kErrorNone:
+    case PackResult::ErrorCode::kNone:
       return ErrorCode::kNone;
-    case PackResult::kErrorOther:
+    case PackResult::ErrorCode::kOther:
       return ErrorCode::kOther;
-    case PackResult::kErrorWrongId:
+    case PackResult::ErrorCode::kWrongId:
       return ErrorCode::kWrongId;
-    case PackResult::kErrorNeedReboot:
+    case PackResult::ErrorCode::kNeedReboot:
       return ErrorCode::kNeedReboot;
-    case PackResult::kErrorAllocation:
+    case PackResult::ErrorCode::kAllocation:
       return ErrorCode::kAllocation;
   }
 }
@@ -74,7 +74,7 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
   auto info = LanguagePackInfo::New();
   info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
   info->error = GetMojoErrorFromPackError(pack_result.operation_error);
-  if (pack_result.pack_state == PackResult::INSTALLED) {
+  if (pack_result.pack_state == PackResult::StatusCode::kInstalled) {
     info->path = pack_result.path;
   }
 
@@ -91,7 +91,7 @@ void OnInstallBasePackComplete(
   auto info = BasePackInfo::New();
   info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
   info->error = GetMojoErrorFromPackError(pack_result.operation_error);
-  if (pack_result.pack_state == PackResult::INSTALLED) {
+  if (pack_result.pack_state == PackResult::StatusCode::kInstalled) {
     info->path = pack_result.path;
   }
 

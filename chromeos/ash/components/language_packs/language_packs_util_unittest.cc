@@ -20,8 +20,8 @@ TEST(LanguagePacksUtil, ConvertDlcState_EmptyInput) {
   PackResult output = ConvertDlcStateToPackResult(input);
 
   // The default value in the input is 'NOT_INSTALLED'.
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNone);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
 }
 
 TEST(LanguagePacksUtil, ConvertDlcState_NotInstalled) {
@@ -29,14 +29,14 @@ TEST(LanguagePacksUtil, ConvertDlcState_NotInstalled) {
   input.set_state(DlcState_State_NOT_INSTALLED);
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNone);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
 
   // Even if the path is set (by mistake) in the input, we should not return it.
   input.set_root_path("/var/somepath");
   output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
   EXPECT_TRUE(output.path.empty());
 }
 
@@ -45,14 +45,14 @@ TEST(LanguagePacksUtil, ConvertDlcState_Installing) {
   input.set_state(DlcState_State_INSTALLING);
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::IN_PROGRESS);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNone);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInProgress);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
 
   // Even if the path is set (by mistake) in the input, we should not return it.
   input.set_root_path("/var/somepath");
   output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::IN_PROGRESS);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInProgress);
   EXPECT_TRUE(output.path.empty());
 }
 
@@ -62,8 +62,8 @@ TEST(LanguagePacksUtil, ConvertDlcState_Installed) {
   input.set_root_path("/var/somepath");
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::INSTALLED);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNone);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(output.path, "/var/somepath");
 }
 
@@ -76,8 +76,8 @@ TEST(LanguagePacksUtil, ConvertDlcState_MalformedProto) {
   input.set_root_path("/var/somepath");
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::UNKNOWN);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNone);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kUnknown);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_TRUE(output.path.empty());
 }
 
@@ -86,8 +86,8 @@ TEST(LanguagePacksUtil, ConvertDlcState_ErrorSet) {
   input.set_last_error_code(dlcservice::kErrorNeedReboot);
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNeedReboot);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNeedReboot);
   EXPECT_TRUE(output.path.empty());
 }
 
@@ -97,8 +97,8 @@ TEST(LanguagePacksUtil, ConvertDlcInstallResult_Success) {
   input.root_path = "/var/somepath";
   PackResult output = ConvertDlcInstallResultToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::INSTALLED);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorNone);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(output.path, "/var/somepath");
 }
 
@@ -107,26 +107,26 @@ TEST(LanguagePacksUtil, ConvertDlcInstallResult_Error) {
   input.error = dlcservice::kErrorInternal;
   PackResult output = ConvertDlcInstallResultToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::UNKNOWN);
-  EXPECT_EQ(output.operation_error, PackResult::kErrorOther);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kUnknown);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kOther);
   EXPECT_TRUE(output.path.empty());
 }
 
 // Tests the conversion of all error types returned by DlcserviceClient.
 TEST(LanguagePacksUtil, ConvertDlcError_AllErrorsTypes) {
-  EXPECT_EQ(ConvertDlcErrorToErrorCode(""), PackResult::kErrorNone);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(""), PackResult::ErrorCode::kNone);
   EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorNone),
-            PackResult::kErrorNone);
+            PackResult::ErrorCode::kNone);
   EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorAllocation),
-            PackResult::kErrorAllocation);
+            PackResult::ErrorCode::kAllocation);
   EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorInvalidDlc),
-            PackResult::kErrorWrongId);
+            PackResult::ErrorCode::kWrongId);
   EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorNeedReboot),
-            PackResult::kErrorNeedReboot);
+            PackResult::ErrorCode::kNeedReboot);
   EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorNoImageFound),
-            PackResult::kErrorOther);
+            PackResult::ErrorCode::kOther);
   EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorInternal),
-            PackResult::kErrorOther);
+            PackResult::ErrorCode::kOther);
 }
 
 // For Handwriting we only keep the language part, not the country/region.

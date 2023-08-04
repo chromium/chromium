@@ -154,8 +154,8 @@ TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
@@ -183,8 +183,8 @@ TEST_F(LanguagePackManagerTest, InstallFailureTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorOther);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(
@@ -203,8 +203,8 @@ TEST_F(LanguagePackManagerTest, InstallWrongIdTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorWrongId);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 // Check that the callback is actually called.
@@ -240,8 +240,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
@@ -265,8 +265,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorOther);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
@@ -283,8 +283,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateWrongIdTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorWrongId);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 // Check that the callback is actually called.
@@ -316,8 +316,8 @@ TEST_F(LanguagePackManagerTest, RemovePackSuccessTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kNotInstalled);
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
@@ -344,8 +344,8 @@ TEST_F(LanguagePackManagerTest, RemovePackFailureTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorOther);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
@@ -364,8 +364,8 @@ TEST_F(LanguagePackManagerTest, RemovePackWrongIdTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorWrongId);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 // Check that the callback is actually called.
@@ -470,8 +470,8 @@ TEST_F(LanguagePackManagerTest, InstallBasePackSuccess) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
 
   // Test UMA metrics: post-condition.
@@ -494,8 +494,8 @@ TEST_F(LanguagePackManagerTest, InstallBasePackFailureTestFailure) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorOther);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
@@ -534,8 +534,8 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccessTest) {
                               base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, "en-au");
 
@@ -564,8 +564,8 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
                               base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, "it");
 
@@ -594,8 +594,8 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeWrongLocaleTest) {
                             base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorWrongId);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
@@ -614,8 +614,8 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeFailureTest) {
                               base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, PackResult::kErrorOther);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 }  // namespace ash::language_packs
