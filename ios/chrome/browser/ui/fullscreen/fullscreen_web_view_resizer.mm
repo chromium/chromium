@@ -20,7 +20,9 @@
 @property(nonatomic, assign) FullscreenModel* model;
 @end
 
-@implementation FullscreenWebViewResizer
+@implementation FullscreenWebViewResizer {
+  BOOL _installedObserver;
+}
 
 @synthesize model = _model;
 @synthesize webState = _webState;
@@ -28,6 +30,7 @@
 - (instancetype)initWithModel:(FullscreenModel*)model {
   self = [super init];
   if (self) {
+    _installedObserver = NO;
     _model = model;
     _compensateFrameChangeByOffset = YES;
   }
@@ -35,8 +38,7 @@
 }
 
 - (void)dealloc {
-  if (_webState && _webState->GetView())
-    [_webState->GetView() removeObserver:self forKeyPath:@"frame"];
+  [self stopObservingWebStateViewFrame];
 }
 
 #pragma mark - Properties
@@ -45,9 +47,7 @@
   if (_webState == webState)
     return;
 
-  if (_webState && _webState->GetView())
-    [_webState->GetView() removeObserver:self forKeyPath:@"frame"];
-
+  [self stopObservingWebStateViewFrame];
   _webState = webState;
 
   if (webState) {
@@ -71,7 +71,7 @@
   if (!self.webState)
     return;
 
-  [self.webState->GetView() removeObserver:self forKeyPath:@"frame"];
+  [self stopObservingWebStateViewFrame];
   [self updateForFullscreenProgress:progress];
   [self observeWebStateViewFrame:self.webState];
 }
@@ -141,8 +141,9 @@
 
 // Observes the frame property of the view of the `webState` using KVO.
 - (void)observeWebStateViewFrame:(web::WebState*)webState {
-  if (!webState->GetView())
+  if (_installedObserver || !webState->GetView()) {
     return;
+  }
 
   NSKeyValueObservingOptions options = 0;
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
@@ -152,6 +153,7 @@
                         forKeyPath:@"frame"
                            options:options
                            context:nil];
+  _installedObserver = YES;
 }
 
 // Callback for the KVO.
@@ -175,6 +177,17 @@
   }
 
   [self updateForCurrentState];
+}
+
+- (void)stopObservingWebStateViewFrame {
+  if (!_installedObserver) {
+    return;
+  }
+
+  DCHECK(_webState);
+  DCHECK(_webState->GetView());
+  [_webState->GetView() removeObserver:self forKeyPath:@"frame"];
+  _installedObserver = NO;
 }
 
 @end

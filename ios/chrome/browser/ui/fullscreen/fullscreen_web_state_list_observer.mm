@@ -73,9 +73,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
     const WebStateListStatus& status) {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach_change =
@@ -106,21 +104,22 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
       break;
     }
   }
-}
 
-void FullscreenWebStateListObserver::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  WebStateWasActivated(new_web_state);
+  if (status.active_web_state_change()) {
+    WebStateWasActivated(status.new_active_web_state);
+  }
 }
 
 void FullscreenWebStateListObserver::WebStateWasActivated(
     web::WebState* web_state) {
   web_state_observer_.SetWebState(web_state);
-  if (web_state && !HasWebStateBeenActivated(web_state)) {
+  if (!web_state) {
+    return;
+  }
+
+  DCHECK(web_state->IsRealized());
+  DCHECK(web_state->GetWebViewProxy());
+  if (!HasWebStateBeenActivated(web_state)) {
     MoveContentBelowHeader(web_state->GetWebViewProxy(), model_);
     activated_web_states_.insert(web_state);
   }
@@ -128,8 +127,9 @@ void FullscreenWebStateListObserver::WebStateWasActivated(
 
 void FullscreenWebStateListObserver::WebStateWasRemoved(
     web::WebState* web_state) {
-  if (HasWebStateBeenActivated(web_state))
+  if (HasWebStateBeenActivated(web_state)) {
     activated_web_states_.erase(web_state);
+  }
 }
 
 bool FullscreenWebStateListObserver::HasWebStateBeenActivated(
