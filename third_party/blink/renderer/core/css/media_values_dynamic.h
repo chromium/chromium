@@ -29,6 +29,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   bool DeviceSupportsHDR() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
+  bool InvertedColors() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   mojom::blink::HoverType PrimaryHoverType() const override;

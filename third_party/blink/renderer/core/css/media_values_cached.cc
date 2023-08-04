@@ -83,6 +83,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     vertical_viewport_segments =
         MediaValues::CalculateVerticalViewportSegments(frame);
     device_posture = MediaValues::CalculateDevicePosture(frame);
+    inverted_colors = MediaValues::CalculateInvertedColors(frame);
   }
 }
 
@@ -226,6 +227,10 @@ int MediaValuesCached::ColorBitsPerComponent() const {
 
 int MediaValuesCached::MonochromeBitsPerComponent() const {
   return data_.monochrome_bits_per_component;
+}
+
+bool MediaValuesCached::InvertedColors() const {
+  return data_.inverted_colors;
 }
 
 mojom::blink::PointerType MediaValuesCached::PrimaryPointerType() const {

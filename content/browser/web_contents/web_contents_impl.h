@@ -2309,6 +2309,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   ui::NativeTheme::PreferredContrast preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
   bool prefers_reduced_transparency_ = false;
+  bool inverted_colors_ = false;
 
   // Tracks clients who want to be notified when a JavaScript dialog is
   // dismissed.

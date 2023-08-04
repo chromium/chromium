@@ -1489,6 +1489,24 @@ static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool InvertedColorsMediaFeatureEval(const MediaQueryExpValue& value,
+                                           MediaQueryOperator,
+                                           const MediaValues& media_values) {
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kInvertedColors,
+      media_values.InvertedColors());
+
+  if (!value.IsValid()) {
+    return media_values.InvertedColors();
+  }
+
+  if (!value.IsId()) {
+    return false;
+  }
+
+  return (value.Id() == CSSValueID::kNone) != media_values.InvertedColors();
+}
+
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
   switch (op) {
     case MediaQueryOperator::kNone:

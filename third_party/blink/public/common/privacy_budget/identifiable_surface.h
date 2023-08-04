@@ -353,8 +353,9 @@ class IdentifiableSurface {
     kVerticalViewportSegments = 24,
     kAspectRatioNormalized = 25,
     kPrefersReducedTransparency = 26,
+    kInvertedColors = 27,
     // We can use enum values up to and including 63, see static_assert below.
-    kMax = kPrefersReducedTransparency
+    kMax = kInvertedColors
   };
   static_assert(static_cast<int>(MediaFeatureName::kMax) < 64,
                 "MediaFeatureName only allows values < 64 since we use it in "

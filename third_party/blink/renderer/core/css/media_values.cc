@@ -213,6 +213,12 @@ int MediaValues::CalculateMonochromeBitsPerComponent(LocalFrame* frame) {
   return screen_info.depth_per_component;
 }
 
+bool MediaValues::CalculateInvertedColors(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetSettings());
+  return frame->GetSettings()->GetInvertedColors();
+}
+
 float MediaValues::CalculateEmSize(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetDocument());

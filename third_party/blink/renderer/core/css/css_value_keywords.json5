@@ -1691,5 +1691,9 @@
 
     // transition-behavior
     "allow-discrete",
+
+    // (inverted-colors:) media feature
+    "inverted"
+    // none
   ],
 }

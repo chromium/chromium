@@ -574,6 +574,10 @@ void WebSettingsImpl::SetPrefersReducedTransparency(bool enabled) {
   settings_->SetPrefersReducedTransparency(enabled);
 }
 
+void WebSettingsImpl::SetInvertedColors(bool enabled) {
+  settings_->SetInvertedColors(enabled);
+}
+
 bool WebSettingsImpl::ViewportEnabled() const {
   return settings_->GetViewportEnabled();
 }

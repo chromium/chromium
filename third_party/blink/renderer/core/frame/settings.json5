@@ -1027,6 +1027,14 @@
       initial: false,
       invalidate: ["MediaQuery"],
     },
+
+    // inverted-colors setting from the OS/application passed to the
+    // renderer for evaluating the inverted-colors media query.
+    {
+      name: "invertedColors",
+      initial: false,
+      invalidate: ["MediaQuery"],
+    },
     {
       name: "DontSendKeyEventsToJavascript",
       initial: false,

@@ -67,6 +67,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual bool DeviceSupportsHDR() const = 0;
   virtual int ColorBitsPerComponent() const = 0;
   virtual int MonochromeBitsPerComponent() const = 0;
+  virtual bool InvertedColors() const = 0;
   virtual mojom::blink::PointerType PrimaryPointerType() const = 0;
   virtual int AvailablePointerTypes() const = 0;
   virtual mojom::blink::HoverType PrimaryHoverType() const = 0;
@@ -136,6 +137,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static bool CalculateDeviceSupportsHDR(LocalFrame*);
   static int CalculateColorBitsPerComponent(LocalFrame*);
   static int CalculateMonochromeBitsPerComponent(LocalFrame*);
+  static bool CalculateInvertedColors(LocalFrame*);
   static const String CalculateMediaType(LocalFrame*);
   static blink::mojom::DisplayMode CalculateDisplayMode(LocalFrame*);
   static bool CalculateThreeDEnabled(LocalFrame*);

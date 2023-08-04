@@ -87,6 +87,11 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kRec2020;
   }
 
+  if (RuntimeEnabledFeatures::InvertedColorsEnabled() &&
+      media_feature == media_feature_names::kInvertedColorsMediaFeature) {
+    return ident == CSSValueID::kInverted || ident == CSSValueID::kNone;
+  }
+
   if (media_feature == media_feature_names::kPrefersColorSchemeMediaFeature) {
     return ident == CSSValueID::kDark || ident == CSSValueID::kLight;
   }

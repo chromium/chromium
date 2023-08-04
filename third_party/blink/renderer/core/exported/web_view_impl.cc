@@ -1595,6 +1595,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetEnableScrollAnimator(prefs.enable_scroll_animator);
   settings->SetPrefersReducedMotion(prefs.prefers_reduced_motion);
   settings->SetPrefersReducedTransparency(prefs.prefers_reduced_transparency);
+  settings->SetInvertedColors(prefs.inverted_colors);
 
   RuntimeEnabledFeatures::SetTouchEventFeatureDetectionEnabled(
       prefs.touch_event_feature_detection_enabled);

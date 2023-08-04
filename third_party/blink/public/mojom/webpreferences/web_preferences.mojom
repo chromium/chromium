@@ -181,6 +181,7 @@ struct WebPreferences {
   bool threaded_scrolling_enabled;
   bool prefers_reduced_motion;
   bool prefers_reduced_transparency;
+  bool inverted_colors;
   bool touch_event_feature_detection_enabled;
   int32 pointer_events_max_touch_points;
   int32 available_pointer_types;

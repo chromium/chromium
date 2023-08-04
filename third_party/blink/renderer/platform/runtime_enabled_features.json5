@@ -2026,6 +2026,10 @@
       status: "experimental",
     },
     {
+      name: "InvertedColors",
+      status: "experimental",
+    },
+    {
       name: "JavaScriptCompileHintsMagicRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsMagic",

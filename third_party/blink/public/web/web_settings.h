@@ -140,6 +140,7 @@ class WebSettings {
   virtual void SetEnableScrollAnimator(bool) = 0;
   virtual void SetPrefersReducedMotion(bool) = 0;
   virtual void SetPrefersReducedTransparency(bool) = 0;
+  virtual void SetInvertedColors(bool) = 0;
   virtual void SetSmoothScrollForFindEnabled(bool) = 0;
   virtual void SetWebGL1Enabled(bool) = 0;
   virtual void SetWebGL2Enabled(bool) = 0;

@@ -99,6 +99,8 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
             RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
            (feature == media_feature_names::kOverflowBlockMediaFeature &&
             RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
+           (feature == media_feature_names::kInvertedColorsMediaFeature &&
+            RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
            (CSSVariableParser::IsValidVariableName(feature) &&
             RuntimeEnabledFeatures::CSSStyleQueriesBooleanEnabled());
   }

@@ -41,6 +41,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     bool device_supports_hdr = false;
     int color_bits_per_component = 24;
     int monochrome_bits_per_component = 0;
+    bool inverted_colors = false;
     mojom::blink::PointerType primary_pointer_type =
         mojom::blink::PointerType::kPointerNone;
     // Bitmask of |ui::PointerType|
@@ -116,6 +117,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.horizontal_viewport_segments = horizontal_viewport_segments;
       data.vertical_viewport_segments = vertical_viewport_segments;
       data.device_posture = device_posture;
+      data.inverted_colors = inverted_colors;
       return data;
     }
   };
@@ -132,6 +134,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   bool DeviceSupportsHDR() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
+  bool InvertedColors() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   mojom::blink::HoverType PrimaryHoverType() const override;

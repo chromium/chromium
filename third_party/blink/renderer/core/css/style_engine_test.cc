@@ -2221,6 +2221,29 @@ TEST_F(StyleEngineTest, MediaQueriesChangeNavigationControls) {
                 GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, MediaQueriesChangeInvertedColors) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { color: red }
+      @media (inverted-colors: inverted) {
+        body { color: green }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetSettings()->SetInvertedColors(true);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineTest, ShadowRootStyleRecalcCrash) {
   GetDocument().body()->setInnerHTML("<div id=host></div>");
   auto* host =

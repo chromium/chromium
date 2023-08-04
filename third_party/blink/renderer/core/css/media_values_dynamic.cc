@@ -182,6 +182,10 @@ int MediaValuesDynamic::MonochromeBitsPerComponent() const {
   return CalculateMonochromeBitsPerComponent(frame_);
 }
 
+bool MediaValuesDynamic::InvertedColors() const {
+  return CalculateInvertedColors(frame_);
+}
+
 mojom::blink::PointerType MediaValuesDynamic::PrimaryPointerType() const {
   return CalculatePrimaryPointerType(frame_);
 }

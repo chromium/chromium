@@ -72,5 +72,6 @@
     "horizontal-viewport-segments",
     "vertical-viewport-segments",
     "stuck",
+    "inverted-colors",
   ],
 }

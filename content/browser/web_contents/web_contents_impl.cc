@@ -1073,6 +1073,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   preferred_color_scheme_ = native_theme->GetPreferredColorScheme();
   preferred_contrast_ = native_theme->GetPreferredContrast();
   prefers_reduced_transparency_ = native_theme->GetPrefersReducedTransparency();
+  inverted_colors_ = native_theme->GetInvertedColors();
 
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
@@ -2925,6 +2926,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
   prefs.prefers_reduced_motion = gfx::Animation::PrefersReducedMotion();
   prefs.prefers_reduced_transparency = prefers_reduced_transparency_;
+  prefs.inverted_colors = inverted_colors_;
 
   if (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
           GetRenderViewHost()->GetProcess()->GetID())) {
@@ -9576,6 +9578,7 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
       observed_theme->GetPreferredContrast();
   bool prefers_reduced_transparency =
       observed_theme->GetPrefersReducedTransparency();
+  bool inverted_colors = observed_theme->GetInvertedColors();
   bool preferences_changed = false;
 
   if (using_dark_colors_ != using_dark_colors) {
@@ -9592,6 +9595,10 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   }
   if (prefers_reduced_transparency_ != prefers_reduced_transparency) {
     prefers_reduced_transparency_ = prefers_reduced_transparency;
+    preferences_changed = true;
+  }
+  if (inverted_colors_ != inverted_colors) {
+    inverted_colors_ = inverted_colors;
     preferences_changed = true;
   }
 
