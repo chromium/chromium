@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -174,6 +175,8 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
       base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
           ->StartSetAsDefault(base::NullCallback());
     }
+    base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
+                                  choice);
     CHECK(step_completed_callback_);
     std::move(step_completed_callback_).Run();
   }

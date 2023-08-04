@@ -704,6 +704,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.FirstRun.DefaultBrowser"
+    enum="FirstRunDefaultBrowserChoice" expires_after="2024-08-03">
+  <owner>dgn@chromium.org</owner>
+  <owner>gabolvr@google.com</owner>
+  <owner>for-you-fre@google.com</owner>
+  <summary>
+    Records the user's choice for the prompt asking if they want to set Chrome
+    to be their default browser, in the first run experience.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.FirstRun.EntryPoint" enum="FirstRunEntryPoint"
     expires_after="2023-12-19">
   <owner>dgn@chromium.org</owner>

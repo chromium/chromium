@@ -45869,6 +45869,14 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="FirstRunDefaultBrowserChoice">
+  <summary>
+    User choice on the prompt to set Chrome as their default browser.
+  </summary>
+  <int value="0" label="SetAsDefaultBrowser"/>
+  <int value="1" label="SkipDefaultBrowser"/>
+</enum>
+
 <enum name="FirstRunEntryPoint">
   <int value="0" label="Other"/>
   <int value="1" label="Process startup"/>

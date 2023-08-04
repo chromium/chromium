@@ -18,9 +18,13 @@ enum class IntroChoice {
   kQuit,
 };
 
+// This is also used for logging, so do not remove or reorder existing entries.
 enum class DefaultBrowserChoice {
-  kSetAsDefault,
-  kSkip,
+  kSetAsDefault = 0,
+  kSkip = 1,
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kSkip
 };
 
 // Callback specification for `SetSigninChoiceCallback()`.

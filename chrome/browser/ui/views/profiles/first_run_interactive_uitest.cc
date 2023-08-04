@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
+#include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -336,6 +337,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   histogram_tester.ExpectUniqueSample(
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+
+  if (WithDefaultBrowserStep()) {
+    histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.DefaultBrowser",
+                                        DefaultBrowserChoice::kSetAsDefault, 1);
+  }
 
   EXPECT_TRUE(proceed_future.Get());
 
