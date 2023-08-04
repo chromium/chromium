@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitForElementUpdate} from '../../../../common/js/unittest_util.js';
@@ -13,9 +14,9 @@ import {EducationalBanner} from './educational_banner.js';
 
 export function setUp() {
   console.log('Setting up drive-bulk-pinning-banner element');
-  document.body.innerHTML =
-      '<xf-bulk-pinning-dialog></xf-bulk-pinning-dialog>' +
-      '<drive-bulk-pinning-banner></drive-bulk-pinning-banner>';
+  document.body.innerHTML = getTrustedHTML
+  `<xf-bulk-pinning-dialog></xf-bulk-pinning-dialog>
+      <drive-bulk-pinning-banner></drive-bulk-pinning-banner>`;
 }
 
 // Gets the <drive-bulk-pinning-banner> element.

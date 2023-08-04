@@ -59,7 +59,7 @@ export function tearDown() {
   if (directoryTreeContainer) {
     getStore().unsubscribe(directoryTreeContainer);
   }
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
 }
 
 /**

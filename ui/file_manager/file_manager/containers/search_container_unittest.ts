@@ -4,6 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {EntryLocation} from '../externs/entry_location.js';
 import {State} from '../externs/ts/state.js';
@@ -33,7 +34,7 @@ function setupStore(): Store {
 export function setUp() {
   const root = document.createElement('div');
   document.body.replaceChildren(root);
-  searchWrapper.innerHTML = `
+  searchWrapper.innerHTML = getTrustedHTML`
       <cr-button id="search-button" tabindex="0">
         <div class="icon"></div>
       </cr-button>

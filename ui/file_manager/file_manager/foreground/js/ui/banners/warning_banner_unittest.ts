@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
@@ -13,7 +14,8 @@ import {WarningBanner} from './warning_banner.js';
 let warningBanner: WarningBanner;
 
 export function setUp() {
-  const html = `<warning-banner>
+  document.body.innerHTML = getTrustedHTML`
+    <warning-banner>
       <span slot="text">Banner text</span>
       <button slot="extra-button" href="http://test.com">
         Test Banner
@@ -22,8 +24,7 @@ export function setUp() {
         Dismiss
       </button>
     </warning-banner>
-    `;
-  document.body.innerHTML = html;
+  `;
   warningBanner = document.body.querySelector<WarningBanner>('warning-banner')!;
 }
 

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotReached} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../common/js/test_error_reporting.js';
@@ -30,9 +31,9 @@ let unlock;
  * Adds a FilesPasswordDialog element to the page.
  */
 export function setUp() {
-  document.body.innerHTML =
-      `<files-password-dialog id="test-files-password-dialog" hidden>
-      </files-password-dialog>`;
+  document.body.innerHTML = getTrustedHTML
+  `<files-password-dialog id="test-files-password-dialog" hidden>
+    </files-password-dialog>`;
 
   // Get the <files-password-dialog> element.
   passwordDialog = assert(/** @type {!FilesPasswordDialog} */ (

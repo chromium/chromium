@@ -9,6 +9,7 @@
  */
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
@@ -19,7 +20,8 @@ import {Banner, BannerEvent} from './types.js';
 let educationalBanner: EducationalBanner;
 
 export function setUp() {
-  const htmlTemplate = `<educational-banner>
+  document.body.innerHTML = getTrustedHTML`
+    <educational-banner>
       <span slot="title">Banner title</span>
       <span slot="subtitle">Subtitle</span>
       <button slot="extra-button" href="http://test.com">
@@ -30,7 +32,6 @@ export function setUp() {
       </button>
     </educational-banner>
     `;
-  document.body.innerHTML = htmlTemplate;
   educationalBanner =
       document.body.querySelector<EducationalBanner>('educational-banner')!;
 }
@@ -54,7 +55,8 @@ export async function testDismissHandlerEmitsEvent(done: () => void) {
  * supplied.
  */
 export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
-  const htmlTemplate = `<educational-banner>
+  document.body.innerHTML = getTrustedHTML
+  `<educational-banner>
       <span slot="title">Banner title text</span>
       <span slot="subtitle">Banner subtitle text</span>
       <button slot="extra-button" href="http://test.com">
@@ -62,7 +64,6 @@ export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
       </button>
     </educational-banner>
     `;
-  document.body.innerHTML = htmlTemplate;
   educationalBanner =
       document.body.querySelector<EducationalBanner>('educational-banner')!;
 
@@ -106,7 +107,8 @@ export function testEducationalBannerDefaults() {
  */
 export async function testDismissBannerWhenClickedAttributeWorks(
     done: () => void) {
-  const htmlTemplate = `<educational-banner>
+  document.body.innerHTML = getTrustedHTML`
+    <educational-banner>
       <span slot="title">Banner title</span>
       <span slot="subtitle">Subtitle</span>
       <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
@@ -114,7 +116,6 @@ export async function testDismissBannerWhenClickedAttributeWorks(
       </button>
     </educational-banner>
     `;
-  document.body.innerHTML = htmlTemplate;
   educationalBanner =
       document.body.querySelector<EducationalBanner>('educational-banner')!;
   const handler = (event: BannerDismissedEvent) => {
@@ -136,7 +137,7 @@ export async function testDismissWhenClickedAttributeWorksComponents(
   const bannerTagName = 'test-educational-banner-dismiss-attribute';
 
   const htmlTemplate = document.createElement('template');
-  htmlTemplate.innerHTML = `<educational-banner>
+  htmlTemplate.innerHTML = getTrustedHTML`<educational-banner>
   <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
     Test Button
   </button>
@@ -150,7 +151,8 @@ export async function testDismissWhenClickedAttributeWorksComponents(
 
   customElements.define(bannerTagName, TestEducationalBanner);
 
-  document.body.innerHTML = `<${bannerTagName} />`;
+  document.body.innerHTML =
+      getTrustedHTML`<test-educational-banner-dismiss-attribute />`;
   const banner = document.body.querySelector<Banner>(bannerTagName)!;
   const handler = (event: BannerDismissedEvent) => {
     assertEquals(event.detail.banner.constructor, TestEducationalBanner);

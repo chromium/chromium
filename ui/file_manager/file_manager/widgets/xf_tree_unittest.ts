@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -12,7 +13,9 @@ import {TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from './xf_tr
 
 export function setUp() {
   document.body.setAttribute('theme', 'refresh23');
-  document.body.innerHTML = '<xf-tree></xf-tree>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-tree></xf-tree>
+  `;
 }
 
 async function getTree(): Promise<XfTree> {

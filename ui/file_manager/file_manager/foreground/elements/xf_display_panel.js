@@ -45,8 +45,6 @@ export class DisplayPanel extends HTMLElement {
      * @private
      */
     this.items_ = [];
-
-    this.setAriaHidden_();
   }
 
   /**
@@ -56,6 +54,15 @@ export class DisplayPanel extends HTMLElement {
   createElement_() {
     const fragment = htmlTemplate.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
+  }
+
+  /**
+   * We cannot set attributes in the constructor for custom elements when using
+   * `createElement()`. Set attributes in the connected callback instead.
+   * @private
+   */
+  connectedCallback() {
+    this.setAriaHidden_();
   }
 
   /**

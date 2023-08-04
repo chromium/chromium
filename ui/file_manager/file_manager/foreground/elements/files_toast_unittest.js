@@ -7,7 +7,8 @@ import './files_toast.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function setUpPage() {
-  document.body.innerHTML += '<files-toast></files-toast>';
+  const filesToastElement = document.createElement('files-toast');
+  document.body.append(filesToastElement);
 }
 
 export async function testToast(done) {

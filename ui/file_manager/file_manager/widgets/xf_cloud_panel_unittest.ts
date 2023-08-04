@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
@@ -11,7 +12,9 @@ import {XfCloudPanel} from './xf_cloud_panel.js';
 
 // Creates new <xf-cloud-panel> for each test.
 export function setUp() {
-  document.body.innerHTML = '<xf-cloud-panel></xf-cloud-panel>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-cloud-panel></xf-cloud-panel>
+  `;
 }
 
 // Returns the <xf-cloud-panel> element.

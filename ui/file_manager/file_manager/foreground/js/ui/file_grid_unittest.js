@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
@@ -35,16 +36,15 @@ let a11y;
  * @return {!HTMLElement}
  */
 function setupBody() {
-  const style = `
-      <style>
-        grid {
-          display: block;
-          height: 200px;
-          width: 800px;
-        }
-       </style>
-      `;
-  document.body.innerHTML = style;
+  document.body.innerHTML = getTrustedHTML`
+    <style>
+      grid {
+        display: block;
+        height: 200px;
+        width: 800px;
+      }
+    </style>
+  `;
 
   const element = document.createElement('div');
   document.body.appendChild(element);

@@ -55,7 +55,7 @@ export function tearDown() {
   if (container) {
     getStore().unsubscribe(container);
   }
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
 }
 
 /**

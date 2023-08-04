@@ -4,6 +4,7 @@
 
 import './xf_nudge.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertGT, assertLT, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {NudgeDirection, XfNudge} from './xf_nudge.js';
@@ -18,7 +19,9 @@ export function setUpPage() {
  * Creates new <xf-nudge> element for each test.
  */
 export function setUp() {
-  nudgeContainer.innerHTML = '<xf-nudge></xf-nudge>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-nudge></xf-nudge>
+`;
 }
 
 /**

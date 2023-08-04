@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
@@ -12,7 +13,9 @@ import {ConflictResolveType, XfConflictDialog} from './xf_conflict_dialog.js';
  * Creates new <xf-conflict-dialog> for each test.
  */
 export function setUp() {
-  document.body.innerHTML = '<xf-conflict-dialog></xf-conflict-dialog>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-conflict-dialog></xf-conflict-dialog>
+  `;
 }
 
 /**

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../common/js/mock_util.js';
@@ -11,7 +12,9 @@ import {getEmptyState} from '../state/store.js';
 import {BulkPinStage, XfBulkPinningDialog} from './xf_bulk_pinning_dialog.js';
 
 export function setUp() {
-  document.body.innerHTML = '<xf-bulk-pinning-dialog></xf-bulk-pinning-dialog>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-bulk-pinning-dialog></xf-bulk-pinning-dialog>
+  `;
 }
 
 // Gets the <xf-bulk-pinning-dialog> element.

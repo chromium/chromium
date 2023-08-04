@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_jstest_base.h"
 
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/file_manager/resource_loader.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -67,6 +68,8 @@ class TestWebUIProvider
   }
 
   void DataSourceOverrides(content::WebUIDataSource* source) override {
+    ash::EnableTrustedTypesCSP(source);
+
     // Add 'unsafe-inline' to CSP to allow the inline <script> in the
     // generated HTML to run see js_test_gen_html.py.
     source->OverrideContentSecurityPolicy(
@@ -84,10 +87,6 @@ class TestWebUIProvider
             " "
             "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
             "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ; ");
-
-    // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
-    source->DisableTrustedTypesCSP();
-
     DCHECK(!dict_.empty()) << "The translation should be fully loaded";
     source->AddLocalizedStrings(dict_);
     source->UseStringsJs();

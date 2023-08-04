@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
@@ -38,45 +39,45 @@ export function setUp() {
   window.innerHeight = initialWindowHeight;
 
   // Install cr.ui <command> elements and <cr-menu>s on the page.
-  document.body.innerHTML = [
-    '<style>',
-    '  cr-menu {',
-    '    position: fixed;',
-    '    padding: 8px;',
-    '  }',
-    '  cr-menu-item {',
-    '    width: 10px;',
-    '    height: 10px;',
-    '    display: block;',
-    '    background-color: blue;',
-    '  }',
-    '</style>',
-    '<command id="default-task">',
-    '<command id="more-actions">',
-    '<command id="show-submenu" shortcut="Enter">',
-    '<button id="test-menu-button" menu="#menu"></button>',
-    '<cr-menu id="menu" hidden>',
-    '  <cr-menu-item id="default" command="#default-task"></cr-menu-item>',
-    '  <cr-menu-item id="more" command="#more-actions"></cr-menu-item>',
-    '  <cr-menu-item id="host-sub-menu" command="#show-submenu"',
-    'visibleif="full-page" class="hide-on-toolbar"',
-    'sub-menu="#sub-menu" hidden></cr-menu-item>',
-    '  <cr-menu-item id="host-second-sub-menu" command="#show-submenu"',
-    'visibleif="full-page" class="hide-on-toolbar"',
-    'sub-menu="#second-sub-menu" hidden></cr-menu-item>',
-    '</cr-menu>',
-    '<cr-menu id="sub-menu" hidden>',
-    '  <cr-menu-item id="first" class="custom-appearance"></cr-menu-item>',
-    '  <cr-menu-item id="second" class="custom-appearance"></cr-menu-item>',
-    '</cr-menu>',
-    '<cr-menu id="second-sub-menu" hidden>',
-    '  <cr-menu-item id="secondone" class="custom-appearance"></cr-menu-item>',
-    '</cr-menu>',
-    '<div id="focus-div" tabindex="1"/>',
-    '<button id="focus-button" tabindex="2"/>',
-    '<cr-input id="focus-input" input-tabindex="3">',
-    '</cr-input>',
-  ].join('');
+  document.body.innerHTML = getTrustedHTML`
+    <style>
+      cr-menu {
+        position: fixed;
+        padding: 8px;
+      }
+      cr-menu-item {
+        width: 10px;
+        height: 10px;
+        display: block;
+        background-color: blue;
+      }
+    </style>
+    <command id="default-task">
+    <command id="more-actions">
+    <command id="show-submenu" shortcut="Enter">
+    <button id="test-menu-button" menu="#menu"></button>
+    <cr-menu id="menu" hidden>
+      <cr-menu-item id="default" command="#default-task"></cr-menu-item>
+      <cr-menu-item id="more" command="#more-actions"></cr-menu-item>
+      <cr-menu-item id="host-sub-menu" command="#show-submenu"
+    visibleif="full-page" class="hide-on-toolbar"
+    sub-menu="#sub-menu" hidden></cr-menu-item>
+      <cr-menu-item id="host-second-sub-menu" command="#show-submenu"
+    visibleif="full-page" class="hide-on-toolbar"
+    sub-menu="#second-sub-menu" hidden></cr-menu-item>
+    </cr-menu>
+    <cr-menu id="sub-menu" hidden>
+      <cr-menu-item id="first" class="custom-appearance"></cr-menu-item>
+      <cr-menu-item id="second" class="custom-appearance"></cr-menu-item>
+    </cr-menu>
+    <cr-menu id="second-sub-menu" hidden>
+      <cr-menu-item id="secondone" class="custom-appearance"></cr-menu-item>
+    </cr-menu>
+    <div id="focus-div" tabindex="1"/>
+    <button id="focus-button" tabindex="2"/>
+    <cr-input id="focus-input" input-tabindex="3">
+    </cr-input>
+  `;
 
   // Initialize cr.ui.Command with the <command>s.
   decorate('command', Command);

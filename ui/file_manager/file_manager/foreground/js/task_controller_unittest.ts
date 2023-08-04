@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
@@ -64,15 +65,15 @@ export function setUp() {
   installMockChrome(mockChrome);
 
   // Install <command> elements on the page.
-  document.body.innerHTML = [
-    '<command id="default-task">',
-    '<command id="open-with">',
-    '<cr-menu id="tasks-menu">',
-    '  <cr-menu-item id="default-task-menu-item" command="#default-task">',
-    '  </cr-menu-item>',
-    '</cr-menu>',
-    '<cr-button id="tasks" menu="#tasks-menu"> Open </cr-button>',
-  ].join('');
+  document.body.innerHTML = getTrustedHTML`
+<command id="default-task">
+<command id="open-with">
+<cr-menu id="tasks-menu">
+  <cr-menu-item id="default-task-menu-item" command="#default-task">
+  </cr-menu-item>
+</cr-menu>
+<cr-button id="tasks" menu="#tasks-menu"> Open </cr-button>
+`;
 
   // Initialize Command with the <command>s.
   decorate('command', Command);

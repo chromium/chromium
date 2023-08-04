@@ -5,6 +5,7 @@
 // clang-format off
 import {AnchorType, positionPopupAroundElement, positionPopupAtPoint} from './position_util.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 // clang-format on
 
@@ -42,7 +43,7 @@ function MockRect(w, h) {
 }
 
 export function setUp() {
-  document.body.innerHTML = `
+  document.body.innerHTML = getTrustedHTML`
     <style>
       html, body {
         margin: 0;
@@ -69,7 +70,7 @@ export function setUp() {
 
     <div id="anchor"></div>
     <div id="popup"></div>
-    `;
+  `;
 
   anchor = /** @type {!HTMLElement} */ (document.getElementById('anchor'));
   popup = /** @type {!HTMLElement} */ (document.getElementById('popup'));
