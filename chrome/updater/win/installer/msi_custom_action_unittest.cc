@@ -28,6 +28,8 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SetArgReferee;
+using ::testing::TestWithParam;
+using ::testing::ValuesIn;
 
 class MockMsiHandle : public MsiHandleInterface {
  public:
@@ -55,13 +57,13 @@ class MockMsiHandle : public MsiHandleInterface {
               (override));
 };
 
-}  // namespace
+struct MsiSetTagsTestCase {
+  std::string msi_file_name;
+  std::string expected_tag_string;
+};
 
-TEST(MsiCustomActionTest, MsiSetTags) {
-  const struct {
-    const std::string msi_file_name;
-    const std::string expected_tag_string;
-  } test_cases[] = {
+std::vector<MsiSetTagsTestCase> MsiSetTagsTestCases() {
+  return {
       // single tag parameter.
       {"GUH-brand-only.msi", "BRAND=QAQA"},
 
@@ -95,36 +97,43 @@ TEST(MsiCustomActionTest, MsiSetTags) {
       // untagged.
       {"GUH-untagged.msi", {}},
   };
-
-  for (const auto& test_case : test_cases) {
-    MockMsiHandle mock_msi_handle;
-    const std::wstring msi_file_path = test::GetTestFilePath("tagged_msi")
-                                           .AppendASCII(test_case.msi_file_name)
-                                           .value();
-    EXPECT_CALL(mock_msi_handle,
-                GetProperty(std::wstring(L"OriginalDatabase"), _, Eq(1U)))
-        .WillOnce(DoAll(SetArgReferee<2>(msi_file_path.length()),
-                        Return(ERROR_MORE_DATA)));
-    EXPECT_CALL(mock_msi_handle,
-                GetProperty(std::wstring(L"OriginalDatabase"), _,
-                            Eq(msi_file_path.length() + 1U)))
-        .WillOnce(DoAll(SetArgReferee<1>(std::vector(msi_file_path.begin(),
-                                                     msi_file_path.end())),
-                        SetArgReferee<2>(msi_file_path.length()),
-                        Return(ERROR_SUCCESS)));
-    std::string tag_string;
-    EXPECT_CALL(mock_msi_handle, SetProperty)
-        .WillRepeatedly(DoAll(
-            Invoke([&](const std::string& name, const std::string& value) {
-              tag_string += base::StrCat(
-                  {!tag_string.empty() ? "&" : "", name, "=", value});
-            }),
-            Return(ERROR_SUCCESS)));
-
-    MsiSetTags(mock_msi_handle);
-    EXPECT_EQ(tag_string, test_case.expected_tag_string);
-  }
 }
+
+}  // namespace
+
+class MsiSetTagsTest : public TestWithParam<MsiSetTagsTestCase> {};
+
+TEST_P(MsiSetTagsTest, MsiSetTags) {
+  MockMsiHandle mock_msi_handle;
+  const std::wstring msi_file_path = test::GetTestFilePath("tagged_msi")
+                                         .AppendASCII(GetParam().msi_file_name)
+                                         .value();
+  EXPECT_CALL(mock_msi_handle,
+              GetProperty(std::wstring(L"OriginalDatabase"), _, Eq(1U)))
+      .WillOnce(DoAll(SetArgReferee<2>(msi_file_path.length()),
+                      Return(ERROR_MORE_DATA)));
+  EXPECT_CALL(mock_msi_handle, GetProperty(std::wstring(L"OriginalDatabase"), _,
+                                           Eq(msi_file_path.length() + 1U)))
+      .WillOnce(DoAll(SetArgReferee<1>(std::vector(msi_file_path.begin(),
+                                                   msi_file_path.end())),
+                      SetArgReferee<2>(msi_file_path.length()),
+                      Return(ERROR_SUCCESS)));
+  std::string tag_string;
+  EXPECT_CALL(mock_msi_handle, SetProperty)
+      .WillRepeatedly(
+          DoAll(Invoke([&](const std::string& name, const std::string& value) {
+                  tag_string += base::StrCat(
+                      {!tag_string.empty() ? "&" : "", name, "=", value});
+                }),
+                Return(ERROR_SUCCESS)));
+
+  MsiSetTags(mock_msi_handle);
+  EXPECT_EQ(tag_string, GetParam().expected_tag_string);
+}
+
+INSTANTIATE_TEST_SUITE_P(MsiSetTagsTestCases,
+                         MsiSetTagsTest,
+                         ValuesIn(MsiSetTagsTestCases()));
 
 TEST(MsiCustomActionTest, ExtractTagInfoFromInstaller) {
   EXPECT_EQ(ExtractTagInfoFromInstaller(0), static_cast<UINT>(ERROR_SUCCESS));
