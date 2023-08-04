@@ -46,6 +46,10 @@ const char
     kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler[] =
         "PageLoad.Clients.ServiceWorker2.PaintTiming."
         "NavigationToFirstContentfulPaint.NonSkippableFetchHandler";
+const char
+    kHistogramServiceWorkerFirstContentfulPaintRaceNetworkRequestEligible[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToFirstContentfulPaint.RaceNetworkRequestEligible";
 const char kBackgroundHistogramServiceWorkerFirstContentfulPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToFirstContentfulPaint.Background";
@@ -254,6 +258,13 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     PAGE_LOAD_HISTOGRAM(
         internal::
             kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+        timing.paint_timing->first_contentful_paint.value());
+  }
+
+  if (IsServiceWorkerEligibleForRaceNetworkRequest()) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintRaceNetworkRequestEligible,
         timing.paint_timing->first_contentful_paint.value());
   }
 }
