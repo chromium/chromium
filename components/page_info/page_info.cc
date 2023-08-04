@@ -14,17 +14,14 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/browsing_data/content/local_storage_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -37,7 +34,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/page_info/core/features.h"
 #include "components/page_info/page_info_delegate.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/permissions/features.h"
@@ -58,9 +54,7 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/ssl_errors/error_info.h"
-#include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -77,6 +71,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -84,6 +79,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/resources/android/theme_resources.h"
+#include "components/strings/grit/components_chromium_strings.h"
 #endif
 
 using base::ASCIIToUTF16;
@@ -672,6 +668,11 @@ void PageInfo::OnSitePermissionChanged(
       constraints.set_lifetime(permissions::kOneTimePermissionMaximumLifetime);
     }
   }
+  if (type == ContentSettingsType::STORAGE_ACCESS) {
+    constraints.set_lifetime(
+        blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
+  }
+
   map->SetNarrowestContentSetting(primary_url, site_url_, type, setting,
                                   constraints);
 

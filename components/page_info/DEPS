@@ -36,6 +36,7 @@ include_rules = [
   "+ppapi",
   "+services/device/public",
   "+services/metrics/public",
+  "+third_party/blink/public/common/features.h",
   "+third_party/boringssl/src/include",
   "+ui/base",
   "+ui/gfx",

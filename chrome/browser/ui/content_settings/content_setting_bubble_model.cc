@@ -47,6 +47,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -78,6 +79,7 @@
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -743,8 +745,12 @@ void ContentSettingStorageAccessBubbleModel::CommitChanges() {
             ContentSettingsType::STORAGE_ACCESS,
             permissions::PermissionSourceUI::PAGE_ACTION);
     auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
-    map->SetNarrowestContentSetting(
-        primary, secondary, ContentSettingsType::STORAGE_ACCESS, setting);
+    content_settings::ContentSettingConstraints constraints;
+    constraints.set_lifetime(
+        blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
+    map->SetNarrowestContentSetting(primary, secondary,
+                                    ContentSettingsType::STORAGE_ACCESS,
+                                    setting, constraints);
   }
 }
 
