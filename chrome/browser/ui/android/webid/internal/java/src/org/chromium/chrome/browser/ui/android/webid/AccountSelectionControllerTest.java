@@ -545,6 +545,7 @@ public class AccountSelectionControllerTest {
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
         listener.keyboardVisibilityChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
+        when(mTab.isUserInteractable()).thenReturn(true);
         listener.keyboardVisibilityChanged(false);
         verify(mMockBottomSheetController, times(2)).requestShowContent(mBottomSheetContent, true);
         assertFalse(mMediator.wasDismissed());
@@ -573,6 +574,25 @@ public class AccountSelectionControllerTest {
         mMediator.getTabObserver().onDidStartNavigationInPrimaryMainFrame(mTab, null);
         assertTrue(mMediator.wasDismissed());
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+    }
+
+    @Test
+    public void testShowKeyboardWhileNotInteractable() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */,
+                "signin" /* rpContext */);
+        KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
+        listener.keyboardVisibilityChanged(true);
+        verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
+
+        when(mTab.isUserInteractable()).thenReturn(false);
+
+        // Showing the keyboard again should do nothing since the tab is not interactable!
+        listener.keyboardVisibilityChanged(false);
+        // The requestShowContent method should have been called only once.
+        verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
+        assertFalse(mMediator.wasDismissed());
     }
 
     private void pressBack() {

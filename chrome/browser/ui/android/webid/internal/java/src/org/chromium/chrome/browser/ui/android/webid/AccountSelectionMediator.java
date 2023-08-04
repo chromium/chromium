@@ -124,7 +124,7 @@ class AccountSelectionMediator {
                 public void keyboardVisibilityChanged(boolean isShowing) {
                     if (isShowing) {
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
-                    } else {
+                    } else if (mTab.isUserInteractable()) {
                         showContent();
                     }
                 }
