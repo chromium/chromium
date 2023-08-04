@@ -280,7 +280,7 @@ std::vector<SystemInfoKeywordInput> GetSystemInfoKeywordVector() {
           l10n_util::GetStringUTF16(IDS_ASH_VERSION_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kVersion,
-          l10n_util::GetStringUTF16(IDS_ASH_MY_DEVICE_KEYWORD_FOR_LAUNCHER)),
+          l10n_util::GetStringUTF16(IDS_ASH_DEVICE_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kVersion,
           l10n_util::GetStringUTF16(IDS_ASH_ABOUT_KEYWORD_FOR_LAUNCHER)),
@@ -288,47 +288,21 @@ std::vector<SystemInfoKeywordInput> GetSystemInfoKeywordVector() {
           SystemInfoInputType::kBattery,
           l10n_util::GetStringUTF16(IDS_ASH_BATTERY_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
-          SystemInfoInputType::kBattery,
-          l10n_util::GetStringUTF16(IDS_ASH_BATTERY_LIFE_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(SystemInfoInputType::kBattery,
-                             l10n_util::GetStringUTF16(
-                                 IDS_ASH_BATTERY_HEALTH_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
           SystemInfoInputType::kMemory,
           l10n_util::GetStringUTF16(IDS_ASH_MEMORY_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kMemory,
-          l10n_util::GetStringUTF16(IDS_ASH_MEMORY_USAGE_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kMemory,
           l10n_util::GetStringUTF16(IDS_ASH_RAM_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
-          SystemInfoInputType::kMemory,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_RANDOM_ACCESS_MEMORY_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kMemory,
-          l10n_util::GetStringUTF16(IDS_ASH_RAM_USAGE_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kMemory,
+          SystemInfoInputType::kCPU,
           l10n_util::GetStringUTF16(
               IDS_ASH_ACTIVITY_MONITOR_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kStorage,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_STORAGE_MANAGEMENT_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kStorage,
           l10n_util::GetStringUTF16(IDS_ASH_STORAGE_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kStorage,
-          l10n_util::GetStringUTF16(IDS_ASH_STORAGE_USE_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kCPU,
           l10n_util::GetStringUTF16(IDS_ASH_CPU_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kCPU,
-          l10n_util::GetStringUTF16(IDS_ASH_CPU_USAGE_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kCPU,
           l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER))};

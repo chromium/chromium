@@ -2152,14 +2152,8 @@ Style notes:
       <message name="IDS_ASH_STORAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage in launcher search that should trigger a storage answer card result.">
         storage
       </message>
-      <message name="IDS_ASH_STORAGE_USE_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage use in launcher search that should trigger a storage answer card result.">
-        storage use
-      </message>
       <message name="IDS_ASH_CPU_KEYWORD_FOR_LAUNCHER" desc="Keyword of cpu in launcher search that should trigger a CPU answer card result.">
         cpu
-      </message>
-      <message name="IDS_ASH_CPU_USAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of cpu usage in launcher search that should trigger a CPU answer card result.">
-        cpu usage
       </message>
       <message name="IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER" desc="Keyword of device slow in launcher search that should trigger a CPU answer card result.">
         device slow
@@ -2167,35 +2161,20 @@ Style notes:
       <message name="IDS_ASH_MEMORY_KEYWORD_FOR_LAUNCHER" desc="Keyword of memory in launcher search that should trigger a memory answer card result.">
         memory
       </message>
-      <message name="IDS_ASH_MEMORY_USAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of memory usage in launcher search that should trigger a memory answer card result.">
-        memory usage
-      </message>
       <message name="IDS_ASH_RAM_KEYWORD_FOR_LAUNCHER" desc="Keyword of ram (random access memory) in launcher search that should trigger a memory answer card result.">
         ram
       </message>
-      <message name="IDS_ASH_RANDOM_ACCESS_MEMORY_KEYWORD_FOR_LAUNCHER" desc="Keyword of random access memory in launcher search that should trigger a memory answer card result.">
-        random access memory
-      </message>
-      <message name="IDS_ASH_RAM_USAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of ram usage in launcher search that should trigger a memory answer card result.">
-        ram usage
-      </message>
-      <message name="IDS_ASH_ACTIVITY_MONITOR_KEYWORD_FOR_LAUNCHER" desc="Keyword of activity monitor in launcher search that should trigger a memory answer card result.">
+      <message name="IDS_ASH_ACTIVITY_MONITOR_KEYWORD_FOR_LAUNCHER" desc="Keyword of activity monitor in launcher search that should trigger a CPU answer card result.">
         actvity monitor
       </message>
       <message name="IDS_ASH_BATTERY_KEYWORD_FOR_LAUNCHER" desc="Keyword of battery in launcher search that should trigger a battery answer card result.">
         battery
       </message>
-      <message name="IDS_ASH_BATTERY_LIFE_KEYWORD_FOR_LAUNCHER" desc="Keyword of battery life in launcher search that should trigger a battery answer card result.">
-        battery life
-      </message>
-      <message name="IDS_ASH_BATTERY_HEALTH_KEYWORD_FOR_LAUNCHER" desc="Keyword of battery health in launcher search that should trigger a battery answer card result.">
-        battery health
-      </message>
       <message name="IDS_ASH_VERSION_KEYWORD_FOR_LAUNCHER" desc="Keyword of version in launcher search that should trigger a version answer card result.">
         version
       </message>
-      <message name="IDS_ASH_MY_DEVICE_KEYWORD_FOR_LAUNCHER" desc="Keyword of my device in launcher search that should trigger a version answer card result.">
-        my device
+      <message name="IDS_ASH_DEVICE_KEYWORD_FOR_LAUNCHER" desc="Keyword of device in launcher search that should trigger a version answer card result.">
+        device
       </message>
       <message name="IDS_ASH_ABOUT_KEYWORD_FOR_LAUNCHER" desc="Keyword of about in launcher search that should trigger a version answer card result.">
         about
