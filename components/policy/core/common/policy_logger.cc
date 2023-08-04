@@ -161,8 +161,8 @@ void PolicyLogger::LogHelper::StreamLog() const {
 base::Value::Dict PolicyLogger::Log::GetAsDict() const {
   base::Value::Dict log_dict;
   log_dict.Set("message", base::EscapeForHTML(message_));
-  log_dict.Set("log_severity", GetLogSeverity(log_severity_));
-  log_dict.Set("log_source", GetLogSourceValue(log_source_));
+  log_dict.Set("logSeverity", GetLogSeverity(log_severity_));
+  log_dict.Set("logSource", GetLogSourceValue(log_source_));
   log_dict.Set("location", GetLineURL(location_));
   log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
   return log_dict;
