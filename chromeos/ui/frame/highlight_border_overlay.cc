@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -189,6 +190,10 @@ void HighlightBorderOverlay::UpdateNinePatchLayer() {
       image_source_map;
   auto iter = image_source_map->find(key);
   if (iter == image_source_map->end()) {
+    // Evict the image source which has no owners.
+    base::EraseIf(*image_source_map, [](auto& key_and_image_source) {
+      return key_and_image_source.second.IsUniquelyOwned();
+    });
     // Create a new image.
     auto insertion = image_source_map->emplace(
         key, gfx::ImageSkia(std::make_unique<ImageSource>(
@@ -196,9 +201,7 @@ void HighlightBorderOverlay::UpdateNinePatchLayer() {
                                 rounded_corner_radius_, image_source_size),
                             image_source_size));
     DCHECK(insertion.second);
-    // When dynamic color feature launches or HighlightBorderOverlay applies to
-    // more window types, the cache size may increase. Add a dcheck here to
-    // notice the cache size change.
+    // Add a dcheck here to notice the cache size change.
     DCHECK_LE(image_source_map->size(), kMaxImageSourceNum);
     iter = insertion.first;
   }
