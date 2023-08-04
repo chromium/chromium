@@ -83073,6 +83073,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="The cancel button was clicked"/>
   <int value="5" label="The sheet with the introduction was dismissed"/>
   <int value="6" label="The sheet with more options was dismissed"/>
+  <int value="7" label="The sheet without content was dismissed"/>
 </enum>
 
 <enum name="PasswordNoteAction">

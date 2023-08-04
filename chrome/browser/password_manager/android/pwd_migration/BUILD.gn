@@ -64,6 +64,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:jni_java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
