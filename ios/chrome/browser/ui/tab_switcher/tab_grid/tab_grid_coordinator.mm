@@ -59,6 +59,8 @@
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
@@ -132,6 +134,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   GridMediatorDelegate,
                                   HistoryCoordinatorDelegate,
                                   HistoryPresentationDelegate,
+                                  HistorySyncPopupCoordinatorDelegate,
                                   InactiveTabsCoordinatorDelegate,
                                   RecentTabsPresentationDelegate,
                                   SceneStateObserver,
@@ -154,6 +157,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // The coordinator that manages the "Bring Android Tabs" prompt for Android
   // switchers.
   BringAndroidTabsPromptCoordinator* _bringAndroidTabsPromptCoordinator;
+
+  // Coordinator for the history sync opt-in screen that should appear after
+  // sign-in.
+  HistorySyncPopupCoordinator* _historySyncPopupCoordinator;
 
   // Coordinator for the "Tab List From Android Prompt" for Android switchers.
   TabListFromAndroidCoordinator* _tabListFromAndroidCoordinator;
@@ -961,6 +968,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
+  _historySyncPopupCoordinator.delegate = nil;
+  [_historySyncPopupCoordinator stop];
+  _historySyncPopupCoordinator = nil;
+
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
 }
@@ -1178,6 +1189,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                animated:YES];
 }
 
+- (void)showHistorySyncOptIn {
+  // Show the History Sync Opt-In screen. The coordinator will dismiss itself
+  // if there is no signed-in account (eg. if sign-in unsuccessful) or if sync
+  // is disabled by policies.
+  _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:self.regularBrowser];
+  _historySyncPopupCoordinator.delegate = self;
+  [_historySyncPopupCoordinator start];
+}
+
 #pragma mark - HistoryPresentationDelegate
 
 - (void)showActiveRegularTabFromHistory {
@@ -1390,6 +1412,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       referencedViewUnderName:bottomToolbarGuideName];
 
   return CGRectGetHeight(bottomToolbar.bounds);
+}
+
+#pragma mark - HistorySyncPopupCoordinatorDelegate
+
+- (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
+         didCloseWithDeclinedByUser:(BOOL)declined {
+  _historySyncPopupCoordinator.delegate = nil;
+  [_historySyncPopupCoordinator stop];
+  _historySyncPopupCoordinator = nil;
+  // TODO(crbug.com/1447014): Sign-out the user if a sign-in has been done, but
+  // the user declined History sync.
+  [self.remoteTabsMediator refreshSessionsView];
 }
 
 @end

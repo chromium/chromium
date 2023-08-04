@@ -10,6 +10,8 @@ source_set("history_sync") {
     "history_sync_coordinator.mm",
     "history_sync_mediator.h",
     "history_sync_mediator.mm",
+    "history_sync_popup_coordinator.h",
+    "history_sync_popup_coordinator.mm",
   ]
   deps = [
     ":ui",
@@ -23,6 +25,7 @@ source_set("history_sync") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:constants",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",

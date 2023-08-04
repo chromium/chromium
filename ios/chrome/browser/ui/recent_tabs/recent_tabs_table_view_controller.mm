@@ -1765,7 +1765,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)signinDidFinish {
-  [self.delegate refreshSessionsView];
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    [self.presentationDelegate showHistorySyncOptIn];
+  } else {
+    [self.delegate refreshSessionsView];
+  }
 }
 
 #pragma mark - SyncPresenter
@@ -1785,10 +1790,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)showGoogleServicesSettings {
   [self.handler showGoogleServicesSettingsFromViewController:self];
-}
-
-- (void)showSyncManagerSettings {
-  [self.handler showSyncSettingsFromViewController:self];
 }
 
 - (void)showAccountSettings {
@@ -1866,10 +1867,31 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
     [self showPrimaryAccountReauth];
   } else if (ShouldShowSyncSettings(error)) {
-    [self showSyncManagerSettings];
+    [self showSyncSettingsOrHistoryOptIn];
   } else if (error ==
              syncer::SyncService::UserActionableError::kNeedsPassphrase) {
     [self showSyncPassphraseSettings];
+  }
+}
+
+// Show the History Sync Opt-In screen if the sync-related UI is disabled, and
+// the account is not syncing. Otherwise, show the sync settings screen.
+- (void)showSyncSettingsOrHistoryOptIn {
+  // TODO(crbug.com/1462326): This logic should be moved outside of the
+  // ViewController.
+  BOOL isSyncUIDisabled =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
+  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
+  // details.
+  BOOL hasSyncingAccount =
+      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (!isSyncUIDisabled || hasSyncingAccount) {
+    [self.handler showSyncSettingsFromViewController:self];
+  } else {
+    [self.presentationDelegate showHistorySyncOptIn];
   }
 }
 

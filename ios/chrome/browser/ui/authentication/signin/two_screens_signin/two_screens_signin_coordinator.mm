@@ -253,7 +253,8 @@ using base::UserMetricsAction;
 
 // Dismisses the current screen.
 - (void)closeHistorySyncCoordinator:
-    (HistorySyncCoordinator*)historySyncCoordinator {
+            (HistorySyncCoordinator*)historySyncCoordinator
+                     declinedByUser:(BOOL)declined {
   [self screenWillFinishPresenting];
 }
 

@@ -166,7 +166,8 @@
 #pragma mark - HistorySyncCoordinatorDelegate
 
 - (void)closeHistorySyncCoordinator:
-    (HistorySyncCoordinator*)historySyncCoordinator {
+            (HistorySyncCoordinator*)historySyncCoordinator
+                     declinedByUser:(BOOL)declined {
   CHECK_EQ(self.childCoordinator, historySyncCoordinator);
   [self screenWillFinishPresenting];
 }

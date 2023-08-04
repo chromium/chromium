@@ -4,15 +4,14 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
-#import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
@@ -59,33 +58,10 @@
   CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  // Don't show history sync opt-in screen if no signed-in user account.
-  if (!authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    [_delegate closeHistorySyncCoordinator:self];
-    return;
-  }
-
-  // Skip History Sync Opt-in if sync is disabled, or if history or tabs sync
-  // is disabled by policy.
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  if (IsSyncDisabledByPolicy(syncService) ||
-      IsManagedSyncDataType(syncService, syncer::UserSelectableType::kTabs) ||
-      IsManagedSyncDataType(syncService,
-                            syncer::UserSelectableType::kHistory)) {
-    [_delegate closeHistorySyncCoordinator:self];
-    return;
-  }
-
-  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
-  if (syncUserSettings->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
-    // This should possible only when Chrome FRE is forced while being already
-    // signed-in with History opt-in enabled. In this case the FRE History
-    // opt-in should be skipped.
-    CHECK(_firstRun);
-    [_delegate closeHistorySyncCoordinator:self];
+  if (!CanHistorySyncOptInBePresented(authenticationService, syncService)) {
+    [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
     return;
   }
 
@@ -130,18 +106,18 @@
 
 - (void)historySyncMediatorPrimaryAccountCleared:
     (HistorySyncMediator*)mediator {
-  [_delegate closeHistorySyncCoordinator:self];
+  [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
   [_mediator enableHistorySyncOptin];
-  [_delegate closeHistorySyncCoordinator:self];
+  [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
 }
 
 - (void)didTapSecondaryActionButton {
-  [_delegate closeHistorySyncCoordinator:self];
+  [_delegate closeHistorySyncCoordinator:self declinedByUser:YES];
 }
 
 @end

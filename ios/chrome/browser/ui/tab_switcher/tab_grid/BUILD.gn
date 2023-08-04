@@ -56,6 +56,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bring_android_tabs",

@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
@@ -38,8 +40,9 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 
-@interface RecentTabsCoordinator () <TabContextMenuDelegate,
-                                     RecentTabsPresentationDelegate>
+@interface RecentTabsCoordinator () <HistorySyncPopupCoordinatorDelegate,
+                                     RecentTabsPresentationDelegate,
+                                     TabContextMenuDelegate>
 // Completion block called once the recentTabsViewController is dismissed.
 @property(nonatomic, copy) ProceduralBlock completion;
 // Mediator being managed by this Coordinator.
@@ -54,10 +57,11 @@
     RecentTabsContextMenuHelper* recentTabsContextMenuHelper;
 @end
 
-@implementation RecentTabsCoordinator
-@synthesize completion = _completion;
-@synthesize mediator = _mediator;
-@synthesize recentTabsNavigationController = _recentTabsNavigationController;
+@implementation RecentTabsCoordinator {
+  // Coordinator for the history sync opt-in screen that should appear after
+  // sign-in.
+  HistorySyncPopupCoordinator* _historySyncPopupCoordinator;
+}
 
 - (void)start {
   // Initialize and configure RecentTabsTableViewController.
@@ -142,6 +146,9 @@
 }
 
 - (void)stop {
+  _historySyncPopupCoordinator.delegate = nil;
+  [_historySyncPopupCoordinator stop];
+  _historySyncPopupCoordinator = nil;
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;
@@ -199,6 +206,17 @@
   [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
+- (void)showHistorySyncOptIn {
+  // Show the History Sync Opt-In screen. The coordinator will dismiss itself
+  // if there is no signed-in account (eg. if sign-in unsuccessful) or if sync
+  // is disabled by policies.
+  _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
+      initWithBaseViewController:self.recentTabsTableViewController
+                         browser:self.browser];
+  _historySyncPopupCoordinator.delegate = self;
+  [_historySyncPopupCoordinator start];
+}
+
 #pragma mark - RecentTabsContextMenuDelegate
 
 - (void)shareURL:(const GURL&)URL
@@ -225,6 +243,18 @@
     (NSInteger)sectionIdentifier {
   return [self.recentTabsTableViewController
       sessionForTableSectionWithIdentifier:sectionIdentifier];
+}
+
+#pragma mark - HistorySyncPopupCoordinatorDelegate
+
+- (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
+         didCloseWithDeclinedByUser:(BOOL)declined {
+  _historySyncPopupCoordinator.delegate = nil;
+  [_historySyncPopupCoordinator stop];
+  _historySyncPopupCoordinator = nil;
+  // TODO(crbug.com/1447014): Sign-out the user if a sign-in has been done, but
+  // the user declined History sync.
+  [self.mediator refreshSessionsView];
 }
 
 @end

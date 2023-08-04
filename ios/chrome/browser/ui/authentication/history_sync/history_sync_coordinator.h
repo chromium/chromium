@@ -15,7 +15,8 @@
 
 // Called once the dialog can be closed.
 - (void)closeHistorySyncCoordinator:
-    (HistorySyncCoordinator*)historySyncCoordinator;
+            (HistorySyncCoordinator*)historySyncCoordinator
+                     declinedByUser:(BOOL)declined;
 
 @end
 
