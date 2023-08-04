@@ -12,8 +12,10 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace guest_os {
 
@@ -130,6 +132,7 @@ FindAppIdResult FindAppId(const base::Value::Dict& prefs,
 // org.chromium.guest_os.<token>.*, return the guest token.
 // The token should be one of the following:
 // - For Crostini app windows: it is the container_token
+// - For Bruschetta app windows: it is the container_token
 // - For Borealis app windows: "borealis"
 // - For all other guest app windows: "termina"
 // Note that PluginVM does not match this prefix since it has a
@@ -306,6 +309,20 @@ bool IsCrostiniShelfAppId(const Profile* profile,
   const auto& apps =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsRegistry);
   return apps.contains(shelf_app_id);
+}
+
+apps::AppType GetAppType(Profile* profile, base::StringPiece shelf_app_id) {
+  if (shelf_app_id.starts_with(kCrostiniShelfIdPrefix)) {
+    shelf_app_id.remove_prefix(strlen(kCrostiniShelfIdPrefix));
+  }
+  const std::string id(shelf_app_id);
+  const std::string token = GetGuestTokenForWindowId(&id);
+  absl::optional<GuestId> guest_id =
+      GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
+  if (guest_id.has_value()) {
+    return ToAppType(guest_id->vm_type);
+  }
+  return ToAppType(vm_tools::apps::UNKNOWN);
 }
 
 }  // namespace guest_os

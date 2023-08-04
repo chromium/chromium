@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/strings/string_piece_forward.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;
 
@@ -37,6 +38,10 @@ bool IsUnregisteredGuestOsShelfAppId(base::StringPiece shelf_app_id);
 // registered and unregistered Crostini apps.
 bool IsCrostiniShelfAppId(const Profile* profile,
                           base::StringPiece shelf_app_id);
+
+// Returns the app_type for the given shelf app_id, based on which VM its
+// window_id comes from, or vm_tools::apps::UNKNOWN if it can't be determined.
+apps::AppType GetAppType(Profile* profile, base::StringPiece shelf_app_id);
 
 }  // namespace guest_os
 

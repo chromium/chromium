@@ -23,13 +23,32 @@ VmType ToVmType(vm_tools::concierge::VmInfo::VmType type) {
 
     case vm_tools::concierge::VmInfo_VmType_UNKNOWN:
     // "default" is necessary because proto enums compile with (e.g.)
-    // INT_SENTINAL_MAX_DO_NOT_USE which we aren't supposed to use...
+    // *_INT_MIN_SENTINEL_DO_NOT_USE_ which we aren't supposed to use.
     default:
       // Note to uprever:
       //  - Add new cases here.
       //  - Make whoever added a type to concierge without adding one to
       //    the vm_apps api put a dollar in the tech-debt jar...
       return VmType::UNKNOWN;
+  }
+}
+
+apps::AppType ToAppType(vm_tools::apps::VmType type) {
+  switch (type) {
+    case vm_tools::apps::TERMINA:
+      return apps::AppType::kCrostini;
+    case vm_tools::apps::PLUGIN_VM:
+      return apps::AppType::kPluginVm;
+    case vm_tools::apps::BOREALIS:
+      return apps::AppType::kBorealis;
+    case vm_tools::apps::BRUSCHETTA:
+      return apps::AppType::kBruschetta;
+    case vm_tools::apps::ARCVM:
+      return apps::AppType::kArc;
+    // "default" is necessary because proto enums compile with (e.g.)
+    // *_INT_MIN_SENTINEL_DO_NOT_USE_ which we aren't supposed to use.
+    default:
+      return apps::AppType::kUnknown;
   }
 }
 
