@@ -4837,6 +4837,25 @@
             ]
         }
     ],
+    "DesktopOmniboxCalculatorProvider": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxCalcProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxGrouping": [
         {
             "platforms": [
