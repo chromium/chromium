@@ -22,6 +22,7 @@
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/common/features.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
@@ -270,9 +271,12 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           // ready until ServiceWorkerMainResourceLoader::StartRequest()
           // finishes, so calling the fallback at this point doesn't correctly
           // handle the fallback process. Use PostTask to run the callback after
-          // finishing StartRequset(), also start the ServiceWorker manually
-          // since we don't instantiate ServiceWorkerFetchDispatcher, which
-          // involves the ServiceWorker startup.
+          // finishing StartRequset().
+          //
+          // If the kServiceWorkerStaticRouterStartServiceWorker feature is
+          // enabled, it starts the ServiceWorker manually since we don't
+          // instantiate ServiceWorkerFetchDispatcher, which involves the
+          // ServiceWorker startup.
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
@@ -282,9 +286,14 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                     std::move(fallback_callback)
                         .Run(false /* reset_subresource_loader_params */,
                              net::LoadTimingInfo());
-                    active_worker->StartWorker(
-                        ServiceWorkerMetrics::EventType::STATIC_ROUTER,
-                        base::DoNothing());
+                    if (active_worker->running_status() !=
+                            EmbeddedWorkerStatus::RUNNING &&
+                        base::FeatureList::IsEnabled(
+                            kServiceWorkerStaticRouterStartServiceWorker)) {
+                      active_worker->StartWorker(
+                          ServiceWorkerMetrics::EventType::STATIC_ROUTER,
+                          base::DoNothing());
+                    }
                   },
                   std::move(fallback_callback_), active_worker));
           return;

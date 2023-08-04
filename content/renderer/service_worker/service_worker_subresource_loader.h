@@ -218,6 +218,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
 
+  std::vector<blink::ServiceWorkerRouterSource> MaybeEvaluateRouterConditions()
+      const;
+
   network::mojom::URLResponseHeadPtr response_head_;
   absl::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;

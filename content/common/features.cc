@@ -43,6 +43,10 @@ BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
              "RestrictCanAccessDataForOriginToUIThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
+             "ServiceWorkerStaticRouterStartServiceWorker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSiteIsolationCitadelEnforcement,
              "kSiteIsolationCitadelEnforcement",
              base::FEATURE_ENABLED_BY_DEFAULT);
