@@ -28459,15 +28459,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="Server redirect"/>
 </enum>
 
-<enum name="DircryptoMigrationFailedPathType">
-  <int value="1" label="Other"/>
-  <int value="2" label="Android Other"/>
-  <int value="3" label="Android Cache"/>
-  <int value="4" label="Downloads"/>
-  <int value="5" label="Cache"/>
-  <int value="6" label="GCache (Google Drive Cache)"/>
-</enum>
-
 <enum name="DirectActionId">
   <int value="0" label="Unknown action"/>
   <int value="1" label="A direct action not on this enum"/>
