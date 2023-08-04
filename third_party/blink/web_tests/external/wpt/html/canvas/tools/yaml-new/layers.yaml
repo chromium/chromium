@@ -573,6 +573,16 @@
         ctx.reset();
         ctx.endLayer();
 
+- name: 2d.layer.exceptions-are-no-op
+  desc: Checks that the context state is left unchanged if beginLayer throws.
+  code: |
+    // Get `beginLayer` to throw while parsing the filter.
+    assert_throws_js(TypeError,
+                     () => ctx.beginLayer({filter: {name: 'colorMatrix',
+                                                    values: 'foo'}}));
+    // `beginLayer` shouldn't have opened the layer, so `endLayer` should throw.
+    assert_throws_dom("InvalidStateError", () => ctx.endLayer());
+
 - name: 2d.layer.cross-layer-paths
   desc: Checks that path defined in a layer is usable outside.
   code: |

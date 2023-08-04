@@ -45,9 +45,11 @@ class CORE_EXPORT FilterOperations {
 
  public:
   FilterOperations();
-  FilterOperations(const FilterOperations& other) { *this = other; }
+  FilterOperations(const FilterOperations& other) = default;
+  FilterOperations(FilterOperations&& other) = default;
 
-  FilterOperations& operator=(const FilterOperations&);
+  FilterOperations& operator=(const FilterOperations&) = default;
+  FilterOperations& operator=(FilterOperations&&) = default;
 
   bool operator==(const FilterOperations&) const;
   bool operator!=(const FilterOperations& o) const { return !(*this == o); }

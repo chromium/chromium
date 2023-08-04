@@ -286,6 +286,22 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
             filter->GetAsCanvasFilter()->Operations());
 }
 
+TEST(BaseRenderingContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  context->beginLayer(
+      scope.GetScriptState(),
+      FilterOption(scope, "({name: 'colorMatrix', values: 'invalid'})"),
+      scope.GetExceptionState());
+
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
+            ESErrorType::kTypeError);
+  // `beginLayer` should be a no-op if an exception is raised.
+  EXPECT_EQ(context->StateStackDepth(), 0);
+  EXPECT_EQ(context->OpenedLayerCount(), 0);
+}
+
 TEST(BaseRenderingContextLayerTests, DefaultRenderingStates) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;

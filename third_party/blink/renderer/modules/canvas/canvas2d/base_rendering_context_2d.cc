@@ -191,14 +191,21 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   if (!canvas)
     return;
 
-  ++layer_count_;
-
   CanvasRenderingContext2DState& state = GetState();
   if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
       filter_input != nullptr) {
+    FilterOperations filter_operations =
+        CanvasFilterOperationResolver::CreateFilterOperations(
+            *filter_input, CHECK_DEREF(ExecutionContext::From(script_state)),
+            exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+
     FilterEffectBuilder filter_effect_builder(
         gfx::RectF(Width(), Height()),
         1.0f);  // Deliberately ignore zoom on the canvas element.
+
     // Save the layer's filter in the parent state, along with all the other
     // render states impacting the layer. Technically, this is only required so
     // that we could restore the `cc::PaintCanvas` matrix stack (in
@@ -206,14 +213,12 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
     // opened. The filter can be discarded from the parent state as soon as the
     // layer is closed.
     state.SetLayerFilter(paint_filter_builder::Build(
-        filter_effect_builder.BuildFilterEffect(
-            CanvasFilterOperationResolver::CreateFilterOperations(
-                *filter_input,
-                CHECK_DEREF(ExecutionContext::From(script_state)),
-                exception_state),
-            !OriginClean()),
+        filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
+                                                !OriginClean()),
         kInterpolationSpaceSRGB));
   }
+
+  ++layer_count_;
 
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
       state, CanvasRenderingContext2DState::kDontCopyClipList,

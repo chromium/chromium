@@ -38,9 +38,6 @@ void FilterOperations::Trace(Visitor* visitor) const {
   visitor->Trace(operations_);
 }
 
-FilterOperations& FilterOperations::operator=(const FilterOperations& other) =
-    default;
-
 bool FilterOperations::operator==(const FilterOperations& o) const {
   if (operations_.size() != o.operations_.size()) {
     return false;
