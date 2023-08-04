@@ -3125,7 +3125,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
   // Reaching here means that the rewind point was not found.
 
   if (break_iterator_.BreakType() == LineBreakType::kPhrase &&
-      !disable_phrase_) {
+      !disable_phrase_ && mode_ == NGLineBreakerMode::kContent) {
     // If the phrase line break overflowed, retry with the normal line break.
     disable_phrase_ = true;
     break_iterator_.SetBreakType(LineBreakType::kNormal);
