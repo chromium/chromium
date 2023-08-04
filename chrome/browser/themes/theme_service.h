@@ -349,6 +349,13 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // The number of infobars currently displayed.
   int number_of_reinstallers_ = 0;
 
+  // Configuring ThemeService into a desired theme state may involve the
+  // configuration of multiple theme prefs. However updating a single theme pref
+  // may result in requests to propagate theme update notifications. This flag
+  // is used to avoid propagating updates until all theme prefs have been set
+  // to their desired values.
+  bool should_suppress_theme_updates_ = false;
+
   // Declared before |theme_syncable_service_|, because ThemeSyncableService
   // removes itself from the |observers_| list on destruction.
   base::ObserverList<ThemeServiceObserver> observers_;

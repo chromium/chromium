@@ -271,6 +271,10 @@ enum {
   kSixPackKeyInsertNotificationsRemaining = 100216,
   kLiveCaptionMaskOffensiveWords = 100217,
   kTimeOfLastSessionActivation = 100218,
+  kBrowserColorScheme = 100219,
+  kBrowserColorVariant = 100220,
+  kGrayscaleThemeEnabled = 100221,
+  kUserColor = 100222,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -774,6 +778,11 @@ const auto& SyncablePreferences() {
         {prefs::kApplyPageColorsOnlyOnIncreasedContrast,
          {syncable_prefs_ids::kApplyPageColorsOnlyOnIncreasedContrast,
           syncer::PREFERENCES, false}},
+        {prefs::kBrowserColorScheme,
+         {syncable_prefs_ids::kBrowserColorScheme, syncer::PREFERENCES, false}},
+        {prefs::kBrowserColorVariant,
+         {syncable_prefs_ids::kBrowserColorVariant, syncer::PREFERENCES,
+          false}},
         {prefs::kDefaultCharset,
          {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES, false}},
         {prefs::kDefaultTasksByMimeType,
@@ -797,6 +806,9 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kExtensionCommands, syncer::PREFERENCES, false}},
         {prefs::kExtensionsUIDeveloperMode,
          {syncable_prefs_ids::kExtensionsUIDeveloperMode, syncer::PREFERENCES,
+          false}},
+        {prefs::kGrayscaleThemeEnabled,
+         {syncable_prefs_ids::kGrayscaleThemeEnabled, syncer::PREFERENCES,
           false}},
         {prefs::kHttpsOnlyModeEnabled,
          {syncable_prefs_ids::kHttpsOnlyModeEnabled, syncer::PREFERENCES,
@@ -849,6 +861,8 @@ const auto& SyncablePreferences() {
         {prefs::kURLsToRestoreOnStartup,
          {syncable_prefs_ids::kURLsToRestoreOnStartup, syncer::PREFERENCES,
           false}},
+        {prefs::kUserColor,
+         {syncable_prefs_ids::kUserColor, syncer::PREFERENCES, false}},
         {spellcheck::prefs::kSpellCheckEnable,
          {syncable_prefs_ids::kSpellCheckEnable, syncer::PREFERENCES, false}},
         // The following prefs are constructed from a prefix in

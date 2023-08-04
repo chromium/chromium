@@ -102920,6 +102920,10 @@ would be helpful to identify which type is being sent.
   <int value="100209" label="DynamicColorUseKMeans"/>
   <int value="100217" label="LiveCaptionMaskOffensiveWords"/>
   <int value="100218" label="AshSessionTimeOfLastActivation"/>
+  <int value="100219" label="BrowserColorScheme"/>
+  <int value="100220" label="BrowserColorVariant"/>
+  <int value="100221" label="GrayscaleThemeEnabled"/>
+  <int value="100222" label="UserColor"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

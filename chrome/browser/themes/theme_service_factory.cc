@@ -133,12 +133,18 @@ void ThemeServiceFactory::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kPolicyThemeColor, SK_ColorTRANSPARENT);
   registry->RegisterIntegerPref(
       prefs::kBrowserColorScheme,
-      static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
-  registry->RegisterIntegerPref(prefs::kUserColor, SK_ColorTRANSPARENT);
+      static_cast<int>(ThemeService::BrowserColorScheme::kSystem),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kUserColor, SK_ColorTRANSPARENT,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kBrowserColorVariant,
-      static_cast<int>(ui::mojom::BrowserColorVariant::kSystem));
-  registry->RegisterBooleanPref(prefs::kGrayscaleThemeEnabled, false);
+      static_cast<int>(ui::mojom::BrowserColorVariant::kSystem),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kGrayscaleThemeEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {

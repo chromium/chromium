@@ -201,4 +201,44 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
   EXPECT_NE(toolbar_button_tinted_color, toolbar_button_explicit_color);
 }
 
+// Test methods that involve resetting and updating multiple theme prefs. Ensure
+// the final state is represented after only a single theme change event.
+IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
+                       ThemeTransitionsEmitSingleNotification) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(browser()->profile());
+
+  // User color.
+  {
+    EXPECT_NE(SK_ColorGREEN, theme_service->GetUserColor());
+    test::ThemeServiceChangedWaiter waiter(theme_service);
+    theme_service->SetUserColor(SK_ColorGREEN);
+    waiter.WaitForThemeChanged();
+    EXPECT_EQ(SK_ColorGREEN, theme_service->GetUserColor());
+  }
+
+  // User color + color variant.
+  {
+    EXPECT_NE(SK_ColorRED, theme_service->GetUserColor());
+    EXPECT_NE(ui::mojom::BrowserColorVariant::kTonalSpot,
+              theme_service->GetBrowserColorVariant());
+    test::ThemeServiceChangedWaiter waiter(theme_service);
+    theme_service->SetUserColorAndBrowserColorVariant(
+        SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
+    waiter.WaitForThemeChanged();
+    EXPECT_EQ(SK_ColorRED, theme_service->GetUserColor());
+    EXPECT_EQ(ui::mojom::BrowserColorVariant::kTonalSpot,
+              theme_service->GetBrowserColorVariant());
+  }
+
+  // Grayscale.
+  {
+    EXPECT_FALSE(theme_service->GetIsGrayscale());
+    test::ThemeServiceChangedWaiter waiter(theme_service);
+    theme_service->SetIsGrayscale(true);
+    waiter.WaitForThemeChanged();
+    EXPECT_TRUE(theme_service->GetIsGrayscale());
+  }
+}
+
 }  // namespace
