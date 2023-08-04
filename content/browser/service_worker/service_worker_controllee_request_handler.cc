@@ -606,13 +606,20 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
         switch (active_version->running_status()) {
           case EmbeddedWorkerStatus::STOPPED:
           case EmbeddedWorkerStatus::STOPPING:
+          case EmbeddedWorkerStatus::STARTING:
+            // If the status is STARTING, the Serviceworker is not actually
+            // started yet. So it makes sense to skip the fetch handler.
             active_version->set_fetch_handler_bypass_option(
                 blink::mojom::ServiceWorkerFetchHandlerBypassOption::
                     kBypassOnlyIfServiceWorkerNotStarted);
             CompleteWithoutLoader();
             RecordSkipReason(
-                FetchHandlerSkipReason::
-                    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop);
+                active_version->running_status() ==
+                        EmbeddedWorkerStatus::STARTING
+                    ? FetchHandlerSkipReason::
+                          kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting
+                    : FetchHandlerSkipReason::
+                          kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop);
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(&ServiceWorkerControlleeRequestHandler::
@@ -621,20 +628,6 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
                                std::move(active_version),
                                ServiceWorkerMetrics::EventType::
                                    BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED));
-            return;
-          case EmbeddedWorkerStatus::STARTING:
-            // If the status is STARTING, the Serviceworker is not actually
-            // started yet. So it makes sense to skip the fetch handler, but
-            // unlike STOPPED or STOPPING status, it doesn't have to invoke
-            // StartServiceWorker since the ServiceWorker is already in the
-            // start process.
-            active_version->set_fetch_handler_bypass_option(
-                blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-                    kBypassOnlyIfServiceWorkerNotStarted);
-            CompleteWithoutLoader();
-            RecordSkipReason(
-                FetchHandlerSkipReason::
-                    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting);
             return;
           case EmbeddedWorkerStatus::RUNNING:
             active_version->set_fetch_handler_bypass_option(
