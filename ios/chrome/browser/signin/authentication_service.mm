@@ -118,6 +118,10 @@ void AuthenticationService::Initialize(
     user_approved_account_list_manager_.ClearApprovedAccountList();
   }
 
+  // Clean up account-scoped settings, in case any accounts were removed from
+  // the device while Chrome wasn't running.
+  ClearAccountSettingsPrefsOfRemovedAccounts();
+
   crash_keys::SetCurrentlySignedIn(
       HasPrimaryIdentity(signin::ConsentLevel::kSignin));
 
@@ -515,6 +519,8 @@ void AuthenticationService::OnPrimaryAccountChanged(
 }
 
 void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {
+  ClearAccountSettingsPrefsOfRemovedAccounts();
+
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // IdentityManager::HasPrimaryAccount() needs to be called instead of
     // AuthenticationService::HasPrimaryIdentity() or
@@ -664,7 +670,6 @@ void AuthenticationService::HandleForgottenIdentity(
   } else if (should_prompt) {
     SetReauthPromptForSignInAndSync();
   }
-  ClearAccountSettingsPrefsOfRemovedAccounts();
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities(
@@ -689,7 +694,6 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
     // since this change comes from the user.
     ApproveAccountList();
   }
-  ClearAccountSettingsPrefsOfRemovedAccounts();
 }
 
 void AuthenticationService::FirePrimaryAccountRestricted() {
