@@ -63,6 +63,9 @@ class PersistedTabDataAndroid
   raw_ptr<const char> data_id_;
 
   int tab_id_;
+
+  static Profile* GetProfile(TabAndroid* tab_android);
+
   TAB_ANDROID_USER_DATA_KEY_DECL();
 };
 

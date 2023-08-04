@@ -7,6 +7,8 @@
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -24,10 +26,10 @@ PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
                                                  const void* user_data_key)
     : persisted_tab_data_storage_android_(
           PersistedTabDataConfigAndroid::Get(user_data_key,
-                                             tab_android->GetProfile())
+                                             GetProfile(tab_android))
               ->persisted_tab_data_storage_android()),
       data_id_(PersistedTabDataConfigAndroid::Get(user_data_key,
-                                                  tab_android->GetProfile())
+                                                  GetProfile(tab_android))
                    ->data_id()),
       tab_id_(tab_android->GetAndroidId()) {}
 
@@ -46,7 +48,7 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
   } else {
     std::unique_ptr<PersistedTabDataConfigAndroid>
         persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
-            user_data_key, tab_android->GetProfile());
+            user_data_key, GetProfile(tab_android));
     persisted_tab_data_config_android->persisted_tab_data_storage_android()
         ->Restore(
             tab_android->GetAndroidId(),
@@ -101,6 +103,11 @@ void PersistedTabDataAndroid::Save() {
 
 void PersistedTabDataAndroid::Remove() {
   persisted_tab_data_storage_android_->Remove(tab_id_, data_id_);
+}
+
+Profile* PersistedTabDataAndroid::GetProfile(TabAndroid* tab_android) {
+  TabModel* tab_model = TabModelList::GetTabModelForTabAndroid(tab_android);
+  return tab_model->GetProfile();
 }
 
 TAB_ANDROID_USER_DATA_KEY_IMPL(PersistedTabDataAndroid)
