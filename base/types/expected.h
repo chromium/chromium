@@ -58,6 +58,21 @@
 //     // process `parsed.error()`
 //   }
 //
+// For even less boilerplate, see expected_macros.h.
+//
+// Note that there are various transformation member functions. To avoid having
+// to puzzle through the standard-ese on their documentation, here's a quick
+// reference table, assuming a source `expected<T, E> ex;` and types U and G
+// convertible from T and E, respectively:
+//
+//                        Return type     Val when ex = t  Val when ex = e
+//                        -----------     ---------------  ---------------
+// ex.value_or(t2)        T               t                t2
+// ex.and_then(f)         expected<U, E>  f(t)             unexpected(e)
+// ex.transform(f)        expected<U, E>  expected(f(t))   unexpected(e)
+// ex.or_else(f)          expected<T, G>  expected(t)      f(e)
+// ex.transform_error(f)  expected<T, G>  expected(t)      unexpected(f(e))
+//
 // References:
 // * https://wg21.link/P0323
 // * https://eel.is/c++draft/expected

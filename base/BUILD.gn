@@ -405,6 +405,7 @@ component("base") {
     "logging.h",
     "macros/concat.h",
     "macros/if.h",
+    "macros/remove_parens.h",
     "macros/uniquify.h",
     "memory/aligned_memory.cc",
     "memory/aligned_memory.h",
@@ -930,6 +931,7 @@ component("base") {
     "types/cxx23_to_underlying.h",
     "types/expected.h",
     "types/expected_internal.h",
+    "types/expected_macros.h",
     "types/id_type.h",
     "types/optional_ref.h",
     "types/optional_util.h",
@@ -2709,6 +2711,7 @@ test("base_perftests") {
     "threading/counter_perftest.cc",
     "threading/thread_local_storage_perftest.cc",
     "threading/thread_perftest.cc",
+    "types/expected_macros_perftest.cc",
   ]
 
   deps = [
@@ -2718,6 +2721,7 @@ test("base_perftests") {
     "//base/test:test_support_perf",
     "//testing/gtest",
     "//testing/perf",
+    "//third_party/google_benchmark",
   ]
 
   if (use_partition_alloc) {
@@ -3353,6 +3357,7 @@ test("base_unittests") {
     "task/thread_pool_unittest.cc",
     "template_util_unittest.cc",
     "test/gmock_callback_support_unittest.cc",
+    "test/gmock_expected_support_unittest.cc",
     "test/gmock_move_support_unittest.cc",
     "test/gtest_links_unittest.cc",
     "test/gtest_tags_unittest.cc",
@@ -3413,6 +3418,7 @@ test("base_unittests") {
     "traits_bag_unittest.cc",
     "tuple_unittest.cc",
     "types/cxx23_to_underlying_unittest.cc",
+    "types/expected_macros_unittest.cc",
     "types/expected_unittest.cc",
     "types/id_type_unittest.cc",
     "types/optional_ref_unittest.cc",
