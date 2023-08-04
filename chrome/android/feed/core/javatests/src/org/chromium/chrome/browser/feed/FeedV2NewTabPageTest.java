@@ -489,9 +489,11 @@ public class FeedV2NewTabPageTest {
 
         if (cta.findViewById(R.id.search_box).getAlpha() == 1) {
             ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
+            // There might be a rounding issue for some devices.
             assertEquals(toolbar.getLocationBarBackgroundHeightForTesting(),
-                    cta.getResources().getDimensionPixelSize(
-                            org.chromium.chrome.R.dimen.ntp_search_box_height_polish));
+                    cta.getResources().getDimension(
+                            org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                    0.5);
         }
     }
 
