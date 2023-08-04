@@ -664,7 +664,7 @@ bool CheckPreInstallConditions(const InstallationState& original_state,
       // Instruct Google Update to launch the existing system-level Chrome.
       // There should be no error dialog.
       base::FilePath install_path(
-          installer::GetChromeInstallPath(true /* system_install */));
+          installer::GetInstalledDirectory(/*system_install=*/true));
       if (install_path.empty()) {
         // Give up if we failed to construct the install path.
         *status = installer::OS_ERROR;
@@ -722,9 +722,12 @@ installer::InstallStatus UninstallProducts(InstallationState& original_state,
 
   if (cmd_line.HasSwitch(installer::switches::kSelfDestruct) &&
       !installer_state.system_install()) {
-    const base::FilePath system_exe_path(
-        installer::GetChromeInstallPath(true).Append(installer::kChromeExe));
-    system_level_cmd.SetProgram(system_exe_path);
+    const base::FilePath system_install_dir(
+        installer::GetInstalledDirectory(/*system_install=*/true));
+    if (!system_install_dir.empty()) {
+      system_level_cmd.SetProgram(
+          system_install_dir.Append(installer::kChromeExe));
+    }
   }
 
   installer::InstallStatus install_status = installer::UNINSTALL_SUCCESSFUL;

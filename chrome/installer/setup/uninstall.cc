@@ -851,15 +851,21 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
   // profile shortcuts, etc.) to the system-level chrome.
   if (cmd_line.HasSwitch(installer::switches::kSelfDestruct) &&
       !installer_state.system_install()) {
-    const base::FilePath system_install_path(GetChromeInstallPath(true));
-    const base::FilePath system_chrome_path(
-        system_install_path.Append(installer::kChromeExe));
     VLOG(1) << "Retargeting user-generated Chrome shortcuts.";
-    if (base::PathExists(system_chrome_path)) {
-      RetargetUserShortcutsWithArgs(installer_state, chrome_exe,
-                                    system_chrome_path);
+    const base::FilePath system_install_path(
+        GetInstalledDirectory(/*system_install=*/true));
+    if (system_install_path.empty()) {
+      LOG(ERROR) << "Retarget failed: system-level Chrome install directory "
+                    "not found.";
     } else {
-      LOG(ERROR) << "Retarget failed: system-level Chrome not found.";
+      const base::FilePath system_chrome_path(
+          system_install_path.Append(installer::kChromeExe));
+      if (base::PathExists(system_chrome_path)) {
+        RetargetUserShortcutsWithArgs(installer_state, chrome_exe,
+                                      system_chrome_path);
+      } else {
+        LOG(ERROR) << "Retarget failed: system-level Chrome not found.";
+      }
     }
 
     // Retarget owned app shortcuts to the system-level chrome_proxy.

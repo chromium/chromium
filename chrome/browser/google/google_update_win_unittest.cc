@@ -566,7 +566,7 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     base::FilePath file_exe;
     ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &file_exe));
     base::FilePath install_dir(
-        installer::GetChromeInstallPath(system_level_install_));
+        installer::GetDefaultChromeInstallPath(system_level_install_));
     file_exe_override_.reset(new base::ScopedPathOverride(
         base::FILE_EXE, install_dir.Append(file_exe.BaseName()),
         true /* is_absolute */, false /* create */));
