@@ -69,9 +69,6 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
    public:
     ~Observer() override = default;
 
-    // Called when the DeepScanningRequest chooses to display a modal dialog.
-    virtual void OnModalShown(DeepScanningRequest* request) {}
-
     // Called when the DeepScanningRequest finishes.
     virtual void OnFinish(DeepScanningRequest* request) {}
   };

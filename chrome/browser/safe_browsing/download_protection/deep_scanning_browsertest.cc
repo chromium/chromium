@@ -186,6 +186,7 @@ class DownloadDeepScanningBrowserTestBase
 
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kDeepScanningUpdatedUX);
     test_sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
     test_sb_factory_->UseV4LocalDatabaseManager();
     SafeBrowsingService::RegisterFactory(test_sb_factory_.get());
@@ -479,6 +480,7 @@ class DownloadDeepScanningBrowserTestBase
     }
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   bool is_consumer_;
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
@@ -1077,7 +1079,6 @@ class WaitForModalObserver : public DeepScanningRequest::Observer {
 
   void Wait() { run_loop_.Run(); }
 
-  void OnModalShown(DeepScanningRequest* request) override { run_loop_.Quit(); }
   void OnFinish(DeepScanningRequest* request) override {
     request_->RemoveObserver(this);
     request_ = nullptr;
@@ -1115,8 +1116,7 @@ class WaitForFinishObserver : public DeepScanningRequest::Observer {
   base::RunLoop run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest,
-                       RetriableErrorShowsModal) {
+IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest, ErrorIndicatesFailure) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
@@ -1150,93 +1150,14 @@ IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest,
 
   ExpectContentAnalysisUploadFailure(net::HTTP_INTERNAL_SERVER_ERROR, {});
 
-  // Wait for the modal dialog
-  {
-    auto deep_scan_requests = test_sb_factory()
-                                  ->test_safe_browsing_service()
-                                  ->download_protection_service()
-                                  ->GetDeepScanningRequests();
-    ASSERT_EQ(deep_scan_requests.size(), 1u);
-    WaitForModalObserver observer(*deep_scan_requests.begin());
-    observer.Wait();
-  }
-
-  web_modal::WebContentsModalDialogManager* web_contents_modal_dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(web_contents_modal_dialog_manager->IsDialogActive());
-
-  // If the dialog remains open, the download remains in progress. This blocks
-  // shutdown, so close the modal.
-  web_contents_modal_dialog_manager->CloseAllDialogs();
-
   WaitForDownloadToFinish();
 
   ASSERT_EQ(download_items().size(), 1u);
   download::DownloadItem* download = *download_items().begin();
   EXPECT_EQ(download->GetState(), download::DownloadItem::COMPLETE);
-  EXPECT_EQ(download->GetDangerType(),
-            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
-}
-
-IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest,
-                       NonretriableErrorDoesNotShowModal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                       SafeBrowsingState::ENHANCED_PROTECTION);
-
-  ClientDownloadResponse metadata_response;
-  metadata_response.set_request_deep_scan(true);
-  ExpectMetadataResponse(metadata_response);
-
-  // An encrypted file will always be encrypted, and therefore not suitable for
-  // deep scanning.
-  GURL url = embedded_test_server()->GetURL(
-      "/safe_browsing/download_protection/encrypted.zip");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // Wait for download to show the prompt
-  {
-    content::DownloadManager* download_manager =
-        browser()->profile()->GetDownloadManager();
-    content::DownloadTestObserverTerminal observer(
-        download_manager, 1,
-        content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT);
-    observer.WaitForFinished();
-  }
-
-  // Trigger upload, bypassing the prompt
-  {
-    ASSERT_EQ(download_items().size(), 1u);
-    DownloadItemModel model(*download_items().begin());
-    DownloadCommands(model.GetWeakPtr())
-        .ExecuteCommand(DownloadCommands::DEEP_SCAN);
-  }
-
-  // Wait for deep scanning to finish
-  {
-    auto deep_scan_requests = test_sb_factory()
-                                  ->test_safe_browsing_service()
-                                  ->download_protection_service()
-                                  ->GetDeepScanningRequests();
-    ASSERT_EQ(deep_scan_requests.size(), 1u);
-    WaitForFinishObserver observer(*deep_scan_requests.begin());
-    observer.Wait();
-  }
-
-  web_modal::WebContentsModalDialogManager* web_contents_modal_dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(web_contents_modal_dialog_manager->IsDialogActive());
-
-  WaitForDownloadToFinish();
-
-  ASSERT_EQ(download_items().size(), 1u);
-  download::DownloadItem* download = *download_items().begin();
-  EXPECT_EQ(download->GetState(), download::DownloadItem::COMPLETE);
-  EXPECT_EQ(download->GetDangerType(),
-            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  EXPECT_EQ(
+      download->GetDangerType(),
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED);
 }
 
 class SavePackageDeepScanningBrowserTest
