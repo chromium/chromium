@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/aura/window.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -363,6 +364,44 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
   EXPECT_EQ(nudge_bounds.bottom(),
             display_bounds.bottom() -
                 ShelfConfig::Get()->hidden_shelf_in_screen_portion());
+}
+
+// Tests that a nudge updates its location after zooming in/out the UI.
+TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_Zoom) {
+  const int shelf_size = ShelfConfig::Get()->shelf_size();
+  gfx::Rect display_bounds;
+  gfx::Rect nudge_bounds;
+
+  // Show nudge on its default location by not providing an anchor view.
+  const std::string id = "id";
+  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+  anchored_nudge_manager()->Show(nudge_data);
+
+  // Since no zoom factor has been set on the display, it should be 1.
+  const display::ManagedDisplayInfo& display =
+      display_manager()->GetDisplayInfo(GetPrimaryDisplay().id());
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(display.id()).device_scale_factor(),
+      1.f);
+
+  // The nudge should be shown on the bottom-left of the work area.
+  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  display_bounds = GetPrimaryDisplay().bounds();
+  EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
+  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
+
+  // Set the device scale factor to 2.
+  constexpr float zoom_factor = 2.0f;
+  display_manager()->UpdateZoomFactor(display.id(), zoom_factor);
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(display.id()).device_scale_factor(),
+      zoom_factor);
+
+  // Nudge bounds should update accordingly.
+  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  display_bounds = GetPrimaryDisplay().bounds();
+  EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
+  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 }
 
 // Tests that attempting to show a nudge with an `id` that's in use cancels

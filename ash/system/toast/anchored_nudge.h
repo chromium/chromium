@@ -12,7 +12,9 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -35,7 +37,8 @@ class SystemNudgeView;
 // Creates and manages the widget and contents view for an anchored nudge.
 // TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
 // and take over its name.
-class ASH_EXPORT AnchoredNudge : public ShelfObserver,
+class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
+                                 public ShelfObserver,
                                  public ShellObserver,
                                  public views::BubbleDialogDelegateView {
  public:
@@ -78,6 +81,10 @@ class ASH_EXPORT AnchoredNudge : public ShelfObserver,
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
+
   // Sets the arrow of the nudge based on the `shelf` alignment.
   void SetArrowFromShelf(Shelf* shelf);
 
@@ -105,6 +112,9 @@ class ASH_EXPORT AnchoredNudge : public ShelfObserver,
 
   // Used to observe hotseat state to update nudges default location baseline.
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
+
+  // Observes display configuration changes.
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

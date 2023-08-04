@@ -246,6 +246,12 @@ void AnchoredNudge::OnShelfAlignmentChanged(aura::Window* root_window,
   }
 }
 
+void AnchoredNudge::OnDisplayMetricsChanged(const display::Display& display,
+                                            uint32_t changed_metrics) {
+  OnAnchorBoundsChanged();
+  system_nudge_view_->UpdateShadowBounds();
+}
+
 void AnchoredNudge::SetArrowFromShelf(Shelf* shelf) {
   SetArrow(shelf->SelectValueForShelfAlignment(
       views::BubbleBorder::BOTTOM_CENTER, views::BubbleBorder::LEFT_CENTER,

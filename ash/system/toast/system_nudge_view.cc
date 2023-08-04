@@ -226,6 +226,10 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
 
 SystemNudgeView::~SystemNudgeView() = default;
 
+void SystemNudgeView::UpdateShadowBounds() {
+  shadow_->SetContentBounds(gfx::Rect(kShadowOrigin, GetPreferredSize()));
+}
+
 void SystemNudgeView::AddedToWidget() {
   // Since nudges have a large corner radius, we use the shadow on texture
   // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.

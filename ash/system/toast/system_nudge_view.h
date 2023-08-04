@@ -41,6 +41,9 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   views::LabelButton* first_button() const { return first_button_; }
   views::LabelButton* second_button() const { return second_button_; }
 
+  // Called when the device zoom scale changes, observed from the widget.
+  void UpdateShadowBounds();
+
  private:
   // Owned by the views hierarchy.
   raw_ptr<views::ImageView> image_view_ = nullptr;
