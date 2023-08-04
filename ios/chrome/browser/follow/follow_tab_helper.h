@@ -38,9 +38,7 @@ class FollowTabHelper : public web::WebStateObserver,
 
   // Sets the presenter for follow in-product help (IPH). `presenter` is not
   // retained by this tab helper.
-  void set_follow_iph_presenter(id<FollowIPHPresenter> presenter) {
-    follow_iph_presenter_ = presenter;
-  }
+  void set_follow_iph_presenter(id<FollowIPHPresenter> presenter);
 
   // Sets the value of `shoud_update_follow_item_`.
   void set_should_update_follow_item(bool shoud_update_follow_item) {

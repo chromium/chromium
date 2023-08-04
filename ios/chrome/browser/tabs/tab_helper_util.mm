@@ -300,7 +300,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
         HttpsUpgradeServiceFactory::GetForBrowserState(browser_state));
   }
 
-  if (IsWebChannelsEnabled() && !is_off_the_record) {
+  if (!is_off_the_record) {
     FollowTabHelper::CreateForWebState(web_state);
   }
 

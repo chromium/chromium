@@ -61,13 +61,27 @@ FollowTabHelper::FollowTabHelper(web::WebState* web_state)
   web_state_observation_.Observe(web_state_);
 }
 
+void FollowTabHelper::set_follow_iph_presenter(
+    id<FollowIPHPresenter> presenter) {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
+  follow_iph_presenter_ = presenter;
+}
+
 void FollowTabHelper::SetFollowMenuUpdater(
     id<FollowMenuUpdater> follow_menu_updater) {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
   DCHECK(web_state_);
   follow_menu_updater_ = follow_menu_updater;
 }
 
 void FollowTabHelper::UpdateFollowMenuItem() {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
   if (should_update_follow_item_) {
     FollowJavaScriptFeature::GetInstance()->GetWebPageURLs(
         web_state_,
@@ -77,6 +91,9 @@ void FollowTabHelper::UpdateFollowMenuItem() {
 }
 
 void FollowTabHelper::RemoveFollowMenuUpdater() {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
   follow_menu_updater_ = nil;
   should_update_follow_item_ = true;
 }
@@ -105,13 +122,15 @@ void FollowTabHelper::PageLoaded(
     return;
   }
 
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
+
   // Do not show Follow IPH if it is disabled.
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHFollowWhileBrowsingFeature)) {
     return;
   }
-
-  DCHECK(IsWebChannelsEnabled());
 
   // Record when the page was successfully loaded. Computing whether the
   // IPH needs to be displayed is done asynchronously and the time used

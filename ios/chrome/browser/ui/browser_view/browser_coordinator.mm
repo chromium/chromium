@@ -1103,14 +1103,12 @@ enum class ToolbarKind {
                          browser:self.browser];
   [self.ARQuickLookCoordinator start];
 
-  if (IsWebChannelsEnabled()) {
-    self.followIPHCoordinator = [[FollowIPHCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    [self.followIPHCoordinator start];
-    // Updates the followIPHPresenter value inside tabLifecycleMediator.
-    self.tabLifecycleMediator.followIPHPresenter = self.followIPHCoordinator;
-  }
+  self.followIPHCoordinator = [[FollowIPHCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.followIPHCoordinator start];
+  // Updates the followIPHPresenter value inside tabLifecycleMediator.
+  self.tabLifecycleMediator.followIPHPresenter = self.followIPHCoordinator;
 
   self.SafariDownloadCoordinator = [[SafariDownloadCoordinator alloc]
       initWithBaseViewController:self.viewController
