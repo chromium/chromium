@@ -3808,11 +3808,15 @@
       name: "WebAppTabStrip",
       status: "experimental",
       base_feature: "none",
+      origin_trial_feature_name: "WebAppTabStrip",
+      origin_trial_os: ["chromeos"],
     },
     {
       name: "WebAppTabStripCustomizations",
       status: "experimental",
       base_feature: "none",
+      origin_trial_feature_name: "WebAppTabStrip",
+      origin_trial_os: ["chromeos"],
     },
     {
       name: "WebAppTranslations",
