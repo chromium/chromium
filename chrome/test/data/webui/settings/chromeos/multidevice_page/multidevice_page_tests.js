@@ -312,8 +312,14 @@ suite('Multidevice', function() {
         'settings-multidevice-notification-access-setup-dialog'));
 
     // Close the dialog.
-    multidevicePage.showPhonePermissionSetupDialog_ = false;
-    flush();
+    multidevicePage.shadowRoot
+        .querySelector('settings-multidevice-notification-access-setup-dialog')
+        .$.dialog.close();
+    await flushAsync();
+
+    // Check the subpage is focused on dialog close.
+    assertEquals(
+        getSubpage(), getDeepActiveElement(), 'subpage should be focused.');
 
     // A change in pageContentData will not cause the notification access
     // setup dialog to reappaear

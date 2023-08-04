@@ -609,6 +609,12 @@ class SettingsMultidevicePageElement extends
       return;
     }
     this.showPhonePermissionSetupDialog_ = false;
+
+    // By default, dialog.close() returns the focus to the previously focused
+    // element if the element is still focusable and within the viewport,
+    // otherwise move the focus to <body>. Therefore, we need to move focus
+    // manually to the subpage.
+    this.shadowRoot!.querySelector('settings-multidevice-subpage')!.focus();
   }
 
   private onPinNumberSelected_(e: CustomEvent<{isPinNumberSelected: boolean}>):
