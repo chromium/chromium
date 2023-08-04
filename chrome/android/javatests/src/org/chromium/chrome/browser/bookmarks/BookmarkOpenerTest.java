@@ -118,7 +118,10 @@ public class BookmarkOpenerTest {
     void openMobileBookmarks() {
         openRootFolder();
 
-        onView(withText("Mobile bookmarks")).perform(click());
+        // Mobile bookmarks is merged into all bookmarks when improved bookmark is enabled.
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            onView(withText("Mobile bookmarks")).perform(click());
+        }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 

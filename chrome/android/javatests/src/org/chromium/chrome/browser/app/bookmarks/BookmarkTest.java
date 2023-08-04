@@ -129,17 +129,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for the bookmark manager. */
-// clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(1406059): Disabling the shopping CPA should not be a requirement for these tests.
-@Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING})
+@Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+        ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 // TODO(crbug.com/1426138): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
 public class BookmarkTest {
-    // clang-format on
-
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
     private static final String TEST_PAGE_TITLE_GOOGLE2 = "Google";
