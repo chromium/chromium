@@ -215,6 +215,11 @@ extern const char kMeasurementsDescription[];
 extern const char kEnableExpKitTextClassifierName[];
 extern const char kEnableExpKitTextClassifierDescription[];
 
+// Title and description for the flag to enable parental controls from Family
+// Link on iOS.
+extern const char kEnableFamilyLinkControlsName[];
+extern const char kEnableFamilyLinkControlsDescription[];
+
 // Title and description for popout omnibox on iPad feature.
 extern const char kEnablePopoutOmniboxIpadName[];
 extern const char kEnablePopoutOmniboxIpadDescription[];

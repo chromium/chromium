@@ -60,6 +60,7 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/pref_names.h"
@@ -1649,6 +1650,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-pickup-minimum-delay", flag_descriptions::kTabPickupMinimumDelayName,
      flag_descriptions::kTabPickupMinimumDelayDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabPickupMinimumDelay)},
+    {"enable-family-link-controls",
+     flag_descriptions::kEnableFamilyLinkControlsName,
+     flag_descriptions::kEnableFamilyLinkControlsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

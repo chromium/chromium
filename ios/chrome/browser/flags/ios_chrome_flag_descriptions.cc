@@ -256,6 +256,11 @@ extern const char kEnableExpKitTextClassifierDescription[] =
     "When enabled, Experience Kit will use Text Classifier library in "
     "entity detection where possible.";
 
+const char kEnableFamilyLinkControlsName[] = "Family Link parental controls";
+const char kEnableFamilyLinkControlsDescription[] =
+    "Enables parental controls from Family Link on supervised accounts "
+    "signed-in to Chrome.";
+
 extern const char kOneTapForMapsName[] = "Enable one Tap Experience for Maps";
 extern const char kOneTapForMapsDescription[] =
     "Enables the one tap experience for maps experience kit.";

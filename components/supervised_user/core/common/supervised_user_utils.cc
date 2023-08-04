@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
@@ -107,7 +108,9 @@ bool EmitLogSegmentHistogram(const std::vector<AccountInfo>& primary_accounts) {
 
 bool IsSubjectToParentalControls(const PrefService* pref_service) {
   return pref_service &&
-         pref_service->GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
+         pref_service->GetString(prefs::kSupervisedUserId) ==
+             kChildAccountSUID &&
+         IsChildAccountSupervisionEnabled();
 }
 
 }  // namespace supervised_user
