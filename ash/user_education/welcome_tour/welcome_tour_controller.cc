@@ -20,12 +20,14 @@
 #include "ash/user_education/welcome_tour/welcome_tour_accelerator_handler.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/user_education/welcome_tour/welcome_tour_notification_blocker.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 #include "ash/user_education/welcome_tour/welcome_tour_window_minimizer.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_manager/user_type.h"
@@ -352,10 +354,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
       GetInitialElementContext(),
       /*completed_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/true),
+                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/true,
+                     /*time_since_start=*/base::ElapsedTimer()),
       /*aborted_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false));
+                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false,
+                     /*time_since_start=*/base::ElapsedTimer()));
 
   // The attempt to start the tutorial above is guaranteed to succeed or crash.
   // If this line of code is reached, the tour has indeed been started.
@@ -412,7 +416,9 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091715): Restore pods in shelf.
 // TODO(http://b/277091619): Restore wallpaper.
 // TODO(http://b/277091624): Restore nudges/toasts.
-void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
+void WelcomeTourController::OnWelcomeTourEnded(
+    bool completed,
+    base::ElapsedTimer time_since_start) {
   accelerator_handler_.reset();
   accessibility_observation_.Reset();
   notification_blocker_.reset();
@@ -434,6 +440,9 @@ void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
       widget->Close();
     }
   }
+
+  welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
+                                           completed);
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourEnded();

@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 
 namespace ash::welcome_tour_metrics {
@@ -58,7 +60,7 @@ void RecordStepAborted(Step step) {
   NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Aborted`.";
 }
 
-void RecordStepDuration(Step step, base::TimeDelta delta) {
+void RecordStepDuration(Step step, base::TimeDelta duration) {
   NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Duration." << ToString(step)
                    << "`.";
 }
@@ -76,8 +78,12 @@ void RecordTourAborted(AbortedReason reason) {
   NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Aborted`.";
 }
 
-void RecordTourDuration(Step step, base::TimeDelta delta) {
-  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Duration`.";
+void RecordTourDuration(base::TimeDelta duration, bool completed) {
+  const std::string metric_infix = completed ? "Completed" : "Aborted";
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Ash.WelcomeTour.", metric_infix, ".Duration"}), duration,
+      /*min=*/base::Seconds(1),
+      /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
 void RecordTourPrevented(PreventedReason reason) {

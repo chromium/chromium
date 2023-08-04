@@ -78,8 +78,9 @@ ASH_EXPORT void RecordTimeToInteraction(Interaction interaction,
 // Record that the Welcome Tour was aborted for the given `reason`.
 ASH_EXPORT void RecordTourAborted(AbortedReason reason);
 
-// Record the `duration` of the Welcome Tour as a whole.
-ASH_EXPORT void RecordTourDuration(base::TimeDelta duration);
+// Record the `duration` of the Welcome Tour as a whole. If the tour was not
+// fully completed, `completed` should be false.
+ASH_EXPORT void RecordTourDuration(base::TimeDelta duration, bool completed);
 
 // Record that the Welcome Tour was prevented for the given `reason`.
 ASH_EXPORT void RecordTourPrevented(PreventedReason reason);

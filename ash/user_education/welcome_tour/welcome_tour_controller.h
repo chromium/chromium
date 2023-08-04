@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ash {
@@ -80,7 +81,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // Invoked when the Welcome Tour is started/ended. The latter is called
   // regardless of whether the tour was `completed` or aborted.
   void OnWelcomeTourStarted();
-  void OnWelcomeTourEnded(bool completed);
+  void OnWelcomeTourEnded(bool completed, base::ElapsedTimer time_since_start);
 
   // Blocks all notifications while the Welcome Tour is in progress. Any
   // notifications received during the tour will appear in the Notification
