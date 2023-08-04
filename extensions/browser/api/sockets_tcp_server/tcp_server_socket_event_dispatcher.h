@@ -100,8 +100,7 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
 
   // Usually IO thread (except for unit testing).
   content::BrowserThread::ID thread_id_;
-  const raw_ptr<content::BrowserContext, LeakedDanglingUntriaged>
-      browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<ServerSocketData> server_sockets_;
   scoped_refptr<ClientSocketData> client_sockets_;
 };

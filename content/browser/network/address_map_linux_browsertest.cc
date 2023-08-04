@@ -64,7 +64,6 @@ class NCNLinuxMockedNetlinkTestUtil {
     auto ncn_linux =
         net::NetworkChangeNotifierLinux::CreateWithSocketForTesting(
             {}, std::move(netlink_fd_receiver));
-    ncn_linux_ = ncn_linux.get();
 
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock()},
@@ -159,7 +158,6 @@ class NCNLinuxMockedNetlinkTestUtil {
   }
 
  private:
-  raw_ptr<net::NetworkChangeNotifierLinux, LeakedDanglingUntriaged> ncn_linux_;
   base::ScopedFD fake_netlink_fd_;
 
   bool initialized_ = false;
@@ -205,8 +203,9 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kAddressTrackerLinuxIsProxied);
     ForceOutOfProcessNetworkService();
-    ncn_mocked_factory_ = new NetworkChangeNotifierLinuxMockedNetlinkFactory();
-    net::NetworkChangeNotifier::SetFactory(ncn_mocked_factory_);
+    ncn_mocked_factory_ =
+        std::make_unique<NetworkChangeNotifierLinuxMockedNetlinkFactory>();
+    net::NetworkChangeNotifier::SetFactory(ncn_mocked_factory_.get());
     ContentBrowserTest::SetUp();
   }
 
@@ -276,7 +275,8 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  raw_ptr<NetworkChangeNotifierLinuxMockedNetlinkFactory> ncn_mocked_factory_;
+  std::unique_ptr<NetworkChangeNotifierLinuxMockedNetlinkFactory>
+      ncn_mocked_factory_;
 
  private:
   class NetworkChangeNotificationListener
