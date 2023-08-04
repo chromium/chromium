@@ -120,9 +120,14 @@ void BlindSignHttpImpl::OnRequestCompleted(
   }
 
   url_loader_.reset();
+
+  // Short-circuit non-200 HTTP responses to an OK response with that code.
+  if (response_code != 200 && response_code != 0) {
+    std::move(callback_)(quiche::BlindSignHttpResponse(response_code, ""));
+    return;
+  }
+
   if (!response) {
-    // TODO (crbug.com/1446863): Indicate why the request to Phosphor failed so
-    // we can consider not requesting more tokens.
     std::move(callback_)(
         absl::InternalError("Failed Request to Authentication Server"));
     return;

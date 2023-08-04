@@ -70,7 +70,7 @@ TEST_F(BlindSignHttpImplTest, DoRequestFailsToConnectReturnsFailureStatus) {
   std::string authorization_header = "token";
   std::string body = "body";
 
-  // Mock no response from Authentication Server.
+  // Mock no response from Authentication Server (such as a network error).
   std::string response_body;
   auto head = network::mojom::URLResponseHead::New();
   GURL test_url =
@@ -94,6 +94,35 @@ TEST_F(BlindSignHttpImplTest, DoRequestFailsToConnectReturnsFailureStatus) {
   EXPECT_EQ("Failed Request to Authentication Server",
             result.status().message());
   EXPECT_EQ(absl::StatusCode::kInternal, result.status().code());
+}
+
+TEST_F(BlindSignHttpImplTest, DoRequestHttpFailureStatus) {
+  std::string path_and_query = "/api/test2";
+  std::string authorization_header = "token";
+  std::string body = "body";
+
+  // Mock a non-200 HTTP response from Authentication Server.
+  std::string response_body;
+  auto head = network::mojom::URLResponseHead::New();
+  GURL test_url =
+      GURL(BlindSignHttpImpl::kIpProtectionServerUrl + path_and_query);
+  test_url_loader_factory_.AddResponse(test_url.spec(), response_body,
+                                       net::HTTP_BAD_REQUEST);
+
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
+      result_future;
+  auto callback =
+      [&result_future](absl::StatusOr<quiche::BlindSignHttpResponse> response) {
+        result_future.SetValue(std::move(response));
+      };
+
+  http_fetcher_->DoRequest(path_and_query, authorization_header, body,
+                           std::move(callback));
+
+  absl::StatusOr<quiche::BlindSignHttpResponse> result = result_future.Get();
+
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(net::HTTP_BAD_REQUEST, result.value().status_code());
 }
 
 TEST_F(BlindSignHttpImplTest, DoRequestHandlesPathAndQuery) {
