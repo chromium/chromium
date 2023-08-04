@@ -166,9 +166,9 @@ void CookieControlsContentView::AddFeedbackSection() {
       views::BoxLayout::Orientation::kVertical));
 
   const ui::ImageModel feedback_icon = ui::ImageModel::FromVectorIcon(
-      kSubmitFeedbackIcon, ui::kColorMenuIcon, kDefaultIconSize);
+      kSubmitFeedbackIcon, ui::kColorMenuIcon, GetDefaultIconSize());
   const ui::ImageModel launch_icon = ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::kColorMenuIcon, kDefaultIconSize);
+      vector_icons::kLaunchIcon, ui::kColorMenuIcon, GetDefaultIconSize());
 
   feedback_section_->AddChildView(CreateSeparator());
 
