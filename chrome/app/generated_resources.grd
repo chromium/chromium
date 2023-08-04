@@ -2230,6 +2230,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_BLOCKED_PASSWORD_PROTECTED_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this download is blocked because it is password protected">
         This file is encrypted. Ask its owner to decrypt.
       </message>
+      <message name="IDS_DEEP_SCANNED_FAILED_DESCRIPTION"
+        desc="Message shown to the user on chrome://downloads page to explain this this download was deep scanned, but the scan failed.">
+        Scan failed. This file might be a virus or malware.
+      </message>
 
       <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
@@ -2314,6 +2318,10 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_REVIEW_DOWNLOAD" desc="Text shown when a download has triggered an enterprise warning or block, on the button to open the dialog containing the enterprise administrator's message explaining the violation.">
         Review
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_ANYWAY"
+               desc="Text shown to open a download that may be dangerous.">
+        Open anyway
       </message>
 
       <!-- Download Tab Items -->

@@ -5,6 +5,7 @@
 import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, States} from 'chrome://downloads/downloads.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy, TestIconLoader} from './test_support.js';
 
@@ -39,7 +40,21 @@ suite('item tests', function() {
              }));
     flush();
 
-    assertTrue(item.$['file-link'].hidden);
+    assertFalse(isVisible(item.$['file-link']));
+    assertFalse(item.$.url.hasAttribute('href'));
+  });
+
+  test('failed deep scans aren\'t linkable', () => {
+    item.set('data', createDownload({
+               dangerType: DangerType.DEEP_SCANNED_FAILED,
+               fileExternallyRemoved: false,
+               hideDate: true,
+               state: States.COMPLETE,
+               url: 'http://evil.com',
+             }));
+    flush();
+
+    assertFalse(isVisible(item.$['file-link']));
     assertFalse(item.$.url.hasAttribute('href'));
   });
 
@@ -89,6 +104,15 @@ suite('item tests', function() {
              }));
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
+    assertTrue(item.$['file-icon'].hidden);
+
+    item.set('data', createDownload({
+               filePath: 'unique1',
+               hideDate: false,
+               dangerType: DangerType.DEEP_SCANNED_FAILED,
+             }));
+
+    assertEquals('cr:info', item.shadowRoot!.querySelector('iron-icon')!.icon);
     assertTrue(item.$['file-icon'].hidden);
   });
 
@@ -140,6 +164,20 @@ suite('item tests', function() {
     flush();
     assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
     assertFalse(!!item.shadowRoot!.querySelector('#bypassDeepScan'));
+  });
+
+  test('open anyway button shown on failed deep scan', () => {
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               filePath: 'unique1',
+               hideDate: false,
+               state: States.COMPLETE,
+               dangerType: DangerType.DEEP_SCANNED_FAILED,
+             }));
+    flush();
+    assertTrue(!!item.shadowRoot!.querySelector('#openAnyway'));
   });
 
   test('undo is shown in toast', () => {

@@ -99,6 +99,7 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
 
       // Deep scanning strings.
       {"deepScannedSafeDesc", IDS_DEEP_SCANNED_SAFE_DESCRIPTION},
+      {"deepScannedFailedDesc", IDS_DEEP_SCANNED_FAILED_DESCRIPTION},
       {"deepScannedOpenedDangerousDesc",
        IDS_DEEP_SCANNED_OPENED_DANGEROUS_DESCRIPTION},
       {"sensitiveContentWarningDesc",
@@ -119,6 +120,7 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"controlledByUrl", IDS_DOWNLOAD_BY_EXTENSION_URL},
       {"controlOpenNow", IDS_OPEN_DOWNLOAD_NOW},
       {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN},
+      {"controlOpenAnyway", IDS_OPEN_DOWNLOAD_ANYWAY},
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},

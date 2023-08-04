@@ -64,9 +64,16 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: true,
       },
 
+      shouldLinkFilename_: {
+        computed: 'computeShouldLinkFilename_(' +
+            'data.dangerType, completelyOnDisk_)',
+        type: Boolean,
+        value: true,
+      },
+
       hasShowInFolderLink_: {
         computed: 'computeHasShowInFolderLink_(' +
-            'data.state, data.fileExternallyRemoved)',
+            'data.state, data.fileExternallyRemoved, data.dangerType)',
         type: Boolean,
         value: true,
       },
@@ -144,6 +151,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: false,
       },
 
+      showOpenAnyway_: {
+        computed: 'computeShowOpenAnyway_(data.dangerType)',
+        type: Boolean,
+        value: false,
+      },
+
       updateDeepScanningUx_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('updateDeepScanningUX'),
@@ -175,6 +188,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
   private updateDeepScanningUx_: boolean;
+  private completelyOnDisk_: boolean;
   override overrideCustomEquivalent: boolean;
 
   constructor() {
@@ -241,8 +255,22 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         !this.data.fileExternallyRemoved;
   }
 
+  private computeShouldLinkFilename_(): boolean {
+    if (this.data === undefined) {
+      return false;
+    }
+
+    return this.completelyOnDisk_ &&
+        this.data.dangerType !== DangerType.DEEP_SCANNED_FAILED;
+  }
+
   private computeHasShowInFolderLink_(): boolean {
+    if (this.data === undefined) {
+      return false;
+    }
+
     return loadTimeData.getBoolean('hasShowInFolder') &&
+        this.data.dangerType !== DangerType.DEEP_SCANNED_FAILED &&
         this.computeCompletelyOnDisk_();
   }
 
@@ -294,6 +322,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
                 loadTimeData.getString('deepScannedSafeDesc');
           case DangerType.DEEP_SCANNED_OPENED_DANGEROUS:
             return loadTimeData.getString('deepScannedOpenedDangerousDesc');
+          case DangerType.DEEP_SCANNED_FAILED:
+            return loadTimeData.getString('deepScannedFailedDesc');
         }
         break;
 
@@ -355,6 +385,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return 'cr:warning';
       }
 
+      if (dangerType === DangerType.DEEP_SCANNED_FAILED) {
+        return 'cr:info';
+      }
+
       const ERROR_TYPES = [
         DangerType.SENSITIVE_CONTENT_BLOCK,
         DangerType.BLOCKED_TOO_LARGE,
@@ -386,7 +420,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
-          dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
+          dangerType === DangerType.SENSITIVE_CONTENT_WARNING ||
+          dangerType === DangerType.DEEP_SCANNED_FAILED) {
         return 'yellow';
       }
 
@@ -506,6 +541,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return this.data.state === States.PROMPT_FOR_SCANNING;
   }
 
+  private computeShowOpenAnyway_(): boolean {
+    return this.data.dangerType === DangerType.DEEP_SCANNED_FAILED;
+  }
+
   private computeTag_(): string {
     switch (this.data.state) {
       case States.CANCELLED:
@@ -546,6 +585,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       DangerType.SENSITIVE_CONTENT_BLOCK,
       DangerType.BLOCKED_TOO_LARGE,
       DangerType.BLOCKED_PASSWORD_PROTECTED,
+      DangerType.DEEP_SCANNED_FAILED,
     ];
 
     if (this.isDangerous_) {
@@ -595,6 +635,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onReviewDangerousClick_() {
     this.mojoHandler_!.reviewDangerousRequiringGesture(this.data.id);
+  }
+
+  private onOpenAnywayClick_() {
+    this.mojoHandler_!.openFileRequiringGesture(this.data.id);
   }
 
   private onDragStart_(e: Event) {

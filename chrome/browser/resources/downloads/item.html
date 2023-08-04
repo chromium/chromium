@@ -310,10 +310,10 @@
       --><a is="action-link" id="file-link" href="[[data.url]]"
           on-click="onFileLinkClick_" focus-row-control
           focus-type="fileLink"
-          hidden="[[!completelyOnDisk_]]">[[data.fileName]]</a><!--
+          hidden="[[!shouldLinkFilename_]]">[[data.fileName]]</a><!--
       Before #name.
       --><span id="name"
-          hidden="[[completelyOnDisk_]]">[[data.fileName]]</span>
+          hidden="[[shouldLinkFilename_]]">[[data.fileName]]</span>
       <span id="tag">[[computeTag_(data.state,
                                    data.lastReasonText,
                                    data.fileExternallyRemoved)]]</span>
@@ -401,6 +401,14 @@
           <cr-button on-click="onCancelClick_" focus-row-control
               focus-type="cancel">
             $i18n{controlCancel}
+          </cr-button>
+        </span>
+      </template>
+      <template is="dom-if" if="[[showOpenAnyway_]]">
+        <span role="gridcell">
+          <cr-button on-click="onOpenAnywayClick_" id="openAnyway"
+              focus-row-control focus-type="open">
+            $i18n{controlOpenAnyway}
           </cr-button>
         </span>
       </template>
