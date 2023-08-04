@@ -63,9 +63,11 @@ class TasksBubbleViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     SimulateUserLogin(account_id_);
+    fake_glanceables_tasks_client_ =
+        std::make_unique<FakeGlanceablesTasksClient>(base::Time::Now());
     Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesV2Controller::ClientsRegistration{
-                         .tasks_client = &tasks_client_});
+                         .tasks_client = fake_glanceables_tasks_client_.get()});
     ASSERT_TRUE(Shell::Get()->glanceables_v2_controller()->GetTasksClient());
 
     widget_ = CreateFramelessTestWidget();
@@ -109,7 +111,7 @@ class TasksBubbleViewTest : public AshTestBase {
   }
 
   const FakeGlanceablesTasksClient* tasks_client() const {
-    return &tasks_client_;
+    return fake_glanceables_tasks_client_.get();
   }
 
   const TestNewWindowDelegateImpl* new_window_delegate() const {
@@ -119,7 +121,7 @@ class TasksBubbleViewTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
-  FakeGlanceablesTasksClient tasks_client_;
+  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
   std::unique_ptr<ash::TestNewWindowDelegateProvider>
       new_window_delegate_provider_;
   raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_;

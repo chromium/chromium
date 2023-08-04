@@ -201,6 +201,9 @@ DecoratedText::RangedAttribute CreateRangedAttribute(
     font_style |= Font::ITALIC;
   if (style_mask & UNDERLINE_MASK)
     font_style |= Font::UNDERLINE;
+  if (style_mask & STRIKE_MASK) {
+    font_style |= Font::STRIKE_THROUGH;
+  }
 
   const Font font_with_style = font.Derive(0, font_style, weight);
   DecoratedText::RangedAttribute attributes(Range(index, index + 1),

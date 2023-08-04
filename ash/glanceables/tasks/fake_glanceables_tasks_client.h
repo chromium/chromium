@@ -27,7 +27,7 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
       base::OnceCallback<void(ui::ListModel<GlanceablesTask>* tasks)>;
   using MarkAsCompletedCallback = base::OnceCallback<void(bool success)>;
 
-  FakeGlanceablesTasksClient();
+  explicit FakeGlanceablesTasksClient(base::Time tasks_due_time);
   FakeGlanceablesTasksClient(const FakeGlanceablesTasksClient&) = delete;
   FakeGlanceablesTasksClient& operator=(const FakeGlanceablesTasksClient&) =
       delete;
@@ -48,8 +48,8 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
   int GetAndResetBubbleClosedCount();
 
  private:
-  void PopulateTasks();
-  void PopulateTaskLists();
+  void PopulateTasks(base::Time tasks_due_time);
+  void PopulateTaskLists(base::Time tasks_due_time);
 
   // All available task lists.
   std::unique_ptr<ui::ListModel<GlanceablesTaskList>> task_lists_;

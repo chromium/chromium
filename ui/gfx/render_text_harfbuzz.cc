@@ -2370,6 +2370,9 @@ bool RenderTextHarfBuzz::GetDecoratedTextForRange(
         style |= Font::ITALIC;
       if (run.font_params.underline || run.font_params.heavy_underline)
         style |= Font::UNDERLINE;
+      if (run.font_params.strike) {
+        style |= Font::STRIKE_THROUGH;
+      }
 
       // Get range relative to the decorated text.
       DecoratedText::RangedAttribute attribute(

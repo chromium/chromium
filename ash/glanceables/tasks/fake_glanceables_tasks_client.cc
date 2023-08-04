@@ -11,9 +11,10 @@
 
 namespace ash {
 
-FakeGlanceablesTasksClient::FakeGlanceablesTasksClient() {
-  PopulateTasks();
-  PopulateTaskLists();
+FakeGlanceablesTasksClient::FakeGlanceablesTasksClient(
+    base::Time tasks_due_time) {
+  PopulateTasks(tasks_due_time);
+  PopulateTaskLists(tasks_due_time);
 }
 
 FakeGlanceablesTasksClient::~FakeGlanceablesTasksClient() = default;
@@ -46,41 +47,42 @@ int FakeGlanceablesTasksClient::GetAndResetBubbleClosedCount() {
   bubble_closed_count_ = 0;
   return result;
 }
-void FakeGlanceablesTasksClient::PopulateTasks() {
+void FakeGlanceablesTasksClient::PopulateTasks(base::Time tasks_due_time) {
   task_lists_ = std::make_unique<ui::ListModel<GlanceablesTaskList>>();
 
   task_lists_->Add(std::make_unique<GlanceablesTaskList>(
-      "TaskListID1", "Task List 1 Title", base::Time::Now()));
+      "TaskListID1", "Task List 1 Title", /*updated=*/tasks_due_time));
   task_lists_->Add(std::make_unique<GlanceablesTaskList>(
-      "TaskListID2", "Task List 2 Title", base::Time::Now()));
+      "TaskListID2", "Task List 2 Title", /*updated=*/tasks_due_time));
   task_lists_->Add(std::make_unique<GlanceablesTaskList>(
-      "TaskListID3", "Task List 3 Title (empty)", base::Time::Now()));
+      "TaskListID3", "Task List 3 Title (empty)",
+      /*updated=*/tasks_due_time));
 }
 
-void FakeGlanceablesTasksClient::PopulateTaskLists() {
+void FakeGlanceablesTasksClient::PopulateTaskLists(base::Time tasks_due_time) {
   std::unique_ptr<ui::ListModel<GlanceablesTask>> task_list_1 =
       std::make_unique<ui::ListModel<GlanceablesTask>>();
   task_list_1->Add(std::make_unique<GlanceablesTask>(
       "TaskListItem1", "Task List 1 Item 1 Title", /*completed=*/false,
-      /*due=*/base::Time::Now(),
+      /*due=*/tasks_due_time,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
   task_list_1->Add(std::make_unique<GlanceablesTask>(
       "TaskListItem2", "Task List 1 Item 2 Title", /*completed=*/false,
-      /*due=*/base::Time::Now(),
+      /*due=*/tasks_due_time,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
   std::unique_ptr<ui::ListModel<GlanceablesTask>> task_list_2 =
       std::make_unique<ui::ListModel<GlanceablesTask>>();
   task_list_2->Add(std::make_unique<GlanceablesTask>(
       "TaskListItem3", "Task List 2 Item 1 Title", /*completed=*/false,
-      /*due=*/base::Time::Now(),
+      /*due=*/tasks_due_time,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
   task_list_2->Add(std::make_unique<GlanceablesTask>(
       "TaskListItem4", "Task List 2 Item 2 Title", /*completed=*/false,
-      /*due=*/base::Time::Now(),
+      /*due=*/tasks_due_time,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
   task_list_2->Add(std::make_unique<GlanceablesTask>(
       "TaskListItem5", "Task List 2 Item 3 Title", /*completed=*/false,
-      /*due=*/base::Time::Now(),
+      /*due=*/tasks_due_time,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
   tasks_in_task_lists_.emplace("TaskListID1", std::move(task_list_1));
   tasks_in_task_lists_.emplace("TaskListID2", std::move(task_list_2));

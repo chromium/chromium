@@ -231,7 +231,7 @@ class DateTrayTest
       glanceables_classroom_client_ =
           std::make_unique<TestGlanceablesClassroomClient>();
       fake_glanceables_tasks_client_ =
-          std::make_unique<FakeGlanceablesTasksClient>();
+          std::make_unique<FakeGlanceablesTasksClient>(base::Time::Now());
       Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
           account_id_,
           GlanceablesV2Controller::ClientsRegistration{

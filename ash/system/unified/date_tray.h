@@ -64,6 +64,7 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
 
  private:
   friend class DateTrayTest;
+  friend class GlanceablesPixelTest;
 
   // Owned by the views hierarchy.
   raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
