@@ -108,6 +108,8 @@ history_clusters::QueryClustersFilterParams CreateFilterParamsFromFeatureFlags(
   filter_params.is_shown_on_prominent_ui_surfaces = true;
   filter_params.filter_done_clusters = true;
   filter_params.filter_hidden_visits = true;
+  filter_params.include_synced_visits = base::FeatureList::IsEnabled(
+      ntp_features::kNtpHistoryClustersModuleIncludeSyncedVisits);
 
   return filter_params;
 }

@@ -317,6 +317,12 @@ BASE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted,
              "NtpHistoryClustersModuleFetchClustersUntilExhausted",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the History clusters module will contain visits from other
+// devices.
+BASE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits,
+             "NtpHistoryClustersModuleIncludeSyncedVisits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam{
     &kNtpRemoveScrim, "NtpOgbButtonSelectorParam", ".gb_A"};
 

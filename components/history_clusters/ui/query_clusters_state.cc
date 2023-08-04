@@ -23,15 +23,21 @@ namespace history_clusters {
 
 namespace {
 
-QueryClustersFilterParams GetZeroStateFilterParamsFromFlags() {
-  // Only set special filter params if context clustering is on and the zero
-  // state filtering flag is applied.
-  if (!ShouldUseNavigationContextClustersFromPersistence() ||
-      !GetConfig().apply_zero_state_filtering) {
-    return QueryClustersFilterParams();
+QueryClustersFilterParams GetFilterParamsFromFlags(const std::string& query) {
+  QueryClustersFilterParams filter_params;
+  filter_params.include_synced_visits = GetConfig().include_synced_visits;
+
+  // If there is a query, we do not want to apply any filtering.
+  if (!query.empty()) {
+    return filter_params;
   }
 
-  QueryClustersFilterParams filter_params;
+  // Only set special filter params if the zero state filtering flag is applied.
+  if (!ShouldUseNavigationContextClustersFromPersistence() ||
+      !GetConfig().apply_zero_state_filtering) {
+    return filter_params;
+  }
+
   filter_params.is_search_initiated = true;
   filter_params.is_shown_on_prominent_ui_surfaces = true;
   // TODO(b/277528165): Apply category filtering only for eligible users.
@@ -92,8 +98,7 @@ QueryClustersState::QueryClustersState(
     bool recluster)
     : service_(service),
       query_(query),
-      filter_params_(query_.empty() ? GetZeroStateFilterParamsFromFlags()
-                                    : QueryClustersFilterParams()),
+      filter_params_(GetFilterParamsFromFlags(query)),
       recluster_(recluster),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),

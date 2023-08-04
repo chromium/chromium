@@ -124,7 +124,7 @@ void HistoryClustersServiceTaskGetMostRecentClustersForUI::
   }
 
   // Prune out synced clusters if feature not enabled.
-  if (!GetConfig().include_synced_visits) {
+  if (!filter_params.include_synced_visits) {
     auto it = clusters.begin();
     while (it != clusters.end()) {
       if (it->originator_cache_guid.empty()) {

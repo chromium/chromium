@@ -68,6 +68,9 @@ struct QueryClustersFilterParams {
 
   // Whether to exclude visits that have interaction state equal to hidden.
   bool filter_hidden_visits = false;
+
+  // Whether to include synced visits.
+  bool include_synced_visits = false;
 };
 
 struct QueryClustersContinuationParams {
