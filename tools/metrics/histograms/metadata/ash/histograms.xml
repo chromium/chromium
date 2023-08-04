@@ -1057,6 +1057,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.MaxResumeReached"
+    enum="MoveMigratorResumeStep" expires_after="2024-01-28">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Recorded for users who've reached the maximum number of resumes
+    `kMoveMigrationResumeCountLimit`. This entry will not have &quot;false&quot;
+    status.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.MoveLacrosItemsTime"
+    units="ms" expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for move migration to run MoveLacrosItemsToNewDir(). Recorded
+    once during the migration. Profile move migration is a feature to migrate
+    profile data from Ash to Lacros once after Lacros is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.PosixErrno.{TaskStatus}"
     units="errno" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
@@ -1108,6 +1130,17 @@ chromium-metrics-reviews@google.com.
     The time taken for move migration to run PreMigrationCleanUp() and recorded
     once when profile move migration happens. Profile move migration migrates
     profile data from Ash to Lacros after Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.ResumeCount"
+    units="units" expires_after="2024-01-28">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The number of times move migration was resumed. Resume means that the
+    previous migrations were interrupted mid way and had to be resumed from
+    where it was left off.
   </summary>
 </histogram>
 

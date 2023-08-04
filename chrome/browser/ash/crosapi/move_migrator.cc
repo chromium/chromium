@@ -67,6 +67,7 @@ void MoveMigrator::Migrate() {
     if (resume_count > kMoveMigrationResumeCountLimit) {
       LOG(ERROR) << "The number of resume attempt limit has reached. Marking "
                     "move migration as completed.";
+      base::UmaHistogramBoolean(kMoveMigratorMaxResumeReached, true);
       base::debug::DumpWithoutCrashing();
       SetResumeStep(local_state_, user_id_hash_, ResumeStep::kCompleted);
       resume_step = ResumeStep::kCompleted;
