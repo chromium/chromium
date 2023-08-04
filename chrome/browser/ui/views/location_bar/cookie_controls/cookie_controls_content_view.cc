@@ -79,7 +79,7 @@ void CookieControlsContentView::AddContentLabels() {
                              gfx::Insets::VH(vertical_margin, side_margin));
   title_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
   title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  title_->SetTextStyle(views::style::STYLE_PRIMARY);
+  title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_->SetProperty(views::kElementIdentifierKey, kTitle);
 
