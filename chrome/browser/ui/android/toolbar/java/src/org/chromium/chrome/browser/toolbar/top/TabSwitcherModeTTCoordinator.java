@@ -10,9 +10,6 @@ import android.view.ViewStub;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.FeatureList;
-import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -215,18 +212,6 @@ class TabSwitcherModeTTCoordinator {
         }
     }
 
-    private boolean isNewTabVariationEnabled() {
-        boolean accessibilityEnabled =
-                DeviceClassManager.enableAccessibilityLayout(mTabSwitcherToolbarStub.getContext());
-
-        return (mIsGridTabSwitcherEnabled || accessibilityEnabled) && FeatureList.isInitialized()
-                && mIsIncognitoModeEnabledSupplier.getAsBoolean()
-                && !ChromeFeatureList
-                            .getFieldTrialParamByFeature(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                                    "tab_grid_layout_android_new_tab")
-                            .equals("false");
-    }
-
     /**
      * @param highlight If the new tab button should be highlighted.
      */
@@ -246,7 +231,8 @@ class TabSwitcherModeTTCoordinator {
      */
     private void maybeInitializeIncognitoTabModelObserver() {
         if (mTabModelSelector == null || mActiveTabSwitcherToolbar == null
-                || !isNewTabVariationEnabled() || mIncognitoTabModelObserver != null) {
+                || !mIsIncognitoModeEnabledSupplier.getAsBoolean()
+                || mIncognitoTabModelObserver != null) {
             return;
         }
 
@@ -273,7 +259,7 @@ class TabSwitcherModeTTCoordinator {
      */
     private void maybeNotifyOnIncognitoTabsExistenceChanged() {
         if (mTabModelSelector == null || mActiveTabSwitcherToolbar == null
-                || !isNewTabVariationEnabled()) {
+                || !mIsIncognitoModeEnabledSupplier.getAsBoolean()) {
             return;
         }
 

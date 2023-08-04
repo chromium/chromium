@@ -1849,9 +1849,6 @@ extern const char kTabAndLinkDragDropDescription[];
 extern const char kTabEngagementReportingName[];
 extern const char kTabEngagementReportingDescription[];
 
-extern const char kTabGridLayoutAndroidName[];
-extern const char kTabGridLayoutAndroidDescription[];
-
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
