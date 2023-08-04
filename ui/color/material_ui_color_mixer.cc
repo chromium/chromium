@@ -138,6 +138,9 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       kColorSysInverseOnSurface};
   mixer[kColorThemeColorPickerOptionBackground] = {kColorSysNeutralContainer};
   mixer[kColorTextfieldSelectionBackground] = {kColorSysTonalContainer};
+  mixer[kColorToastBackground] = {kColorSysInverseSurface};
+  mixer[kColorToastButton] = {kColorSysInversePrimary};
+  mixer[kColorToastForeground] = {kColorSysInverseOnSurface};
   mixer[kColorToggleButtonHover] = {kColorSysStateHover};
   mixer[kColorToggleButtonPressed] = {kColorSysStatePressed};
   mixer[kColorToggleButtonShadow] = {kColorSysOutline};

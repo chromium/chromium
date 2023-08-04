@@ -449,6 +449,9 @@
   E_CPONLY(kColorThemeColorPickerOptionBackground) \
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \
+  E_CPONLY(kColorToastBackground) \
+  E_CPONLY(kColorToastButton) \
+  E_CPONLY(kColorToastForeground) \
   E_CPONLY(kColorToggleButtonHover) \
   E_CPONLY(kColorToggleButtonPressed) \
   E_CPONLY(kColorToggleButtonShadow) \
