@@ -945,6 +945,44 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
   return result;
 }
 
+void ShapeResult::ApplyTextAutoSpacing(
+    const Vector<OffsetWithSpacing, 16>& offsets_with_spacing) {
+  DCHECK(offsets_with_spacing.size());
+  float total_space = 0.0;
+  wtf_size_t current_offset_index = 0;
+  // TODO(crbug.com/1463890): Implement and test the RTL case.
+  for (auto& run : runs_) {
+    if (!run) {
+      continue;
+    }
+    float total_space_for_run = 0;
+    for (wtf_size_t i = 0; i < run->glyph_data_.size() &&
+                           current_offset_index < offsets_with_spacing.size();
+         i++) {
+      HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
+
+      // Skip if it's not a grapheme cluster boundary. Set it to UNLIKELY, since
+      // this method should be executed within ideograph content.
+      if (UNLIKELY(i + 1 < run->glyph_data_.size() &&
+                   glyph_data.character_index ==
+                       run->glyph_data_[i + 1].character_index)) {
+        continue;
+      }
+      if (glyph_data.character_index + run->start_index_ ==
+          offsets_with_spacing[current_offset_index].offset) {
+        glyph_data.advance +=
+            offsets_with_spacing[current_offset_index].spacing;
+        total_space_for_run +=
+            offsets_with_spacing[current_offset_index].spacing;
+        current_offset_index++;
+      }
+    }
+    run->width_ += total_space_for_run;
+    total_space += total_space_for_run;
+  }
+  width_ += total_space;
+}
+
 namespace {
 
 float HarfBuzzPositionToFloat(hb_position_t value) {

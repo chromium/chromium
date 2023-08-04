@@ -301,6 +301,62 @@ TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
 
+struct TextAutoSpaceTextData {
+  // The string that should be processed.
+  const UChar* string;
+  // Precalculated insertion points' offsets.
+  std::vector<wtf_size_t> offsets;
+
+} text_auto_space_test_data[] = {
+    {u"Abcあああ", {2}},
+    {u"ああ123ああ", {1, 4}},
+    {u"ああ123ああ", {1, 4, 10}},
+    {u"ああ123ああ", {0, 1, 2, 3, 4, 5, 6, 10}},
+};
+class TextAutoSpaceResultText
+    : public ShapeResultTest,
+      public testing::WithParamInterface<TextAutoSpaceTextData> {};
+INSTANTIATE_TEST_SUITE_P(ShapeResultTest,
+                         TextAutoSpaceResultText,
+                         testing::ValuesIn(text_auto_space_test_data));
+
+// Tests the spacing should be appended at the correct positions.
+TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
+  const auto& test_data = GetParam();
+  String string(test_data.string);
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+
+  // Record the position before applying text-autospace, and fill the spacing
+  // widths with different values.
+  Vector<float> before_adding_spacing(string.length());
+  std::generate(before_adding_spacing.begin(), before_adding_spacing.end(),
+                [&, i = 0]() mutable {
+                  float offset = result->PositionForOffset(i);
+                  i++;
+                  return offset;
+                });
+  Vector<OffsetWithSpacing, 16> offsets(test_data.offsets.size());
+  std::generate_n(
+      offsets.begin(), test_data.offsets.size(), [&, i = -1]() mutable {
+        ++i;
+        return OffsetWithSpacing{.offset = test_data.offsets[i],
+                                 .spacing = static_cast<float>(0.1 * i)};
+      });
+
+  result->ApplyTextAutoSpacing(offsets);
+  float accumulated_spacing = 0.0;
+  for (wtf_size_t i = 0, j = 0; i < string.length(); i++) {
+    EXPECT_NEAR(accumulated_spacing,
+                result->PositionForOffset(i) - before_adding_spacing[i],
+                /* abs_error= */ 1e-5);
+    if (j < test_data.offsets.size() && offsets[j].offset == i) {
+      accumulated_spacing += offsets[j].spacing;
+      j++;
+    }
+  }
+}
+
 // TDOO(yosin): We should use a font including U+0A81 or other code point
 // having non-zero glyph offset.
 TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {

@@ -79,6 +79,12 @@ struct ShapeResultCharacterData {
   unsigned safe_to_break_before : 1;
 };
 
+// A space should be appended after `offset` with the width of `spacing`.
+struct OffsetWithSpacing {
+  wtf_size_t offset;
+  float spacing;
+};
+
 // There are two options for how OffsetForPosition behaves:
 // IncludePartialGlyphs - decides what to do when the position hits more than
 // 50% of the glyph. If enabled, we count that glyph, if disable we don't.
@@ -268,6 +274,11 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   void ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
   scoped_refptr<ShapeResult> ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
                                          const TextRun&) const;
+
+  // Adds spacing between ideograph character and non-ideograph character for
+  // the property of text-autospace.
+  void ApplyTextAutoSpacing(
+      const Vector<OffsetWithSpacing, 16>& offsets_with_spacing);
 
   // Append a copy of a range within an existing result to another result.
   //
