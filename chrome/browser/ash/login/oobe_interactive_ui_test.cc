@@ -55,7 +55,6 @@
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -140,13 +139,6 @@ void HandleGaiaInfoScreen() {
 
   test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
   LOG(INFO) << "OobeInteractiveUITest: Exiting 'gaia-info' screen.";
-}
-
-void HandleConsumerUpdateScreen() {
-  OobeScreenWaiter(ConsumerUpdateScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: Switched to 'consumer-update' screen.";
-
-  test::ExitConsumerUpdateScreenNoUpdate();
 }
 
 void WaitForGaiaSignInScreen() {
@@ -705,14 +697,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
-
-    if (features::IsOobeSoftwareUpdateEnabled()) {
-      test::TapForPersonalUseCrRadioButton();
-      test::TapUserCreationNext();
-      HandleConsumerUpdateScreen();
-    } else {
-      test::TapUserCreationNext();
-    }
+    test::TapUserCreationNext();
 
     if (features::IsOobeGaiaInfoScreenEnabled()) {
       HandleGaiaInfoScreen();
