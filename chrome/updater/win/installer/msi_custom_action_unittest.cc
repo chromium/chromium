@@ -139,30 +139,40 @@ TEST(MsiCustomActionTest, ExtractTagInfoFromInstaller) {
   EXPECT_EQ(ExtractTagInfoFromInstaller(0), static_cast<UINT>(ERROR_SUCCESS));
 }
 
-TEST(MsiCustomActionTest, MsiSetInstallerResult) {
-  for (const bool installer_result_only_in_updater_key : {true, false}) {
-    const std::wstring kAppId = L"{55d6c27c-8b97-4b76-a691-2df8810004ed}";
-    registry_util::RegistryOverrideManager registry_override;
+class MsiSetInstallerResultTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool, bool>> {
+ protected:
+  void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(
-        registry_override.OverrideRegistry(HKEY_LOCAL_MACHINE));
-    {
-      InstallerOutcome expected_installer_outcome = {};
-      expected_installer_outcome.installer_result =
-          InstallerResult::kCustomError;
-      expected_installer_outcome.installer_text = "some text";
-      EXPECT_TRUE(SetInstallerOutcomeForTesting(UpdaterScope::kSystem,
-                                                base::WideToASCII(kAppId),
-                                                expected_installer_outcome));
+        registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+    if (SetResults()) {
+      InstallerOutcome installer_outcome = {};
+      installer_outcome.installer_result = InstallerResult::kCustomError;
+      installer_outcome.installer_text = "some text";
+      EXPECT_TRUE(SetInstallerOutcomeForTesting(
+          UpdaterScope::kSystem, base::WideToASCII(kAppId), installer_outcome));
       ASSERT_TRUE(GetInstallerOutcome(UpdaterScope::kSystem,
                                       base::WideToASCII(kAppId)));
 
-      if (installer_result_only_in_updater_key) {
+      if (OnlyInUpdaterKey()) {
         EXPECT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_WRITE))
                       .DeleteKey(GetAppClientStateKey(kAppId).c_str()),
                   ERROR_SUCCESS);
       }
     }
-    MockMsiHandle mock_msi_handle;
+  }
+
+  bool SetResults() const { return std::get<0>(GetParam()); }
+  bool OnlyInUpdaterKey() const { return std::get<1>(GetParam()); }
+  bool ValidCustomActionData() const { return std::get<2>(GetParam()); }
+
+  const std::wstring kAppId = L"{55d6c27c-8b97-4b76-a691-2df8810004ed}";
+  registry_util::RegistryOverrideManager registry_override_manager_;
+};
+
+TEST_P(MsiSetInstallerResultTest, MsiSetInstallerResult) {
+  MockMsiHandle mock_msi_handle;
+  if (ValidCustomActionData()) {
     EXPECT_CALL(mock_msi_handle,
                 GetProperty(std::wstring(L"CustomActionData"), _, Eq(1U)))
         .WillOnce(
@@ -172,17 +182,28 @@ TEST(MsiCustomActionTest, MsiSetInstallerResult) {
         .WillOnce(
             DoAll(SetArgReferee<1>(std::vector(kAppId.begin(), kAppId.end())),
                   SetArgReferee<2>(kAppId.length()), Return(ERROR_SUCCESS)));
-
+  } else {
+    EXPECT_CALL(mock_msi_handle,
+                GetProperty(std::wstring(L"CustomActionData"), _, Eq(1U)))
+        .WillOnce(Return(ERROR_SUCCESS));
+  }
+  if (ValidCustomActionData() && SetResults()) {
     EXPECT_CALL(mock_msi_handle, CreateRecord(0)).WillOnce(Return(33));
     EXPECT_CALL(mock_msi_handle,
                 RecordSetString(33, 0, std::wstring(L"some text")))
         .WillOnce(Return(ERROR_SUCCESS));
     EXPECT_CALL(mock_msi_handle, ProcessMessage(INSTALLMESSAGE_ERROR, 33))
         .WillOnce(Return(ERROR_SUCCESS));
-
-    MsiSetInstallerResult(mock_msi_handle);
   }
+
+  MsiSetInstallerResult(mock_msi_handle);
 }
+
+INSTANTIATE_TEST_SUITE_P(SetResults_OnlyInUpdaterKey_ValidCustomActionData,
+                         MsiSetInstallerResultTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
 
 TEST(MsiCustomActionTest, ShowInstallerResultUIString) {
   EXPECT_EQ(ShowInstallerResultUIString(0), static_cast<UINT>(ERROR_SUCCESS));

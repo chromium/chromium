@@ -82,7 +82,7 @@ absl::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
     value.resize(++value_length);
     result = msi_handle.GetProperty(name, value, value_length);
   } while (result == ERROR_MORE_DATA && value_length <= 0xFFFF);
-  return result == ERROR_SUCCESS
+  return result == ERROR_SUCCESS && !value.empty()
              ? absl::make_optional(std::wstring(value.begin(), value.end()))
              : absl::nullopt;
 }
@@ -91,6 +91,9 @@ absl::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
 // returns that string.
 absl::optional<std::wstring> GetLastInstallerResultUIString(
     const std::wstring& app_id) {
+  if (app_id.empty()) {
+    return {};
+  }
   auto key = [&app_id]() -> absl::optional<base::win::RegKey> {
     if (base::win::RegKey client_state_key(HKEY_LOCAL_MACHINE,
                                            GetAppClientStateKey(app_id).c_str(),
@@ -141,21 +144,16 @@ UINT MsiSetTags(MsiHandleInterface& msi_handle) {
 }
 
 UINT MsiSetInstallerResult(MsiHandleInterface& msi_handle) {
-  const auto app_id = MsiGetProperty(msi_handle, L"CustomActionData");
-  if (!app_id) {
-    return ERROR_SUCCESS;
-  }
-
-  absl::optional<std::wstring> result_string =
-      GetLastInstallerResultUIString(*app_id);
-  if (!result_string) {
-    return ERROR_SUCCESS;
-  }
-
-  PMSIHANDLE record = msi_handle.CreateRecord(0);
-  if (record &&
-      msi_handle.RecordSetString(record, 0, *result_string) == ERROR_SUCCESS) {
-    msi_handle.ProcessMessage(INSTALLMESSAGE_ERROR, record);
+  if (const auto app_id = MsiGetProperty(msi_handle, L"CustomActionData");
+      app_id) {
+    if (const auto result_string = GetLastInstallerResultUIString(*app_id);
+        result_string) {
+      if (PMSIHANDLE record = msi_handle.CreateRecord(0);
+          record && msi_handle.RecordSetString(record, 0, *result_string) ==
+                        ERROR_SUCCESS) {
+        msi_handle.ProcessMessage(INSTALLMESSAGE_ERROR, record);
+      }
+    }
   }
 
   return ERROR_SUCCESS;
