@@ -17083,6 +17083,21 @@
             ]
         }
     ],
+    "WinSboxWarmupProcessPrng": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxWarmupProcessPrng"
+                    ]
+                }
+            ]
+        }
+    ],
     "WindowLayoutMenu": [
         {
             "platforms": [
