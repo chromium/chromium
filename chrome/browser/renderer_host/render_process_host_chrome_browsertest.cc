@@ -89,13 +89,14 @@ base::Process ProcessFromHandle(base::ProcessHandle handle) {
   return base::Process(handle);
 }
 
-// Returns true if `process` is backgrounded.
+// Returns true if the priority of `process` is kBestEffort.
 bool IsProcessBackgrounded(const base::Process& process) {
 #if BUILDFLAG(IS_MAC)
-  return process.IsProcessBackgrounded(
-      content::BrowserChildProcessHost::GetPortProvider());
+  return process.GetPriority(
+             content::BrowserChildProcessHost::GetPortProvider()) ==
+         base::Process::Priority::kBestEffort;
 #else
-  return process.IsProcessBackgrounded();
+  return process.GetPriority() == base::Process::Priority::kBestEffort;
 #endif
 }
 
@@ -393,7 +394,7 @@ class ChromeRenderProcessHostBackgroundingTest
     EXPECT_TRUE(process->IsInitializedAndNotDead());
     EXPECT_EQ(expected_is_backgrounded, process->IsProcessBackgrounded());
 
-    if (base::Process::CanBackgroundProcesses()) {
+    if (base::Process::CanSetPriority()) {
       base::Process p = ProcessFromHandle(process->GetProcess().Handle());
       ASSERT_TRUE(p.IsValid());
       EXPECT_EQ(expected_is_backgrounded, IsProcessBackgrounded(p));
@@ -725,9 +726,10 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
 // from the active tab and there is an immediate tab switch.
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
                        ProcessPriorityAfterStoppedAudio) {
-  // This test is invalid on platforms that can't background.
-  if (!base::Process::CanBackgroundProcesses())
+  // This test is invalid on platforms that can't set priority.
+  if (!base::Process::CanSetPriority()) {
     return;
+  }
 
   ShowSingletonTab(audio_url_);
 
@@ -749,9 +751,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
 // stops playing from a hidden tab.
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
                        ProcessPriorityAfterAudioStopsOnNotVisibleTab) {
-  // This test is invalid on platforms that can't background.
-  if (!base::Process::CanBackgroundProcesses())
+  // This test is invalid on platforms that can't set priority.
+  if (!base::Process::CanSetPriority()) {
     return;
+  }
 
   // Wait until the two pages are not backgrounded.
   WaitUntilBackgrounded(audio_process_, false, no_audio_process_, false);
@@ -771,8 +774,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
                        ProcessPriorityAfterAudioStartsFromBackgroundTab) {
   // This test is invalid on platforms that can't background.
-  if (!base::Process::CanBackgroundProcesses())
+  if (!base::Process::CanSetPriority()) {
     return;
+  }
 
   // Stop the audio.
   ASSERT_TRUE(
