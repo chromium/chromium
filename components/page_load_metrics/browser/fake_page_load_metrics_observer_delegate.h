@@ -60,6 +60,8 @@ class FakePageLoadMetricsObserverDelegate
   // returned.
   const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const override;
+  const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
+      const override;
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const override;
   const NormalizedResponsivenessMetrics&

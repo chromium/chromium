@@ -499,6 +499,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
       UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
     }
     UpdateSoftNavigationIntervalResponsivenessMetrics(*input_timing_delta);
+    UpdateSoftNavigationIntervalLayoutShift(*render_data);
     UpdateSoftNavigation(std::move(*soft_navigation_metrics));
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
@@ -646,6 +647,15 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameSubresourceLoadMetrics(
 void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigation(
     const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   client_->OnSoftNavigationChanged(soft_navigation_metrics);
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
+    const mojom::FrameRenderDataUpdate& render_data) {
+  soft_nav_interval_render_data_.layout_shift_score +=
+      render_data.layout_shift_delta;
+  soft_nav_interval_layout_shift_normalization_.AddNewLayoutShifts(
+      render_data.new_layout_shifts, base::TimeTicks::Now(),
+      soft_nav_interval_render_data_.layout_shift_score);
 }
 
 void PageLoadMetricsUpdateDispatcher::

@@ -179,6 +179,8 @@ class PageLoadMetricsObserverDelegate {
   virtual const PageRenderData& GetPageRenderData() const = 0;
   virtual const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const = 0;
+  virtual const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
+      const = 0;
   // Returns normalized responsiveness metrics data. Currently we normalize
   // user interaction latencies from all renderer frames in a few different
   // ways.

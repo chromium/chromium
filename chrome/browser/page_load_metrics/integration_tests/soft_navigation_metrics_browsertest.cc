@@ -12,6 +12,7 @@
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -255,6 +256,55 @@ class SoftNavigationTest : public MetricIntegrationTest,
       }
     }
     return max_duration;
+  }
+
+  double GetCLSFromList(base::Value::List& entry_records_list,
+                        bool ignore_has_recent_input = false) {
+    // cls is the normalized cls value.
+    double cls = 0;
+
+    // sessionCls is the cls score for current session window.
+    double sessionCls = 0;
+
+    // sessionDeadline is the maximum duration for current session window.
+    double sessionDeadline = 0;
+
+    // sessionGaptime is the time after one second gap of current shift.
+    double sessionGaptime = 0;
+
+    size_t entry_records_list_size = entry_records_list.size();
+    for (size_t i = 0; i < entry_records_list_size; i++) {
+      absl::optional<double> record_startTime =
+          entry_records_list[i].GetDict().FindDouble("startTime");
+      absl::optional<double> record_score =
+          entry_records_list[i].GetDict().FindDouble("score");
+      absl::optional<double> record_hadRecentInput =
+          entry_records_list[i].GetDict().FindBool("hadRecentInput");
+
+      // Verify that the optional<double> has value.
+      EXPECT_TRUE(record_startTime.has_value());
+      EXPECT_TRUE(record_score.has_value());
+      EXPECT_TRUE(record_hadRecentInput.has_value());
+
+      if (!ignore_has_recent_input && *record_hadRecentInput) {
+        continue;
+      }
+
+      if (sessionCls != 0 && *record_startTime < sessionDeadline &&
+          *record_startTime < sessionGaptime) {
+        sessionCls += *record_score;
+      } else {
+        sessionCls = *record_score;
+        sessionDeadline = *record_startTime + 5000;
+      }
+      sessionGaptime = *record_startTime + 1000;
+
+      if (sessionCls > cls) {
+        cls = sessionCls;
+      }
+    }
+
+    return cls;
   }
 
  private:
@@ -501,5 +551,125 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
   auto analyzer = StopTracingAndAnalyze();
 
   ASSERT_TRUE(VerifyInpUkmAndTraceData(*analyzer));
+}
+
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddPageLayoutShiftExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame::
+          LayoutShiftOnlyInMainFrame,
+      /*num_layout_shifts=*/1);
+  Start();
+
+  // Start tracking with layout_shift related information.
+  StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
+  Load("/soft_navigation.html");
+
+  // Retrieve web exposed values of the layout shift that happens before any
+  // soft navigation happens.
+  base::Value entry_records =
+      EvalJs(web_contents(), "GetLayoutShift()").ExtractList();
+  auto& entry_records_list = entry_records.GetList();
+
+  // Verify that the entry_records_list has 1 or 2 records. There could be 2
+  // layout shift entries emitted for the initial triggerLayoutShift() call.
+  EXPECT_LE(entry_records_list.size(), 2u);
+
+  double cls_before_soft_nav = GetCLSFromList(entry_records_list);
+
+  waiter->Wait();
+
+  // Set up for soft navigation.
+  EXPECT_EQ(
+      EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()").error,
+      "");
+
+  // Trigger 1st soft navigation.
+  TriggerSoftNavigation(waiter.get(), 1);
+
+  // Trigger a layout shift.
+  waiter->AddPageLayoutShiftExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame::
+          LayoutShiftOnlyInMainFrame,
+      /*num_layout_shifts=*/1);
+
+  EvalJs(web_contents(), "triggerLayoutShift()");
+
+  waiter->Wait();
+
+  // Retrieve web exposed layout shift entries if the runtime flag for soft nav
+  // is on.
+  double soft_nav_1_cls;
+  if (GetParam()) {
+    auto soft_nav_entry_records =
+        EvalJs(web_contents(), "GetLayoutShift(1)").ExtractList();
+    auto& soft_nav_1_entry_records_list = soft_nav_entry_records.GetList();
+
+    // Verify that there is 1 layout shift entry after soft nav 1.
+    EXPECT_EQ(soft_nav_1_entry_records_list.size(), 1u);
+
+    // The first part of the expect_score contains total CLS, and the second
+    // part of the expect_score contains normalized CLS.
+    soft_nav_1_cls = GetCLSFromList(soft_nav_1_entry_records_list, true);
+  }
+
+  // Trigger 2nd soft navigation.
+  TriggerSoftNavigation(waiter.get(), 2);
+
+  // Trigger a layout shift.
+  waiter->AddPageLayoutShiftExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame::
+          LayoutShiftOnlyInMainFrame,
+      /*num_layout_shifts=*/1);
+
+  EvalJs(web_contents(),
+         "triggerLayoutShift(" + base::NumberToString(1.5) + ")");
+
+  waiter->Wait();
+
+  // Retrieve web exposed layout shift entries if the runtime flag for soft nav
+  // is on.
+  double soft_nav_2_cls;
+  if (GetParam()) {
+    auto soft_nav_entry_records =
+        EvalJs(web_contents(), "GetLayoutShift(2)").ExtractList();
+    auto& soft_nav_2_entry_records_list = soft_nav_entry_records.GetList();
+
+    // Verify that there is 1 layout shift entry after soft nav 1.
+    EXPECT_EQ(soft_nav_2_entry_records_list.size(), 1u);
+
+    // The first part of the expect_score contains total CLS, and the second
+    // part of the expect_score contains normalized CLS.
+    soft_nav_2_cls = GetCLSFromList(soft_nav_2_entry_records_list, true);
+  }
+
+  // Finish session.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check UKM with CLS Normalization value, and it should be the same as the
+  // layout shift score.
+  ExpectUKMPageLoadMetricNear(
+      ukm::builders::PageLoad::
+          kLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000msName,
+      page_load_metrics::LayoutShiftUkmValue(cls_before_soft_nav), 1);
+
+  // Verify soft nav CLS records exist.
+  auto source_id_to_soft_nav_cls = GetSoftNavigationMetrics(
+      ukm_recorder(),
+      ukm::builders::SoftNavigation::
+          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName);
+
+  EXPECT_EQ(source_id_to_soft_nav_cls.size(), 2u);
+
+  // Verify soft navigation layout shift values against web-exposed values
+  if (GetParam()) {
+    EXPECT_NEAR(source_id_to_soft_nav_cls.begin()->second,
+                page_load_metrics::LayoutShiftUkmValue(soft_nav_1_cls), 1);
+
+    EXPECT_NEAR(std::next(source_id_to_soft_nav_cls.begin())->second,
+                page_load_metrics::LayoutShiftUkmValue(soft_nav_2_cls), 1);
+  }
 }
 }  // namespace

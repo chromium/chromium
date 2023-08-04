@@ -1085,6 +1085,7 @@ void PageLoadTracker::OnSoftNavigationChanged(
   if (new_soft_navigation_metrics.count > soft_navigation_metrics_->count) {
     metrics_update_dispatcher_
         .ResetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+    metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
   }
 
   soft_navigation_metrics_ = new_soft_navigation_metrics.Clone();
@@ -1266,6 +1267,12 @@ const PageRenderData& PageLoadTracker::GetPageRenderData() const {
 const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
     BfcacheStrategy bfcache_strategy) const {
   return metrics_update_dispatcher_.normalized_cls_data(bfcache_strategy);
+}
+
+const NormalizedCLSData&
+PageLoadTracker::GetSoftNavigationIntervalNormalizedCLSData() const {
+  return metrics_update_dispatcher_
+      .soft_navigation_interval_normalized_layout_shift();
 }
 
 const NormalizedResponsivenessMetrics&

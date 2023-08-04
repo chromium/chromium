@@ -709,6 +709,17 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
             soft_nav_normalized_responsiveness_metrics.num_user_interactions));
   }
 
+  // Don't report CLS if we were never in the foreground.
+  if (!last_time_shown_.is_null()) {
+    const absl::optional<float> cwv_cls_value =
+        GetCoreWebVitalsSoftNavigationIntervalCLS();
+    if (cwv_cls_value.has_value()) {
+      builder
+          .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+              page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+    }
+  }
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -738,6 +749,26 @@ void UkmPageLoadMetricsObserver::
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+void UkmPageLoadMetricsObserver::
+    RecordLayoutShiftBeforeSoftNavigationForMainFrame() {
+  // Don't report CLS if we were never in the foreground.
+  if (last_time_shown_.is_null()) {
+    return;
+  }
+
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+
+  const absl::optional<float> cwv_cls_value =
+      GetCoreWebVitalsSoftNavigationIntervalCLS();
+
+  if (cwv_cls_value.has_value()) {
+    builder
+        .SetLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+  }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
     const page_load_metrics::mojom::SoftNavigationMetrics&
         new_soft_navigation_metrics) {
@@ -750,6 +781,7 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   if (current_soft_navigation_metrics->count == 0 &&
       new_soft_navigation_metrics.count == 1) {
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
+    RecordLayoutShiftBeforeSoftNavigationForMainFrame();
   }
 
   // Record current soft navigation metrics into Ukm when a new soft navigation
@@ -1183,6 +1215,16 @@ absl::optional<float> UkmPageLoadMetricsObserver::GetCoreWebVitalsCLS() {
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               ACCUMULATE);
+  if (!normalized_cls_data.data_tainted) {
+    return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+  }
+  return absl::nullopt;
+}
+
+absl::optional<float>
+UkmPageLoadMetricsObserver::GetCoreWebVitalsSoftNavigationIntervalCLS() {
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetSoftNavigationIntervalNormalizedCLSData();
   if (!normalized_cls_data.data_tainted) {
     return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
   }

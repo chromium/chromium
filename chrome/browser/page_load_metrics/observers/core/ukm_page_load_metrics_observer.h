@@ -145,6 +145,7 @@ class UkmPageLoadMetricsObserver
   // Returns the current Core Web Vital definition of Cumulative Layout Shift.
   // Returns nullopt if current value should not be reported to UKM.
   absl::optional<float> GetCoreWebVitalsCLS();
+  absl::optional<float> GetCoreWebVitalsSoftNavigationIntervalCLS();
 
   // Returns the current Core Web Vital definition of Largest Contentful Paint.
   // The caller needs to check whether the value should be reported to UKM based
@@ -160,6 +161,8 @@ class UkmPageLoadMetricsObserver
       page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
   void RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
+
+  void RecordLayoutShiftBeforeSoftNavigationForMainFrame();
 
   void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
