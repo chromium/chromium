@@ -132,7 +132,8 @@ void PersistLastInstallerResultValues(UpdaterScope updater_scope,
 bool ClientStateAppKeyExists(UpdaterScope updater_scope,
                              const std::string& app_id) {
   return base::win::RegKey(UpdaterScopeToHKeyRoot(updater_scope),
-                           CLIENT_STATE_KEY, Wow6432(KEY_QUERY_VALUE))
+                           GetAppClientStateKey(app_id).c_str(),
+                           Wow6432(KEY_QUERY_VALUE))
       .Valid();
 }
 
