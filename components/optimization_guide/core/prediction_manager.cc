@@ -57,33 +57,6 @@ proto::ModelCacheKey GetModelCacheKey(const std::string& locale) {
   return model_cache_key;
 }
 
-// Util class for recording the state of a prediction model. The result is
-// recorded when it goes out of scope and its destructor is called.
-class ScopedPredictionManagerModelStatusRecorder {
- public:
-  explicit ScopedPredictionManagerModelStatusRecorder(
-      proto::OptimizationTarget optimization_target)
-      : optimization_target_(optimization_target) {}
-
-  ~ScopedPredictionManagerModelStatusRecorder() {
-    DCHECK_NE(status_, PredictionManagerModelStatus::kUnknown);
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus",
-        status_);
-
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus." +
-            GetStringNameForOptimizationTarget(optimization_target_),
-        status_);
-  }
-
-  void set_status(PredictionManagerModelStatus status) { status_ = status; }
-
- private:
-  PredictionManagerModelStatus status_ = PredictionManagerModelStatus::kUnknown;
-  const proto::OptimizationTarget optimization_target_;
-};
-
 // Util class for recording the construction and validation of a prediction
 // model. The result is recorded when it goes out of scope and its destructor is
 // called.
