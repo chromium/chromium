@@ -60198,6 +60198,7 @@ from previous Chrome versions.
   <int value="-1940291343" label="SpeculativeResourcePrefetching:enabled"/>
   <int value="-1940251540"
       label="AutofillEnableEmailOtpForVcnYellowPath:enabled"/>
+  <int value="-1939554947" label="DisableSlowMSAAInGraphite:enabled"/>
   <int value="-1939525844" label="AssistantTimersV2:enabled"/>
   <int value="-1939016096"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:enabled"/>
@@ -63144,6 +63145,7 @@ from previous Chrome versions.
   <int value="-449465495" label="disable-browser-task-scheduler"/>
   <int value="-449229817" label="ArcExternalStorageAccess:enabled"/>
   <int value="-448929520" label="TranslateMessageUI:enabled"/>
+  <int value="-448677794" label="DisableSlowMSAAInGraphite:disabled"/>
   <int value="-447986568" label="WebNotesDynamicTemplates:disabled"/>
   <int value="-447148659" label="ContextMenuTranslateWithGoogleLens:enabled"/>
   <int value="-447104608" label="BiometricAuthenticationInSettings:enabled"/>

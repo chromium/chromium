@@ -470,6 +470,9 @@ extern const char kChromeWhatsNewUIDescription[];
 extern const char kCreateShortcutIgnoresManifestName[];
 extern const char kCreateShortcutIgnoresManifestDescription[];
 
+extern const char kDisableSlowMSAAInGraphiteName[];
+extern const char kDisableSlowMSAAInGraphiteDescription[];
+
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 

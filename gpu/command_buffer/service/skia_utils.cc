@@ -106,13 +106,27 @@ GrContextOptions GetDefaultGrContextOptions() {
   return options;
 }
 
-skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions() {
+skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
+    const GpuDriverBugWorkarounds& workarounds) {
   skgpu::graphite::ContextOptions options;
   size_t max_resource_cache_bytes;
   size_t glyph_cache_max_texture_bytes;
   DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
                                             &glyph_cache_max_texture_bytes);
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
+
+  // Disable multisampled antialiasing when it's slow if the relevant
+  // base::Feature is enabled.
+  // NOTE: `workarounds.msaa_is_slow` is true on all Intel devices.
+  // gpu::gles2::MSAAIsSlow() will return true on Intel devices unless the
+  // features::kEnableMSAAOnNewIntelGPUs base::Feature is enabled. If rolling
+  // out single-sampling for Graphite, we should consider whether to tie the
+  // rollout to the features::kEnableMSSAOnNewIntelGPUs experiment.
+  if (workarounds.msaa_is_slow &&
+      base::FeatureList::IsEnabled(features::kDisableSlowMSAAInGraphite)) {
+    options.fInternalMultisampleCount = 1;
+  }
+
   return options;
 }
 

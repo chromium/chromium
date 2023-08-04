@@ -323,7 +323,8 @@ class GPU_GLES2_EXPORT SharedContextState
                         GpuProcessActivityFlags* activity_flags = nullptr,
                         gl::ProgressReporter* progress_reporter = nullptr);
 
-  bool InitializeGraphite(const GpuPreferences& gpu_preferences);
+  bool InitializeGraphite(const GpuPreferences& gpu_preferences,
+                          const GpuDriverBugWorkarounds& workarounds);
 
   absl::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 

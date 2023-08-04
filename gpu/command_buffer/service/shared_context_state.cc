@@ -268,7 +268,7 @@ bool SharedContextState::InitializeSkia(
 
   if (gr_context_type_ == GrContextType::kGraphiteDawn ||
       gr_context_type_ == GrContextType::kGraphiteMetal) {
-    return InitializeGraphite(gpu_preferences);
+    return InitializeGraphite(gpu_preferences, workarounds);
   }
 
   return InitializeGanesh(gpu_preferences, workarounds, cache, activity_flags,
@@ -382,9 +382,10 @@ bool SharedContextState::InitializeGanesh(
 }
 
 bool SharedContextState::InitializeGraphite(
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& workarounds) {
   [[maybe_unused]] skgpu::graphite::ContextOptions context_options =
-      GetDefaultGraphiteContextOptions();
+      GetDefaultGraphiteContextOptions(workarounds);
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (dawn_context_provider_ &&
