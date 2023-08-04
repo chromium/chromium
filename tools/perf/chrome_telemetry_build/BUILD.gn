@@ -211,7 +211,7 @@ group("telemetry_chrome_test_without_chrome") {
 
       # These dependencies are necessary for running Telemetry tests in an
       # Android emulator.
-      "//third_party/android_toolchain/simpleperf/",
+      "//third_party/android_toolchain/ndk/simpleperf/",
       "//third_party/android_sdk/public/",
       "//tools/android/avd/proto/",
     ]

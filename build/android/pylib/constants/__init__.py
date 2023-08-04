@@ -120,7 +120,7 @@ ANDROID_SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
 ANDROID_SDK_TOOLS = os.path.join(ANDROID_SDK_ROOT,
                                  'build-tools', ANDROID_SDK_BUILD_TOOLS_VERSION)
 ANDROID_NDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party',
-                                'android_toolchain')
+                                'android_toolchain', 'ndk')
 
 BAD_DEVICES_JSON = os.path.join(DIR_SOURCE_ROOT,
                                 os.environ.get('CHROMIUM_OUT_DIR', 'out'),

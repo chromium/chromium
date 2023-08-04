@@ -1017,7 +1017,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_toolchain': {
+  'src/third_party/android_toolchain/ndk': {
       'packages': [
             {
                 'package': 'chromium/third_party/android_toolchain/android_toolchain',

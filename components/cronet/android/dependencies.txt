@@ -42,7 +42,7 @@
 //net/traffic_annotation
 //third_party/abseil-cpp
 //third_party/android_deps
-//third_party/android_toolchain
+//third_party/android_toolchain/ndk
 //third_party/android_sdk
 //third_party/androidx
 //third_party/ashmem

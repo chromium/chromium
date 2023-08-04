@@ -69,7 +69,7 @@ namespace {
 
 void NameRegion(void* start, size_t length, PageTag page_tag) {
   // Important: All the names should be string literals. As per prctl.h in
-  // //third_party/android_toolchain the kernel keeps a pointer to the name
+  // //third_party/android_toolchain/ndk the kernel keeps a pointer to the name
   // instead of copying it.
   //
   // Having the name in .rodata ensures that the pointer remains valid as

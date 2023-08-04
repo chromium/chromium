@@ -102,7 +102,7 @@ if (is_android || is_chromeos) {
   }
 
   if (!defined(default_android_ndk_root)) {
-    default_android_ndk_root = "//third_party/android_toolchain"
+    default_android_ndk_root = "//third_party/android_toolchain/ndk"
     default_android_ndk_version = "r25c"
     default_android_ndk_major_version = 25
   } else {

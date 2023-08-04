@@ -186,7 +186,7 @@ class SimplePerfRunner:
   def RunSimplePerf(perf_data_path, args):
     """Runs the simple perf commandline."""
     cmd = [
-        'third_party/android_toolchain/simpleperf/app_profiler.py',
+        'third_party/android_toolchain/ndk/simpleperf/app_profiler.py',
         '--perf_data_path', perf_data_path, '--skip_collect_binaries'
     ]
     if args.system_wide:
@@ -223,7 +223,7 @@ class SimplePerfRunner:
   def GetOriginalReportHtml(perf_data_path, report_html_path):
     """Gets the original report.html from running simpleperf."""
     cmd = [
-        'third_party/android_toolchain/simpleperf/report_html.py',
+        'third_party/android_toolchain/ndk/simpleperf/report_html.py',
         '--record_file', perf_data_path, '--report_path', report_html_path,
         '--no_browser'
     ]

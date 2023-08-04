@@ -23,32 +23,32 @@
       "file_info": {
         "android_armeabi-v7a": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf/bin/android/arm/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf/bin/android/arm/simpleperf"
           ]
         },
         "android_arm64-v8a": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf/bin/android/arm64/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf/bin/android/arm64/simpleperf"
           ]
         },
         "android_x86": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf/bin/android/x86/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf/bin/android/x86/simpleperf"
           ]
         },
         "android_x86_64": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf/bin/android/x86_64/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf/bin/android/x86_64/simpleperf"
           ]
         },
         "linux_x86": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf/bin/linux/x86/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf/bin/linux/x86/simpleperf"
           ]
         },
         "linux_x86_64": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf/bin/linux/x86_64/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf/bin/linux/x86_64/simpleperf"
           ]
         }
       }
@@ -57,7 +57,7 @@
       "file_info": {
         "default": {
           "local_paths": [
-            "../../third_party/android_toolchain/simpleperf"
+            "../../third_party/android_toolchain/ndk/simpleperf"
           ]
         }
       }

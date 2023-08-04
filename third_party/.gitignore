@@ -19,7 +19,7 @@
 /android_sdk/sources/
 /android_support_test_runner/lib/
 /android_system_sdk/*.jar
-/android_toolchain/
+/android_toolchain/ndk/
 /android_tools_internal/
 /android_webview_glue/src
 /androidx/BUILD.gn
