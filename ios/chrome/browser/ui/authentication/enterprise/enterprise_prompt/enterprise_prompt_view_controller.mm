@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
 
+#import "base/feature_list.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -75,16 +77,30 @@
 // Updates the view with force sign out informations.
 - (void)setupForForceSignOut {
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
-  self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    self.subtitleString =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE_WITH_UNO);
+  } else {
+    self.subtitleString =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE);
+  }
 }
 
 // Updates the view with sync disabled informations.
 - (void)setupForSyncDisabled {
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE);
-  self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    self.titleString =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_WITH_UNO);
+    self.subtitleString = l10n_util::GetNSString(
+        IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_WITH_UNO);
+  } else {
+    self.titleString =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE);
+    self.subtitleString =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE);
+  }
 }
 
 @end
