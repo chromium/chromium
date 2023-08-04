@@ -4,10 +4,14 @@
 
 #include <string>
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -15,12 +19,32 @@
 
 namespace {
 
+// Log filter on messages ignoring a fullscreen [popup] request.
+bool FullscreenRequestIgnoredMessageFilter(
+    const content::WebContentsConsoleObserver::Message& message) {
+  return message.message.starts_with(u"Fullscreen request ignored:");
+}
+
+// Log filter on messages indicating fullscreen permission policy is denied.
+bool FullscreenPermissionPolicyViolationMessageFilter(
+    const content::WebContentsConsoleObserver::Message& message) {
+  return message.message.starts_with(
+      u"Permissions policy violation: fullscreen is not allowed");
+}
+
 // Base class for fullscreen popup tests.
 class PopupFullscreenTestBase : public PopupTestBase {
  public:
   PopupFullscreenTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kFullscreenPopupWindows}, {});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Required for permission policy violations to be logged.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "FeaturePolicyReporting");
+    PopupTestBase::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -32,7 +56,14 @@ class PopupFullscreenTestBase : public PopupTestBase {
     ASSERT_TRUE(NavigateToURL(web_contents,
                               embedded_test_server()->GetURL("/simple.html")));
     EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
+    console_observer_ = std::make_unique<content::WebContentsConsoleObserver>(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    console_observer_->SetFilter(
+        base::BindRepeating(&FullscreenRequestIgnoredMessageFilter));
   }
+
+ protected:
+  std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -41,42 +72,57 @@ class PopupFullscreenTestBase : public PopupTestBase {
 // Tests opening popups as fullscreen windows.
 // See https://chromestatus.com/feature/6002307972464640 for more information.
 // Tests are run with and without the requisite Window Management permission.
-class PopupFullscreenTest : public PopupFullscreenTestBase,
-                            public ::testing::WithParamInterface<bool> {
+class PopupFullscreenTest
+    : public PopupFullscreenTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   void SetUpOnMainThread() override {
     PopupFullscreenTestBase::SetUpOnMainThread();
     if (ShouldTestWindowManagement()) {
       SetUpWindowManagement(browser());
+      // The permission prompt creates a user gesture. If we are trying to test
+      // without a user gesture, wait for the existing one to expire.
+      if (!ShouldTestWithUserGesture()) {
+        WaitForUserActivationExpiry(browser());
+      }
     }
   }
 
  protected:
-  bool ShouldTestWindowManagement() { return GetParam(); }
+  bool IsFullscreenExpected() {
+    return ShouldTestWithUserGesture() && ShouldTestWindowManagement();
+  }
+  bool ShouldTestWithUserGesture() { return std::get<0>(GetParam()); }
+  bool ShouldTestWindowManagement() { return std::get<1>(GetParam()); }
 };
 
-INSTANTIATE_TEST_SUITE_P(, PopupFullscreenTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         PopupFullscreenTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, BasicFullscreen) {
-  Browser* popup = OpenPopup(
-      browser(), "open('/simple.html', '_blank', 'popup,fullscreen')");
+  Browser* popup =
+      OpenPopup(browser(), "open('/simple.html', '_blank', 'popup,fullscreen')",
+                ShouldTestWithUserGesture());
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
-  if (ShouldTestWindowManagement()) {
+  if (IsFullscreenExpected()) {
     WaitForHTMLFullscreen(popup_contents);
+  } else {
+    ASSERT_TRUE(console_observer_->Wait());
   }
   EXPECT_EQ(EvalJs(popup_contents,
                    "!!document.fullscreenElement && "
                    "document.fullscreenElement == document.documentElement")
                 .ExtractBool(),
-            ShouldTestWindowManagement());
+            IsFullscreenExpected());
   FullscreenController* fullscreen_controller =
       popup->exclusive_access_manager()->fullscreen_controller();
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
-  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(),
-            ShouldTestWindowManagement());
+  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(), IsFullscreenExpected());
   EXPECT_EQ(EvalJs(popup_contents, "document.exitFullscreen()").error.empty(),
-            ShouldTestWindowManagement());
+            IsFullscreenExpected());
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 
@@ -93,24 +139,26 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, BasicFullscreen) {
 
 IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, AboutBlankFullscreen) {
   Browser* popup =
-      OpenPopup(browser(), "open('about:blank', '_blank', 'popup,fullscreen')");
+      OpenPopup(browser(), "open('about:blank', '_blank', 'popup,fullscreen')",
+                ShouldTestWithUserGesture());
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
-  if (ShouldTestWindowManagement()) {
+  if (IsFullscreenExpected()) {
     WaitForHTMLFullscreen(popup_contents);
+  } else {
+    ASSERT_TRUE(console_observer_->Wait());
   }
   EXPECT_EQ(EvalJs(popup_contents,
                    "!!document.fullscreenElement && "
                    "document.fullscreenElement == document.documentElement")
                 .ExtractBool(),
-            ShouldTestWindowManagement());
+            IsFullscreenExpected());
   FullscreenController* fullscreen_controller =
       popup->exclusive_access_manager()->fullscreen_controller();
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
-  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(),
-            ShouldTestWindowManagement());
+  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(), IsFullscreenExpected());
   EXPECT_EQ(EvalJs(popup_contents, "document.exitFullscreen()").error.empty(),
-            ShouldTestWindowManagement());
+            IsFullscreenExpected());
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 
@@ -129,22 +177,64 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenWithBounds) {
   Browser* popup =
       OpenPopup(browser(),
                 "open('/simple.html', '_blank', "
-                "'height=200,width=200,top=100,left=100,fullscreen')");
+                "'height=200,width=200,top=100,left=100,fullscreen')",
+                ShouldTestWithUserGesture());
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
-  if (ShouldTestWindowManagement()) {
+  if (IsFullscreenExpected()) {
     WaitForHTMLFullscreen(popup_contents);
+  } else {
+    ASSERT_TRUE(console_observer_->Wait());
   }
   EXPECT_EQ(EvalJs(popup_contents,
                    "!!document.fullscreenElement && "
                    "document.fullscreenElement == document.documentElement")
                 .ExtractBool(),
-            ShouldTestWindowManagement());
+            IsFullscreenExpected());
   FullscreenController* fullscreen_controller =
       popup->exclusive_access_manager()->fullscreen_controller();
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
-  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(),
-            ShouldTestWindowManagement());
+  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(), IsFullscreenExpected());
+}
+
+// Tests that a fullscreen popup consumes a user gesture even with "popups &
+// redirects" enabled and therefore a second fullscreen popup without a gesture
+// will not transition to fullscreen.
+IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, ConsumesGesture) {
+  if (!IsFullscreenExpected()) {
+    // This test is only applicable when testing the normal use case.
+    GTEST_SKIP();
+  }
+  // Enable Popups & Redirects.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetContentSettingDefaultScope(web_contents->GetURL(), GURL(),
+                                      ContentSettingsType::POPUPS,
+                                      CONTENT_SETTING_ALLOW);
+
+  // Open a fullscreen popup with a gesture and validate.
+  Browser* popup = OpenPopup(
+      browser(), "open('/simple.html', '_blank', 'popup,fullscreen')");
+  content::WebContents* popup_contents =
+      popup->tab_strip_model()->GetActiveWebContents();
+  WaitForHTMLFullscreen(popup_contents);
+  EXPECT_TRUE(EvalJs(popup_contents,
+                     "!!document.fullscreenElement && "
+                     "document.fullscreenElement == document.documentElement")
+                  .ExtractBool());
+
+  // Open another fullscreen popup without a gesture. The popup should open but
+  // the fullscreen should be ignored since the user activation was consumed.
+  popup =
+      OpenPopup(browser(), "open('/simple.html', '_blank', 'popup,fullscreen')",
+                /*user_gesture=*/false);
+  popup_contents = popup->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(console_observer_->Wait());
+  EXPECT_FALSE(EvalJs(popup_contents,
+                      "!!document.fullscreenElement && "
+                      "document.fullscreenElement == document.documentElement")
+                   .ExtractBool());
 }
 
 // Fullscreen should not work if the new window is not specified as a popup.
@@ -156,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresPopupFeature) {
   EXPECT_TRUE(
       EvalJs(web_contents, "open('/simple.html', '_blank', 'fullscreen')")
           .error.empty());
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(console_observer_->messages().size(), 1u);
   EXPECT_FALSE(
       EvalJs(web_contents, "!!document.fullscreenElement").ExtractBool());
   FullscreenController* fullscreen_controller =
@@ -170,15 +260,17 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresPopupFeature) {
 IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresNewWindow) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(web_contents,
-                            embedded_test_server()->GetURL("/iframe.html")));
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/iframe_about_blank.html")));
   EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
   // OpenPopup() cannot be used here since it waits for a new browser which
   // would not open in this case. open() targeting a frame named "test" in
   // "iframe.html" will not create a new window.
   EXPECT_TRUE(
-      EvalJs(web_contents, "open('/simple.html', 'test', 'popup,fullscreen')")
+      EvalJs(web_contents,
+             "open('/simple.html', 'about_blank_iframe', 'popup,fullscreen')")
           .error.empty());
+  EXPECT_EQ(console_observer_->messages().size(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_FALSE(
       EvalJs(web_contents, "!!document.fullscreenElement").ExtractBool());
@@ -189,10 +281,14 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresNewWindow) {
 }
 
 struct PopupFullscreenPermissionPolicyTestParams {
+  enum ExpectedFullscreenState { Allowed, BlockedByOpener, BlockedByOpened };
   std::string test_name;
   std::string opener_permission_policy_header;
   std::string opened_permission_policy_header;
-  bool fullscreen_expected;
+  ExpectedFullscreenState fullscreen_expected;
+  bool is_fullscreen_expected_allowed() const {
+    return fullscreen_expected == ExpectedFullscreenState::Allowed;
+  }
 };
 
 constexpr char kOpenerPath[] = "/simple.html";
@@ -232,6 +328,9 @@ class PopupFullscreenPermissionPolicyTest
   }
 };
 
+using ExpectedState =
+    PopupFullscreenPermissionPolicyTestParams::ExpectedFullscreenState;
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     PopupFullscreenPermissionPolicyTest,
@@ -239,31 +338,31 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "DefaultOpener_DefaultOpened",
          .opener_permission_policy_header = "",
          .opened_permission_policy_header = "",
-         .fullscreen_expected = true},
+         .fullscreen_expected = ExpectedState::Allowed},
         {.test_name = "DefaultOpener_SelfOpened",
          .opener_permission_policy_header = "",
          .opened_permission_policy_header = "fullscreen=(self)",
-         .fullscreen_expected = true},
+         .fullscreen_expected = ExpectedState::Allowed},
         {.test_name = "SelfOpener_DefaultOpened",
          .opener_permission_policy_header = "fullscreen=(self)",
          .opened_permission_policy_header = "",
-         .fullscreen_expected = true},
+         .fullscreen_expected = ExpectedState::Allowed},
         {.test_name = "SelfOpener_SelfOpened",
          .opener_permission_policy_header = "fullscreen=(self)",
          .opened_permission_policy_header = "fullscreen=(self)",
-         .fullscreen_expected = true},
+         .fullscreen_expected = ExpectedState::Allowed},
         {.test_name = "BlockedOpener_SelfOpened",
          .opener_permission_policy_header = "fullscreen=()",
          .opened_permission_policy_header = "fullscreen=(self)",
-         .fullscreen_expected = false},
+         .fullscreen_expected = ExpectedState::BlockedByOpener},
         {.test_name = "SelfOpener_BlockedOpened",
          .opener_permission_policy_header = "fullscreen=(self)",
          .opened_permission_policy_header = "fullscreen=()",
-         .fullscreen_expected = false},
+         .fullscreen_expected = ExpectedState::BlockedByOpened},
         {.test_name = "BlockedOpener_BlockedOpened",
          .opener_permission_policy_header = "fullscreen=()",
          .opened_permission_policy_header = "fullscreen=()",
-         .fullscreen_expected = false}}),
+         .fullscreen_expected = ExpectedState::BlockedByOpener}}),
     [](const testing::TestParamInfo<PopupFullscreenPermissionPolicyTestParams>&
            info) { return info.param.test_name; });
 
@@ -278,19 +377,29 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenPermissionPolicyTest,
       OpenPopup(browser(), "open('" + url + "', '_blank', 'popup,fullscreen')");
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
-  if (GetParam().fullscreen_expected) {
+  if (GetParam().fullscreen_expected == ExpectedState::BlockedByOpened) {
+    // In cases where fullscreen is blocked by the *opened* frame:
+    // Switch the console observer to the opened window.
+    console_observer_ =
+        std::make_unique<content::WebContentsConsoleObserver>(popup_contents);
+    console_observer_->SetFilter(
+        base::BindRepeating(&FullscreenPermissionPolicyViolationMessageFilter));
+  }
+  if (GetParam().is_fullscreen_expected_allowed()) {
     WaitForHTMLFullscreen(popup_contents);
+  } else {
+    ASSERT_TRUE(console_observer_->Wait());
   }
   EXPECT_EQ(EvalJs(popup_contents,
                    "!!document.fullscreenElement && "
                    "document.fullscreenElement == document.documentElement")
                 .ExtractBool(),
-            GetParam().fullscreen_expected);
+            GetParam().is_fullscreen_expected_allowed());
   FullscreenController* fullscreen_controller =
       popup->exclusive_access_manager()->fullscreen_controller();
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_EQ(fullscreen_controller->IsTabFullscreen(),
-            GetParam().fullscreen_expected);
+            GetParam().is_fullscreen_expected_allowed());
 }
 
 }  // namespace

@@ -2213,8 +2213,14 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // If the resulting frame didn't create a new window and fullscreen was
   // requested, reset the flag to prevent making a pre-existing frame
   // fullscreen.
-  if (!result.new_window && window_features.is_fullscreen) {
+  if (window_features.is_fullscreen &&
+      (!result.new_window || !window_features.is_popup)) {
     window_features.is_fullscreen = false;
+    GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Fullscreen request ignored: 'fullscreen' "
+        "windowFeature flag requires a new popup window."));
     frame_request.SetFeaturesForWindowOpen(window_features);
   }
 

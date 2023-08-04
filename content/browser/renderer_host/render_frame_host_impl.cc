@@ -8898,8 +8898,7 @@ void RenderFrameHostImpl::BeginNavigation(
 
   if (begin_params->is_fullscreen_requested) {
     // Fullscreen requests on navigation are only allowed from initial empty
-    // documents that are the outermost main frame. The initiator must also have
-    // window management granted, otherwise the fullscreen bit is dropped.
+    // documents that are the outermost main frame.
     if (!is_initial_empty_document()) {
       bad_message::ReceivedBadMessage(
           GetProcess(),
@@ -8918,8 +8917,22 @@ void RenderFrameHostImpl::BeginNavigation(
                   initiator_process_id,
                   begin_params->initiator_frame_token.value())
             : nullptr;
+    // The initiator must have window-management permission, permission
+    // policy and `fullscreen` permission policy granted and the navigation must
+    // be from a user gesture, otherwise the fullscreen bit is dropped.
     if (!initiator_render_frame_host ||
-        !IsWindowManagementGranted(initiator_render_frame_host)) {
+        !validated_common_params->has_user_gesture ||
+        !IsWindowManagementGranted(initiator_render_frame_host) ||
+        !initiator_render_frame_host->permissions_policy()->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kFullscreen) ||
+        !initiator_render_frame_host->permissions_policy()->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kWindowManagement)) {
+      if (initiator_render_frame_host) {
+        initiator_render_frame_host->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "Fullscreen request ignored: Insufficient permissions "
+            "or user activation.");
+      }
       begin_params->is_fullscreen_requested = false;
     }
   }
