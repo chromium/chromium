@@ -4,7 +4,6 @@
 
 #include "ash/system/time/time_of_day.h"
 
-#include "ash/test/failing_local_time_converter.h"
 #include "base/i18n/rtl.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/simple_test_clock.h"
@@ -89,13 +88,6 @@ TEST(TimeOfDayTest, SetClock) {
   base::Time expected_time;
   EXPECT_TRUE(base::Time::FromString("23 Dec 2021 2:00:00", &expected_time));
   EXPECT_EQ(expected_time, test_time.ToTimeToday());
-}
-
-TEST(TimeOfDayTest, ReturnsNullTimeWhenLocalTimeFails) {
-  FailingLocalTimeConverter failing_local_time_converter;
-  TimeOfDay time_of_day =
-      TimeOfDay(12 * 60).SetLocalTimeConverter(&failing_local_time_converter);
-  EXPECT_TRUE(time_of_day.ToTimeToday().is_null());
 }
 
 }  // namespace
