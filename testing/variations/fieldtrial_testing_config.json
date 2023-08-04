@@ -3905,6 +3905,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "task_priority": "user_blocking"
+                    },
                     "enable_features": [
                         "CompressionDictionaryTransportBackend"
                     ]
