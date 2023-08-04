@@ -73,10 +73,11 @@ class TestSuite {
   // Disable crash dialogs so that it doesn't gum up the buildbot
   virtual void SuppressErrorDialogs();
 
-  // Override these for custom initialization and shutdown handling.  Use these
-  // instead of putting complex code in your constructor/destructor.
-
+  // Override these for custom test handling. Use these instead of putting
+  // complex code in your constructor/destructor.
   virtual void Initialize();
+  virtual void InitializeFromCommandLine(int argc, char** argv);
+  virtual int RunAllTests();
   virtual void Shutdown();
 
   // Make sure that we setup an AtExitManager so Singleton objects will be
@@ -84,15 +85,15 @@ class TestSuite {
   std::unique_ptr<base::AtExitManager> at_exit_manager_;
 
  private:
-  void AddTestLauncherResultPrinter();
-
-  void InitializeFromCommandLine(int argc, char** argv);
-#if BUILDFLAG(IS_WIN)
-  void InitializeFromCommandLine(int argc, wchar_t** argv);
-#endif  // BUILDFLAG(IS_WIN)
+  // Implementation of the constructor. Factored to a helper so that the
+  // Windows-specific constructor can delegate to it after doing some string
+  // conversion.
+  void Construct(int argc, char** argv);
 
   // Basic initialization for the test suite happens here.
   void PreInitialize();
+
+  void AddTestLauncherResultPrinter();
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   test::TraceToFile trace_to_file_;
