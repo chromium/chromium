@@ -10,6 +10,8 @@ import './shared_style.css.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -32,7 +34,10 @@ export interface ExtensionsReviewPanelElement {
   };
 }
 
-export class ExtensionsReviewPanelElement extends PolymerElement {
+const ExtensionsReviewPanelElementBase = I18nMixin(PolymerElement);
+
+export class ExtensionsReviewPanelElement extends
+    ExtensionsReviewPanelElementBase {
   static get is() {
     return 'extensions-review-panel';
   }
@@ -198,6 +203,16 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
           this.lastClickedExtensionId_);
       this.hasChangeBeenMade_ = true;
     }
+  }
+
+  private getRemoveButtonA11yLabel_(extensionName: string): string {
+    return loadTimeData.substituteString(
+        this.i18n('safetyCheckRemoveButtonA11yLabel'), extensionName);
+  }
+
+  private getOptionMenuA11yLabel_(extensionName: string) {
+    return loadTimeData.substituteString(
+        this.i18n('safetyCheckOptionMenuA11yLabel'), extensionName);
   }
 
   private async onRemoveExtensionClick_(

@@ -128,11 +128,13 @@
         </div>
       </div>
       <cr-icon-button iron-icon="cr:delete"
-          actionable on-click="onRemoveExtensionClick_">
+          actionable on-click="onRemoveExtensionClick_"
+          aria-label="[[getRemoveButtonA11yLabel_(item.name)]]">
       </cr-icon-button>
       <cr-icon-button class="icon-more-vert header-aligned-button"
         id="makeExceptionMenuButton"
         on-click="onMakeExceptionMenuClick_"
+        aria-label="[[getOptionMenuA11yLabel_(item.name)]]"
         focus-type="makeExceptionMenuButton"></cr-icon-button>
     </div>
   </template>

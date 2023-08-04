@@ -577,6 +577,12 @@
   <message name="IDS_EXTENSIONS_SC_ALL_EXTENSIONS" desc="The label for extensions cards below the safety check panel.">
     All Extensions
   </message>
+  <message name="IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL" desc="The (accessibility) label for remove extension button.">
+    Remove <ph name="EXTENSION_NAME">$1<ex>Voice Over</ex></ph> extension
+  </message>
+  <message name="IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL" desc="The (accessibility) label for the three dots option menu.">
+    More actions for <ph name="EXTENSION_NAME">$1<ex>Voice Over</ex></ph> extension
+  </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
     Include Ctrl, Alt, or ⌘

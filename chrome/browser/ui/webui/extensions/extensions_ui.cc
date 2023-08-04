@@ -350,7 +350,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
     {"safetyCheckAllDoneForNow", IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW},
     {"safetyCheckAllExtensions", IDS_EXTENSIONS_SC_ALL_EXTENSIONS},
-
+    {"safetyCheckRemoveButtonA11yLabel",
+     IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
+    {"safetyCheckOptionMenuA11yLabel",
+     IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},
     {"kioskAddApp", IDS_EXTENSIONS_KIOSK_ADD_APP},
