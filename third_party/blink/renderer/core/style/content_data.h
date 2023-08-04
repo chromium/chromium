@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #include <iosfwd>
 
@@ -124,7 +125,30 @@ class ImageContentData final : public ContentData {
   void Trace(Visitor*) const override;
 
   String DebugString() const override {
-    return "<image: " + image_->CssValue()->CssText() + ">";
+    StringBuilder str;
+    str.Append("<image: ");
+    if (image_->IsImageResource()) {
+      str.Append("[is_resource]");
+    }
+    if (image_->IsPendingImage()) {
+      str.Append("[pending]");
+    }
+    if (image_->IsGeneratedImage()) {
+      str.Append("[generated]");
+    }
+    if (image_->IsContentful()) {
+      str.Append("[contentful]");
+    }
+    if (image_->IsImageResourceSet()) {
+      str.Append("[resourceset]");
+    }
+    if (image_->IsPaintImage()) {
+      str.Append("[paint]");
+    }
+    if (image_->IsCrossfadeImage()) {
+      str.Append("[crossfade]");
+    }
+    return str + image_->CssValue()->CssText() + ">";
   }
 
  private:
