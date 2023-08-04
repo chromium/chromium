@@ -41,6 +41,7 @@ class RemoveWebAppJob : public UninstallJob {
   void OnIconDataDeleted(bool success);
   void OnTranslationDataDeleted(bool success);
   void OnWebAppProfileDeleted(Profile* profile);
+  void OnIsolatedWebAppBrowsingDataCleared();
   void MaybeFinishPrimaryRemoval();
   void ProcessSubAppsPendingRemovalOrComplete();
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
@@ -58,6 +59,7 @@ class RemoveWebAppJob : public UninstallJob {
 
   bool app_data_deleted_ = false;
   bool translation_data_deleted_ = false;
+  bool isolated_web_app_browsing_data_cleared_ = false;
   bool hooks_uninstalled_ = false;
   bool pending_app_profile_deletion_ = false;
   bool errors_ = false;

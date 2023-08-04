@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/uninstall/remove_install_source_job.h"
@@ -134,6 +135,21 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     mutable_app->SetIsUninstalling(true);
   }
 
+  // For Isolated Web App:
+  // - Sets pref value to garbage-collect StoragePartitions on next start up.
+  // - Clears data on StoragePartitions to prevent data leak on reinstall
+  // before GC.
+  if (has_isolated_storage_) {
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kShouldGarbageCollectStoragePartitions, true);
+
+    url::Origin iwa_origin = url::Origin::Create(app->scope());
+    web_app::RemoveIsolatedWebAppBrowsingData(
+        &profile_.get(), iwa_origin,
+        base::BindOnce(&RemoveWebAppJob::OnIsolatedWebAppBrowsingDataCleared,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
       base::BindOnce(&RemoveWebAppJob::OnOsHooksUninstalled,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -249,10 +265,20 @@ void RemoveWebAppJob::OnWebAppProfileDeleted(Profile* profile) {
   MaybeFinishPrimaryRemoval();
 }
 
+void RemoveWebAppJob::OnIsolatedWebAppBrowsingDataCleared() {
+  CHECK(!primary_removal_result_.has_value());
+  CHECK(!isolated_web_app_browsing_data_cleared_);
+  // Must be an Isolated Web App.
+  CHECK(has_isolated_storage_);
+  isolated_web_app_browsing_data_cleared_ = true;
+  MaybeFinishPrimaryRemoval();
+}
+
 void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
   CHECK(!primary_removal_result_.has_value());
   if (!hooks_uninstalled_ || !app_data_deleted_ || !translation_data_deleted_ ||
-      pending_app_profile_deletion_) {
+      pending_app_profile_deletion_ ||
+      (has_isolated_storage_ && !isolated_web_app_browsing_data_cleared_)) {
     return;
   }
 
@@ -265,13 +291,6 @@ void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
   primary_removal_result_ = errors_ ? webapps::UninstallResultCode::kError
                                     : webapps::UninstallResultCode::kSuccess;
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);
-
-  // For IWAs, set pref for garbage collection.
-  if (has_isolated_storage_ &&
-      primary_removal_result_ == webapps::UninstallResultCode::kSuccess) {
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kShouldGarbageCollectStoragePartitions, true);
-  }
 
   lock_->install_manager().NotifyWebAppUninstalled(app_id_, uninstall_source_);
 

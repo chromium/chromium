@@ -147,7 +147,7 @@ void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
   UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action);
 
   Uninstall();
-  if (is_isolated_web_app || (checkbox_ && checkbox_->GetChecked())) {
+  if (checkbox_ && checkbox_->GetChecked()) {
     ClearWebAppSiteData();
   }
 }

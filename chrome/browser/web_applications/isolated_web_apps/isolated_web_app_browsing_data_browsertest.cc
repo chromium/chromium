@@ -15,9 +15,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
+#include "chrome/browser/web_applications/uninstall/remove_web_app_job.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -173,6 +177,31 @@ class IsolatedWebAppBrowsingDataClearingTest
 
     browsing_data_remover->SetWouldCompleteCallbackForTesting(
         base::DoNothing());
+  }
+
+  void Uninstall(const IsolatedWebAppUrlInfo& url_info) {
+    base::RunLoop run_loop;
+    auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::BindLambdaForTesting([&](base::OnceClosure callback) {
+          if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
+            run_loop.Quit();
+          }
+          std::move(callback).Run();
+        }));
+
+    base::test::TestFuture<webapps::UninstallResultCode> future;
+    auto job = std::make_unique<RemoveWebAppJob>(
+        webapps::WebappUninstallSource::kAppsPage, *profile(),
+        url_info.app_id());
+
+    provider().scheduler().UninstallWebApp(
+        url_info.app_id(), webapps::WebappUninstallSource::kAppsPage,
+        future.GetCallback());
+
+    auto code = future.Get();
+    ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
+    run_loop.Run();
   }
 
   int64_t GetCacheSize(const IsolatedWebAppUrlInfo& url_info) {
@@ -352,6 +381,62 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
   }
 
   ClearData(url_info);
+
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    EXPECT_EQ(GetAllCookies(partition).size(), 0UL);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
+                       DataClearedOnUninstall) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+
+  // Create both a persistent and a non-persistent partitions.
+  ASSERT_TRUE(CreateControlledFrame(web_contents,
+                                    dev_server()->GetURL("/empty_title.html"),
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(CreateControlledFrame(web_contents,
+                                    dev_server()->GetURL("/empty_title.html"),
+                                    "partition_name_1"));
+
+  std::vector<content::StoragePartitionConfig> storage_partition_configs{
+      url_info.storage_partition_config(profile()),
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_0", /*in_memory=*/false),
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_1", /*in_memory=*/true)};
+
+  // Set a partitioned and an unpartitioned cookie for each storage partition.
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // Unpartitioned Cookie
+    ASSERT_TRUE(
+        SetCookie(partition, GURL("http://a.com"), "A=0", absl::nullopt));
+    // Partitioned Cookie
+    ASSERT_TRUE(SetCookie(
+        partition, GURL("https://c.com"), "A=0; secure; partitioned",
+        net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
+  }
+
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
+  }
+
+  Uninstall(url_info);
 
   for (const auto& config : storage_partition_configs) {
     SCOPED_TRACE("partition_name: " + config.partition_name());
