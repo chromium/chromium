@@ -18,9 +18,11 @@
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_util.h"
@@ -30,6 +32,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -45,6 +48,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -71,12 +75,6 @@ namespace ash {
 
 namespace {
 
-ui::ClipboardNonBacked* GetClipboard() {
-  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  DCHECK(clipboard);
-  return clipboard;
-}
-
 // Encodes `bitmap` and maps the corresponding ClipboardHistoryItem ID, `id, to
 // the resulting PNG in `encoded_pngs`. This function should run on a background
 // thread.
@@ -93,6 +91,39 @@ void EncodeBitmapToPNG(
 
   encoded_pngs->emplace(id, std::move(png));
   std::move(barrier_callback).Run();
+}
+
+// Returns the clipboard instance for the current thread.
+ui::ClipboardNonBacked* GetClipboard() {
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  DCHECK(clipboard);
+  return clipboard;
+}
+
+// Returns the last active user pref service or `nullptr` if one does not exist.
+PrefService* GetLastActiveUserPrefService() {
+  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+}
+
+// Returns the time when the menu was last shown for the user associated with
+// the last active user pref service, or `absl::nullopt` if the menu was not
+// previously marked as having been shown.
+absl::optional<base::Time> GetMenuLastTimeShown() {
+  if (auto* prefs = GetLastActiveUserPrefService()) {
+    if (auto* pref = prefs->FindPreference(prefs::kMultipasteMenuLastTimeShown);
+        pref && !pref->IsDefaultValue()) {
+      return base::ValueToTime(pref->GetValue());
+    }
+  }
+  return absl::nullopt;
+}
+
+// Marks the time when the menu was last shown for the user associated with the
+// last active user pref service.
+void MarkMenuLastTimeShown() {
+  if (auto* prefs = GetLastActiveUserPrefService()) {
+    prefs->SetTime(prefs::kMultipasteMenuLastTimeShown, base::Time::Now());
+  }
 }
 
 // Emits a user action indicating that the clipboard history item at menu index
@@ -339,6 +370,13 @@ ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
   clipboard_history_->RemoveObserver(this);
 }
 
+// static
+void ClipboardHistoryControllerImpl::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  ClipboardNudgeController::RegisterProfilePrefs(registry);
+  registry->RegisterTimePref(prefs::kMultipasteMenuLastTimeShown, base::Time());
+}
+
 void ClipboardHistoryControllerImpl::Shutdown() {
   if (IsMenuShowing()) {
     context_menu_->Cancel(/*will_paste_item=*/false);
@@ -418,7 +456,8 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
       base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
                           base::Unretained(this)),
       clipboard_history_.get());
-  context_menu_->Run(anchor_rect, source_type, show_source);
+  context_menu_->Run(anchor_rect, source_type, show_source,
+                     GetMenuLastTimeShown());
 
   CHECK(IsMenuShowing());
   accelerator_target_->OnMenuShown();
@@ -444,6 +483,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
           },
           weak_ptr_factory_.GetWeakPtr()));
 
+  MarkMenuLastTimeShown();
   base::UmaHistogramEnumeration("Ash.ClipboardHistory.ContextMenu.ShowMenu",
                                 show_source);
 

@@ -11,6 +11,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -42,6 +43,7 @@ using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::ResultOf;
+using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
@@ -240,8 +242,10 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
 // presence of a menu header, a menu footer, both, or neither.
 class ClipboardHistoryMenuModelAdapterMenuItemTest
     : public AshTestBase,
-      public WithParamInterface<std::tuple<ClipboardHistoryControllerShowSource,
-                                           /*enable_refresh=*/bool>> {
+      public WithParamInterface<
+          std::tuple<ClipboardHistoryControllerShowSource,
+                     /*time_since_menu_shown=*/absl::optional<base::TimeDelta>,
+                     /*enable_refresh=*/bool>> {
  public:
   ClipboardHistoryMenuModelAdapterMenuItemTest() {
     scoped_feature_list_.InitWithFeatureStates(
@@ -255,6 +259,19 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    auto* session_controller = Shell::Get()->session_controller();
+    ASSERT_TRUE(session_controller);
+    auto* prefs = session_controller->GetLastActiveUserPrefService();
+    ASSERT_TRUE(prefs);
+
+    // Set menu last time shown.
+    if (const auto& time_since_menu_shown = GetTimeSinceMenuShown()) {
+      prefs->SetTime(prefs::kMultipasteMenuLastTimeShown,
+                     base::Time::Now() - time_since_menu_shown.value());
+    }
+
+    // Satisfy future on operation confirmations.
     GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
         operation_confirmed_future_.GetRepeatingCallback());
   }
@@ -271,12 +288,16 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     return std::get<0>(GetParam());
   }
 
+  const absl::optional<base::TimeDelta>& GetTimeSinceMenuShown() const {
+    return std::get<1>(GetParam());
+  }
+
   bool IsClipboardHistoryLongpressEnabled() {
     return GetSource() ==
            ClipboardHistoryControllerShowSource::kControlVLongpress;
   }
 
-  bool IsClipboardHistoryRefreshEnabled() { return std::get<1>(GetParam()); }
+  bool IsClipboardHistoryRefreshEnabled() { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -286,6 +307,10 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
 INSTANTIATE_TEST_SUITE_P(All,
                          ClipboardHistoryMenuModelAdapterMenuItemTest,
                          Combine(ValuesIn(GetClipboardHistoryShowSources()),
+                                 /*time_since_menu_shown=*/
+                                 Values(absl::make_optional(base::Days(60)),
+                                        absl::make_optional(base::Days(59)),
+                                        absl::nullopt),
                                  /*enable_refresh=*/Bool()));
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
@@ -302,9 +327,13 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
   EXPECT_TRUE(controller->IsMenuShowing());
 
-  // Verify the number of items in the menu model.
   const bool has_header = IsClipboardHistoryRefreshEnabled();
-  const bool has_footer = IsClipboardHistoryLongpressEnabled();
+  const bool has_footer =
+      IsClipboardHistoryLongpressEnabled() ||
+      (IsClipboardHistoryRefreshEnabled() &&
+       (GetTimeSinceMenuShown().value_or(base::Days(60)) >= base::Days(60)));
+
+  // Verify the number of items in the menu model.
   size_t expected_menu_item_count = controller->history()->GetItems().size();
   if (has_header) {
     // The menu's first item should be a header.

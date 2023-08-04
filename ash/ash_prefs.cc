@@ -13,7 +13,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/clipboard/clipboard_nudge_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -102,7 +102,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   CellularSetupNotifier::RegisterProfilePrefs(registry);
   chromeos::MultitaskMenuNudgeController::RegisterProfilePrefs(registry);
   contextual_tooltip::RegisterProfilePrefs(registry);
-  ClipboardNudgeController::RegisterProfilePrefs(registry);
+  ClipboardHistoryControllerImpl::RegisterProfilePrefs(registry);
   ColorPaletteController::RegisterPrefs(registry);
   DarkLightModeControllerImpl::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);

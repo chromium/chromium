@@ -62,6 +62,11 @@ gfx::FontList Resolve(TypographyToken typography_token) {
   return TypographyProvider::Get()->ResolveTypographyToken(typography_token);
 }
 
+// Returns the elapsed time since the specified `time`.
+base::TimeDelta TimeSince(const base::Time& time) {
+  return base::Time::Now() - time;
+}
+
 // Returns whether the clipboard history menu requires a header.
 bool IsHeaderRequired() {
   return chromeos::features::IsClipboardHistoryRefreshEnabled();
@@ -69,9 +74,28 @@ bool IsHeaderRequired() {
 
 // Returns whether the clipboard history menu requires a footer.
 bool IsFooterRequired(
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
-  return show_source == crosapi::mojom::ClipboardHistoryControllerShowSource::
-                            kControlVLongpress;
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    const absl::optional<base::Time>& menu_last_time_shown) {
+  // A footer is always required when the menu is shown via Ctrl+V long press.
+  using crosapi::mojom::ClipboardHistoryControllerShowSource;
+  if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {
+    return true;
+  }
+
+  // If the menu is not shown via Ctrl+V long press, footers require that the
+  // clipboard history refresh feature be enabled.
+  if (!chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    return false;
+  }
+
+  // A footer is required if the menu hasn't been shown in the past 60 days.
+  if (TimeSince(menu_last_time_shown.value_or(base::Time())) >=
+      base::Days(60)) {
+    return true;
+  }
+
+  // TODO(http://b/267694412): Also require footer if a nudge was just shown.
+  return false;
 }
 
 // Populates `container` with a menu title to appear at the top of the clipboard
@@ -331,7 +355,8 @@ ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
 void ClipboardHistoryMenuModelAdapter::Run(
     const gfx::Rect& anchor_rect,
     ui::MenuSourceType source_type,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    const absl::optional<base::Time>& menu_last_time_shown) {
   DCHECK(!root_view_);
   DCHECK(model_);
   DCHECK(item_snapshots_.empty());
@@ -366,7 +391,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
     ++index;
   }
 
-  if (IsFooterRequired(show_source)) {
+  if (IsFooterRequired(show_source, menu_last_time_shown)) {
     // Add a placeholder non-interactive item that will contain the clipboard
     // history menu's footer, consisting of a separator (styled differently from
     // the context menu separators) and educational text.

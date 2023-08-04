@@ -1317,6 +1317,10 @@ inline constexpr char kNaturalScroll[] = "settings.touchpad.natural_scroll";
 // A boolean pref which is true if mouse reverse scroll is enabled.
 inline constexpr char kMouseReverseScroll[] = "settings.mouse.reverse_scroll";
 
+// A time pref storing the last time the multipaste menu was shown.
+inline constexpr char kMultipasteMenuLastTimeShown[] =
+    "ash.clipboard.multipaste_menu.last_time_shown";
+
 // A dictionary storing the number of times and most recent time the multipaste
 // contextual nudge was shown.
 inline constexpr char kMultipasteNudges[] = "ash.clipboard.multipaste_nudges";

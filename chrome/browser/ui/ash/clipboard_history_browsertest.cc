@@ -2008,23 +2008,23 @@ class ClipboardHistoryRefreshEnabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that clicking the clipboard history menu's header does nothing and
-// that tab and arrow key traversal passes over the header.
+// Verifies that clicking the clipboard history menu's header/footer does
+// nothing, and that tab and arrow key traversal passes over the header/footer.
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshEnabledBrowserTest,
-                       HeaderNotInteractive) {
+                       HeaderAndFooterNotInteractive) {
   // Write some things to the clipboard.
   SetClipboardText("A");
   SetClipboardText("B");
 
-  // Show the clipboard history menu and verify that the menu has a header and
-  // two clipboard history items.
+  // Show the clipboard history menu and verify that the menu has a header, a
+  // footer, and two clipboard history items.
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   const auto* const menu =
       GetClipboardHistoryController()->context_menu_for_test();
   ASSERT_TRUE(menu);
   EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
-  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 3u);
+  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 4u);
 
   // Verify that clicking on the header does nothing.
   EXPECT_TRUE(textfield_->GetText().empty());
@@ -2035,7 +2035,16 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshEnabledBrowserTest,
   EXPECT_TRUE(textfield_->GetText().empty());
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Verify that traversing over the menu with arrow keys skips the header.
+  // Verify that clicking on the footer does nothing.
+  EXPECT_TRUE(textfield_->GetText().empty());
+  const auto* const footer = menu->GetMenuItemViewAtForTest(/*index=*/3u);
+  ASSERT_TRUE(footer);
+  GetEventGenerator()->MoveMouseTo(footer->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(textfield_->GetText().empty());
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify traversing over the menu with arrow keys skips the header/footer.
   const auto* const item1 =
       GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
   const auto* const item2 =
@@ -2047,8 +2056,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshEnabledBrowserTest,
   PressAndRelease(ui::VKEY_DOWN);
   EXPECT_TRUE(item1->IsSelected());
 
-  // Verify that traversing over the menu with the Tab key (two presses at a
-  // time for each item's main button and delete button) skips the header.
+  // Verify traversing over the menu with the Tab key (two presses at a time for
+  // each item's main button and delete button) skips the header/footer.
   PressAndRelease(ui::VKEY_TAB);
   PressAndRelease(ui::VKEY_TAB);
   EXPECT_TRUE(item2->IsSelected());
