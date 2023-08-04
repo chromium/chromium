@@ -6,8 +6,8 @@ import("//build/config/features.gni")
 
 source_set("browser") {
   sources = [
-    "hash_database_mechanism.cc",
-    "hash_database_mechanism.h",
+    "database_manager_mechanism.cc",
+    "database_manager_mechanism.h",
     "hash_realtime_mechanism.cc",
     "hash_realtime_mechanism.h",
     "ping_manager.cc",

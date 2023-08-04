@@ -7,8 +7,8 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/hash_database_mechanism.h"
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
@@ -47,7 +47,7 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
       url_lookup_service_metric_suffix, last_committed_url, ui_task_runner_,
       url_lookup_service_on_ui, webui_delegate,
       MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly);
-  auto hash_database_mechanism = std::make_unique<HashDatabaseMechanism>(
+  auto hash_database_mechanism = std::make_unique<DatabaseManagerMechanism>(
       url, threat_types, database_manager,
       MechanismExperimentHashDatabaseCache::kHashDatabaseOnly);
   auto hash_real_time_mechanism = std::make_unique<HashRealTimeMechanism>(

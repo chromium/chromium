@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/hash_database_mechanism.h"
+#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -11,7 +11,7 @@
 
 namespace safe_browsing {
 
-HashDatabaseMechanism::HashDatabaseMechanism(
+DatabaseManagerMechanism::DatabaseManagerMechanism(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
@@ -21,7 +21,7 @@ HashDatabaseMechanism::HashDatabaseMechanism(
                                   database_manager,
                                   experiment_cache_selection) {}
 
-HashDatabaseMechanism::~HashDatabaseMechanism() {
+DatabaseManagerMechanism::~DatabaseManagerMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_async_database_manager_check_in_progress_) {
@@ -30,7 +30,7 @@ HashDatabaseMechanism::~HashDatabaseMechanism() {
 }
 
 SafeBrowsingLookupMechanism::StartCheckResult
-HashDatabaseMechanism::StartCheckInternal() {
+DatabaseManagerMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_safe_synchronously = database_manager_->CheckBrowseUrl(
       url_, threat_types_, this, experiment_cache_selection_);
@@ -41,7 +41,7 @@ HashDatabaseMechanism::StartCheckInternal() {
                           /*did_check_url_real_time_allowlist=*/false);
 }
 
-void HashDatabaseMechanism::OnCheckBrowseUrlResult(
+void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASH_DATABASE_MECHANISM_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASH_DATABASE_MECHANISM_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DATABASE_MANAGER_MECHANISM_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DATABASE_MANAGER_MECHANISM_H_
 
 #include "base/sequence_checker.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -12,19 +12,19 @@
 
 namespace safe_browsing {
 
-// This performs the hash-based Safe Browsing check using the database manager.
-class HashDatabaseMechanism : public SafeBrowsingLookupMechanism,
-                              public SafeBrowsingDatabaseManager::Client {
+// This performs Safe Browsing checks using the database manager.
+class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
+                                 public SafeBrowsingDatabaseManager::Client {
  public:
-  HashDatabaseMechanism(
+  DatabaseManagerMechanism(
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       MechanismExperimentHashDatabaseCache experiment_cache_selection);
 
-  HashDatabaseMechanism(const HashDatabaseMechanism&) = delete;
-  HashDatabaseMechanism& operator=(const HashDatabaseMechanism&) = delete;
-  ~HashDatabaseMechanism() override;
+  DatabaseManagerMechanism(const DatabaseManagerMechanism&) = delete;
+  DatabaseManagerMechanism& operator=(const DatabaseManagerMechanism&) = delete;
+  ~DatabaseManagerMechanism() override;
 
  private:
   // SafeBrowsingLookupMechanism implementation:
@@ -47,4 +47,4 @@ class HashDatabaseMechanism : public SafeBrowsingLookupMechanism,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASH_DATABASE_MECHANISM_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DATABASE_MANAGER_MECHANISM_H_

@@ -388,13 +388,13 @@ class V4GetHashProtocolManager {
   std::vector<ThreatType> threat_types_;
 
   // This value determines whether the class should maintain three local caches,
-  // one for each type of SafeBrowsingLookupMechanism's usage of the
-  // HashDatabaseMechanism cache. The value is set to true on the first Safe
-  // Browsing lookup that an ESB user makes after startup. Once true, it's never
-  // set back to false, meaning that the secondary caches won't be cleaned up
-  // until restart. Note that the two secondary caches will only ever be read
-  // from / written to from an experiment lookup, which is not run if the user
-  // turns off ESB (or for any non-ESB users on the device).
+  // one for each type of SafeBrowsingLookupMechanism's usage of the hash
+  // database cache. The value is set to true on the first Safe Browsing lookup
+  // that an ESB user makes after startup. Once true, it's never set back to
+  // false, meaning that the secondary caches won't be cleaned up until restart.
+  // Note that the two secondary caches will only ever be read from / written to
+  // from an experiment lookup, which is not run if the user turns off ESB (or
+  // for any non-ESB users on the device).
   // TODO(crbug.com/1410253): Delete once temporary experiment is complete.
   bool is_lookup_mechanism_experiment_enabled_ = false;
 

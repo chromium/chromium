@@ -285,7 +285,7 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_safe_synchronously = false;
   if (can_check_db_) {
-    hash_database_mechanism_ = std::make_unique<HashDatabaseMechanism>(
+    hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
         url, threat_types_, database_manager_, experiment_cache_selection_);
     is_safe_synchronously =
         hash_database_mechanism_

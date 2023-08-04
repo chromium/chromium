@@ -122,7 +122,7 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
     bool real_time_request_failed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  hash_database_mechanism_ = std::make_unique<HashDatabaseMechanism>(
+  hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
       url, threat_types_, database_manager_, experiment_cache_selection_);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult,

@@ -11,9 +11,9 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/hash_database_mechanism.h"
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
@@ -600,7 +600,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
         /*is_source_lookup_mechanism_experiment=*/false);
   } else {
     performed_check = PerformedCheck::kHashDatabaseCheck;
-    lookup_mechanism = std::make_unique<HashDatabaseMechanism>(
+    lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         MechanismExperimentHashDatabaseCache::kNoExperiment);
   }

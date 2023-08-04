@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/hash_database_mechanism.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -179,7 +179,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // This will be created in cases where the real-time URL check decides to fall
   // back to the hash-based checks.
-  std::unique_ptr<HashDatabaseMechanism> hash_database_mechanism_ = nullptr;
+  std::unique_ptr<DatabaseManagerMechanism> hash_database_mechanism_ = nullptr;
 
   base::WeakPtrFactory<UrlRealTimeMechanism> weak_factory_{this};
 };

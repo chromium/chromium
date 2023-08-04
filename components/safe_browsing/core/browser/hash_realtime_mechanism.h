@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/hash_database_mechanism.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "url/gurl.h"
@@ -91,7 +91,7 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // This will be created in cases where the hash-prefix real-time check decides
   // to fall back to the hash-based database checks.
-  std::unique_ptr<HashDatabaseMechanism> hash_database_mechanism_ = nullptr;
+  std::unique_ptr<DatabaseManagerMechanism> hash_database_mechanism_ = nullptr;
 
   // True if the mechanism was created as part of the
   // SafeBrowsingLookupMechanismExperiment.
