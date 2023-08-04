@@ -634,6 +634,12 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.getCurrentScreen_(),
         PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
+
+    // Undefined behavior can happen when the current page has focus on the
+    // "next" button, however the next page hides the button. This prevents
+    // undefined behavior by focusing on the dialog before changing screens.
+    this.$.dialog.focus();
+
     switch (this.flowState_) {
       // TODO(b/266455078) Avoid Fallthrough case in switch
       // @ts-expect-error Fallthrough case in switch
@@ -782,7 +788,6 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
       case Status.CONNECTING:
         return this.i18n('multideviceNotificationAccessSetupConnectingTitle');
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
-        return this.i18n('multidevicePermissionsSetupAwaitingResponseTitle');
       case Status.COMPLETED_SUCCESSFULLY:
       case Status.COMPLETED_USER_REJECTED:
       case Status.FAILED_OR_CANCELLED:
@@ -845,6 +850,26 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
       default:
         return '';
     }
+  }
+
+  private getLiveStatus_(): string {
+    // Because the title is dynamically changed on the single dialog, there
+    // are cases when the "Connecting" screen is visually skipped in the
+    // multidevice permissions dialog because the phone is already
+    // connected, however, the Chromevox gets "stuck" on the Connecting
+    // screen and reads it. This work around adds attributes to get the
+    // "Finish setting up on your phone" title and description to fire in
+    // Chromevox.
+    //
+    // TODO(b/293308787): Investigate potential solutions to improve this,
+    // such as - if the phone is already connected, skip the "Connecting"
+    // screen all together to prevent this issue.
+    if (this.setupState_ ===
+        PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE) {
+      return 'polite';
+    }
+
+    return 'off';
   }
 
   private computeShouldShowLearnMoreButton_(): boolean {

@@ -281,7 +281,8 @@
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div id="dialogTitle" slot="title">
-    <div id="title">
+    <div id="title" aria-live="[[getLiveStatus_(setupState_)]]"
+        aria-labelledby="title" aria-describedby="description">
       <template is="dom-if" if="[[didSetupAttemptFail_]]" restamp>
         <iron-icon id="failure-icon" icon="os-settings:multidevice-error">
         </iron-icon>
