@@ -12,6 +12,7 @@ import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrom
 import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -459,8 +460,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
   });
 
   test('SetsExpandedSearchResultDescription', async () => {
-    const viewButton: HTMLElement =
-        powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
+    const viewButton =
+        powerBookmarksList.shadowRoot!.querySelector<HTMLElement>(
+            '#viewButton')!;
     viewButton.click();
 
     await performSearch('child bookmark');
@@ -471,6 +473,57 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(
         'child - All Bookmarks',
         powerBookmarksList.getBookmarkDescriptionForTests(folder));
+  });
+
+  test('RenamesBookmark', async () => {
+    const renamedBookmarkId = '4';
+    powerBookmarksList.setRenamingIdForTests(renamedBookmarkId);
+
+    await flushTasks();
+
+    const rowElement =
+        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            `#bookmark-${renamedBookmarkId}`);
+    assertTrue(!!rowElement);
+    let input =
+        rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertTrue(!!input);
+    const newName = 'foo';
+    input.value = newName;
+    input.inputElement.dispatchEvent(new Event('change'));
+
+    await flushTasks();
+
+    // Committing a new input value should rename the bookmark and remove the
+    // input.
+    assertEquals(1, bookmarksApi.getCallCount('renameBookmark'));
+    assertEquals(
+        renamedBookmarkId, bookmarksApi.getArgs('renameBookmark')[0][0]);
+    assertEquals(newName, bookmarksApi.getArgs('renameBookmark')[0][1]);
+    input = rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertFalse(!!input);
+  });
+
+  test('BlursRenameInput', async () => {
+    const renamedBookmarkId = '4';
+    powerBookmarksList.setRenamingIdForTests(renamedBookmarkId);
+
+    await flushTasks();
+
+    const rowElement =
+        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            `#bookmark-${renamedBookmarkId}`);
+    assertTrue(!!rowElement);
+    let input =
+        rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertTrue(!!input);
+    input.inputElement.blur();
+
+    await flushTasks();
+
+    // Blurring the input should remove it.
+    input = rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertFalse(!!input);
   });
 
   test('ShowsFolderImages', () => {

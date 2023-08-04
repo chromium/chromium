@@ -252,6 +252,17 @@ export class PowerBookmarkRowElement extends PolymerElement {
     }
   }
 
+  private createInputChangeEvent_(value: string|null) {
+    return new CustomEvent('input-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        value: value,
+      },
+    });
+  }
+
   /**
    * Triggers a custom input change event when the user hits enter or the input
    * loses focus.
@@ -261,14 +272,13 @@ export class PowerBookmarkRowElement extends PolymerElement {
     event.stopPropagation();
     const inputElement =
         this.shadowRoot!.querySelector<CrInputElement>('#input')!;
-    this.dispatchEvent(new CustomEvent('input-change', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        bookmark: this.bookmark,
-        value: inputElement.value,
-      },
-    }));
+    this.dispatchEvent(this.createInputChangeEvent_(inputElement.value));
+  }
+
+  private onInputBlur_(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(this.createInputChangeEvent_(null));
   }
 }
 
