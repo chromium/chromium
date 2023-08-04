@@ -89,8 +89,7 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   ~IOSurfaceBackingEGLState();
 };
 
-// Representation of a GLTextureImageBacking or
-// GLTextureImageBackingPassthrough as a GL TexturePassthrough.
+// Representation of an IOSurfaceImageBacking as a GL TexturePassthrough.
 class GLTextureIOSurfaceRepresentation
     : public GLTexturePassthroughImageRepresentation {
  public:
