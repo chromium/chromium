@@ -1626,6 +1626,9 @@ extern const char kPrivacySandboxSettings4Description[];
 extern const char kPrivateAggregationDeveloperModeName[];
 extern const char kPrivateAggregationDeveloperModeDescription[];
 
+extern const char kProtectedAudiencesConsentedDebugTokenName[];
+extern const char kProtectedAudiencesConsentedDebugTokenDescription[];
+
 extern const char kPullToRefreshName[];
 extern const char kPullToRefreshDescription[];
 extern const char kPullToRefreshEnabledTouchscreen[];

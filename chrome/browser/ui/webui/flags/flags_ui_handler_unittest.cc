@@ -83,13 +83,9 @@ class FlagsUIHandlerTest : public testing::Test {
   raw_ptr<TestFlagStorage> storage_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// We don't currently have a feature using String valued flags so we can't run
-// this test.
 TEST_F(FlagsUIHandlerTest, HandlesSetString) {
-  // Need to use an actual feature name for ChromeOS. This feature will be added
-  // in a subsequent CL. But until then it's fine for other platforms.
-  const std::string kTestFeature = "protected-audience-debugging";
+  // Need to use an actual feature name for ChromeOS.
+  const std::string kTestFeature = "protected-audience-debug-token";
   EXPECT_EQ("", storage_->GetStringFlag(kTestFeature));
 
   web_ui_.HandleReceivedMessage(
@@ -97,7 +93,6 @@ TEST_F(FlagsUIHandlerTest, HandlesSetString) {
       base::Value::List().Append(kTestFeature).Append("value"));
   EXPECT_EQ("value", storage_->GetStringFlag(kTestFeature));
 }
-#endif
 
 TEST_F(FlagsUIHandlerTest, HandlesSetOriginList) {
   // Need to use an actual feature name for ChromeOS.

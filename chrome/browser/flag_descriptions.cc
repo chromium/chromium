@@ -2877,6 +2877,15 @@ const char kPrivateAggregationDeveloperModeDescription[] =
     "all reporting delays. Only works if the Private Aggregation API is "
     "already enabled.";
 
+const char kProtectedAudiencesConsentedDebugTokenName[] =
+    "Protected Audiences Consented Debug Token";
+const char kProtectedAudiencesConsentedDebugTokenDescription[] =
+    "Enables Protected Audience Consented Debugging with the provided token. "
+    "Protected Audience auctions running on a Bidding and Auction API trusted "
+    "server with a matching token will be able to log information about the "
+    "auction to enable debugging. Note that this logging may include "
+    "information about the user's browsing history normally kept private.";
+
 const char kPullToRefreshName[] = "Pull-to-refresh gesture";
 const char kPullToRefreshDescription[] =
     "Pull-to-refresh gesture in response to vertical overscroll.";

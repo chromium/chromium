@@ -6740,6 +6740,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "protected-audience-debug-token",
+    "owners": [
+      "behamilton@google.com",
+      "//third_party/blink/renderer/modules/ad_auction/OWNERS"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "pull-to-refresh",
     "owners": [ "afakhry", "tclaiborne" ],
     "expiry_milestone": 99

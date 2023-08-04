@@ -10756,6 +10756,12 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableAndroidNKeyForFidoAuthentication)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"protected-audience-debug-token",
+     flag_descriptions::kProtectedAudiencesConsentedDebugTokenName,
+     flag_descriptions::kProtectedAudiencesConsentedDebugTokenDescription,
+     kOsAll,
+     STRING_VALUE_TYPE(switches::kProtectedAudiencesConsentedDebugToken, "")},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
