@@ -168,6 +168,13 @@ def GetCommandDecoder(gpu_info: Optional[tgi.GPUInfo]) -> str:
   return 'no_passthrough'
 
 
+def GetSkiaGraphiteStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+  if gpu_info and gpu_info.feature_status and gpu_info.feature_status.get(
+      'skia_graphite') == 'enabled':
+    return 'graphite-enabled'
+  return 'graphite-disabled'
+
+
 def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo],
                     extra_browser_args: List[str]) -> str:
   retval = 'renderer-software'

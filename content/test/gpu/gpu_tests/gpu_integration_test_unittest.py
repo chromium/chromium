@@ -316,6 +316,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'no-asan',
             'target-cpu-64',
             'no-clang-coverage',
+            'graphite-disabled',
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -342,6 +343,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'renderer-skia-gl',
             'no-oop-c',
             'no-clang-coverage',
+            'graphite-disabled',
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -366,6 +368,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'renderer-skia-gl',
             'no-oop-c',
             'no-clang-coverage',
+            'graphite-disabled',
         ]))
 
   @mock.patch.dict(os.environ, clear=True)

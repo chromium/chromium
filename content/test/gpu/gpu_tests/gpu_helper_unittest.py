@@ -240,6 +240,26 @@ class TagHelpersUnittest(unittest.TestCase):
     # Undefined info.
     self.assertEqual(gpu_helper.GetCommandDecoder(None), 'no_passthrough')
 
+  def testGetSkiaGraphiteStatus(self) -> None:
+    """Tests all the code paths for the GetSkiaGraphiteStatus() method."""
+    cases = [
+        # No feature status.
+        TagHelperTestCase('graphite-disabled'),
+        # Feature status off.
+        TagHelperTestCase('graphite-disabled',
+                          feature_status={'skia_graphite': 'disabled'}),
+        # Feature status on.
+        TagHelperTestCase('graphite-enabled',
+                          feature_status={'skia_graphite': 'enabled'}),
+    ]
+
+    for tc in cases:
+      self.runTagHelperTest(tc, gpu_helper.GetSkiaGraphiteStatus)
+
+    # Undefined info.
+    self.assertEqual(gpu_helper.GetSkiaGraphiteStatus(None),
+                     'graphite-disabled')
+
   def testGetSkiaRenderer(self) -> None:
     """Tests all code paths for the GetSkiaRenderer() method."""
     cases = [

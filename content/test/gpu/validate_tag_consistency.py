@@ -82,6 +82,8 @@ TAG_HEADER = """\
 # tags: [ webgpu-compat webgpu-not-compat ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
+# Skia Graphite
+# tags: [ graphite-enabled graphite-disabled ]
 # results: [ Failure RetryOnFailure Skip Slow ]
 """
 

@@ -3165,26 +3165,26 @@
       },
     },
 
-    'gpu_gl_passthrough_telemetry_tests': {
-      'context_lost_gl_passthrough': {
-        'name': 'context_lost_gl_passthrough_tests',
+    'gpu_gl_passthrough_ganesh_telemetry_tests': {
+      'context_lost_gl_passthrough_ganesh': {
+        'name': 'context_lost_gl_passthrough_ganesh_tests',
         'telemetry_test_name': 'context_lost',
         'args': [
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
       },
-      'expected_color_gl_passthrough': {
-        'name': 'expected_color_pixel_gl_passthrough_test',
+      'expected_color_gl_passthrough_ganesh': {
+        'name': 'expected_color_pixel_gl_passthrough_ganesh_test',
         'telemetry_test_name': 'expected_color',
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
         ],
         'mixins': [
           'skia_gold_test',
@@ -3202,13 +3202,13 @@
           'has_native_resultdb_integration',
         ],
       },
-      'pixel_skia_gl_passthrough': {
-        'name': 'pixel_skia_gold_gl_passthrough_test',
+      'pixel_skia_gl_passthrough_ganesh': {
+        'name': 'pixel_skia_gold_gl_passthrough_ganesh_test',
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
@@ -3217,12 +3217,77 @@
         ],
         'telemetry_test_name': 'pixel',
       },
-      'screenshot_sync_gl_passthrough': {
-        'name': 'screenshot_sync_gl_passthrough_tests',
+      'screenshot_sync_gl_passthrough_ganesh': {
+        'name': 'screenshot_sync_gl_passthrough_ganesh_tests',
         'telemetry_test_name': 'screenshot_sync',
         'args': [
           '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
+    'gpu_gl_passthrough_graphite_telemetry_tests': {
+      'context_lost_gl_passthrough_graphite': {
+        'name': 'context_lost_gl_passthrough_graphite_tests',
+        'telemetry_test_name': 'context_lost',
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'expected_color_gl_passthrough_graphite': {
+        'name': 'expected_color_pixel_gl_passthrough_graphite_test',
+        'telemetry_test_name': 'expected_color',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+      },
+      'gpu_process': {
+        'name': 'gpu_process_launch_tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'hardware_accelerated_feature': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'pixel_skia_gl_passthrough_graphite': {
+        'name': 'pixel_skia_gold_gl_passthrough_graphite_test',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+        'telemetry_test_name': 'pixel',
+      },
+      'screenshot_sync_gl_passthrough_graphite': {
+        'name': 'screenshot_sync_gl_passthrough_graphite_tests',
+        'telemetry_test_name': 'screenshot_sync',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -3308,26 +3373,26 @@
       },
     },
 
-    'gpu_metal_passthrough_telemetry_tests': {
-      'context_lost_metal_passthrough': {
-        'name': 'context_lost_metal_passthrough_tests',
+    'gpu_metal_passthrough_ganesh_telemetry_tests': {
+      'context_lost_metal_passthrough_ganesh': {
+        'name': 'context_lost_metal_passthrough_ganesh_tests',
         'telemetry_test_name': 'context_lost',
         'args': [
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
       },
-      'expected_color_metal_passthrough': {
-        'name': 'expected_color_pixel_metal_passthrough_test',
+      'expected_color_metal_passthrough_ganesh': {
+        'name': 'expected_color_pixel_metal_passthrough_ganesh_test',
         'telemetry_test_name': 'expected_color',
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
         ],
         'mixins': [
           'skia_gold_test',
@@ -3345,13 +3410,13 @@
           'has_native_resultdb_integration',
         ],
       },
-      'pixel_skia_metal_passthrough': {
-        'name': 'pixel_skia_gold_metal_passthrough_test',
+      'pixel_skia_metal_passthrough_ganesh': {
+        'name': 'pixel_skia_gold_metal_passthrough_ganesh_test',
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
@@ -3360,12 +3425,77 @@
         ],
         'telemetry_test_name': 'pixel',
       },
-      'screenshot_sync_metal_passthrough': {
-        'name': 'screenshot_sync_metal_passthrough_tests',
+      'screenshot_sync_metal_passthrough_ganesh': {
+        'name': 'screenshot_sync_metal_passthrough_ganesh_tests',
         'telemetry_test_name': 'screenshot_sync',
         'args': [
           '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
+    'gpu_metal_passthrough_graphite_telemetry_tests': {
+      'context_lost_metal_passthrough_graphite': {
+        'name': 'context_lost_metal_passthrough_graphite_tests',
+        'telemetry_test_name': 'context_lost',
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'expected_color_metal_passthrough_graphite': {
+        'name': 'expected_color_pixel_metal_passthrough_graphite_test',
+        'telemetry_test_name': 'expected_color',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+      },
+      'gpu_process': {
+        'name': 'gpu_process_launch_tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'hardware_accelerated_feature': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'pixel_skia_metal_passthrough_graphite': {
+        'name': 'pixel_skia_gold_metal_passthrough_graphite_test',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+        'telemetry_test_name': 'pixel',
+      },
+      'screenshot_sync_metal_passthrough_graphite': {
+        'name': 'screenshot_sync_metal_passthrough_graphite_tests',
+        'telemetry_test_name': 'screenshot_sync',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -6653,9 +6783,9 @@
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],
 
-    'gpu_common_gl_passthrough_telemetry_tests': [
+    'gpu_common_gl_passthrough_graphite_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_telemetry_tests',
+      'gpu_gl_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
@@ -6665,9 +6795,9 @@
       'gpu_webgl_conformance_telemetry_tests',
     ],
 
-    'gpu_common_metal_passthrough_telemetry_tests': [
+    'gpu_common_metal_passthrough_ganesh_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_metal_passthrough_telemetry_tests',
+      'gpu_metal_passthrough_ganesh_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
     ],
 
@@ -6865,7 +6995,7 @@
 
     'gpu_fyi_mac_nvidia_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_telemetry_tests',
+      'gpu_gl_passthrough_graphite_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
@@ -6875,7 +7005,7 @@
 
     'gpu_fyi_mac_pro_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_metal_passthrough_telemetry_tests',
+      'gpu_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
     ],
@@ -6890,7 +7020,8 @@
     ],
 
     'gpu_fyi_mac_release_telemetry_tests': [
-      'gpu_gl_passthrough_telemetry_tests',
+      'gpu_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_gl_passthrough_graphite_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
@@ -6901,9 +7032,10 @@
 
     'gpu_fyi_only_mac_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_telemetry_tests',
+      'gpu_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_gl_passthrough_graphite_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_metal_passthrough_telemetry_tests',
+      'gpu_metal_passthrough_ganesh_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
@@ -8109,7 +8241,7 @@
           'MAC_RETINA_AMD_GPU_STABLE',
         ],
       },
-      'gpu_gl_passthrough_telemetry_tests': {
+      'gpu_gl_passthrough_ganesh_telemetry_tests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',

@@ -905,6 +905,7 @@ class GpuIntegrationTest(
       gpu_tags.append(gpu_helper.GetAsanStatus(gpu_info))
       gpu_tags.append(gpu_helper.GetClangCoverage(gpu_info))
       gpu_tags.append(gpu_helper.GetTargetCpuStatus(gpu_info))
+      gpu_tags.append(gpu_helper.GetSkiaGraphiteStatus(gpu_info))
       if gpu_info and gpu_info.devices:
         for ii in range(0, len(gpu_info.devices)):
           gpu_vendor = gpu_helper.GetGpuVendorString(gpu_info, ii)

@@ -69,6 +69,8 @@
 # tags: [ webgpu-compat webgpu-not-compat ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
+# Skia Graphite
+# tags: [ graphite-enabled graphite-disabled ]
 # results: [ Failure RetryOnFailure Skip Slow ]
 # END TAG HEADER
 
@@ -95,7 +97,6 @@ crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] ExpectedColor_MediaRecorder
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
 # ExpectedColor_MediaRecorderFromVideoElement fails on several FYI bots
 crbug.com/1382332 [ chromeos target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
@@ -109,6 +110,9 @@ crbug.com/1382332 [ fuchsia ] ExpectedColor_MediaRecorderFromVideoElementWithOop
 crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ RetryOnFailure ]
+
+crbug.com/1469875 [ mac graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1469875 [ mac graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
