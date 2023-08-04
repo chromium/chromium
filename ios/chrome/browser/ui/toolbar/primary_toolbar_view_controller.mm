@@ -73,6 +73,15 @@
   }
 }
 
+#pragma mark - AdaptiveToolbarViewController (Subclassing)
+
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController {
+  [super setLocationBarViewController:locationBarViewController];
+
+  self.view.separator.hidden = !self.hasOmnibox;
+}
+
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {

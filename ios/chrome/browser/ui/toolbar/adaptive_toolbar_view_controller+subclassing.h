@@ -13,6 +13,11 @@
 /// Reacts to user tapping `collapsedToolbarButton`.
 - (void)collapsedToolbarButtonTapped;
 
+/// Sets location bar view controller. Used to move the location bar between the
+/// adaptive toolbars. Set to nil to remove from toolbar.
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_SUBCLASSING_H_
