@@ -158,24 +158,16 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
       const LayoutObject* parent) const override;
 
   LayoutUnit BorderTop() const override;
-
   LayoutUnit BorderBottom() const override;
-
   LayoutUnit BorderLeft() const override;
-
   LayoutUnit BorderRight() const override;
 
   // The collapsing border model disallows paddings on table.
   // See http://www.w3.org/TR/CSS2/tables.html#collapsing-borders.
   LayoutUnit PaddingTop() const override;
-
   LayoutUnit PaddingBottom() const override;
-
   LayoutUnit PaddingLeft() const override;
-
   LayoutUnit PaddingRight() const override;
-
-  NGPhysicalBoxStrut BorderBoxOutsets() const override;
 
   // TODO(1151101)
   // ClientLeft/Top are incorrect for tables, but cannot be fixed

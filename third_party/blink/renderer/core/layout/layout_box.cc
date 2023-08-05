@@ -2469,7 +2469,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
     clip_rect = PhysicalRect(location, View()->ViewRect().size);
   } else {
     clip_rect = PhysicalBorderBoxRect();
-    clip_rect.Contract(BorderBoxOutsets());
+    clip_rect.Contract(BorderOutsets());
     clip_rect.Move(location);
 
     // Videos need to be pre-snapped so that they line up with the
@@ -2487,7 +2487,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
       } else if (ShouldApplyOverflowClipMargin()) {
         switch (StyleRef().OverflowClipMargin()->GetReferenceBox()) {
           case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
-            clip_rect.Expand(BorderBoxOutsets());
+            clip_rect.Expand(BorderOutsets());
             break;
           case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
             break;
@@ -3908,8 +3908,8 @@ LayoutRect LayoutBox::RectForOverflowPropagation(const LayoutRect& rect) const {
   return result;
 }
 
-NGPhysicalBoxStrut LayoutBox::BorderBoxOutsetsForClipping() const {
-  auto padding_box = -BorderBoxOutsets();
+NGPhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
+  auto padding_box = -BorderOutsets();
   if (!ShouldApplyOverflowClipMargin())
     return padding_box;
 
@@ -3956,7 +3956,7 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
         overflow_->visual_overflow->ContentsVisualOverflowRect();
     if (!contents_visual_overflow_rect.IsEmpty()) {
       LayoutRect result = BorderBoxRect();
-      NGPhysicalBoxStrut outsets = BorderBoxOutsetsForClipping();
+      NGPhysicalBoxStrut outsets = BorderOutsetsForClipping();
       result.ExpandEdges(outsets.top, outsets.right, outsets.bottom,
                          outsets.left);
       result.Intersect(contents_visual_overflow_rect);

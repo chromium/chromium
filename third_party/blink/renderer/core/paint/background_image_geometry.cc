@@ -390,7 +390,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       // kPadding and we should apply the snapping logic.
       unsnapped_dest_adjust = positioning_box_->PaddingOutsets();
       if (!unsnapped_dest_adjust.IsZero()) {
-        unsnapped_dest_adjust += positioning_box_->BorderBoxOutsets();
+        unsnapped_dest_adjust += positioning_box_->BorderOutsets();
 
         // We're not trying to match a border position, so don't snap.
         snapped_dest_adjust = unsnapped_dest_adjust;
@@ -398,7 +398,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       }
       [[fallthrough]];
     case EFillBox::kPadding:
-      unsnapped_dest_adjust = positioning_box_->BorderBoxOutsets();
+      unsnapped_dest_adjust = positioning_box_->BorderOutsets();
       if (disallow_border_derived_adjustment) {
         // Nothing to drive snapping behavior, so don't snap.
         snapped_dest_adjust = unsnapped_dest_adjust;
@@ -446,7 +446,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
               positioning_box_->StyleRef(), unsnapped_positioning_area)
               .Rect();
-      NGPhysicalBoxStrut box_outsets = positioning_box_->BorderBoxOutsets();
+      NGPhysicalBoxStrut box_outsets = positioning_box_->BorderOutsets();
       if (edges[static_cast<unsigned>(BoxSide::kTop)].ObscuresBackground()) {
         snapped_dest_adjust.top =
             LayoutUnit(inner_border_rect.y()) - unsnapped_dest_rect_.Y();
@@ -486,7 +486,7 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
       // kPadding and we should apply the snapping logic.
       unsnapped_box_outset = positioning_box_->PaddingOutsets();
       if (!unsnapped_box_outset.IsZero()) {
-        unsnapped_box_outset += positioning_box_->BorderBoxOutsets();
+        unsnapped_box_outset += positioning_box_->BorderOutsets();
 
         // We're not trying to match a border position, so don't snap.
         snapped_box_outset = unsnapped_box_outset;
@@ -494,7 +494,7 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
       }
       [[fallthrough]];
     case EFillBox::kPadding:
-      unsnapped_box_outset = positioning_box_->BorderBoxOutsets();
+      unsnapped_box_outset = positioning_box_->BorderOutsets();
       if (disallow_border_derived_adjustment) {
         snapped_box_outset = unsnapped_box_outset;
       } else {

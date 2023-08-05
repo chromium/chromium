@@ -48,17 +48,6 @@ void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
   }
 }
 
-NGPhysicalBoxStrut LayoutNGTableCell::BorderBoxOutsets() const {
-  NOT_DESTROYED();
-  // TODO(1061423) This function should not be called before layout.
-  // ScrollAnchor::Examine does. Example trigger:
-  // ScrollTimelineTest.TimelineInvalidationWhenScrollerDisplayPropertyChanges
-  // DCHECK_GE(PhysicalFragmentCount(), 0u);
-  if (PhysicalFragmentCount() > 0)
-    return GetPhysicalFragment(0)->Borders();
-  return LayoutNGBlockFlow::BorderBoxOutsets();
-}
-
 LayoutUnit LayoutNGTableCell::BorderTop() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.

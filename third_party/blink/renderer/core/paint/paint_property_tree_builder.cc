@@ -2208,7 +2208,7 @@ static void AdjustRoundedClipForOverflowClipMargin(
   NGPhysicalBoxStrut outsets;
   switch (overflow_clip_margin->GetReferenceBox()) {
     case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
-      outsets = box.BorderBoxOutsets();
+      outsets = box.BorderOutsets();
       break;
     case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
       break;

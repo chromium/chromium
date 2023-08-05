@@ -1048,7 +1048,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     // The background painting code assumes that the borders are part of the
     // paintRect so we expand the paintRect by the border size when painting the
     // background into the scrolling contents layer.
-    paint_rect.Expand(layout_box.BorderBoxOutsets());
+    paint_rect.Expand(layout_box.BorderOutsets());
 
     background_client = &layout_box.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
@@ -1262,7 +1262,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   if (box_decoration_data.ShouldPaintShadow()) {
     if (layout_box.IsTableCell()) {
       PhysicalRect inner_rect = paint_rect;
-      inner_rect.Contract(layout_box.BorderBoxOutsets());
+      inner_rect.Contract(layout_box.BorderOutsets());
       // PaintInsetBoxShadowWithInnerRect doesn't subtract borders before
       // painting. We have to use it here after subtracting collapsed borders
       // above. PaintInsetBoxShadowWithBorderRect below subtracts the borders

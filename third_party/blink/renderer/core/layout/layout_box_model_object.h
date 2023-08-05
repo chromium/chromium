@@ -272,7 +272,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return BorderTop() + BorderBottom();
   }
 
-  virtual NGPhysicalBoxStrut BorderBoxOutsets() const {
+  NGPhysicalBoxStrut BorderOutsets() const {
     NOT_DESTROYED();
     return {BorderTop(), BorderRight(), BorderBottom(), BorderLeft()};
   }
@@ -280,12 +280,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   NGPhysicalBoxStrut PaddingOutsets() const {
     NOT_DESTROYED();
     return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
-  }
-
-  // Insets from the border box to the inside of the border.
-  NGPhysicalBoxStrut BorderInsets() const {
-    NOT_DESTROYED();
-    return {-BorderTop(), -BorderRight(), -BorderBottom(), -BorderLeft()};
   }
 
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBefore() const {

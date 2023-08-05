@@ -1554,7 +1554,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The outsets from this box's border-box that the element's content should be
   // clipped to, including overflow-clip-margin.
-  NGPhysicalBoxStrut BorderBoxOutsetsForClipping() const;
+  NGPhysicalBoxStrut BorderOutsetsForClipping() const;
 
   void UpdateHasSubpixelVisualEffectOutsets(const NGPhysicalBoxStrut&);
   void SetVisualOverflow(const PhysicalRect& self,

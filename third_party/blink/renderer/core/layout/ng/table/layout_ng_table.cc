@@ -465,17 +465,6 @@ LayoutUnit LayoutNGTable::PaddingRight() const {
   return LayoutNGMixin<LayoutBlock>::PaddingRight();
 }
 
-NGPhysicalBoxStrut LayoutNGTable::BorderBoxOutsets() const {
-  NOT_DESTROYED();
-  // DCHECK(cached_table_borders_.get())
-  // ScrollAnchoring fails this DCHECK.
-  if (PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders();
-  }
-  NOTREACHED();
-  return {};
-}
-
 // Effective column index is index of columns with mergeable
 // columns skipped. Used in a11y.
 unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
