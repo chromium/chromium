@@ -7,7 +7,6 @@
 #ifndef BASE_STRINGS_STRING_UTIL_H_
 #define BASE_STRINGS_STRING_UTIL_H_
 
-#include <ctype.h>
 #include <stdarg.h>   // va_list
 #include <stddef.h>
 #include <stdint.h>

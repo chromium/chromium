@@ -34,6 +34,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -644,8 +645,9 @@ bool IsValidDiskName(StringPiece candidate) {
       (candidate[0] == 'h' || candidate[0] == 's' || candidate[0] == 'v')) {
     // [hsv]d[a-z]+ case
     for (size_t i = 2; i < candidate.length(); ++i) {
-      if (!islower(candidate[i]))
+      if (!absl::ascii_islower(static_cast<unsigned char>(candidate[i]))) {
         return false;
+      }
     }
     return true;
   }
@@ -656,8 +658,9 @@ bool IsValidDiskName(StringPiece candidate) {
 
   // mmcblk[0-9]+ case
   for (size_t i = strlen(kMMCName); i < candidate.length(); ++i) {
-    if (!isdigit(candidate[i]))
+    if (!absl::ascii_isdigit(static_cast<unsigned char>(candidate[i]))) {
       return false;
+    }
   }
   return true;
 }

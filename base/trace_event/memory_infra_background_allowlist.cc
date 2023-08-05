@@ -4,7 +4,6 @@
 
 #include "base/trace_event/memory_infra_background_allowlist.h"
 
-#include <ctype.h>
 #include <string.h>
 
 #include <string>
@@ -13,6 +12,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/meminfo_dump_provider.h"
@@ -347,8 +347,10 @@ bool IsMemoryAllocatorDumpNameInAllowlist(const std::string& name) {
   stripped_str.reserve(length);
   bool parsing_hex = false;
   for (size_t i = 0; i < length; ++i) {
-    if (parsing_hex && isxdigit(name[i]))
+    if (parsing_hex &&
+        absl::ascii_isxdigit(static_cast<unsigned char>(name[i]))) {
       continue;
+    }
     parsing_hex = false;
     if (i + 1 < length && name[i] == '0' && name[i + 1] == 'x') {
       parsing_hex = true;
