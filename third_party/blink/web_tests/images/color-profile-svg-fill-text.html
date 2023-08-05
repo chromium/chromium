@@ -2,6 +2,16 @@
 <html>
 <script src="../resources/run-after-layout-and-paint.js"></script>
 
+<script>
+  function load() {
+    if (window.testRunner)
+      runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
+  }
+
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+</script>
+
 <!-- There should be no red on this page. -->
 <body>
 <svg width="98%" height="400px">
@@ -13,14 +23,4 @@
   </text>
 </svg>
 </body>
-
-<script>
-function load() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-}
-
-if (window.testRunner)
-  testRunner.waitUntilDone();
-</script>
 </html>
