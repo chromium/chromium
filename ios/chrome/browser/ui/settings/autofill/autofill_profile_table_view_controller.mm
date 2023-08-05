@@ -51,6 +51,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 namespace {
 
@@ -286,6 +287,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self stopAutofillProfileEditCoordinator];
   _personalDataManager->RemoveObserver(_observer.get());
+  [self dismissDeletionSheet];
 
   // Remove observer bridges.
   _observer.reset();
@@ -558,6 +560,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
+- (void)dismissDeletionSheet {
+  [self.deletionSheetCoordinator stop];
+  self.deletionSheetCoordinator = nil;
+}
 
 - (void)stopAutofillProfileEditCoordinator {
   self.autofillProfileEditCoordinator.delegate = nil;
@@ -697,8 +703,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
                   // TODO(crbug.com/650390) Generalize removing empty sections
                   [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
                                 SectionIdentifierProfiles];
+                  [weakSelf dismissDeletionSheet];
                 }
                  style:UIAlertActionStyleDestructive];
+  [self.deletionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissDeletionSheet];
+                }
+                 style:UIAlertActionStyleCancel];
   [self.deletionSheetCoordinator start];
 }
 

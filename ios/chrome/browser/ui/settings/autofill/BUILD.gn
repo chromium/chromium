@@ -68,6 +68,7 @@ source_set("autofill") {
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ui/strings",
   ]
 }
 
