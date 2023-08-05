@@ -95881,9 +95881,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="16" label="ChromeLowUserEngagement"/>
   <int value="17" label="FeedUserSegment"/>
   <int value="18" label="ContextualPageActions"/>
+  <int value="21" label="ShoppingUser"/>
+  <int value="22" label="ChromeAndroidStartUserV2"/>
   <int value="23" label="SearchUserSegment"/>
+  <int value="27" label="DeviceSwitcher"/>
   <int value="28" label="AdaptiveToolbar"/>
+  <int value="29" label="TabletProductivityUser"/>
   <int value="32" label="WebAppInstallationPromo"/>
+  <int value="35" label="BottomToolbar"/>
+  <int value="37" label="IosModuleRanker"/>
   <int value="38" label="DesktopNtpModule"/>
 </enum>
 

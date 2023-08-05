@@ -18,13 +18,15 @@ package segmentation_platform.proto;
 //
 // All new SegmentIds should be added to the following locations:
 //   1. The list of segmentation client keys in
-//   components/segmentation_platform/public/constants.h.
+//      components/segmentation_platform/public/constants.h.
 //   2. Histogram variant must be added to SegmentationModel in
 //      tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
 //
 // New server model segments must be added to the following locations:
 //   - OptimizationTargetProto in
 //     components/optimization_guide/proto/models.proto.
+//   - SegmentationPlatformSegmentationModel enum in
+//     tools/metrics/histograms/enums.xml
 enum SegmentId {
   // Reserved fields are `OptimizationTarget`s that are not used by segmentation
   // to prevent accidental misuse.
