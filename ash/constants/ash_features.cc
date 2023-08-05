@@ -431,7 +431,7 @@ BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
 // clipboard history nudge was last seen.
 BASE_FEATURE(kClipboardHistoryFooter,
              "ClipboardHistoryFooter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
