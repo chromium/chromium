@@ -217,6 +217,10 @@ void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
 }
 
 void NetworkDetailedNetworkViewImpl::UpdateWifiStatus(bool enabled) {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
   if (wifi_top_container_) {
     wifi_top_container_->SetBehavior(
         enabled ? RoundedContainer::Behavior::kTopRounded
@@ -228,6 +232,10 @@ void NetworkDetailedNetworkViewImpl::UpdateWifiStatus(bool enabled) {
 }
 
 void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
   if (mobile_top_container_) {
     mobile_top_container_->SetBehavior(
         enabled ? RoundedContainer::Behavior::kTopRounded
