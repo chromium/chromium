@@ -275,6 +275,49 @@ TEST_F(CalendarUpNextViewTest,
   EXPECT_EQ(ScrollPosition(), 0);
 }
 
+TEST_F(CalendarUpNextViewTest,
+       ShouldScrollLeftAndRightWhenScrollButtonsArePressed_RTL) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Add multiple upcoming events.
+  const int event_count = 5;
+  CreateUpNextView(CreateUpcomingEvents(event_count));
+
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(event_count));
+  EXPECT_EQ(ScrollPosition(), 0);
+
+  // Sets the UI to be RTL.
+  base::i18n::SetRTLForTesting(true);
+
+  // Press scroll right. We should scroll past the first event + margin.
+  const int first_event_width =
+      GetContentsView()->children()[0]->GetContentsBounds().width() +
+      calendar_utils::kUpNextBetweenChildSpacing;
+  PressScrollRightButton();
+  EXPECT_EQ(ScrollPosition(), first_event_width);
+
+  // Press scroll right again. We should scroll past the second event +
+  // margin.
+  const int second_event_width =
+      GetContentsView()->children()[1]->GetContentsBounds().width() +
+      calendar_utils::kUpNextBetweenChildSpacing;
+  PressScrollRightButton();
+  EXPECT_EQ(ScrollPosition(), first_event_width + second_event_width);
+
+  // Press scroll left. Now we should be back to being past the first event +
+  // margin.
+  PressScrollLeftButton();
+  EXPECT_EQ(ScrollPosition(), first_event_width);
+
+  // Press scroll left again. We should be back at the beginning of the scroll
+  // view.
+  PressScrollLeftButton();
+  EXPECT_EQ(ScrollPosition(), 0);
+}
+
 TEST_F(CalendarUpNextViewTest, ShouldHideScrollButtons_WhenOnlyOneEvent) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
