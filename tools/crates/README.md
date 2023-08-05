@@ -27,6 +27,12 @@ bar = { version = "3", features = [ "spaceships" ] }
 
 To generate `BUILD.gn` files for all third-party crates, and find missing
 transitive dependencies to download, use the `gnrt` tool:
+
+1. Change directory to the root `src/` dir of Chromium.
+1. Run `vpython3 ./tools/crates/run_gnrt.py gen` to build and run gnrt with the `gen` action.
+
+Or, to directly build gnrt:
+
 1. Change directory to the root `src/` dir of Chromium.
 1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
 1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen`.
