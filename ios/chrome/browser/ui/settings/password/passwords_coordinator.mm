@@ -246,6 +246,8 @@ using password_manager::WarningType;
   [self.reauthCoordinator stop];
   self.reauthCoordinator.delegate = nil;
   self.reauthCoordinator = nil;
+  [self dismissActionSheetCoordinator];
+  [self dismissAlertCoordinator];
 
   [self.mediator disconnect];
 }
@@ -328,16 +330,21 @@ using password_manager::WarningType;
 
   NSString* deleteButtonString =
       l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE);
+  __weak PasswordsCoordinator* weakSelf = self;
 
   [self.actionSheetCoordinator addItemWithTitle:deleteButtonString
                                          action:^{
                                            completion();
+                                           [weakSelf
+                                               dismissActionSheetCoordinator];
                                          }
                                           style:UIAlertActionStyleDestructive];
 
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
-                action:nil
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
 
   [self.actionSheetCoordinator start];
@@ -359,7 +366,9 @@ using password_manager::WarningType;
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
 
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf dismissAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   [self.alertCoordinator
@@ -367,6 +376,7 @@ using password_manager::WarningType;
                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 action:^{
                   [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -481,6 +491,18 @@ using password_manager::WarningType;
   [_reauthCoordinator stop];
   _reauthCoordinator.delegate = nil;
   _reauthCoordinator = nil;
+}
+
+#pragma mark - Private
+
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
+}
+
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end
