@@ -184,7 +184,7 @@
               on-wallpaper-grid-item-selected="onCollectionSelected_"
               primary-text="[[item.name]]"
               role="option"
-              secondary-text="[[item.count]]"
+              secondary-text="[[getOnlineTileSecondaryText_(item)]]"
               src="[[item.preview]]"
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>

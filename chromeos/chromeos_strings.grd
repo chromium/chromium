@@ -2722,6 +2722,9 @@
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER" desc="Description shown in the Time of Day promo banner without screen saver link.">
           You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/collection?id=_time_of_day_chromebook_collection"&gt;</ph>wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE">&lt;/a&gt;</ph>
         </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL" desc="Sublabel for the Time of Day wallpaper collection.">
+          Exclusive
+        </message>
 
         <!-- Personalization App Search Results -->
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">

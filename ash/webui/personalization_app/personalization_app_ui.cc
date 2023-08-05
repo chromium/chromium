@@ -335,7 +335,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"timeOfDayBannerDescription",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION},
       {"timeOfDayBannerDescriptionNoScreensaver",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER}};
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER},
+      {"timeOfDayWallpaperCollectionSublabel",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

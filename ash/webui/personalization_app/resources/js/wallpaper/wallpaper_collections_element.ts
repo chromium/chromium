@@ -657,6 +657,14 @@ export class WallpaperCollections extends WithPersonalizationStore {
   private getAriaIndex_(index: number): number {
     return index + 1;
   }
+
+  private getOnlineTileSecondaryText_(item: Tile): string {
+    assert(this.isOnlineTile_(item), 'item must be online tile');
+    if (this.isTimeOfDayCollection_(item)) {
+      return loadTimeData.getString('timeOfDayWallpaperCollectionSublabel');
+    }
+    return item.count;
+  }
 }
 
 customElements.define(WallpaperCollections.is, WallpaperCollections);
