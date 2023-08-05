@@ -7,7 +7,7 @@ import itertools
 import os
 import re
 import sys
-from typing import List, Optional, Set, Type
+from typing import Iterable, List, Optional, Set, Type
 import unittest
 import unittest.mock as mock
 
@@ -107,7 +107,7 @@ def check_intel_driver_version(version: str) -> bool:
   return True
 
 
-def _MapGpuDevicesToVendors(tag_sets: List[Set[str]]) -> None:
+def _MapGpuDevicesToVendors(tag_sets: Iterable[Set[str]]) -> None:
   for tag_set in tag_sets:
     if any(gpu in tag_set for gpu in GPU_CONDITIONS):
       _map_specific_to_generic.update({
