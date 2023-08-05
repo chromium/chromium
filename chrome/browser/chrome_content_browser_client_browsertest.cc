@@ -599,7 +599,13 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {
+// TODO(https://crbug.com/1454691): Enable test when MacOS flake is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CustomHandler DISABLED_CustomHandler
+#else
+#define MAYBE_CustomHandler CustomHandler
+#endif
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, MAYBE_CustomHandler) {
 #if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(test::RegisterAppWithLaunchServices());
 #endif
