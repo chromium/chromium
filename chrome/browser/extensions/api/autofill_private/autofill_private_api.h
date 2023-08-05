@@ -366,6 +366,24 @@ class AutofillPrivateAuthenticateUserToEditLocalCardFunction
   void CanShowEditDialogForLocalCard(bool can_show);
 };
 
+class AutofillPrivateCheckIfDeviceAuthAvailableFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateCheckIfDeviceAuthAvailableFunction() = default;
+  AutofillPrivateCheckIfDeviceAuthAvailableFunction(
+      const AutofillPrivateCheckIfDeviceAuthAvailableFunction&) = delete;
+  AutofillPrivateCheckIfDeviceAuthAvailableFunction& operator=(
+      const AutofillPrivateCheckIfDeviceAuthAvailableFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.checkIfDeviceAuthAvailable",
+                             AUTOFILLPRIVATE_CHECKIFDEVICEAUTHAVAILABLE)
+
+ protected:
+  ~AutofillPrivateCheckIfDeviceAuthAvailableFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

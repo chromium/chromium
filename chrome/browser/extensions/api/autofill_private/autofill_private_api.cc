@@ -22,6 +22,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -892,6 +893,22 @@ void AutofillPrivateAuthenticateUserToEditLocalCardFunction::
         "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
   }
   Respond(WithArguments(can_show));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateCheckIfDeviceAuthAvailableFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (client) {
+    return RespondNow(WithArguments(
+        autofill::IsDeviceAuthAvailable(client->GetDeviceAuthenticator())));
+  }
+#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
+  return RespondNow(Error(kErrorDeviceAuthUnavailable));
 }
 
 }  // namespace extensions

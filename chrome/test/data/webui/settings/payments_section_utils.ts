@@ -8,6 +8,7 @@ import {PaymentsManagerImpl, SettingsPaymentsSectionElement, SettingsCreditCardL
 import {assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 
 import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_data.js';
 
@@ -26,6 +27,8 @@ export async function createPaymentsSection(
   paymentsManager.data.creditCards = creditCards;
   paymentsManager.data.ibans = ibans;
   paymentsManager.data.upiIds = upiIds;
+  paymentsManager.setIsDeviceAuthAvailable(
+      loadTimeData.getBoolean('deviceAuthAvailable'));
   PaymentsManagerImpl.setInstance(paymentsManager);
 
   const section = document.createElement('settings-payments-section');

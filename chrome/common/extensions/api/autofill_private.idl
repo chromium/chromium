@@ -312,6 +312,7 @@ namespace autofillPrivate {
   callback GetUpiIdListCallback = void(DOMString[] entries);
   callback IsValidIbanCallback = void(boolean isValid);
   callback CheckForUserAuthCallback = void(boolean isUserAuthSuccessful);
+  callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -412,6 +413,11 @@ namespace autofillPrivate {
     // the result of user auth. If the auth was successful, we will show
     // the edit card dialog for the Local card.
     [supportsPromises] static void authenticateUserToEditLocalCard(CheckForUserAuthCallback callback);
+
+    // Returns true if there is authentication available on this device
+    // (biometric or screen lock), false otherwise.
+    [supportsPromises] static void checkIfDeviceAuthAvailable(
+        CheckForDeviceAuthCallback callback);
   };
 
   interface Events {

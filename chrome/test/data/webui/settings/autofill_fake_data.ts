@@ -253,6 +253,7 @@ export class PaymentsManagerExpectations {
 export class TestPaymentsManager extends TestBrowserProxy implements
     PaymentsManagerProxy {
   private isUserVerifyingPlatformAuthenticatorAvailable_: boolean|null = null;
+  private isDeviceAuthAvailable_: boolean = false;
 
   data: {
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
@@ -349,7 +350,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     return Promise.resolve(true);
   }
 
-
   setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {
     this.isUserVerifyingPlatformAuthenticatorAvailable_ = available;
   }
@@ -365,6 +365,14 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   authenticateUserToEditLocalCard() {
     this.methodCalled('authenticateUserToEditLocalCard');
     return Promise.resolve(true);
+  }
+
+  setIsDeviceAuthAvailable(available: boolean) {
+    this.isDeviceAuthAvailable_ = available;
+  }
+
+  checkIfDeviceAuthAvailable() {
+    return Promise.resolve(this.isDeviceAuthAvailable_);
   }
 
   /**

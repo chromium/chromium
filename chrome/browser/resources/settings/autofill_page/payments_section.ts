@@ -181,6 +181,17 @@ export class SettingsPaymentsSectionElement extends
         },
       },
       // </if>
+
+      /**
+       * Whether the feature flag for mandatory re-auth is enabled.
+       */
+      mandatoryReauthFeatureEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'autofillEnablePaymentsMandatoryReauth');
+        },
+      },
     };
   }
 
@@ -203,6 +214,7 @@ export class SettingsPaymentsSectionElement extends
   private deviceAuthAvailable_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
+  private mandatoryReauthFeatureEnabled_: boolean;
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
 
   override connectedCallback() {
@@ -250,6 +262,9 @@ export class SettingsPaymentsSectionElement extends
     // Listen for changes.
     this.paymentsManager_.setPersonalDataManagerListener(
         setPersonalDataListener);
+
+    this.paymentsManager_.checkIfDeviceAuthAvailable().then(
+        result => this.deviceAuthAvailable_ = result);
 
     // Record that the user opened the payments settings.
     chrome.metricsPrivate.recordUserAction('AutofillCreditCardsViewed');
@@ -580,16 +595,15 @@ export class SettingsPaymentsSectionElement extends
   }
 
   /**
-   * Checks if we can show the Mandatory reauth toggle.
-   * This method checks if pref autofill.credit_card_enabled is true and either
-   * there is support for device authentication or the mandatory auth toggle is
-   * already enabled.
+   * Checks if we should disable the mandatory reauth toggle.
+   * This method checks that one of the following conditions are met:
+   * 1) Pref autofill.credit_card_enabled is false
+   * 2) There is no support for device authentication
+   * Under any of these circumstances, we should display a disabled mandatory
+   * re-auth toggle to the user.
    */
-  private shouldShowMandatoryAuthToggle_(
-      deviceAuthAvailable: boolean, creditCardEnabled: boolean,
-      mandatoryReauthToggleEnabled: boolean): boolean {
-    return creditCardEnabled &&
-        (deviceAuthAvailable || mandatoryReauthToggleEnabled);
+  private shouldDisableAuthToggle_(creditCardEnabled: boolean): boolean {
+    return !creditCardEnabled || !this.deviceAuthAvailable_;
   }
 
   private focusHeaderControls_(): void {

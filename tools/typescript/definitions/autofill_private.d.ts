@@ -216,6 +216,7 @@ declare global {
       export function removeVirtualCard(cardId: string): void;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function authenticateUserToEditLocalCard(): Promise<boolean>;
+      export function checkIfDeviceAuthAvailable(): Promise<boolean>;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

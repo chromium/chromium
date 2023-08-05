@@ -1389,6 +1389,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           CheckDeviceAuthAvailability(web_contents));
 
   html_source->AddBoolean(
+      "autofillEnablePaymentsMandatoryReauth",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnablePaymentsMandatoryReauth));
+
+  html_source->AddBoolean(
       "fidoAuthenticationAvailableForAutofill",
       IsFidoAuthenticationAvailable(personal_data, web_contents));
 

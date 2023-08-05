@@ -1870,6 +1870,7 @@ enum HistogramValue {
   READINGLIST_QUERY = 1808,
   DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS = 1809,
   PASSWORDSPRIVATE_SHAREPASSWORD = 1810,
+  AUTOFILLPRIVATE_CHECKIFDEVICEAUTHAVAILABLE = 1811,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

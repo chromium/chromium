@@ -77,6 +77,12 @@ suite('PasswordsAndForms', function() {
                            type: chrome.settingsPrivate.PrefType.BOOLEAN,
                            value: true,
                          },
+                         {
+                           key: 'autofill.payment_methods_mandatory_reauth',
+                           type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                           value: true,
+
+                         },
                        ]) as unknown as typeof chrome.settingsPrivate);
 
       CrSettingsPrefs.initialized.then(function() {
