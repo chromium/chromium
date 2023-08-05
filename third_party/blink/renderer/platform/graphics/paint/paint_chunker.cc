@@ -170,11 +170,19 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
   auto& chunk = chunks_->back();
   chunk.bounds.Union(rect);
   if (touch_action != TouchAction::kAuto) {
-    chunk.EnsureHitTestData().touch_action_rects.push_back(
-        TouchActionRect{rect, touch_action});
+    auto& touch_action_rects = chunk.EnsureHitTestData().touch_action_rects;
+    if (touch_action_rects.empty() ||
+        !touch_action_rects.back().rect.Contains(rect) ||
+        touch_action_rects.back().allowed_touch_action != touch_action) {
+      touch_action_rects.push_back(TouchActionRect{rect, touch_action});
+    }
   }
-  if (blocking_wheel)
-    chunk.EnsureHitTestData().wheel_event_rects.push_back(rect);
+  if (blocking_wheel) {
+    auto& wheel_event_rects = chunk.EnsureHitTestData().wheel_event_rects;
+    if (wheel_event_rects.empty() || !wheel_event_rects.back().Contains(rect)) {
+      wheel_event_rects.push_back(rect);
+    }
+  }
   return created_new_chunk;
 }
 

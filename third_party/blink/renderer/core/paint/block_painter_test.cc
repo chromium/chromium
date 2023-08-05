@@ -193,6 +193,42 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 }
 
+TEST_P(BlockPainterTest, BlockingWheelRectOverflowingContents) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #parent {
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+        position: absolute;
+      }
+      #child {
+        width: 10px;
+        height: 400px;
+      }
+    </style>
+    <div id='parent'>
+      <div id='child'></div>
+    </div>
+  )HTML");
+
+  SetWheelEventListener(GetDocument(), "parent");
+
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 100, 100),
+                                     gfx::Rect(0, 0, 10, 400)};
+  auto* parent = GetLayoutBoxByElementId("parent");
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                  IsPaintChunk(1, 2,
+                               PaintChunk::Id(parent->Layer()->Id(),
+                                              DisplayItem::kLayerChunk),
+                               parent->FirstFragment().ContentsProperties(),
+                               &hit_test_data, gfx::Rect(0, 0, 100, 400))));
+}
+
 TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -224,8 +260,7 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
   SetWheelEventListener(GetDocument(), "scroller");
 
   HitTestData hit_test_data;
-  hit_test_data.wheel_event_rects = {{gfx::Rect(0, 0, 100, 400)},
-                                     {gfx::Rect(0, 0, 10, 400)}};
+  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 100, 400)};
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -439,17 +474,21 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
         width: 100px;
         height: 100px;
         overflow: scroll;
-        touch-action: none;
+        touch-action: pinch-zoom;
         will-change: transform;
         background-color: blue;
       }
-      #child {
+      #child1, #child2 {
         width: 10px;
-        height: 400px;
+        height: 200px;
+      }
+      #child2 {
+        touch-action: none;
       }
     </style>
     <div id='scroller'>
-      <div id='child'></div>
+      <div id="child1"></div>
+      <div id='child2'></div>
     </div>
   )HTML");
 
@@ -459,8 +498,9 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
   const auto& scroller_scrolling_client =
       scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
   HitTestData hit_test_data;
-  hit_test_data.touch_action_rects = {{gfx::Rect(0, 0, 100, 400)},
-                                      {gfx::Rect(0, 0, 10, 400)}};
+  hit_test_data.touch_action_rects = {
+      {gfx::Rect(0, 0, 100, 400), TouchAction::kPinchZoom},
+      {gfx::Rect(0, 200, 10, 200), TouchAction::kNone}};
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
