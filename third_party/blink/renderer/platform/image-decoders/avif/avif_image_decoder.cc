@@ -45,6 +45,8 @@
 #error Blink assumes a little-endian target.
 #endif
 
+namespace blink {
+
 namespace {
 
 // The maximum AVIF file size we are willing to decode. This helps libavif
@@ -191,7 +193,7 @@ inline void WritePixel(float max_channel,
   uint8_t b = base::ClampRound<uint8_t>(pixel.z() * 255.0f);
   uint8_t a = base::ClampRound<uint8_t>(alpha * 255.0f);
   if (premultiply_alpha) {
-    blink::ImageFrame::SetRGBAPremultiply(rgba_dest, r, g, b, a);
+    ImageFrame::SetRGBAPremultiply(rgba_dest, r, g, b, a);
   } else {
     *rgba_dest = SkPackARGB32NoCheck(a, r, g, b);
   }
@@ -270,16 +272,16 @@ void YUVAToRGBA(const avifImage* image,
 
 // Creates a copy of the given input (AVIF image data), with the primary item id
 // changed so that it now points to the gain map image.
-scoped_refptr<blink::SegmentReader> CreateGainmapSegmentReader(
+scoped_refptr<SegmentReader> CreateGainmapSegmentReader(
     const AvifInfoFeatures& features,
-    const blink::SegmentReader* input) {
+    const SegmentReader* input) {
   const uint64_t primary_item_id_start = features.primary_item_id_location;
   const uint64_t primary_item_id_end =
       primary_item_id_start + features.primary_item_id_bytes;  // Exclusive.
   const uint32_t new_id = features.gainmap_item_id;
 
   // Copy the input data while changing the item id.
-  blink::RWBuffer rw_buffer;
+  RWBuffer rw_buffer;
   size_t item_id_bytes_to_write = features.primary_item_id_bytes;
   CHECK(item_id_bytes_to_write == 2 || item_id_bytes_to_write == 4);
   size_t position = 0;
@@ -314,13 +316,12 @@ scoped_refptr<blink::SegmentReader> CreateGainmapSegmentReader(
     }
     position += length;
   }
-  return blink::SegmentReader::CreateFromROBuffer(
-      rw_buffer.MakeROBufferSnapshot());
+  return SegmentReader::CreateFromROBuffer(rw_buffer.MakeROBufferSnapshot());
 }
 
 // Stream object for use with libavifinfo.
 struct AvifInfoSegmentReaderStream {
-  const blink::SegmentReader* reader = nullptr;
+  const SegmentReader* reader = nullptr;
   size_t num_read_bytes = 0;
   uint8_t buffer[AVIFINFO_MAX_NUM_READ_BYTES];
 };
@@ -368,8 +369,6 @@ void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
 }
 
 }  // namespace
-
-namespace blink {
 
 AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
                                    HighBitDepthDecodingOption hbd_option,
@@ -1434,7 +1433,7 @@ void AVIFImageDecoder::ColorCorrectImage(int from_row,
 bool AVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kGainmapHdrImages));
+  CHECK(base::FeatureList::IsEnabled(features::kGainmapHdrImages));
   if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
     return false;
   }
