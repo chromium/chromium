@@ -114,7 +114,7 @@ void ModifyPrivacyIndicatorsNotification(
   }
   auto* message_center = message_center::MessageCenter::Get();
   std::string id = GetPrivacyIndicatorsNotificationId(app_id);
-  bool notification_exists = message_center->FindVisibleNotificationById(id);
+  bool notification_exists = message_center->FindNotificationById(id);
 
   if (!is_camera_used && !is_microphone_used) {
     if (notification_exists)
