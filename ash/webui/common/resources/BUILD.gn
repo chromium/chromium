@@ -153,6 +153,7 @@ non_web_component_files = [
 web_component_files_ts = [
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
+  "quick_unlock/fingerprint_progress.ts",
 ]
 
 non_web_component_files_ts = [
@@ -179,6 +180,7 @@ icons_html_files = [
   "cr_picture/icons.html",
   "network/network_icons.html",
   "quick_unlock/pin_keyboard_icons.html",
+  "quick_unlock/fingerprint_progress_icons.html",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -334,6 +336,8 @@ generate_grd("build_grd") {
     "network_health/test_not_run.png",
     "network_health/test_passed.png",
     "network_health/test_warning.png",
+    "quick_unlock/fingerprint_enrollment.json",
+    "quick_unlock/fingerprint_check.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -411,6 +415,8 @@ generate_definitions_js_files = [
   "quick_unlock/pin_keyboard.html.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "quick_unlock/setup_pin_keyboard.html.js",
+  "quick_unlock/fingerprint_progress.html.js",
+  "quick_unlock/fingerprint_progress_icons.html.js",
   "store/store.js",
   "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",

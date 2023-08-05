@@ -1,0 +1,34 @@
+<style>
+    :host {
+      user-select: none;
+    }
+
+    .translucent {
+      opacity: 0.3;
+    }
+
+    #canvasDiv {
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+      width:  460px;
+    }
+
+    cros-lottie-renderer {
+      display: inline-block;
+      position: absolute;
+    }
+
+    #fingerprintScanned {
+      position: absolute;
+    }
+</style>
+
+<div id="canvasDiv">
+    <canvas id="canvas" height="240" width="460"></canvas>
+    <cros-lottie-renderer id="scanningAnimation"
+        autoplay="[[autoplay]]"
+        dynamic>
+    </cros-lottie-renderer>
+    <iron-icon id="fingerprintScanned" hidden></iron-icon>
+</div>
