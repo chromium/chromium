@@ -4858,6 +4858,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_USER_POLICY_CONTINUE" desc="Label of the button to continue with the current managed account in the User Policy notification dialog. [iOS only] [300em]">
         Continue
       </message>
+      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_TITLE" desc="The title of the User Policy notification dialog. [iOS only] [300em]">
+        Your Account is Managed
+      </message>
       <message name="IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA" desc="Label of the button to sign out the current managed account and clear its data in the User Policy notification dialog. [iOS only] [300em]">
         Sign Out and Clear Data
       </message>

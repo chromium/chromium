@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/strcat.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #import "google_apis/gaia/gaia_switches.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -141,9 +143,9 @@ void VerifyTheNotificationUI() {
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   NSString* title =
-      l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_TITLE);
+      l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_TITLE);
   NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE,
+      IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_SUBTITLE,
       base::UTF8ToUTF16(std::string(policy::SignatureProvider::kTestDomain1)));
 
   // Verify the notification UI.
@@ -151,6 +153,29 @@ void VerifyTheNotificationUI() {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:grey_text(subtitle)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Wait for the chrome management url to become visible in the web state
+// without validating the content. The goal being to verify that the page was
+// opened.
+void WaitForVisibleChromeManagementURL() {
+  // const GURL expectedURL(base::StrCat({kChromeUIManagementURL, "/"}));
+
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for web state"
+                       @" with visible url %@ ",
+                       base::SysUTF8ToNSString(kChromeUIManagementURL)];
+
+  GREYCondition* waitForUrl = [GREYCondition
+      conditionWithName:errorString
+                  block:^{
+                    return base::StartsWith(
+                        [ChromeEarlGrey webStateVisibleURL].spec(),
+                        kChromeUIManagementURL);
+                  }];
+  base::TimeDelta timeout = base::Seconds(5);
+  bool visibleUrl = [waitForUrl waitWithTimeout:timeout.InSecondsF()];
+  GREYAssert(visibleUrl, errorString);
 }
 
 }  // namespace
@@ -366,7 +391,7 @@ void VerifyTheNotificationUI() {
   // Tap on the "Continue" button to dismiss the alert dialog and start the user
   // policy fetch.
   NSString* continueLabel =
-      l10n_util::GetNSString(IDS_IOS_USER_POLICY_CONTINUE);
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityLabel(continueLabel),
@@ -383,9 +408,9 @@ void VerifyTheNotificationUI() {
   VerifyThatPoliciesAreSet();
 }
 
-// Tests that the user policies aren't fetched when the user decides to sign out
-// in the notification dialog.
-- (void)testUserPolicyNotificationWithSignoutChoice {
+// Tests that the learn more page is displayed when choosing that option in the
+// notice dialog.
+- (void)testUserPolicyNotificationWithLearnMoreChoice {
   // Clear the prefs related to user policy to make sure that the notification
   // isn't skipped and that the fetch is started within the minimal schedule
   // interval.
@@ -419,21 +444,15 @@ void VerifyTheNotificationUI() {
 
   // Tap on the "Sign Out and Clear Data" button to dismiss the alert dialog
   // without triggering the user policy fetch.
-  NSString* signoutLabel =
-      l10n_util::GetNSString(IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA);
+  NSString* label =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(signoutLabel),
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(label),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitButton),
                                           nil)] performAction:grey_tap()];
 
-  // Wait enough time to verifiy that the fetch wasn't unexpectedly triggered
-  // after dismissing the notification.
-  base::test::ios::SpinRunLoopWithMinDelay(
-      kWaitOnScheduledUserPolicyFetchInterval);
-
-  // Verify that the fetch wasn't done.
-  VerifyThatPoliciesAreNotSet();
+  WaitForVisibleChromeManagementURL();
 }
 
 @end

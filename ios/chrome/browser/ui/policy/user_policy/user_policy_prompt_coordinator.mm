@@ -105,7 +105,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - UserPolicyPromptPresenter
 
 - (void)stopPresenting {
-  [self.delegate didCompletePresentation:self];
+  [self.delegate didCompletePresentationAndShowLearnMoreAfterward:NO];
+}
+
+- (void)stopPresentingAndShowLearnMoreAfterward {
+  [self.delegate didCompletePresentationAndShowLearnMoreAfterward:YES];
 }
 
 - (void)showActivityOverlay {

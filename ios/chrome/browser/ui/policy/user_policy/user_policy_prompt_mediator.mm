@@ -40,15 +40,7 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
-  DCHECK(self.authService);
-  __weak __typeof(self) weakSelf = self;
-  [self.presenter showActivityOverlay];
-  self.authService->SignOut(
-      signin_metrics::ProfileSignout::
-          kUserClickedSignoutFromUserPolicyNotificationDialog,
-      false, ^{
-        [weakSelf stopPresentation];
-      });
+  [self.presenter stopPresentingAndShowLearnMoreAfterward];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
