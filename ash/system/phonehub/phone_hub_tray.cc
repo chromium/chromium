@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
+#include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -487,6 +488,20 @@ void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
     return;
   }
   ShowBubble();
+
+  if (message_center::MessageCenter::Get()->FindPopupNotificationById(
+          MultiDeviceNotificationPresenter::kSetupNotificationId) &&
+      ui_controller_->ui_state() ==
+          PhoneHubUiController::UiState::kOnboardingWithoutPhone &&
+      !is_icon_clicked_when_setup_notification_visible_) {
+    Shell::Get()
+        ->multidevice_notification_presenter()
+        ->UpdateIsSetupNotificationInteracted(true);
+    phone_hub_metrics::LogMultiDeviceSetupNotificationInteraction();
+    // Set to true to prevent duplicate logging data if the icon is clicked
+    // multiple times when notification is visible.
+    is_icon_clicked_when_setup_notification_visible_ = true;
+  }
 }
 
 views::View* PhoneHubTray::GetPhoneStatusView() {

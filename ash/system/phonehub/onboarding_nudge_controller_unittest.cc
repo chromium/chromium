@@ -13,6 +13,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -103,6 +104,7 @@ class OnboardingNudgeControllerTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<base::SimpleTestClock> test_clock_;
@@ -152,6 +154,7 @@ TEST_F(OnboardingNudgeControllerTest, ShowNudge) {
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastShownTime),
             base::Time::FromJavaTime(kTestTimeMillis));
+  histogram_tester_.ExpectTotalCount("MultiDeviceSetup.NudgeShown", 1);
 
   // Advance the clock by 5 minutes, should not show nuge again.
   AdvanceClock(base::Minutes(5));
@@ -173,6 +176,7 @@ TEST_F(OnboardingNudgeControllerTest, ShowNudge) {
                 OnboardingNudgeController::kPhoneHubNudgeLastShownTime),
             base::Time::FromJavaTime(kTestTimeMillis) + base::Minutes(5) +
                 base::Hours(24));
+  histogram_tester_.ExpectTotalCount("MultiDeviceSetup.NudgeShown", 2);
 
   // Advance the clock by 24 hours, should show nuge again.
   AdvanceClock(base::Hours(24));
@@ -184,6 +188,7 @@ TEST_F(OnboardingNudgeControllerTest, ShowNudge) {
                 OnboardingNudgeController::kPhoneHubNudgeLastShownTime),
             base::Time::FromJavaTime(kTestTimeMillis) + base::Minutes(5) +
                 base::Hours(24) + base::Hours(24));
+  histogram_tester_.ExpectTotalCount("MultiDeviceSetup.NudgeShown", 3);
 
   // Should not show nudge again since the total appearances reach 3 times.
   AdvanceClock(base::Hours(24));
@@ -210,14 +215,69 @@ TEST_F(OnboardingNudgeControllerTest, HoverNudge) {
             base::Time::FromJavaTime(kTestTimeMillis));
 }
 
-TEST_F(OnboardingNudgeControllerTest, ClickNudge) {
+TEST_F(OnboardingNudgeControllerTest, ClickNudgeAndPhoneHubIcon) {
+  GetController()->ShowNudgeIfNeeded();
+
+  AdvanceClock(base::Seconds(3));
   GetController()->OnNudgeClicked();
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastActionTime),
-            base::Time::FromJavaTime(kTestTimeMillis));
+            base::Time::FromJavaTime(kTestTimeMillis + 3000));
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastClickTime),
+            base::Time::FromJavaTime(kTestTimeMillis + 3000));
+
+  // Simulate click on Phone Hub icon.
+  GetController()->HideNudge();
+  histogram_tester_.ExpectTimeBucketCount(
+      "MultiDeviceSetup.NudgeActionDuration", base::Seconds(3), 1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDeviceSetup.NudgeShownTimesBeforeActed", 1, 1);
+  histogram_tester_.ExpectTotalCount("MultiDeviceSetup.NudgeInteracted", 2);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDeviceSetup.NudgeInteracted",
+      phone_hub_metrics::MultideviceSetupNudgeInteraction::kNudgeClicked, 1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDeviceSetup.NudgeInteracted",
+      phone_hub_metrics::MultideviceSetupNudgeInteraction::kPhoneHubIconClicked,
+      1);
+
+  AdvanceClock(base::Hours(24));
+  GetController()->ShowNudgeIfNeeded();
+  // Nudge has been clicked, would not show again.
+  EXPECT_EQ(pref_service()->GetInteger(
+                OnboardingNudgeController::kPhoneHubNudgeTotalAppearances),
+            1);
+  EXPECT_EQ(pref_service()->GetTime(
+                OnboardingNudgeController::kPhoneHubNudgeLastShownTime),
             base::Time::FromJavaTime(kTestTimeMillis));
+}
+
+TEST_F(OnboardingNudgeControllerTest, ClickPhoneHubIcon) {
+  GetController()->ShowNudgeIfNeeded();
+
+  AdvanceClock(base::Seconds(3));
+  // Simulate Phone Hub icon clicked.
+  GetController()->HideNudge();
+  EXPECT_EQ(pref_service()->GetTime(
+                OnboardingNudgeController::kPhoneHubNudgeLastActionTime),
+            base::Time::FromJavaTime(kTestTimeMillis + 3000));
+  EXPECT_EQ(pref_service()->GetTime(
+                OnboardingNudgeController::kPhoneHubNudgeLastClickTime),
+            base::Time::FromJavaTime(kTestTimeMillis + 3000));
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "MultiDeviceSetup.NudgeActionDuration", base::Seconds(3), 1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDeviceSetup.NudgeShownTimesBeforeActed", 1, 1);
+  histogram_tester_.ExpectTotalCount("MultiDeviceSetup.NudgeInteracted", 1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDeviceSetup.NudgeInteracted",
+      phone_hub_metrics::MultideviceSetupNudgeInteraction::kNudgeClicked, 0);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDeviceSetup.NudgeInteracted",
+      phone_hub_metrics::MultideviceSetupNudgeInteraction::kPhoneHubIconClicked,
+      1);
 }
 
 TEST_F(OnboardingNudgeControllerTest,

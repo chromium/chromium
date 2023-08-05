@@ -72586,6 +72586,11 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Wi-Fi Sync Announcement"/>
 </enum>
 
+<enum name="MultideviceSetupNudgeInteraction">
+  <int value="0" label="Click on nudge"/>
+  <int value="1" label="Click on Phone Hub icon when nudge is visible"/>
+</enum>
+
 <enum name="MultiDeviceSetupOOBEUserChoice">
   <int value="0" label="MULTI_DEVICE_SETUP_OOBE_USER_CHOICE_ACCEPTED">
     Accepted MultiDevice OOBE Setup.

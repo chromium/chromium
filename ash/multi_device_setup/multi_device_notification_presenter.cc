@@ -177,6 +177,11 @@ void MultiDeviceNotificationPresenter::RemoveMultiDeviceSetupNotification() {
                                       /* by_user */ false);
 }
 
+void MultiDeviceNotificationPresenter::UpdateIsSetupNotificationInteracted(
+    bool is_setup_notification_interacted) {
+  is_setup_notification_interacted_ = is_setup_notification_interacted;
+}
+
 void MultiDeviceNotificationPresenter::OnUserSessionAdded(
     const AccountId& account_id) {
   ObserveMultiDeviceSetupIfPossible();
@@ -250,6 +255,16 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
   switch (notification_status_) {
     case Status::kNewUserNotificationVisible:
       Shell::Get()->system_tray_model()->client()->ShowMultiDeviceSetup();
+      // If user has not interacted with Phone Hub icon when the notification is
+      // visible, log MultiDeviceSetup.NotificationInteracted event when
+      // notification is clicked.
+      if (!is_setup_notification_interacted_) {
+        base::UmaHistogramCounts100("MultiDeviceSetup.NotificationInteracted",
+                                    1);
+      } else {
+        // Restore the value when the notification is clicked.
+        UpdateIsSetupNotificationInteracted(false);
+      }
       break;
     case Status::kExistingUserHostSwitchedNotificationVisible:
       // Clicks on the 'host switched' and 'Chromebook added' notifications have

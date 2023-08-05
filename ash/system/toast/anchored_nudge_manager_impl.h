@@ -41,6 +41,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   void Cancel(const std::string& id) override;
   void MaybeRecordNudgeAction(NudgeCatalogName catalog_name) override;
   std::unique_ptr<ScopedAnchoredNudgePause> CreateScopedPause() override;
+  bool IsNudgeShown(const std::string& id) override;
 
   // Closes all `shown_nudges_`.
   void CloseAllNudges();
@@ -54,9 +55,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-
-  // Returns true if `id` is stored in `shown_nudges_`.
-  bool IsNudgeShown(const std::string& id);
 
   const std::u16string& GetNudgeBodyTextForTest(const std::string& id);
   views::View* GetNudgeAnchorViewForTest(const std::string& id);

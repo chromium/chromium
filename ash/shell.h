@@ -622,6 +622,9 @@ class ASH_EXPORT Shell : public SessionObserver,
     return mouse_cursor_filter_.get();
   }
   MruWindowTracker* mru_window_tracker() { return mru_window_tracker_.get(); }
+  MultiDeviceNotificationPresenter* multidevice_notification_presenter() {
+    return multidevice_notification_presenter_.get();
+  }
   MultiDisplayMetricsController* multi_display_metrics_controller() {
     return multi_display_metrics_controller_.get();
   }

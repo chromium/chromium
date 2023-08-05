@@ -15,8 +15,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -88,19 +90,32 @@ void OnboardingNudgeController::ShowNudgeIfNeeded() {
       base::BindRepeating(&OnboardingNudgeController::OnNudgeDismissed,
                           base::Unretained(this)));
   AnchoredNudgeManager::Get()->Show(nudge_data);
-  start_animation_callback_.Run();
-  PrefService* pref_service = GetPrefService();
-  pref_service->SetTime(kPhoneHubNudgeLastShownTime, clock_->Now());
-  pref_service->SetInteger(
-      kPhoneHubNudgeTotalAppearances,
-      pref_service->GetInteger(kPhoneHubNudgeTotalAppearances) + 1);
+
+  if (AnchoredNudgeManager::Get()->IsNudgeShown(kPhoneHubNudgeId)) {
+    start_animation_callback_.Run();
+    PrefService* pref_service = GetPrefService();
+    pref_service->SetTime(kPhoneHubNudgeLastShownTime, clock_->Now());
+    pref_service->SetInteger(
+        kPhoneHubNudgeTotalAppearances,
+        pref_service->GetInteger(kPhoneHubNudgeTotalAppearances) + 1);
+    base::UmaHistogramCounts100("MultiDeviceSetup.NudgeShown", 1);
+  }
 }
 
 void OnboardingNudgeController::HideNudge() {
   if (!IsInPhoneHubNudgeExperimentGroup()) {
     return;
   }
-  AnchoredNudgeManager::Get()->Cancel(kPhoneHubNudgeId);
+  if (AnchoredNudgeManager::Get()->IsNudgeShown(kPhoneHubNudgeId)) {
+    // `HideNudge()` is only invoked when Phone Hub icon is clicked. If the
+    // nudge is visible, it should be counted as interaction.
+    PrefService* pref_service = GetPrefService();
+    base::Time time = clock_->Now();
+    pref_service->SetTime(kPhoneHubNudgeLastActionTime, time);
+    pref_service->SetTime(kPhoneHubNudgeLastClickTime, time);
+    is_phone_hub_icon_clicked_ = true;
+    AnchoredNudgeManager::Get()->Cancel(kPhoneHubNudgeId);
+  }
 }
 
 void OnboardingNudgeController::MaybeRecordNudgeAction() {
@@ -127,6 +142,8 @@ void OnboardingNudgeController::OnNudgeClicked() {
     return;
   }
 
+  is_nudge_clicked_ = true;
+
   // Action can be click or hover so define `kPhoneHubNudgeLastActionTime` on
   // click, but `kPhoneHubNudgeLastClickTime` should be set separately.
   PrefService* pref_service = GetPrefService();
@@ -140,8 +157,29 @@ void OnboardingNudgeController::OnNudgeDismissed() {
     return;
   }
 
-  // TODO (b/267809132): Create a histogram whether nudge was autodismissed
-  // or nudge was acted on.
+  if (is_nudge_clicked_ || is_phone_hub_icon_clicked_) {
+    PrefService* pref_service = GetPrefService();
+    base::UmaHistogramTimes(
+        "MultiDeviceSetup.NudgeActionDuration",
+        pref_service->GetTime(kPhoneHubNudgeLastClickTime) -
+            pref_service->GetTime(kPhoneHubNudgeLastShownTime));
+    base::UmaHistogramCounts100(
+        "MultiDeviceSetup.NudgeShownTimesBeforeActed",
+        pref_service->GetInteger(kPhoneHubNudgeTotalAppearances));
+    if (is_nudge_clicked_) {
+      base::UmaHistogramEnumeration(
+          "MultiDeviceSetup.NudgeInteracted",
+          phone_hub_metrics::MultideviceSetupNudgeInteraction::kNudgeClicked);
+    }
+    if (is_phone_hub_icon_clicked_) {
+      base::UmaHistogramEnumeration(
+          "MultiDeviceSetup.NudgeInteracted",
+          phone_hub_metrics::MultideviceSetupNudgeInteraction::
+              kPhoneHubIconClicked);
+    }
+  }
+  is_nudge_clicked_ = false;
+  is_phone_hub_icon_clicked_ = false;
 }
 
 void OnboardingNudgeController::OnEligiblePhoneHubHostFound(
@@ -196,6 +234,11 @@ bool OnboardingNudgeController::IsInPhoneHubNudgeExperimentGroup() {
 
 bool OnboardingNudgeController::ShouldShowNudge() {
   PrefService* pref_service = GetPrefService();
+  if (!pref_service->GetTime(kPhoneHubNudgeLastClickTime).is_null()) {
+    // User has taken actions on the nudge. We do not show it to them again.
+    return false;
+  }
+
   if (pref_service->GetInteger(kPhoneHubNudgeTotalAppearances) >=
       features::kPhoneHubNudgeTotalAppearancesAllowed.Get()) {
     PA_LOG(INFO) << "Nudge has been shown "

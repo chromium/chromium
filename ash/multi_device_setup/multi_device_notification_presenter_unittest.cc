@@ -244,6 +244,17 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
         MultiDeviceNotificationPresenter::kWifiSyncNotificationId));
   }
 
+  void AssertPotentialHostNotificationInterationHost(int count) {
+    if (histogram_tester_
+            .GetAllSamples("MultiDeviceSetup.NotificationInteracted")
+            .empty()) {
+      EXPECT_EQ(count, 0);
+      return;
+    }
+    histogram_tester_.ExpectTotalCount(
+        "MultiDeviceSetup.NotificationInteracted", count);
+  }
+
   void AssertPotentialHostBucketCount(std::string histogram, int count) {
     if (histogram_tester_.GetAllSamples(histogram).empty()) {
       EXPECT_EQ(count, 0);
@@ -389,6 +400,27 @@ TEST_F(MultiDeviceNotificationPresenterTest,
   VerifyNoNotificationIsVisible();
 
   EXPECT_EQ(test_system_tray_client_->show_multi_device_setup_count(), 1);
+  AssertPotentialHostNotificationInterationHost(1);
+  AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationClicked", 1);
+  AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationShown", 1);
+}
+
+TEST_F(
+    MultiDeviceNotificationPresenterTest,
+    TestHostNewUserPotentialHostExistsNotification_InteractedThenClickNotification) {
+  SignIntoAccount();
+
+  ShowNewUserNotification();
+  VerifyNewUserPotentialHostExistsNotificationIsVisible();
+  // Simulate that Phone Hub icon is clicked when notification is visible.
+  notification_presenter_->UpdateIsSetupNotificationInteracted(true);
+
+  ClickNotification();
+  VerifyNoNotificationIsVisible();
+
+  EXPECT_EQ(test_system_tray_client_->show_multi_device_setup_count(), 1);
+
+  AssertPotentialHostNotificationInterationHost(0);
   AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationClicked", 1);
   AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationShown", 1);
 }
@@ -458,6 +490,9 @@ TEST_F(MultiDeviceNotificationPresenterTest,
 
   EXPECT_EQ(test_system_tray_client_->show_connected_devices_settings_count(),
             1);
+  // Should not log data into this histogram when the notification is not for
+  // new user.
+  AssertPotentialHostNotificationInterationHost(0);
   AssertHostSwitchedBucketCount("MultiDeviceSetup_NotificationClicked", 1);
   AssertHostSwitchedBucketCount("MultiDeviceSetup_NotificationShown", 1);
 }

@@ -40,6 +40,9 @@ class ASH_PUBLIC_EXPORT AnchoredNudgeManager {
   // No op if the nudge specified by `catalog_name` hasn't been shown before.
   virtual void MaybeRecordNudgeAction(NudgeCatalogName catalog_name) = 0;
 
+  // Returns true if the nudge with `id` is shown at the moment.
+  virtual bool IsNudgeShown(const std::string& id) = 0;
+
   // Creates a `ScopedAnchoredNudgePause`.
   virtual std::unique_ptr<ScopedAnchoredNudgePause> CreateScopedPause() = 0;
 

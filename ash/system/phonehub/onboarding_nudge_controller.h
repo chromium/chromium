@@ -96,6 +96,8 @@ class ASH_EXPORT OnboardingNudgeController
 
   bool ShouldShowNudge();
 
+  bool is_nudge_clicked_ = false;
+  bool is_phone_hub_icon_clicked_ = false;
   raw_ptr<views::View, ExperimentalAsh> anchored_view_;
   base::RepeatingClosure stop_animation_callback_;
   base::RepeatingClosure start_animation_callback_;

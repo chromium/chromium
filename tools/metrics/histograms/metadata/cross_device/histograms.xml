@@ -1996,6 +1996,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MultiDeviceSetup.NotificationInteracted" units="count"
+    expires_after="2024-07-19">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the number of interactions with MultiDevice setup notification when
+    visible. Emitted if user clicks on Phone Hub icon when the notification is
+    visible or clicks on the notification. This metric and
+    MultiDeviceSetup_NotificationClicked should be compared with
+    MultiDeviceSetup_NotificationShown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeActionDuration" units="ms"
+    expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the time for users to act on nudge while it's visible. Emitted when
+    nudge dismissed after clicked either on the nudge or Phone Hub icon by user.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeInteracted"
+    enum="MultideviceSetupNudgeInteraction" expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the number of nudges for MultideviceSetup interacted by users. Split
+    by click on nudge and click on Phone Hub icon. Emitted when users either
+    click on the nudge itself or click on Phone Hub icon. Should be compared
+    with MultideviceSetup_NudgeShown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeShown" units="count"
+    expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the number of nudges for MultideviceSetup shown to users. Emitted
+    when a nudge is shown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeShownTimesBeforeActed" units="attempts"
+    expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the average times that nudge is shown to a customer before they
+    clicks on it. Emitted when users click on the nudge or Phone Hub icon.
+  </summary>
+</histogram>
+
 <histogram name="MultiDeviceSetup.OOBE.UserChoice"
     enum="MultiDeviceSetupOOBEUserChoice" expires_after="2023-12-31">
   <owner>hansberry@google.com</owner>

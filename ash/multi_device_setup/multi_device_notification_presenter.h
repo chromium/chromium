@@ -64,6 +64,13 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
   // nothing if that notification is not currently displayed.
   void RemoveMultiDeviceSetupNotification();
 
+  void UpdateIsSetupNotificationInteracted(
+      bool is_setup_notificaton_interacted);
+
+  // MultiDevice setup notification ID. Public so it can be accessed from
+  // phone_hub_tray.cc
+  static const char kSetupNotificationId[];
+
  protected:
   // multidevice_setup::mojom::AccountStatusChangeDelegate:
   void OnPotentialHostExistsForNewUser() override;
@@ -91,7 +98,6 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
   friend class MultiDeviceNotificationPresenterTest;
 
   // MultiDevice setup notification ID.
-  static const char kSetupNotificationId[];
   static const char kWifiSyncNotificationId[];
 
   // Represents each possible MultiDevice setup notification that the setup flow
@@ -132,6 +138,11 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
                         message_center::RichNotificationData optional_fields);
 
   void FlushForTesting();
+
+  // Indicates if Phone Hub icon is clicked when the setup notification is
+  // visible. If the value is true, we do not log event to
+  // MultiDevice.Setup.NotificationInteracted histogram.
+  bool is_setup_notification_interacted_ = false;
 
   raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 

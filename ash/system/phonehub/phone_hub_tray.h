@@ -162,6 +162,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   bool IsInPhoneHubNudgeExperimentGroup();
 
+  bool is_icon_clicked_when_setup_notification_visible_ = false;
+
   // Icon of the tray. Unowned.
   raw_ptr<views::ImageButton, ExperimentalAsh> icon_;
 
