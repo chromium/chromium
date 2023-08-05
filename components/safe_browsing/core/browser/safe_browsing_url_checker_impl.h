@@ -130,9 +130,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       bool is_mechanism_experiment_allowed,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
-  // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
-  // real-time lookup-related arguments, omitting other arguments that never
-  // have non-default values on iOS.
+  // Constructor that takes only a RequestDestination, a UrlCheckerDelegate,
+  // URL real-time lookup-related arguments, and hash-real-time lookup-related
+  // arguments, omitting other arguments that never have non-default values on
+  // iOS.
   // TODO(crbug.com/1103222): Add an iOS-specific WebUIDelegate implementation
   // and pass it here to log URT requests/responses on open
   // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
@@ -144,7 +145,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
+      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+      base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
   SafeBrowsingUrlCheckerImpl& operator=(const SafeBrowsingUrlCheckerImpl&) =

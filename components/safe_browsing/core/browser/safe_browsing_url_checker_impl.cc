@@ -185,7 +185,9 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     bool url_real_time_lookup_enabled,
     bool can_urt_check_subresource_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui)
+    base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+    base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
+    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
     : load_flags_(0),
       request_destination_(request_destination),
       has_user_gesture_(false),
@@ -196,7 +198,9 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       can_urt_check_subresource_url_(can_urt_check_subresource_url),
       can_check_db_(true),
       ui_task_runner_(ui_task_runner),
-      url_lookup_service_on_ui_(url_lookup_service_on_ui) {
+      url_lookup_service_on_ui_(url_lookup_service_on_ui),
+      hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
+      hash_realtime_selection_(hash_realtime_selection) {
   DCHECK(!can_urt_check_subresource_url_ || url_real_time_lookup_enabled_);
 
   // This object is used exclusively on the IO thread but may be constructed on

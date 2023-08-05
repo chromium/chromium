@@ -152,7 +152,9 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       request_destination, url_checker_delegate, web_state->GetWeakPtr(),
       can_perform_full_url_lookup, can_url_realtime_check_subresource_url,
       web::GetUIThreadTaskRunner({}),
-      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
+      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
+      /*hash_realtime_service_on_ui=*/nullptr,
+      safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone);
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {
