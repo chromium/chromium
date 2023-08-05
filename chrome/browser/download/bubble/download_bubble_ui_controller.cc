@@ -243,6 +243,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
       commands.ExecuteCommand(command);
       break;
     default:

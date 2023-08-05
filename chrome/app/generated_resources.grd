@@ -2854,6 +2854,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status message displayed when a download is blocked because it is dangerous.">
         Dangerous download blocked
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_UNVERIFIED"
+               desc="Status message displayed when a download is blocked because it is unverified.">
+        Unverified download blocked
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED"
                desc="When a download is blocked because of warnings, let the user know.">
         Blocked
@@ -2885,6 +2889,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE"
                desc="Label for the Download suspicious file button on the blocked download bubble subpage.">
         Download suspicious file
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE"
+               desc="Label for the Download unverified file button on the blocked download bubble subpage.">
+        Download unverified file
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_DELETE"
                desc="Label for the Delete button on the blocked download bubble subpage.">
@@ -3030,9 +3038,21 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary text for a download item when the downloaded file may hide malware.">
         This file may hide malware
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_NO_SAFE_BROWSING"
+               desc="Subpage summary text for a download item when the download could not be verified due to Safe Browsing being off.">
+        This file can't be verified because Safe Browsing is off
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL"
                desc="Sentence including the link to the help page about why Chrome blocks some downloaded files, indicating to the user that they can learn more by clicking on the link.">
         Learn why <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK">$1<ex>Chrome blocks some downloads</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LABEL"
+               desc="Sentence including the link to the settings page allowing the user to turn on Safe Browsing, indicating to the user that they can change the setting by clicking on the link.">
+        <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK">$1<ex>Turn on Safe Browsing</ex></ph> to make downloading files safer
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK"
+               desc="Text for the link to the settings page allowing the user to turn on Safe Browsing. This string will be embedded in a longer sentence that makes up the whole label.">
+        Turn on Safe Browsing
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS"
                desc="Dangerous warning for the user.">

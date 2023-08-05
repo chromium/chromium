@@ -18,6 +18,7 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -29,6 +30,8 @@
 #include "components/google/core/common/google_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -146,6 +149,23 @@ std::u16string FailStateDescription(FailState fail_state) {
   status_text = l10n_util::GetStringUTF16(string_id);
 
   return status_text;
+}
+
+bool ShouldShowWarningForNoSafeBrowsing(Profile* profile) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  return safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
+         safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
+#else
+  return false;
+#endif
+}
+
+bool CanUserTurnOnSafeBrowsing(Profile* profile) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  return !safe_browsing::IsSafeBrowsingPolicyManaged(*profile->GetPrefs());
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -640,6 +660,8 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return true;
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
+      return CanUserTurnOnSafeBrowsing(profile());
   }
   NOTREACHED();
   return false;
@@ -666,6 +688,7 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
@@ -679,6 +702,8 @@ bool DownloadUIModel::IsCommandChecked(
 
 void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
                                      DownloadCommands::Command command) {
+  auto helper = security_interstitials::ChromeSettingsPageHelper::
+      CreateChromeSettingsPageHelper();
   switch (command) {
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
@@ -718,6 +743,13 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
               g_browser_process->GetApplicationLocale()),
           content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK, false));
+      break;
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
+      helper->OpenEnhancedProtectionSettingsWithIph(
+          download_commands->GetBrowser()
+              ->tab_strip_model()
+              ->GetActiveWebContents(),
+          SafeBrowsingSettingReferralMethod::kDownloadBubbleSubpage);
       break;
     case DownloadCommands::PAUSE:
       Pause();
@@ -1165,6 +1197,9 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
       } else {
         if (base::FeatureList::IsEnabled(
                 safe_browsing::kImprovedDownloadBubbleWarnings)) {
+          if (ShouldShowWarningForNoSafeBrowsing(profile())) {
+            return GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing();
+          }
           return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
               l10n_util::GetStringUTF16(
                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DANGEROUS_FILE_TYPE),
@@ -1513,6 +1548,21 @@ DownloadUIModel::GetBubbleUIInfoForTailoredWarning() const {
   return DownloadUIModel::BubbleUIInfo();
 }
 
+DownloadUIModel::BubbleUIInfo
+DownloadUIModel::GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing() const {
+  BubbleUIInfo ui_info = BubbleUIInfo::SuspiciousUiPattern(
+      l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_NO_SAFE_BROWSING),
+      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE));
+  if (CanUserTurnOnSafeBrowsing(profile())) {
+    ui_info.AddLearnMoreLink(
+        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LABEL,
+        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK,
+        DownloadCommands::Command::OPEN_SAFE_BROWSING_SETTING);
+  }
+  return ui_info;
+}
+
 DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfo(
     bool is_download_bubble_v2) const {
   switch (GetState()) {
@@ -1687,6 +1737,11 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       if (base::FeatureList::IsEnabled(
               safe_browsing::kImprovedDownloadBubbleWarnings)) {
+        if (ShouldShowWarningForNoSafeBrowsing(model_->profile())) {
+          // "Unverified download blocked"
+          return l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_UNVERIFIED);
+        }
         // "Suspicious download blocked"
         return l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_SUSPICIOUS);

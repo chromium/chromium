@@ -11,7 +11,8 @@ enum class SafeBrowsingSettingReferralMethod {
   kSecurityInterstitial = 0,
   kSafetyCheck = 1,
   kPromoSlingerReferral = 2,
-  kMaxValue = kPromoSlingerReferral,
+  kDownloadBubbleSubpage = 3,
+  kMaxValue = kDownloadBubbleSubpage,
 };
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_REFERRAL_METHODS_H_

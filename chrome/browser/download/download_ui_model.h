@@ -576,6 +576,7 @@ class DownloadUIModel {
   BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete(
       bool is_download_bubble_v2) const;
   virtual BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const;
+  BubbleUIInfo GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing() const;
 
   // Returns |true| if this download should be displayed in the download bubble.
   virtual bool ShouldShowInBubble() const;
