@@ -27,6 +27,7 @@ import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.ui.fragment.dialog.GroupTabPickerDialog;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.MultiRecycler;
@@ -120,7 +121,9 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
             if (tabMultiData.mSelectedSet.isEmpty()) {
                 return;
             }
-            start(GroupTabPickerDialog.newInstance(new ArrayList<>(tabMultiData.mSelectedSet)));
+            GroupTabPickerDialog dialog = GroupTabPickerDialog.newInstance(new ArrayList<>(tabMultiData.mSelectedSet));
+            dialog.setOnDismissListener(groupTabPickerDialog -> search());
+            start(dialog);
         });
 
         findViewById(R.id.btn_group).setOnClickListener(v -> {
@@ -138,6 +141,7 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
                         for (ITab tab : tabMultiData.mSelectedSet) {
                             newGroup.moveToNewGroup(tab, false);
                         }
+                        search();
                     })
                     .show(context);
         });
@@ -151,8 +155,9 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
                     .setContent("确定删除选中的" + tabMultiData.mSelectedSet.size() + "个标签页？")
                     .setPositiveButton((fragment, which) -> {
                         for (ITab tab : tabMultiData.mSelectedSet) {
-                            tab.getParentTab().closeTab(tab);
+                            tab.getParentGroup().closeTab(tab);
                         }
+                        search();
                     })
                     .show(context);
         });
@@ -174,8 +179,8 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
             exitSelectMode();
             return true;
         }
-        if (mGroup.getParentTab() != null) {
-            mGroup = mGroup.getParentTab();
+        if (mGroup.getParentGroup() != null) {
+            mGroup = mGroup.getParentGroup();
             search(searchBar.getEditor().getText().toString());
             return true;
         }
@@ -201,6 +206,9 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
         mRecycler.notifyDataSetChanged();
     }
 
+    private void search() {
+        search(searchBar.getEditor().getText().toString());
+    }
 
     private void search(String keyword) {
         mRecycler.showContent();

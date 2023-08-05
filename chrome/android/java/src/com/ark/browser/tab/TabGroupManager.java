@@ -87,20 +87,25 @@ public class TabGroupManager {
     }
 
     public static ITab cloneTab(ITab tab) {
-        return tab.getParentTab().cloneTab(tab);
+        return tab.getParentGroup().cloneTab(tab);
     }
 
     public static boolean moveToNewTab(PageInfo page) {
         ITab tab = findTabById(page.getTabId());
         if (tab != null) {
-            ITabGroup group = tab.getParentTab();
-            return group.moveToNewTab(group.findPageById(page.getId()));
+            ITabGroup group = tab.getParentGroup();
+            return group.moveToNewTab(tab, group.findPageById(page.getId()));
         }
         return false;
     }
 
+    public static boolean moveToNewTab(ITab tab, IPage page) {
+        ITabGroup group = tab.getParentGroup();
+        return group.moveToNewTab(tab, page);
+    }
+
     public static boolean selectTab(ITab iTab, IPage page) {
-        ITabGroup tabGroup = iTab.getParentTab();
+        ITabGroup tabGroup = iTab.getParentGroup();
         if (tabGroup == null) {
             return false;
         }
@@ -225,6 +230,22 @@ public class TabGroupManager {
             }
         }
 
+        public void notifyTabSelected(ITab tab) {
+            ArkLogger.d(TAG, "notifyTabSelected size=" + mObservers.size());
+            for (TabManagerObserver listener : mObservers) {
+                ArkLogger.d(TAG, "notifyTabSelected listener=" + listener);
+                listener.onTabSelected(tab);
+            }
+        }
+
+        public void notifyGroupChanged(ITabGroup newGroup, ITabGroup oldGroup) {
+            ArkLogger.d(TAG, "notifyGroupChanged size=" + mObservers.size());
+            for (TabManagerObserver listener : mObservers) {
+                ArkLogger.d(TAG, "notifyGroupChanged listener=" + listener);
+                listener.onGroupChanged(newGroup, oldGroup);
+            }
+        }
+
         public void notifyTabMoved(ITab tab, ITabGroup oldGroup) {
             ArkLogger.d(TAG, "notifyTabMoved size=" + mObservers.size());
             for (TabManagerObserver listener : mObservers) {
@@ -264,6 +285,8 @@ public class TabGroupManager {
         public static final int ID_INCOGNITO = -101;
 
         private int mCurrentIndex = 0;
+
+        private ITabGroup mCurrentGroup;
 
         // TODO optimise
         protected final TabContentManager mTabContentManager = new TabContentManager();
@@ -313,10 +336,35 @@ public class TabGroupManager {
             Toast.makeText(ContextUtils.getApplicationContext(), "TODO 关闭所有窗口", Toast.LENGTH_SHORT).show();
         }
 
+        public void selectGroup(ITabGroup group) {
+            ArkLogger.e(TAG, "selectGroup group=" + group + " currentGroup=" + mCurrentGroup);
+            if (mCurrentGroup == group) {
+                return;
+            }
+            ITabGroup old = mCurrentGroup;
+            mCurrentGroup = group;
+
+            group.getTabInfo().setAccessTime(System.currentTimeMillis());
+            group.saveTabInfo();
+
+            ITab current = group;
+            ITabGroup parent = group.getParentGroup();
+            while (parent != null) {
+                parent.onIndexChanged(parent.indexOf(current));
+                current = parent;
+                parent = parent.getParentGroup();
+            }
+
+            notifyGroupChanged(group, old);
+        }
+
         @NonNull
         @Override
         public ITabGroup getCurrentTabGroup() {
-            return getCurrentTabGroup(isIncognitoSelected());
+            if (mCurrentGroup == null) {
+                mCurrentGroup = getCurrentTabGroup(isIncognitoSelected());
+            }
+            return mCurrentGroup;
         }
 
         public ITabGroup getCurrentTabGroup(boolean incognito) {

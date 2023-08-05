@@ -2,6 +2,7 @@ package com.ark.browser.ui.fragment.search;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,10 +25,13 @@ import com.ark.browser.event.BundleEvent;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.model.SearchHistory;
 import com.ark.browser.settings.AppConfig;
+import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.ThumbnailProvider;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.download.DownloadFragment2;
@@ -299,6 +303,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
 
     private class TabListMultiData extends SingleTypeMultiData<ITab> {
 
+        private ThumbnailProvider mThumbnailProvider;
 
         public TabListMultiData() {
             super(new HorizontalLayouter());
@@ -323,29 +328,59 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
         public void onBindViewHolder(EasyViewHolder holder, List<ITab> list, int position, List<Object> payloads) {
             ITab tab = list.get(position);
             TextView tvTitle = holder.getView(R.id.tv_title);
+            tvTitle.setText(tab.getTitle());
 
             CardView cardView = holder.getView(R.id.card_view);
             FitWidthImageView ivThumbnail = holder.getView(R.id.iv_thumbnail);
             PageInfo pageInfo = tab.getCurrentPageInfo();
-            if (pageInfo != null) {
-                cardView.setCardBackgroundColor(pageInfo.getThemeColor());
-                tvTitle.setText(pageInfo.getTitle());
-                PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+            if (!(tab instanceof ITabGroup) && pageInfo != null) {
+                int theme = pageInfo.getThemeColor();
+                cardView.setCardBackgroundColor(theme == 0 ? getDefaultThemeColor() : theme);
+//                PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                Object tabIdTag = holder.getTag(R.id.key_tab_id);
+                if (!(tabIdTag instanceof Integer) || (int) tabIdTag != tab.getId()) {
+                    ivThumbnail.setImageBitmap(null);
+                }
             } else {
-                cardView.setCardBackgroundColor(Color.WHITE);
-                tvTitle.setText(null);
-                ivThumbnail.setImageBitmap(null);
+                cardView.setCardBackgroundColor(getDefaultThemeColor());
             }
+
+
+            if (mThumbnailProvider == null) {
+                mThumbnailProvider = new MultiThumbnailCardProvider(holder.getContext(),
+                        TabGroupManager.global().getTabContentManager());
+            }
+            mThumbnailProvider.getTabThumbnailWithCallback(tab, null, new Callback<Bitmap>() {
+                @Override
+                public void onResult(Bitmap result) {
+                    if (result == null && pageInfo != null) {
+                        PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                    } else {
+                        ivThumbnail.setImageBitmap(result);
+                    }
+                }
+            }, false, false, false);
+
             holder.setOnItemClickListener(v -> {
-                TabGroupManager.selectTab(tab, tab.getCurrentPage());
+                // TODO
+                if (tab instanceof ITabGroup) {
+                    TabGroupManager.global().selectGroup((ITabGroup) tab);
+                    BundleEvent.with(BundleEvent.ACTION_GO_TO_SWITCHER).post();
+                } else {
+                    TabGroupManager.selectTab(tab, tab.getCurrentPage());
+                    BundleEvent.with(BundleEvent.ACTION_GO_TO_BROWSER).post();
+                }
                 dismiss();
-                BundleEvent.with(BundleEvent.ACTION_GO_TO_BROWSER).post();
             });
         }
 
         @Override
         public boolean loadData() {
             return false;
+        }
+
+        public int getDefaultThemeColor() {
+            return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
         }
     }
 

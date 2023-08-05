@@ -243,6 +243,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                     }
                 }
             }
+
+            if (relatedTabList.isEmpty()) {
+                PostTask.postTask(TaskTraits.USER_VISIBLE,
+                        mFinalCallback.bind(mMultiThumbnailBitmap));
+            }
         }
 
         private void drawThumbnailBitmapOnCanvasWithFrame(Bitmap thumbnail, int index) {

@@ -3,6 +3,7 @@ package com.ark.browser.tab.core;
 import android.util.AtomicFile;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
@@ -41,15 +42,15 @@ public class ChildTab implements ITab, IPageGroup {
 
     protected transient final List<IPage> mPages;
 
-    public ChildTab(ITabGroup parent) {
+    public ChildTab(@NonNull ITabGroup parent) {
         this(parent, TabInfo.create(parent.getId()));
     }
 
-    public ChildTab(ITabGroup parent, TabInfo tabInfo) {
+    public ChildTab(@Nullable ITabGroup parent, TabInfo tabInfo) {
         this(parent, tabInfo, new ArrayList<>(0));
     }
 
-    public ChildTab(ITabGroup parent, TabInfo tabInfo, List<IPage> pages) {
+    public ChildTab(@Nullable ITabGroup parent, TabInfo tabInfo, List<IPage> pages) {
         mParentTab = parent;
         mTabInfo = tabInfo;
         mPages = pages;
@@ -100,7 +101,7 @@ public class ChildTab implements ITab, IPageGroup {
     }
 
     @Override
-    public ITabGroup getParentTab() {
+    public ITabGroup getParentGroup() {
         return mParentTab;
     }
 
@@ -333,7 +334,7 @@ public class ChildTab implements ITab, IPageGroup {
     @Override
     public String toString() {
         return "TabImpl{" +
-                "tabInfo=" + mTabInfo +
+                "info=" + mTabInfo +
                 '}';
     }
 

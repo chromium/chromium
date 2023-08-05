@@ -69,6 +69,14 @@ public class ArkTabDao {
         return new File(tabsDir, "tab" + id);
     }
 
+    public static File getTabDir() {
+        File tabsDir = new File(StateDirHolder.sDirectory, DIR_TABS);
+        if (!tabsDir.exists()) {
+            tabsDir.mkdirs();
+        }
+        return tabsDir;
+    }
+
     public static void deleteTabFile(int id) {
         File tabFile = getTabFile(id);
         AtomicFile atomicFile = new AtomicFile(tabFile);
@@ -101,21 +109,10 @@ public class ArkTabDao {
 
 
 
-    public static DataInputStream readFileAtomic(File file) {
+    public static DataInputStream readFileAtomic(File file) throws IOException {
         ArkLogger.i(TAG, "readFile2 file: " + file);
-        if (!file.exists()) {
-            ArkLogger.i(TAG, "readFile2 file not exists!");
-            return null;
-        }
-
         AtomicFile atomicFile = new AtomicFile(file);
-        try {
-            return new DataInputStream(new ByteArrayInputStream(atomicFile.readFully()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            ArkLogger.e(TAG, "readFile2 file read failed!", e);
-            return null;
-        }
+        return new DataInputStream(new ByteArrayInputStream(atomicFile.readFully()));
     }
 
     public static DataInputStream readFile(File file) {
@@ -143,12 +140,17 @@ public class ArkTabDao {
         return new BackgroundOnlyAsyncTask<DataInputStream>() {
             @Override
             protected DataInputStream doInBackground() {
-                return readFileAtomic(file);
+                try {
+                    return readFileAtomic(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static DataInputStream readFileSync(final File file) {
+    public static DataInputStream readFileSync(final File file) throws IOException {
         return readFileAtomic(file);
     }
 

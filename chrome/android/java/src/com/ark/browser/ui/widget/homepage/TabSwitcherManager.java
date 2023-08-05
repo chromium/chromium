@@ -186,16 +186,30 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
             }
 
             @Override
+            public void onGroupChanged(ITabGroup newGroup, ITabGroup oldGroup) {
+                ArkLogger.e(this, "TabManagerObserver onGroupChanged newGroup="
+                        + newGroup + " oldGroup=" + oldGroup);
+                mSwitcher.setTabGroup(newGroup);
+            }
+
+            @Override
+            public void onTabSelected(ITab tab) {
+                ArkLogger.d(this, "TabManagerObserver onTabSelected tab=" + tab);
+                mSwitcher.setTabGroup(tab.getParentGroup());
+                mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
+                mViewHolder.setTab(TabCacheManager.getInstance().findTab(tab));
+            }
+
+            @Override
             public void onTabMoved(ITab tab, ITabGroup oldGroup) {
                 Tab nativeTab = mViewHolder.getTab();
                 int id = nativeTab == null ? -1 : nativeTab.getId();
                 ArkLogger.e(this, "TabManagerObserver onTabMoved id="
                         + tab.getId() + " currentId=" + id);
                 if (id == tab.getId()) {
-                    mSwitcher.setTabGroup(tab.getParentTab());
-                    mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
-                    mViewHolder.setTab(TabCacheManager.getInstance().findTab(tab));
-                } else if (oldGroup == mSwitcher.getTabGroup() || tab.getParentTab() == mSwitcher.getTabGroup()) {
+                    onTabSelected(tab);
+                } else if (oldGroup == mSwitcher.getTabGroup()
+                        || tab.getParentGroup() == mSwitcher.getTabGroup()) {
                     mSwitcher.notifyDataSetChanged();
                 }
             }
@@ -294,8 +308,8 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void onRestore() {
-        mTabSwitcherLayout.onRestore();
         mSwitcher.setTabGroup(TabGroupManager.global().getCurrentTabGroup());
+        mTabSwitcherLayout.onRestore();
     }
 
     @Override
@@ -491,7 +505,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         } else {
             tabGroup.openInNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
         }
-        mSwitcher.setTabGroup(tabGroup);
+        TabGroupManager.global().selectGroup(tabGroup);
         goToBrowser();
     }
 

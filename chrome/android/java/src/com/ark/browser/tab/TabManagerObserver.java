@@ -15,6 +15,10 @@ public interface TabManagerObserver {
 
     void onChange();
 
+    void onGroupChanged(ITabGroup newGroup, ITabGroup oldGroup);
+
+    void onTabSelected(ITab tab);
+
     void onTabMoved(ITab tab, ITabGroup oldGroup);
 
 }

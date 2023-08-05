@@ -215,7 +215,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (tab == null) {
             return;
         }
-        tab.getParentTab().openInNewGroup(tab, params, TabLaunchType.FROM_CHROME_UI);
+        tab.getParentGroup().openInNewGroup(tab, params, TabLaunchType.FROM_CHROME_UI);
     }
 
     @Override
@@ -374,7 +374,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void moveTab() {
-        boolean r = TabGroupManager.moveToNewTab(mTab.getPageInfo());
+        boolean r = TabGroupManager.moveToNewTab(mTab.getTab(), mTab.getTab().getCurrentPage());
         if (r) {
             ZToast.success("移动页面成功！");
         } else {

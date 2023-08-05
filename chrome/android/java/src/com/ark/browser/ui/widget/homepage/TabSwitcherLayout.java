@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
@@ -71,6 +72,13 @@ public class TabSwitcherLayout extends FrameLayout {
             @Override
             public void onTabGroupChanged(ITabGroup tabGroup) {
                 updateBackButtonState();
+                if (mSwitcher.getCount() == 0) {
+                    mEmptyLayout.setAlpha(1f);
+                    mEmptyLayout.setVisibility(VISIBLE);
+                } else {
+                    mEmptyLayout.setAlpha(0f);
+                    mEmptyLayout.setVisibility(GONE);
+                }
             }
 
             @Override
@@ -173,8 +181,8 @@ public class TabSwitcherLayout extends FrameLayout {
                 if (tabGroup == null) {
                     return;
                 }
-                if (tabGroup.getParentTab() != null) {
-                    mSwitcher.setTabGroup(tabGroup.getParentTab());
+                if (tabGroup.getParentGroup() != null) {
+                    TabGroupManager.global().selectGroup(tabGroup.getParentGroup());
                 }
 
                 updateBackButtonState();
@@ -247,7 +255,7 @@ public class TabSwitcherLayout extends FrameLayout {
         if (tabGroup == null) {
             mBtnBack.setEnabled(false);
         } else {
-            mBtnBack.setEnabled(tabGroup.getParentTab() != null);
+            mBtnBack.setEnabled(tabGroup.getParentGroup() != null);
         }
 
         if (mBtnBack.isEnabled()) {

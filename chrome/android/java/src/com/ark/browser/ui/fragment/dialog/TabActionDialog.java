@@ -205,7 +205,7 @@ public class TabActionDialog extends AttachListDialogFragment<TabActionDialog.Ac
                 addItem(new Action("移动至新标签") {
                     @Override
                     void onClick() {
-                        boolean r = TabGroupManager.moveToNewTab(mTab.getCurrentPageInfo());
+                        boolean r = TabGroupManager.moveToNewTab(mTab, mTab.getCurrentPage());
                         if (r) {
                             ZToast.success("移动页面成功！");
                         } else {

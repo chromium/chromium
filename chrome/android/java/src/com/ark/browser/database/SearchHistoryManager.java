@@ -30,12 +30,10 @@ public class SearchHistoryManager {
         static {
             try (DataInputStream is = ArkTabDao.readFileAtomic(
                     new File(ContextUtils.getApplicationContext().getFilesDir(), NAME))) {
-                if (is != null) {
-                    int version = is.readInt();
-                    int size = is.readInt();
-                    for (int i = 0; i < size; i++) {
-                        SEARCH_HISTORY_LIST.add(is.readUTF());
-                    }
+                int version = is.readInt();
+                int size = is.readInt();
+                for (int i = 0; i < size; i++) {
+                    SEARCH_HISTORY_LIST.add(is.readUTF());
                 }
             } catch (IOException e) {
                 e.printStackTrace();

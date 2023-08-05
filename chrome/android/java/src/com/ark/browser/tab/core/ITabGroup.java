@@ -200,7 +200,7 @@ public interface ITabGroup extends ITab {
         tab.selectPage(page);
 
         // TODO optimise
-        TabGroupManager.global().notifyChanged();
+        TabGroupManager.global().notifyTabSelected(iTab);
         for (TabInfoObserver obs : getObservers()) {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
@@ -223,31 +223,17 @@ public interface ITabGroup extends ITab {
 
     void openInNewGroup(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
-    boolean moveToNewTab(IPage page);
+    boolean moveToNewTab(ITab tab, IPage page);
 
     boolean moveToNewGroup(ITab tab, boolean selected);
 
-    default boolean closeTab(ITab tab) {
-        if (removeTab(tab)) {
-            int id = tab.getId();
-            ThreadPool.postOnUIThread(() -> {
-                tab.remove();
-                // TODO optimise
-                TabGroupManager.global().notifyChanged();
-                for (TabInfoObserver obs : getObservers()) {
-                    obs.didCloseTab(id, isIncognito());
-                }
-            });
-            return true;
-        }
-        return false;
-    }
+    boolean closeTab(ITab tab);
 
     default void closeAllTabs() {
         Toast.makeText(ContextUtils.getApplicationContext(), "TODO 关闭所有窗口", Toast.LENGTH_SHORT).show();
     }
 
-    default boolean removeTab(ITab tab) {
+    default boolean removeTab(ITab tab, boolean delete) {
         if (tab == null) {
             return false;
         }
@@ -262,6 +248,24 @@ public interface ITabGroup extends ITab {
             }
             onIndexChanged(index);
             saveTabInfo();
+
+            if (delete) {
+                int id = tab.getId();
+                ThreadPool.postOnUIThread(() -> {
+                    tab.remove();
+                    // TODO optimise
+//                    TabGroupManager.global().notifyChanged();
+                    for (TabInfoObserver obs : getObservers()) {
+                        obs.didCloseTab(id, isIncognito());
+                    }
+                });
+            } else {
+//                TabGroupManager.global().notifyChanged();
+                for (TabInfoObserver obs : getObservers()) {
+                    obs.didRemoveTab(tab);
+                }
+            }
+
         }
         return result;
     }

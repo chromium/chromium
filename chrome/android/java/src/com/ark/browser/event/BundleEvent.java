@@ -17,8 +17,9 @@ import java.util.ArrayList;
 public class BundleEvent {
 
     public static final int ACTION_GO_TO_BROWSER = 0;
-    public static final int ACTION_ADD_TO_HOMEPAGE = 1;
-    public static final int ACTION_REMOVE_FROM_HOMEPAGE = 2;
+    public static final int ACTION_GO_TO_SWITCHER = 1;
+    public static final int ACTION_ADD_TO_HOMEPAGE = 2;
+    public static final int ACTION_REMOVE_FROM_HOMEPAGE = 3;
 
     private final int mAction;
     private final Bundle mBundle;

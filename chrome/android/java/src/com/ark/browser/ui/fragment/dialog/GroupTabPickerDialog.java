@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ark.browser.settings.Keys;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.core.GroupTab;
@@ -31,7 +30,6 @@ import com.zpj.utils.ScreenUtils;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,10 +95,10 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
                         if (tag instanceof ITabGroup) {
                             ITabGroup group = (ITabGroup) tag;
                             int index = 0;
-                            ITabGroup p = group.getParentTab();
+                            ITabGroup p = group.getParentGroup();
                             while (p != null) {
                                 index++;
-                                p = p.getParentTab();
+                                p = p.getParentGroup();
                             }
                             outRect.set(index * ScreenUtils.dp2pxInt(24), 0, 0, 0);
                         } else {
@@ -248,7 +246,7 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
         public void onClick(View v, float x, float y) {
             ArkLogger.e(this, "moveToNewGroup group id=" + tabGroup.getId());
             if (tabGroup.getId() == ITab.INVALID_TAB_INDEX) {
-                ITabGroup newGroup = new GroupTab(tabGroup.getParentTab());
+                ITabGroup newGroup = new GroupTab(tabGroup.getParentGroup());
                 if (tabGroup.moveToNewGroup(newGroup, true)) {
                     moveToNewGroup(newGroup);
                 } else {
@@ -321,7 +319,7 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
 
                                             mRecycler.getAdapter().notifyItemRangeRemoved(position, getCount());
 
-                                            tabGroup.getParentTab().closeTab(tabGroup);
+                                            tabGroup.getParentGroup().closeTab(tabGroup);
                                         })
                                         .show(context);
                                 break;

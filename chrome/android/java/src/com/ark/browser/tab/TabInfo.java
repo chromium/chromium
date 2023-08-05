@@ -16,7 +16,7 @@ import java.io.IOException;
 @Keep
 public class TabInfo {
 
-    private int tabId;
+    private int mTabId;
 
     private int mParentId;
 
@@ -49,11 +49,11 @@ public class TabInfo {
     }
 
     public int getId() {
-        return tabId;
+        return mTabId;
     }
 
     public void setId(int tabId) {
-        this.tabId = tabId;
+        this.mTabId = tabId;
     }
 
     public int getParentId() {
@@ -170,7 +170,7 @@ public class TabInfo {
     public static TabInfo create(int id, int parentId, boolean isGroup) {
         TabInfo manager = new TabInfo();
         manager.createTime = System.currentTimeMillis();
-        manager.tabId = id;
+        manager.mTabId = id;
         manager.mParentId = parentId;
         manager.mIsGroup = isGroup;
         return manager;
@@ -192,7 +192,7 @@ public class TabInfo {
         TabInfo manager = new TabInfo();
         manager.createTime = createTime;
         manager.accessTime = createTime;
-        manager.tabId = ArkIdManager.generateTabId();
+        manager.mTabId = ArkIdManager.generateTabId();
         manager.mParentId = parentId;
         manager.mIsGroup = isGroup;
         return manager;
@@ -201,7 +201,7 @@ public class TabInfo {
     public void wrapStream(DataOutputStream os) throws IOException {
         int version = 6;
         os.writeInt(version);
-        os.writeInt(tabId);
+        os.writeInt(mTabId);
         os.writeInt(mParentId);
         os.writeBoolean(mIsGroup);
         os.writeInt(mLaunchType);
@@ -218,7 +218,7 @@ public class TabInfo {
     public void fromStream(DataInputStream is) throws IOException {
         int version = is.readInt();
         ArkLogger.e(this, "fromStream version=" + version);
-        tabId = is.readInt();
+        mTabId = is.readInt();
         if (version >= 3) {
             if (version >= 5) {
                 mParentId = is.readInt();
@@ -298,16 +298,19 @@ public class TabInfo {
     @Override
     public String toString() {
         return "TabInfo{" +
-                "tabId=" + tabId +
+                "tabId=" + mTabId +
+                ", parentId=" + mParentId +
                 ", createTime=" + createTime +
-                ", pageIndex=" + childIndex +
-                ", currentPageId=" + currentChildId +
+                ", childIndex=" + childIndex +
+                ", currentChildId=" + currentChildId +
                 ", position=" + position +
                 ", isLocked=" + isLocked +
                 ", incognito=" + incognito +
                 ", accessTime=" + accessTime +
-                ", parentId=" + mParentId +
-                ", mLaunchType=" + mLaunchType +
+                ", fromId=" + fromId +
+                ", launchType=" + mLaunchType +
+                ", isGroup=" + mIsGroup +
+                ", title='" + mTitle + '\'' +
                 '}';
     }
 

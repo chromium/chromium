@@ -199,6 +199,10 @@ public class ArkMainFragment extends BaseFragment implements
                     int action = event.getAction();
                     if (action == BundleEvent.ACTION_GO_TO_BROWSER) {
                         mSwitcherManager.goToBrowser(event.getBoolean("animated", true));
+                    } else if (action == BundleEvent.ACTION_GO_TO_SWITCHER) {
+                        if (!mSwitcherManager.isInTabSwitcher()) {
+                            mSwitcherManager.goToTabSwitcher();
+                        }
                     } else if (action == BundleEvent.ACTION_ADD_TO_HOMEPAGE) {
                         String url = event.getString("url", null);
                         String title = event.getString("title", null);

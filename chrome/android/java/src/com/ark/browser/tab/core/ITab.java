@@ -35,7 +35,7 @@ public interface ITab {
         return getTabInfo().getParentId();
     }
 
-    ITabGroup getParentTab();
+    ITabGroup getParentGroup();
 
     void setParentGroup(ITabGroup group);
 
@@ -47,10 +47,10 @@ public interface ITab {
      */
     default ITabGroup getRootGroupTab() {
 
-        ITabGroup tabGroup = getParentTab();
+        ITabGroup tabGroup = getParentGroup();
 
         while (tabGroup != null) {
-            ITabGroup parent = tabGroup.getParentTab();
+            ITabGroup parent = tabGroup.getParentGroup();
             if (parent == null) {
                 return tabGroup;
             } else {

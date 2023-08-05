@@ -26,6 +26,7 @@ import androidx.core.view.ViewCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.ark.browser.tab.EmptyTabInfoObserver;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.core.ChildTab;
 import com.ark.browser.tab.core.GroupTab;
@@ -157,7 +158,8 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         }
     };
 
-    public void setTabGroup(ITabGroup tabGroup) {
+    void setTabGroup(ITabGroup tabGroup) {
+        ArkLogger.e(this, "setTabGroup group=" + tabGroup + " old=" + mTabGroup);
         if (mTabGroup == tabGroup) {
             return;
         }
@@ -169,17 +171,14 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
         notifyDataSetChanged();
 
-        ThreadPool.postOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                for (Callback callback : mCallbackList) {
-                    callback.onTabGroupChanged(mTabGroup);
-                }
+        ThreadPool.postOnUIThread(() -> {
+            for (Callback callback : mCallbackList) {
+                callback.onTabGroupChanged(tabGroup);
             }
         });
     }
 
-    public ITabGroup getTabGroup() {
+    ITabGroup getTabGroup() {
         return mTabGroup;
     }
 
@@ -1270,12 +1269,13 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                 int pos = mFirstPosition + indexOfChild(v);
                 ITab tab = mTabGroup.getTabAt(pos);
                 setPosition(pos);
+                ArkLogger.e(TAG, "onClick tab=" + tab);
                 if (tab instanceof ChildTab) {
                     mState = STATE_ANIMATION;
                     mCurrentTouchView = v;
                     goToSelect(v, pos);
                 } else if (tab instanceof GroupTab) {
-                    setTabGroup((ITabGroup) tab);
+                    TabGroupManager.global().selectGroup((ITabGroup) tab);
                 }
             }
         });

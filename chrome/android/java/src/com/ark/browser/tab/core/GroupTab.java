@@ -2,10 +2,11 @@ package com.ark.browser.tab.core;
 
 import android.util.AtomicFile;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
@@ -15,6 +16,7 @@ import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -73,7 +75,7 @@ public class GroupTab implements ITabGroup {
     }
 
     @Override
-    public ITabGroup getParentTab() {
+    public ITabGroup getParentGroup() {
         return mParentTab;
     }
 
@@ -104,23 +106,119 @@ public class GroupTab implements ITabGroup {
     private void readGroupFile(DataInputStream is) {
         try {
             mTabInfo.fromStream(is);
-            int version = is.readInt();
-            ArkLogger.e(this, "readGroupFile version=" + version);
-
             int count = is.readInt();
             ArkLogger.e(TabInfo.class, "readGroupFile id="
                     + mTabInfo.getId() + " count=" + count);
+            List<Integer> list = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 int childId = is.readInt();
+                list.add(childId);
                 ITab newTab = restoreTab(this, childId);
                 ArkLogger.e(TAG, "readGroupFile newTab=" + newTab);
                 ArkLogger.e(TAG, "readGroupFile tabInfo=" + newTab.getTabInfo());
                 mTabList.add(newTab);
             }
 
+
+//            list.add(-100);
+//            ArkLogger.e(TAG, "restoreLostTab list=" + list);
+//            File dir = ArkTabDao.getTabDir();
+//            File[] files = dir.listFiles(new FileFilter() {
+//                @Override
+//                public boolean accept(File file) {
+//                    String id = file.getName().substring(3);
+//                    boolean accept = !list.contains(Integer.parseInt(id));
+//                    ArkLogger.e(GroupTab.TAG, "restoreLostTab accept=" + accept + " id=" + id);
+//                    return accept;
+//                }
+//            });
+//
+//
+//            ArkLogger.e(TAG, "restoreLostTab files size=" + files.length);
+//            SparseArray<List<ITab>> lostTabsMap = new SparseArray<>();
+//
+//            for (File file : files) {
+//                ArkLogger.e(TAG, "restoreLostTab file=" + file);
+//                try {
+//                    ITab tab = restoreTab(null, file);
+//
+//                    int parentId = tab.getTabInfo().getParentId();
+//                    ArkLogger.e(TAG, "restoreLostTab parentId=" + parentId + " tab=" + tab);
+//
+//                    List<ITab> tabs = lostTabsMap.get(parentId, null);
+//                    if (tabs == null) {
+//                        tabs = new ArrayList<>();
+//                        lostTabsMap.put(parentId, tabs);
+//                    }
+//                    tabs.add(tab);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            ArkLogger.e(TAG, "restoreLostTab lostTabsMap size=" + lostTabsMap.size());
+//
+//
+//            List<ITab> tabList = new ArrayList<>(mTabList);
+//            if (lostTabsMap.get(-100, null) != null) {
+//                tabList.addAll(lostTabsMap.get(-100));
+//                lostTabsMap.remove(-100);
+//            }
+//
+//            Collections.sort(tabList, new Comparator<ITab>() {
+//                @Override
+//                public int compare(ITab t0, ITab t1) {
+//                    return Integer.compare(t0.getTabInfo().getPosition(), t1.getTabInfo().getPosition());
+//                }
+//            });
+//
+//            if (lostTabsMap.get(ITab.INVALID_TAB_INDEX, null) != null) {
+//                int pos = tabList.get(tabList.size() - 1).getTabInfo().getPosition();
+//                for (ITab tab : lostTabsMap.get(ITab.INVALID_TAB_INDEX)) {
+//                    tab.getTabInfo().setParentId(-100);
+//                    tab.getTabInfo().setPosition(++pos);
+//                    tabList.add(tab);
+//                }
+//                lostTabsMap.remove(ITab.INVALID_TAB_INDEX);
+//            }
+//
+//
+//
+//            for (ITab tab : tabList) {
+//                ArkLogger.e(TAG, "restoreLostTab title=" + tab.getTitle());
+//            }
+//
+//            for (int i = 0; i < lostTabsMap.size(); i++) {
+//                int groupId = lostTabsMap.keyAt(i);
+//                List<ITab> tabs = lostTabsMap.get(groupId);
+//                ArkLogger.e(TAG, "restoreLostTab groupId=" + groupId
+//                        + " size=" + tabs.size() + " tabs=" + tabs);
+//                ITab groupTab = null;
+//
+//                for (ITab tab : tabList) {
+//                    if (tab.getId() == groupId) {
+//                        groupTab = tab;
+//                        break;
+//                    }
+//                }
+//
+//                if (groupTab == null) {
+//                    ArkLogger.e(TAG, "restoreLostTab group id=" + groupId + " null");
+//                } else {
+//                    ArkLogger.e(TAG, "restoreLostTab group id=" + groupId + " title=" + groupTab.getTitle());
+//                }
+//            }
+//
+//            mTabList.clear();
+//            mTabList.addAll(tabList);
+//            saveTabInfo();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void restoreLastTab() {
+
     }
 
     @Override
@@ -167,6 +265,11 @@ public class GroupTab implements ITabGroup {
             return null;
         }
         return mTabList.get(i);
+    }
+
+    @Override
+    public boolean closeTab(ITab tab) {
+        return removeTab(tab, true);
     }
 
     @Override
@@ -227,7 +330,7 @@ public class GroupTab implements ITabGroup {
 //        nativeTab.loadInNewPage();
 
         // TODO optimise
-        TabGroupManager.global().notifyChanged();
+//        TabGroupManager.global().notifyChanged();
         for (TabInfoObserver obs : mObservers) {
             obs.didAddTab(newTab, type);
         }
@@ -269,11 +372,12 @@ public class GroupTab implements ITabGroup {
         ArkLogger.d(TAG, "openInNewGroup group=" + newGroup.getTabInfo());
 
         // TODO optimise
-        TabGroupManager.global().notifyChanged();
+        TabGroupManager.global().selectGroup(newGroup);
         for (TabInfoObserver obs : mObservers) {
             ArkLogger.d(GroupTab.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(newGroup, TabSelectionType.FROM_USER, lastId);
         }
+
         ArkLogger.d(TAG, "openInNewGroup loadUrlParams=" + loadUrlParams);
 
         newGroup.openInNewTab(currentTab, loadUrlParams, type);
@@ -316,13 +420,10 @@ public class GroupTab implements ITabGroup {
 
 
     @Override
-    public boolean moveToNewTab(IPage page) {
+    public boolean moveToNewTab(ITab tab, IPage page) {
         ArkLogger.d(TAG, "moveToNewTab");
-        ITab tab = findTabById(page.getPageInfo().getTabId());
-
         // TODO remove instanceof
         if (tab instanceof ChildTab && ((ChildTab) tab).removePage(page)) {
-//            selectTab(tab, tab.getCurrentPage());
             TabInfo newTabInfo = TabInfo.create(getId());
             List<IPage> pages = new ArrayList<>();
             page.getPageInfo().setTabId(newTabInfo.getId());
@@ -344,12 +445,13 @@ public class GroupTab implements ITabGroup {
 
     @Override
     public boolean moveToNewGroup(ITab tab, boolean selected) {
-        if (tab.getParentTab() == this) {
+        if (tab.getParentGroup() == this) {
             return false;
         }
-        ITabGroup oldGroup = tab.getParentTab();
-        if (oldGroup == null || oldGroup.removeTab(tab)) {
+        ITabGroup oldParent = tab.getParentGroup();
+        if (oldParent == null || oldParent.removeTab(tab, false)) {
             tab.setParentGroup(this);
+            tab.getTabInfo().setParentId(getId());
             ITab lastTab = getTabAt(mTabList.size() - 1);
             if (lastTab == null) {
                 tab.getTabInfo().setPosition(0);
@@ -357,22 +459,23 @@ public class GroupTab implements ITabGroup {
                 tab.getTabInfo().setPosition(lastTab.getTabInfo().getPosition() + 1);
             }
             mTabList.add(tab);
-            saveTabInfo();
             tab.saveTabInfo();
+            saveTabInfo();
 
-            if (selected) {
+            Tab nativeTab = TabCacheManager.getInstance().findTab(tab);
+            if (nativeTab != null && nativeTab.getWindowAndroid() != null) {
                 ITab current = tab;
-                ITabGroup parent = tab.getParentTab();
+                ITabGroup parent = tab.getParentGroup();
                 while (parent != null) {
                     parent.onIndexChanged(parent.indexOf(current));
                     current = parent;
-                    parent = parent.getParentTab();
+                    parent = parent.getParentGroup();
                 }
+                TabGroupManager.global().selectGroup(tab.getParentGroup());
             }
 
-
             // TODO optimise
-            TabGroupManager.global().notifyTabMoved(tab, oldGroup);
+            TabGroupManager.global().notifyTabMoved(tab, oldParent);
             for (TabInfoObserver observer : mObservers) {
                 observer.didMoveTab(tab);
             }
@@ -440,8 +543,18 @@ public class GroupTab implements ITabGroup {
             return;
         }
         mTabInfo.setChildIndex(index);
-        mTabInfo.setCurrentPageId(getTabAt(index).getId());
+        ITab current = getTabAt(index);
+        if (current != null) {
+            mTabInfo.setCurrentPageId(current.getId());
+        }
         saveTabInfo();
+    }
+
+    @Override
+    public String toString() {
+        return "GroupTab{" +
+                "info=" + mTabInfo +
+                '}';
     }
 
     private static final int MAX_CHANGE_COUNT = 10;
@@ -591,7 +704,7 @@ public class GroupTab implements ITabGroup {
         }
     }
 
-    public static ITab restoreTab(ITabGroup parent, int tabId) {
+    public static ITab restoreTab(@Nullable ITabGroup parent, int tabId) {
         File tabFile = ArkTabDao.getTabFile(tabId);
         ArkLogger.e(ChildTab.class, "from id=" + tabId + " tabFile=" + tabFile);
         try {
@@ -603,16 +716,13 @@ public class GroupTab implements ITabGroup {
         }
     }
 
-    private static ITab restoreTab(ITabGroup parent, File tabFile) throws IOException {
+    private static ITab restoreTab(@Nullable ITabGroup parent, File tabFile) throws IOException {
         try (DataInputStream stream = ArkTabDao.readFileAtomic(tabFile)) {
-            if (stream == null) {
-                throw new IOException("tab file stream is null!");
-            }
             return restoreTab(parent, stream);
         }
     }
 
-    private static ITab restoreTab(@NonNull ITabGroup parent, DataInputStream is) throws IOException {
+    private static ITab restoreTab(@Nullable ITabGroup parent, DataInputStream is) throws IOException {
         TabInfo newTabInfo = TabInfo.create(is);
 
         int count = is.readInt();
@@ -636,7 +746,15 @@ public class GroupTab implements ITabGroup {
             for (int i = 0; i < count; i++) {
                 int pageId = is.readInt();
                 File file = new File(pagesDir, String.valueOf(pageId));
-                PageInfo pageInfo = PageInfo.from(file);
+                PageInfo pageInfo;
+                try {
+                    pageInfo = PageInfo.from(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ArkLogger.e(TabInfo.class, "restoreTab page restore failed! pageId=" + pageId);
+                    pageInfo = PageInfo.createBreakPageInfo(pageId, newTabInfo.getId(), newTabInfo.isIncognito());
+                }
+
                 ArkLogger.e(TabInfo.class, "restoreTab pageId=" + pageId + " pageInfo=" + pageInfo);
                 pages.add(new PageImpl(pageInfo));
             }

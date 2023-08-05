@@ -16,5 +16,11 @@ public class EmptyTabManagerObserver implements TabManagerObserver {
     public void onChange() {}
 
     @Override
+    public void onGroupChanged(ITabGroup newGroup, ITabGroup oldGroup) {}
+
+    @Override
+    public void onTabSelected(ITab tab) {}
+
+    @Override
     public void onTabMoved(ITab tab, ITabGroup oldGroup) {}
 }

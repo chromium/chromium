@@ -45,6 +45,15 @@ public class PageInfo {
 
     }
 
+    public static PageInfo createBreakPageInfo(int pageId, int tabId, boolean isIncognito) {
+        PageInfo info = new PageInfo();
+        info.pageId = pageId;
+        info.tabId = tabId;
+        info.isIncognito = isIncognito;
+        info.title = "Blank";
+        return info;
+    }
+
     public static PageInfo from(int tabId, int index, boolean isIncognito) {
         PageInfo info = new PageInfo();
         info.pageId = ArkIdManager.generatePageId();
@@ -74,9 +83,6 @@ public class PageInfo {
 
     public static PageInfo from(File pageFile) throws IOException {
         try (DataInputStream stream = ArkTabDao.readFileAtomic(pageFile)) {
-            if (stream == null) {
-                throw new IOException("page file stream is null!");
-            }
             return from(stream);
         }
 //        DataInputStream stream = ArkTabDao.readFile(pageFile);
