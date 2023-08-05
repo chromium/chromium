@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -48,7 +49,9 @@ bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
     case VcEffectId::kNoiseCancellation:
       return IsNoiseCancellationSupported();
     case VcEffectId::kLiveCaption:
-      return captions::IsLiveCaptionFeatureSupported();
+      return base::FeatureList::IsEnabled(
+                 features::kShowLiveCaptionInVideoConferenceTray) &&
+             captions::IsLiveCaptionFeatureSupported();
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
