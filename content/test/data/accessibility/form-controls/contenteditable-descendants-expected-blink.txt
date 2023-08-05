@@ -1,5 +1,5 @@
 rootWebArea
-++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an  and a Button.Always expose editable tables as tables.1. Editable list item.' nonAtomicTextFieldRoot=true
+++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an  and a Button.Always expose editable tables as tables.<newline>1. Editable list item.' nonAtomicTextFieldRoot=true
 ++++staticText editable richlyEditable name='A contenteditable with a '
 ++++staticText editable linked richlyEditable name='link'
 ++++staticText editable richlyEditable name=' and an '
@@ -8,8 +8,10 @@ rootWebArea
 ++++++staticText name='Button'
 ++++staticText editable richlyEditable name='.'
 ++++staticText editable richlyEditable name='Always expose editable tables as tables.'
-++++staticText name='1. '
-++++staticText editable richlyEditable name='Editable list item.'
+++++listItem editable ignored richlyEditable
+++++++listMarker ignored
+++++++++staticText name='1. '
+++++++staticText editable richlyEditable name='Editable list item.'
 ++staticText name='Non-editable paragraph.'
 ++paragraph editable multiline richlyEditable value='Should keep the role but change the state.' nonAtomicTextFieldRoot=true
 ++++staticText editable richlyEditable name='Should keep the role but change the state.'

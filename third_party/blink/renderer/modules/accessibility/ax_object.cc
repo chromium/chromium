@@ -3780,6 +3780,24 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     }
   }
 
+  // Include all pseudo element content. Any anonymous subtree is included
+  // from above, in the condition where there is no node.
+  if (element && element->IsPseudoElement()) {
+    return true;
+  }
+
+  // Include all parents of ::before/::after/::marker pseudo elements to help
+  // ClearChildren() find all children, and assist naming computation.
+  // It is unnecessary to include a rule for other types of pseudo elements:
+  // Specifically, ::first-letter/::backdrop are not visited by
+  // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
+  // a special rule to include their parents.
+  if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
+                  element->GetPseudoElement(kPseudoIdAfter) ||
+                  element->GetPseudoElement(kPseudoIdMarker))) {
+    return true;
+  }
+
   if (IsExcludedByFormControlsFilter()) {
     return false;
   }
@@ -3827,23 +3845,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
 
   if (!element)
     return false;
-
-  // Include all pseudo element content. Any anonymous subtree is included
-  // from above, in the condition where there is no node.
-  if (element->IsPseudoElement())
-    return true;
-
-  // Include all parents of ::before/::after/::marker pseudo elements to help
-  // ClearChildren() find all children, and assist naming computation.
-  // It is unnecessary to include a rule for other types of pseudo elements:
-  // Specifically, ::first-letter/::backdrop are not visited by
-  // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
-  // a special rule to include their parents.
-  if (element->GetPseudoElement(kPseudoIdBefore) ||
-      element->GetPseudoElement(kPseudoIdAfter) ||
-      element->GetPseudoElement(kPseudoIdMarker)) {
-    return true;
-  }
 
   // Use a flag to control whether or not the <html> element is included
   // in the accessibility tree. Either way it's always marked as "ignored",
