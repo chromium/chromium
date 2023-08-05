@@ -100,6 +100,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
 - (void)stop {
   _browser = nil;
   _baseViewController = nil;
+  [_imageSaver stop];
   _imageSaver = nil;
   [_imageCopier stop];
   _imageCopier = nil;

@@ -42,6 +42,13 @@
   return self;
 }
 
+- (void)stop {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+  self.baseViewController = nil;
+  _browser = nullptr;
+}
+
 - (void)saveImageAtURL:(const GURL&)URL
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState
