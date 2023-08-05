@@ -28,6 +28,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.I
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -542,6 +543,8 @@ public class InstantStartTabSwitcherTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
     // clang-format on
+    @DisableIf.Build(message = "https://crbug.com/1470412",
+            sdk_is_greater_than = VERSION_CODES.M, sdk_is_less_than = VERSION_CODES.O)
     public void testSaveIsLastVisitedTabSRP() throws Exception {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
