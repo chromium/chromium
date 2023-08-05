@@ -49,10 +49,27 @@ TEST_P(NGTextFragmentPainterTest, LineBreak) {
   // 0: view background, 1: A, 2: B, 3: C
   EXPECT_EQ(4u, ContentDisplayItems().size());
 
-  GetDocument().GetFrame()->Selection().SelectAll();
+  Selection().SelectAll();
   UpdateAllLifecyclePhasesForTest();
   // 0: view background, 1: A, 2: <br>, 3: B, 4: <br>, 5: C
   EXPECT_EQ(6u, ContentDisplayItems().size());
+}
+
+TEST_P(NGTextFragmentPainterTest, LineBreaksInLongDocument) {
+  SetBodyInnerHTML(
+      "<div id='div' style='font-size: 100px; width: 300px'><div>");
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  for (int i = 0; i < 1000; i++) {
+    div->appendChild(GetDocument().createTextNode("XX"));
+    div->appendChild(
+        GetDocument().CreateRawElement(QualifiedName(AtomicString("br"))));
+  }
+  UpdateAllLifecyclePhasesForTest();
+  Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintContents(gfx::Rect(0, 0, 800, 600));
+  EXPECT_LE(ContentDisplayItems().size(), 100u);
 }
 
 TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {
@@ -95,6 +112,29 @@ TEST_P(NGTextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
     </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
   // Test passes if no crashes.
+}
+
+TEST_P(NGTextFragmentPainterTest, WheelEventListenerOnInlineElement) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>body {margin: 0}</style>
+    <div id="parent" style="width: 100px; height: 100px; position: absolute">
+      <span id="child" style="font: 50px Ahem">ABC</span>
+    </div>
+  )HTML");
+
+  SetWheelEventListener("child");
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 150, 50)};
+  auto* parent = GetLayoutBoxByElementId("parent");
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                  IsPaintChunk(1, 2,
+                               PaintChunk::Id(parent->Layer()->Id(),
+                                              DisplayItem::kLayerChunk),
+                               parent->FirstFragment().ContentsProperties(),
+                               &hit_test_data, gfx::Rect(0, 0, 150, 100))));
 }
 
 }  // namespace blink

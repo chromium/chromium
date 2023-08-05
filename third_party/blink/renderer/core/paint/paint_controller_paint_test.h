@@ -8,6 +8,8 @@
 #include "base/check_op.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
+#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -129,6 +131,22 @@ class PaintControllerPaintTestBase : public RenderingTest {
       subset.Merge(PaintChunkSubset(artifact, chunks[i]));
     }
     return subset;
+  }
+
+  class MockEventListener final : public NativeEventListener {
+   public:
+    void Invoke(ExecutionContext*, Event*) override {}
+  };
+
+  void SetWheelEventListener(const char* element_id) {
+    auto* element = GetDocument().getElementById(AtomicString(element_id));
+    auto* listener = MakeGarbageCollected<MockEventListener>();
+    auto* resolved_options =
+        MakeGarbageCollected<AddEventListenerOptionsResolved>();
+    resolved_options->setPassive(false);
+    element->addEventListener(event_type_names::kWheel, listener,
+                              resolved_options);
+    UpdateAllLifecyclePhasesForTest();
   }
 };
 

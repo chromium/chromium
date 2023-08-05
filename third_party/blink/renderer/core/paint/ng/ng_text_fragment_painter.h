@@ -60,6 +60,8 @@ class NGTextFragmentPainter {
                           const PaintInfo& paint_info,
                           const PhysicalOffset& paint_offset);
 
+  bool ShouldRecordHitTestData(const PaintInfo&) const;
+
   const NGInlineCursor& cursor_;
   PhysicalOffset parent_offset_;
   absl::optional<NGInlineCursor> inline_cursor_for_block_flow_;

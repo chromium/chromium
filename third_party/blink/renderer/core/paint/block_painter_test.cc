@@ -6,8 +6,6 @@
 #include "cc/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
-#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -22,24 +20,6 @@ namespace blink {
 using BlockPainterTest = PaintControllerPaintTest;
 
 INSTANTIATE_PAINT_TEST_SUITE_P(BlockPainterTest);
-
-namespace {
-class BlockPainterTestMockEventListener final : public NativeEventListener {
- public:
-  void Invoke(ExecutionContext*, Event*) override {}
-};
-
-void SetWheelEventListener(const Document& document, const char* element_id) {
-  auto* element = document.getElementById(AtomicString(element_id));
-  auto* listener = MakeGarbageCollected<BlockPainterTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
-  element->addEventListener(event_type_names::kWheel, listener,
-                            resolved_options);
-  document.View()->UpdateAllLifecyclePhasesForTest();
-}
-}  // namespace
 
 TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
   SetBodyInnerHTML(R"HTML(
@@ -66,7 +46,7 @@ TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
 
   // Add a blocking wheel event handler to parent and ensure that hit test data
   // are created for both the parent and the visible child.
-  SetWheelEventListener(GetDocument(), "parent");
+  SetWheelEventListener("parent");
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -106,7 +86,7 @@ TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
     </div>
   )HTML");
 
-  SetWheelEventListener(GetDocument(), "wheelhandler");
+  SetWheelEventListener("wheelhandler");
 
   const auto* wheelhandler = GetLayoutObjectByElementId("wheelhandler");
   EXPECT_THAT(ContentDisplayItems(),
@@ -168,7 +148,7 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
     <div id='sibling'></div>
   )HTML");
 
-  SetWheelEventListener(GetDocument(), "wheelhandler");
+  SetWheelEventListener("wheelhandler");
 
   auto* sibling_element = GetElementById("sibling");
   const auto* sibling = sibling_element->GetLayoutObject();
@@ -213,7 +193,7 @@ TEST_P(BlockPainterTest, BlockingWheelRectOverflowingContents) {
     </div>
   )HTML");
 
-  SetWheelEventListener(GetDocument(), "parent");
+  SetWheelEventListener("parent");
 
   HitTestData hit_test_data;
   hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 100, 100),
@@ -257,7 +237,7 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
   const auto& scroller_scrolling_client =
       scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
 
-  SetWheelEventListener(GetDocument(), "scroller");
+  SetWheelEventListener("scroller");
 
   HitTestData hit_test_data;
   hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 100, 400)};
@@ -296,7 +276,7 @@ TEST_P(BlockPainterTest, WheelEventRectPaintChunkChanges) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
 
-  SetWheelEventListener(GetDocument(), "wheelevent");
+  SetWheelEventListener("wheelevent");
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));

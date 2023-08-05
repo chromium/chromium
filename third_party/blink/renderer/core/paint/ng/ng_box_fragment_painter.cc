@@ -1561,8 +1561,11 @@ void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
   }
 }
 
-// Paint a line box. This function paints hit tests and backgrounds of
-// `::first-line`. In all other cases, the container box paints background.
+// Paint a line box. This function records hit test data of the line box in
+// case the line box overflows the container or the line box is in a different
+// chunk from the hit test data recorded for the container box's background.
+// It also paints the backgrounds of the `::first-line` line box. Other line
+// boxes don't have their own background.
 inline void NGBoxFragmentPainter::PaintLineBox(
     const NGPhysicalFragment& line_box_fragment,
     const DisplayItemClient& display_item_client,
@@ -1574,11 +1577,11 @@ inline void NGBoxFragmentPainter::PaintLineBox(
 
   PhysicalRect border_box = line_box_fragment.LocalRect();
   border_box.offset += child_offset;
-  absl::optional<ScopedDisplayItemFragment> display_item_fragment;
   const wtf_size_t line_fragment_id = line_box_item.FragmentId();
   DCHECK_GE(line_fragment_id, NGFragmentItem::kInitialLineFragmentId);
+  ScopedDisplayItemFragment display_item_fragment(paint_info.context,
+                                                  line_fragment_id);
   if (ShouldRecordHitTestData(paint_info)) {
-    display_item_fragment.emplace(paint_info.context, line_fragment_id);
     paint_info.context.GetPaintController().RecordHitTestData(
         display_item_client, ToPixelSnappedRect(border_box),
         PhysicalFragment().EffectiveAllowedTouchAction(),
@@ -1594,8 +1597,6 @@ inline void NGBoxFragmentPainter::PaintLineBox(
 
   // Paint the background of the `::first-line` line box.
   if (NGLineBoxFragmentPainter::NeedsPaint(line_box_fragment)) {
-    if (!display_item_fragment)
-      display_item_fragment.emplace(paint_info.context, line_fragment_id);
     NGLineBoxFragmentPainter line_box_painter(line_box_fragment, line_box_item,
                                               PhysicalFragment());
     line_box_painter.PaintBackgroundBorderShadow(paint_info, child_offset);

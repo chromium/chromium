@@ -248,6 +248,22 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   }
 }
 
+bool NGTextFragmentPainter::ShouldRecordHitTestData(
+    const PaintInfo& paint_info) const {
+  // Hit test data are only needed for compositing.
+  if (paint_info.ShouldOmitCompositingInfo()) {
+    return false;
+  }
+
+  // We need to record hit test data for a text fragment when an ancestor
+  // inline element has special hit test situations. Touch action doesn't apply
+  // to non-replaced inline elements so we don't need to check it here.
+  // TODO(crbug.com/1413877): Handle pointer-events.
+  return cursor_.CurrentItem()
+      ->GetLayoutObject()
+      ->InsideBlockingWheelEventHandler();
+}
+
 void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                   const PhysicalOffset& paint_offset) {
   const auto& text_item = *cursor_.CurrentItem();
@@ -280,6 +296,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (UNLIKELY(text_combine))
     LayoutNGTextCombine::AssertStyleIsValid(style);
 #endif
+
+  if (ShouldRecordHitTestData(paint_info)) {
+    paint_info.context.GetPaintController().RecordHitTestData(
+        *text_item.GetDisplayItemClient(), ToPixelSnappedRect(physical_box),
+        layout_object->EffectiveAllowedTouchAction(),
+        layout_object->InsideBlockingWheelEventHandler());
+  }
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t
   // actually rotate until we reach the steps that need it.
