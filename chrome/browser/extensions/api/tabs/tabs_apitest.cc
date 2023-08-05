@@ -131,7 +131,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Muted) {
+// TODO(crbug.com/1470083): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Muted DISABLED_Muted
+#else
+#define MAYBE_Muted Muted
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, MAYBE_Muted) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/muted")) << message_;
 }
 
