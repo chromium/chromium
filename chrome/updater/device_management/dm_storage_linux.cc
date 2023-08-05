@@ -63,8 +63,8 @@ class TokenService : public TokenServiceInterface {
   bool IsEnrollmentMandatory() const override { return false; }
 
   bool StoreEnrollmentToken(const std::string& enrollment_token) override {
-    if (!base::ImportantFileWriter::WriteFileAtomically(enrollment_token_path_,
-                                                        enrollment_token)) {
+    if (!WriteContentToGlobalReadableFile(enrollment_token_path_,
+                                          enrollment_token)) {
       return false;
     }
 
@@ -83,8 +83,7 @@ class TokenService : public TokenServiceInterface {
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
 
   bool StoreDmToken(const std::string& dm_token) override {
-    if (!base::ImportantFileWriter::WriteFileAtomically(dm_token_path_,
-                                                        dm_token)) {
+    if (!WriteContentToGlobalReadableFile(dm_token_path_, dm_token)) {
       return false;
     }
     dm_token_ = dm_token;

@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
@@ -78,6 +79,16 @@ bool MakePathGlobalAccessible(const base::FilePath& path) {
 
 }  // namespace
 
+bool CreateGlobalAccessibleDirectory(const base::FilePath& path) {
+  return base::CreateDirectory(path) && MakePathGlobalAccessible(path);
+}
+
+bool WriteContentToGlobalReadableFile(const base::FilePath& path,
+                                      const std::string& content) {
+  return base::ImportantFileWriter::WriteFileAtomically(path, content) &&
+         MakePathGlobalAccessible(path);
+}
+
 DMStorage::DMStorage(const base::FilePath& policy_cache_root,
                      std::unique_ptr<TokenServiceInterface> token_service)
     : policy_cache_root_(policy_cache_root),
@@ -134,12 +145,9 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
   const std::string policy_info_data = policy_map.cbegin()->second;
   CachedPolicyInfo cached_info;
   if (cached_info.Populate(policy_info_data) &&
-      !cached_info.public_key().empty()) {
-    if (!base::ImportantFileWriter::WriteFileAtomically(policy_info_file_,
-                                                        policy_info_data) ||
-        !MakePathGlobalAccessible(policy_info_file_)) {
-      return false;
-    }
+      !cached_info.public_key().empty() &&
+      !WriteContentToGlobalReadableFile(policy_info_file_, policy_info_data)) {
+    return false;
   }
 
   // Persists individual policies.
@@ -150,19 +158,13 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
 
     std::string encoded_policy_type;
     base::Base64Encode(policy_type, &encoded_policy_type);
-
     policy_types_base64.emplace(encoded_policy_type);
 
-    base::FilePath policy_dir =
+    const base::FilePath policy_dir =
         policy_cache_root_.AppendASCII(encoded_policy_type);
-    if (!base::CreateDirectory(policy_dir) ||
-        !MakePathGlobalAccessible(policy_dir)) {
-      return false;
-    }
-    base::FilePath policy_file = policy_dir.AppendASCII(kPolicyFileName);
-    if (!base::ImportantFileWriter::WriteFileAtomically(policy_file,
-                                                        policy_value) ||
-        !MakePathGlobalAccessible(policy_file)) {
+    if (!CreateGlobalAccessibleDirectory(policy_dir) ||
+        !WriteContentToGlobalReadableFile(
+            policy_dir.AppendASCII(kPolicyFileName), policy_value)) {
       return false;
     }
   }
@@ -190,6 +192,7 @@ DMStorage::GetOmahaPolicySettings() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsValidDMToken()) {
+    VLOG(1) << "No valid DM token.";
     return nullptr;
   }
 
@@ -211,6 +214,7 @@ DMStorage::GetOmahaPolicySettings() const {
       !policy_data.ParseFromString(response.policy_data()) ||
       !policy_data.has_policy_value() ||
       !omaha_settings->ParseFromString(policy_data.policy_value())) {
+    VLOG(1) << "No Omaha policies.";
     return nullptr;
   }
 

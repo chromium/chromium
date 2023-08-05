@@ -137,9 +137,9 @@ TokenService::TokenService(const base::FilePath& enrollment_token_path,
 
 bool TokenService::StoreEnrollmentToken(const std::string& enrollment_token) {
   if (enrollment_token_path_.empty() ||
-      !base::CreateDirectory(enrollment_token_path_.DirName()) ||
-      !base::ImportantFileWriter::WriteFileAtomically(enrollment_token_path_,
-                                                      enrollment_token)) {
+      !CreateGlobalAccessibleDirectory(enrollment_token_path_.DirName()) ||
+      !WriteContentToGlobalReadableFile(enrollment_token_path_,
+                                        enrollment_token)) {
     VLOG(1) << "Failed to update enrollment token.";
     return false;
   }
@@ -157,8 +157,8 @@ bool TokenService::DeleteEnrollmentToken() {
 
 bool TokenService::StoreDmToken(const std::string& token) {
   if (dm_token_path_.empty() ||
-      !base::CreateDirectory(dm_token_path_.DirName()) ||
-      !base::ImportantFileWriter::WriteFileAtomically(dm_token_path_, token)) {
+      !CreateGlobalAccessibleDirectory(dm_token_path_.DirName()) ||
+      !WriteContentToGlobalReadableFile(dm_token_path_, token)) {
     VLOG(1) << "Failed to update DM token.";
     return false;
   }

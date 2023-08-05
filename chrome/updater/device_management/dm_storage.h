@@ -22,6 +22,10 @@ namespace updater {
 
 class CachedPolicyInfo;
 
+bool CreateGlobalAccessibleDirectory(const base::FilePath& path);
+bool WriteContentToGlobalReadableFile(const base::FilePath& path,
+                                      const std::string& content_to_write);
+
 // The token service interface defines how to serialize tokens.
 class TokenServiceInterface {
  public:
