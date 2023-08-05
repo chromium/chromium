@@ -66,34 +66,6 @@ struct MsiSetTagsTestCase {
 
 class MsiSetTagsTest : public TestWithParam<MsiSetTagsTestCase> {};
 
-TEST_P(MsiSetTagsTest, MsiSetTags) {
-  MockMsiHandle mock_msi_handle;
-  const std::wstring msi_file_path = test::GetTestFilePath("tagged_msi")
-                                         .AppendASCII(GetParam().msi_file_name)
-                                         .value();
-  EXPECT_CALL(mock_msi_handle,
-              GetProperty(std::wstring(L"OriginalDatabase"), _, Eq(1U)))
-      .WillOnce(DoAll(SetArgReferee<2>(msi_file_path.length()),
-                      Return(ERROR_MORE_DATA)));
-  EXPECT_CALL(mock_msi_handle, GetProperty(std::wstring(L"OriginalDatabase"), _,
-                                           Eq(msi_file_path.length() + 1U)))
-      .WillOnce(DoAll(SetArgReferee<1>(std::vector(msi_file_path.begin(),
-                                                   msi_file_path.end())),
-                      SetArgReferee<2>(msi_file_path.length()),
-                      Return(ERROR_SUCCESS)));
-  std::string tag_string;
-  EXPECT_CALL(mock_msi_handle, SetProperty)
-      .WillRepeatedly(
-          DoAll(Invoke([&](const std::string& name, const std::string& value) {
-                  tag_string += base::StrCat(
-                      {!tag_string.empty() ? "&" : "", name, "=", value});
-                }),
-                Return(ERROR_SUCCESS)));
-
-  MsiSetTags(mock_msi_handle);
-  EXPECT_EQ(tag_string, GetParam().expected_tag_string);
-}
-
 INSTANTIATE_TEST_SUITE_P(
     MsiSetTagsTestCases,
     MsiSetTagsTest,
@@ -134,6 +106,34 @@ INSTANTIATE_TEST_SUITE_P(
         {"GUH-untagged.msi", {}},
     }));
 
+TEST_P(MsiSetTagsTest, MsiSetTags) {
+  MockMsiHandle mock_msi_handle;
+  const std::wstring msi_file_path = test::GetTestFilePath("tagged_msi")
+                                         .AppendASCII(GetParam().msi_file_name)
+                                         .value();
+  EXPECT_CALL(mock_msi_handle,
+              GetProperty(std::wstring(L"OriginalDatabase"), _, Eq(1U)))
+      .WillOnce(DoAll(SetArgReferee<2>(msi_file_path.length()),
+                      Return(ERROR_MORE_DATA)));
+  EXPECT_CALL(mock_msi_handle, GetProperty(std::wstring(L"OriginalDatabase"), _,
+                                           Eq(msi_file_path.length() + 1U)))
+      .WillOnce(DoAll(SetArgReferee<1>(std::vector(msi_file_path.begin(),
+                                                   msi_file_path.end())),
+                      SetArgReferee<2>(msi_file_path.length()),
+                      Return(ERROR_SUCCESS)));
+  std::string tag_string;
+  EXPECT_CALL(mock_msi_handle, SetProperty)
+      .WillRepeatedly(
+          DoAll(Invoke([&](const std::string& name, const std::string& value) {
+                  tag_string += base::StrCat(
+                      {!tag_string.empty() ? "&" : "", name, "=", value});
+                }),
+                Return(ERROR_SUCCESS)));
+
+  MsiSetTags(mock_msi_handle);
+  EXPECT_EQ(tag_string, GetParam().expected_tag_string);
+}
+
 TEST(MsiCustomActionTest, ExtractTagInfoFromInstaller) {
   EXPECT_EQ(ExtractTagInfoFromInstaller(0), static_cast<UINT>(ERROR_SUCCESS));
 }
@@ -169,6 +169,12 @@ class MsiSetInstallerResultTest
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
+INSTANTIATE_TEST_SUITE_P(SetResults_OnlyInUpdaterKey_ValidCustomActionData,
+                         MsiSetInstallerResultTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
+
 TEST_P(MsiSetInstallerResultTest, MsiSetInstallerResult) {
   MockMsiHandle mock_msi_handle;
   if (ValidCustomActionData()) {
@@ -197,12 +203,6 @@ TEST_P(MsiSetInstallerResultTest, MsiSetInstallerResult) {
 
   MsiSetInstallerResult(mock_msi_handle);
 }
-
-INSTANTIATE_TEST_SUITE_P(SetResults_OnlyInUpdaterKey_ValidCustomActionData,
-                         MsiSetInstallerResultTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
-                                            ::testing::Bool()));
 
 TEST(MsiCustomActionTest, ShowInstallerResultUIString) {
   EXPECT_EQ(ShowInstallerResultUIString(0), static_cast<UINT>(ERROR_SUCCESS));

@@ -97,15 +97,6 @@ class AppCommandFormatComponentsInvalidPathsTest
           AppCommandFormatComponentsInvalidPathsTestCase>,
       public AppCommandRunnerTestBase {};
 
-TEST_P(AppCommandFormatComponentsInvalidPathsTest, TestCases) {
-  base::FilePath executable;
-  std::vector<std::wstring> parameters;
-  EXPECT_EQ(
-      AppCommandRunner::GetAppCommandFormatComponents(
-          GetParam().scope, GetParam().command_format, executable, parameters),
-      E_INVALIDARG);
-}
-
 INSTANTIATE_TEST_SUITE_P(
     AppCommandFormatComponentsInvalidPathsTestCases,
     AppCommandFormatComponentsInvalidPathsTest,
@@ -121,9 +112,25 @@ INSTANTIATE_TEST_SUITE_P(
         {UpdaterScope::kSystem, L"C:\\windows\\system32\\cmd.exe"},
     }));
 
+TEST_P(AppCommandFormatComponentsInvalidPathsTest, TestCases) {
+  base::FilePath executable;
+  std::vector<std::wstring> parameters;
+  EXPECT_EQ(
+      AppCommandRunner::GetAppCommandFormatComponents(
+          GetParam().scope, GetParam().command_format, executable, parameters),
+      E_INVALIDARG);
+}
+
 class AppCommandFormatComponentsProgramFilesPathsTest
     : public ::testing::TestWithParam<int>,
       public AppCommandRunnerTestBase {};
+
+INSTANTIATE_TEST_SUITE_P(AppCommandFormatComponentsProgramFilesPathsTestCases,
+                         AppCommandFormatComponentsProgramFilesPathsTest,
+                         ::testing::ValuesIn(std::vector<int>{
+                             base::DIR_PROGRAM_FILES,
+                             base::DIR_PROGRAM_FILESX86,
+                             base::DIR_PROGRAM_FILES6432}));
 
 TEST_P(AppCommandFormatComponentsProgramFilesPathsTest, TestCases) {
   base::FilePath executable;
@@ -138,13 +145,6 @@ TEST_P(AppCommandFormatComponentsProgramFilesPathsTest, TestCases) {
   EXPECT_TRUE(parameters.empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(AppCommandFormatComponentsProgramFilesPathsTestCases,
-                         AppCommandFormatComponentsProgramFilesPathsTest,
-                         ::testing::ValuesIn(std::vector<int>{
-                             base::DIR_PROGRAM_FILES,
-                             base::DIR_PROGRAM_FILESX86,
-                             base::DIR_PROGRAM_FILES6432}));
-
 struct AppCommandFormatParameterTestCase {
   const wchar_t* format_string;
   const wchar_t* expected_output;
@@ -154,16 +154,6 @@ struct AppCommandFormatParameterTestCase {
 class AppCommandFormatParameterTest
     : public ::testing::TestWithParam<AppCommandFormatParameterTestCase>,
       public AppCommandRunnerTestBase {};
-
-TEST_P(AppCommandFormatParameterTest, TestCases) {
-  absl::optional<std::wstring> output = AppCommandRunner::FormatParameter(
-      GetParam().format_string, GetParam().substitutions);
-  if (GetParam().expected_output) {
-    EXPECT_EQ(output.value(), GetParam().expected_output);
-  } else {
-    EXPECT_EQ(output, absl::nullopt);
-  }
-}
 
 INSTANTIATE_TEST_SUITE_P(
     AppCommandFormatParameterTestCases,
@@ -205,6 +195,16 @@ INSTANTIATE_TEST_SUITE_P(
         {L"abc=%1", nullptr, {}},
     }));
 
+TEST_P(AppCommandFormatParameterTest, TestCases) {
+  absl::optional<std::wstring> output = AppCommandRunner::FormatParameter(
+      GetParam().format_string, GetParam().substitutions);
+  if (GetParam().expected_output) {
+    EXPECT_EQ(output.value(), GetParam().expected_output);
+  } else {
+    EXPECT_EQ(output, absl::nullopt);
+  }
+}
+
 struct AppCommandFormatComponentsAndCommandLineTestCase {
   const std::vector<std::wstring> input;
   const wchar_t* output;
@@ -215,54 +215,6 @@ class AppCommandFormatComponentsAndCommandLineTest
     : public ::testing::TestWithParam<
           AppCommandFormatComponentsAndCommandLineTestCase>,
       public AppCommandRunnerTestBase {};
-
-TEST_P(AppCommandFormatComponentsAndCommandLineTest, TestCases) {
-  const std::wstring process_command_line =
-      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
-  base::FilePath executable;
-  std::vector<std::wstring> parameters;
-
-  ASSERT_EQ(AppCommandRunner::GetAppCommandFormatComponents(
-                GetTestScope(),
-                base::StrCat({process_command_line, L" ",
-                              base::JoinString(GetParam().input, L" ")}),
-                executable, parameters),
-            S_OK);
-  EXPECT_EQ(executable,
-            base::CommandLine::FromString(process_command_line).GetProgram());
-  EXPECT_EQ(parameters.size(), GetParam().input.size());
-
-  absl::optional<std::wstring> command_line =
-      AppCommandRunner::FormatAppCommandLine(parameters,
-                                             GetParam().substitutions);
-  if (!GetParam().output) {
-    EXPECT_EQ(command_line, absl::nullopt);
-    return;
-  }
-
-  EXPECT_EQ(command_line.value(), GetParam().output);
-
-  if (GetParam().input[0] != L"%1" || GetParam().substitutions.size() != 1) {
-    return;
-  }
-
-  // The formatted output is now sent through ::CommandLineToArgvW to
-  // verify that it produces the original substitution.
-  std::wstring cmd = base::StrCat({L"process.exe ", command_line.value()});
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> argv_handle(
-      ::CommandLineToArgvW(&cmd[0], &num_args));
-  ASSERT_TRUE(argv_handle);
-  EXPECT_EQ(num_args, 2) << "substitution '" << GetParam().substitutions[0]
-                         << "' gave command line '" << cmd
-                         << "' which unexpectedly did not parse to a single "
-                         << "argument.";
-
-  EXPECT_EQ(argv_handle.get()[1], GetParam().substitutions[0])
-      << "substitution '" << GetParam().substitutions[0]
-      << "' gave command line '" << cmd << "' which did not parse back to the "
-      << "original substitution";
-}
 
 INSTANTIATE_TEST_SUITE_P(
     AppCommandFormatComponentsAndCommandLineTestCases,
@@ -346,6 +298,54 @@ INSTANTIATE_TEST_SUITE_P(
             {{L"%1"}, L"\" abcdef\"", {L" abcdef"}},
         }));
 
+TEST_P(AppCommandFormatComponentsAndCommandLineTest, TestCases) {
+  const std::wstring process_command_line =
+      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
+  base::FilePath executable;
+  std::vector<std::wstring> parameters;
+
+  ASSERT_EQ(AppCommandRunner::GetAppCommandFormatComponents(
+                GetTestScope(),
+                base::StrCat({process_command_line, L" ",
+                              base::JoinString(GetParam().input, L" ")}),
+                executable, parameters),
+            S_OK);
+  EXPECT_EQ(executable,
+            base::CommandLine::FromString(process_command_line).GetProgram());
+  EXPECT_EQ(parameters.size(), GetParam().input.size());
+
+  absl::optional<std::wstring> command_line =
+      AppCommandRunner::FormatAppCommandLine(parameters,
+                                             GetParam().substitutions);
+  if (!GetParam().output) {
+    EXPECT_EQ(command_line, absl::nullopt);
+    return;
+  }
+
+  EXPECT_EQ(command_line.value(), GetParam().output);
+
+  if (GetParam().input[0] != L"%1" || GetParam().substitutions.size() != 1) {
+    return;
+  }
+
+  // The formatted output is now sent through ::CommandLineToArgvW to
+  // verify that it produces the original substitution.
+  std::wstring cmd = base::StrCat({L"process.exe ", command_line.value()});
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv_handle(
+      ::CommandLineToArgvW(&cmd[0], &num_args));
+  ASSERT_TRUE(argv_handle);
+  EXPECT_EQ(num_args, 2) << "substitution '" << GetParam().substitutions[0]
+                         << "' gave command line '" << cmd
+                         << "' which unexpectedly did not parse to a single "
+                         << "argument.";
+
+  EXPECT_EQ(argv_handle.get()[1], GetParam().substitutions[0])
+      << "substitution '" << GetParam().substitutions[0]
+      << "' gave command line '" << cmd << "' which did not parse back to the "
+      << "original substitution";
+}
+
 struct AppCommandTestCase {
   const std::vector<std::wstring> input;
   const std::vector<std::wstring> substitutions;
@@ -355,6 +355,13 @@ struct AppCommandTestCase {
 class AppCommandExecuteTest
     : public ::testing::TestWithParam<AppCommandTestCase>,
       public AppCommandRunnerTestBase {};
+
+INSTANTIATE_TEST_SUITE_P(AppCommandExecuteTestCases,
+                         AppCommandExecuteTest,
+                         ::testing::ValuesIn(std::vector<AppCommandTestCase>{
+                             {{L"/c", L"exit 7"}, {}, 7},
+                             {{L"/c", L"exit %1"}, {L"5420"}, 5420},
+                         }));
 
 TEST_P(AppCommandExecuteTest, TestCases) {
   base::Process process;
@@ -367,13 +374,6 @@ TEST_P(AppCommandExecuteTest, TestCases) {
                                              &exit_code));
   EXPECT_EQ(exit_code, GetParam().expected_exit_code);
 }
-
-INSTANTIATE_TEST_SUITE_P(AppCommandExecuteTestCases,
-                         AppCommandExecuteTest,
-                         ::testing::ValuesIn(std::vector<AppCommandTestCase>{
-                             {{L"/c", L"exit 7"}, {}, 7},
-                             {{L"/c", L"exit %1"}, {L"5420"}, 5420},
-                         }));
 
 TEST_F(AppCommandRunnerTest, NoApp) {
   HResultOr<AppCommandRunner> app_command_runner =
@@ -391,6 +391,13 @@ TEST_F(AppCommandRunnerTest, NoCmd) {
 class RunAppCommandFormatTest
     : public ::testing::TestWithParam<AppCommandTestCase>,
       public AppCommandRunnerTestBase {};
+
+INSTANTIATE_TEST_SUITE_P(RunAppCommandFormatTestCases,
+                         RunAppCommandFormatTest,
+                         ::testing::ValuesIn(std::vector<AppCommandTestCase>{
+                             {{L"/c", L"exit 7"}, {}, 7},
+                             {{L"/c", L"exit %1"}, {L"5420"}, 5420},
+                         }));
 
 TEST_P(RunAppCommandFormatTest, TestCases) {
   HResultOr<AppCommandRunner> app_command_runner;
@@ -413,13 +420,6 @@ TEST_P(RunAppCommandFormatTest, TestCases) {
   EXPECT_EQ(exit_code, GetParam().expected_exit_code);
 }
 
-INSTANTIATE_TEST_SUITE_P(RunAppCommandFormatTestCases,
-                         RunAppCommandFormatTest,
-                         ::testing::ValuesIn(std::vector<AppCommandTestCase>{
-                             {{L"/c", L"exit 7"}, {}, 7},
-                             {{L"/c", L"exit %1"}, {L"5420"}, 5420},
-                         }));
-
 TEST_F(AppCommandRunnerTest, CheckChromeBrandedName) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_STREQ("Google Chrome", BROWSER_PRODUCT_NAME_STRING);
@@ -438,32 +438,6 @@ struct RunProcessLauncherFormatTestCase {
 class RunProcessLauncherFormatTest
     : public ::testing::TestWithParam<RunProcessLauncherFormatTestCase>,
       public AppCommandRunnerTestBase {};
-
-TEST_P(RunProcessLauncherFormatTest, TestCases) {
-  if (!IsSystemInstall(GetTestScope())) {
-    return;
-  }
-
-  HResultOr<AppCommandRunner> app_command_runner;
-  base::Process process;
-  ASSERT_EQ(app_command_runner->Run({}, process), E_UNEXPECTED);
-
-  app_command_runner = CreateProcessLauncherRunner(
-      kAppId1, GetParam().app_name, GetParam().app_version, GetParam().cmd_id,
-      base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
-                    base::JoinString(GetParam().input, L" ")}));
-  ASSERT_EQ(app_command_runner.error_or(S_OK), GetParam().expected_hr);
-  if (FAILED(GetParam().expected_hr)) {
-    return;
-  }
-
-  ASSERT_HRESULT_SUCCEEDED(app_command_runner->Run({}, process));
-
-  int exit_code = 0;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(exit_code, GetParam().expected_exit_code);
-}
 
 INSTANTIATE_TEST_SUITE_P(
     RunProcessLauncherFormatTestCases,
@@ -509,6 +483,32 @@ INSTANTIATE_TEST_SUITE_P(
          S_OK},
     }));
 
+TEST_P(RunProcessLauncherFormatTest, TestCases) {
+  if (!IsSystemInstall(GetTestScope())) {
+    return;
+  }
+
+  HResultOr<AppCommandRunner> app_command_runner;
+  base::Process process;
+  ASSERT_EQ(app_command_runner->Run({}, process), E_UNEXPECTED);
+
+  app_command_runner = CreateProcessLauncherRunner(
+      kAppId1, GetParam().app_name, GetParam().app_version, GetParam().cmd_id,
+      base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                    base::JoinString(GetParam().input, L" ")}));
+  ASSERT_EQ(app_command_runner.error_or(S_OK), GetParam().expected_hr);
+  if (FAILED(GetParam().expected_hr)) {
+    return;
+  }
+
+  ASSERT_HRESULT_SUCCEEDED(app_command_runner->Run({}, process));
+
+  int exit_code = 0;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(exit_code, GetParam().expected_exit_code);
+}
+
 struct RunBothFormatsTestCase {
   const wchar_t* cmd_id_to_execute;
   const wchar_t* cmd_id_appcommand;
@@ -521,6 +521,21 @@ struct RunBothFormatsTestCase {
 class RunBothFormatsTest
     : public ::testing::TestWithParam<RunBothFormatsTestCase>,
       public AppCommandRunnerTestBase {};
+
+INSTANTIATE_TEST_SUITE_P(
+    RunBothFormatsTestCases,
+    RunBothFormatsTest,
+    ::testing::ValuesIn(std::vector<RunBothFormatsTestCase>{
+        // both formats in registry; AppCommand overrides ProcessLauncher entry.
+        {L"cmd", L"cmd", {L"/c", L"exit 7"}, L"cmd", {L"/c", L"exit 14"}, 7},
+        // only AppCommand format in registry.
+        {L"cmd", L"cmd", {L"/c", L"exit 21"}, {}, {}, 21},
+        // only ProcessLauncher format in registry.
+        {L"cmd", {}, {}, L"cmd", {L"/c", L"exit 28"}, 28},
+        // both formats in registry, but AppCommand has a different command ID,
+        // so does not override ProcessLauncher entry.
+        {L"cmd", L"cmd2", {L"/c", L"exit 7"}, L"cmd", {L"/c", L"exit 35"}, 35},
+    }));
 
 TEST_P(RunBothFormatsTest, TestCases) {
   if (!IsSystemInstall(GetTestScope())) {
@@ -561,21 +576,6 @@ TEST_P(RunBothFormatsTest, TestCases) {
   DeleteAppClientKey(GetTestScope(), kAppId1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    RunBothFormatsTestCases,
-    RunBothFormatsTest,
-    ::testing::ValuesIn(std::vector<RunBothFormatsTestCase>{
-        // both formats in registry; AppCommand overrides ProcessLauncher entry.
-        {L"cmd", L"cmd", {L"/c", L"exit 7"}, L"cmd", {L"/c", L"exit 14"}, 7},
-        // only AppCommand format in registry.
-        {L"cmd", L"cmd", {L"/c", L"exit 21"}, {}, {}, 21},
-        // only ProcessLauncher format in registry.
-        {L"cmd", {}, {}, L"cmd", {L"/c", L"exit 28"}, 28},
-        // both formats in registry, but AppCommand has a different command ID,
-        // so does not override ProcessLauncher entry.
-        {L"cmd", L"cmd2", {L"/c", L"exit 7"}, L"cmd", {L"/c", L"exit 35"}, 35},
-    }));
-
 struct EachAppCommand {
   const std::vector<std::wstring> input;
   const wchar_t* command_id;
@@ -587,6 +587,21 @@ class LoadAutoRunOnOsUpgradeAppCommandsTest
     : public ::testing::TestWithParam<
           LoadAutoRunOnOsUpgradeAppCommandsTestCase>,
       public AppCommandRunnerTestBase {};
+
+INSTANTIATE_TEST_SUITE_P(
+    LoadAutoRunOnOsUpgradeAppCommandsTestCases,
+    LoadAutoRunOnOsUpgradeAppCommandsTest,
+    ::testing::ValuesIn(std::vector<LoadAutoRunOnOsUpgradeAppCommandsTestCase>{
+        {
+            {{L"/c", L"exit 7"}, kCmdId1},
+            {{L"/c", L"exit 5420"}, kCmdId2},
+        },
+        {
+            {{L"/c", L"exit 7"}, kCmdId1},
+            {{L"/c", L"exit 5420"}, kCmdId2},
+            {{L"/c", L"exit 3"}, L"command 3"},
+            {{L"/c", L"exit 4"}, L"command 4"},
+        }}));
 
 TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
   base::ranges::for_each(GetParam(), [&](const auto& app_command) {
@@ -605,23 +620,8 @@ TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
       app_command_runners, [&](const auto& app_command_runner) {
         base::Process process;
         EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
-        EXPECT_TRUE(process.WaitForExit(nullptr));
+        EXPECT_TRUE(process.WaitForExit(/*exit_code=*/nullptr));
       });
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    LoadAutoRunOnOsUpgradeAppCommandsTestCases,
-    LoadAutoRunOnOsUpgradeAppCommandsTest,
-    ::testing::ValuesIn(std::vector<LoadAutoRunOnOsUpgradeAppCommandsTestCase>{
-        {
-            {{L"/c", L"exit 7"}, kCmdId1},
-            {{L"/c", L"exit 5420"}, kCmdId2},
-        },
-        {
-            {{L"/c", L"exit 7"}, kCmdId1},
-            {{L"/c", L"exit 5420"}, kCmdId2},
-            {{L"/c", L"exit 3"}, L"command 3"},
-            {{L"/c", L"exit 4"}, L"command 4"},
-        }}));
 
 }  // namespace updater
