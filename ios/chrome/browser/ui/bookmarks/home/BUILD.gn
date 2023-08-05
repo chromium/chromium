@@ -67,6 +67,7 @@ source_set("home") {
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",
     "//ui/base",
+    "//ui/strings",
   ]
   frameworks = [ "UIKit.framework" ]
 }

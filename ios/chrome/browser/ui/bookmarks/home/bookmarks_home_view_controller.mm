@@ -85,6 +85,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/strings/grit/ui_strings.h"
 
 using bookmark_utils_ios::BookmarkNodeReference;
 using bookmark_utils_ios::FindNodeReferenceByNodes;
@@ -270,6 +271,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.browser = nullptr;
   self.browserState = nullptr;
   [self.searchController dismissViewControllerAnimated:YES completion:nil];
+  [self dismissActionSheetCoordinator];
   _profileBookmarkModel = nullptr;
   _profileBookmarkModelBridge.reset();
   _accountBookmarkModel = nullptr;
@@ -1233,6 +1235,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - private
 
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
+}
+
 // Stops the folder chooser coordinator.
 - (void)stopFolderChooserCoordinator {
   [_folderChooserCoordinator stop];
@@ -1826,6 +1833,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       break;
   }
 
+  [self addCancelActionToCoordinator:self.actionSheetCoordinator];
   [self.actionSheetCoordinator start];
 }
 
@@ -1988,6 +1996,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:titleString
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   if (!strongSelf) {
                     return;
@@ -2010,6 +2019,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:titleString
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   if (!strongSelf) {
                     return;
@@ -2035,6 +2045,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:titleString
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   [strongSelf
                       moveBookmarkNodeWithReferences:nodeReferences
@@ -2061,6 +2072,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           [weakSelf dismissActionSheetCoordinator];
                            BookmarksHomeViewController* strongSelf = weakSelf;
                            [strongSelf editBookmarkNodeWithReference:
                                            bookmarkNodeReference];
@@ -2072,6 +2084,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           [weakSelf dismissActionSheetCoordinator];
                            if ([weakSelf isIncognitoForced]) {
                              return;
                            }
@@ -2085,6 +2098,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   if (base::ios::IsMultipleScenesSupported()) {
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
     auto action = ^{
+      [weakSelf dismissActionSheetCoordinator];
       [weakSelf.applicationCommandsHandler
           openNewWindowWithActivity:ActivityToLoadURL(
                                         WindowActivityBookmarksOrigin,
@@ -2098,6 +2112,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           [weakSelf dismissActionSheetCoordinator];
                            if (![weakSelf isIncognitoAvailable]) {
                              return;
                            }
@@ -2112,6 +2127,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:titleString
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   // Use strongSelf even though the object is only used once
                   // because we do not want to change the global pasteboard
                   // if the view has been deallocated.
@@ -2142,6 +2158,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           [weakSelf dismissActionSheetCoordinator];
                            BookmarksHomeViewController* strongSelf = weakSelf;
                            [strongSelf editFolderNodeWithReference:
                                            bookmarkNodeReference];
@@ -2153,6 +2170,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:titleString
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   bookmark_utils_ios::NodeReferenceSet nodeReferences = {
                       bookmarkNodeReference};
@@ -2179,6 +2197,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:titleString
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   [strongSelf
                       moveBookmarkNodeWithReferences:nodeReferences
@@ -2186,6 +2205,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                                      "ToFolderBulk"];
                 }
                  style:UIAlertActionStyleDefault];
+}
+
+- (void)addCancelActionToCoordinator:(AlertCoordinator*)coordinator {
+  __weak BookmarksHomeViewController* weakSelf = self;
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
 }
 
 #pragma mark - UIGestureRecognizerDelegate and gesture handling
@@ -2240,6 +2269,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
 
+  [self addCancelActionToCoordinator:self.actionSheetCoordinator];
   [self.actionSheetCoordinator start];
 }
 
