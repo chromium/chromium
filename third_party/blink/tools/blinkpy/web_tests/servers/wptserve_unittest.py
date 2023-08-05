@@ -36,6 +36,23 @@ class TestWPTServe(LoggingTestCase):
 
     # pylint: disable=protected-access
 
+    def test_init_start_cmd_without_ws_handlers(self):
+        server = WPTServe(self.port, '/foo')
+        expected_start_cmd = [
+            self.port.python3_command(),
+            '-u',
+            '/mock-checkout/third_party/wpt_tools/wpt/wpt',
+            'serve',
+            '--config',
+            server._config_file,
+            '--doc_root',
+            '/mock-checkout/third_party/blink/web_tests/external/wpt',
+        ]
+        if six.PY3:
+            expected_start_cmd.append('--webtransport-h3')
+
+        self.assertEqual(server._start_cmd, expected_start_cmd)
+
     def test_init_start_cmd_with_ws_handlers(self):
         self.host.filesystem.maybe_make_directory(
             '/mock-checkout/third_party/blink/web_tests/external/wpt/websockets/handlers'

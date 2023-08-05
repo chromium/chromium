@@ -50,6 +50,7 @@ class BuilderList:
             "is_try_builder": Whether the builder is a trybot.
             "main": The main name of the builder. It is deprecated, but still required
                 by test-results.appspot.com API."
+            "has_webdriver_tests": Whether webdriver_tests_suite runs on this builder.
 
         Possible refactoring note: Potentially, it might make sense to use
         blinkpy.common.net.results_fetcher.Builder and add port_name and
@@ -196,6 +197,9 @@ class BuilderList:
 
     def main_for_builder(self, builder_name):
         return self._builders[builder_name].get('main', '')
+
+    def has_webdriver_tests_for_builder(self, builder_name):
+        return self._builders[builder_name].get('has_webdriver_tests')
 
     def port_name_for_builder_name(self, builder_name):
         return self._builders[builder_name]['port_name']

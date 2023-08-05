@@ -130,7 +130,7 @@ def _check_directory_glob(host, port, path, expectations):
         if not exp.test or exp.is_glob:
             continue
 
-        test_name = exp.test
+        test_name, _ = port.split_webdriver_test_name(exp.test)
         index = test_name.find('?')
         if index != -1:
             test_name = test_name[:index]
