@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
 
   void TrackGeolocationAttempted();
   void TrackGeolocationRelinquished();
+  void RequestSystemPermission();
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
 // Default empty implementation of Geolocation Manager. It is used on operation

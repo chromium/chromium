@@ -108,8 +108,12 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
 
 void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
 #if BUILDFLAG(IS_IOS)
-  [location_manager_ requestWhenInUseAuthorization];
+  RequestPermission();
 #endif
+}
+
+void SystemGeolocationSourceMac::RequestPermission() {
+  [location_manager_ requestWhenInUseAuthorization];
 }
 
 }  // namespace device

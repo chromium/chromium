@@ -54,8 +54,8 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   virtual void TrackGeolocationRelinquished() {}
 
 #if BUILDFLAG(IS_APPLE)
-  // This method accepts a callback. The callback is to be called always when
-  // the permission changes in the OS.
+  // This method accepts a callback. The callback is called whenever a new
+  // position estimate is available.
   virtual void RegisterPositionUpdateCallback(
       PositionUpdateCallback callback) = 0;
 
@@ -69,6 +69,11 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   // in the |position_observers_| list will stop receiving updates until
   // StartWatchingPosition is called again.
   virtual void StopWatchingPosition() = 0;
+
+  // Requests system level permission to use geolocation. This may cause a
+  // permission dialog to be displayed. The permission update callback is called
+  // if the permission state changes.
+  virtual void RequestPermission() = 0;
 #endif
 };
 

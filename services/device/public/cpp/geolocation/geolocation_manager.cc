@@ -114,4 +114,10 @@ void GeolocationManager::TrackGeolocationRelinquished() {
 #endif
 }
 
+void GeolocationManager::RequestSystemPermission() {
+#if BUILDFLAG(IS_APPLE)
+  system_geolocation_source_->RequestPermission();
+#endif
+}
+
 }  // namespace device
