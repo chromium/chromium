@@ -50,6 +50,7 @@ class WebThemeEngineDefault : public WebThemeEngine {
   WebThemeEngine::SystemColorInfoState GetSystemColorInfo() override;
   bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
                             const ui::RendererColorMap& dark_colors) override;
+  void EmulateForcedColors(bool is_dark_theme) override;
 
  protected:
   const ui::ColorProvider* GetColorProviderForPainting(

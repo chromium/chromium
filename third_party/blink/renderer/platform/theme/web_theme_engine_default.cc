@@ -295,11 +295,15 @@ void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
       {ui::NativeTheme::SystemThemeColor::kWindow, 0xFFFFFFFF},
       {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFF000000},
   };
-  emulated_forced_colors_provider_ =
-      ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
-  SetEmulateForcedColors(true);
+  EmulateForcedColors(is_dark_theme);
   ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
       false, true, is_dark_theme ? dark_theme : light_theme);
+}
+
+void WebThemeEngineDefault::EmulateForcedColors(bool is_dark_theme) {
+  SetEmulateForcedColors(true);
+  emulated_forced_colors_provider_ =
+      ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
 }
 
 void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
