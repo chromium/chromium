@@ -516,9 +516,9 @@ export class SettingsPaymentsSectionElement extends
   /**
    * @return Whether the user is verifiable through FIDO authentication.
    */
-  private shouldShowFidoToggle_(
-      creditCardEnabled: boolean, userIsFidoVerifiable: boolean): boolean {
-    return creditCardEnabled && userIsFidoVerifiable;
+  private shouldShowFidoToggle_(creditCardEnabled: boolean): boolean {
+    return creditCardEnabled && this.userIsFidoVerifiable_ &&
+        !this.mandatoryReauthFeatureEnabled_;
   }
 
   /**

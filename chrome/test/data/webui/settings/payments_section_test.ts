@@ -178,9 +178,15 @@ suite('PaymentsSection', function() {
     assertFalse(section.$.migrateCreditCards.hidden);
   });
 
-  test('verifyFIDOAuthToggleShownIfUserIsVerifiable', async function() {
-    // Set |fidoAuthenticationAvailableForAutofill| to true.
-    loadTimeData.overrideValues({fidoAuthenticationAvailableForAutofill: true});
+  // Scenario1:
+  // FIDO toggle shown- True
+  // User Verified- True
+  // Mandatory Reauth Flag- False
+  test('FidoAuthScenario1', async function() {
+    loadTimeData.overrideValues({
+      fidoAuthenticationAvailableForAutofill: true,
+      autofillEnablePaymentsMandatoryReauth: false,
+    });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
@@ -190,8 +196,29 @@ suite('PaymentsSection', function() {
         '#autofillCreditCardFIDOAuthToggle'));
   });
 
-  test('verifyFIDOAuthToggleNotShownIfUserIsNotVerifiable', async function() {
-    // Set |fidoAuthenticationAvailableForAutofill| to false.
+  // Scenario2:
+  // FIDO toggle shown- False
+  // User Verified- True
+  // Mandatory Reauth Flag- True
+  test('FidoAuthScenario2', async function() {
+    loadTimeData.overrideValues({
+      fidoAuthenticationAvailableForAutofill: true,
+      autofillEnablePaymentsMandatoryReauth: true,
+    });
+    addFakePlatformAuthenticator();
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
+        {credit_card_enabled: {value: true}});
+
+    assertFalse(!!section.shadowRoot!.querySelector(
+        '#autofillCreditCardFIDOAuthToggle'));
+  });
+
+  // Scenario3:
+  // FIDO toggle shown- False
+  // User Verified- False
+  // Mandatory Reauth Flag- False
+  test('FidoAuthScenario3', async function() {
     loadTimeData.overrideValues(
         {fidoAuthenticationAvailableForAutofill: false});
     const section = await createPaymentsSection(
@@ -202,8 +229,10 @@ suite('PaymentsSection', function() {
   });
 
   test('verifyFIDOAuthToggleCheckedIfOptedIn', async function() {
-    // Set FIDO auth pref value to true.
-    loadTimeData.overrideValues({fidoAuthenticationAvailableForAutofill: true});
+    loadTimeData.overrideValues({
+      fidoAuthenticationAvailableForAutofill: true,
+      autofillEnablePaymentsMandatoryReauth: false,
+    });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
@@ -216,8 +245,10 @@ suite('PaymentsSection', function() {
   });
 
   test('verifyFIDOAuthToggleUncheckedIfOptedOut', async function() {
-    // Set FIDO auth pref value to false.
-    loadTimeData.overrideValues({fidoAuthenticationAvailableForAutofill: true});
+    loadTimeData.overrideValues({
+      fidoAuthenticationAvailableForAutofill: true,
+      autofillEnablePaymentsMandatoryReauth: false,
+    });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {

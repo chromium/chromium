@@ -438,6 +438,18 @@ public class AutofillPaymentMethodsFragmentTest {
         optOutHistogram.assertExpected();
     }
 
+    // TODO(crbug/1470259): Tests for various FIDO toggle scenarios needs to be added here.
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testMandatoryReauthToggle_FidoToggleHiddenIfReauthFlagIsEnabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference expectedNullFidoToggle = getPreferenceScreen(activity).findPreference(
+                AutofillPaymentMethodsFragment.PREF_FIDO);
+        Assert.assertNull(expectedNullFidoToggle);
+    }
+
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})

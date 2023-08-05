@@ -51,6 +51,9 @@ import org.chromium.components.payments.AndroidPaymentAppFactory;
 public class AutofillPaymentMethodsFragment
         extends PreferenceFragmentCompat implements PersonalDataManager.PersonalDataManagerObserver,
                                                     FragmentHelpAndFeedbackLauncher {
+    // The Fido pref is used as a key on the settings toggle. This key helps in the retrieval of the
+    // Fido toggle during tests.
+    static final String PREF_FIDO = "fido";
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
@@ -133,11 +136,14 @@ public class AutofillPaymentMethodsFragment
         getPreferenceScreen().addPreference(autofillSwitch);
 
         if (isBiometricAvailable()
-                && PersonalDataManager.getInstance().isFidoAuthenticationAvailable()) {
+                && PersonalDataManager.getInstance().isFidoAuthenticationAvailable()
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)) {
             ChromeSwitchPreference fidoAuthSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
             fidoAuthSwitch.setTitle(R.string.enable_credit_card_fido_auth_label);
             fidoAuthSwitch.setSummary(R.string.enable_credit_card_fido_auth_sublabel);
+            fidoAuthSwitch.setKey(PREF_FIDO);
             fidoAuthSwitch.setChecked(PersonalDataManager.isAutofillCreditCardFidoAuthEnabled());
             fidoAuthSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
                 PersonalDataManager.setAutofillCreditCardFidoAuthEnabled((boolean) newValue);
