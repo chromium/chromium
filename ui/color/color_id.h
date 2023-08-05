@@ -520,12 +520,17 @@
   E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \
   E_CPONLY(kColorAshSystemUIMenuSeparator) \
   \
+  /* TODO(b/291622042): Delete these colors when Jelly is launched */ \
   E_CPONLY(kColorHighlightBorderBorder1) \
   E_CPONLY(kColorHighlightBorderBorder2) \
   E_CPONLY(kColorHighlightBorderBorder3) \
   E_CPONLY(kColorHighlightBorderHighlight1) \
   E_CPONLY(kColorHighlightBorderHighlight2) \
   E_CPONLY(kColorHighlightBorderHighlight3) \
+  \
+  E_CPONLY(kColorCrosSystemHighlight) \
+  E_CPONLY(kColorCrosSystemHighlightBorder) \
+  E_CPONLY(kColorCrosSystemHighlightBorder1) \
   \
   E_CPONLY(kColorNativeColor1) \
   E_CPONLY(kColorNativeColor1Shade1) \
