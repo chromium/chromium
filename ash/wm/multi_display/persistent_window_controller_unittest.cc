@@ -475,6 +475,71 @@ TEST_F(PersistentWindowControllerTest, RestoreBounds) {
   EXPECT_EQ(restore_bounds_in_screen, window->GetBoundsInScreen());
 }
 
+// Tests that restore bounds updated correctly after removing and adding back
+// the internal display.
+TEST_F(PersistentWindowControllerTest, RestoreBoundsOnInternalDisplayRemoval) {
+  UpdateDisplay("500x600,500x700");
+
+  std::unique_ptr<aura::Window> window = CreateTestWindow(gfx::Rect(200, 100));
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  display::Screen* screen = display::Screen::GetScreen();
+  ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(window.get()).id());
+
+  // Move the window to the secondary display and snap it.
+  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
+  WindowState* window_state = WindowState::Get(window.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_TRUE(window_state->HasRestoreBounds());
+  const gfx::Rect restore_bounds_in_screen =
+      window_state->GetRestoreBoundsInScreen();
+
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+
+  // Disconnect the primary display.
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  // TODO(b/291341473): The restore bounds of the window should be updated
+  // correctly on the display changes.
+
+  // Reconnect the primary display.
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  // The window should still stay in the secondary display with resumed restore
+  // bounds.
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(restore_bounds_in_screen, window_state->GetRestoreBoundsInScreen());
+
+  // Maximize the window, it should stay in the secondary display.
+  window_state->Maximize();
+  ASSERT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+
+  // Restore the window, it should go back to snapped state and stay in the
+  // secondary display.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+
+  // Restore again, the window should go back to normal state and stay in the
+  // secondary display.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+}
+
 // Tests that the MRU order is maintained visually after adding and removing a
 // display.
 TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {

@@ -9,9 +9,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "ui/aura/window_tracker.h"
+#include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -21,6 +27,39 @@ namespace ash {
 class ASH_EXPORT PersistentWindowController : public display::DisplayObserver,
                                               public SessionObserver {
  public:
+  // This class is used to track a list of windows with their restore bounds in
+  // parent. The restore bounds in parent will be empty if it does not exist.
+  // When a window is destroyed, it is removed from the list.
+  class WindowTracker : public aura::WindowObserver {
+   public:
+    WindowTracker();
+
+    WindowTracker(const WindowTracker&) = delete;
+    WindowTracker& operator=(const WindowTracker&) = delete;
+
+    ~WindowTracker() override;
+
+    const base::flat_map<aura::Window*, gfx::Rect>& window_restore_bounds_map()
+        const {
+      return window_restore_bounds_map_;
+    }
+
+    // Adds {window, restore_bounds_in_parent} as a pair to the map. If the
+    // `window` is already tracked, it will do nothing.
+    void Add(aura::Window* window, const gfx::Rect& restore_bounds_in_parent);
+
+    void RemoveAll();
+
+    // Removes `window` from the map of windows with restore bounds.
+    void Remove(aura::Window* window);
+
+    // aura::WindowObserver:
+    void OnWindowDestroying(aura::Window* window) override;
+
+   private:
+    base::flat_map<aura::Window*, gfx::Rect> window_restore_bounds_map_;
+  };
+
   // Public so it can be used by unit tests.
   constexpr static char kNumOfWindowsRestoredOnDisplayAdded[] =
       "Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded";
@@ -60,7 +99,7 @@ class ASH_EXPORT PersistentWindowController : public display::DisplayObserver,
 
   // Temporary storage that stores windows that may need persistent info
   // stored on display removal. Cleared when display changes are processed.
-  aura::WindowTracker need_persistent_info_windows_;
+  WindowTracker need_persistent_info_windows_;
 
   // Tracking the screen orientation of each display before screen rotation
   // take effect. Key is the display id, value is true if the display is in

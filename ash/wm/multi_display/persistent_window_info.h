@@ -22,8 +22,11 @@ namespace ash {
 struct ASH_EXPORT PersistentWindowInfo {
   // `is_landscape_before_rotation` indicates the screen orientation before
   // screen rotation happens. This is used to help restore window bounds in
-  // screen rotation scenario.
-  PersistentWindowInfo(aura::Window* window, bool is_landscape_before_rotation);
+  // screen rotation scenario. The `given_restore_bounds_in_parent` will be
+  // ignored if it is empty.
+  PersistentWindowInfo(aura::Window* window,
+                       bool is_landscape_before_rotation,
+                       const gfx::Rect& given_restore_bounds_in_parent);
   PersistentWindowInfo(const PersistentWindowInfo& other);
   ~PersistentWindowInfo();
 
@@ -41,8 +44,8 @@ struct ASH_EXPORT PersistentWindowInfo {
   // Note, this is only meaningful in the screen rotation scenario.
   bool is_landscape;
 
-  // Stores the restore bounds in screen coordinates if they exist.
-  absl::optional<gfx::Rect> restore_bounds_in_screen;
+  // Stores the restore bounds in its parent coordinates if they exist.
+  absl::optional<gfx::Rect> restore_bounds_in_parent;
 };
 
 }  // namespace ash
