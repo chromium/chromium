@@ -1394,7 +1394,7 @@
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
 <translation id="4375864595697821259">如果您想让 Chrome 在推测您的兴趣时可从主题列表中选择某个主题，请将此主题重新添加到列表中</translation>
 <translation id="4377125064752653719">您尝试访问的是 <ph name="DOMAIN" />，但服务器出示的证书已被其颁发者吊销。这表明绝对不应该信任此服务器出示的安全凭据。您可能正在与攻击者进行通信。</translation>
-<translation id="4378154925671717803">电话机</translation>
+<translation id="4378154925671717803">电话</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4386413576162606861">角色扮演游戏</translation>
 <translation id="4390472908992056574">帽檐式</translation>
@@ -1889,7 +1889,7 @@
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">检查网络连接</translation>
 <translation id="5610807607761827392">您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理信用卡和地址信息。</translation>
-<translation id="5611398002774823980">保存到帐号</translation>
+<translation id="5611398002774823980">保存到账号</translation>
 <translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
 <translation id="561669346091975195">科幻与奇幻电视节目</translation>
@@ -3184,7 +3184,7 @@
 <translation id="8806285662264631610">沐浴与身体护理产品</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
 <translation id="8809203544698246977">已屏蔽的主题会显示在此处</translation>
-<translation id="8811470563853401328">是否将地址保存到帐号？</translation>
+<translation id="8811470563853401328">是否将地址保存到账号？</translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
