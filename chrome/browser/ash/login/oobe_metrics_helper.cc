@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
@@ -48,7 +49,7 @@ std::string GetUmaLegacyScreenName(const OobeScreenId& screen_id) {
       break;
     }
   }
-  uma_name[0] = std::toupper(uma_name[0]);
+  uma_name[0] = base::ToUpperASCII(uma_name[0]);
   return uma_name;
 }
 
@@ -84,7 +85,7 @@ void OobeMetricsHelper::OnScreenExited(OobeScreenId screen,
 
   // Use for this histogram real screen names.
   std::string screen_name = screen.name;
-  screen_name[0] = std::toupper(screen_name[0]);
+  screen_name[0] = base::ToUpperASCII(screen_name[0]);
   std::string histogram_name_with_reason =
       kUmaStepCompletionTimeByExitReasonName + screen_name + "." + exit_reason;
 

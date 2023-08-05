@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -206,7 +207,7 @@ void ChoobeFlowController::OnChoobeFlowExit() {
   for (auto static_id : kOptionalScreens) {
     OobeScreenId id = static_id.AsId();
     std::string screen_name = id.name;
-    screen_name[0] = std::toupper(screen_name[0]);
+    screen_name[0] = base::ToUpperASCII(screen_name[0]);
     std::string histogram_name = "OOBE.CHOOBE.ScreenCompleted." + screen_name;
     bool is_completed =
         completed_screens_ids_.find(id) != completed_screens_ids_.end();
