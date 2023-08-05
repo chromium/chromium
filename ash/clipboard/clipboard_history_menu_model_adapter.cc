@@ -75,7 +75,8 @@ bool IsHeaderRequired() {
 // Returns whether the clipboard history menu requires a footer.
 bool IsFooterRequired(
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-    const absl::optional<base::Time>& menu_last_time_shown) {
+    const absl::optional<base::Time>& menu_last_time_shown,
+    const absl::optional<base::Time>& nudge_last_time_shown) {
   // A footer is always required when the menu is shown via Ctrl+V long press.
   using crosapi::mojom::ClipboardHistoryControllerShowSource;
   if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {
@@ -94,8 +95,9 @@ bool IsFooterRequired(
     return true;
   }
 
-  // TODO(http://b/267694412): Also require footer if a nudge was just shown.
-  return false;
+  // A footer is required if a nudge has been shown in the past 60 seconds.
+  return TimeSince(nudge_last_time_shown.value_or(base::Time())) <=
+         base::Seconds(60);
 }
 
 // Populates `container` with a menu title to appear at the top of the clipboard
@@ -356,7 +358,8 @@ void ClipboardHistoryMenuModelAdapter::Run(
     const gfx::Rect& anchor_rect,
     ui::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-    const absl::optional<base::Time>& menu_last_time_shown) {
+    const absl::optional<base::Time>& menu_last_time_shown,
+    const absl::optional<base::Time>& nudge_last_time_shown) {
   DCHECK(!root_view_);
   DCHECK(model_);
   DCHECK(item_snapshots_.empty());
@@ -391,7 +394,8 @@ void ClipboardHistoryMenuModelAdapter::Run(
     ++index;
   }
 
-  if (IsFooterRequired(show_source, menu_last_time_shown)) {
+  if (IsFooterRequired(show_source, menu_last_time_shown,
+                       nudge_last_time_shown)) {
     // Add a placeholder non-interactive item that will contain the clipboard
     // history menu's footer, consisting of a separator (styled differently from
     // the context menu separators) and educational text.

@@ -54,12 +54,13 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   ~ClipboardHistoryMenuModelAdapter() override;
 
   // Shows the menu anchored at `anchor_rect`. `source_type` and `show_source`
-  // indicate how the menu was triggered. `menu_last_time_shown` indicates when
-  // the menu was last shown.
+  // indicate how the menu was triggered. `menu_last_time_shown` and
+  // `nudge_last_time_shown` indicate when the menu or any nudge was last shown.
   void Run(const gfx::Rect& anchor_rect,
            ui::MenuSourceType source_type,
            crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-           const absl::optional<base::Time>& menu_last_time_shown);
+           const absl::optional<base::Time>& menu_last_time_shown,
+           const absl::optional<base::Time>& nudge_last_time_shown);
 
   // Returns if the menu is currently running.
   bool IsRunning() const;

@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
@@ -245,9 +246,11 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
       public WithParamInterface<
           std::tuple<ClipboardHistoryControllerShowSource,
                      /*time_since_menu_shown=*/absl::optional<base::TimeDelta>,
+                     /*time_since_nudge_shown=*/absl::optional<base::TimeDelta>,
                      /*enable_refresh=*/bool>> {
  public:
-  ClipboardHistoryMenuModelAdapterMenuItemTest() {
+  ClipboardHistoryMenuModelAdapterMenuItemTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kClipboardHistoryLongpress,
           IsClipboardHistoryLongpressEnabled()},
@@ -265,23 +268,25 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     auto* prefs = session_controller->GetLastActiveUserPrefService();
     ASSERT_TRUE(prefs);
 
+    // Set nudge last time shown.
+    if (const auto& time_since_nudge_shown = GetTimeSinceNudgeShown()) {
+      ClipboardHistoryController::Get()->OnScreenshotNotificationCreated();
+      task_environment()->FastForwardBy(*time_since_nudge_shown);
+    }
+
     // Set menu last time shown.
     if (const auto& time_since_menu_shown = GetTimeSinceMenuShown()) {
       prefs->SetTime(prefs::kMultipasteMenuLastTimeShown,
                      base::Time::Now() - time_since_menu_shown.value());
     }
-
-    // Satisfy future on operation confirmations.
-    GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
-        operation_confirmed_future_.GetRepeatingCallback());
   }
 
-  void WriteTextToClipboardAndConfirm(const std::u16string& str) {
+  void WriteTextToClipboardAndFlushMessageLoop(const std::u16string& str) {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
       scw.WriteText(str);
     }
-    EXPECT_TRUE(operation_confirmed_future_.Take());
+    FlushMessageLoop();
   }
 
   ClipboardHistoryControllerShowSource GetSource() const {
@@ -292,16 +297,19 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     return std::get<1>(GetParam());
   }
 
+  const absl::optional<base::TimeDelta>& GetTimeSinceNudgeShown() const {
+    return std::get<2>(GetParam());
+  }
+
   bool IsClipboardHistoryLongpressEnabled() {
     return GetSource() ==
            ClipboardHistoryControllerShowSource::kControlVLongpress;
   }
 
-  bool IsClipboardHistoryRefreshEnabled() { return std::get<2>(GetParam()); }
+  bool IsClipboardHistoryRefreshEnabled() { return std::get<3>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TestFuture<bool> operation_confirmed_future_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -311,13 +319,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                                  Values(absl::make_optional(base::Days(60)),
                                         absl::make_optional(base::Days(59)),
                                         absl::nullopt),
+                                 /*time_since_nudge_shown=*/
+                                 Values(absl::make_optional(base::Seconds(61)),
+                                        absl::make_optional(base::Seconds(60)),
+                                        absl::nullopt),
                                  /*enable_refresh=*/Bool()));
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
        HeaderAndFooterConditionallyPresent) {
   // Write items to clipboard history so that the menu can show.
-  WriteTextToClipboardAndConfirm(u"A");
-  WriteTextToClipboardAndConfirm(u"B");
+  WriteTextToClipboardAndFlushMessageLoop(u"A");
+  WriteTextToClipboardAndFlushMessageLoop(u"B");
   auto* const controller = GetClipboardHistoryController();
   ASSERT_TRUE(controller);
   EXPECT_EQ(controller->history()->GetItems().size(), 2u);
@@ -327,11 +339,16 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
   EXPECT_TRUE(controller->IsMenuShowing());
 
+  const auto time_since_menu_shown =
+      GetTimeSinceMenuShown().value_or(base::TimeDelta::Max());
+  const auto time_since_nudge_shown =
+      GetTimeSinceNudgeShown().value_or(base::TimeDelta::Max());
+
   const bool has_header = IsClipboardHistoryRefreshEnabled();
-  const bool has_footer =
-      IsClipboardHistoryLongpressEnabled() ||
-      (IsClipboardHistoryRefreshEnabled() &&
-       (GetTimeSinceMenuShown().value_or(base::Days(60)) >= base::Days(60)));
+  const bool has_footer = IsClipboardHistoryLongpressEnabled() ||
+                          (IsClipboardHistoryRefreshEnabled() &&
+                           ((time_since_menu_shown >= base::Days(60)) ||
+                            (time_since_nudge_shown <= base::Seconds(60))));
 
   // Verify the number of items in the menu model.
   size_t expected_menu_item_count = controller->history()->GetItems().size();

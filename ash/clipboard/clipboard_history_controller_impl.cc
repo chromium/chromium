@@ -457,7 +457,8 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
                           base::Unretained(this)),
       clipboard_history_.get());
   context_menu_->Run(anchor_rect, source_type, show_source,
-                     GetMenuLastTimeShown());
+                     GetMenuLastTimeShown(),
+                     nudge_controller_->GetNudgeLastTimeShown());
 
   CHECK(IsMenuShowing());
   accelerator_target_->OnMenuShown();

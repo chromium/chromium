@@ -254,6 +254,20 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
   }
 }
 
+absl::optional<base::Time> ClipboardNudgeController::GetNudgeLastTimeShown()
+    const {
+  const base::Time& nudge_last_time_shown =
+      base::ranges::max(
+          {&duplicate_copy_nudge_recorder_, &onboarding_nudge_recorder_,
+           &screenshot_nudge_recorder_, &zero_state_nudge_recorder_},
+          /*comp=*/{}, /*proj=*/&NudgeTimeDeltaRecorder::nudge_shown_time)
+          ->nudge_shown_time();
+
+  return nudge_last_time_shown.is_null()
+             ? absl::nullopt
+             : absl::make_optional(nudge_last_time_shown);
+}
+
 void ClipboardNudgeController::MarkScreenshotNotificationShown() {
   base::UmaHistogramBoolean(kClipboardHistoryScreenshotNotificationShowCount,
                             true);

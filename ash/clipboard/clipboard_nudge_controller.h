@@ -70,6 +70,10 @@ class ASH_EXPORT ClipboardNudgeController
       override;
   void OnClipboardHistoryPasted() override;
 
+  // Returns the time in this session that any nudge was last shown, or
+  // `absl::nullopt` if a nudge has not been shown.
+  absl::optional<base::Time> GetNudgeLastTimeShown() const;
+
   // Increments the screenshot notification shown count.
   void MarkScreenshotNotificationShown();
 
@@ -107,6 +111,10 @@ class ASH_EXPORT ClipboardNudgeController
     // Called when the clipboard history menu shows. Maybe records the time
     // delta since `nudge_shown_time_`.
     void OnClipboardHistoryMenuShown();
+
+    // Returns the time in this session that the associated nudge was last
+    // shown, or a null value if the associated nudge was never shown.
+    const base::Time& nudge_shown_time() const { return nudge_shown_time_; }
 
    private:
     // Resets the tracking on the most recent nudge shown, if any. If the
