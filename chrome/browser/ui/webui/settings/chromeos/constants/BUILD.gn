@@ -5,20 +5,23 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojom") {
   sources = [
-    "search.mojom",
-    "search_result_icon.mojom",
-    "user_action_recorder.mojom",
+    "routes.mojom",
+    "setting.mojom",
   ]
-
-  public_deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
-    "//mojo/public/mojom/base",
-  ]
-
   webui_module_path = "/"
   use_typescript_sources = true
+}
+
+action("gen_routes") {
+  script = "gen_routes.py"
+  outputs = [ "$target_gen_dir/routes.h" ]
+  deps = [ ":mojom" ]
+  args = [
+    "--gen_dir",
+    rebase_path(target_gen_dir, root_build_dir),
+  ]
 }
