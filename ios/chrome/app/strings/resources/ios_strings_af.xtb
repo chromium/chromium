@@ -210,6 +210,7 @@
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2269277877025820298">Sien meer</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
+<translation id="2275480389219976105">Adres gevind</translation>
 <translation id="2286505070150039482">Gemerkte teks</translation>
 <translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
 <translation id="2297822946037605517">Deel hierdie bladsy</translation>
@@ -542,6 +543,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="430793432425771671">Sinkroniseer alles</translation>
 <translation id="4309403553630140242">Dubbeltik vir meer inligting</translation>
 <translation id="430967081421617822">Alle tye</translation>
+<translation id="4331177082088332784">Jy kan dit bestuur in BEGIN_LINK inhoudinstellings END_LINK</translation>
 <translation id="4334428914252001502">1 ongeleesde artikel.</translation>
 <translation id="4338650699862464074">Stuur URL'e van bladsye wat jy besoek na Google toe.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Hierdie adres sal op hierdie en jou ander aangemelde toestelle uitgevee word.}other{Hierdie adresse sal op hierdie en jou ander aangemelde toestelle uitgevee word.}}</translation>
@@ -1068,6 +1070,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7340958967809483333">Opsies vir Ontdek</translation>
 <translation id="7346909386216857016">OK, het dit</translation>
 <translation id="734758817008927353">Opsies om 'n kaart te stoor</translation>
+<translation id="7349129508108954623">Laat Chrome toe om Google Maps te gebruik om vir jou aanwysings en plaaslike inligting oor bespeurde adresse te gee.</translation>
 <translation id="7351537303876921605">Tik op Skep skakel op die kontekskieslys</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7353432112255316844">Verifieer dis jy</translation>
@@ -1124,6 +1127,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7719038820139380048">Meld aan om inhoud gegrond op jou belangstellings te kry.</translation>
 <translation id="7720410380936703141">PROBEER WEER</translation>
 <translation id="7726702057919861819">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>
+<translation id="7729458878441927652">Sinkroniseer jou oortjies en geskiedenis om oortjies van jou ander toestelle af te sien.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Net op hierdie toestel.</translation>
 <translation id="7738120385185846461">Gee ’n kwessie aan …</translation>
 <translation id="7741325291586284254">Nuwe Incognito-oortjiebladsy</translation>

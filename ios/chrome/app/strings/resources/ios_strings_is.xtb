@@ -210,6 +210,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="2268044343513325586">Þrengja</translation>
 <translation id="2269277877025820298">Sjá meira</translation>
 <translation id="2273327106802955778">Valmynd fyrir meira</translation>
+<translation id="2275480389219976105">Heimilisfang fannst</translation>
 <translation id="2286505070150039482">Áherslumerktur texti</translation>
 <translation id="2287614783861766820">{count,plural, =1{Þessu heimilisfangi verður eytt úr tækinu.}one{Þessum heimilisföngum verður eytt úr tækinu.}other{Þessum heimilisföngum verður eytt úr tækinu.}}</translation>
 <translation id="2297822946037605517">Deila þessari síðu</translation>
@@ -542,6 +543,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="430793432425771671">Samstilla allt</translation>
 <translation id="4309403553630140242">Ýttu tvisvar til að fá frekari upplýsingar.</translation>
 <translation id="430967081421617822">Frá upphafi</translation>
+<translation id="4331177082088332784">Þú getur stjórnað þessu í BEGIN_LINK efnisstillingunum END_LINK</translation>
 <translation id="4334428914252001502">1 ólesin grein.</translation>
 <translation id="4338650699862464074">Senda vefslóðir síðna sem þú ferð á til Google.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Heimilisfanginu verður eytt bæði úr þessu og öðrum tækjum sem þú ert skráð(ur) inn í.}one{Þessum heimilisföngum verður eytt bæði úr þessu og öðrum tækjum sem þú ert skráð(ur) inn í.}other{Þessum heimilisföngum verður eytt bæði úr þessu og öðrum tækjum sem þú ert skráð(ur) inn í.}}</translation>
@@ -1068,6 +1070,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>
 <translation id="7346909386216857016">Ég skil</translation>
 <translation id="734758817008927353">Valkostir fyrir vistun korts</translation>
+<translation id="7349129508108954623">Veittu Chrome heimild til að nota Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="7351537303876921605">Ýttu á „Búa til tengil“ á efnisvalmyndinni</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7353432112255316844">Staðfestu hver þú ert</translation>
@@ -1124,6 +1127,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7719038820139380048">Skráðu þig inn til að fá efni byggt á áhugasviðum þínum.</translation>
 <translation id="7720410380936703141">REYNDU AFTUR</translation>
 <translation id="7726702057919861819">Valmynd → Ferill → Hreinsa vefskoðunargögn</translation>
+<translation id="7729458878441927652">Samstilltu flipana þína og ferilinn til að sjá flipa úr hinum tækjunum þínum.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Aðeins í þessu tæki.</translation>
 <translation id="7738120385185846461">Tilkynna vandamál…</translation>
 <translation id="7741325291586284254">Síða með nýjum huliðsflipa</translation>

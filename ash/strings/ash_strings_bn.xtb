@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1557622599341396706">ডেস্কের নাম দেখুন</translation>
 <translation id="1569384531973824928">এর ফলে ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
+<translation id="1571697193564730395">'বিরক্ত করবে না' টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
 <translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">হটস্পট চালু করুন</translation>
 <translation id="3566240529365775567">এইমাত্র খোলা হয়েছে</translation>
 <translation id="3571734092741541777">সেট-আপ করুন</translation>
+<translation id="3572988532398145777">প্যানেল খোলা থাকলে আপনি বিজ্ঞপ্তি বড় করতে পারবেন না। প্রথমে নিচে প্যানেল বন্ধ করুন।</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" তে ফেরান (পুনর্সূচনা প্রয়োজন)</translation>
 <translation id="3576141592585647168">টাইমজোন পরিবর্তন করা</translation>
 <translation id="3577473026931028326">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
@@ -687,6 +689,7 @@
 <translation id="3990002060657467458">ওয়াই-ফাই, ব্লুটুথ এবং ভলিউমের মতো প্রায়শই ব্যবহার করা কন্ট্রোল 'দ্রুত সেটিংস'-এ আছে। এছাড়াও স্ক্রিনশট নিতে এখানে যেতে পারবেন।</translation>
 <translation id="3995138139523574647">USB-C ডিভাইস (ডান দিকের পিছনের পোর্ট)</translation>
 <translation id="40062176907008878">'হ্যান্ডরাইটিং' ফিচার</translation>
+<translation id="4011112806063830608">'বিরক্ত করবে না' চালু আছে।</translation>
 <translation id="4017989525502048489">লেজার পয়েন্টার</translation>
 <translation id="401993194061514265">মার্কার উপলভ্য নেই। Screencast আবার খুলুন।</translation>
 <translation id="4021716437419160885">নিচের দিকে স্ক্রল করুন</translation>
@@ -720,6 +723,7 @@
 <translation id="4146833061457621061">মিউজিক চালান</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4165275524535002941">কেবলের মাধ্যমে কানেক্ট করা হলে সিগন্যাল নাও দেখা যেতে পারে</translation>
+<translation id="4177415338862979658">বিবরণের জন্য চেক করতে ক্লিক করুন</translation>
 <translation id="4177913004758410636">{0,plural, =1{এক দিনের মধ্যে ডিভাইস আপডেট করুন}one{# দিনের মধ্যে ডিভাইস আপডেট করুন}other{# দিনের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4185671786623711291">চালু থাকা উইন্ডো ডানদিকের ডেস্কে সরান</translation>
@@ -1438,6 +1442,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="7313193732017069507">ক্যামেরা সামনে আনুন</translation>
+<translation id="7316261577130609484">নতুন টাস্ক যোগ করুন</translation>
 <translation id="7340731148882810149">অটোমেটিক ক্লিক মেনু</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
@@ -1590,6 +1595,7 @@
 <translation id="7944023924886109030">আজকের সব ইভেন্ট দেখুন</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> আপনার <ph name="DEVICE_NAME" /> ব্যবহার করতে চায়</translation>
 <translation id="7951630946012935453">ডিম কীবোর্ড</translation>
+<translation id="7963689218131240420">'বিরক্ত করবে না' বন্ধ আছে।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> থেকে</translation>
 <translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
 <translation id="797512352675305461">ফুলস্ক্রিন ম্যাগনিফার চালু বা বন্ধ করুন</translation>
@@ -1842,6 +1848,7 @@
 <translation id="9080073830732419341">ক্যামেরাটি উপরে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
 <translation id="9080132581049224423">'হোম' স্ক্রিনে যাওয়ার জন্য উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="9080206825613744995">মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
+<translation id="908451241440060346">'বিরক্ত করবে না' চালু থাকলে বিজ্ঞপ্তি মিউট করা হয়</translation>
 <translation id="9084606467167974638">মেনুর অবস্থান টগল করুন</translation>
 <translation id="9085962983642906571">ব্যাটারির আয়ু বাড়ানোর জন্য প্লাগ-ইন করার সময় আপনার ব্যাটারি ৮০% এ রাখা হয়।</translation>
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>

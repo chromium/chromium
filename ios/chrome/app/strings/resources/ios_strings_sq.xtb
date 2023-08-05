@@ -210,6 +210,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2268044343513325586">Ripërpuno</translation>
 <translation id="2269277877025820298">Shiko më shumë</translation>
 <translation id="2273327106802955778">Menyja "Më shumë"</translation>
+<translation id="2275480389219976105">Adresa u gjet</translation>
 <translation id="2286505070150039482">Teksti i theksuar</translation>
 <translation id="2287614783861766820">{count,plural, =1{Kjo adresë do të fshihet nga kjo pajisje.}other{Këto adresa do të fshihen nga kjo pajisje.}}</translation>
 <translation id="2297822946037605517">Ndaje këtë faqe</translation>
@@ -542,6 +543,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="430793432425771671">Sinkronizo gjithçka</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
 <translation id="430967081421617822">Gjatë të gjithë kohës</translation>
+<translation id="4331177082088332784">Mund ta menaxhosh këtë te BEGIN_LINK Cilësimet e përmbajtjes END_LINK</translation>
 <translation id="4334428914252001502">1 artikull i palexuar.</translation>
 <translation id="4338650699862464074">Dërgon te Google URL-të e faqeve që ti viziton.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar.}other{Këto adresa do të fshihen nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar.}}</translation>
@@ -1068,6 +1070,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7340958967809483333">Opsionet për "Zbulo"</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
 <translation id="734758817008927353">Opsionet për ruajtjen e kartës</translation>
+<translation id="7349129508108954623">Lejo që Chrome të përdorë Google Maps për të të dhënë udhëzime dhe informacione lokale për adresat e zbuluara.</translation>
 <translation id="7351537303876921605">Trokit te "Krijo një lidhje" në menynë kontekstuale</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353432112255316844">Verifiko që je ti</translation>
@@ -1124,6 +1127,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7719038820139380048">Identifikohu për të marrë përmbajtje bazuar në interesat e tu.</translation>
 <translation id="7720410380936703141">PROVO SËRISH</translation>
 <translation id="7726702057919861819">"Menyja → Historiku → Pastro të dhënat e shfletimit"</translation>
+<translation id="7729458878441927652">Për të parë skedat nga pajisjet e tua të tjera, sinkronizo skedat dhe historikun.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vetëm në këtë pajisje.</translation>
 <translation id="7738120385185846461">Raporto një problem…</translation>
 <translation id="7741325291586284254">Faqja e skedës së re "të fshehtë"</translation>

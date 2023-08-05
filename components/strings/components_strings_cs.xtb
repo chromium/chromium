@@ -568,6 +568,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2149968176347646218">Připojení není zabezpečené</translation>
 <translation id="2152495481414285304">Aplikace</translation>
 <translation id="2153609454945889823">Nainstalovat Služby Google Play pro RR?</translation>
+<translation id="2154144347038514978">Automatické spuštění na zařízení</translation>
 <translation id="2154484045852737596">Úprava karty</translation>
 <translation id="2154739667870063220">Restartovat</translation>
 <translation id="2155260325161282517">5 × 7″</translation>
@@ -2907,6 +2908,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7186833457841277072">Obálka (pro inkoustové tiskárny)</translation>
 <translation id="7186840261985974511">Obálka č. 12</translation>
 <translation id="718872491229180389">Roztleskávání</translation>
+<translation id="7188840756966467339">Restartovat a použít zásady</translation>
 <translation id="7192188280913829296">Musí být zadán také atribut „vendor_id“.</translation>
 <translation id="7192203810768312527">Uvolní <ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="7192537357091279678">Paměťová a úložná zařízení pro počítače</translation>
@@ -3004,6 +3006,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
 <translation id="7403392780200267761">Sdílet tuto kartu pomocí odkazu či QR kódu, odesláním apod.</translation>
 <translation id="7403591733719184120">Vaše zařízení <ph name="DEVICE_NAME" /> je spravováno</translation>
+<translation id="7405878640835614059">Organizace <ph name="ENROLLMENT_DOMAIN" /> nainstalovala aplikace pro dodatečné funkce. Rozšíření mají přístup k některým vašim datům.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Tato chyba se zobrazuje, pokud v počítači se systémem Windows máte software Superfish.&lt;/p&gt;
       &lt;p&gt;Abyste se mohli dostat na web, podle těchto pokynů tento software dočasně zakažte. Budete potřebovat administrátorská práva.&lt;/p&gt;
       &lt;ol&gt;
@@ -3483,6 +3486,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8349305172487531364">Lišta záložek</translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
 <translation id="835203957414790336">Obsah tisknutých stránek a informace o vaší tiskárně se odesílají do služby Google Cloud nebo třetím stranám k analýze. Může se u nich například kontrolovat přítomnost citlivých údajů.</translation>
+<translation id="8352849934814541340">Administrátor tohoto zařízení nainstaloval rozšíření pro dodatečné funkce. Rozšíření mají přístup k některým vašim datům.</translation>
 <translation id="8355270400102541638">Místní kontext selhání:</translation>
 <translation id="8363502534493474904">Vypnout režim Letadlo</translation>
 <translation id="8364627913115013041">Nenastaveno.</translation>
@@ -3732,6 +3736,7 @@ Další podrobnosti:
 <translation id="8903921497873541725">Přiblížit</translation>
 <translation id="890493561996401738">Tlačítko Odstranit návrh, odstranění provedete stisknutím klávesy Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">2 × 10 palců</translation>
+<translation id="8918062451146297192">Kód CVC virtuální karty</translation>
 <translation id="8919740778133505789">Sportovní vozy</translation>
 <translation id="8919895429178014996">Skrýt všechny položky</translation>
 <translation id="8922013791253848639">Na tomto webu reklamy vždy povolovat</translation>

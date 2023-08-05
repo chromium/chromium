@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2149968176347646218">ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="2152495481414285304">ਐਪਲੀਕੇਸ਼ਨਾਂ</translation>
 <translation id="2153609454945889823">ਕੀ Google Play Services for AR ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
+<translation id="2154144347038514978">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਸਵੈ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2154484045852737596">ਕਾਰਡ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2154739667870063220">ਰੀਬੂਟ ਕਰੋ</translation>
 <translation id="2155260325161282517">5 x 7 ਇੰਚ</translation>
@@ -2907,6 +2909,7 @@
 <translation id="7186833457841277072">ਐਨਵਲੋਪ (ਇੰਕਜੈੱਟ)</translation>
 <translation id="7186840261985974511">#12 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="718872491229180389">ਚੀਅਰਲੀਡਿੰਗ</translation>
+<translation id="7188840756966467339">ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਨੀਤੀਆਂ ਲਾਗੂ ਕਰੋ</translation>
 <translation id="7192188280913829296">ਵਿਸ਼ੇਸ਼ਤਾ "vendor_id" ਵੀ ਨਿਰਧਾਰਿਤ ਕੀਤੀ ਜਾਣੀ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="7192537357091279678">ਕੰਪਿਊਟਰ ਡਰਾਈਵਾਂ ਅਤੇ ਸਟੋਰੇਜ</translation>
@@ -3005,6 +3008,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ਲਿੰਕ ਸਾਂਝਾ ਕਰ ਕੇ, QR ਕੋਡ ਬਣਾ ਕੇ, ਕਾਸਟ ਕਰ ਕੇ ਅਤੇ ਹੋਰ ਵਿਕਲਪਾਂ ਨਾਲ ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7403591733719184120">ਤੁਹਾਡਾ <ph name="DEVICE_NAME" /> ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ਨੇ ਵਧੀਕ ਫੰਕਸ਼ਨਾਂ ਲਈ ਐਪਲੀਕੇਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹਨ। ਐਪਲੀਕੇਸ਼ਨਾਂ ਕੋਲ ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="7407424307057130981">&lt;p&gt;ਜੇਕਰ ਤੁਹਾਡੇ Windows ਕੰਪਿਊਟਰ 'ਤੇ Superfish ਸਾਫ਼ਟਵੇਅਰ ਹੈ ਤਾਂ ਤੁਹਾਨੂੰ ਇਹ ਗੜਬੜ ਦਿਖਾਈ ਦੇਵੇਗੀ।&lt;/p&gt;
       &lt;p&gt;ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰਨ ਲਈ ਇਹਨਾਂ ਪੜਾਵਾਂ ਦਾ ਅਨੁਸਰਣ ਕਰੋ ਤਾਂ ਕਿ ਤੁਸੀਂ ਵੈੱਬ 'ਤੇ ਜਾ ਸਕੋ। ਤੁਹਾਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਦੇ ਵਿਸ਼ੇਸ਼-ਅਧਿਕਾਰਾਂ ਦੀ ਲੋੜ ਪਵੇਗੀ।&lt;/p&gt;
       &lt;ol&gt;
@@ -3484,6 +3488,7 @@
 <translation id="8349305172487531364">ਬੁੱਕਮਾਰਕਸ ਬਾਰ</translation>
 <translation id="8351131234907093545">ਨੋਟ-ਕਥਨ ਬਣਾਓ</translation>
 <translation id="835203957414790336">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪ੍ਰਿੰਟ ਕੀਤੇ ਗਏ ਪੰਨਿਆਂ ਦੀ ਸਮੱਗਰੀ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਿੰਟਰ ਬਾਰੇ ਜਾਣਕਾਰੀ Google Cloud ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ ਭੇਜੀ ਜਾਂਦੀ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਇਸਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="8352849934814541340">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਵਧੀਕ ਫੰਕਸ਼ਨਾਂ ਲਈ ਐਪਲੀਕੇਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹਨ। ਐਪਲੀਕੇਸ਼ਨਾਂ ਕੋਲ ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="8355270400102541638">ਸਥਾਨਕ ਕ੍ਰੈਸ਼ ਸੰਦਰਭ:</translation>
 <translation id="8363502534493474904">ਜਹਾਜ਼ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="8364627913115013041">ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ।</translation>
@@ -3732,6 +3737,7 @@
 <translation id="8903921497873541725">ਜ਼ੂਮ ਵਧਾਓ</translation>
 <translation id="890493561996401738">ਸੁਝਾਅ ਬਟਨ ਹਟਾਓ, ਹਟਾਉਣ ਲਈ ਐਂਟਰ ਦਬਾਓ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ਇੰਚ</translation>
+<translation id="8918062451146297192">ਆਭਾਸੀ ਕਾਰਡ ਲਈ CVC</translation>
 <translation id="8919740778133505789">ਸਪੋਰਟਸ ਕਾਰਾਂ</translation>
 <translation id="8919895429178014996">ਸਾਰੀਆਂ ਆਈਟਮਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="8922013791253848639">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮੇਸ਼ਾ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ</translation>

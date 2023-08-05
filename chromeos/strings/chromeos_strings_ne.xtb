@@ -816,6 +816,7 @@
 <translation id="7397270852490618635">उज्यालो थिम अफ गर्नुहोस्</translation>
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
+<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" /> स्वतः सुरु हुने बनाउनुभएको छ।}=2{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" /> र <ph name="APP_NAME_2" /> स्वतः सुरु हुने बनाउनुभएको छ।}=3{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> स्वतः सुरु हुने बनाउनुभएको छ।}other{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> र अन्य # वटा एप स्वतः सुरु हुने बनाउनुभएको छ।}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">अवतारहरू हेर्न र सेट गर्न इन्टरनेटमा कनेक्ट गर्नुहोस् र यो पेज रिलोड गर्नुहोस्।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
@@ -1014,6 +1015,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}}</translation>
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> स्वतः सुरु गरियो}other{# वटा एप स्वतः सुरु गरिए}}</translation>
 <translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>

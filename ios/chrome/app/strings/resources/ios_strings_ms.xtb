@@ -210,6 +210,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2268044343513325586">Perhalusi</translation>
 <translation id="2269277877025820298">Lihat Lagi</translation>
 <translation id="2273327106802955778">Lagi menu</translation>
+<translation id="2275480389219976105">Alamat Ditemukan</translation>
 <translation id="2286505070150039482">Teks Yang Diserlahkan</translation>
 <translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dipadamkan daripada peranti ini.}other{Alamat ini akan dipadamkan daripada peranti ini.}}</translation>
 <translation id="2297822946037605517">Kongsi halaman ini</translation>
@@ -542,6 +543,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="430793432425771671">Segerakkan Semua</translation>
 <translation id="4309403553630140242">Ketik dua kali untuk mendapatkan maklumat lanjut</translation>
 <translation id="430967081421617822">Sepanjang Masa</translation>
+<translation id="4331177082088332784">Anda boleh mengurus tetapan ini dalam BEGIN_LINK Tetapan Kandungan END_LINK</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
 <translation id="4338650699862464074">Menghantar URL halaman yang anda lawati kepada Google.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Alamat ini akan dipadamkan daripada peranti ini dan peranti log masuk anda yang lain.}other{Alamat ini akan dipadamkan daripada peranti ini dan peranti log masuk anda yang lain.}}</translation>
@@ -1068,6 +1070,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7340958967809483333">Pilihan untuk Discover</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="734758817008927353">Pilihan untuk Simpan Kad</translation>
+<translation id="7349129508108954623">Benarkan Chrome untuk menggunakan Google Maps bagi memberikan arah dan maklumat setempat kepada anda pada alamat yang dikesan.</translation>
 <translation id="7351537303876921605">Ketik Cipta Pautan dalam Menu Konteks</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353432112255316844">Sahkan Orang Itu Ialah Anda</translation>
@@ -1124,6 +1127,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7719038820139380048">Log masuk untuk mendapatkan kandungan berdasarkan minat anda.</translation>
 <translation id="7720410380936703141">CUBA LAGI</translation>
 <translation id="7726702057919861819">Menu → Sejarah → Kosongkan Data Semakan Imbas</translation>
+<translation id="7729458878441927652">Untuk melihat tab daripada peranti anda yang lain, segerakkan tab dan sejarah anda.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Hanya pada peranti ini.</translation>
 <translation id="7738120385185846461">Laporkan Isu…</translation>
 <translation id="7741325291586284254">Halaman Tab Inkognito Baharu</translation>

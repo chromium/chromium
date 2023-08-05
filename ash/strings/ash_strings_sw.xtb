@@ -141,6 +141,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="1557622599341396706">Kuonyesha jina la eneokazi</translation>
 <translation id="1569384531973824928">Hatua hii huruhusu ufikiaji kwa ajili ya programu na tovuti zote zilizo na ruhusa za kamera na maikrofoni. Huenda ukahitaji kuonyesha upya ukurasa wa wavuti au ufunge kisha uwashe programu.</translation>
+<translation id="1571697193564730395">Washa au zima kipengele cha Usinisumbue. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Sogeza mbali kikuzaji kikiwa kimewashwa</translation>
 <translation id="1586324912145647027">Nenda kwenye eneokazi la kwanza hadi la nane</translation>
 <translation id="1589090746204042747">Fikia shughuli zako zote katika kipindi hiki</translation>
@@ -579,6 +580,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3563775809269155755">Washa mtandaopepe</translation>
 <translation id="3566240529365775567">Imefunguliwa hivi punde</translation>
 <translation id="3571734092741541777">Weka mipangilio</translation>
+<translation id="3572988532398145777">Huwezi kupanua arifa wakati kichupo kimefunguliwa. Kwanza funga kichupo kilicho hapa chini.</translation>
 <translation id="3573179567135747900">Badilisha hadi "<ph name="FROM_LOCALE" />" (inahitaji uzime na uwashe)</translation>
 <translation id="3576141592585647168">Badilisha saa za eneo</translation>
 <translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
@@ -687,6 +689,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3990002060657467458">Vidhibiti vinavyotumika mara kwa mara kama vile Wi-Fi, Bluetooth na sauti viko katika Mipangilio ya Haraka. Unaweza pia kwenda hapa kupiga picha za skrini.</translation>
 <translation id="3995138139523574647">Kifaa cha USB-C (mlango wa upande wa kulia nyuma)</translation>
 <translation id="40062176907008878">Mwandiko</translation>
+<translation id="4011112806063830608">Kipengele cha Usinisumbue kimewashwa.</translation>
 <translation id="4017989525502048489">Kielekezi cha leza</translation>
 <translation id="401993194061514265">Kitia alama hakipatikani. Fungua tena programu ya Kurekodi skrini.</translation>
 <translation id="4021716437419160885">Sogeza chini</translation>
@@ -720,6 +723,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4146833061457621061">Cheza muziki</translation>
 <translation id="4150201353443180367">Onyesho</translation>
 <translation id="4165275524535002941">Huenda kebo haijaoana na skrini</translation>
+<translation id="4177415338862979658">Bofya ili uangalie maelezo</translation>
 <translation id="4177913004758410636">{0,plural, =1{Sasisha kifaa ndani ya siku moja}other{Sasisha kifaa ndani ya siku #}}</translation>
 <translation id="4181841719683918333">Lugha</translation>
 <translation id="4185671786623711291">Sogeza dirisha linalotumika kwenye eneokazi la upande wa kulia</translation>
@@ -1438,6 +1442,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Msimamizi wako anabadilisha mipangilio ya eSIM yako. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="7313193732017069507">Panua kamera</translation>
+<translation id="7316261577130609484">Weka jukumu jipya</translation>
 <translation id="7340731148882810149">Menyu ya mibofyo ya kiotomatiki</translation>
 <translation id="7346909386216857016">Sawa, nimeelewa</translation>
 <translation id="7348093485538360975">Kibodi ya skrini</translation>
@@ -1591,6 +1596,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7944023924886109030">Angalia matukio yote ya leo</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> inataka kutumia <ph name="DEVICE_NAME" /> yako</translation>
 <translation id="7951630946012935453">Fifisha kibodi</translation>
+<translation id="7963689218131240420">Kipengele cha Usinisumbue kimezimwa.</translation>
 <translation id="7963992254934562106">Kutoka <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Chagua folda...</translation>
 <translation id="797512352675305461">Zima au washa kikuzaji cha skrini nzima</translation>
@@ -1843,6 +1849,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9080073830732419341">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kushoto</translation>
 <translation id="9080132581049224423">Telezesha kidole juu ili urudi kwenye skrini ya kwanza</translation>
 <translation id="9080206825613744995">Maikrofoni inatumika</translation>
+<translation id="908451241440060346">Arifa huzimwa kipengele cha Usinisumbue kinapokuwa kimewashwa</translation>
 <translation id="9084606467167974638">Badilisha nafasi ya menyu</translation>
 <translation id="9085962983642906571">Betri yako itasalia katika asilimia 80 inapokuwa imechomekwa kwenye umeme ili kuongeza muda wa matumizi ya betri.</translation>
 <translation id="9089416786594320554">Mbinu za Kuweka</translation>

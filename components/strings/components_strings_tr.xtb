@@ -568,6 +568,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2149968176347646218">Bağlantı güvenli değil</translation>
 <translation id="2152495481414285304">Uygulamalar</translation>
 <translation id="2153609454945889823">AR için Google Play Hizmetleri yüklensin mi?</translation>
+<translation id="2154144347038514978">Cihazımda otomatik başlat</translation>
 <translation id="2154484045852737596">Kartı düzenle</translation>
 <translation id="2154739667870063220">Yeniden başlat</translation>
 <translation id="2155260325161282517">5 x 7 inç</translation>
@@ -2912,6 +2913,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7186833457841277072">Zarf (Mürekkep Püskürtmeli)</translation>
 <translation id="7186840261985974511">Zarf #12</translation>
 <translation id="718872491229180389">Amigoluk</translation>
+<translation id="7188840756966467339">Yeniden başlat ve politikaları uygula</translation>
 <translation id="7192188280913829296">"vendor_id" özelliği de belirtilmelidir.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="7192537357091279678">Bilgisayar Sürücüleri ve Depolama</translation>
@@ -3010,6 +3012,7 @@ Ek ayrıntılar:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşın</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> adlı cihazınız yönetilmektedir</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> diğer işlevler için uygulamalar yüklemiş. Söz konusu uygulamaların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows bilgisayarınızda Superfish yazılımı varsa bu hatayı görürsünüz.&lt;/p&gt;
       &lt;p&gt;Web'e ulaşabilmeniz amacıyla yazılımı geçici olarak devre dışı bırakmak için bu adımları uygulayın. Bu adımları gerçekleştirmek için yönetici ayrıcalıklarınızın olması gerekir.&lt;/p&gt;
       &lt;ol&gt;
@@ -3489,6 +3492,7 @@ Ek ayrıntılar:
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="835203957414790336">Yazdırdığınız sayfaların içeriği ve yazıcınızla ilgili bilgiler analiz edilmek üzere Google Cloud'a veya üçüncü taraflara gönderilir. Dosyalarınızın hassas veriler içerip içermediği kontrol edilir.</translation>
+<translation id="8352849934814541340">Bu cihazın yöneticisi diğer işlevler için uygulamalar yüklemiş. Söz konusu uygulamaların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
 <translation id="8363502534493474904">Uçak modunu kapatma</translation>
 <translation id="8364627913115013041">Henüz ayarlanmadı.</translation>
@@ -3738,6 +3742,7 @@ Ek ayrıntılar:
 <translation id="8903921497873541725">Yakınlaştır</translation>
 <translation id="890493561996401738">Öneriyi Kaldır düğmesi, kaldırmak için Enter tuşuna basın, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
+<translation id="8918062451146297192">Sanal kartın CVC'si</translation>
 <translation id="8919740778133505789">Spor Otomobiller</translation>
 <translation id="8919895429178014996">Tüm öğeleri gizleyin</translation>
 <translation id="8922013791253848639">Bu sitede her zaman reklamlara izin ver</translation>

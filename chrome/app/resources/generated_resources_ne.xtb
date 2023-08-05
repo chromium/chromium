@@ -157,6 +157,7 @@
 <translation id="1122960773616686544">बुकमार्क नाम</translation>
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (नेटिभ) जस्तो देखिन्छ</translation>
+<translation id="1125921926864945797">वालपेपर तथा शैली</translation>
 <translation id="1126809382673880764">तपाईंलाई जोखिमपूर्ण वेबसाइट, डाउनलोड वा एक्स्टेन्सनहरूविरुद्ध सुरक्षा प्रदान गर्दैन। उपलब्ध भएसम्म तपाईं अझै पनि Gmail र खोज जस्ता Google का अन्य सेवाहरूमा सुरक्षित ब्राउजिङको सुरक्षा प्राप्त गर्नु हुने छ।</translation>
 <translation id="1128090040635299943">Linux हाल कन्फिगर गरिँदै छ। कन्फिगर गर्ने कार्य पूरा हुन केही समय लाग्ने छ।</translation>
 <translation id="1128591060186966949">खोज इन्जिनलाई सम्पादन गर्नुहोस्</translation>
@@ -184,6 +185,7 @@
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> को पालो</translation>
 <translation id="1147991416141538220">पहुँच माग्न यस डिभाइसका प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1148624853678088576">तपाइँ तैयार हुनुहुन्छ!</translation>
+<translation id="1148669835763563782">तपाईं परिष्कृत सुरक्षा र Chromebook का नयाँ सुविधाहरू समावेश भएको नवीनतम सफ्टवेयर अपडेट प्राप्त गर्दै हुनुहुन्छ। यो अपडेटमा तपाईंलाई आफ्नो Chromebook सहज रूपमा सुरु गर्न सघाउने सुधारिएको सेटअप सुविधा समावेश छ।</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1149483087970735785">सहायक प्रविधि</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्क्यान गरिँदै</translation>
@@ -265,6 +267,7 @@
 <translation id="1202116106683864634">तपाईंले यो पासकी मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="1202596434010270079">Kiosk एप अद्यावधिक गरिएको छ। कृपया USB स्टिक हटाउनुहोस्।</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
+<translation id="1203559206734265703">प्रोटेक्टेड अडियन्स डिबगिङ अन छ।</translation>
 <translation id="120368089816228251">साङ्गीतिक टिपोट</translation>
 <translation id="1203942045716040624">साझा कर्मचारी: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">तपाईं सर्टकटहरू व्यवस्थित गर्नुहुन्छ</translation>
@@ -716,6 +719,7 @@
 <translation id="1580772913177567930">आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्</translation>
 <translation id="1581962803218266616">फाइन्डरमा देखाउनुहोस्</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] मेट्नुहोस्</translation>
+<translation id="1583082742220286248">सत्र सुचारु गरिँदै छ</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> भाषा डिभाइसभित्रै प्रोसेस गरिन्छ र उक्त भाषा अफलाइन प्रयोग गर्न मिल्छ</translation>
 <translation id="1584990664401018068">तपाईँले प्रयोग गरिरहनुभएको ( <ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कको प्रमाणीकरण आवश्यक हुन सक्छ।</translation>
 <translation id="1585717515139318619">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विषयवस्तु थप्यो जसले Chrome को कार्य गर्ने तरिका बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
@@ -817,6 +821,7 @@
 <translation id="1644852018355792105"><ph name="DEVICE" /> नामक डिभाइसको ब्लुटुथ पासकी हाल्नुहोस्</translation>
 <translation id="1645004815457365098">अज्ञात स्रोत</translation>
 <translation id="1645516838734033527">तपाईंको <ph name="DEVICE_TYPE" /> सुरक्षित राख्न Smart Lock का लागि तपाईंको फोनमा एक स्क्रिन लक अनिवार्य छ।</translation>
+<translation id="1646045728251578877">सफ्टवेयर अपडेट उपलब्ध छ</translation>
 <translation id="1646982517418478057">कृपया यस प्रमाणपत्रलाई इन्क्रिप्ट गर्न कुनै पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="1647408325348388858"><ph name="FILE_NAME" /> यो वेब एपमा खोलेर सम्पादन गर्ने हो?</translation>
 <translation id="1648528859488547844">स्थान निर्धारण गर्न Wi-Fi वा मोबाइल नेटवर्कहरूको प्रयोग गर्नुहोस्</translation>
@@ -2795,6 +2800,7 @@
 <translation id="3254084468305910013">{COUNT,plural, =0{सुरक्षासम्बन्धी कुनै पनि समस्या फेला परेन}=1{सुरक्षासम्बन्धी {COUNT} समस्या फेला पर्‍यो}other{सुरक्षासम्बन्धी {COUNT} वटा समस्या फेला परे}}</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> डाउनलोड गरिँदै छ, <ph name="PERCENT_REMAINING" />% बाँकी छ</translation>
 <translation id="3254516606912442756">प्रामाणिक समय स्वत: पत्ता लगाउने सुविधालाई असक्षम पारिएको छ</translation>
+<translation id="3255747772218936245">अपडेट इन्स्टल गर्नुहोस्</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> लाई अनुमति दिने हो?</translation>
 <translation id="325797067711573598">शङ्कास्पद सामग्री डाउनलोड गर्ने कार्य ब्लक गरिएको छ</translation>
 <translation id="3259723213051400722">कृपया फेरि प्रयास गर्नुहोस्।</translation>
@@ -3625,10 +3631,12 @@
 <translation id="3920909973552939961">भुक्तानी ह्यान्ड्लरहरू इन्स्टल गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="3922823422695198027">अन्य एपले पनि <ph name="APP_NAME" /> ले झैँ उही लिंकहरू खोल्ने सेटिङ लागू गरिएको छ। तपाईंले डिफल्ट एप बदल्नुभयो भने <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> र <ph name="APP_NAME_4" /> ले खोल्न मिल्ने लिंकहरू खोल्न सक्ने छैनन्।</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
+<translation id="3923221004758245114">आफ्नो <ph name="DEVICE_TYPE" /> बाट <ph name="VM_NAME" /> हटाउने हो? तपाईंले यसो गर्नुभयो भने भर्चुअल मेसिनमा भएका सबै एप र डेटा मेटाइने छन्!</translation>
 <translation id="3923676227229836009">यो पृष्ठलाई फाइलहरू हेर्ने अनुमति छ</translation>
 <translation id="3924145049010392604">मेटा</translation>
 <translation id="3924487862883651986">URL हरूको जाँच गर्नका निम्ति तिनलाई सुरक्षित ब्राउजिङमा पठाउँछ। नयाँ खतराहरू पत्ता लगाउने कार्यमा मद्दत गर्न पृष्ठ, डाउनलोड, एक्स्टेन्सनसम्बन्धी गतिविधि र प्रणालीसम्बन्धी जानकारीको एउटा सानो नमुना पनि पठाउँछ। तपाईंलाई Google का एपहरूमा सुरक्षा प्रदान गर्न तपाईं आफ्नो Google खातामा साइन इन हुने बित्तिकै यो डेटालाई केही समयका लागि तपाईंको उक्त खातासँग लिंक गर्छ।</translation>
 <translation id="3925573269917483990">क्यामेरा:</translation>
+<translation id="3925926055063465902">यो डिभाइस चलाउने अन्य प्रयोगकर्ताहरू पनि यो नेटवर्क प्रयोग गर्न सक्छन्</translation>
 <translation id="3926002189479431949">Smart Lock फोन परिवर्तन भयो</translation>
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> मा गरिएका परिवर्तनहरू सुरक्षित गर्ने हो?</translation>
@@ -4204,6 +4212,7 @@
 <translation id="4413087696295876280">ChromeOS Flex चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" लाई तपाईंको संलग्न USB डिभाइसहरूको सूची प्राप्त गर्न अनुमति दिने हो?</translation>
 <translation id="4414232939543644979">नयाँ &amp;इन्कग्निटो सन्झ्याल</translation>
+<translation id="4414242853388122273"><ph name="VM_NAME" /> हटाउने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4415213869328311284">तपाईं आफ्नो <ph name="DEVICE_TYPE" /> प्रयोग गर्न तयार हुनुहुन्छ।</translation>
 <translation id="4415245286584082850">कुनै पनि यन्त्र फेला परेन। एउटा नयाँ ट्याबमा मद्दत केन्द्रको लेख खोल्नुहोस्।</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
@@ -4407,6 +4416,7 @@
 <translation id="4580587929153007251">Google पासवर्ड म्यानेजरमा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="4580596421317071374">पासवर्डहरू यो डिभाइसको <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्।</translation>
 <translation id="4581774856936278355">Linux पुनर्स्थापना गर्ने क्रममा त्रुटि भयो</translation>
+<translation id="4582217877717474109">सिस्टमका प्राथमिकताहरू</translation>
 <translation id="4582297591746054421">साइटहरूले तपाईंले कपी गर्नुभएको पाठको ढाँचा कायमै राख्ने जस्ता सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको क्लिपबोर्ड पढ्छन्</translation>
 <translation id="4582563038311694664">सबै सेटिङहरू रिसेट गर्नुहोस्</translation>
 <translation id="4585793705637313973">पृष्ठ सम्पादन गर्नुहोस्</translation>
@@ -4670,6 +4680,7 @@
 <translation id="4811503964269049987">चयन गरिएको ट्याब कुनै समूहमा थप्नुहोस्</translation>
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
 <translation id="4814114628197290459">IBAN मेटाउनुहोस्</translation>
+<translation id="4814327014588285482">स्किप गरियोस् र मलाई फेरि सम्झाइयोस्</translation>
 <translation id="4814378367953456825">यो फिंगरप्रिन्टको नाम प्रविष्टि गर्नुहोस्</translation>
 <translation id="481574578487123132">लिंक गरिएका डिभाइसहरू</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, विवरणहरू</translation>
@@ -4878,6 +4889,7 @@
 <translation id="4985206706500620449">तपाईंले यो साइटमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभयो</translation>
 <translation id="4986706507552097681">तपाईं जुनसुकै बेला सेटिङमा गई कुन-कुन डेटा सिंक गर्ने भन्ने कुरा छनौट गर्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="4986728572522335985">यसले सुरक्षा साँचोको PIN सहित यसमा रहेको सबै डेटा मेटाउने छ</translation>
+<translation id="4987944280765486504">डाउनलोड पूरा भएपछि तपाईंको Chromebook रिस्टार्ट हुने छ अनि तपाईं सेटअप गर्ने प्रक्रिया जारी राख्न सक्नुहुन्छ।</translation>
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="49896407730300355">घडिको उल्टो दिशा&amp;तिर घुमाउनुहोस्</translation>
 <translation id="4989966318180235467">निरीक्षण र पृष्ठभूमि पृष्ठ</translation>
@@ -5659,6 +5671,7 @@
 <translation id="5656845498778518563">Google लाई प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="5657156137487675418">सबै कुकीहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="5657667036353380798">बाह्य विस्तारलाई chrome संस्करण <ph name="MINIMUM_CHROME_VERSION" /> वा ठुलो स्थापित भएको हुन आवश्यक छ।</translation>
+<translation id="565899488479822148">नवीनतम अपडेट इन्स्टल गरिँदै छ</translation>
 <translation id="5659593005791499971">इमेल</translation>
 <translation id="566040795510471729">Chrome कस्टमाइज गर्नुहोस्</translation>
 <translation id="5662513737565158057">Linux एपहरूले काम गर्ने तरिका परिवर्तन गर्नुहोस्।</translation>
@@ -5718,6 +5731,7 @@
 <translation id="5711983031544731014">अनलक गर्न सकिएन। आप्नो पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="5712153969432126546">साइटहरूले कहिलेकाहीँ कागजात, करार तथा फाराम जस्ता PDF फाइलहरू प्रकाशित गर्छन्</translation>
 <translation id="571222594670061844">साइटहरूले पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन प्रम्प्टहरू देखाउन सक्छन्</translation>
+<translation id="5713033452812927234">तपाईंको यसअघिको डिभाइसमा खोलिएका विन्डो खोलिँदै छन्</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> मा कनेक्ट गरिएको छ</translation>
 <translation id="5713960379473463904">स्पेस इनपुट गर्ने शैली</translation>
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
@@ -6277,6 +6291,7 @@
 <translation id="6177412385419165772">अनइन्स्टल गरिँदै छ...</translation>
 <translation id="6178664161104547336">एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6178682841350631965">तपाईंको साइन इन डेटा परिवर्तन गरियो</translation>
+<translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{एक्स्टेन्सन हटाउने हो?}other{# वटा एक्स्टेन्सन हटाउने हो?}}</translation>
 <translation id="6180510783007738939">रेखा बनाउने टुल</translation>
 <translation id="6180550893222597997">तपाईं <ph name="APP_NAME" /> मा कुन पासकी प्रयोग गर्न चाहनुहुन्छ?</translation>
 <translation id="6181431612547969857">डाउनलोड रोकिएको</translation>
@@ -6352,6 +6367,7 @@
 <translation id="6241844896329831164">पहुँच चाहिँदैन</translation>
 <translation id="6242574558232861452">तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीति अनुकूल छ कि छैन भनी जाँच गरिँदै छ।</translation>
 <translation id="6242589501614145408">आफ्नो सुरक्षा साँचो रिसेट गर्नुहोस्</translation>
+<translation id="6242605626259978229">तपाईं व्यवस्थापन गरिएका ब्राउजर तथा प्रोफाइल प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="6242852299490624841">यो ट्याबमा केन्द्रित गर्नुहोस्</translation>
 <translation id="6243774244933267674">सर्भर अनुपलब्ध</translation>
 <translation id="6244245036423700521">ONC फाइल इम्पोर्ट गर्नुहोस्</translation>
@@ -6371,6 +6387,7 @@
 <translation id="6254503684448816922">मुख्य सम्झौता</translation>
 <translation id="6254892857036829079">उत्कृष्ट</translation>
 <translation id="6257602895346497974">सिंक गर्ने सुविधा अन गर्नुहोस्...</translation>
+<translation id="625827534921607067">यसअघि कनेक्ट वा कन्फिगर गरिएका एकभन्दा बढी नेटवर्क उपलब्ध भएमा यो नेटवर्कलाई प्राथमिकता दिइने छ</translation>
 <translation id="62586649943626337">ट्याब समूहहरू बनाएर ती समूहमा आफ्ना ट्याबहरू मिलाएर राख्नुहोस्</translation>
 <translation id="6262371516389954471">तपाईंका ब्याकअपहरू Google मा अपलोड गरी तपाईंको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिन्छन्।</translation>
 <translation id="6263082573641595914">Microsoft CA संस्करण</translation>
@@ -6679,6 +6696,7 @@
 <translation id="652937045869844725">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुहोस्। यसको अर्थ सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले काम गर्न सक्छन्</translation>
 <translation id="652948702951888897">Chrome को इतिहास</translation>
 <translation id="6530186581263215931">यी सेटिङहरू तपाईंका प्रशासकले लागू गर्नुहुन्छ</translation>
+<translation id="6530267432324197764">प्रोफाइल व्यवस्थापक: <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">खतरनाक फाइल राख्नुहोस्</translation>
 <translation id="6532101170117367231">Google ड्राइभमा सेभ गर्नुहोस्</translation>
 <translation id="6532106788206463496">परिवर्तनहरू सुरक्षित गर्ने</translation>
@@ -7870,6 +7888,7 @@
 <translation id="7527758104894292229">आफ्नो Google खाता <ph name="ACCOUNT" /> मा यो पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="7528224636098571080">नखोल्नुहोस्</translation>
 <translation id="7529411698175791732">आफ्नो इन्टरनेट जडान जाँच गर्नुहोस्। समस्या यथावत् रहिरहेमा साइन आउट गरेर पुन: साइन इन गरी हेर्नुहोस्।</translation>
+<translation id="7529865045818406536">यसअघि प्रयोग गरिएका एकभन्दा बढी नेटवर्क उपलब्ध भएमा रुचाइएका नेटवर्कहरू प्रयोग गरिने छ</translation>
 <translation id="7529876053219658589">{0,plural, =1{अतिथि विन्डोहरू बन्द गर्नुहोस्}other{अतिथि विन्डोहरू बन्द गर्नुहोस्}}</translation>
 <translation id="7530016656428373557">वाट्स मा दर डिस्चार्ज गर्नुहोस्</translation>
 <translation id="7531310913436731628">Mac का सिस्टमसम्बन्धी प्राथमिकताहरूमा स्थान अफ गरिएको छ</translation>
@@ -9624,6 +9643,7 @@
 <translation id="8965037249707889821">पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="8966809848145604011">अन्य प्रोफाइलहरू</translation>
 <translation id="8967427617812342790">पाठ्य सूचीमा थप्नुहोस्</translation>
+<translation id="8967548289042494261"><ph name="VM_NAME" /> हटाउनुहोस्</translation>
 <translation id="8968527460726243404">ChromeOS प्रणाली छवि लेखक</translation>
 <translation id="8968766641738584599">कार्ड सेभ गर्नुहोस्</translation>
 <translation id="8968906873893164556">सेटअपका लागि प्रयोग गर्न चाहेको खाता छनौट गर्नुहोस्</translation>

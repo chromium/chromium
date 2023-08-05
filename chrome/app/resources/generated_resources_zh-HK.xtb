@@ -189,7 +189,7 @@
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
 <translation id="1147991416141538220">如要求存取權，請聯絡此裝置的管理員。</translation>
 <translation id="1148624853678088576">您已完成全部設定！</translation>
-<translation id="1148669835763563782">你正在接收最新的軟體更新版本，享有安全再升級和最新的 Chromebook 功能。本次更新提升了設定體驗，有助於順利開始使用 Chromebook。</translation>
+<translation id="1148669835763563782">你正在接收最新的軟件更新版本，享有加強安全保障和最新的 Chromebook 功能。此更新提升了設定體驗，有助順利開始使用 Chromebook。</translation>
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1149483087970735785">輔助科技</translation>
 <translation id="1149725087019908252">正在掃瞄 <ph name="FILE_NAME" /></translation>
@@ -271,7 +271,7 @@
 <translation id="1202116106683864634">確定要刪除此密鑰嗎？</translation>
 <translation id="1202596434010270079">Kiosk 應用程式已更新。請移除 USB 記憶體。</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
-<translation id="1203559206734265703">Protected Audience 偵錯功能已啟用。</translation>
+<translation id="1203559206734265703">「Protected Audience 偵錯功能」已啟用。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共用工作程式：<ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
@@ -827,7 +827,7 @@
 <translation id="1644852018355792105">輸入「<ph name="DEVICE" />」裝置的藍牙密鑰</translation>
 <translation id="1645004815457365098">不明來源</translation>
 <translation id="1645516838734033527">為確保您的 <ph name="DEVICE_TYPE" /> 安全，Smart Lock 要求您的手機必須啟用螢幕鎖定功能。</translation>
-<translation id="1646045728251578877">有可用的軟體更新</translation>
+<translation id="1646045728251578877">有可用的軟件更新</translation>
 <translation id="1646982517418478057">請輸入密碼以加密此憑證</translation>
 <translation id="1647408325348388858">要在這個網絡應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="1648528859488547844">使用 Wi‑Fi 或流動網絡確定位置</translation>
@@ -3646,12 +3646,12 @@
 <translation id="3920909973552939961">不允許安裝付款處理常式</translation>
 <translation id="3922823422695198027">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />和<ph name="APP_NAME_4" />無法開啟支援的連結。</translation>
 <translation id="3923184630988645767">數據用量</translation>
-<translation id="3923221004758245114">要將「<ph name="VM_NAME" />」從 <ph name="DEVICE_TYPE" /> 中移除嗎？這項操作會刪除虛擬機器中的所有應用程式和資料！</translation>
+<translation id="3923221004758245114">要將 <ph name="VM_NAME" /> 從 <ph name="DEVICE_TYPE" /> 中移除嗎？這麼做會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="3923676227229836009">此網頁可查看檔案</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924487862883651986">將網址傳送至「安全瀏覽」功能檢查。同時傳送少量網頁、下載檔案、擴充程式活動及系統資料，以協助探索新威脅。當您登入 Google 帳戶時，這些資料會暫時連結至您的帳戶，保護各項 Google app 的使用安全。</translation>
 <translation id="3925573269917483990">相機：</translation>
-<translation id="3925926055063465902">這部裝置的其他使用者也可以使用這個網路</translation>
+<translation id="3925926055063465902">此裝置的其他使用者亦可使用此網絡</translation>
 <translation id="3926002189479431949">Smart Lock 配對手機已變更</translation>
 <translation id="3927932062596804919">拒絕</translation>
 <translation id="3928570707778085600">要儲存變更至「<ph name="FILE_OR_FOLDER_NAME" />」嗎？</translation>
@@ -4226,7 +4226,7 @@
 <translation id="4413087696295876280">讀取 ChromeOS Flex 裝置資訊和資料</translation>
 <translation id="44141919652824029">允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414232939543644979">新增無痕式視窗(&amp;I)</translation>
-<translation id="4414242853388122273">移除「<ph name="VM_NAME" />」時發生錯誤，請再試一次。</translation>
+<translation id="4414242853388122273">移除 <ph name="VM_NAME" /> 時發生錯誤，請再試一次。</translation>
 <translation id="4415213869328311284">您的 <ph name="DEVICE_TYPE" /> 已準備就緒。</translation>
 <translation id="4415245286584082850">搵唔到裝置。你可以喺新分頁度開啟說明中心文章。</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
@@ -6305,7 +6305,7 @@
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6178664161104547336">選取憑證</translation>
 <translation id="6178682841350631965">您的登入資料已更新</translation>
-<translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{要移除擴充功能嗎？}other{要移除 # 個擴充功能嗎？}}</translation>
+<translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{要移除擴充程式嗎？}other{要移除 # 個擴充程式嗎？}}</translation>
 <translation id="6180510783007738939">線條工具</translation>
 <translation id="6180550893222597997">您要在 <ph name="APP_NAME" /> 上使用哪一個密鑰？</translation>
 <translation id="6181431612547969857">下載被封鎖</translation>
@@ -6401,7 +6401,7 @@
 <translation id="6254503684448816922">金鑰洩露</translation>
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
-<translation id="625827534921607067">如有多個先前曾連線或設定過的網路，系統會優先使用這個網路</translation>
+<translation id="625827534921607067">如有多個先前曾連線或設定過的網絡，系統會優先使用此網絡</translation>
 <translation id="62586649943626337">使用分頁群組來整理分頁</translation>
 <translation id="6262371516389954471">您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
@@ -6710,7 +6710,7 @@
 <translation id="652937045869844725">請嘗試允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
 <translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6530186581263215931">這些設定由管理員執行</translation>
-<translation id="6530267432324197764">由「<ph name="MANAGER" />」管理的設定檔</translation>
+<translation id="6530267432324197764">由 <ph name="MANAGER" /> 管理的設定檔</translation>
 <translation id="6531282281159901044">保留不安全的檔案</translation>
 <translation id="6532101170117367231">儲存至「Google 雲端硬碟」</translation>
 <translation id="6532106788206463496">儲存變更</translation>
@@ -7902,7 +7902,7 @@
 <translation id="7527758104894292229">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
 <translation id="7528224636098571080">不要開啟</translation>
 <translation id="7529411698175791732">請檢查您的互聯網連線。如果問題持續，請嘗試登出，然後再次登入。</translation>
-<translation id="7529865045818406536">如果有多個先前的網路可用，系統會使用慣用網路</translation>
+<translation id="7529865045818406536">如果有多個先前的網絡可用，系統會使用慣用網絡</translation>
 <translation id="7529876053219658589">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗}}</translation>
 <translation id="7530016656428373557">放電速率 (瓦特)</translation>
 <translation id="7531310913436731628">已在 Mac 系統偏好設定中關閉位置功能</translation>
@@ -9658,7 +9658,7 @@
 <translation id="8965037249707889821">輸入舊密碼</translation>
 <translation id="8966809848145604011">其他個人檔案</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
-<translation id="8967548289042494261">移除「<ph name="VM_NAME" />」</translation>
+<translation id="8967548289042494261">移除 <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome 作業系統圖片撰寫工具</translation>
 <translation id="8968766641738584599">儲存付款卡</translation>
 <translation id="8968906873893164556">選取用於設定的帳戶</translation>

@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">कार्ड हाल्नुहोस्</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149968176347646218">इन्टरनेट सुरक्षित छैन</translation>
+<translation id="2152495481414285304">एपहरू</translation>
 <translation id="2153609454945889823">Google Play Services for AR इन्स्टल गर्ने हो?</translation>
+<translation id="2154144347038514978">डिभाइसमा लग इन गर्दा स्वतः सुरु गरियोस्</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2154739667870063220">रिबुट गर्नुहोस्</translation>
 <translation id="2155260325161282517">५ x ७ इन्च</translation>
@@ -2909,6 +2911,7 @@
 <translation id="7186833457841277072">इन्भलप (इङ्कजेट)</translation>
 <translation id="7186840261985974511">Envelope #12</translation>
 <translation id="718872491229180389">चियरलिडिङ</translation>
+<translation id="7188840756966467339">रिस्टार्ट गर्नुहोस् र नीतिहरू लागू गर्नुहोस्</translation>
 <translation id="7192188280913829296">"vendor_id" पनि तोक्नु पर्ने हुन्छ।</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="7192537357091279678">कम्प्युटर ड्राइभ तथा स्टोरेज</translation>
@@ -3007,6 +3010,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">लिंक सेयर गरेर, QR कोड बनाएर, कास्ट गरेर वा अन्य तरिकाले यो ट्याब सेयर गर्नुहोस्</translation>
 <translation id="7403591733719184120">तपाईंको <ph name="DEVICE_NAME" /> व्यवस्थित छ</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ले थप सुविधाहरू प्राप्त गर्न विभिन्न एप इन्स्टल गरेको छ। ती एपले तपाईंका केही जानकारी प्रयोग गर्न सक्छन्।</translation>
 <translation id="7407424307057130981">&lt;p&gt;आफ्नो Windows कम्प्युटरमा Superfish नामक सफ्टवेयर भएको खण्डमा तपाईं यो त्रुटि देखु हुने छ।&lt;/p&gt;
       &lt;p&gt;तपाईं वेबमा जान सक्नुहोस् भन्नाका लागि उक्त सफ्टवेयरलाई अस्थायी रूपमा असक्षम पार्न यी चरणहरूको पालना गर्नुहोस्‌। यसका लागि तपाईंलाई प्रशासकीय विशेषाधिकारहरू आवश्यक पर्ने छ।&lt;/p&gt;
       &lt;ol&gt;
@@ -3486,6 +3490,7 @@
 <translation id="8349305172487531364">बुकमार्क पट्टी</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="835203957414790336">तपाईंले प्रिन्ट गर्ने पेजका सामग्री र तपाईंको प्रिन्टरसम्बन्धी जानकारी विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउड वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, उक्त टेक्स्टमा संवेदनशील जानकारी छ कि छैन भन्ने कुराको जाँच गरिन सक्छ।</translation>
+<translation id="8352849934814541340">यो डिभाइसका एड्मिनले थप सुविधाहरू प्राप्त गर्न विभिन्न एप इन्स्टल गरेका छन्। ती एपले तपाईंका केही जानकारी प्रयोग गर्न सक्छन्।</translation>
 <translation id="8355270400102541638">स्थानीय क्र्यासको सन्दर्भ:</translation>
 <translation id="8363502534493474904">हवाइजहाज मोडलाई निष्क्रिय गर्नुहोस्</translation>
 <translation id="8364627913115013041">सेट गरिएको छैन।</translation>
@@ -3734,6 +3739,7 @@
 <translation id="8903921497873541725">जुम इन</translation>
 <translation id="890493561996401738">सुझावको बटन हटाउनुहोस्, हटाउन Enter थिच्नुहोस्, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इन्च</translation>
+<translation id="8918062451146297192">भर्चुअल कार्डको CVC</translation>
 <translation id="8919740778133505789">स्पोर्ट्स कारहरू</translation>
 <translation id="8919895429178014996">सबै सामग्रीहरू लुकाइयोस्</translation>
 <translation id="8922013791253848639">यो साइटमा सधैँ विज्ञापनहरू राख्ने अनुमति दिनुहोस्</translation>

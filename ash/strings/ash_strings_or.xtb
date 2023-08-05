@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="1557622599341396706">ଡେସ୍କର ନାମ ଦେଖାନ୍ତୁ</translation>
 <translation id="1569384531973824928">ଏହା କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ସହିତ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ଆକ୍ସେସ କରିବାକୁ ଅନୁମତି ଦିଏ। ଆପଣଙ୍କୁ ୱେବ ପୃଷ୍ଠାକୁ ରିଫ୍ରେସ କରିବା କିମ୍ବା ଆପକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ହୋଇପାରେ।</translation>
+<translation id="1571697193564730395">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ମେଗ୍ନିଫାୟର ଚାଲୁ ଥିବା ସମୟରେ ଜୁମ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="1586324912145647027">1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ ଡେସ୍କକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">ହଟସ୍ପଟକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3566240529365775567">ଏହିକ୍ଷଣି ଖୋଲାଯାଇଛି</translation>
 <translation id="3571734092741541777">ସେଟ୍ ଅପ୍</translation>
+<translation id="3572988532398145777">ଏକ ପେନେଲ ଖୋଲା ଥିବା ସମୟରେ ଆପଣ ବିଜ୍ଞପ୍ତିକୁ ବିସ୍ତାର କରିପାରିବେ ନାହିଁ। ପ୍ରଥମେ ନିମ୍ନରେ ଥିବା ପେନେଲକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"ରେ ପୁଣି ପରିବର୍ତ୍ତନ କରନ୍ତୁ (ପୁନରାରମ୍ଭର ଆବଶ୍ୟକତା ଅଛି)</translation>
 <translation id="3576141592585647168">ସମୟକ୍ଷେତ୍ର ବଦଳାନ୍ତୁ</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -687,6 +689,7 @@
 <translation id="3990002060657467458">ୱାଇ-ଫାଇ, ବ୍ଲୁଟୁଥ ଏବଂ ଭଲ୍ୟୁମ ପରି ବାରମ୍ବାର ବ୍ୟବହାର କରାଯାଉଥିବା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ କୁଇକ ସେଟିଂସରେ ଅଛି। ସ୍କ୍ରିନସଟ ନେବା ପାଇଁ ଆପଣ ମଧ୍ୟ ଏଠାକୁ ଯାଇପାରିବେ।</translation>
 <translation id="3995138139523574647">USB-C ଡିଭାଇସ୍‌ (ଡାହାଣପଟ ପଛ ପୋର୍ଟ)</translation>
 <translation id="40062176907008878">ହସ୍ତଲିଖନ</translation>
+<translation id="4011112806063830608">"ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ" ଚାଲୁ ଅଛି।</translation>
 <translation id="4017989525502048489">ଲେଜର୍ ପଏଣ୍ଟର୍</translation>
 <translation id="401993194061514265">ମାର୍କର ଉପଲବ୍ଧ ନାହିଁ। Screencastକୁ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="4021716437419160885">ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
@@ -720,6 +723,7 @@
 <translation id="4146833061457621061">ସଙ୍ଗୀତ ବଜାନ୍ତୁ</translation>
 <translation id="4150201353443180367">ଡିସ୍‌ପ୍ଲେ</translation>
 <translation id="4165275524535002941">କବୁଲ ଡିସପ୍ଲେଗୁଡ଼ିକୁ ସମର୍ଥନ କରିନପାରେ</translation>
+<translation id="4177415338862979658">ବିବରଣୀ ଯାଞ୍ଚ କରିବାକୁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="4177913004758410636">{0,plural, =1{ଗୋଟିଏ ଦିନ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}other{# ଦିନ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
 <translation id="4181841719683918333">ଭାଷାସମୂହ</translation>
 <translation id="4185671786623711291">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡାହାଣ ପଟ ଡେସ୍କକୁ ମୁଭ କରନ୍ତୁ</translation>
@@ -1437,6 +1441,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ଆପଣଙ୍କ ଆଡମିନଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର eSIMକୁ ରିସେଟ କରୁଛନ୍ତି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="7313193732017069507">କ୍ୟାମେରା ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="7316261577130609484">ନୂଆ ଟାସ୍କ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7340731148882810149">ସ୍ୱଚାଳିତ କ୍ଲିକ ମେନୁ</translation>
 <translation id="7346909386216857016">ଠିକ ଅଛି, ଏହା ବୁଝିଗଲି</translation>
 <translation id="7348093485538360975">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡ</translation>
@@ -1557,6 +1562,7 @@
 <translation id="7842569679327885685">ଚେତାବନୀ: ପରୀକ୍ଷାମୂଳକ ବୈଶିଷ୍ଟ୍ୟ</translation>
 <translation id="7846634333498149051">କୀ'ବୋର୍ଡ</translation>
 <translation id="7848989271541991537">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />, ଧାଡ଼ି <ph name="ROW_NUMBER" />, ସ୍ତମ୍ଭ <ph name="COLUMN_NUMBER" />କୁ ଘୁଞ୍ଚାଯାଇଛି।</translation>
+<translation id="7850320739366109486">ବିରକ୍ତ କରନାହିଁ</translation>
 <translation id="7851039877802112575">ପପ-ଅପ ଏବଂ ଡାଏଲଗଗୁଡ଼ିକୁ ଫୋକସ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="7851768487828137624">କାନାରି</translation>
 <translation id="7860671499921112077">ଓଭରଭିଉରେ ଏଣ୍ଟର୍ କରିବା ପାଇଁ ତିନୋଟି ଆଙ୍ଗୁଠିରେ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
@@ -1588,6 +1594,7 @@
 <translation id="7944023924886109030">ଆଜି ପାଇଁ ସମସ୍ତ ଇଭେଣ୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ</translation>
 <translation id="7951630946012935453">କୀବୋର୍ଡକୁ ଡିମ କରନ୍ତୁ</translation>
+<translation id="7963689218131240420">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ବନ୍ଦ ଅଛି।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />ରୁ</translation>
 <translation id="7968693143708939792">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="797512352675305461">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ ମେଗ୍ନିଫାୟାରକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1840,6 +1847,7 @@
 <translation id="9080073830732419341">କ୍ୟାମେରାକୁ ଉପର ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="9080132581049224423">ମୂଳସ୍କ୍ରିନକୁ ଯିବା ପାଇଁ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="9080206825613744995">ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>
+<translation id="908451241440060346">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଚାଲୁ ଥିବା ବେଳେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ମ୍ୟୁଟ କରାଯାଇଛି</translation>
 <translation id="9084606467167974638">ଟୋଗଲ୍ ମେନୁ ଅବସ୍ଥିତି</translation>
 <translation id="9085962983642906571">ବ୍ୟାଟେରୀ ଲାଇଫକୁ ବଢ଼ାଇବା ପାଇଁ ପ୍ଲଗ ଇନ କରିବା ସମୟରେ ଆପଣଙ୍କ ବ୍ୟାଟେରୀକୁ 80%ରେ ରଖାଯାଏ।</translation>
 <translation id="9089416786594320554">ଇନ୍‌ପୁଟ୍ ପଦ୍ଧତି</translation>

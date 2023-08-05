@@ -210,6 +210,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2269277877025820298">Zobrazit více</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
+<translation id="2275480389219976105">Byla nalezena adresa</translation>
 <translation id="2286505070150039482">Zvýrazněný text</translation>
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
 <translation id="2297822946037605517">Sdílet tuto stránku</translation>
@@ -542,6 +543,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="430793432425771671">Synchronizovat vše</translation>
 <translation id="4309403553630140242">Další informace zobrazíte dvojitým klepnutím</translation>
 <translation id="430967081421617822">Od počátku věků</translation>
+<translation id="4331177082088332784">Tuto funkci můžete spravovat v BEGIN_LINK Nastavení obsahu END_LINK</translation>
 <translation id="4334428914252001502">1 nepřečtený článek.</translation>
 <translation id="4338650699862464074">Odesílá do Googlu adresy URL navštívených stránek.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Tato adresa bude smazána z tohoto i z vašich dalších přihlášených zařízení.}few{Tyto adresy budou smazány z tohoto i z vašich dalších přihlášených zařízení.}many{Tyto adresy budou smazány z tohoto i z vašich dalších přihlášených zařízení.}other{Tyto adresy budou smazány z tohoto i z vašich dalších přihlášených zařízení.}}</translation>
@@ -1068,6 +1070,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7340958967809483333">Možnosti funkce Objevit</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="734758817008927353">Možnosti uložení karty</translation>
+<translation id="7349129508108954623">Povolte Chromu používat Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
 <translation id="7351537303876921605">V kontextové nabídce klepněte na Vytvořit odkaz.</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353432112255316844">Ověřte svoji totožnost</translation>
@@ -1124,6 +1127,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7719038820139380048">Pokud chcete dostávat obsah podle svých zájmů, přihlaste se.</translation>
 <translation id="7720410380936703141">ZKUSIT ZNOVU</translation>
 <translation id="7726702057919861819">Nabídka → Historie → Vymazat údaje o prohlížení</translation>
+<translation id="7729458878441927652">Pokud chcete zobrazit karty ze svých ostatních zařízení, synchronizujte karty a historii.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Pouze na tomto zařízení</translation>
 <translation id="7738120385185846461">Nahlásit problém…</translation>
 <translation id="7741325291586284254">Nová stránka Anonymní karta</translation>

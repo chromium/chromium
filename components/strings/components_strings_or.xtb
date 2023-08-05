@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2149968176347646218">ସଂଯୋଗଟି ସୁରକ୍ଷିତ ନୁହେଁ</translation>
+<translation id="2152495481414285304">ଆପ୍ଲିକେସନଗୁଡ଼ିକ</translation>
 <translation id="2153609454945889823">AR ପାଇଁ Google Play ସେବାଗୁଡ଼ିକ ଇନଷ୍ଟଲ କରିବେ?</translation>
+<translation id="2154144347038514978">ଆପଣଙ୍କ ଡିଭାଇସରେ ସ୍ୱତଃ-ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2154484045852737596">କାର୍ଡକୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2154739667870063220">ରିବୁଟ କରନ୍ତୁ</translation>
 <translation id="2155260325161282517">5 x 7 ଇଞ୍ଚ</translation>
@@ -2908,6 +2910,7 @@
 <translation id="7186833457841277072">ଏନଭେଲପ (ଇଙ୍କଜେଟ)</translation>
 <translation id="7186840261985974511">ଏନଭେଲପ #12</translation>
 <translation id="718872491229180389">ଚିଅରଲିଡିଂ</translation>
+<translation id="7188840756966467339">ରିଷ୍ଟାର୍ଟ କରି ନୀତିଗୁଡ଼ିକୁ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="7192188280913829296">"vendor_id" ଆଟ୍ରିବ୍ୟୁଟ ମଧ୍ୟ ନିର୍ଦ୍ଦିଷ୍ଟ କରିବା ଉଚିତ।</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> ଜାଗା ଖାଲି କରିଥାଏ। କିଛି ସାଇଟ୍‍ ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭ୍ରମଣ ସମୟରେ ଆହୁରି ଧୀରେ ଲୋଡ୍ ହୋଇପାରନ୍ତି।</translation>
 <translation id="7192537357091279678">କମ୍ପ୍ୟୁଟର ଡ୍ରାଇଭ ଏବଂ ଷ୍ଟୋରେଜ</translation>
@@ -3006,6 +3009,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଏବଂ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="7403591733719184120">ଆପଣଙ୍କର <ph name="DEVICE_NAME" />କୁ ପରିଚାଳନା କରାଯାଏ</translation>
+<translation id="7405878640835614059">ଅତିରିକ୍ତ ଫଙ୍କସନ ପାଇଁ <ph name="ENROLLMENT_DOMAIN" /> ଆପ୍ଲିକେସନଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରିଛି। ଆପ୍ଲିକେସନଗୁଡ଼ିକର ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ ଅଛି।</translation>
 <translation id="7407424307057130981">&lt;p&gt;ଆପଣଙ୍କର Windows କମ୍ପ୍ୟୁଟର୍‌ରେ ଯଦି ସୁପର୍‌ଫିସ୍ ସଫ୍ଟୱେର୍ ଥାଏ ତେବେ ଆପଣ ଏହି ତ୍ରୁଟି ଦେଖିବେ।&lt;/p&gt;
       &lt;p&gt;ସଫ୍ଟୱେର୍‌କୁ ଅସ୍ଥାୟୀରୂପେ ଅକ୍ଷମ କରିବାକୁ ଏହି ପଦକ୍ଷେପଗୁଡ଼ିକୁ ପାଳନ କରନ୍ତୁ ଯାହାଫଳରେ ଆପଣ ୱେବ୍‌ଗୁଡ଼ିକୁ ଯାଇପାରିବେ।. ଆପଣଙ୍କୁ ବ୍ୟବସ୍ଥାପକ ବିଶେଷାଧିକାରର ଆବଶ୍ୟକତା ହେବ।&lt;/p&gt;
       &lt;ol&gt;
@@ -3485,6 +3489,7 @@
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="835203957414790336">ଆପଣ ପ୍ରିଣ୍ଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର ବିଷୟବସ୍ତୁ ଏବଂ ଆପଣଙ୍କ ପ୍ରିଣ୍ଟର ବିଷୟରେ ସୂଚନା ବିଶ୍ଳେଷଣ ପାଇଁ Google Cloud କିମ୍ବା ତୃତୀୟ ପକ୍ଷଗୁଡ଼ିକୁ ପଠାଯାଏ। ଉଦାହରଣ ସ୍ଵରୂପ, ଏହାକୁ ସମ୍ବେଦନଶୀଳ ଡାଟା ପାଇଁ ସ୍କାନ କରାଯାଇପାରେ।</translation>
+<translation id="8352849934814541340">ଅତିରିକ୍ତ ଫଙ୍କସନ ପାଇଁ ଏହି ଡିଭାଇସର ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପ୍ଲିକେସନଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରିଛନ୍ତି। ଆପ୍ଲିକେସନଗୁଡ଼ିକର ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ ଅଛି।</translation>
 <translation id="8355270400102541638">ସ୍ଥାନୀୟ କ୍ରାସ୍ ପ୍ରସଙ୍ଗ:</translation>
 <translation id="8363502534493474904">ଏରୋପ୍ଲେନ୍ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8364627913115013041">ସେଟ୍ ହୋଇନାହିଁ।</translation>
@@ -3733,6 +3738,7 @@
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="890493561996401738">ପ୍ରସ୍ତାବ ବଟନ୍‍କୁ କାଢ଼ି ଦିଅନ୍ତୁ, କାଢ଼ିବା ପାଇଁ Enter ଦବାନ୍ତୁ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ଇଞ୍ଚ</translation>
+<translation id="8918062451146297192">ଭର୍ଚୁଆଲ କାର୍ଡ ପାଇଁ CVC</translation>
 <translation id="8919740778133505789">ସ୍ପୋର୍ଟ୍ସ କାର</translation>
 <translation id="8919895429178014996">ସମସ୍ତ ଆଇଟମ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8922013791253848639">ଏହି ସାଇଟ୍‌ରେ ସର୍ବଦା ବିଜ୍ଞାପନକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>

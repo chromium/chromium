@@ -210,7 +210,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="2268044343513325586">Traži detaljnije</translation>
 <translation id="2269277877025820298">Prikaži više</translation>
 <translation id="2273327106802955778">Meni Više</translation>
-<translation id="2275480389219976105">Pronađena je adresa</translation>
+<translation id="2275480389219976105">Pronađena adresa</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adresa će se izbrisati s uređaja.}one{Adrese će se izbrisati s uređaja.}few{Adrese će se izbrisati s uređaja.}other{Adrese će se izbrisati s uređaja.}}</translation>
 <translation id="2297822946037605517">Dijeli ovu stranicu</translation>
@@ -543,7 +543,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="430793432425771671">Sinhroniziraj sve</translation>
 <translation id="4309403553630140242">Dodirnite dvaput za više informacija</translation>
 <translation id="430967081421617822">Sve vrijeme</translation>
-<translation id="4331177082088332784">Time možete upravljati u odjeljku BEGIN_LINK Postavke sadržaja END_LINK</translation>
+<translation id="4331177082088332784">Ovim možete upravljati u BEGIN_LINK Postavkama sadržaja END_LINK</translation>
 <translation id="4334428914252001502">Jedan nepročitani članak.</translation>
 <translation id="4338650699862464074">Googleu šalje URL-ove stranica koje ste posjetili.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Adresa će se izbrisati s ovog uređaja i drugih uređaja na kojima ste prijavljeni.}one{Adrese će se izbrisati s ovog uređaja i drugih uređaja na kojima ste prijavljeni.}few{Adrese će se izbrisati s ovog uređaja i drugih uređaja na kojima ste prijavljeni.}other{Adrese će se izbrisati s ovog uređaja i drugih uređaja na kojima ste prijavljeni.}}</translation>
@@ -1070,7 +1070,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7340958967809483333">Opcije za Discover</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>
 <translation id="734758817008927353">Opcije za čuvanje kartice</translation>
-<translation id="7349129508108954623">Dopustite Chromeu da upotrebljava Google karte kako bi vam pružao upute i lokalne informacije o otkrivenim adresama.</translation>
+<translation id="7349129508108954623">Dozvolite Chromeu da koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="7351537303876921605">Dodirnite Kreiraj link u kontekstnom meniju</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
 <translation id="7353432112255316844">Potvrdite identitet</translation>
@@ -1127,7 +1127,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7719038820139380048">Prijavite se radi dobijanja sadržaja na osnovu vaših interesa.</translation>
 <translation id="7720410380936703141">POKUŠAJTE PONOVO</translation>
 <translation id="7726702057919861819">Meni → Historija → Obriši podatke pregledanja</translation>
-<translation id="7729458878441927652">Kako biste vidjeli kartice s drugih uređaja, sinkronizirajte kartice i povijest.</translation>
+<translation id="7729458878441927652">Da vidite kartice sa svojih drugih uređaja, sinhronizirajte svoje kartice i historiju.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7738120385185846461">Prijava problema…</translation>
 <translation id="7741325291586284254">Nova stranica anonimne kartice</translation>

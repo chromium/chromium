@@ -141,7 +141,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
 <translation id="1569384531973824928">此操作會允許所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
-<translation id="1571697193564730395">切換零打擾模式。<ph name="STATE_TEXT" /></translation>
+<translation id="1571697193564730395">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1586324912145647027">前往桌面 1 至 8</translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
@@ -689,7 +689,7 @@
 <translation id="3990002060657467458">「快速設定」內含 Wi-Fi、藍牙和音量等常用控制項，你亦可透過「快速設定」擷取螢幕截圖。</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
 <translation id="40062176907008878">手寫</translation>
-<translation id="4011112806063830608">零打擾模式已開啟。</translation>
+<translation id="4011112806063830608">「請勿騷擾」模式已開啟。</translation>
 <translation id="4017989525502048489">雷射筆</translation>
 <translation id="401993194061514265">無法使用標記，請重新開啟螢幕錄影應用程式。</translation>
 <translation id="4021716437419160885">向下捲動</translation>
@@ -1593,7 +1593,7 @@
 <translation id="7944023924886109030">睇今日嘅所有活動</translation>
 <translation id="7947798320695032612">「<ph name="APP_NAME" />」要求使用您的<ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">校暗鍵盤</translation>
-<translation id="7963689218131240420">零打擾模式已關閉。</translation>
+<translation id="7963689218131240420">「請勿騷擾」模式已關閉。</translation>
 <translation id="7963992254934562106">來自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">選取資料夾…</translation>
 <translation id="797512352675305461">開啟或關閉全螢幕放大鏡</translation>
@@ -1846,7 +1846,7 @@
 <translation id="9080073830732419341">攝錄機已經對齊左上角</translation>
 <translation id="9080132581049224423">向上滑動即可開啟主畫面</translation>
 <translation id="9080206825613744995">麥克風正在使用中。</translation>
-<translation id="908451241440060346">零打擾模式開啟時，系統會忽略通知</translation>
+<translation id="908451241440060346">「請勿騷擾」功能開啟時，系統會忽略通知</translation>
 <translation id="9084606467167974638">切換選單位置</translation>
 <translation id="9085962983642906571">插上電源時，電池電量會維持在 80% 以延長電池壽命。</translation>
 <translation id="9089416786594320554">輸入法</translation>

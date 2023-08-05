@@ -141,6 +141,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1557622599341396706">Sýna heiti skrifborðs</translation>
 <translation id="1569384531973824928">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
+<translation id="1571697193564730395">Kveikja/slökkva á „Ónáðið ekki“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
 <translation id="1586324912145647027">Opna skrifborð 1 til 8</translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
@@ -579,6 +580,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3563775809269155755">Kveikja á heitum reit</translation>
 <translation id="3566240529365775567">Opnað rétt í þessu</translation>
 <translation id="3571734092741541777">Setja upp</translation>
+<translation id="3572988532398145777">Þú getur ekki stækkað tilkynningu á meðan svæði er opið. Lokaðu svæðinu hér að neðan fyrst.</translation>
 <translation id="3573179567135747900">Skipta aftur yfir í „<ph name="FROM_LOCALE" />“ (krefst endurræsingar)</translation>
 <translation id="3576141592585647168">Breyta tímabelti</translation>
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
@@ -687,6 +689,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3990002060657467458">Þú finnur algengar stýringar á borð við Wi-Fi, Bluetooth og hljóðstyrkur í flýtistillingunum. Hér geturðu einnig tekið skjámyndir.</translation>
 <translation id="3995138139523574647">USB-C tæki (tengi hægra megin að aftan)</translation>
 <translation id="40062176907008878">Handskrift</translation>
+<translation id="4011112806063830608">Kveikt er á „Ónáðið ekki“.</translation>
 <translation id="4017989525502048489">Laser-bendill</translation>
 <translation id="401993194061514265">Merki ekki tiltækt. Opna „Skjávarp“ aftur.</translation>
 <translation id="4021716437419160885">Fletta niður</translation>
@@ -720,6 +723,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4146833061457621061">Spila tónlist</translation>
 <translation id="4150201353443180367">Skjár</translation>
 <translation id="4165275524535002941">Ekki er víst að snúran styðji skjái</translation>
+<translation id="4177415338862979658">Smelltu til að skoða upplýsingar</translation>
 <translation id="4177913004758410636">{0,plural, =1{Uppfærðu tækið innan eins dags}one{Uppfærðu tækið innan # dags}other{Uppfærðu tækið innan # daga}}</translation>
 <translation id="4181841719683918333">Tungumál</translation>
 <translation id="4185671786623711291">Færa virkan glugga á skrifborð til hægri</translation>
@@ -1438,6 +1442,7 @@ Ný uppsetning</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Stjórnandinn er að endurstilla eSIM. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="7313193732017069507">Stækka myndavél</translation>
+<translation id="7316261577130609484">Bæta við nýju verkefni</translation>
 <translation id="7340731148882810149">Valmynd sjálfvirkra smella</translation>
 <translation id="7346909386216857016">Ég skil</translation>
 <translation id="7348093485538360975">Skjályklaborð</translation>
@@ -1590,6 +1595,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7944023924886109030">Sjá alla viðburði dagsins</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill nota <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Myrkva lyklaborð</translation>
+<translation id="7963689218131240420">Slökkt er á „Ónáðið ekki“.</translation>
 <translation id="7963992254934562106">Frá <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Veldu möppu...</translation>
 <translation id="797512352675305461">Kveikja eða slökkva á stækkunargleri á öllum skjánum</translation>
@@ -1842,6 +1848,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="9080073830732419341">Myndavél fest við efra horn vinstra megin</translation>
 <translation id="9080132581049224423">Strjúktu upp til að fara á heimaskjáinn</translation>
 <translation id="9080206825613744995">Hljóðnemi er í notkun.</translation>
+<translation id="908451241440060346">Tilkynningar eru þaggaðar þegar kveikt er á „Ónáðið ekki“</translation>
 <translation id="9084606467167974638">Víxla staðsetningu valmyndar</translation>
 <translation id="9085962983642906571">Hleðslu rafhlöðunnar er haldið í 80% á meðan hún er sambandi til að lengja rafhlöðuendinguna.</translation>
 <translation id="9089416786594320554">Innsláttaraðferðir</translation>

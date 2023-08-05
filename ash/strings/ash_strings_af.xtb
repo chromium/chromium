@@ -141,6 +141,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1557622599341396706">Wys lessenaarnaam</translation>
 <translation id="1569384531973824928">Dit gee toegang vir alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
+<translation id="1571697193564730395">Wissel Moenie Steur Nie. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
 <translation id="1586324912145647027">Gaan na lessenaar 1 tot 8</translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
@@ -579,6 +580,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3563775809269155755">Aktiveer warmkol</translation>
 <translation id="3566240529365775567">Sopas oopgemaak</translation>
 <translation id="3571734092741541777">Stel op</translation>
+<translation id="3572988532398145777">Jy kan nie die kennisgewing uitvou terwyl ’n paneel oop is nie. Maak eers die paneel hieronder toe.</translation>
 <translation id="3573179567135747900">Verander terug na "<ph name="FROM_LOCALE" />" (vereis herbegin)</translation>
 <translation id="3576141592585647168">Verander tydsone</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
@@ -688,6 +690,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3990002060657467458">Kontroles wat gereeld gebruik word, soos wi-fi, Bluetooth en volume, is in Kitsinstellings. Jy kan ook hierheen kom om skermskote te neem.</translation>
 <translation id="3995138139523574647">USB C-toestel (agterste poort aan regterkant)</translation>
 <translation id="40062176907008878">Handskrif</translation>
+<translation id="4011112806063830608">Moenie Steur Nie is aan.</translation>
 <translation id="4017989525502048489">Laserwyser</translation>
 <translation id="401993194061514265">Merker is nie beskikbaar nie. Maak Screencast weer oop.</translation>
 <translation id="4021716437419160885">Rollees af</translation>
@@ -721,6 +724,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4146833061457621061">Speel musiek</translation>
 <translation id="4150201353443180367">Vertoon</translation>
 <translation id="4165275524535002941">Kabel steun dalk nie skerms nie</translation>
+<translation id="4177415338862979658">Klik om besonderhede te soek</translation>
 <translation id="4177913004758410636">{0,plural, =1{Dateer toestel binne 'n dag op}other{Dateer toestel binne # dae op}}</translation>
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4185671786623711291">Skuif aktiewe venster na lessenaar aan die regterkant toe</translation>
@@ -1439,6 +1443,7 @@ Nuwe installasie</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Jou administrateur stel tans jou e-SIM terug. Dit kan 'n paar minute neem.</translation>
 <translation id="7313193732017069507">Vou kamera uit</translation>
+<translation id="7316261577130609484">Voeg nuwe taak by</translation>
 <translation id="7340731148882810149">Outomatiese Klikke-kieslys</translation>
 <translation id="7346909386216857016">OK, het dit</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
@@ -1591,6 +1596,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7944023924886109030">Sien alle geleenthede vir vandag</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil jou <ph name="DEVICE_NAME" /> gebruik</translation>
 <translation id="7951630946012935453">Demp sleutelbord</translation>
+<translation id="7963689218131240420">Moenie Steur Nie is af.</translation>
 <translation id="7963992254934562106">Vanaf <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Kies vouer …</translation>
 <translation id="797512352675305461">Skakel volskermvergrootglas aan of af</translation>
@@ -1843,6 +1849,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9080073830732419341">Kamera is geglip na hoek bo links</translation>
 <translation id="9080132581049224423">Swiep op om na die tuisskerm toe te gaan</translation>
 <translation id="9080206825613744995">Mikrofoon word gebruik.</translation>
+<translation id="908451241440060346">Kennisgewings is gedemp wanneer Moenie Steur Nie aan is</translation>
 <translation id="9084606467167974638">Wissel kieslysposisie</translation>
 <translation id="9085962983642906571">Jou battery word op 80% gehou terwyl dit ingeprop is om die batterylewe te verleng.</translation>
 <translation id="9089416786594320554">Invoermetodes</translation>

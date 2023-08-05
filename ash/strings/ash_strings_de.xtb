@@ -1812,6 +1812,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8921624153894383499">Google Assistant spricht diese Sprache nicht.</translation>
 <translation id="8924458948354692166">Eingabetaste drücken, um einen Screenshot eines Fensters aufzunehmen</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 Datei}other{# Dateien}}</translation>
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>
 <translation id="8940956008527784070">Niedriger Akkustand (<ph name="PERCENTAGE" /> %)</translation>

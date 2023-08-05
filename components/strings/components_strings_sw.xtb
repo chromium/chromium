@@ -566,7 +566,9 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2148613324460538318">Ongeza Kadi</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="2149968176347646218">Muunganisho si salama</translation>
+<translation id="2152495481414285304">Programu</translation>
 <translation id="2153609454945889823">Ungependa kusakinisha Huduma za Google Play za AR?</translation>
+<translation id="2154144347038514978">Kuanza kiotomatiki kwenye kifaa chako</translation>
 <translation id="2154484045852737596">Badilisha kadi</translation>
 <translation id="2154739667870063220">Washa tena</translation>
 <translation id="2155260325161282517">Inchi 5 x 7</translation>
@@ -2911,6 +2913,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7186833457841277072">Bahasha (Inkijeti)</translation>
 <translation id="7186840261985974511">Bahasha ya ukubwa wa #12</translation>
 <translation id="718872491229180389">Ushangiliaji</translation>
+<translation id="7188840756966467339">Zima kisha uwashe na utumie sera</translation>
 <translation id="7192188280913829296">Sifa ya "vendor_id" lazima pia ibainishwe.</translation>
 <translation id="7192203810768312527">Huongeza nafasi ya <ph name="SIZE" />. Huenda baadhi ya tovuti zikapakia polepole katika tembeleo lako lijalo.</translation>
 <translation id="7192537357091279678">Hifadhi na Nafasi za Kompyuta</translation>
@@ -3007,6 +3010,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Shiriki kichupo hiki kwa kushiriki kiungo, kuunda msimbo wa QR, kutuma na chaguo zingine</translation>
 <translation id="7403591733719184120">Kifaa chako cha <ph name="DEVICE_NAME" /> kinadhibitiwa</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> amesakinisha programu kwa ajili ya utendaji wa ziada. Programu hizo zina idhini ya kufikia baadhi ya data yako.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Utaona ujumbe huu wa hitilafu ikiwa una programu ya Superfish kwenye kompyuta yako ya Windows.&lt;/p&gt;
     &lt;p&gt;Fuata hatua hizi ili uzime progamu kwa muda na uweze kufikia wavuti. Utahitaji haki za msimamizi.&lt;/p&gt;
     &lt;ol&gt;
@@ -3486,6 +3490,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8349305172487531364">Sehemu ya Alamisho</translation>
 <translation id="8351131234907093545">Unda kidokezo</translation>
 <translation id="835203957414790336">Maudhui ya kurasa unazochapisha na maelezo kuhusu printa yako hutumwa kwenye Wingu la Google au mifumo ya washirika wengine ili kuchanganuliwa. Kwa mfano, yanaweza kuchanganuliwa ili kubaini data nyeti.</translation>
+<translation id="8352849934814541340">Msimamizi wa kifaa hiki amesakinisha programu kwa ajili ya utendaji wa ziada. Programu hizo zina idhini ya kufikia baadhi ya data yako.</translation>
 <translation id="8355270400102541638">Muktadha wa Ripoti ya Kuacha Kufanya:</translation>
 <translation id="8363502534493474904">Kuzima hali ya ndegeni</translation>
 <translation id="8364627913115013041">Haijawekwa.</translation>
@@ -3733,6 +3738,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8903921497873541725">Kuza karibu</translation>
 <translation id="890493561996401738">Ondoa kitufe cha Mapendekezo, bofya Enter ili uondoe, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">Inchi 8 x 10</translation>
+<translation id="8918062451146297192">CVC ya kadi pepe</translation>
 <translation id="8919740778133505789">Magari ya Spoti</translation>
 <translation id="8919895429178014996">Ficha vipengee vyote</translation>
 <translation id="8922013791253848639">Ruhusu matangazo kwenye tovuti hii wakati wote</translation>

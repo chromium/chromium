@@ -358,6 +358,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ungelesene Seite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ungelesene Seiten}}</translation>
 <translation id="2961210776189273067">Anrede</translation>
 <translation id="296370266220139811">Zeit sparen und weniger tippen</translation>
+<translation id="297771753501244313">Nach „Zuletzt geöffnet“ sortieren</translation>
 <translation id="2979025552038692506">Ausgewählter Inkognitotab</translation>
 <translation id="2979639724566107830">In neuem Fenster öffnen</translation>
 <translation id="2981364137500752533">Du kannst bis zu 5 Fenster nutzen.</translation>
@@ -1442,7 +1443,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8559961053328923750">Chrome beschränkt die Gesamtmenge an Daten, die Websites über den Browser zur Analyse der Werbeleistung teilen können</translation>
 <translation id="8559990750235505898">Übersetzung von fremdsprachigen Seiten anbieten</translation>
 <translation id="8560602726703398413">In den Lesezeichen findest du deine Leseliste</translation>
-<translation id="8562452229998620586">Gespeicherte Passwörter erscheinen hier.</translation>
+<translation id="8562452229998620586">Deine gespeicherten Passwörter kannst du hier sehen.</translation>
 <translation id="856481929701340285">Desktopversion ansehen</translation>
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>

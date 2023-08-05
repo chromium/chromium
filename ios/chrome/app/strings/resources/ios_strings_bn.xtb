@@ -210,6 +210,7 @@
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2269277877025820298">আরও দেখুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
+<translation id="2275480389219976105">ঠিকানা পাওয়া গেছে</translation>
 <translation id="2286505070150039482">হাইলাইট করা টেক্সট</translation>
 <translation id="2287614783861766820">{count,plural, =1{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
 <translation id="2297822946037605517">এই পৃষ্ঠাটি শেয়ার করুন</translation>
@@ -542,6 +543,7 @@
 <translation id="430793432425771671">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4309403553630140242">আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
 <translation id="430967081421617822">সব সময়</translation>
+<translation id="4331177082088332784">আপনি এটি BEGIN_LINK কন্টেন্ট সেটিংস END_LINK থেকে ম্যানেজ করতে পারবেন</translation>
 <translation id="4334428914252001502">পড়া হয়নি এমন ১টি নিবন্ধ।</translation>
 <translation id="4338650699862464074">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়।</translation>
 <translation id="4342054591427973606">{count,plural, =1{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
@@ -1069,6 +1071,7 @@
 <translation id="7340958967809483333">Discover-এর বিকল্প</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="734758817008927353">কার্ড সেভ করার বিকল্প দেখার বোতাম</translation>
+<translation id="7349129508108954623">Chrome-কে Google Maps ব্যবহার করার অনুমতি দিন যাতে শনাক্ত করা ঠিকানা সম্পর্কে আপনাকে দিকনির্দেশ ও স্থানীয় তথ্য দিতে পারে।</translation>
 <translation id="7351537303876921605">সংশ্লিষ্ট মেনুতে 'লিঙ্ক তৈরি করুন' বিকল্পে ট্যাপ করুন</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7353432112255316844">নিজের পরিচয় যাচাই করুন</translation>
@@ -1125,6 +1128,7 @@
 <translation id="7719038820139380048">আপনার আগ্রহ অনুসারে কন্টেন্ট দেখতে সাইন-ইন করুন</translation>
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7726702057919861819">মেনু → ইতিহাস → ব্রাউজ করা ডেটা মুছুন</translation>
+<translation id="7729458878441927652">আপনার অন্য ডিভাইস থেকে ট্যাব দেখতে নিজের ট্যাব ও ইতিহাস সিঙ্ক করুন।</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। শুধুমাত্র এই ডিভাইসে।</translation>
 <translation id="7738120385185846461">সমস্যার বিষয়ে অভিযোগ জানান…</translation>
 <translation id="7741325291586284254">নতুন ছদ্মবেশী ট্যাব পৃষ্ঠা</translation>

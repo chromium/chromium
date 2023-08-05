@@ -210,6 +210,7 @@
 <translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2269277877025820298">आणखी पहा</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
+<translation id="2275480389219976105">पत्ता आढळला</translation>
 <translation id="2286505070150039482">हायलाइट केलेला मजकूर</translation>
 <translation id="2287614783861766820">{count,plural, =1{हा पत्ता या डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या डिव्हाइसवरून हटवले जातील.}}</translation>
 <translation id="2297822946037605517">हे पेज शेअर करा</translation>
@@ -542,6 +543,7 @@
 <translation id="430793432425771671">प्रत्येकगोष्ट संंकालित करा</translation>
 <translation id="4309403553630140242">अधिक माहितीसाठी दोनदा टॅप करा</translation>
 <translation id="430967081421617822">सर्व वेळ</translation>
+<translation id="4331177082088332784">तुम्ही हे BEGIN_LINK आशय सेटिंग्ज END_LINK मध्ये व्यवस्थापित करू शकता</translation>
 <translation id="4334428914252001502">न वाचलेला एक लेख.</translation>
 <translation id="4338650699862464074">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते.</translation>
 <translation id="4342054591427973606">{count,plural, =1{हा पत्ता या आणि तुम्ही साइन-इन केलेल्या इतर डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या आणि तुम्ही साइन-इन केलेल्या इतर डिव्हाइसवरून हटवले जातील.}}</translation>
@@ -1069,6 +1071,7 @@
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="734758817008927353">कार्ड सेव्ह करण्यासाठी पर्याय</translation>
+<translation id="7349129508108954623">डिटेक्ट केलेल्या पत्त्यांनुसार तुम्हाला दिशा आणि स्थानिक माहिती देण्यासाठी Chrome ला Google Maps वापरण्याची अनुमती द्या.</translation>
 <translation id="7351537303876921605">कॉंटेक्स्ट मेनू मध्ये लिंक तयार करा वर टॅप करा</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7353432112255316844">हे तुम्हीच असल्याची पडताळणी करा</translation>
@@ -1125,6 +1128,7 @@
 <translation id="7719038820139380048">तुमच्या स्वारस्यांवर आधारित आशय मिळवण्यासाठी.</translation>
 <translation id="7720410380936703141">पुन्हा प्रयत्न करा</translation>
 <translation id="7726702057919861819">मेनू → इतिहास → ब्राउझिंग डेटा साफ करा</translation>
+<translation id="7729458878441927652">तुमच्या इतर डिव्हाइसवरील टॅब पाहण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. फक्त या डिव्हाइसवर.</translation>
 <translation id="7738120385185846461">समस्या नोंदवा…</translation>
 <translation id="7741325291586284254">नवीन गुप्त टॅब पेज</translation>

@@ -566,7 +566,9 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2148613324460538318">Shto kartë</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2149968176347646218">Lidhja nuk është e sigurt</translation>
+<translation id="2152495481414285304">Aplikacionet</translation>
 <translation id="2153609454945889823">Të instalohen "Shërbimet e Google Play për AR"?</translation>
+<translation id="2154144347038514978">Nis automatikisht në pajisjen tënde</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2154739667870063220">Rindiz</translation>
 <translation id="2155260325161282517">5 x 7 inç</translation>
@@ -2910,6 +2912,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7186833457841277072">Zarf (inkjet)</translation>
 <translation id="7186840261985974511">Zarf nr. 12</translation>
 <translation id="718872491229180389">Nxitja e tifozëve</translation>
+<translation id="7188840756966467339">Rinis dhe zbato politikat</translation>
 <translation id="7192188280913829296">Atributi "vendor_id" duhet të specifikohet po ashtu.</translation>
 <translation id="7192203810768312527">Liron <ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="7192537357091279678">Hapësira ruajtëse dhe disqe kompjuteri</translation>
@@ -3008,6 +3011,7 @@ Detaje shtesë:
 <translation id="7400418766976504921">URL-ja</translation>
 <translation id="7403392780200267761">Ndaje këtë skedë duke ndarë lidhjen, duke krijuar një kod QR, duke transmetuar etj.</translation>
 <translation id="7403591733719184120">Pajisja jote <ph name="DEVICE_NAME" /> është e menaxhuar</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ka instaluar aplikacione për funksionet shtesë. Aplikacionet kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Do të shohësh këtë gabim nëse ke softuer Superfish në kompjuterin tënd me Windows.&lt;/p&gt;
     &lt;p&gt;Ndiq këta hapa për të çaktivizuar përkohësisht softuerin në mënyrë që të hysh në ueb. Do të të nevojiten privilegjet e administratorit.&lt;/p&gt;
     &lt;ol&gt;
@@ -3487,6 +3491,7 @@ Detaje shtesë:
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="835203957414790336">Përmbajtja e faqeve që printon dhe informacionet për printerin tënd dërgohen te Google Cloud ose palë të treta për analizë. Për shembull, mund të skanohen për të dhëna delikate.</translation>
+<translation id="8352849934814541340">Administratori i kësaj pajisjeje ka instaluar aplikacione për funksionet shtesë. Aplikacionet kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="8355270400102541638">Konteksti lokal i ndërprerjes aksidentale:</translation>
 <translation id="8363502534493474904">Të çaktivizosh modalitetin e aeroplanit</translation>
 <translation id="8364627913115013041">Nuk është caktuar.</translation>
@@ -3735,6 +3740,7 @@ Detaje shtesë:
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="890493561996401738">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
+<translation id="8918062451146297192">Kodi CVC për kartën virtuale</translation>
 <translation id="8919740778133505789">Makina sportive</translation>
 <translation id="8919895429178014996">Fshih të gjithë artikujt</translation>
 <translation id="8922013791253848639">Lejo gjithmonë reklamat në këtë sajt</translation>

@@ -3011,7 +3011,7 @@
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403392780200267761">透過分享連結、建立 QR 碼、投放及其他功能來分享這個分頁</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 已受管理</translation>
-<translation id="7405878640835614059">「<ph name="ENROLLMENT_DOMAIN" />」已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> 已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
 <translation id="7407424307057130981">&lt;p&gt;如果您在 Windows 電腦上安裝了 Superfish 軟件，便會看到此錯誤訊息。&lt;/p&gt;
       &lt;p&gt;請按照以下步驟暫時停用軟件，以便連接至網絡。您需要管理員權限。&lt;/p&gt;
       &lt;ol&gt;
@@ -3491,7 +3491,7 @@
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8351131234907093545">建立筆記</translation>
 <translation id="835203957414790336">您列印的頁面內容和打印機相關資訊料會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄文字，檢查是否含有敏感資料。</translation>
-<translation id="8352849934814541340">這部裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
+<translation id="8352849934814541340">此裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8363502534493474904">關閉飛行模式</translation>
 <translation id="8364627913115013041">未設定。</translation>
@@ -3740,7 +3740,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="890493561996401738">移除建議按鈕，㩒一下 Enter 鍵就可以移除「<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
 <translation id="8910898109640902752">8 x 10 吋</translation>
-<translation id="8918062451146297192">虛擬卡片的信用卡驗證碼</translation>
+<translation id="8918062451146297192">虛擬卡的 CVC</translation>
 <translation id="8919740778133505789">跑車</translation>
 <translation id="8919895429178014996">隱藏所有項目</translation>
 <translation id="8922013791253848639">一律允許在此網站中顯示廣告</translation>

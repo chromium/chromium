@@ -141,6 +141,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1557622599341396706">Afficher le nom du bureau</translation>
 <translation id="1569384531973824928">L'accès est accordé à l'ensemble des applis et sites Web ayant l'autorisation d'accéder à l'appareil photo et au micro. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
+<translation id="1571697193564730395">Activer/Désactiver Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Faire un zoom arrière lorsque la loupe est activée</translation>
 <translation id="1586324912145647027">Accéder aux bureaux 1 à 8</translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
@@ -579,6 +580,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3566240529365775567">Ouvert à l'instant</translation>
 <translation id="3571734092741541777">Configurer</translation>
+<translation id="3572988532398145777">Impossible de développer la notification lorsqu'un panneau est ouvert. Fermez d'abord le panneau ci-dessous.</translation>
 <translation id="3573179567135747900">Revenir à "<ph name="FROM_LOCALE" />" (redémarrage requis)</translation>
 <translation id="3576141592585647168">Modifier le fuseau horaire</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
@@ -686,6 +688,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3990002060657467458">Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez également y accéder pour prendre des captures d'écran.</translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
+<translation id="4011112806063830608">Ne pas déranger activé.</translation>
 <translation id="4017989525502048489">Pointeur laser</translation>
 <translation id="401993194061514265">Marqueur non disponible. Rouvrez l'Enregistreur d'écran.</translation>
 <translation id="4021716437419160885">Faire défiler vers le bas</translation>
@@ -719,6 +722,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4165275524535002941">Le câble n'est peut-être pas compatible avec les écrans</translation>
+<translation id="4177415338862979658">Cliquez ici pour en savoir plus</translation>
 <translation id="4177913004758410636">{0,plural, =1{Mettre à jour l'appareil d'ici 1 jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4185671786623711291">Déplacer la fenêtre active vers le bureau à droite</translation>
@@ -1437,6 +1441,7 @@ Nouvelle installation</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Votre administrateur réinitialise votre eSIM. Cela peut prendre quelques minutes.</translation>
 <translation id="7313193732017069507">Développer la caméra</translation>
+<translation id="7316261577130609484">Ajouter une tâche</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
@@ -1589,6 +1594,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7944023924886109030">Afficher tous les événements d'aujourd'hui</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Réduire la luminosité du clavier</translation>
+<translation id="7963689218131240420">Ne pas déranger désactivé.</translation>
 <translation id="7963992254934562106">À partir du <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Sélectionner un dossier…</translation>
 <translation id="797512352675305461">Activer ou désactiver la loupe plein écran</translation>
@@ -1840,6 +1846,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9080073830732419341">Appareil photo aligné sur l'angle supérieur gauche</translation>
 <translation id="9080132581049224423">Balayer l'écran vers le haut pour revenir à l'accueil</translation>
 <translation id="9080206825613744995">Le micro est en cours d'utilisation.</translation>
+<translation id="908451241440060346">Les notifications sont désactivées lorsque Ne pas déranger est activé</translation>
 <translation id="9084606467167974638">Activer/Désactiver la position du menu</translation>
 <translation id="9085962983642906571">Votre batterie reste à 80 % pour prolonger son autonomie tant que l'appareil est branché.</translation>
 <translation id="9089416786594320554">Modes de saisie</translation>

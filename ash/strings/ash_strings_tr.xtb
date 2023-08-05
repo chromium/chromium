@@ -141,6 +141,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1557622599341396706">Masa adını göster</translation>
 <translation id="1569384531973824928">Bu işlem, kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
+<translation id="1571697193564730395">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
 <translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
@@ -579,6 +580,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3563775809269155755">Hotspot'ı etkinleştir</translation>
 <translation id="3566240529365775567">Az önce açıldı</translation>
 <translation id="3571734092741541777">Kur</translation>
+<translation id="3572988532398145777">Bir panel açıkken bildirimi genişletemezsiniz. Önce aşağıdaki paneli kapatın.</translation>
 <translation id="3573179567135747900">Tekrar "<ph name="FROM_LOCALE" />" ayarına dön (yeniden başlatmak gerekir)</translation>
 <translation id="3576141592585647168">Saat dilimini değiştir</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
@@ -687,6 +689,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3990002060657467458">Kablosuz, Bluetooth ve ses seviyesi gibi sık kullanılan denetimler Hızlı Ayarlar'da yer alır. Ekran görüntüsü almak için de bu menüyü kullanabilirsiniz.</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
 <translation id="40062176907008878">El Yazısı</translation>
+<translation id="4011112806063830608">Rahatsız Etmeyin modu açık.</translation>
 <translation id="4017989525502048489">Lazer işaretçi</translation>
 <translation id="401993194061514265">İşaretçi kullanılamıyor. Ekran Kaydı'nı tekrar açın.</translation>
 <translation id="4021716437419160885">Aşağı kaydır</translation>
@@ -720,6 +723,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4146833061457621061">Müzik çal</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4165275524535002941">Kablo, ekranları desteklemeyebilir</translation>
+<translation id="4177415338862979658">Ayrıntılara göz atmak için tıklayın</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün içinde güncelleyin}other{Cihazı # gün içinde güncelleyin}}</translation>
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4185671786623711291">Etkin pencereyi sağdaki masaya taşı</translation>
@@ -1438,6 +1442,7 @@ Yeni yüklenmiş</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="7313193732017069507">Kamerayı genişlet</translation>
+<translation id="7316261577130609484">Yeni görev ekle</translation>
 <translation id="7340731148882810149">Otomatik tıklamalar menüsü</translation>
 <translation id="7346909386216857016">Tamam, anladım</translation>
 <translation id="7348093485538360975">Dokunmatik klavye</translation>
@@ -1590,6 +1595,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7944023924886109030">Bugünkü tüm etkinlikleri göster</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />, <ph name="DEVICE_NAME" /> kullanmak istiyor</translation>
 <translation id="7951630946012935453">Klavyenin ışığını kısın</translation>
+<translation id="7963689218131240420">Rahatsız Etmeyin modu kapalı.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> telefondan</translation>
 <translation id="7968693143708939792">Klasör seç...</translation>
 <translation id="797512352675305461">Tam ekran büyütecini açın veya kapatın</translation>
@@ -1842,6 +1848,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9080073830732419341">Kamera sol üst köşeye tutturuldu</translation>
 <translation id="9080132581049224423">Ana ekrana gitmek için yukarı kaydırın</translation>
 <translation id="9080206825613744995">Mikrofon kullanımda.</translation>
+<translation id="908451241440060346">Rahatsız Etmeyin modu açıkken bildirimler gösterilmez</translation>
 <translation id="9084606467167974638">Menü konumunu değiştir</translation>
 <translation id="9085962983642906571">Pil ömrünü uzatmak için piliniz fişe takılıyken geçici olarak %80'de kalır.</translation>
 <translation id="9089416786594320554">Giriş yöntemleri</translation>

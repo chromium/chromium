@@ -568,6 +568,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2149968176347646218">A kapcsolat nem biztonságos</translation>
 <translation id="2152495481414285304">Alkalmazások</translation>
 <translation id="2153609454945889823">Telepíti a Google Play Services for AR szolgáltatást?</translation>
+<translation id="2154144347038514978">Automatikus indítás az eszközön</translation>
 <translation id="2154484045852737596">Kártya szerkesztése</translation>
 <translation id="2154739667870063220">Újraindítás</translation>
 <translation id="2155260325161282517">5 × 7 hüvelyk</translation>
@@ -2910,6 +2911,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7186833457841277072">Boríték (tintasugaras)</translation>
 <translation id="7186840261985974511">12. boríték</translation>
 <translation id="718872491229180389">Pomponlányok</translation>
+<translation id="7188840756966467339">Újraindítás és a házirendek alkalmazása</translation>
 <translation id="7192188280913829296">A „vendor_id” attribútumot is meg kell adni.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> szabadul fel. Előfordulhat, hogy bizonyos oldalak lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="7192537357091279678">Számítógépes meghajtók és tárolóeszközök</translation>
@@ -3008,6 +3010,7 @@ További részletek:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Megoszthatja ezt a lapot a link használatával, QR-kód létrehozásával, átküldéssel és egyéb műveletekkel</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> eszköze felügyelet alatt áll</translation>
+<translation id="7405878640835614059">A(z) <ph name="ENROLLMENT_DOMAIN" /> alkalmazásokat telepített további funkciók használata céljából. Az alkalmazások hozzáférhetnek az Ön bizonyos adataihoz.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ez a hibaüzenet akkor jelenik meg, ha Superfish szoftverrel rendelkezik Windows rendszerű számítógépen.&lt;/p&gt;
       &lt;p&gt;Kövesse ezeket a lépéseket, ha szeretné átmenetileg letiltani a szoftvert, hogy hozzáférhessen az internethez. Ehhez rendszergazdai jogosultságokra lesz szüksége.&lt;/p&gt;
       &lt;ol&gt;
@@ -3487,6 +3490,7 @@ További részletek:
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>
 <translation id="835203957414790336">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja az Ön által kinyomtatott oldalak tartalmát és a nyomtatójával kapcsolatos adatokat. Így például bizalmas adatokat kereshetnek a tartalmakban.</translation>
+<translation id="8352849934814541340">Az eszköz rendszergazdája alkalmazásokat telepített további funkciók használata céljából. Az alkalmazások hozzáférhetnek az Ön bizonyos adataihoz.</translation>
 <translation id="8355270400102541638">Összeomlás helyi kontextusa:</translation>
 <translation id="8363502534493474904">Repülős üzemmód kikapcsolása</translation>
 <translation id="8364627913115013041">Nincs beállítva.</translation>
@@ -3736,6 +3740,7 @@ További részletek:
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="890493561996401738">Javaslat eltávolítása gomb. Nyomja meg az Entert a következő eltávolításához: <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 hüvelyk</translation>
+<translation id="8918062451146297192">CVC virtuális kártyához</translation>
 <translation id="8919740778133505789">Sportkocsik</translation>
 <translation id="8919895429178014996">Összes elem elrejtése</translation>
 <translation id="8922013791253848639">Mindig engedélyezi a hirdetéseket ezen a webhelyen</translation>

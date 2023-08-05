@@ -568,6 +568,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2149968176347646218">Anslutningen är inte säker</translation>
 <translation id="2152495481414285304">Appar</translation>
 <translation id="2153609454945889823">Vill du installera Google Play-tjänster för AR?</translation>
+<translation id="2154144347038514978">Starta automatiskt på enheten</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2154739667870063220">Starta om</translation>
 <translation id="2155260325161282517">5 x 7 tum</translation>
@@ -2912,6 +2913,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7186833457841277072">Kuvert (Inkjet)</translation>
 <translation id="7186840261985974511">Kuvert nr 12</translation>
 <translation id="718872491229180389">Cheerleading</translation>
+<translation id="7188840756966467339">Starta om och tillämpa policyer</translation>
 <translation id="7192188280913829296">Attributet vendor_id måste också anges.</translation>
 <translation id="7192203810768312527">Frigör <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="7192537357091279678">Datorenheter och lagring</translation>
@@ -3010,6 +3012,7 @@ Mer information.
 <translation id="7400418766976504921">Webbadress</translation>
 <translation id="7403392780200267761">Dela den här fliken genom att dela länken, skapa en QR-kod, casta med flera alternativ</translation>
 <translation id="7403591733719184120">Din <ph name="DEVICE_NAME" /> hanteras</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Det här felmeddelandet visas om du har programvaran Superfish på Windows-datorn.&lt;/p&gt;
       &lt;p&gt;Inaktivera programvaran tillfälligt enligt anvisningarna nedan så att du kan komma ut på internet. Du måste ha administratörsbehörighet.&lt;/p&gt;
       &lt;ol&gt;
@@ -3489,6 +3492,7 @@ Mer information.
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8351131234907093545">Skapa anteckning</translation>
 <translation id="835203957414790336">Innehållet på sidor du skriver ut och information om skrivaren skickas till Google Cloud eller tredje part för analys. Informationen kan till exempel genomsökas efter känsliga uppgifter.</translation>
+<translation id="8352849934814541340">Administratören för enheten har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
 <translation id="8355270400102541638">Kontext för lokal krasch:</translation>
 <translation id="8363502534493474904">inaktivera flygplansläget</translation>
 <translation id="8364627913115013041">Inte angiven.</translation>
@@ -3738,6 +3742,7 @@ Mer information:
 <translation id="8903921497873541725">Zooma in</translation>
 <translation id="890493561996401738">Knappen Ta bort förslag, tryck på retur om du vill ta bort förslaget, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tum</translation>
+<translation id="8918062451146297192">CVC för virtuellt kort</translation>
 <translation id="8919740778133505789">Sportbilar</translation>
 <translation id="8919895429178014996">Dölj alla objekt</translation>
 <translation id="8922013791253848639">Tillåt alltid annonser på den här webbplatsen</translation>

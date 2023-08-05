@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1557622599341396706">Asztal nevének megjelenítése</translation>
 <translation id="1569384531973824928">Ezzel engedélyezi a hozzáférést a kamera- és mikrofonengedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
+<translation id="1571697193564730395">A Ne zavarjanak mód ki- vagy bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Kicsinyítés, ha a nagyító be van kapcsolva</translation>
 <translation id="1586324912145647027">Lépjen az 1–8. asztal valamelyikéhez.</translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">Hotspot engedélyezése</translation>
 <translation id="3566240529365775567">Éppen most nyitotta meg</translation>
 <translation id="3571734092741541777">Beállítás</translation>
+<translation id="3572988532398145777">Az értesítés nem bontható ki, ha meg van nyitva egy panel. Előbb zárja be az alábbi panelt.</translation>
 <translation id="3573179567135747900">Visszatérés ehhez: "<ph name="FROM_LOCALE" />" (újraindítás szükséges)</translation>
 <translation id="3576141592585647168">Időzóna módosítása</translation>
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
@@ -688,6 +690,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3990002060657467458">A gyakran használt vezérlők (például a Wi-Fi, a Bluetooth és a hangerő) a Gyorsbeállításokban találhatók. Itt képernyőképeket is készíthet.</translation>
 <translation id="3995138139523574647">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>
 <translation id="40062176907008878">Kézírás</translation>
+<translation id="4011112806063830608">A Ne zavarjanak mód be van kapcsolva.</translation>
 <translation id="4017989525502048489">Lézermutató</translation>
 <translation id="401993194061514265">A jelölő nem áll rendelkezésre. Nyissa meg újra a Screencastot.</translation>
 <translation id="4021716437419160885">Görgetés lefelé</translation>
@@ -721,6 +724,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4146833061457621061">Zenelejátszás</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>
 <translation id="4165275524535002941">Előfordulhat, hogy a kábel nem támogatja a kijelzőket</translation>
+<translation id="4177415338862979658">Kattintson ide a részletekért</translation>
 <translation id="4177913004758410636">{0,plural, =1{1 napon belül frissítse az eszközt}other{# napon belül frissítse az eszközt}}</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4185671786623711291">Aktív ablak áthelyezése a jobb oldali asztalra</translation>
@@ -1439,6 +1443,7 @@ Frissen telepítve</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">A rendszergazda visszaállítja az Ön eSIM-jét. Ez eltarthat néhány percig.</translation>
 <translation id="7313193732017069507">Kamera kibontása</translation>
+<translation id="7316261577130609484">Új feladat felvétele</translation>
 <translation id="7340731148882810149">Automatikus kattintások menü</translation>
 <translation id="7346909386216857016">Rendben, értem</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
@@ -1591,6 +1596,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7944023924886109030">A mai nap összes eseményének megtekintése</translation>
 <translation id="7947798320695032612">A(z) <ph name="APP_NAME" /> használni szeretné a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">A billentyűzet fényerejének csökkentése</translation>
+<translation id="7963689218131240420">A Ne zavarjanak mód ki van kapcsolva.</translation>
 <translation id="7963992254934562106">Innen: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Mappa választása…</translation>
 <translation id="797512352675305461">Teljes képernyős nagyító be- vagy kikapcsolása</translation>
@@ -1843,6 +1849,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9080073830732419341">Kamera a bal felső sarokhoz igazítva</translation>
 <translation id="9080132581049224423">Felfelé csúsztatva megjelenik a kezdőképernyő</translation>
 <translation id="9080206825613744995">A mikrofon használatban van.</translation>
+<translation id="908451241440060346">Az értesítések némítva vannak, amikor a Ne zavarjanak mód be van kapcsolva</translation>
 <translation id="9084606467167974638">Menü helyzetének módosítása</translation>
 <translation id="9085962983642906571">Az akkumulátor-élettartam növelése érdekében az akkumulátorszint 80%-on marad, amíg csatlakoztatva van az áramforráshoz.</translation>
 <translation id="9089416786594320554">Beviteli módszerek</translation>

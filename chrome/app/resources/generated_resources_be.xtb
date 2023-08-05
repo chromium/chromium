@@ -157,6 +157,7 @@
 <translation id="1122960773616686544">Назва закладкі</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1125550662859510761">Здаецца, гэта <ph name="WIDTH" /> × <ph name="HEIGHT" /> (уласная)</translation>
+<translation id="1125921926864945797">Шпалеры і стыль</translation>
 <translation id="1126809382673880764">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Вы застаняцеся пад абаронай Бяспечнага прагляду пры карыстанні іншымі сэрвісамі Google, у якіх ён даступны, такімі як Gmail і Пошук.</translation>
 <translation id="1128090040635299943">Ідзе наладжванне Linux. Гэта зойме некалькі хвілін.</translation>
 <translation id="1128591060186966949">Змяніць сістэму пошуку</translation>
@@ -184,6 +185,7 @@
 <translation id="1147322039136785890">Перадайце прыладу карыстальніку <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Каб запытаць доступ, звярніцеся да адміністратара гэтай прылады.</translation>
 <translation id="1148624853678088576">Усё гатова!</translation>
+<translation id="1148669835763563782">Вы атрымліваеце апошняе абнаўленне ПЗ. Узровень бяспекі павысіцца, і на прыладзе Chromebook стануць даступнымі новыя функцыі. Гэта абнаўленне прадугледжвае палепшаны працэс наладжвання, які дазволіць вам з лёгкасцю пачаць работу з Chromebook.</translation>
 <translation id="1149401351239820326">Месяц заканчэння тэрміну дзеяння</translation>
 <translation id="1149483087970735785">Налады спецыяльных магчымасцей</translation>
 <translation id="1149725087019908252">Ідзе праверка файла "<ph name="FILE_NAME" />"</translation>
@@ -268,6 +270,7 @@
 <translation id="1202116106683864634">Сапраўды выдаліць гэты ключ доступу?</translation>
 <translation id="1202596434010270079">Праграма-кіёск абноўлена. Выміце USB-сховішча.</translation>
 <translation id="1202892408424955784">Адсочванне тавараў</translation>
+<translation id="1203559206734265703">Адладка для Protected Audiences уключана.</translation>
 <translation id="120368089816228251">Музычная нота</translation>
 <translation id="1203942045716040624">Агульны рабочы працэс: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Ярлыкі, падабраныя вамі</translation>
@@ -715,6 +718,7 @@
 <translation id="1580772913177567930">Звярніцеся да адміністратара</translation>
 <translation id="1581962803218266616">Паказаць у акне Finder</translation>
 <translation id="1582955169539260415">выдаліць [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583082742220286248">Ідзе ўзнаўленне сеанса</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" />: маўленне на гэтай мове апрацоўваецца толькі на вашай прыладзе і выкарыстоўваецца без падключэння да інтэрнэту</translation>
 <translation id="1584990664401018068">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="NETWORK_ID" />), можа патрабаваць аўтэнтыфікацыі.</translation>
 <translation id="1585717515139318619">Іншая праграма на камп'ютары дадала тэму, якая можа змяніць працу Chrome.
@@ -816,6 +820,7 @@
 <translation id="1644852018355792105">Увядзіце ключ доступу да Bluetooth для прылады <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Невядомая крыніца</translation>
 <translation id="1645516838734033527">Каб прылада <ph name="DEVICE_TYPE" /> была ў бяспецы, Smart Lock патрабуе, каб функцыя блакіроўкі экрана на вашым тэлефоне была ўключана.</translation>
+<translation id="1646045728251578877">Ёсць абнаўленне ПЗ</translation>
 <translation id="1646982517418478057">Каб зашыфраваць гэты сертыфікат, увядзіце пароль</translation>
 <translation id="1647408325348388858">Адкрыць і змяніць у гэтай вэб-праграме файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="1648528859488547844">Выкарыстоўваць Wi‑Fi або мабільныя сеткі для вызначэння месцазнаходжання</translation>
@@ -2761,6 +2766,7 @@
 <translation id="3254084468305910013">{COUNT,plural, =0{Праблем з бяспекай не знойдзена}=1{Знойдзена {COUNT} праблема з бяспекай}one{Знойдзена {COUNT} праблема з бяспекай}few{Знойдзена {COUNT} праблемы з бяспекай}many{Знойдзена {COUNT} праблем з бяспекай}other{Знойдзена {COUNT} праблемы з бяспекай}}</translation>
 <translation id="3254451942070605467">Ідзе спампоўванне файла "<ph name="FILE_NAME" />", застаецца <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">Аўтаматычнае вызначэнне часавага пояса выключана</translation>
+<translation id="3255747772218936245">Усталяваць абнаўленне</translation>
 <translation id="3257733480216378006">Дазволіць пашырэнні (<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />)?</translation>
 <translation id="3259723213051400722">Паўтарыце спробу.</translation>
 <translation id="3261090393424563833">Павялічыць частату</translation>
@@ -3578,10 +3584,12 @@
 <translation id="3920909973552939961">Не дазволена ўсталёўваць апрацоўшчыкаў плацяжоў</translation>
 <translation id="3922823422695198027">Іншыя праграмы наладжаны адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграмы "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" і "<ph name="APP_NAME_4" />" перастануць адкрываць адпаведныя спасылкі.</translation>
 <translation id="3923184630988645767">Выкарыстанне трафіка</translation>
+<translation id="3923221004758245114">Выдаліць <ph name="VM_NAME" /> з прылады <ph name="DEVICE_TYPE" />? Будуць выдалены ўсе праграмы і даныя на віртуальнай машыне!</translation>
 <translation id="3923676227229836009">Гэта старонка мае дазвол на прагляд файлаў</translation>
 <translation id="3924145049010392604">Клавіша Meta</translation>
 <translation id="3924487862883651986">Адпраўляе URL-адрасы на праверку ў Бяспечны прагляд. Таксама адпраўляе невялікія прыклады старонак, спамповак, дзеянняў пашырэнняў і інфармацыі пра сістэму, каб дапамагчы выяўляць новыя пагрозы. Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google.</translation>
 <translation id="3925573269917483990">Камера:</translation>
+<translation id="3925926055063465902">Іншыя карыстальнікі прылады таксама могуць выкарыстоўваць гэту сетку</translation>
 <translation id="3926002189479431949">Тэлефон са Smart Lock зменены</translation>
 <translation id="3927932062596804919">Адмовіць</translation>
 <translation id="3928570707778085600">Захаваць змяненні ў "<ph name="FILE_OR_FOLDER_NAME" />"?</translation>
@@ -4153,6 +4161,7 @@
 <translation id="4413087696295876280">Прагляд звестак і даных пра прыладу з ChromeOS Flex</translation>
 <translation id="44141919652824029">Дазволіць праграме "<ph name="APP_NAME" />" атрымліваць спіс падключаных USB-прылад?</translation>
 <translation id="4414232939543644979">Новае &amp;акно ў рэжыме інкогніта</translation>
+<translation id="4414242853388122273">Пры выдаленні віртуальнай машыны <ph name="VM_NAME" /> адбылася памылка. Паўтарыце спробу.</translation>
 <translation id="4415213869328311284">Цяпер вы можаце выкарыстоўваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Прылады не знойдзены. Адкрыць артыкул даведачнага цэнтра ў новай укладцы.</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
@@ -4355,6 +4364,7 @@
 <translation id="4580587929153007251">Увайдзіце ў Менеджар пароляў Google зноў</translation>
 <translation id="4580596421317071374">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />" на гэтай прыладзе.</translation>
 <translation id="4581774856936278355">Памылка падчас аднаўлення кантэйнера Linux</translation>
+<translation id="4582217877717474109">Налады сістэмы</translation>
 <translation id="4582297591746054421">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
 <translation id="4582563038311694664">Скінуць усе налады</translation>
 <translation id="4585793705637313973">Рэдагаванне старонкі</translation>
@@ -4617,6 +4627,7 @@
 <translation id="4811503964269049987">Дадаць выбраную ўкладку ў групу</translation>
 <translation id="4813512666221746211">Памылка сеткі</translation>
 <translation id="4814114628197290459">Выдаленне нумара IBAN</translation>
+<translation id="4814327014588285482">Прапусціць і нагадаць пазней</translation>
 <translation id="4814378367953456825">Увядзіце назву для гэтага адбітка пальца</translation>
 <translation id="481574578487123132">Звязаныя прылады</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, падрабязныя звесткі</translation>
@@ -4822,6 +4833,7 @@
 <translation id="4985206706500620449">Вы дазволілі староннія файлы cookie для гэтага сайта</translation>
 <translation id="4986706507552097681">У наладах заўсёды можна выбраць, што трэба сінхранізаваць. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове гісторыі прагляду вамі сайтаў.</translation>
 <translation id="4986728572522335985">Будуць выдалены ўсе даныя на ключы бяспекі, уключаючы яго PIN-код</translation>
+<translation id="4987944280765486504">Перазапуск Chromebook адбудзецца пасля завяршэння спампоўвання. Пасля гэтага вы зможаце працягваць наладжванне.</translation>
 <translation id="4988526792673242964">Старонкі</translation>
 <translation id="49896407730300355">Павярнуць су&amp;праць гадзіннікавай стрэлкі</translation>
 <translation id="4989966318180235467">Праглядзець &amp;фонавую старонку</translation>
@@ -5597,6 +5609,7 @@
 <translation id="5656845498778518563">Адправіць водгук у Google</translation>
 <translation id="5657156137487675418">Дазволіць усе файлы cookie</translation>
 <translation id="5657667036353380798">Для знешняга пашырэння неабходна ўсталяваць Chrome версіі як мінімум <ph name="MINIMUM_CHROME_VERSION" />.</translation>
+<translation id="565899488479822148">Ідзе ўсталяванне апошняга абнаўлення</translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="566040795510471729">&amp;Наладзіць Chrome</translation>
 <translation id="5662513737565158057">Змяненне параметраў для праграм Linux.</translation>
@@ -5656,6 +5669,7 @@
 <translation id="5711983031544731014">Не ўдалося разблакіраваць. Увядзіце пароль.</translation>
 <translation id="5712153969432126546">Часам сайты публікуюць PDF-файлы (напрыклад, дакументы, кантракты і формы)</translation>
 <translation id="571222594670061844">Сайты могуць паказваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі</translation>
+<translation id="5713033452812927234">Адкрываюцца вокны з папярэдняй прылады</translation>
 <translation id="5713158217420111469">Падключана да прылады "<ph name="DEVICE" />"</translation>
 <translation id="5713960379473463904">Стыль уводу прабелаў</translation>
 <translation id="5715711091495208045">Брокер убудовы: <ph name="PLUGIN_NAME" /></translation>
@@ -6212,6 +6226,7 @@
 <translation id="6177412385419165772">Ідзе выдаленне...</translation>
 <translation id="6178664161104547336">Выберыце сертыфікат</translation>
 <translation id="6178682841350631965">Даныя для ўваходу абноўлены</translation>
+<translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Выдаліць пашырэнне?}one{Выдаліць # пашырэнне?}few{Выдаліць # пашырэнні?}many{Выдаліць # пашырэнняў?}other{Выдаліць # пашырэння?}}</translation>
 <translation id="6180510783007738939">Інструмент "Лінія"</translation>
 <translation id="6180550893222597997">Які ключ доступу вы хочаце выкарыстаць для <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Спампоўванне заблакіравана</translation>
@@ -6286,6 +6301,7 @@
 <translation id="6241844896329831164">Доступ не патрабуецца</translation>
 <translation id="6242574558232861452">Ідзе праверка спампоўкі на адпаведнасць палітыкам бяспекі вашай арганізацыі.</translation>
 <translation id="6242589501614145408">Скіньце ключ бяспекі</translation>
+<translation id="6242605626259978229">Ваш браўзер і профіль знаходзяцца пад кіраваннем</translation>
 <translation id="6242852299490624841">Перайсці на гэту ўкладку</translation>
 <translation id="6243774244933267674">Сервер недаступны</translation>
 <translation id="6244245036423700521">Імпартаваць файл ONC</translation>
@@ -6305,6 +6321,7 @@
 <translation id="6254503684448816922">Кампраметацыя ключа</translation>
 <translation id="6254892857036829079">Выдатная</translation>
 <translation id="6257602895346497974">Уключыць сінхранізацыю...</translation>
+<translation id="625827534921607067">Прылада будзе выкарыстоўваць гэту сетку, калі даступныя некалькі сетак, да якіх вы падключаліся або якія вы наладжвалі раней</translation>
 <translation id="62586649943626337">Упарадкоўвайце свае ўкладкі з дапамогай груп укладак</translation>
 <translation id="6262371516389954471">Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад вашага Уліковага запісу Google.</translation>
 <translation id="6263082573641595914">Версія ЦС Microsoft</translation>
@@ -6608,6 +6625,7 @@
 <translation id="652937045869844725">Паспрабуйце дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць, але павысіць імавернасць таго, што функцыі сайта будуць працаваць</translation>
 <translation id="652948702951888897">Гісторыя праглядаў Chrome</translation>
 <translation id="6530186581263215931">Гэтыя налады прымусова ўключаны адміністратарам</translation>
+<translation id="6530267432324197764">Профілем кіруе <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Захаваць небяспечны файл</translation>
 <translation id="6532101170117367231">Захаваць на Google Дыск</translation>
 <translation id="6532106788206463496">Захаваць змены</translation>
@@ -7797,6 +7815,7 @@
 <translation id="7527758104894292229">Ён будзе абноўлены ва Уліковым запісе Google <ph name="ACCOUNT" /></translation>
 <translation id="7528224636098571080">Не адкрываць</translation>
 <translation id="7529411698175791732">Праверце падключэнне да інтэрнэту. Калі праблема застанецца, паспрабуйце выйсці і ўвайсці зноў.</translation>
+<translation id="7529865045818406536">Прыярытэтныя сеткі будуць выкарыстоўвацца пры даступнасці некалькіх сетак, якія выкарыстоўваліся раней</translation>
 <translation id="7529876053219658589">{0,plural, =1{Закрыць гасцявое акно}one{Закрыць гасцявыя вокны}few{Закрыць гасцявыя вокны}many{Закрыць гасцявыя вокны}other{Закрыць гасцявыя вокны}}</translation>
 <translation id="7530016656428373557">Індыкатар разрадкі ў ватах</translation>
 <translation id="7531310913436731628">Вызначэнне месцазнаходжання выключана ў сістэмных наладах Mac</translation>
@@ -9531,6 +9550,7 @@
 <translation id="8965037249707889821">Увядзіце стары пароль</translation>
 <translation id="8966809848145604011">Іншыя профілі</translation>
 <translation id="8967427617812342790">Дадаць у спіс чытання</translation>
+<translation id="8967548289042494261">Выдаліць <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Запіс стану сістэмы Chrome OS</translation>
 <translation id="8968766641738584599">Захаваць картку</translation>
 <translation id="89720367119469899">Escape</translation>

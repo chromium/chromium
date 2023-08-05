@@ -210,6 +210,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="2268044343513325586">Definir mejor</translation>
 <translation id="2269277877025820298">Ver más</translation>
 <translation id="2273327106802955778">Menú Más</translation>
+<translation id="2275480389219976105">Se encontró una dirección</translation>
 <translation id="2286505070150039482">Texto resaltado</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se borrará de este dispositivo.}other{Estas direcciones se borrarán de este dispositivo.}}</translation>
 <translation id="2297822946037605517">Compartir esta página</translation>
@@ -307,7 +308,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2834399722155632105">3. Presiona Opciones de contraseña</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Restablecer</translation>
-<translation id="284581348330507117">Crea contraseñas únicas.</translation>
+<translation id="284581348330507117">Crea contraseñas únicas</translation>
 <translation id="2848086008667475748">Establecer como predeterminado en Configuración…</translation>
 <translation id="2858204748079866344">Para proteger tu privacidad, Chrome no completará de forma automática tu contraseña en este campo.</translation>
 <translation id="285960592395650245">Volver a descargar</translation>
@@ -542,6 +543,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
 <translation id="430967081421617822">Todo el tiempo</translation>
+<translation id="4331177082088332784">Puedes administrar esto en la BEGIN_LINK Configuración de contenido END_LINK</translation>
 <translation id="4334428914252001502">1 artículo sin leer.</translation>
 <translation id="4338650699862464074">Envía a Google las URL de las páginas que visitas.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Esta dirección se borrará de este y otros dispositivos en los que accediste a tu cuenta.}other{Estas direcciones se borrarán de este y otros dispositivos en los que accediste a tu cuenta.}}</translation>
@@ -1068,6 +1070,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7340958967809483333">Opciones para Descubre</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
+<translation id="7349129508108954623">Permite que Chrome use Google Maps para brindarte instrucciones sobre cómo llegar y datos locales sobre las direcciones detectadas.</translation>
 <translation id="7351537303876921605">Presiona Crear vínculo en el menú contextual.</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353432112255316844">Verificar tu identidad</translation>
@@ -1124,6 +1127,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7719038820139380048">Accede para obtener contenido según tus intereses.</translation>
 <translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
+<translation id="7729458878441927652">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo en este dispositivo.</translation>
 <translation id="7738120385185846461">Informar un problema…</translation>
 <translation id="7741325291586284254">Nueva página de pestañas de incógnito</translation>
@@ -1331,7 +1335,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8917490105272468696">Acepto</translation>
 <translation id="8928133177108699615">Escritorio</translation>
 <translation id="8934982071228289624">Para guardar esta contraseña en tu cuenta, primero debes establecer un código en tu dispositivo.</translation>
-<translation id="894191600409472540">Crea contraseñas seguras.</translation>
+<translation id="894191600409472540">Crea contraseñas seguras</translation>
 <translation id="8952559610785099500">Agregar contraseña</translation>
 <translation id="8953046091948372197">Aquí encontrarás tus contraseñas</translation>
 <translation id="895541991026785598">Informar de un problema</translation>

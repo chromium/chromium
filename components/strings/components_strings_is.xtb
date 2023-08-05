@@ -566,7 +566,9 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2148613324460538318">Bæta við korti</translation>
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2149968176347646218">Tengingin er ekki örugg</translation>
+<translation id="2152495481414285304">Forrit</translation>
 <translation id="2153609454945889823">Setja upp Google Play þjónustur fyrir AR?</translation>
+<translation id="2154144347038514978">Ræsa sjálfkrafa í tækinu þínu</translation>
 <translation id="2154484045852737596">Breyta korti</translation>
 <translation id="2154739667870063220">Endurræsa</translation>
 <translation id="2155260325161282517">5 x 7 to.</translation>
@@ -2911,6 +2913,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7186833457841277072">Umslag (bleksprautað)</translation>
 <translation id="7186840261985974511">Umslag: #12</translation>
 <translation id="718872491229180389">Klappstjórn</translation>
+<translation id="7188840756966467339">Endurræsa og virkja reglur</translation>
 <translation id="7192188280913829296">Einnig þarf að tilgreina eigindina „vendor_id“.</translation>
 <translation id="7192203810768312527">Losar <ph name="SIZE" />. Lengri tíma gæti tekið að sækja sum vefsvæði þegar þú heimsækir þau næst.</translation>
 <translation id="7192537357091279678">Tölvudiskar og geymslubúnaður</translation>
@@ -3009,6 +3012,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7400418766976504921">Vefslóð</translation>
 <translation id="7403392780200267761">Deildu þessum flipa með því að deila tenglinum, búa til QR-kóða, senda út og fleira</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> er stjórnað</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> hefur sett upp forrit fyrir fleiri aðgerðir. Forrit hafa aðgang að einhverjum gögnum í þinni eigu.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Þessi villa birtist ef þú ert að nota Superfish-hugbúnað í Windows-tölvu.&lt;/p&gt;
     &lt;p&gt;Fylgdu þessum skrefum til að slökkva tímabundið á hugbúnaðinum til að þú getir farið á vefinn. Þú þarft að hafa stjórnandaréttindi.&lt;/p&gt;
     &lt;ol&gt;
@@ -3488,6 +3492,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="835203957414790336">Efni síðna sem þú prentar og upplýsingar um prentarann þinn eru sendar til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum.</translation>
+<translation id="8352849934814541340">Kerfisstjóri þessa tækis hefur sett upp forrit fyrir fleiri aðgerðir. Forrit hafa aðgang að einhverjum gögnum í þinni eigu.</translation>
 <translation id="8355270400102541638">Samhengi staðbundins hruns:</translation>
 <translation id="8363502534493474904">Slökkva á flugstillingu</translation>
 <translation id="8364627913115013041">Ekkert valið.</translation>
@@ -3736,6 +3741,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8903921497873541725">Auka aðdrátt</translation>
 <translation id="890493561996401738">Hnappur til að fjarlægja tillögu, ýttu á færslulykilinn til að fjarlægja, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 to.</translation>
+<translation id="8918062451146297192">CVC-númer fyrir sýndarkort</translation>
 <translation id="8919740778133505789">Sportbílar</translation>
 <translation id="8919895429178014996">Fela öll atriði</translation>
 <translation id="8922013791253848639">Leyfa alltaf auglýsingar á þessu vefsvæði</translation>

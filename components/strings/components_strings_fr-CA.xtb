@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">Ajouter une carte</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149968176347646218">La connexion n'est pas sécurisée</translation>
+<translation id="2152495481414285304">Applications</translation>
 <translation id="2153609454945889823">Installer les services Google Play pour la RA?</translation>
+<translation id="2154144347038514978">Démarrage automatique sur votre appareil</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2154739667870063220">Redémarrer</translation>
 <translation id="2155260325161282517">5 po x 7 po</translation>
@@ -2911,6 +2913,7 @@
 <translation id="7186833457841277072">Enveloppe (jet d'encre)</translation>
 <translation id="7186840261985974511">Enveloppe nᵒ 12</translation>
 <translation id="718872491229180389">Claque</translation>
+<translation id="7188840756966467339">Redémarrer et appliquer les politiques</translation>
 <translation id="7192188280913829296">L'attribut « vendor_id » doit également être spécifié.</translation>
 <translation id="7192203810768312527">Libère <ph name="SIZE" />. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="7192537357091279678">Disques durs et supports de stockage</translation>
@@ -3009,6 +3012,7 @@ Détails supplémentaires :
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Partager cet onglet en partageant le lien, en créant un code QR, en diffusant du contenu et plus</translation>
 <translation id="7403591733719184120">Votre <ph name="DEVICE_NAME" /> est géré</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> a installé des applications offrant des fonctions supplémentaires. Les applications ont accès à certaines de vos données.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Cette erreur s'affiche si vous avez un logiciel Superfish sur votre ordinateur Windows.&lt;/p&gt;
       &lt;p&gt;Suivez ces étapes pour désactiver temporairement le logiciel et pouvoir accéder au Web. Vous aurez besoin des privilèges d'administrateur.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3492,7 @@ Détails supplémentaires :
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="835203957414790336">Le contenu des pages que vous imprimez et les informations de votre imprimante sont envoyés à Google Cloud ou à des tiers pour analyse. Par exemple, ces informations pourraient être analysées pour déterminer s'ils contiennent des données confidentielles.</translation>
+<translation id="8352849934814541340">L'administrateur de cet appareil a installé des applications offrant des fonctions supplémentaires. Les applications ont accès à certaines de vos données.</translation>
 <translation id="8355270400102541638">Contexte du plantage local :</translation>
 <translation id="8363502534493474904">De désactiver le mode Avion</translation>
 <translation id="8364627913115013041">Non configurée.</translation>
@@ -3736,6 +3741,7 @@ Détails supplémentaires :
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="890493561996401738">Bouton Supprimer la suggestion, appuyez sur Entrée pour supprimer, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 po</translation>
+<translation id="8918062451146297192">Code CVC pour carte virtuelle</translation>
 <translation id="8919740778133505789">Voitures de sport</translation>
 <translation id="8919895429178014996">Masquer tous les éléments</translation>
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>

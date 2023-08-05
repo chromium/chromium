@@ -210,6 +210,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="2268044343513325586">Mugatu</translation>
 <translation id="2269277877025820298">Ikusi gehiago</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
+<translation id="2275480389219976105">Helbidea aurkitu da</translation>
 <translation id="2286505070150039482">Nabarmendutako testua</translation>
 <translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
 <translation id="2297822946037605517">Partekatu orria</translation>
@@ -542,6 +543,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="430793432425771671">Sinkronizatu guztia</translation>
 <translation id="4309403553630140242">Informazio gehiago lortzeko, sakatu birritan</translation>
 <translation id="430967081421617822">Orain artekoak</translation>
+<translation id="4331177082088332784">Aukera hori kudeatzeko, joan BEGIN_LINK edukiaren ezarpenetara END_LINK</translation>
 <translation id="4334428914252001502">Irakurri gabeko artikulu bat.</translation>
 <translation id="4338650699862464074">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Helbidea gailu honetatik eta saioa hasita daukaten beste gailuetatik ezabatuko da.}other{Helbideak gailu honetatik eta saioa hasita daukaten beste gailuetatik ezabatuko dira.}}</translation>
@@ -1068,6 +1070,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7340958967809483333">Discover-en aukerak</translation>
 <translation id="7346909386216857016">Ados, ulertu dut</translation>
 <translation id="734758817008927353">Txartela gordetzeko aukerak</translation>
+<translation id="7349129508108954623">Eman Google Maps-en bidez hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko baimena Chrome-ri.</translation>
 <translation id="7351537303876921605">Sakatu Create Link (sortu esteka bat) laster-menuan</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
 <translation id="7353432112255316844">Egiaztatu zeu zarela</translation>
@@ -1124,6 +1127,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7719038820139380048">Zure interesen araberako edukia ikusteko, hasi saioa.</translation>
 <translation id="7720410380936703141">SAIATU BERRIRO</translation>
 <translation id="7726702057919861819">Menua → Historia → Garbitu arakatze-datuak</translation>
+<translation id="7729458878441927652">Beste gailuetako fitxak ikusteko, sinkronizatu fitxak eta historia.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Gailu honetan soilik.</translation>
 <translation id="7738120385185846461">Eman arazo baten berri…</translation>
 <translation id="7741325291586284254">Ezkutuko moduko beste fitxa baten orria</translation>

@@ -566,7 +566,9 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2148613324460538318">Gehitu txartela</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="2149968176347646218">Konexioa ez da segurua</translation>
+<translation id="2152495481414285304">Aplikazioak</translation>
 <translation id="2153609454945889823">Errealitate areagoturako Google Play Services instalatu nahi duzu?</translation>
+<translation id="2154144347038514978">Abiarazi automatikoki gailuan</translation>
 <translation id="2154484045852737596">Editatu txartela</translation>
 <translation id="2154739667870063220">Berrabiarazi</translation>
 <translation id="2155260325161282517">12,7 × 17,78 cm (5 × 7 in)</translation>
@@ -2906,6 +2908,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7186833457841277072">Gutun-azala (tinta-zurrusta)</translation>
 <translation id="7186840261985974511">Gutun-azala 12</translation>
 <translation id="718872491229180389">Animazio-zerbitzuak</translation>
+<translation id="7188840756966467339">Berrabiarazi eta aplikatu gidalerroak</translation>
 <translation id="7192188280913829296">vendor_id atributua ere zehaztu behar da.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> uzten ditu libre. Webgune batzuk mantsoago kargatuko dira bisitatzen dituzun hurrengoan.</translation>
 <translation id="7192537357091279678">Ordenagailuen unitateak eta biltegiratzea</translation>
@@ -3004,6 +3007,7 @@ Xehetasun gehiago:
 <translation id="7400418766976504921">URLa</translation>
 <translation id="7403392780200267761">Fitxa partekatzeko, partekatu esteka, sortu QR kode bat, igorri fitxa, etab.</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> gailuak kudeatzailea du</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> domeinuak aplikazio batzuk instalatu ditu, funtzio gehigarriak izan ditzazun. Aplikazioek zure datu batzuk atzi ditzakete.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows ordenagailuan Superfish softwarea badarabilzu ikusiko duzu errore hori.&lt;/p&gt;
       &lt;p&gt;Egin urrats hauek softwarea aldi baterako desgaitu eta sarean sartu ahal izateko. Administratzailearen pribilegioak beharko dituzu.&lt;/p&gt;
       &lt;ol&gt;
@@ -3483,6 +3487,7 @@ Xehetasun gehiago:
 <translation id="8349305172487531364">Laster-marken barra</translation>
 <translation id="8351131234907093545">Sortu oharra</translation>
 <translation id="835203957414790336">Inprimatzen dituzun orrietako edukia eta inprimagailuari buruzko informazioa Google Cloud-i edo hirugarrenei bidaltzen zaizkie eduki hori azter dezaten; adibidez, baliteke orrian kontuzko daturik dagoen bilatzea.</translation>
+<translation id="8352849934814541340">Gailuaren administratzaileak aplikazio batzuk instalatu ditu, funtzio gehigarriak izan ditzazun. Aplikazioek zure datu batzuk atzi ditzakete.</translation>
 <translation id="8355270400102541638">Gailuko hutsegitearen testuingurua:</translation>
 <translation id="8363502534493474904">Hegaldi modua desaktibatu.</translation>
 <translation id="8364627913115013041">Ez da ezarri.</translation>
@@ -3731,6 +3736,7 @@ Xehetasun gehiago:
 <translation id="8903921497873541725">Handitu</translation>
 <translation id="890493561996401738">"Kendu iradokizuna" botoia, sakatu Sartu kentzeko, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 in</translation>
+<translation id="8918062451146297192">Txartel birtualaren CVCa</translation>
 <translation id="8919740778133505789">Kiroletako autoak</translation>
 <translation id="8919895429178014996">Ezkutatu elementu guztiak</translation>
 <translation id="8922013791253848639">Eman beti iragarkiak webgune honetan erakusteko baimena</translation>

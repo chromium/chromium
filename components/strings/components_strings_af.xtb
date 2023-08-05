@@ -566,7 +566,9 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2148613324460538318">Voeg kaart by</translation>
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="2149968176347646218">Verbinding is nie veilig nie</translation>
+<translation id="2152495481414285304">Apps</translation>
 <translation id="2153609454945889823">Wil jy Google Play Dienste vir AR installeer?</translation>
+<translation id="2154144347038514978">Begin outomaties op jou toestel</translation>
 <translation id="2154484045852737596">Wysig kaart</translation>
 <translation id="2154739667870063220">Herselflaai</translation>
 <translation id="2155260325161282517">5x7 dm.</translation>
@@ -2911,6 +2913,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7186833457841277072">Koevert (inkstraal)</translation>
 <translation id="7186840261985974511">Koevert #12</translation>
 <translation id="718872491229180389">Rasieleiding</translation>
+<translation id="7188840756966467339">Herbegin en pas beleide toe</translation>
 <translation id="7192188280913829296">Die kenmerk "vendor_id" moet ook gespesifiseer wees.</translation>
 <translation id="7192203810768312527">Maak <ph name="SIZE" /> beskikbaar. Sommige werwe sal dalk stadiger laai met jou volgende besoek.</translation>
 <translation id="7192537357091279678">Rekenaarhardeskyf en -berging</translation>
@@ -3009,6 +3012,7 @@ Bykomende besonderhede:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Deel hierdie oortjie deur die skakel te deel, 'n QR-kode te skep, uit te saai, en meer</translation>
 <translation id="7403591733719184120">Jou <ph name="DEVICE_NAME" /> word bestuur</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> het apps vir bykomende funksies geïnstalleer. Apps het toegang tot sommige van jou data.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Jy sal hierdie fout sien as jy Superfish-sagteware op jou Windows-rekenaar het.&lt;/p&gt;
       &lt;p&gt;Volg hierdie stappe om die sagteware tydelik te deaktiveer sodat jy aan die web kan koppel. Jy het administrateursvoorregte nodig.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3492,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8351131234907093545">Skep nota</translation>
 <translation id="835203957414790336">Die inhoud van bladsye wat jy druk, en inligting oor jou drukker word na Google Wolk of derde partye toe gestuur vir ontleding. Dit kan byvoorbeeld vir sensitiewe data geskandeer word.</translation>
+<translation id="8352849934814541340">Die administrateur van hierdie toestel het apps vir bykomende funksies geïnstalleer. Apps het toegang tot sommige van jou data.</translation>
 <translation id="8355270400102541638">Konteks van plaaslike omval:</translation>
 <translation id="8363502534493474904">Vliegtuigmodus afskakel</translation>
 <translation id="8364627913115013041">Nie gestel nie.</translation>
@@ -3736,6 +3741,7 @@ Bykomende besonderhede:
 <translation id="8903921497873541725">Zoem in</translation>
 <translation id="890493561996401738">Verwyder Voorstel-knoppie; druk Enter om te verwyder; <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 dm.</translation>
+<translation id="8918062451146297192">CVC vir virtuele kaart</translation>
 <translation id="8919740778133505789">Sportmotors</translation>
 <translation id="8919895429178014996">Versteek alle items</translation>
 <translation id="8922013791253848639">Laat advertensies altyd op hierdie werf toe</translation>

@@ -210,6 +210,7 @@
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2269277877025820298">مشاهده جزئیات بیشتر</translation>
 <translation id="2273327106802955778">منوی بیشتر</translation>
+<translation id="2275480389219976105">نشانی پیدا شد</translation>
 <translation id="2286505070150039482">نوشتار برجسته‌شده</translation>
 <translation id="2287614783861766820">{count,plural, =1{این نشانی از این دستگاه حذف خواهد شد.}one{این نشانی از این دستگاه حذف خواهد شد.}other{این نشانی‌ها از این دستگاه حذف خواهند شد.}}</translation>
 <translation id="2297822946037605517">اشتراک‌گذاری این صفحه</translation>
@@ -542,6 +543,7 @@
 <translation id="430793432425771671">همگام‌سازی همه چیز</translation>
 <translation id="4309403553630140242">برای اطلاعات بیشتر دو ضربه بزنید</translation>
 <translation id="430967081421617822">از ابتدا تا الآن</translation>
+<translation id="4331177082088332784">‏می‌توانید این گزینه را در BEGIN_LINK تنظیمات محتوا END_LINK مدیریت کنید</translation>
 <translation id="4334428914252001502">۱ مقاله خوانده‌نشده.</translation>
 <translation id="4338650699862464074">‏نشانی وب صفحه‌هایی را که بازدید می‌کنید برای Google ارسال می‌کند.</translation>
 <translation id="4342054591427973606">{count,plural, =1{این نشانی از این دستگاه و دیگر دستگاه‌های وارد‌شده به حسابتان حذف خواهد شد.}one{این نشانی از این دستگاه و دیگر دستگاه‌های وارد‌شده به حسابتان حذف خواهد شد.}other{این نشانی‌ها از این دستگاه و دیگر دستگاه‌های وارد‌شده به حسابتان حذف خواهند شد.}}</translation>
@@ -1068,6 +1070,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="734758817008927353">گزینه‌های ذخیره کارت</translation>
+<translation id="7349129508108954623">‏به Chrome اجازه می‌دهد برای ارائه مسیرها و اطلاعات محلی به شما در نشانی‌های شناسایی‌شده از Google Maps استفاده کند.</translation>
 <translation id="7351537303876921605">‏در Context Menu (منوی بافت) روی Create Link (ایجاد پیوند) ضربه بزنید</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353432112255316844">تأیید کنید هویتتان</translation>
@@ -1124,6 +1127,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7719038820139380048">برای دریافت محتوا براساس علایقتان، به سیستم وارد شوید.</translation>
 <translation id="7720410380936703141">امتحان مجدد</translation>
 <translation id="7726702057919861819">منو ← سابقه ← پاک کردن داده‌های مرور</translation>
+<translation id="7729458878441927652">برای دیدن برگه‌های دستگاه‌های دیگرتان، برگه‌ها و سابقه را همگام‌سازی کنید.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. فقط در این دستگاه.</translation>
 <translation id="7738120385185846461">گزارش مشکل…</translation>
 <translation id="7741325291586284254">صفحه برگه ناشناس جدید</translation>

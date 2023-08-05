@@ -141,6 +141,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1557622599341396706">Zobrazit název plochy</translation>
 <translation id="1569384531973824928">Tímto povolíte přístup všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
+<translation id="1571697193564730395">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
@@ -579,6 +580,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3563775809269155755">Aktivovat hotspot</translation>
 <translation id="3566240529365775567">Právě otevřeno</translation>
 <translation id="3571734092741541777">Nastavit</translation>
+<translation id="3572988532398145777">Oznámení nelze rozbalit, když je otevřený panel. Nejdříve zavřete panel níže.</translation>
 <translation id="3573179567135747900">Změnit zpět na jazyk <ph name="FROM_LOCALE" /> (vyžaduje restart)</translation>
 <translation id="3576141592585647168">Změnit časové pásmo</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
@@ -687,6 +689,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3990002060657467458">Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky.</translation>
 <translation id="3995138139523574647">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="40062176907008878">Psaní rukou</translation>
+<translation id="4011112806063830608">Režim Nerušit je zapnutý.</translation>
 <translation id="4017989525502048489">Laserové ukazovátko</translation>
 <translation id="401993194061514265">Značka není k dispozici. Znovu otevřete Screencast.</translation>
 <translation id="4021716437419160885">Posunout dolů</translation>
@@ -720,6 +723,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4165275524535002941">Kabel možná nepodporuje displeje</translation>
+<translation id="4177415338862979658">Kliknutím zobrazíte podrobnosti</translation>
 <translation id="4177913004758410636">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dne zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4185671786623711291">Přesunout aktivní okno na plochu vpravo</translation>
@@ -1438,6 +1442,7 @@ Nová instalace</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrátor resetuje vaši eSIM. Může to trvat několik minut.</translation>
 <translation id="7313193732017069507">Rozbalit fotoaparát</translation>
+<translation id="7316261577130609484">Přidat nový úkol</translation>
 <translation id="7340731148882810149">Nabídka automatických kliknutí</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
@@ -1590,6 +1595,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7944023924886109030">Zobrazit všechny události pro dnešek</translation>
 <translation id="7947798320695032612">Aplikace <ph name="APP_NAME" /> chce použít tuto hardwarovou komponentu: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Ztlumit klávesnici</translation>
+<translation id="7963689218131240420">Režim Nerušit je vypnutý.</translation>
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vyberte složku…</translation>
 <translation id="797512352675305461">Zapnout nebo vypnout lupu celé obrazovky</translation>
@@ -1841,6 +1847,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9080073830732419341">Kamera byl připnuta do levého horního rohu</translation>
 <translation id="9080132581049224423">Přejetím nahoru se vrátíte na plochu</translation>
 <translation id="9080206825613744995">Mikrofon je používán.</translation>
+<translation id="908451241440060346">Když je zapnutý režim Nerušit, jsou vypnuta oznámení</translation>
 <translation id="9084606467167974638">Přepnout pozici nabídky</translation>
 <translation id="9085962983642906571">Baterie je udržována na 80 %, aby se prodloužila její životnost.</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>

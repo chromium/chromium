@@ -568,6 +568,7 @@
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नाही</translation>
 <translation id="2152495481414285304">ॲप्लिकेशन</translation>
 <translation id="2153609454945889823">Google Play Services for AR इंस्टॉल करायचे आहे का?</translation>
+<translation id="2154144347038514978">तुमच्या डिव्हाइसवर ऑटो-स्टार्ट</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2154739667870063220">रीबूट करा</translation>
 <translation id="2155260325161282517">५ x ७ इं</translation>
@@ -2912,6 +2913,7 @@
 <translation id="7186833457841277072">एन्व्हलप (इंकजेट)</translation>
 <translation id="7186840261985974511">एन्व्हलप #१२</translation>
 <translation id="718872491229180389">चीअरलीडिंग</translation>
+<translation id="7188840756966467339">रीस्टार्ट करा आणि धोरणे लागू करा</translation>
 <translation id="7192188280913829296">ॲट्रिब्यूट "vendor_id" देखील नमूद करणे आवश्यक आहे.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> जागा मोकळी करते. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी धीम्या गतीने लोड होऊ शकतात.</translation>
 <translation id="7192537357091279678">कॉंप्युटर ड्राइव्ह आणि स्टोरेज</translation>
@@ -3010,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">लिंक शेअर करून, QR कोड तयार करून, कास्ट करून आणि आणखी बऱ्याच पर्यायांद्वारे हा टॅब शेअर करा</translation>
 <translation id="7403591733719184120">तुमचे <ph name="DEVICE_NAME" /> व्यवस्थापित केले आहे</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ने अतिरिक्त फंक्शनसाठी अ‍ॅप्लिकेशन इंस्टॉल केली आहेत. अ‍ॅप्लिकेशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
 <translation id="7407424307057130981">&lt;p&gt;जर तुमच्या Windows कॉंप्युटरवर Superfish सॉफ्टवेअर असेल, तर तुम्हाला हा एरर दिसेल.&lt;/p&gt;
     &lt;p&gt;सॉफ्टवेअरला तात्पुरत्या स्वरुपात बंद करण्यासाठी या पायऱ्यांनुसार कृती करा, जेणेकरून तुम्‍ही ते वेबवर मिळवू शकाल. तुमच्याकडे ॲडमिनिस्ट्रेटरचे अधिकार असणे आवश्यक आहे.&lt;/p&gt;
     &lt;ol&gt;
@@ -3489,6 +3492,7 @@
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="835203957414790336">तुम्ही प्रिंट करता त्या पेजचा आशय आणि तुमच्या प्रिंटरविषयीची माहिती विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांना पाठवली जाते. उदाहरणार्थ, तो संवेदनशील डेटासाठी स्कॅन केला जाऊ शकतो.</translation>
+<translation id="8352849934814541340">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी अ‍ॅप्लिकेशन इंस्टॉल केली आहेत. अ‍ॅप्लिकेशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>
 <translation id="8364627913115013041">सेट केलेले नाही.</translation>
@@ -3737,6 +3741,7 @@
 <translation id="8903921497873541725">झूम इन करा</translation>
 <translation id="890493561996401738">सूचना बटण काढा, काढण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इंच</translation>
+<translation id="8918062451146297192">व्हर्च्युअल कार्डसाठी CVC</translation>
 <translation id="8919740778133505789">स्पोर्ट्स कार</translation>
 <translation id="8919895429178014996">सर्व आयटम लपवा</translation>
 <translation id="8922013791253848639">या साइटवर कायम जाहिरातींना परवानगी द्या</translation>

@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">Додајте картичка</translation>
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2149968176347646218">Врската не е безбедна</translation>
+<translation id="2152495481414285304">Апликации</translation>
 <translation id="2153609454945889823">Да се инсталира „Услуги на Google Play за AR“?</translation>
+<translation id="2154144347038514978">Автоматско стартување на вашиот уред</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2154739667870063220">Рестартирај</translation>
 <translation id="2155260325161282517">5 x 7 инчи</translation>
@@ -2911,6 +2913,7 @@
 <translation id="7186833457841277072">Коверт (за мастилен печатач)</translation>
 <translation id="7186840261985974511">Плик #12</translation>
 <translation id="718872491229180389">Навивање</translation>
+<translation id="7188840756966467339">Рестартирај и примени ги правилата</translation>
 <translation id="7192188280913829296">Атрибутот „vendor_id“ исто така мора да биде одреден.</translation>
 <translation id="7192203810768312527">Ќе ослободи <ph name="SIZE" />. Некои сајтови може да се вчитуваат побавно при вашата следна посета.</translation>
 <translation id="7192537357091279678">Дискови и капацитет на компјутери</translation>
@@ -3009,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Споделете ја картичкава со споделување на линкот, создавање QR-код, емитување и друго</translation>
 <translation id="7403591733719184120">Вашиот <ph name="DEVICE_NAME" /> е управуван</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> инсталирал апликации за дополнителни функции. Апликациите имаат пристап до некои од податоците.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Грешкава ќе ја видите ако имате софтвер Superfish на компјутерот со Windows.&lt;/p&gt;
       &lt;p&gt;Следете ги овие чекори за да го оневозможите софверот привремено за да може да отидете на интернет. Ќе ви бидат потребни привилегии на администратор.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3492,7 @@
 <translation id="8349305172487531364">Лента со обележувачи</translation>
 <translation id="8351131234907093545">Создајте белешка</translation>
 <translation id="835203957414790336">Содржините на страниците што ги печатите и податоците за вашиот печатач се испраќаат на Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци.</translation>
+<translation id="8352849934814541340">Администраторот на уредов инсталирал апликации за дополнителни функции. Апликациите имаат пристап до некои од податоците.</translation>
 <translation id="8355270400102541638">Контекст на локален пад:</translation>
 <translation id="8363502534493474904">Да го исклучите авионскиот режим</translation>
 <translation id="8364627913115013041">Не е поставено.</translation>
@@ -3736,6 +3741,7 @@
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="890493561996401738">Копче за отстранување предлог, притиснете Enter за да отстраните, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8918062451146297192">CVC за виртуелна картичка</translation>
 <translation id="8919740778133505789">Спортски автомобили</translation>
 <translation id="8919895429178014996">Скриј ги сите ставки</translation>
 <translation id="8922013791253848639">Секогаш дозволувај реклами на сајтов</translation>

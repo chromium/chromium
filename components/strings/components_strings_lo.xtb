@@ -566,7 +566,9 @@
 <translation id="2148613324460538318">ເພີ່ມບັດ</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2149968176347646218">ການເຊື່ອມຕໍ່ບໍ່ປອດໄພ</translation>
+<translation id="2152495481414285304">ແອັບພລິເຄຊັນ</translation>
 <translation id="2153609454945889823">ຕິດຕັ້ງບໍລິການ Google Play ສຳລັບ AR ບໍ?</translation>
+<translation id="2154144347038514978">ເລີ່ມອັດຕະໂນມັດຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="2154484045852737596">ແກ້ໄຂບັດ</translation>
 <translation id="2154739667870063220">ປິດ​ເປີດ​ໃໝ່</translation>
 <translation id="2155260325161282517">5 x 7 ນິ້ວ</translation>
@@ -2911,6 +2913,7 @@
 <translation id="7186833457841277072">ຊອງ (Inkjet)</translation>
 <translation id="7186840261985974511">Envelope #12</translation>
 <translation id="718872491229180389">ເຊຍລີດເດີ</translation>
+<translation id="7188840756966467339">ຣີສະຕາດ ແລະ ນຳໃຊ້ນະໂຍບາຍ</translation>
 <translation id="7192188280913829296">ຈະຕ້ອງລະບຸຄຸນສົມບັດ "vendor_id" ນຳ.</translation>
 <translation id="7192203810768312527">ຂະຫຍາຍ <ph name="SIZE" />. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນຄັ້ງຕໍ່ໄປທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
 <translation id="7192537357091279678">Drives ແລະ ບ່ອນຈັດເກັບຂໍ້ມູນຄອມພິວເຕີ</translation>
@@ -3009,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ແບ່ງປັນແຖບນີ້ໂດຍການແບ່ງປັນລິ້ງ, ການສ້າງລະຫັດ QR, ການສົ່ງສັນຍານ ແລະ ອື່ນໆ</translation>
 <translation id="7403591733719184120">ມີການຈັດການ <ph name="DEVICE_NAME" /> ຂອງທ່ານ</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ໄດ້ຕິດຕັ້ງແອັບພລິເຄຊັນສຳລັບຄຸນສົມບັດເພີ່ມເຕີມແລ້ວ. ແອັບພລິເຄຊັນມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານ.</translation>
 <translation id="7407424307057130981">&lt;p&gt;ທ່ານຈະເຫັນຂໍ້ຜິດພາດນີ້ຖ້າທ່ານມີຊອບແວ Superfish ຢູ່ໃນຄອມພິວເຕີ Windows ຂອງທ່ານ.&lt;/p&gt;
       &lt;p&gt;ປະຕິບັດຕາມຂັ້ນຕອນເຫຼົ່ານີ້ເພື່ອປິດນຳໃຊ້ຊອບແວຊົ່ວຄາວ ເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າເວັບໄດ້. ທ່ານຈະຈຳເປັນຕ້ອງມີສິດທິຂອງຜູ້ເບິ່ງແຍງລະບົບ.&lt;/p&gt;
       &lt;ol&gt;
@@ -3488,6 +3492,7 @@
 <translation id="8349305172487531364">ແຖບບຸກມາກສ໌</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>
 <translation id="835203957414790336">ເນື້ອຫາຂອງໜ້າທີ່ທ່ານພິມ ແລະ ຂໍ້ມູນກ່ຽວກັບເຄື່ອງພິມຂອງທ່ານແມ່ນຖືກສົ່ງໄປໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ມັນອາດຖືກສະແກນຫາຂໍ້ມູນລະອຽດອ່ອນ.</translation>
+<translation id="8352849934814541340">ຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້ໄດ້ຕິດຕັ້ງແອັບພລິເຄຊັນສຳລັບຟັງຊັນເພີ່ມເຕີມແລ້ວ. ແອັບພລິເຄຊັນມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານ.</translation>
 <translation id="8355270400102541638">ບໍລິບົດການຂັດຂ້ອງພາຍໃນເຄື່ອງ:</translation>
 <translation id="8363502534493474904">ກຳລັງປິດໂໝດເຮືອບິນ</translation>
 <translation id="8364627913115013041">ບໍ່​ໄດ້ຕັ້ງ​.</translation>
@@ -3736,6 +3741,7 @@
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="890493561996401738">ລຶບປຸ່ມການແນະນຳອອກ, ກົດ Enter ເພື່ອລຶບອອກ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ນິ້ວ</translation>
+<translation id="8918062451146297192">CVC ສຳລັບບັດສະເໝືອນ</translation>
 <translation id="8919740778133505789">ລົດສະປອດ</translation>
 <translation id="8919895429178014996">ເຊື່ອງລາຍການທັງໝົດ</translation>
 <translation id="8922013791253848639">ອະນຸຍາດໂຄສະນາໃນເວັບໄຊນີ້ທຸກເທື່ອ</translation>

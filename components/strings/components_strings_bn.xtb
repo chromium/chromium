@@ -569,6 +569,7 @@
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
 <translation id="2152495481414285304">অ্যাপ্লিকেশন</translation>
 <translation id="2153609454945889823">Google Play Services for AR ইনস্টল করবেন?</translation>
+<translation id="2154144347038514978">আপনার ডিভাইসে অটোমেটিক চালু করুন</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
 <translation id="2154739667870063220">রিবুট করুন</translation>
 <translation id="2155260325161282517">৫ x ৭ ইঞ্চি</translation>
@@ -2912,6 +2913,7 @@
 <translation id="7186833457841277072">এনভেলপ (ইঙ্কজেট)</translation>
 <translation id="7186840261985974511">এনভেলপ #১২</translation>
 <translation id="718872491229180389">চিয়ারলিডিং</translation>
+<translation id="7188840756966467339">রিস্টার্ট করে নীতি প্রয়োগ করুন</translation>
 <translation id="7192188280913829296">"vendor_id" অ্যাট্রিবিউটও নির্দিষ্ট করতে হবে।</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> জায়গা খালি করে। পরের বার যখন দেখবেন তখন কিছু সাইট লোড হতে দেরি হতে পারে।</translation>
 <translation id="7192537357091279678">কম্পিউটার ড্রাইভ ও স্টোরেজ</translation>
@@ -3010,6 +3012,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">লিঙ্ক শেয়ার করে, QR কোড তৈরি করে, কাস্টিং করে বা আরও অন্য বিকল্পের সাহায্যে এই ট্যাব শেয়ার করুন</translation>
 <translation id="7403591733719184120">আপনার <ph name="DEVICE_NAME" /> ম্যানেজ করা হচ্ছে</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> অতিরিক্ত ফাংশনের জন্য অ্যাপ্লিকেশন ইনস্টল করেছে। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করেছে।</translation>
 <translation id="7407424307057130981">&lt;p&gt;আপনার Windows কম্পিউটারে Superfish সফ্টওয়্যারটি ইনস্টল করা থাকলে এই সমস্যাটি হবে।&lt;/p&gt;
       &lt;p&gt;ইন্টারনেটে কানেক্ট করার জন্য এই সফ্টওয়্যারটি সাময়িকভাবে বন্ধ রাখতে এই ধাপগুলি অনুসরণ করুন। এর জন্য অ্যাডমিনিস্ট্রেটরের সুবিধা থাকতে হবে।&lt;/p&gt;
       &lt;ol&gt;
@@ -3489,6 +3492,7 @@
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>
 <translation id="835203957414790336">আপনার প্রিন্ট করা পৃষ্ঠার কন্টেন্ট এবং আপনার প্রিন্টার সম্পর্কে তথ্য বিশ্লেষণের জন্য Google ক্লাউড বা তৃতীয় পক্ষের কাছে পাঠানো হয়। যেমন, কোনও সংবেদনশীল ডেটা আছে কিনা জানার জন্য এটি হয়ত স্ক্যান করা হতে পারে।</translation>
+<translation id="8352849934814541340">এই ডিভাইসের অ্যাডমিনিস্ট্রেটর অতিরিক্ত ফাংশনের জন্য এক্সটেনশন ইনস্টল করেছেন। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করেছে।</translation>
 <translation id="8355270400102541638">স্থানীয় স্তরে ক্র্যাশ রিপোর্টের প্রসঙ্গ:</translation>
 <translation id="8363502534493474904">বিমান মোড বন্ধ করে দেখুন</translation>
 <translation id="8364627913115013041">সেট করা নেই৷</translation>
@@ -3737,6 +3741,7 @@
 <translation id="8903921497873541725">জুম বাড়ান</translation>
 <translation id="890493561996401738">সাজেশন বোতাম সরান, সরাতে Enter বোতাম প্রেস করুন, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">৮ x ১০ ইঞ্চি</translation>
+<translation id="8918062451146297192">ভার্চুয়াল কার্ডের জন্য CVC</translation>
 <translation id="8919740778133505789">স্পোর্টস কার</translation>
 <translation id="8919895429178014996">সবকটি আইটেম লুকান</translation>
 <translation id="8922013791253848639">এই সাইটে সবসময় বিজ্ঞাপন দেখানোর অনুমতি দিন</translation>

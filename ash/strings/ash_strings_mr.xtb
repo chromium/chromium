@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1557622599341396706">डेस्‍कचे नाव दाखवा</translation>
 <translation id="1569384531973824928">हे कॅमेरा आणि मायक्रोफोन वापरण्याच्या परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
+<translation id="1571697193564730395">व्यत्यय आणू नका टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">मॅग्निफायर सुरू असताना झूम आउट करा</translation>
 <translation id="1586324912145647027">एक ते आठ डेस्कवर जा</translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">हॉटस्पॉट सुरू करा</translation>
 <translation id="3566240529365775567">आताच उघडलेली</translation>
 <translation id="3571734092741541777">सेट अप</translation>
+<translation id="3572988532398145777">पॅनल उघडे असताना, तुम्ही सूचनांचा विस्तार करू शकत नाही. आधी खाली पॅनल बंद करा.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"मध्ये परत बदला (रीस्टार्ट करणे आवश्यक)</translation>
 <translation id="3576141592585647168">टाइमझोन बदला</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
@@ -687,6 +689,7 @@
 <translation id="3990002060657467458">वाय-फाय, ब्लूटूथ आणि व्हॉल्यूम यांसारखी वारंवार वापरली जाणारी नियंत्रणे क्विक सेटिंग्जमध्ये आहेत. तुम्ही येथे जाऊन स्क्रीनशॉटदेखील घेऊ शकता.</translation>
 <translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
+<translation id="4011112806063830608">व्यत्यय आणू नका सुरू आहे.</translation>
 <translation id="4017989525502048489">लेझर पॉइंट</translation>
 <translation id="401993194061514265">मार्कर उपलब्ध नाही. Screencast पुन्हा उघडा.</translation>
 <translation id="4021716437419160885">खाली स्क्रोल करा</translation>
@@ -720,6 +723,7 @@
 <translation id="4146833061457621061">म्युझिक प्ले करा</translation>
 <translation id="4150201353443180367">डिस्प्ले करा</translation>
 <translation id="4165275524535002941">केबल कदाचित डिस्प्लेला सपोर्ट करणार नाही</translation>
+<translation id="4177415338862979658">तपशील तपासण्यासाठी क्लिक करा</translation>
 <translation id="4177913004758410636">{0,plural, =1{डिव्हाइस एका दिवसाच्या आत अपडेट करा}other{डिव्हाइस # दिवसांच्या आत अपडेट करा}}</translation>
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4185671786623711291">अ‍ॅक्टिव्ह विंडो ही उजवीकडील डेस्‍कवर हलवा</translation>
@@ -1438,6 +1442,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="7313193732017069507">कॅमेराचा विस्तार करा</translation>
+<translation id="7316261577130609484">नवीन टास्क जोडा</translation>
 <translation id="7340731148882810149">ऑटोमॅटिक क्लिक मेनू</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="7348093485538360975">ऑन-स्क्रीन कीबोर्ड</translation>
@@ -1590,6 +1595,7 @@
 <translation id="7944023924886109030">आजचे सर्व इव्‍हेंट पहा</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ला तुमचे <ph name="DEVICE_NAME" /> वापरायचे आहे</translation>
 <translation id="7951630946012935453">कीबोर्ड डिम करा</translation>
+<translation id="7963689218131240420">व्यत्यय आणू नका बंद आहे.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> कडून</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
 <translation id="797512352675305461">फुलस्क्रीन मॅग्निफायर सुरू किंवा बंद करा</translation>
@@ -1842,6 +1848,7 @@
 <translation id="9080073830732419341">कॅमेरा सर्वात वरच्या डाव्या कोपर्‍यात स्नॅप केला आहे</translation>
 <translation id="9080132581049224423">होमवर जाण्यासाठी वर स्वाइप करा</translation>
 <translation id="9080206825613744995">मायक्रोफोन वापरात आहे.</translation>
+<translation id="908451241440060346">व्यत्यय आणू नका सुरू असते, तेव्हा सूचना म्यूट केल्या जातात</translation>
 <translation id="9084606467167974638">मेनूची जागा टॉगल करा</translation>
 <translation id="9085962983642906571">बॅटरी लाइफ वाढवण्यासाठी प्लग इन केलेले असताना तुमची बॅटरी ८०% वर ठेवली जाते.</translation>
 <translation id="9089416786594320554">इनपुट पद्धती</translation>

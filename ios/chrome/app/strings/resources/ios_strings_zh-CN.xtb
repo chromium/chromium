@@ -145,7 +145,7 @@
 <translation id="1815941218935345331">密码</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
-<translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 帐号 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
 <translation id="1836891464494477513">{count,plural, =1{书签已保存到您的 Google 帐号 {email}}other{书签已保存到您的 Google 帐号 {email}}}</translation>
 <translation id="1870148520156231997">显示密码</translation>
@@ -551,7 +551,7 @@
 <translation id="4371526908359194219">电子邮件通知</translation>
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4375040482473363939">QR 码搜索</translation>
-<translation id="4378154925671717803">电话机</translation>
+<translation id="4378154925671717803">电话</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
 <translation id="4405320213589929829">使用网页上的地址来获取本地信息和路线。</translation>
 <translation id="4420409367264901497">修改书签</translation>

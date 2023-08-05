@@ -141,6 +141,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1557622599341396706">Tunjukkan nama meja</translation>
 <translation id="1569384531973824928">Tindakan ini akan membenarkan akses kepada semua apl dan laman web dengan kebenaran kamera dan mikrofon. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
+<translation id="1571697193564730395">Togol Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zum keluar apabila penggadang dihidupkan</translation>
 <translation id="1586324912145647027">Pergi ke meja 1 hingga 8</translation>
 <translation id="1589090746204042747">Akses semua aktiviti anda dalam sesi ini</translation>
@@ -579,6 +580,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3563775809269155755">Dayakan tempat liputan</translation>
 <translation id="3566240529365775567">Dibuka sebentar tadi</translation>
 <translation id="3571734092741541777">Sediakan</translation>
+<translation id="3572988532398145777">Anda tidak boleh mengembangkan pemberitahuan semasa panel dibuka. Tutup panel di bawah dahulu.</translation>
 <translation id="3573179567135747900">Tukar kembali kepada "<ph name="FROM_LOCALE" />" (perlu dimulakan semula)</translation>
 <translation id="3576141592585647168">Tukar zon waktu</translation>
 <translation id="3577473026931028326">Kesilapan telah berlaku. Cuba lagi.</translation>
@@ -688,6 +690,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3990002060657467458">Kawalan yang kerap digunakan seperti Wi-Fi, Bluetooth dan kelantangan berada dalam Tetapan Pantas. Anda juga boleh mengakses di sini untuk mengambil tangkapan skrin.</translation>
 <translation id="3995138139523574647">Peranti USB-C (port belakang sebelah kanan)</translation>
 <translation id="40062176907008878">Tulisan Tangan</translation>
+<translation id="4011112806063830608">Jangan Ganggu dihidupkan.</translation>
 <translation id="4017989525502048489">Penuding laser</translation>
 <translation id="401993194061514265">Penanda tidak tersedia. Buka semula Screencast.</translation>
 <translation id="4021716437419160885">Tatal ke bawah</translation>
@@ -721,6 +724,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4146833061457621061">Mainkan muzik</translation>
 <translation id="4150201353443180367">Paparan</translation>
 <translation id="4165275524535002941">Kabel mungkin tidak menyokong paparan</translation>
+<translation id="4177415338862979658">Klik untuk menyemak butiran</translation>
 <translation id="4177913004758410636">{0,plural, =1{Kemas kini peranti dalam masa sehari}other{Kemas kini peranti dalam masa # hari}}</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4185671786623711291">Alih tetingkap aktif kepada meja di sebelah kanan</translation>
@@ -1439,6 +1443,7 @@ Pemasangan baharu</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Pentadbir sedang menetapkan semula eSIM anda. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="7313193732017069507">Kembangkan kamera</translation>
+<translation id="7316261577130609484">Tambahkan tugasan baharu</translation>
 <translation id="7340731148882810149">Menu klik automatik</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
@@ -1591,6 +1596,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7944023924886109030">Lihat semua peristiwa hari ini</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
+<translation id="7963689218131240420">Jangan Ganggu dimatikan.</translation>
 <translation id="7963992254934562106">Daripada <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder...</translation>
 <translation id="797512352675305461">Hidupkan atau matikan penggadang skrin penuh</translation>
@@ -1843,6 +1849,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9080073830732419341">Kamera diautojajar ke penjuru kiri sebelah atas</translation>
 <translation id="9080132581049224423">Leret ke atas untuk mencapai laman utama</translation>
 <translation id="9080206825613744995">Mikrofon sedang digunakan.</translation>
+<translation id="908451241440060346">Pemberitahuan diredam apabila Jangan Ganggu dihidupkan</translation>
 <translation id="9084606467167974638">Togol kedudukan menu</translation>
 <translation id="9085962983642906571">Bateri anda dipastikan pada tahap 80% semasa palam dipasangkan untuk melanjutkan hayat bateri.</translation>
 <translation id="9089416786594320554">Kaedah input</translation>

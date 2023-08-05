@@ -568,6 +568,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2152495481414285304">Aplicaciones</translation>
 <translation id="2153609454945889823">¿Quieres instalar los Servicios de Google Play para RA?</translation>
+<translation id="2154144347038514978">Inicio automático en el dispositivo</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2155260325161282517">12.7 × 17.8 cm (5 × 7 in)</translation>
@@ -2913,6 +2914,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7186833457841277072">Sobre (inyección de tinta)</translation>
 <translation id="7186840261985974511">Sobre n.º 12</translation>
 <translation id="718872491229180389">Animación deportiva</translation>
+<translation id="7188840756966467339">Reiniciar y aplicar políticas</translation>
 <translation id="7192188280913829296">También se debe especificar el atributo "vendor_id".</translation>
 <translation id="7192203810768312527">Esta acción libera hasta <ph name="SIZE" />. Es posible que algunos sitios carguen más lento en tu próxima visita.</translation>
 <translation id="7192537357091279678">Unidades y almacenamiento para computadoras</translation>
@@ -3011,6 +3013,7 @@ Detalles adicionales:
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
 <translation id="7403591733719184120">Tu <ph name="DEVICE_NAME" /> está administrado</translation>
+<translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Se muestra este error si tienes el software Superfish en tu computadora con Windows.&lt;/p&gt;
       &lt;p&gt;Realiza estos pasos para inhabilitar el software de forma temporal a fin de que puedas acceder a la Web. Necesitarás privilegios de administrador.&lt;/p&gt;
       &lt;ol&gt;
@@ -3490,6 +3493,7 @@ Detalles adicionales:
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="835203957414790336">El contenido de las páginas que imprimes y la información sobre tu impresora se envían a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analice para detectar datos sensibles.</translation>
+<translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>
 <translation id="8363502534493474904">Desactivar el modo de avión.</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
@@ -3739,6 +3743,7 @@ Detalles adicionales:
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="890493561996401738">Botón Quitar sugerencia; presiona Intro para quitarla, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">20.3 × 25.4 cm (8 × 10 in)</translation>
+<translation id="8918062451146297192">CVC para tarjeta virtual</translation>
 <translation id="8919740778133505789">Automóviles deportivos</translation>
 <translation id="8919895429178014996">Ocultar todos los elementos</translation>
 <translation id="8922013791253848639">Permite mostrar anuncios en este sitio</translation>

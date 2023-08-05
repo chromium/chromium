@@ -210,6 +210,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2269277877025820298">Afficher plus</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
+<translation id="2275480389219976105">Adresse trouvée</translation>
 <translation id="2286505070150039482">Texte en surbrillance</translation>
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Cette adresse sera supprimée de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
@@ -542,6 +543,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="430793432425771671">Tout synchroniser</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
 <translation id="430967081421617822">Toutes les données</translation>
+<translation id="4331177082088332784">Vous pouvez gérer cette option dans les BEGIN_LINKParamètres de contenuEND_LINK</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie à Google les URL des pages que vous consultez.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte.}one{Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte.}other{Ces adresses seront supprimées de cet appareil et des autres appareils connectés à votre compte.}}</translation>
@@ -1069,6 +1071,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7340958967809483333">Options pour Discover</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="734758817008927353">Options d'enregistrement de la carte</translation>
+<translation id="7349129508108954623">Autorisez Chrome à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="7351537303876921605">Appuyez sur "Créer un lien" dans le menu contextuel</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7353432112255316844">Confirmer votre identité</translation>
@@ -1125,6 +1128,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7719038820139380048">Connectez-vous pour obtenir des contenus conformes à vos centres d'intérêt.</translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
 <translation id="7726702057919861819">Menu → Historique → Effacer les données de navigation</translation>
+<translation id="7729458878441927652">Pour voir les onglets de vos autres appareils, synchronisez vos onglets et l'historique.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Uniquement sur cet appareil.</translation>
 <translation id="7738120385185846461">Signaler un problème…</translation>
 <translation id="7741325291586284254">Page du nouvel onglet de navigation privée</translation>

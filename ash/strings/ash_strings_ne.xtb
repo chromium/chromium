@@ -141,6 +141,7 @@
 <translation id="1555130319947370107">निलो</translation>
 <translation id="1557622599341396706">डेस्कको नाम देखाइयोस्</translation>
 <translation id="1569384531973824928">तपाईंले यसो गर्नुभयो भने क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
+<translation id="1571697193564730395">Do Not Disturb अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
 <translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
@@ -579,6 +580,7 @@
 <translation id="3563775809269155755">हटस्पट अन गर्नुहोस्</translation>
 <translation id="3566240529365775567">भर्खरै खोलिएको</translation>
 <translation id="3571734092741541777">सेटअप गर्नुहोस्</translation>
+<translation id="3572988532398145777">प्यानल खुला भएका बेला सूचना एक्स्पान्ड गर्न मिल्दैन। सुरुमा तलको प्यानल बन्द गर्नुहोस्।</translation>
 <translation id="3573179567135747900">पुन: "<ph name="FROM_LOCALE" />" मा परिवर्तन गर्नुहोस् (फेरि सुरु गर्न आवश्यक छ)</translation>
 <translation id="3576141592585647168">प्रामाणिक समय परिवर्तन गर्नुहोस्</translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
@@ -687,6 +689,7 @@
 <translation id="3990002060657467458">Wi-Fi, ब्लुटुथ र भोल्युमलगायतका प्रायः प्रयोग गरिने सेटिङ द्रुत सेटिङअन्तर्गत भेट्टाउन सकिन्छ। तपाईं यहाँ गएर पनि स्क्रिनसट लिन सक्नुहुन्छ।</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
+<translation id="4011112806063830608">Do Not Disturb अन छ।</translation>
 <translation id="4017989525502048489">लेजर प्वाइन्टर</translation>
 <translation id="401993194061514265">मार्कर उपलब्ध छैन। स्क्रिनकास्ट पुनः खोल्नुहोस्।</translation>
 <translation id="4021716437419160885">तलतिर स्क्रोल गर्नुहोस्</translation>
@@ -720,6 +723,7 @@
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
 <translation id="4150201353443180367">प्रदर्शन</translation>
 <translation id="4165275524535002941">यो केबल डिस्प्लेहरूमा जोड्न मिल्दैन</translation>
+<translation id="4177415338862979658">थप जानकारीका लागि क्लिक गर्नुहोस्</translation>
 <translation id="4177913004758410636">{0,plural, =1{एक दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4185671786623711291">सक्रिय विन्डो सारेर दायाँतिरको डेस्कमा लैजानुहोस्</translation>
@@ -1438,6 +1442,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
+<translation id="7316261577130609484">नयाँ कार्य हाल्नुहोस्</translation>
 <translation id="7340731148882810149">स्वतः क्लिक गर्ने सुविधाको मेनु</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
@@ -1590,6 +1595,7 @@
 <translation id="7944023924886109030">आजका सबै कार्यक्रमहरू हेर्नुहोस्</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ले <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="7951630946012935453">किबोर्डको चमक घटाउनुहोस्</translation>
+<translation id="7963689218131240420">Do Not Disturb अफ छ।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> मार्फत</translation>
 <translation id="7968693143708939792">फोल्डर चयन गर्नुहोस्...</translation>
 <translation id="797512352675305461">फुल स्क्रिन म्याग्निफायर अन वा अफ गर्नुहोस्</translation>
@@ -1842,6 +1848,7 @@
 <translation id="9080073830732419341">क्यामेरा सिरानको बायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="9080132581049224423">गृहपृष्ठमा जान माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="9080206825613744995">माइक्रोफोन प्रयोगमा छ।</translation>
+<translation id="908451241440060346">Do Not Disturb अन हुँदा सूचनाहरू म्युट गरिन्छन्</translation>
 <translation id="9084606467167974638">मेनुको अवस्था टगल गर्नुहोस्</translation>
 <translation id="9085962983642906571">तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएकै भए तापनि उक्त डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री केही समयका लागि ८०% चार्ज गरेर राखिएको छ।</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>

@@ -5486,7 +5486,7 @@
 <translation id="5555760010546505198">色反転、色補正、拡大鏡、表示設定</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
-<translation id="5559311991468302423">アドレスを削除</translation>
+<translation id="5559311991468302423">住所を削除</translation>
 <translation id="5559768063688681413">保存済みのプリンタはありません</translation>
 <translation id="55601339223879446">ディスプレイ内のデスクトップの境界線を調整します</translation>
 <translation id="5561162485081632007">危険なイベントの発生を検出して警告します</translation>
@@ -6222,7 +6222,7 @@
 <translation id="6184099524311454384">タブを検索</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
 <translation id="6190953336330058278">スマートフォン ハブ アプリ</translation>
-<translation id="6192333916571137726">ダウンロード ファイル</translation>
+<translation id="6192333916571137726">ファイルをダウンロード</translation>
 <translation id="6192413564913825901">すべてのブックマークに移動</translation>
 <translation id="6194333736420234626">お支払い方法(&amp;P)</translation>
 <translation id="6195005504600220730">ブラウザ、OS、デバイスに関する情報の読み取り</translation>
@@ -8294,7 +8294,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> を待機しています...</translation>
 <translation id="7926423016278357561">これは私ではありません。</translation>
 <translation id="7926975587469166629">カードのニックネーム</translation>
-<translation id="7928175190925744466">このパスワードを変更しましたか？</translation>
+<translation id="7928175190925744466">このパスワードをすでに変更した場合</translation>
 <translation id="7929962904089429003">メニューを開く</translation>
 <translation id="7930294771522048157">保存したお支払い方法がここに表示されます</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> が画面と音声を共有しています。</translation>
@@ -9121,7 +9121,7 @@
 <translation id="8634348081024879304">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK" />仮想カードについて<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">再読み込みしています...</translation>
 <translation id="8636284842992792762">拡張機能を初期化しています…</translation>
-<translation id="8636323803535540285">すばやくアクセスするには、<ph name="BRAND" /> にショートカットを追加します</translation>
+<translation id="8636323803535540285">すばやくアクセスできるよう、<ph name="BRAND" /> へのショートカットを追加できます</translation>
 <translation id="8636500887554457830">サイトにポップアップの送信やリダイレクトの使用を許可しない</translation>
 <translation id="8637688295594795546">システムのアップデートが見つかりました。ダウンロードの準備をしています...</translation>
 <translation id="8639635302972078117">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>

@@ -141,6 +141,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
+<translation id="1571697193564730395">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
@@ -579,6 +580,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3563775809269155755">Habilitar el hotspot</translation>
 <translation id="3566240529365775567">Se abrió justo ahora</translation>
 <translation id="3571734092741541777">Configurar</translation>
+<translation id="3572988532398145777">No puedes expandir la notificación cuando hay un panel abierto. Primero, cierra el panel que se encuentra a continuación.</translation>
 <translation id="3573179567135747900">Volver a "<ph name="FROM_LOCALE" />" (debes reiniciar).</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
@@ -688,6 +690,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3990002060657467458">Los controles que usas con frecuencia, como Wi-Fi, Bluetooth y volumen, se encuentran en la Configuración rápida. También puedes ir aquí para tomar capturas de pantalla.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
 <translation id="40062176907008878">Escritura a mano</translation>
+<translation id="4011112806063830608">La función No interrumpir está activada.</translation>
 <translation id="4017989525502048489">Puntero láser</translation>
 <translation id="401993194061514265">Marcador no disponible. Volver a abrir Screencast.</translation>
 <translation id="4021716437419160885">Desplazar hacia abajo</translation>
@@ -721,6 +724,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4165275524535002941">Es posible que el cable no admita pantallas</translation>
+<translation id="4177415338862979658">Haz clic para ver los detalles</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo dentro de los próximos # días}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4185671786623711291">Mover la ventana activa al escritorio de la derecha</translation>
@@ -1439,6 +1443,7 @@ Nueva instalación</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">El administrador está restableciendo tu eSIM. Es posible que este proceso demore unos minutos.</translation>
 <translation id="7313193732017069507">Expandir la cámara</translation>
+<translation id="7316261577130609484">Agregar nueva tarea</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
@@ -1591,6 +1596,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7944023924886109030">Ver todos los eventos de hoy</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenuar el teclado</translation>
+<translation id="7963689218131240420">La función No interrumpir está desactivada.</translation>
 <translation id="7963992254934562106">De <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta…</translation>
 <translation id="797512352675305461">Activar o desactivar la lupa de pantalla completa</translation>
@@ -1843,6 +1849,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9080073830732419341">Se ajustó la cámara a la esquina superior izquierda</translation>
 <translation id="9080132581049224423">Desliza hacia arriba para ir a la pantalla principal</translation>
 <translation id="9080206825613744995">El micrófono está en uso.</translation>
+<translation id="908451241440060346">Se silencian las notificaciones cuando está activada la función No interrumpir</translation>
 <translation id="9084606467167974638">Cambiar la posición del menú</translation>
 <translation id="9085962983642906571">El nivel de la batería se mantiene al 80% cuando el dispositivo está enchufado para extender la duración de batería.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
