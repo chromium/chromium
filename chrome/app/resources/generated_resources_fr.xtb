@@ -12,7 +12,7 @@
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur les sites. Vous pouvez contrôler les sites auxquels elle a accès.</translation>
 <translation id="1007057452468855774">Activer le Google Play Store</translation>
 <translation id="1008186147501209563">Exporter les favoris</translation>
-<translation id="1008261151167010035"><ph name="BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, vous êtes invité à confirmer votre choix à chaque fois.</translation>
+<translation id="1008261151167010035">Le <ph name="BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, vous êtes invité à confirmer votre choix à chaque fois.</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Pour protéger vos données, des autorisations ont été supprimées pour un site que vous n'avez pas consulté depuis deux mois}one{Pour protéger vos données, des autorisations ont été supprimées pour un site que vous n'avez pas consulté depuis deux mois}other{Pour protéger vos données, des autorisations ont été supprimées pour des sites que vous n'avez pas consultés depuis deux mois}}</translation>
 <translation id="1009663062402466586">Commandes de jeu désormais disponibles</translation>
@@ -5612,7 +5612,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5787146423283493983">Accord de la clé</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
 <translation id="5788367137662787332">Désolé, impossible d'installer au moins une partition du périphérique <ph name="DEVICE_LABEL" />.</translation>
-<translation id="5789581866075720267">Pour importer des mots de passe dans <ph name="BRAND" /> sur cet appareil, sélectionnez un fichier CSV.</translation>
+<translation id="5789581866075720267">Pour importer des mots de passe dans le <ph name="BRAND" /> sur cet appareil, sélectionnez un fichier CSV.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Succès</translation>
 <translation id="5790651917470750848">Ce port existe déjà</translation>
@@ -8377,7 +8377,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8113476325385351118">Continuer à bloquer le contrôle total des appareils MIDI pour ce site</translation>
 <translation id="8115139559594092084">De votre Google Drive</translation>
 <translation id="8116972784401310538">&amp;Gestionnaire de favoris</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, vous êtes invité à confirmer votre choix à chaque fois.</translation>
+<translation id="8118276691321086429">Le <ph name="PASSWORD_MANAGER_BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, vous êtes invité à confirmer votre choix à chaque fois.</translation>
 <translation id="8118362518458010043">Désactivée par Chrome. Cette extension est peut-être dangereuse.</translation>
 <translation id="8118488170956489476">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation</translation>
 <translation id="8118515372935001629">Fréquence d'actualisation de l'affichage</translation>

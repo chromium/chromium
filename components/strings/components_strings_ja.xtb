@@ -701,7 +701,7 @@
 <translation id="2521736961081452453">フォームを作成</translation>
 <translation id="2523886232349826891">カードはこのデバイスのみに保存されます</translation>
 <translation id="2524461107774643265">その他の情報の追加</translation>
-<translation id="2526280916094749336">保存した住所は Google サービス全体で使用できます。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
+<translation id="2526280916094749336">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2527451058878391043">CVC コードはカードの表面に記載されています。カード番号の右上にある 4 桁のコードです。</translation>
 <translation id="2529899080962247600">このフィールドで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。それ以降のエントリはすべて無視されます。</translation>
 <translation id="253493526287553278">プロモーション コードの詳細を確認</translation>
@@ -1823,7 +1823,7 @@
 <translation id="5018422839182700155">このページを開けません</translation>
 <translation id="5018802455907704660">16x20 インチ</translation>
 <translation id="5019198164206649151">代替ストアの状態が不適切です</translation>
-<translation id="5019293549442035120">保存した住所は Google サービス全体で使用できます。この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存されます。</translation>
+<translation id="5019293549442035120">この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="5020776957610079374">ワールド ミュージック</translation>
 <translation id="5021557570875267742">Chrome で価格をトラッキング</translation>
 <translation id="5023310440958281426">管理者のポリシーを確認してください</translation>
@@ -2064,7 +2064,7 @@
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558083606899411167">エアコン</translation>
 <translation id="5558125320634132440">このサイトは成人向けコンテンツを含んでいる可能性があるためブロックされました</translation>
-<translation id="5559311991468302423">アドレスを削除</translation>
+<translation id="5559311991468302423">住所を削除</translation>
 <translation id="5560088892362098740">有効期限</translation>
 <translation id="55635442646131152">ドキュメントの概要</translation>
 <translation id="5565613213060953222">シークレット タブを開く</translation>
@@ -2281,7 +2281,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> では証明書ピンニングが使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="6051898664905071243">ページ数:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053584886670442526">保存した住所は Google サービス全体で使用できます。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
+<translation id="6053584886670442526">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="6053735090575989697">Google によるユーザーデータの保護について、詳しくはプライバシー ポリシーをご覧ください。</translation>
 <translation id="6055888660316801977">保護されたお支払い認証情報（認証情報の一致なし）シート</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>

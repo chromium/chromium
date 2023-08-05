@@ -2273,7 +2273,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2844809857160214557">Xem và quản lý các lệnh in</translation>
 <translation id="2845382757467349449">Luôn Hiển thị Thanh Dấu trang</translation>
 <translation id="2845751331501453107">Khi bạn duyệt web, thì chế độ cài đặt này, <ph name="BEGIN_LINK1" />Quảng cáo do trang web đề xuất<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />chế độ cài đặt cookie<ph name="LINK_END2" /> và khả năng cá nhân hoá quảng cáo của trang web bạn đang xem sẽ quyết định liệu quảng cáo bạn thấy có được cá nhân hoá không</translation>
-<translation id="284581348330507117">Tạo mật khẩu không trùng lặp</translation>
+<translation id="284581348330507117">Tạo mật khẩu khác biệt</translation>
 <translation id="284805635805850872">Xóa phần mềm độc hại?</translation>
 <translation id="2849035674501872372">Tra cứu</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -8156,7 +8156,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7925285046818567682">Đang chờ <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Đây không phải là tôi.</translation>
 <translation id="7926975587469166629">Biệt hiệu của thẻ</translation>
-<translation id="7928175190925744466">Bạn đã thay đổi mật khẩu này?</translation>
+<translation id="7928175190925744466">Bạn đã đổi mật khẩu này?</translation>
 <translation id="7929962904089429003">Mở menu</translation>
 <translation id="7930294771522048157">Các phương thức thanh toán đã lưu sẽ xuất hiện ở đây</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> đang chia sẻ màn hình và âm thanh của bạn.</translation>
