@@ -1928,8 +1928,10 @@ class ClipboardHistoryLongpressEnabledBrowserTest
     : public ClipboardHistoryTextfieldBrowserTest {
  public:
   ClipboardHistoryLongpressEnabledBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kClipboardHistoryLongpress);
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kClipboardHistoryFooter,
+         ash::features::kClipboardHistoryLongpress},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -1999,7 +2001,8 @@ class ClipboardHistoryRefreshEnabledBrowserTest
  public:
   ClipboardHistoryRefreshEnabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kClipboardHistoryRefresh,
+        {ash::features::kClipboardHistoryFooter,
+         chromeos::features::kClipboardHistoryRefresh,
          chromeos::features::kJelly},
         /*disabled_features=*/{});
   }

@@ -425,6 +425,14 @@ BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
              "CheckPasswordsAgainstCryptohomeHelper",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, an educational footer may appear at the bottom of the clipboard
+// history menu. Whether the educational footer appears is based on user/device
+// state, such as when the user last used the clipboard history menu or when a
+// clipboard history nudge was last seen.
+BASE_FEATURE(kClipboardHistoryFooter,
+             "ClipboardHistoryFooter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
@@ -2910,6 +2918,10 @@ bool IsCaptureModeTourEnabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
+}
+
+bool IsClipboardHistoryFooterEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryFooter);
 }
 
 bool IsClipboardHistoryLongpressEnabled() {
