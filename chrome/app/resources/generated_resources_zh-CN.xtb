@@ -3022,7 +3022,7 @@
 <translation id="3602870520245633055">打印和扫描</translation>
 <translation id="3602894439067790744">将数值读为</translation>
 <translation id="3603622770190368340">获取网络证书</translation>
-<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 个帐号在使用同一密码}other{{COUNT} 个帐号在使用同一密码}}</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 个账号在使用同一密码}other{{COUNT} 个账号在使用同一密码}}</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
 <translation id="3609277884604412258">快速搜索</translation>
 <translation id="3610241585790874201">不得将数据保存在设备上</translation>
@@ -3911,7 +3911,7 @@
 <translation id="4377058670119819762">如果您启用此实验，标签栏可以在填满后左右滚动。</translation>
 <translation id="4377363674125277448">服务器的证书存在问题。</translation>
 <translation id="437809255587011096">播报文本样式</translation>
-<translation id="4378154925671717803">电话机</translation>
+<translation id="4378154925671717803">电话</translation>
 <translation id="4378308539633073595">向前滚动</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4378556263712303865">设备申请</translation>
@@ -9280,7 +9280,7 @@
 <translation id="9076523132036239772">抱歉，您的电子邮件地址或密码无法进行验证。请先尝试连接到网络。</translation>
 <translation id="9076821103818989526">侧边栏</translation>
 <translation id="9076977315710973122">SMB 共享</translation>
-<translation id="907779190626433918">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他帐号。</translation>
+<translation id="907779190626433918">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他账号。</translation>
 <translation id="9078193189520575214">正在应用更改…</translation>
 <translation id="9078316009970372699">停用“即时网络共享”</translation>
 <translation id="9078546160009814724">用户名：<ph name="USERNAME" /></translation>

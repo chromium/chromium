@@ -50,7 +50,7 @@
 <translation id="1100782917270858593">Schaltfläche „Weiter stöbern“ – drücke die Eingabetaste, um weiter zu recherchieren und relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="1101672080107056897">Fehleraktion</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
-<translation id="1104409666019087579">Einige Pflichtfelder sind leer. Bitte füllen Sie sie vor dem Speichern aus.</translation>
+<translation id="1104409666019087579">Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Berechtigung für <ph name="PERMISSION_NAME" /> auswählen</translation>
 <translation id="1112828774174131240">Antiquitäten und Sammlerstücke</translation>
@@ -2819,7 +2819,7 @@ Weitere Details:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Gleiche Reihenfolge Vorderseite nach oben</translation>
 <translation id="7785790577395078482">diesem Tablet</translation>
-<translation id="7786368602962652765">Ein Pflichtfeld ist leer. Bitte füllen Sie es vor dem Speichern aus.</translation>
+<translation id="7786368602962652765">Ein Pflichtfeld ist leer. Bitte fülle es vor dem Speichern aus.</translation>
 <translation id="7790488044432570133">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Anzeigen zu messen. Chrome erlaubt Websites aber nur die Datenerhebung zu bestimmten Informationsarten, z. B. die Uhrzeit, zu der eine Anzeige präsentiert wurde.</translation>
 <translation id="7791011319128895129">Unveröffentlicht</translation>
 <translation id="7791196057686275387">Bündel</translation>
@@ -2829,7 +2829,7 @@ Weitere Details:
 <translation id="7800977246388195491">Chrome schließt aufgrund deines aktuellen Browserverlaufs auf Themen, die dich interessieren könnten. Außerdem können besuchte Websites feststellen, was dir gefällt. Weitere besuchte Websites können diese Informationen abfragen und dir dann personalisierte Werbung anzeigen. Du kannst festlegen, welche Themen und Websites für Werbung verwendet werden.</translation>
 <translation id="7802523362929240268">Website ist vertrauenswürdig</translation>
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
-<translation id="780301667611848630">Kein Interesse</translation>
+<translation id="780301667611848630">Nein, danke</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vorschlag für das Formular aus Chrome entfernen?</translation>
