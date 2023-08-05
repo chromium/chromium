@@ -45,14 +45,14 @@ enum class PreventedReason {
 // Enumeration of steps in the Welcome Tour. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class Step {
-  kDialog,
-  kExploreApp,
-  kExploreAppWindow,
-  kHomeButton,
-  kSearch,
-  kSettingsApp,
-  kShelf,
-  kStatusArea,
+  kDialog = 0,
+  kExploreApp = 1,
+  kExploreAppWindow = 2,
+  kHomeButton = 3,
+  kSearch = 4,
+  kSettingsApp = 5,
+  kShelf = 6,
+  kStatusArea = 7,
   kMaxValue = kStatusArea,
 };
 

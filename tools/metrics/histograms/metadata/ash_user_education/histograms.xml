@@ -42,6 +42,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records that a step of the Welcome Tour was shown. Each step should be
+    recorded either 0 or 1 times for any given user, depending on how far into
+    the tour the user proceeds.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.{Completion}.Duration" units="ms"
     expires_after="2024-01-01">
   <owner>angusmclean@google.com</owner>

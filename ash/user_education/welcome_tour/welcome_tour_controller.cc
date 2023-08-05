@@ -50,6 +50,19 @@ WelcomeTourController* g_instance = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
+base::RepeatingCallback<void(ui::TrackedElement*)> CreateCustomNextCallback(
+    welcome_tour_metrics::Step next_step) {
+  return base::BindRepeating(
+      [](welcome_tour_metrics::Step next_step,
+         ui::TrackedElement* current_anchor) {
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+            current_anchor, user_education::kHelpBubbleNextButtonClickedEvent);
+
+        welcome_tour_metrics::RecordStepShown(next_step);
+      },
+      next_step);
+}
+
 user_education::HelpBubbleParams::ExtendedProperties
 CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id) {
   return user_education_util::CreateExtendedProperties(
@@ -163,7 +176,8 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourShelf))
-          .AddDefaultNextButton());
+          .AddCustomNextButton(CreateCustomNextCallback(
+              /*next_step=*/welcome_tour_metrics::Step::kStatusArea)));
 
   // Wait for "Next" button click before proceeding to the next bubble step.
   // NOTE: This event step also ensures that the next bubble step will show on
@@ -184,7 +198,8 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourStatusArea))
-          .AddDefaultNextButton()
+          .AddCustomNextButton(CreateCustomNextCallback(
+              /*next_step=*/welcome_tour_metrics::Step::kHomeButton))
           .InAnyContext());
 
   // Wait for "Next" button click before proceeding to the next bubble step.
@@ -210,6 +225,8 @@ WelcomeTourController::GetTutorialDescriptions() {
                 GetPrimaryDisplayId(), AppListShowSource::kWelcomeTour,
                 ui::EventTimeForNow(),
                 /*should_record_metrics=*/true);
+            welcome_tour_metrics::RecordStepShown(
+                welcome_tour_metrics::Step::kSearch);
           }))
           .InAnyContext());
 
@@ -220,7 +237,8 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourSearchBox))
-          .AddDefaultNextButton()
+          .AddCustomNextButton(CreateCustomNextCallback(
+              /*next_step=*/welcome_tour_metrics::Step::kSettingsApp))
           .InAnyContext());
 
   // Wait for "Next" button click before proceeding to the next bubble step.
@@ -237,7 +255,8 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourSettingsApp))
-          .AddDefaultNextButton()
+          .AddCustomNextButton(CreateCustomNextCallback(
+              /*next_step=*/welcome_tour_metrics::Step::kExploreApp))
           .InSameContext());
 
   // Wait for "Next" button click before proceeding to the next bubble step.
@@ -422,7 +441,10 @@ void WelcomeTourController::OnWelcomeTourStarted() {
   // Welcome Tour will automatically proceed to the next step once the dialog is
   // closed unless it has been aborted.
   WelcomeTourDialog::CreateAndShow(
-      /*accept_callback=*/base::DoNothing(),
+      /*accept_callback=*/base::BindOnce([]() {
+        welcome_tour_metrics::RecordStepShown(
+            welcome_tour_metrics::Step::kShelf);
+      }),
       /*cancel_callback=*/
       base::BindOnce(&WelcomeTourController::MaybeAbortWelcomeTour,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -431,6 +453,8 @@ void WelcomeTourController::OnWelcomeTourStarted() {
       base::BindOnce(&WelcomeTourController::MaybeAbortWelcomeTour,
                      weak_ptr_factory_.GetWeakPtr(),
                      welcome_tour_metrics::AbortedReason::kUnknown));
+
+  welcome_tour_metrics::RecordStepShown(welcome_tour_metrics::Step::kDialog);
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourStarted();
@@ -459,6 +483,9 @@ void WelcomeTourController::OnWelcomeTourEnded(
     UserEducationController::Get()->LaunchSystemWebAppAsync(
         UserEducationPrivateApiKey(), ash::SystemWebAppType::HELP,
         display::Screen::GetScreen()->GetPrimaryDisplay().id());
+
+    welcome_tour_metrics::RecordStepShown(
+        welcome_tour_metrics::Step::kExploreAppWindow);
   } else {
     welcome_tour_metrics::RecordTourAborted(aborted_reason_);
 

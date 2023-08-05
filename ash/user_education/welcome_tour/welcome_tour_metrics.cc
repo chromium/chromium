@@ -66,7 +66,7 @@ void RecordStepDuration(Step step, base::TimeDelta duration) {
 }
 
 void RecordStepShown(Step step) {
-  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Shown`.";
+  base::UmaHistogramEnumeration("Ash.WelcomeTour.Step.Shown", step);
 }
 
 void RecordTimeToInteraction(Interaction interaction, base::TimeDelta delta) {
