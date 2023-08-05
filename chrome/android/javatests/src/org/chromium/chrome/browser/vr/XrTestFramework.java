@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -484,6 +485,11 @@ public abstract class XrTestFramework {
                     "Timed out waiting for JavaScript test initialization. Initialization steps "
                     + "object: " + initSteps);
         }
+        // It is possible, particularly with multiple sessions and navigations within a single test,
+        // for the page to get zoomed in on navigation. So, ensure that we are always zoomed out
+        // enough to see all page content after we do a page load.
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> ZoomController.zoomReset(mRule.getWebContents()));
         return result;
     }
 
