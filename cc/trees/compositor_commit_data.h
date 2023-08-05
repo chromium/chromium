@@ -106,8 +106,13 @@ struct CC_EXPORT CompositorCommitData {
   ScrollEndInfo scroll_end_data;
 
   // Tracks whether there is an ongoing compositor-driven animation for a
-  // scroll.
+  // scroll, excluding autoscrolls (i.e., a continuous scroll animation
+  // initiated by pressing on a scrollbar button).
   bool ongoing_scroll_animation = false;
+
+  // Tracks whether there is an ongoing compositor-driven scroll animation for
+  // a pressed scrollbar part.
+  bool is_auto_scrolling = false;
 
   // Tracks different methods of scrolling (e.g. wheel, touch, precision
   // touchpad, etc.).

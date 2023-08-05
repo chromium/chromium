@@ -51,6 +51,7 @@ void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
                          autoscroll_velocity);
   ScrollAnimationCreateInternal(element_id, std::move(curve),
                                 animation_start_offset);
+  animation_is_autoscroll_ = true;
 }
 
 void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
@@ -67,6 +68,7 @@ void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
   curve->SetInitialValue(current_offset, delayed_by);
   ScrollAnimationCreateInternal(element_id, std::move(curve),
                                 animation_start_offset);
+  animation_is_autoscroll_ = false;
 }
 
 void ScrollOffsetAnimationsImpl::ScrollAnimationCreateInternal(
@@ -180,7 +182,10 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationApplyAdjustment(
   new_keyframe_model->SetIsImplOnly();
   new_keyframe_model->set_affects_active_elements(false);
 
-  // Abort the old animation.
+  // Abort the old animation. AutoReset here will restore the current value of
+  // animation_is_autoscroll_ after ScrollAnimationAbort resets it.
+  base::AutoReset<bool> autoscroll(&animation_is_autoscroll_,
+                                   animation_is_autoscroll_);
   ScrollAnimationAbort(/* needs_completion */ false);
 
   // Start a new one with the adjusment.
@@ -195,6 +200,7 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion) {
       TargetProperty::SCROLL_OFFSET, needs_completion);
   TRACE_EVENT_INSTANT1("cc", "ScrollAnimationAbort", TRACE_EVENT_SCOPE_THREAD,
                        "needs_completion", needs_completion);
+  animation_is_autoscroll_ = false;
 }
 
 void ScrollOffsetAnimationsImpl::AnimatingElementRemovedByCommit() {
@@ -234,6 +240,10 @@ bool ScrollOffsetAnimationsImpl::IsAnimating() const {
     case KeyframeModel::ABORTED_BUT_NEEDS_COMPLETION:
       return false;
   }
+}
+
+bool ScrollOffsetAnimationsImpl::IsAutoScrolling() const {
+  return IsAnimating() && animation_is_autoscroll_;
 }
 
 ElementId ScrollOffsetAnimationsImpl::GetElementId() const {

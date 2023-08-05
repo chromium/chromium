@@ -4181,6 +4181,7 @@ LayerTreeHostImpl::ProcessCompositorDeltas(
 
   commit_data->ongoing_scroll_animation =
       !!mutator_host_->ImplOnlyScrollAnimatingElement();
+  commit_data->is_auto_scrolling = mutator_host_->IsAutoScrolling();
 
   if (browser_controls_manager()) {
     commit_data->browser_controls_constraint =

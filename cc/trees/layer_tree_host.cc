@@ -993,12 +993,17 @@ void LayerTreeHost::ApplyViewportChanges(
                                 ? commit_data.ongoing_scroll_animation
                                 : (commit_data.ongoing_scroll_animation &&
                                    commit_data.manipulation_info);
-  if (scroll_animation_.in_progress && !new_ongoing_scroll) {
-    scroll_animation_.in_progress = false;
-    if (!scroll_animation_.end_notification.is_null())
-      std::move(scroll_animation_.end_notification).Run();
-  } else {
-    scroll_animation_.in_progress = new_ongoing_scroll;
+  scroll_animation_.in_progress = new_ongoing_scroll;
+
+  // A pointer-down event on a scrollbar button triggers two scroll animations:
+  // one that starts immediately and ends after one scroll increment (typically
+  // 40px); and an autoscroll that starts after a 250ms delay and continues
+  // until pointer-up or until the end of the scroll node is reached.
+  // scroll_animation_.end_notification should wait for the first animation to
+  // finish, but it should *not* wait for the autoscroll to finish.
+  if (!scroll_animation_.end_notification.is_null() &&
+      (!scroll_animation_.in_progress || commit_data.is_auto_scrolling)) {
+    std::move(scroll_animation_.end_notification).Run();
   }
 
   if (inner_viewport_scroll_delta.IsZero() &&

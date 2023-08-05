@@ -909,4 +909,8 @@ bool AnimationHost::HasScrollLinkedAnimation(ElementId for_scroller) const {
   return false;
 }
 
+bool AnimationHost::IsAutoScrolling() const {
+  return scroll_offset_animations_impl_.Read(*this)->IsAutoScrolling();
+}
+
 }  // namespace cc
