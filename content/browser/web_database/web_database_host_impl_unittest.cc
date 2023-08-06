@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -197,15 +198,15 @@ TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {
   run_loop.Run();
 
   // Check default bucket exists for https://example.com.
-  storage::QuotaErrorOr<storage::BucketInfo> result =
+  ASSERT_OK_AND_ASSIGN(
+      storage::BucketInfo result,
       quota_manager_proxy_sync.GetBucket(
           blink::StorageKey::CreateFromStringForTesting(example_url),
-          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->name, storage::kDefaultBucketName);
-  EXPECT_EQ(result->storage_key,
+          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary));
+  EXPECT_EQ(result.name, storage::kDefaultBucketName);
+  EXPECT_EQ(result.storage_key,
             blink::StorageKey::CreateFromStringForTesting(example_url));
-  EXPECT_GT(result->id.value(), 0);
+  EXPECT_GT(result.id.value(), 0);
 
   security_policy->ClearIsolatedOriginsForTesting();
 }

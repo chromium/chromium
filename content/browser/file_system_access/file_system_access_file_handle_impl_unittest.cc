@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -178,9 +179,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
         test_src_storage_key_, type, test_file_path);
     if (type == storage::kFileSystemTypeTemporary) {
-      auto bucket = CreateBucketForTesting();
-      ASSERT_TRUE(bucket.has_value());
-      test_file_url_.SetBucket(*std::move(bucket));
+      ASSERT_OK_AND_ASSIGN(auto bucket, CreateBucketForTesting());
+      test_file_url_.SetBucket(std::move(bucket));
     }
 
     ASSERT_EQ(base::File::FILE_OK,

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/services/storage/service_worker/service_worker_storage.h"
@@ -704,13 +705,13 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
   loop.Run();
 
   // Check default bucket exists.com.
-  storage::QuotaErrorOr<storage::BucketInfo> result =
-      quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName,
-                                         blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->name, storage::kDefaultBucketName);
-  EXPECT_EQ(result->storage_key, kKey);
-  EXPECT_GT(result->id.value(), 0);
+  ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
+                       quota_manager_proxy_sync.GetBucket(
+                           kKey, storage::kDefaultBucketName,
+                           blink::mojom::StorageType::kTemporary));
+  EXPECT_EQ(result.name, storage::kDefaultBucketName);
+  EXPECT_EQ(result.storage_key, kKey);
+  EXPECT_GT(result.id.value(), 0);
 }
 
 TEST_F(ServiceWorkerRegistryTest, GetOrCreateBucketError) {
@@ -2370,14 +2371,13 @@ TEST_F(ServiceWorkerRegistryTest,
     EXPECT_EQ(inflight_call_count(), 0U);
 
     // Check default bucket exists.com.
-    storage::QuotaErrorOr<storage::BucketInfo> result =
-        quota_manager_proxy_sync.GetBucket(
-            kKey, storage::kDefaultBucketName,
-            blink::mojom::StorageType::kTemporary);
-    ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(result->name, storage::kDefaultBucketName);
-    EXPECT_EQ(result->storage_key, kKey);
-    EXPECT_GT(result->id.value(), 0);
+    ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
+                         quota_manager_proxy_sync.GetBucket(
+                             kKey, storage::kDefaultBucketName,
+                             blink::mojom::StorageType::kTemporary));
+    EXPECT_EQ(result.name, storage::kDefaultBucketName);
+    EXPECT_EQ(result.storage_key, kKey);
+    EXPECT_GT(result.id.value(), 0);
   }
 
   {

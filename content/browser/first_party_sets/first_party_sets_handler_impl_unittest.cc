@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -143,14 +144,12 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
               }
             )")
                           .value();
-  // Validation fails with an error.
-  auto [success, warnings] =
-      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  ASSERT_FALSE(success.has_value());
-  // An appropriate ParseError is returned.
-  EXPECT_EQ(success.error(), FirstPartySetsHandler::ParseError(
-                                 ParseErrorType::kNonDisjointSets,
-                                 {kAdditionsField, 0, kPrimaryField}));
+  // Validation fails with an error and an appropriate ParseError is returned.
+  EXPECT_THAT(
+      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()).first,
+      base::test::ErrorIs(FirstPartySetsHandler::ParseError(
+          ParseErrorType::kNonDisjointSets,
+          {kAdditionsField, 0, kPrimaryField})));
 }
 
 class FirstPartySetsHandlerImplTest : public ::testing::Test {

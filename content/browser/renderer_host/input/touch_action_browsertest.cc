@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
@@ -353,10 +354,10 @@ class TouchActionBrowserTest : public ContentBrowserTest {
                 { "name": "pointerUp"}]}]
         )HTML";
 
-    auto parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json);
-    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-    ActionsParser actions_parser(std::move(*parsed_json));
+    ASSERT_OK_AND_ASSIGN(
+        auto parsed_json,
+        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json));
+    ActionsParser actions_parser(std::move(parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());
 
@@ -392,10 +393,10 @@ class TouchActionBrowserTest : public ContentBrowserTest {
         }]
         )HTML";
 
-    auto parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json);
-    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-    ActionsParser actions_parser(std::move(*parsed_json));
+    ASSERT_OK_AND_ASSIGN(
+        auto parsed_json,
+        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json));
+    ActionsParser actions_parser(std::move(parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());
 

@@ -16,7 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -107,16 +107,16 @@ void TestAggregationServiceImpl::SetPublicKeys(
     const GURL& url,
     const base::FilePath& json_file,
     base::OnceCallback<void(bool)> callback) {
-  base::expected<PublicKeyset, std::string> keyset =
-      aggregation_service::ReadAndParsePublicKeys(json_file, clock_->Now());
-  if (!keyset.has_value()) {
-    LOG(ERROR) << keyset.error();
-    std::move(callback).Run(false);
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      PublicKeyset keyset,
+      aggregation_service::ReadAndParsePublicKeys(json_file, clock_->Now()),
+      [&](std::string error) {
+        LOG(ERROR) << error;
+        std::move(callback).Run(false);
+      });
 
   storage_.AsyncCall(&AggregationServiceStorage::SetPublicKeys)
-      .WithArgs(url, std::move(*keyset))
+      .WithArgs(url, std::move(keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
 

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -137,13 +138,13 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
         EvalJs(shell(), "getSources()").ExtractString();
     EXPECT_FALSE(devices_as_json.empty());
 
-    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-        devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
+    ASSERT_OK_AND_ASSIGN(
+        auto parsed_json,
+        base::JSONReader::ReadAndReturnValueWithError(
+            devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS));
+    ASSERT_TRUE(parsed_json.is_list());
 
-    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-    ASSERT_TRUE(parsed_json->is_list());
-
-    for (const auto& entry : parsed_json->GetList()) {
+    for (const auto& entry : parsed_json.GetList()) {
       const base::Value::Dict* dict = entry.GetIfDict();
       ASSERT_TRUE(dict);
       const std::string* kind = dict->FindString("kind");
