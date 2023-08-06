@@ -199,7 +199,7 @@ mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
           .value_or(false);
   settings->enable_w_for_u_horn_shortcut =
       input_method_specific_pref.FindBool("vietnameseTelexInsertUHornOnW")
-          .value_or(false);
+          .value_or(true);
   settings->show_underline_for_composition_text =
       input_method_specific_pref.FindBool("vietnameseTelexShowUnderline")
           .value_or(true);
