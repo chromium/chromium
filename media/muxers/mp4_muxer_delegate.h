@@ -31,7 +31,9 @@ class AudioParameters;
 // MP4 format and internal data will be cleared at the end of `Flush`.
 class MEDIA_EXPORT Mp4MuxerDelegate {
  public:
-  explicit Mp4MuxerDelegate(Muxer::WriteDataCB write_callback);
+  Mp4MuxerDelegate(
+      Muxer::WriteDataCB write_callback,
+      base::TimeDelta max_audio_only_fragment_duration = base::Seconds(5));
   ~Mp4MuxerDelegate();
   Mp4MuxerDelegate(const Mp4MuxerDelegate&) = delete;
   Mp4MuxerDelegate& operator=(const Mp4MuxerDelegate&) = delete;
@@ -51,7 +53,6 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
   void Flush();
 
- private:
   struct Fragment {
     Fragment();
     ~Fragment() = default;
@@ -62,19 +63,20 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
     mp4::writable_boxes::MediaData mdat;
   };
 
+ private:
   void BuildMovieBox();
+
   void BuildVideoTrackWithKeyframe(
       const Muxer::VideoParameters& params,
       base::StringPiece encoded_data,
       VideoEncoder::CodecDescription codec_description);
-  void BuildVideoFragment(const Muxer::VideoParameters& params,
-                          base::StringPiece encoded_data,
-                          base::TimeTicks timestamp,
-                          bool is_key_frame);
-  void AddNewVideoFragment(Mp4MuxerDelegate::Fragment& fragment);
-  void AddDataToMdat(Mp4MuxerDelegate::Fragment& fragment,
-                     base::StringPiece encoded_data);
-  void AddLastVideoSampleTimestamp();
+  void BuildVideoFragment(base::StringPiece encoded_data, bool is_key_frame);
+  void BuildAudioTrack(const AudioParameters& params,
+                       base::StringPiece encoded_data,
+                       AudioEncoder::CodecDescription codec_description);
+  void BuildAudioFragment(base::StringPiece encoded_data);
+
+  void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
   int GetNextTrackIndex();
   void EnsureInitialized();
   void Reset();
@@ -92,13 +94,22 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
   // video and audio index is a 0 based index that is an item of the container.
   // The track id would be plus one on this index value.
   absl::optional<int> video_track_index_;
+  absl::optional<int> audio_track_index_;
   int next_track_index_ = 0;
 
   // Duration time delta for the video track.
   base::TimeTicks start_video_time_;
   base::TimeTicks last_video_time_;
 
-  double video_frame_rate_;
+  // Duration time delta for the audio track.
+  base::TimeTicks start_audio_time_;
+  base::TimeTicks last_audio_time_;
+
+  double video_frame_rate_ = 0;
+  int audio_sample_rate_ = 0;
+
+  base::TimeDelta max_audio_only_fragment_duration_;
+
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

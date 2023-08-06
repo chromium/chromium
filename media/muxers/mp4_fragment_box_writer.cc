@@ -225,7 +225,11 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
   if (duration_exists) {
     // fragment, if not last, has an additional timestamp entry for last
     // item duration calculation.
-    CHECK_EQ(box_.sample_count + 1, box_.sample_timestamps.size());
+    if (box_.sample_count == 0) {
+      CHECK_EQ(box_.sample_count, box_.sample_timestamps.size());
+    } else {
+      CHECK_EQ(box_.sample_count + 1, box_.sample_timestamps.size());
+    }
   }
 
   if (size_exists) {
