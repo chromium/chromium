@@ -84,9 +84,17 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void OnWelcomeTourStarted();
   void OnWelcomeTourEnded(bool completed, base::ElapsedTimer time_since_start);
 
+  // Sets the current step of the tutorial, since that information is not
+  // directly available.
+  void SetCurrentStep(absl::optional<welcome_tour_metrics::Step> step);
+
   // The reason the tour was aborted.
   welcome_tour_metrics::AbortedReason aborted_reason_ =
       welcome_tour_metrics::AbortedReason::kUnknown;
+
+  // The current step of the Welcome Tour, if it is active. Tracked here because
+  // it is not directly available from the tutorial.
+  absl::optional<welcome_tour_metrics::Step> current_step_;
 
   // Blocks all notifications while the Welcome Tour is in progress. Any
   // notifications received during the tour will appear in the Notification

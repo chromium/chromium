@@ -57,7 +57,7 @@ std::string ToString(Interaction interaction) {
 }  // namespace
 
 void RecordStepAborted(Step step) {
-  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Aborted`.";
+  base::UmaHistogramEnumeration("Ash.WelcomeTour.Step.Aborted", step);
 }
 
 void RecordStepDuration(Step step, base::TimeDelta duration) {

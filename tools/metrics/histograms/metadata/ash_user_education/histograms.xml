@@ -42,6 +42,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.Step.Aborted" enum="WelcomeTourStep"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>Records that the Welcome Tour was aborted on a given step.</summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
     expires_after="2024-01-01">
   <owner>angusmclean@google.com</owner>
