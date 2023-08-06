@@ -768,6 +768,17 @@ void WidgetInputHandlerManager::WaitForInputProcessed(
   DCHECK(!input_processed_callback_);
   input_processed_callback_ = std::move(callback);
 
+  // If there are frame-aligned input events waiting to be dispatched, wait for
+  // that to happen before posting to the main thread input queue.
+  if (input_handler_proxy_) {
+    input_handler_proxy_->RequestCallbackAfterEventQueueFlushed(base::BindOnce(
+        &WidgetInputHandlerManager::QueueInputProcessedClosure, AsWeakPtr()));
+  } else {
+    QueueInputProcessedClosure();
+  }
+}
+
+void WidgetInputHandlerManager::QueueInputProcessedClosure() {
   // We mustn't touch widget_ from the impl thread so post all the setup
   // to the main thread. Make sure the callback runs after all the queued events
   // are dispatched.

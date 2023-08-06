@@ -276,6 +276,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void HandleInputEventWithLatencyOnInputHandlingThread(
       std::unique_ptr<WebCoalescedInputEvent>);
 
+  void QueueInputProcessedClosure();
+
   // The kInputBlocking task runner is for tasks which are on the critical path
   // of showing the effect of an already-received input event, and should be
   // prioritized above handling new input.

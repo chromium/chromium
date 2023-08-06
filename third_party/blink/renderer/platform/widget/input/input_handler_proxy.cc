@@ -1524,6 +1524,10 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
 
     DispatchSingleInputEvent(std::move(event_with_callback), args.frame_time);
   }
+
+  if (!queue_flushed_callback_.is_null()) {
+    std::move(queue_flushed_callback_).Run();
+  }
 }
 
 void InputHandlerProxy::DeliverInputForHighLatencyMode() {
@@ -1744,6 +1748,16 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerUp(
 void InputHandlerProxy::SetDeferBeginMainFrame(
     bool defer_begin_main_frame) const {
   input_handler_->SetDeferBeginMainFrame(defer_begin_main_frame);
+}
+
+void InputHandlerProxy::RequestCallbackAfterEventQueueFlushed(
+    base::OnceClosure callback) {
+  CHECK(queue_flushed_callback_.is_null());
+  if (HasQueuedEventsReadyForDispatch(/*frame_aligned*/ true)) {
+    queue_flushed_callback_ = std::move(callback);
+  } else {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace blink
