@@ -569,7 +569,9 @@
 <translation id="2148613324460538318">Ավելացնել քարտ</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2149968176347646218">Կապը պաշտպանված չէ</translation>
+<translation id="2152495481414285304">Հավելվածներ</translation>
 <translation id="2153609454945889823">Տեղադրե՞լ Google Play ծառայություններն AR-ի համար</translation>
+<translation id="2154144347038514978">Ավտոմատ գործարկում ձեր սարքում</translation>
 <translation id="2154484045852737596">Քարտի փոփոխություն</translation>
 <translation id="2154739667870063220">Վերաբեռնել</translation>
 <translation id="2155260325161282517">5 x 7 դյույմ</translation>
@@ -2919,6 +2921,7 @@
 <translation id="7186833457841277072">Ծրար (թանաքաշիթային տպիչների)</translation>
 <translation id="7186840261985974511">Envelope #12</translation>
 <translation id="718872491229180389">Չիրլիդինգ</translation>
+<translation id="7188840756966467339">Վերագործարկել դիտարկիչը և կիրառել կանոնները</translation>
 <translation id="7192188280913829296">Նաև պետք է նշվի «vendor_id» հատկանիշը։</translation>
 <translation id="7192203810768312527">Կազատվի <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="7192537357091279678">Համակարգչային սկավառակներ և կրիչներ</translation>
@@ -3017,6 +3020,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Կիսվել այս ներդիրով՝ ուղարկելով հղում կամ ստեղծելով QR կոդ, հեռարձակում և այլն</translation>
 <translation id="7403591733719184120">Ձեր <ph name="DEVICE_NAME" /> սարքը կառավարվում է</translation>
+<translation id="7405878640835614059">Այս կայքը (<ph name="ENROLLMENT_DOMAIN" />) լրացուցիչ գործառույթների համար հավելվածներ է տեղադրել։ Ձեր տվյալների մի մասը հասանելի է այդ հավելվածներին։</translation>
 <translation id="7407424307057130981">&lt;p&gt;Այս սխալը կցուցադրվի, եթե ձեր Windows համակարգչում տեղադրված է Superfish ծրագիրը։&lt;/p&gt;
       &lt;p&gt;Ծրագիրը ժամանակավորապես անջատելու և համացանցին միանալու համար կատարեք ստորև նշված գործողությունները։ Ձեզ անհրաժեշտ կլինեն ադմինիստրատորի արտոնություններ։&lt;/p&gt;
       &lt;ol&gt;
@@ -3495,6 +3499,7 @@
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
 <translation id="8351131234907093545">Գրառման ստեղծում</translation>
 <translation id="835203957414790336">Ձեր տպած էջերի բովանդակությունը և ձեր տպիչի մասին տեղեկությունները վերլուծության նպատակով ուղարկվում են Google Cloud կամ երրորդ կողմերի։ Օրինակ՝ կարող է ստուգվել զգայուն տվյալների առկայությունը։</translation>
+<translation id="8352849934814541340">Այս սարքի ադմինիստրատորը լրացուցիչ գործառույթների համար հավելվածներ է տեղադրել։ Ձեր տվյալների մի մասը հասանելի է այդ հավելվածներին։</translation>
 <translation id="8355270400102541638">Խափանման լոկալ կոնտեքստը՝</translation>
 <translation id="8363502534493474904">Անջատել Ավիառեժիմը</translation>
 <translation id="8364627913115013041">Կարգավորված չէ:</translation>
@@ -3743,6 +3748,7 @@
 <translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="890493561996401738">Հուշումը հեռացնելու կոճակ։ Սեղմեք Enter՝ հեռացնելու համար։ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 դյմ</translation>
+<translation id="8918062451146297192">Վիրտուալ քարտի CVC կոդ</translation>
 <translation id="8919740778133505789">Սպորտային ավտոմեքենաներ</translation>
 <translation id="8919895429178014996">Թաքցնել բոլոր տարրերը</translation>
 <translation id="8922013791253848639">Միշտ թույլատրել գովազդն այս կայքում</translation>

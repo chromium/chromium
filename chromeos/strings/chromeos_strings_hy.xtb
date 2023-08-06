@@ -816,6 +816,7 @@
 <translation id="7397270852490618635">Անջատել բաց թեման</translation>
 <translation id="741244894080940828">փոխարկում</translation>
 <translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
+<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> հավելվածն ավտոմատ գործարկվի։}=2{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> և <ph name="APP_NAME_2" /> հավելվածներն ավտոմատ գործարկվեն։}=3{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> և <ph name="APP_NAME_3" /> հավելվածներն ավտոմատ գործարկվեն։}one{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> և <ph name="APP_NAME_2" /> հավելվածներն ու ևս # հավելված ավտոմատ գործարկվեն։}other{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> և <ph name="APP_NAME_2" /> հավելվածներն ու ևս # հավելված ավտոմատ գործարկվեն։}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ ավատարները դիտելու և կարգավորելու համար։</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
@@ -1014,6 +1015,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Սկանավորել}=1{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}one{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}other{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}}</translation>
 <translation id="8997710128084572139">Սարքի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
+<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> հավելվածն ավտոմատ գործարկվել է}one{# հավելված ավտոմատ գործարկվել է}other{# հավելված ավտոմատ գործարկվել է}}</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="9003704114456258138">Հաճախականություն</translation>
 <translation id="9024331582947483881">լիաէկրան</translation>
