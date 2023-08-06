@@ -91,7 +91,7 @@ void ScopedFxLogger::LogMessage(base::StringPiece file,
   fuchsia_syslog::LogBuffer buffer;
   buffer.BeginRecord(severity, cpp17::string_view(file.data(), file.size()),
                      line_number, cpp17::string_view(msg.data(), msg.size()),
-                     false, socket_.borrow(), 0, base::Process::Current().Pid(),
+                     socket_.borrow(), 0, base::Process::Current().Pid(),
                      base::PlatformThread::CurrentId());
   for (const auto& tag : tags_) {
     buffer.WriteKeyValue("tag", tag);
