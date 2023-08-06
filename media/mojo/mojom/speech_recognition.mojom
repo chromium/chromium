@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -294,4 +294,12 @@ struct SpeechRecognitionOptions {
 
   // Which client is requesting the speech recognition session.
   [MinVersion=1] RecognizerClientType recognizer_client_type;
+
+  // When true, if the incoming audio buffer is zero for an extended period
+  // (e.g. 10 seconds), audio won't be fed to the captioning model until nonzero
+  // audio is received.
+  // When false, even empty audio is captioned indefinitely.
+  // Set to false if accurate TimingInfo relative to the start of captioning is
+  // needed.
+  [MinVersion=4] bool skip_continuously_empty_audio = false;
 };

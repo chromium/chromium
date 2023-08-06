@@ -176,6 +176,10 @@ class SpeechRecognitionRecognizerImpl
   // Whether the client is still requesting speech recognition.
   bool is_client_requesting_speech_recognition_ = true;
 
+  // Time the most recent nonzero data was processed.
+  // Used when options_->skip_continuously_empty_audio == true.
+  base::Time last_non_empty_audio_time_ = base::Time::Now();
+
   // Whether the speech recognition session contains any recognized speech. Used
   // for logging purposes only.
   bool session_contains_speech_ = false;
