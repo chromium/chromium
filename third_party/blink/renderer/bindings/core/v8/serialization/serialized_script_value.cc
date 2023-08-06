@@ -36,6 +36,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
+#include "base/types/expected_macros.h"
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -670,10 +671,8 @@ bool SerializedScriptValue::IsOriginCheckRequired() const {
 bool SerializedScriptValue::CanDeserializeIn(
     ExecutionContext* execution_context) {
   TrailerReader reader(GetWireData());
-  if (auto result = reader.SkipToTrailer(); !result.has_value())
-    return false;
-  if (auto result = reader.Read(); !result.has_value())
-    return false;
+  RETURN_IF_ERROR(reader.SkipToTrailer(), [](auto) { return false; });
+  RETURN_IF_ERROR(reader.Read(), [](auto) { return false; });
   auto& factory = SerializedScriptValueFactory::Instance();
   bool result = base::ranges::all_of(
       reader.required_exposed_interfaces(), [&](SerializationTag tag) {

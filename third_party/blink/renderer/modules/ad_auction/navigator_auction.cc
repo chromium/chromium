@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
@@ -1794,15 +1795,14 @@ bool CopyAuctionReportBuyerKeysFromIdlToMojo(
   output.auction_ad_config_non_shared_params->auction_report_buyer_keys
       .emplace();
   for (const BigInt& value : input.auctionReportBuyerKeys()) {
-    base::expected<absl::uint128, String> maybe_bucket =
-        CopyBigIntToUint128(value);
-    if (!maybe_bucket.has_value()) {
-      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint128(
-          input, "auctionReportBuyerKeys", maybe_bucket.error()));
-      return false;
-    }
+    ASSIGN_OR_RETURN(
+        auto bucket, CopyBigIntToUint128(value), [&](String error) {
+          exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint128(
+              input, "auctionReportBuyerKeys", std::move(error)));
+          return false;
+        });
     output.auction_ad_config_non_shared_params->auction_report_buyer_keys
-        ->push_back(*maybe_bucket);
+        ->push_back(std::move(bucket));
   }
 
   return true;
@@ -1837,16 +1837,16 @@ bool CopyAuctionReportBuyersFromIdlToMojo(
       // compatibility with new fields added later.
       continue;
     }
-    base::expected<absl::uint128, String> maybe_bucket =
-        CopyBigIntToUint128(report_config->bucket());
-    if (!maybe_bucket.has_value()) {
-      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint128(
-          input, "auctionReportBuyers", maybe_bucket.error()));
-      return false;
-    }
+    ASSIGN_OR_RETURN(
+        auto bucket, CopyBigIntToUint128(report_config->bucket()),
+        [&](String error) {
+          exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint128(
+              input, "auctionReportBuyers", error));
+          return false;
+        });
     output.auction_ad_config_non_shared_params->auction_report_buyers->insert(
         report_type, mojom::blink::AuctionReportBuyersConfig::New(
-                         *maybe_bucket, report_config->scale()));
+                         std::move(bucket), report_config->scale()));
   }
 
   return true;
