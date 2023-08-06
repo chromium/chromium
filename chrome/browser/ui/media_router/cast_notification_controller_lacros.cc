@@ -139,6 +139,7 @@ CastNotificationControllerLacros::CreateNotification(const MediaRoute& route) {
   }
   message_center::RichNotificationData data;
   data.buttons = GetButtons(route, freeze_host);
+  data.pinned = true;
 
   return message_center::Notification{
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
