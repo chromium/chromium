@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 453 tests; 396 PASS, 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 458 tests; 399 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSStyleSheet: original interface defined
@@ -172,30 +172,6 @@ FAIL CSSRule interface: constant MARGIN_RULE on interface object assert_own_prop
 FAIL CSSRule interface: constant MARGIN_RULE on interface prototype object assert_own_property: expected property "MARGIN_RULE" missing
 PASS CSSRule interface: constant NAMESPACE_RULE on interface object
 PASS CSSRule interface: constant NAMESPACE_RULE on interface prototype object
-PASS CSSStyleRule interface: existence and properties of interface object
-PASS CSSStyleRule interface object length
-PASS CSSStyleRule interface object name
-PASS CSSStyleRule interface: existence and properties of interface prototype object
-PASS CSSStyleRule interface: existence and properties of interface prototype object's "constructor" property
-PASS CSSStyleRule interface: existence and properties of interface prototype object's @@unscopables property
-PASS CSSStyleRule interface: attribute selectorText
-PASS CSSStyleRule interface: attribute style
-PASS CSSStyleRule must be primary interface of sheet.cssRules[4]
-PASS Stringification of sheet.cssRules[4]
-PASS CSSStyleRule interface: sheet.cssRules[4] must inherit property "selectorText" with the proper type
-PASS CSSStyleRule interface: sheet.cssRules[4] must inherit property "style" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "cssText" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "parentRule" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "parentStyleSheet" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "type" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "STYLE_RULE" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "CHARSET_RULE" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "IMPORT_RULE" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "MEDIA_RULE" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "FONT_FACE_RULE" with the proper type
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "PAGE_RULE" with the proper type
-FAIL CSSRule interface: sheet.cssRules[4] must inherit property "MARGIN_RULE" with the proper type assert_inherits: property "MARGIN_RULE" not found in prototype chain
-PASS CSSRule interface: sheet.cssRules[4] must inherit property "NAMESPACE_RULE" with the proper type
 PASS CSSImportRule interface: existence and properties of interface object
 PASS CSSImportRule interface object length
 PASS CSSImportRule interface object name
@@ -235,6 +211,35 @@ PASS CSSGroupingRule interface: existence and properties of interface prototype 
 PASS CSSGroupingRule interface: attribute cssRules
 FAIL CSSGroupingRule interface: operation insertRule(CSSOMString, optional unsigned long) assert_equals: property has wrong .length expected 1 but got 2
 PASS CSSGroupingRule interface: operation deleteRule(unsigned long)
+FAIL CSSStyleRule interface: existence and properties of interface object assert_equals: prototype of CSSStyleRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
+PASS CSSStyleRule interface object length
+PASS CSSStyleRule interface object name
+FAIL CSSStyleRule interface: existence and properties of interface prototype object assert_equals: prototype of CSSStyleRule.prototype is not CSSGroupingRule.prototype expected object "[object CSSGroupingRule]" but got object "[object CSSRule]"
+PASS CSSStyleRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSStyleRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSStyleRule interface: attribute selectorText
+PASS CSSStyleRule interface: attribute style
+PASS CSSStyleRule must be primary interface of sheet.cssRules[4]
+PASS Stringification of sheet.cssRules[4]
+PASS CSSStyleRule interface: sheet.cssRules[4] must inherit property "selectorText" with the proper type
+PASS CSSStyleRule interface: sheet.cssRules[4] must inherit property "style" with the proper type
+PASS CSSGroupingRule interface: sheet.cssRules[4] must inherit property "cssRules" with the proper type
+PASS CSSGroupingRule interface: sheet.cssRules[4] must inherit property "insertRule(CSSOMString, optional unsigned long)" with the proper type
+PASS CSSGroupingRule interface: calling insertRule(CSSOMString, optional unsigned long) on sheet.cssRules[4] with too few arguments must throw TypeError
+PASS CSSGroupingRule interface: sheet.cssRules[4] must inherit property "deleteRule(unsigned long)" with the proper type
+PASS CSSGroupingRule interface: calling deleteRule(unsigned long) on sheet.cssRules[4] with too few arguments must throw TypeError
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "cssText" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "parentRule" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "parentStyleSheet" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "type" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "STYLE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "CHARSET_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "IMPORT_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "MEDIA_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "FONT_FACE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "PAGE_RULE" with the proper type
+FAIL CSSRule interface: sheet.cssRules[4] must inherit property "MARGIN_RULE" with the proper type assert_inherits: property "MARGIN_RULE" not found in prototype chain
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "NAMESPACE_RULE" with the proper type
 FAIL CSSPageRule interface: existence and properties of interface object assert_equals: prototype of CSSPageRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
 PASS CSSPageRule interface object length
 PASS CSSPageRule interface object name

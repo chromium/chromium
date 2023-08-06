@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Popover light dismiss uses the flat tree promise_test: Unhandled rejection with value: object "Error: element in different document or iframe"
+Harness: the test ran to completion.
+

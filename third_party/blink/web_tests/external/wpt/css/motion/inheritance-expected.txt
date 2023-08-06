@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Property offset-anchor has initial value auto
+PASS Property offset-anchor does not inherit
+PASS Property offset-distance has initial value 0px
+PASS Property offset-distance does not inherit
+PASS Property offset-path has initial value none
+PASS Property offset-path does not inherit
+FAIL Property offset-position has initial value normal assert_equals: expected "normal" but got "auto"
+PASS Property offset-position does not inherit
+PASS Property offset-rotate has initial value ['auto 0deg' or 'auto']
+PASS Property offset-rotate does not inherit
+Harness: the test ran to completion.
+

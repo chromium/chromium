@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL UTF-8 BOM should be stripped when decoding JSON module script promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/bom-utf-8.json"
+FAIL UTF-16BE BOM should result in parse error in JSON module script promise_rejects_js: Expected parse error from UTF-16BE BOM function "function() { throw e }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/bom-utf-16be.json" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
+FAIL UTF-16LE BOM should result in parse error in JSON module script promise_rejects_js: Expected parse error from UTF-16LE BOM function "function() { throw e }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/bom-utf-16le.json" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
+Harness: the test ran to completion.
+

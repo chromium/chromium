@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Imported CSS module, cross-origin with CORS assert_equals: Unexpected _log value expected "imported CSS: #test { background-color: rgb(255, 0, 0); }" but got "10-189"
+FAIL Imported CSS module, cross-origin, missing CORS ACAO header assert_equals: Unexpected _log value expected "error" but got "10-146"
+FAIL Imported CSS module with parse error, cross-origin, with CORS assert_equals: Unexpected _log value expected "imported CSS rules count: 0" but got "10-195"
+Harness: the test ran to completion.
+
