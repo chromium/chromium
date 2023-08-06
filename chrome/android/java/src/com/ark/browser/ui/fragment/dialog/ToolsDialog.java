@@ -162,6 +162,9 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         DrawableTintTextView tvReaderMode = findViewById(R.id.tv_reader_mode);
         DrawableTintTextView tvEditMode = findViewById(R.id.tv_edit_mode);
 
+        DrawableTintTextView tvImgPreview = findViewById(R.id.tv_img_preview);
+        tvImgPreview.setOnClickListener(this);
+
         int primaryColor = getResources().getColor(R.color.colorPrimary);
         if (smartNoImageMode) {
             tvSmartNoImg.setTint(primaryColor);
@@ -373,6 +376,29 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
 
             LoadUrlEvent.post(mArkWeb.getPageInfo(),
                     distillerUrl, true, mArkWeb.isIncognito());
+        } else if (id == R.id.tv_img_preview) {
+            String script = "javascript:" +
+                    "console.log('get imgs');" +
+                    "const imgs = [];" +
+                    "var videoElements = document.getElementsByTagName('img');\n" +
+                    "if(videoElements == null){\n" +
+                    "   ark_bridge.setImgUrls(JSON.stringify(imgs));\n" +
+                    "} else {\n" +
+                    "   for(var i = 0;i < videoElements.length; i++) {\n" +
+                    "       if(videoElements[i].width > 70 && videoElements[i].height > 70){\n" +
+                    "           const src = videoElements[i].src;\n" +
+                    "           if(src == null || src.length < 5){\n" +
+                    "               continue;\n" +
+                    "           }\n" +
+                    "           console.log('image, ', src);\n" +
+                    "           imgs.push(src);\n" +
+                    "       }\n" +
+                    "   }\n" +
+                    "   ark_bridge.setImgUrls(JSON.stringify(imgs));\n" +
+                    "}";
+            mArkWeb.evaluateJavaScript(script, null);
+
+            ImagePreviewer.start(context, mArkWeb.getId());
         }
         dismiss();
     }

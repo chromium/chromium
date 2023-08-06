@@ -288,6 +288,12 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
         handleMediaKey(event);
     }
 
+    @Override
+    public boolean addMessageToConsole(int level, String message, int lineNumber, String sourceId) {
+        ArkLogger.e(TAG, "addMessageToConsole message=" + message + " level=" + level + " lineNumber=" + lineNumber);
+        return super.addMessageToConsole(level, message, lineNumber, sourceId);
+    }
+
     /**
      * Redispatches unhandled media keys. This allows bluetooth headphones with play/pause or
      * other buttons to function correctly.

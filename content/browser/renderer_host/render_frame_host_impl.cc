@@ -3372,6 +3372,7 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
     uint32_t line_no,
     const absl::optional<std::u16string>& source_id,
     const absl::optional<std::u16string>& untrusted_stack_trace) {
+  LOG(ERROR) << "RenderFrameHostImpl::DidAddMessageToConsole message=" << message << " line_no=" << line_no;
   std::u16string updated_source_id;
   if (source_id.has_value())
     updated_source_id = *source_id;

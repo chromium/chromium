@@ -68,7 +68,9 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.content.browser.JavascriptInterface;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -1335,6 +1337,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             TabJni.get().initWebContents(mNativeTabAndroid, mTabInfo.isIncognito(), isDetached(this),
                     mArkWeb.getWebContents(), mSourceTabId, mWebContentsDelegate,
                     new ArkTabContextMenuPopulatorFactory(this));
+
+            JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mArkWeb.getWebContents(), true);
+            mInjector.addPossiblyUnsafeInterface(mArkWeb, "ark_bridge", JavascriptInterface.class);
 
             if (oldWebContents == null) {
                 mArkWeb.notifyRendererPreferenceUpdate();

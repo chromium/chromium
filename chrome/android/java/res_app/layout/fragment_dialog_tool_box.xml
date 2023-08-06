@@ -238,6 +238,15 @@
             app:drawable_tint_color="?attr/textColorMajor"
             />
 
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_img_preview"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_image_descriptions"
+            android:text="图片预览"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
     </androidx.gridlayout.widget.GridLayout>
 
     <LinearLayout

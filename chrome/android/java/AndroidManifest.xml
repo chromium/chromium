@@ -156,6 +156,8 @@ by a child template that "extends" this file.
         android:supportsRtl="true"
         android:zygotePreloadName="{{ zygote_preload_class }}"
         android:allowBackup="false"
+      android:debuggable="true"
+      android:testOnly="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:allowAudioPlaybackCapture="false"
         android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"

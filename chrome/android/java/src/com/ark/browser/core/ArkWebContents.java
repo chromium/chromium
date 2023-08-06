@@ -3,6 +3,7 @@ package com.ark.browser.core;
 import android.graphics.Color;
 import android.text.TextUtils;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,6 +14,7 @@ import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.utils.ArkLogger;
+import com.zpj.bus.EventLiveData;
 
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.content.browser.JavascriptInterface;
 import org.chromium.content.browser.webcontents.ObserverProxyFactory;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsObserverProxy;
@@ -40,6 +43,11 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArkWebContents {
 
@@ -72,6 +80,8 @@ public class ArkWebContents {
 
     private boolean mStartLoad = false;
     private boolean mFinishLoad = false;
+
+    EventLiveData<List<String>> imagesLiveData;
 
     public ArkWebContents(PageInfo pageInfo, @NonNull WebContents webContents) {
         mPageInfo = pageInfo;
@@ -138,6 +148,38 @@ public class ArkWebContents {
         }
     }
 
+    @Keep
+    @JavascriptInterface
+    public void hello() {
+        ArkLogger.e(this, "hello");
+    }
+
+    @Keep
+    @JavascriptInterface
+    public void log(String s) {
+        ArkLogger.e(this, "log s=" + s);
+    }
+
+    @Keep
+    @JavascriptInterface
+    public void setImgUrls(String urls) {
+        ArkLogger.e(this, "setImgUrls urls=" + urls);
+        if (imagesLiveData == null) {
+            return;
+        }
+        try {
+            JSONArray jsonArray = new JSONArray(urls);
+            List<String> images = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                images.add(jsonArray.getString(i));
+            }
+            imagesLiveData.postValue(images);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            imagesLiveData = null;
+        }
+    }
+
     public PageInfo getPageInfo() {
         return mPageInfo;
     }
@@ -172,7 +214,6 @@ public class ArkWebContents {
     }
 
     public void reload() {
-
         if (OfflinePageUtils.isOfflinePage(mWebContents)) {
             // If current page is an offline page, reload it with custom behavior defined in extra
             // header respected.
@@ -185,6 +226,7 @@ public class ArkWebContents {
                     });
             return;
         }
+        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(getUrl()));
         getWebContents().getNavigationController().reload(true);
     }
 
@@ -205,6 +247,41 @@ public class ArkWebContents {
 
     public void evaluateJavaScript(String script, @Nullable JavaScriptCallback callback) {
         mWebContents.evaluateJavaScript(script, callback);
+    }
+
+    public EventLiveData<List<String>> getImagesLiveData() {
+        if (imagesLiveData == null) {
+            imagesLiveData = new EventLiveData<>(true);
+        }
+        return imagesLiveData;
+    }
+
+    public void loadImages() {
+
+        if (imagesLiveData == null) {
+            imagesLiveData = new EventLiveData<>(true);
+        }
+
+        String script = "javascript:" +
+                "console.log('get imgs');" +
+                "const imgs = [];" +
+                "var els = document.getElementsByTagName('img');\n" +
+                "if(els == null){\n" +
+                "   ark_bridge.setImgUrls(JSON.stringify(imgs));\n" +
+                "} else {\n" +
+                "   for(var i = 0;i < els.length; i++) {\n" +
+                "       if(els[i].width > 70 && els[i].height > 70){\n" +
+                "           const src = els[i].src;\n" +
+                "           if(src == null || src.length < 5){\n" +
+                "               continue;\n" +
+                "           }\n" +
+                "           console.log('image, ', src);\n" +
+                "           imgs.push(src);\n" +
+                "       }\n" +
+                "   }\n" +
+                "   ark_bridge.setImgUrls(JSON.stringify(imgs));\n" +
+                "}";
+        evaluateJavaScript(script, null);
     }
 
     public boolean canGoBack() {
@@ -287,6 +364,10 @@ public class ArkWebContents {
 
         updateThemeColor();
 
+        // TODO
+//        JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mWebContents, true);
+//        mInjector.addPossiblyUnsafeInterface(this, "ark_bridge", ArkTabImpl.JavascriptInterface.class);
+
         loadIfNecessary();
     }
 
@@ -300,6 +381,9 @@ public class ArkWebContents {
         mWebContents.setViewAndroidDelegate(ViewAndroidDelegate.createBasicDelegate(/* containerView */ null));
         mWebContents.setOverscrollRefreshHandler(null);
         mWebContents.setFocus(false);
+
+//        JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mWebContents, true);
+//        mInjector.removeInterface("ark_bridge");
     }
 
 //    public void destroy() {

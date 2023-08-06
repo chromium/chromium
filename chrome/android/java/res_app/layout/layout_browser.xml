@@ -61,13 +61,6 @@
             android:layout_gravity="start|top"
             android:focusable="true" />
 
-        <FrameLayout
-            android:id="@+id/sheet_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false" />
-
-
 
         <View
             android:layout_width="match_parent"

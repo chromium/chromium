@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,11 @@ import com.zpj.fragmentation.helper.BlockActionQueue;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.FileUtils;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,7 +58,10 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageAutodismissDurationProvider;
@@ -65,6 +72,7 @@ import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.MessagesMetrics;
 import org.chromium.net.ConnectionType;
+import org.chromium.url.GURL;
 
 public class ArkMainFragment extends BaseFragment implements
         PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {
@@ -79,6 +87,9 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Nullable
     protected ManagedMessageDispatcher mMessageDispatcher;
+
+    private ManagedBottomSheetController mBottomSheetController;
+    private EphemeralTabCoordinator mEphemeralTabCoordinator;
 
     public ArkMainFragment() {
         TabGroupManager.global().restore(result -> {
@@ -222,6 +233,18 @@ public class ArkMainFragment extends BaseFragment implements
                         } else {
                             ZToast.error("从首页移除失败!");
                         }
+                    } else if (action == BundleEvent.ACTION_OPEN_IN_EPHEMERAL_TAB) {
+                        if (mEphemeralTabCoordinator == null) {
+                            return;
+                        }
+                        String url = event.getString("url", null);
+                        if (TextUtils.isEmpty(url)) {
+                            return;
+                        }
+                        String title = event.getString("title", null);
+                        boolean incognito = event.getBoolean("incognito", false);
+
+                        mEphemeralTabCoordinator.requestOpenSheet(new GURL(url), title, incognito);
                     }
                 })
                 .subscribe();
@@ -244,6 +267,52 @@ public class ArkMainFragment extends BaseFragment implements
         mViewHolder = mSwitcherManager.getCompositorViewHolder();
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
+
+
+
+        ViewGroup coordinator = findViewById(R.id.coordinator);
+        ScrimCoordinator.SystemUiScrimDelegate delegate =
+                new ScrimCoordinator.SystemUiScrimDelegate() {
+                    @Override
+                    public void setStatusBarScrimFraction(float scrimFraction) {
+                        // TODO
+//                        RootUiCoordinator.this.setStatusBarScrimFraction(scrimFraction);
+                    }
+
+                    @Override
+                    public void setNavigationBarScrimFraction(float scrimFraction) {}
+                };
+        ScrimCoordinator mScrimCoordinator = new ScrimCoordinator(_mActivity, delegate, coordinator,
+                context.getResources().getColor(R.color.black_alpha_65));
+
+        mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
+                ()
+                        -> mScrimCoordinator,
+                new Callback<View>() {
+                    @Override
+                    public void onResult(View result) {
+
+                    }
+                }, _mActivity.getWindow(),
+                getWindowAndroid().getKeyboardDelegate(),
+                () -> findViewById(R.id.sheet_container));
+        BottomSheetControllerFactory.setExceptionReporter(
+                ChromePureJavaExceptionReporter::reportJavaException);
+        BottomSheetControllerFactory.attach(getWindowAndroid(), mBottomSheetController);
+
+//        BottomSheetManager mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
+//                mBrowserControlsManager, mExpandedBottomSheetHelper,
+//                this::getBottomSheetSnackbarManager, mOmniboxFocusStateSupplier,
+//                panelManagerSupplier, mLayoutStateProviderOneShotSupplier);
+        mEphemeralTabCoordinator = new EphemeralTabCoordinator(getContext(), getWindowAndroid(),
+                _mActivity.getWindow().getDecorView(),
+                new Supplier<Tab>() {
+                    @Nullable
+                    @Override
+                    public Tab get() {
+                        return mSwitcherManager.getCompositorViewHolder().getTab();
+                    }
+                }, mBottomSheetController, true);
     }
 
     @Override
@@ -268,6 +337,10 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public boolean onBackPressedSupport() {
+        if (mEphemeralTabCoordinator != null && mEphemeralTabCoordinator.isOpened()) {
+            mEphemeralTabCoordinator.close();
+            return true;
+        }
         if (mSwitcherManager != null && mSwitcherManager.onBackPressed()) {
             return true;
         }
@@ -307,6 +380,10 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onDestroyView() {
+        if (mBottomSheetController != null) {
+            BottomSheetControllerFactory.detach(mBottomSheetController);
+            mBottomSheetController.destroy();
+        }
         if (mSwitcherManager != null) {
             mSwitcherManager.onDestroy();
         }
@@ -339,12 +416,6 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onResumeWithNative() {
-//        ArkWebContents web = TabGroupManager.global().getCurrentWeb();
-//        if (web != null) {
-//            // For picture-in-picture mode / auto-darken web contents.
-//            web.notifyRendererPreferenceUpdate();
-//        }
-
         if (mViewHolder != null) {
             Tab tab = mViewHolder.getTab();
             if (tab != null && tab.getWebContents() != null) {

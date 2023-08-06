@@ -20,6 +20,7 @@ public class BundleEvent {
     public static final int ACTION_GO_TO_SWITCHER = 1;
     public static final int ACTION_ADD_TO_HOMEPAGE = 2;
     public static final int ACTION_REMOVE_FROM_HOMEPAGE = 3;
+    public static final int ACTION_OPEN_IN_EPHEMERAL_TAB = 4;
 
     private final int mAction;
     private final Bundle mBundle;
