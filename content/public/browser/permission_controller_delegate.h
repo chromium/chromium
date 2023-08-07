@@ -82,7 +82,8 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   virtual PermissionResult GetPermissionResultForOriginWithoutContext(
       blink::PermissionType permission,
-      const url::Origin& origin) = 0;
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) = 0;
 
   // Returns the permission status for the current document in the given
   // RenderFrameHost. Use this over `GetPermissionStatus` whenever possible as

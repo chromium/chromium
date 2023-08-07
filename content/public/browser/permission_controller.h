@@ -68,9 +68,8 @@ class CONTENT_EXPORT PermissionController
 
   // The method does the same as `GetPermissionResultForOriginWithoutContext`
   // but it can be used for `PermissionType` that are keyed on a combination of
-  // requesting and embedding origins, e.g., Notifications.
-  virtual blink::mojom::PermissionStatus
-  GetPermissionStatusForOriginWithoutContext(
+  // requesting and embedding origins, e.g., Notifications or StorageAccess.
+  virtual PermissionResult GetPermissionResultForOriginWithoutContext(
       blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) = 0;

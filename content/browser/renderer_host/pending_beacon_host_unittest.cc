@@ -166,8 +166,8 @@ class PendingBeaconHostTestBase : public RenderViewHostTestHarness {
         browser_context()->GetPermissionControllerDelegate());
 
     ON_CALL(*mock_permission_manager,
-            GetPermissionResultForOriginWithoutContext(permission_type,
-                                                       ::testing::_))
+            GetPermissionResultForOriginWithoutContext(
+                permission_type, ::testing::_, ::testing::_))
         .WillByDefault(::testing::Return(PermissionResult(
             permission_status, PermissionStatusSource::UNSPECIFIED)));
   }

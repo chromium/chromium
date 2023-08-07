@@ -349,12 +349,14 @@ PermissionStatus PermissionManager::GetPermissionStatus(
 content::PermissionResult
 PermissionManager::GetPermissionResultForOriginWithoutContext(
     blink::PermissionType permission,
-    const url::Origin& origin) {
+    const url::Origin& requesting_origin,
+    const url::Origin& embedding_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PermissionResult result = GetPermissionStatusInternal(
       PermissionUtil::PermissionTypeToContentSettingType(permission),
       /*render_process_host=*/nullptr,
-      /*render_frame_host=*/nullptr, origin.GetURL(), origin.GetURL());
+      /*render_frame_host=*/nullptr, requesting_origin.GetURL(),
+      embedding_origin.GetURL());
 
   return PermissionUtil::ToContentPermissionResult(result);
 }

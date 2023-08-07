@@ -177,12 +177,19 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
 
 permissions::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
     blink::PermissionType permission,
-    const url::Origin& origin) {
-  content::PermissionResult permission_result =
-      GetProfile()
-          ->GetPermissionController()
-          ->GetPermissionResultForOriginWithoutContext(permission, origin);
-  return permissions::PermissionUtil::ToPermissionResult(permission_result);
+    const url::Origin& origin,
+    const absl::optional<url::Origin>& requesting_origin) {
+  auto* controller = GetProfile()->GetPermissionController();
+
+  if (requesting_origin.has_value()) {
+    return permissions::PermissionUtil::ToPermissionResult(
+        controller->GetPermissionResultForOriginWithoutContext(
+            permission, *requesting_origin, origin));
+  } else {
+    return permissions::PermissionUtil::ToPermissionResult(
+        controller->GetPermissionResultForOriginWithoutContext(permission,
+                                                               origin));
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

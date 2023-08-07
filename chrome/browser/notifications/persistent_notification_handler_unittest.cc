@@ -52,8 +52,9 @@ class TestingProfileWithPermissionManager : public TestingProfile {
   // Sets the notification permission status to |permission_status|.
   void SetNotificationPermissionStatus(
       blink::mojom::PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_, GetPermissionResultForOriginWithoutContext(
-                                      blink::PermissionType::NOTIFICATIONS, _))
+    ON_CALL(*permission_manager_,
+            GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::NOTIFICATIONS, _, _))
         .WillByDefault(Return(content::PermissionResult(
             permission_status, content::PermissionStatusSource::UNSPECIFIED)));
   }

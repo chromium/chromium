@@ -212,9 +212,10 @@ class PlatformNotificationContextTest : public ::testing::Test {
 
   void SetPermissionStatus(const GURL& origin,
                            blink::mojom::PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_, GetPermissionResultForOriginWithoutContext(
-                                      blink::PermissionType::NOTIFICATIONS,
-                                      url::Origin::Create(origin)))
+    ON_CALL(*permission_manager_,
+            GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::NOTIFICATIONS,
+                url::Origin::Create(origin), url::Origin::Create(origin)))
         .WillByDefault(Return(content::PermissionResult(
             permission_status, PermissionStatusSource::UNSPECIFIED)));
   }

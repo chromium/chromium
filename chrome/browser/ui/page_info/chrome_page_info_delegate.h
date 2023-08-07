@@ -50,7 +50,8 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #endif
   permissions::PermissionResult GetPermissionResult(
       blink::PermissionType permission,
-      const url::Origin& origin) override;
+      const url::Origin& origin,
+      const absl::optional<url::Origin>& requesting_origin) override;
 #if !BUILDFLAG(IS_ANDROID)
   absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
   bool IsFpsManaged() override;

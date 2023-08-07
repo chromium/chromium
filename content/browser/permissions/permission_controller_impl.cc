@@ -578,28 +578,29 @@ PermissionResult
 PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
     PermissionType permission,
     const url::Origin& origin) {
-  absl::optional<blink::mojom::PermissionStatus> status =
-      permission_overrides_.Get(origin, permission);
-  if (status)
-    return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
-
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate)
-    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
-                            PermissionStatusSource::UNSPECIFIED);
-
-  return delegate->GetPermissionResultForOriginWithoutContext(permission,
-                                                              origin);
+  return GetPermissionResultForOriginWithoutContext(permission, origin, origin);
 }
 
-blink::mojom::PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForOriginWithoutContext(
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
     PermissionType permission,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  return GetPermissionStatusInternal(permission, requesting_origin.GetURL(),
-                                     embedding_origin.GetURL());
+  absl::optional<blink::mojom::PermissionStatus> status =
+      permission_overrides_.Get(requesting_origin, permission);
+  if (status) {
+    return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
+  }
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate) {
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                            PermissionStatusSource::UNSPECIFIED);
+  }
+
+  return delegate->GetPermissionResultForOriginWithoutContext(
+      permission, requesting_origin, embedding_origin);
 }
 
 blink::mojom::PermissionStatus

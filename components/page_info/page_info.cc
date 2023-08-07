@@ -1204,7 +1204,7 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
       permission_result = delegate_->GetPermissionResult(
           permissions::PermissionUtil::ContentSettingTypeToPermissionType(
               permission_info.type),
-          url::Origin::Create(site_url_));
+          url::Origin::Create(site_url_), permission_info.requesting_origin);
     } else if (permission_info.type ==
                ContentSettingsType::FEDERATED_IDENTITY_API) {
       absl::optional<permissions::PermissionResult> embargo_result =

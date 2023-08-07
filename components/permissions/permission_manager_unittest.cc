@@ -98,7 +98,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   void CheckPermissionStatus(PermissionType type, PermissionStatus expected) {
     EXPECT_EQ(expected, GetPermissionManager()
                             ->GetPermissionResultForOriginWithoutContext(
-                                type, url::Origin::Create(url_))
+                                type, url::Origin::Create(url_),
+                                url::Origin::Create(url_))
                             .status);
   }
 
@@ -108,7 +109,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::PermissionStatusSource expected_status_source) {
     content::PermissionResult result =
         GetPermissionManager()->GetPermissionResultForOriginWithoutContext(
-            type, url::Origin::Create(url_));
+            type, url::Origin::Create(url_), url::Origin::Create(url_));
     EXPECT_EQ(expected_status, result.status);
     EXPECT_EQ(expected_status_source, result.source);
   }

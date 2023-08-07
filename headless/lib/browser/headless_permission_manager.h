@@ -62,7 +62,8 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
       const GURL& embedding_origin) override;
   content::PermissionResult GetPermissionResultForOriginWithoutContext(
       blink::PermissionType permission,
-      const url::Origin& origin) override;
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;

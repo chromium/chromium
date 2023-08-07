@@ -93,7 +93,8 @@ class GeolocationPermissionContextDelegateTests
       blink::PermissionType permission,
       const url::Origin& origin) {
     return PermissionManagerFactory::GetForProfile(profile)
-        ->GetPermissionResultForOriginWithoutContext(permission, origin);
+        ->GetPermissionResultForOriginWithoutContext(permission, origin,
+                                                     origin);
   }
 };
 

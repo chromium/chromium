@@ -135,7 +135,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   PermissionResult GetPermissionResultForOriginWithoutContext(
       PermissionType permission,
       const url::Origin& origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForOriginWithoutContext(
+  PermissionResult GetPermissionResultForOriginWithoutContext(
       blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;

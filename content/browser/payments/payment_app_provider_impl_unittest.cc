@@ -74,7 +74,7 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
         new testing::NiceMock<MockPermissionManager>());
     ON_CALL(*mock_permission_manager,
             GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::PAYMENT_HANDLER, testing::_))
+                blink::PermissionType::PAYMENT_HANDLER, testing::_, testing::_))
         .WillByDefault(testing::Return(
             PermissionResult(blink::mojom::PermissionStatus::GRANTED,
                              PermissionStatusSource::UNSPECIFIED)));

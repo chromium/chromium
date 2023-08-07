@@ -32,9 +32,10 @@ class MockPermissionManager : public PermissionControllerDelegate {
                blink::mojom::PermissionStatus(blink::PermissionType permission,
                                               const GURL& requesting_origin,
                                               const GURL& embedding_origin));
-  MOCK_METHOD2(GetPermissionResultForOriginWithoutContext,
+  MOCK_METHOD3(GetPermissionResultForOriginWithoutContext,
                content::PermissionResult(blink::PermissionType permission,
-                                         const url::Origin& origin));
+                                         const url::Origin& requesting_origin,
+                                         const url::Origin& embedding_origin));
   MOCK_METHOD2(GetPermissionStatusForCurrentDocument,
                blink::mojom::PermissionStatus(
                    blink::PermissionType permission,

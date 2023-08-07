@@ -45,6 +45,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cookies/cookie_util.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
@@ -222,14 +223,14 @@ ContentSetting GetPermissionSettingForOrigin(
     BrowserContext* browser_context = unwrap(jbrowser_context_handle);
     content::PermissionController* permission_controller =
         browser_context->GetPermissionController();
-    blink::mojom::PermissionStatus status =
-        permission_controller->GetPermissionStatusForOriginWithoutContext(
+    content::PermissionResult result =
+        permission_controller->GetPermissionResultForOriginWithoutContext(
             permissions::PermissionUtil::ContentSettingTypeToPermissionType(
                 content_type),
             url::Origin::Create(requesting_origin),
             url::Origin::Create(embedding_origin));
     return permissions::PermissionUtil::PermissionStatusToContentSetting(
-        status);
+        result.status);
   } else {
     // If `content_type` is not permission, then we can directly read its value
     // from `HostContentSettingsMap`.
