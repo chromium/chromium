@@ -34,7 +34,7 @@ struct ModuleAddressCompare {
   }
 };
 
-// TODO(1446766): Cleanup after finishing crash investigation.
+// TODO(crbug/1446766): Cleanup after finishing crash investigation.
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_BASE_TRACING)
 std::string ModuleToString(const ModuleCache::Module& module) {
   trace_event::TracedValueJSON value;
