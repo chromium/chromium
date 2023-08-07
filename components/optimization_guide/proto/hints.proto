@@ -116,7 +116,7 @@ message GetHintsResponse {
 // Must sync with enum OptimizationType in enums.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29;
+  reserved 11, 12, 16, 29, 32;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -193,7 +193,7 @@ enum OptimizationType {
   V8_COMPILE_HINTS = 31;
   // This optimization provides information about shoppinge page types of this
   // page.
-  SHOPPING_PAGE_TYPES = 32;
+  SHOPPING_PAGE_TYPES = 33;
 }
 
 // Presents semantics for how page load URLs should be matched.
