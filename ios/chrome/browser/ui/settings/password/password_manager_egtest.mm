@@ -2593,7 +2593,6 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 // Tests that the duplicate credential section alert is shown when the user adds
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
-// TODO(crbug.com/1351802): The test is flaky.
 // TODO(crbug.com/1465016): This test isn't implemented with grouped passwords
 // yet.
 - (void)DISABLED_testDuplicatedCredentialWithNoUsername {
