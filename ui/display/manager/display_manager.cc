@@ -2116,8 +2116,6 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.SetColorSpaces(display_info.display_color_spaces());
   new_display.set_display_frequency(display_info.refresh_rate());
   new_display.set_label(display_info.name());
-  new_display.SetDRMFormatsAndModifiers(
-      display_info.GetDRMFormatsAndModifiers());
   new_display.set_detected(display_info.detected());
 
   constexpr uint32_t kNormalBitDepthNumBitsPerChannel = 8u;

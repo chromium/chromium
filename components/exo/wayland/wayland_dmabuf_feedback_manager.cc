@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,8 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 
@@ -134,7 +137,10 @@ class WaylandDmabufFeedback {
 
     const display::Display surface_display = surface->GetDisplay();
     display::DrmFormatsAndModifiers display_formats_and_modifiers =
-        surface_display.GetDRMFormatsAndModifiers();
+        ash::Shell::Get()
+            ->display_manager()
+            ->GetDisplayInfo(surface_display.id())
+            .GetDRMFormatsAndModifiers();
     IndexedDrmFormatsAndModifiers scanout_formats_and_modifiers;
 
     for (const auto& [format, modifier_entries] :
