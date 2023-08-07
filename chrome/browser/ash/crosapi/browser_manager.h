@@ -360,11 +360,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   enum class LacrosLaunchMode {
     // Indicates that Lacros is disabled.
     kLacrosDisabled = 0,
-    // Indicates that Lacros and Ash are both enabled and accessible by the
-    // user.
-    kSideBySide = 1,
-    // Similar to kSideBySide but Lacros is the primary browser.
-    kLacrosPrimary = 2,
     // Lacros is the only browser and Ash is disabled.
     kLacrosOnly = 3,
 
@@ -377,34 +372,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   enum class LacrosLaunchModeAndSource {
     // Either set by user or system/flags, indicates that Lacros is disabled.
     kPossiblySetByUserLacrosDisabled = 0,
-    // Either set by user or system/flags, indicates that Lacros and Ash are
-    // both
-    // enabled and accessible by the user.
-    kPossiblySetByUserSideBySide = 1,
-    // Either set by user or system/flags, indicates that Lacros is the primary
-    // (but not only) browser.
-    kPossiblySetByUserLacrosPrimary = 2,
     // Either set by user or system/flags, Lacros is the only browser and Ash is
     // disabled.
     kPossiblySetByUserLacrosOnly = 3,
     // Enforced by the user, indicates that Lacros is disabled.
     kForcedByUserLacrosDisabled = 4 + kPossiblySetByUserLacrosDisabled,
-    // Enforced by the user, indicates that Lacros and Ash are both enabled and
-    // accessible by the user.
-    kForcedByUserSideBySide = 4 + kPossiblySetByUserSideBySide,
-    // Enforced by the user, indicates that Lacros is the primary (but not only)
-    // browser.
-    kForcedByUserLacrosPrimary = 4 + kPossiblySetByUserLacrosPrimary,
     // Enforced by the user, Lacros is the only browser and Ash is disabled.
     kForcedByUserLacrosOnly = 4 + kPossiblySetByUserLacrosOnly,
     // Enforced by policy, indicates that Lacros is disabled.
     kForcedByPolicyLacrosDisabled = 8 + kPossiblySetByUserLacrosDisabled,
-    // Enforced by policy, indicates that Lacros and Ash are both enabled and
-    // accessible by the user.
-    kForcedByPolicySideBySide = 8 + kPossiblySetByUserSideBySide,
-    // Enforced by policy, indicates that Lacros is the primary (but not only)
-    // browser.
-    kForcedByPolicyLacrosPrimary = 8 + kPossiblySetByUserLacrosPrimary,
     // Enforced by policy, Lacros is the only browser and Ash is disabled.
     kForcedByPolicyLacrosOnly = 8 + kPossiblySetByUserLacrosOnly,
 
