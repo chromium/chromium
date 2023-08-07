@@ -29,8 +29,10 @@ source_set("address_bar_preference_ui") {
     "address_bar_preference_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/address_bar_preference/cells",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ui/base",
   ]
 }

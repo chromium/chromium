@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_view_controller.h"
 
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -25,7 +27,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.title = @"Address Bar";
+  self.title = l10n_util::GetNSString(IDS_IOS_ADDRESS_BAR_SETTING);
   [self loadModel];
 }
 
@@ -50,8 +52,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewLinkHeaderFooterItem* addressBarTip =
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypeOptionsContent];
-  addressBarTip.text =
-      @"You can also touch & hold the address bar to change the position.";
+  addressBarTip.text = l10n_util::GetNSString(IDS_IOS_ADDRESS_BAR_TIP_NOTE);
   [self.tableViewModel setFooter:addressBarTip
         forSectionWithIdentifier:SectionIdentifierContent];
 }

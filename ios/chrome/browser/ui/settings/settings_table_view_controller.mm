@@ -852,8 +852,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (TableViewItem*)addressBarPreferenceItem {
   _addressBarPreferenceItem = [self
            detailItemWithType:SettingsItemTypeAddressBar
-                         text:@"Address Bar"
-                   detailText:[_bottomOmniboxEnabled value] ? @"Bottom" : @"Top"
+                         text:l10n_util::GetNSString(
+                                  IDS_IOS_ADDRESS_BAR_SETTING)
+                   detailText:[_bottomOmniboxEnabled value]
+                                  ? l10n_util::GetNSString(
+                                        IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)
+                                  : l10n_util::GetNSString(
+                                        IDS_IOS_TOP_ADDRESS_BAR_OPTION)
                        symbol:DefaultSettingsRootSymbol(kGlobeAmericasSymbol)
         symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
       accessibilityIdentifier:kSettingsAddressBarCellId];
@@ -2233,7 +2238,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                   withRowAnimation:UITableViewRowAnimationAutomatic];
   } else if (observableBoolean == _bottomOmniboxEnabled) {
     _addressBarPreferenceItem.detailText =
-        [_bottomOmniboxEnabled value] ? @"Bottom" : @"Top";
+        [_bottomOmniboxEnabled value]
+            ? l10n_util::GetNSString(IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)
+            : l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION);
     [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   } else {
     NOTREACHED();

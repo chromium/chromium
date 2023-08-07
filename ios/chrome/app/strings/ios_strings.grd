@@ -5043,6 +5043,18 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SPOTLIGHT_OPEN_TAB_LABEL" desc="Tag label title displayed for opent tabs spotlight items. [iOS only]">
         Open Tab
       </message>
+      <message name="IDS_IOS_ADDRESS_BAR_SETTING" desc="Tag label title displayed in the address bar setting section. [iOS only]">
+        Address Bar
+      </message>
+      <message name="IDS_IOS_ADDRESS_BAR_TIP_NOTE" desc="Tag label footer note displayed in the address bar setting section. [iOS only]">
+        You can also touch and hold the address bar to change the position.
+      </message>
+      <message name="IDS_IOS_TOP_ADDRESS_BAR_OPTION" desc="Tag label title displayed for the top address bar preference option. [iOS only]">
+        Top
+      </message>
+      <message name="IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION" desc="Tag label title displayed for the bottom address bar preference option. [iOS only]">
+        Bottom
+      </message>
     </messages>
   </release>
 </grit>

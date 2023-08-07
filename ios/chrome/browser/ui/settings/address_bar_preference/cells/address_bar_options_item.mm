@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_option_item_view.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_preference_service_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -86,12 +88,14 @@ const CGFloat kCellTrailingPadding = 31;
 // Returns a UI stack view that displays an UI stack view with two Address bar
 // preference options views.
 - (UIStackView*)addressBarPreferenceOptionsContent {
-  _topAddressBar =
-      [[AddressBarOptionView alloc] initWithSymbolName:kTopOmniboxOptionSymbol
-                                             labelText:@"Top"];
+  _topAddressBar = [[AddressBarOptionView alloc]
+      initWithSymbolName:kTopOmniboxOptionSymbol
+               labelText:l10n_util::GetNSString(
+                             IDS_IOS_TOP_ADDRESS_BAR_OPTION)];
   _bottomAddressBar = [[AddressBarOptionView alloc]
       initWithSymbolName:kBottomOmniboxOptionSymbol
-               labelText:@"Bottom"];
+               labelText:l10n_util::GetNSString(
+                             IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)];
 
   [_topAddressBar setSelected:!_bottomAddressBarOptionSelected];
   [_bottomAddressBar setSelected:_bottomAddressBarOptionSelected];
