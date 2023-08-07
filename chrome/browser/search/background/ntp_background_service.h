@@ -191,7 +191,7 @@ class NtpBackgroundService : public KeyedService {
   void OnCollectionPreviewURLHeadersReceived(
       base::OnceClosure collection_fetch_complete_closure,
       ntp::background::Collection collection,
-      const std::string& preview_image_url,
+      const GURL& preview_image_url,
       int headers_response_code);
   // Callback that processes the response of a FetchImageInfo request made by a
   // collection image whose preview image's URL is broken. The images in the
@@ -208,6 +208,7 @@ class NtpBackgroundService : public KeyedService {
       ntp::background::Collection collection,
       ntp::background::GetImagesInCollectionResponse images_response,
       int replacement_preview_index,
+      const GURL& preview_image_url,
       int headers_response_code);
 
   // Callback that processes the response from the FetchNextCollectionImage

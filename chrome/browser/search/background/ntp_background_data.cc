@@ -42,19 +42,12 @@ bool operator!=(const CollectionInfo& lhs, const CollectionInfo& rhs) {
 
 CollectionInfo CollectionInfo::CreateFromProto(
     const ntp::background::Collection& collection,
-    absl::optional<std::string> preview_image_url) {
+    absl::optional<GURL> preview_image_url) {
   CollectionInfo collection_info;
   collection_info.collection_id = collection.collection_id();
   collection_info.collection_name = collection.collection_name();
   if (preview_image_url.has_value()) {
-    collection_info.preview_image_url =
-        AddOptionsToImageURL(preview_image_url.value(), kThumbnailImageOptions);
-  } else if (collection.preview_size() > 0 &&
-             collection.preview(0).has_image_url()) {
-    // Use the first preview image as the representative one for the
-    // collection.
-    collection_info.preview_image_url = AddOptionsToImageURL(
-        collection.preview(0).image_url(), kThumbnailImageOptions);
+    collection_info.preview_image_url = preview_image_url.value();
   }
 
   return collection_info;

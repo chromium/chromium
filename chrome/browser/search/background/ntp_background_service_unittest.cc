@@ -208,7 +208,8 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionsResponse) {
   SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
                         response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(GURL(collection.preview(0).image_url()));
+    SetUpResponseWithNetworkSuccess(
+        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_info().empty());
@@ -252,8 +253,10 @@ TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasNoReplacement) {
   if (BackgroundImageErrorDetectionEnabled()) {
     SetUpResponseWithData(service()->GetImagesURLForTesting(),
                           image_response_string);
-    SetUpResponseWithNetworkError(GURL(collection.preview(0).image_url()));
-    SetUpResponseWithNetworkError(GURL(image.image_url()));
+    SetUpResponseWithNetworkError(
+        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
+    SetUpResponseWithNetworkError(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_info().empty());
@@ -301,8 +304,10 @@ TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasReplacement) {
   if (BackgroundImageErrorDetectionEnabled()) {
     SetUpResponseWithData(service()->GetImagesURLForTesting(),
                           image_response_string);
-    SetUpResponseWithNetworkError(GURL(collection.preview(0).image_url()));
-    SetUpResponseWithNetworkSuccess(GURL(image.image_url()));
+    SetUpResponseWithNetworkError(
+        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
+    SetUpResponseWithNetworkSuccess(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_info().empty());
@@ -332,6 +337,55 @@ TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasReplacement) {
   } else {
     EXPECT_FALSE(service()->collection_info().empty());
     EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));
+  }
+}
+
+TEST_P(NtpBackgroundServiceTest, CollectionHasNoPreviewImage) {
+  ntp::background::Collection shapes_collection;
+  shapes_collection.set_collection_id("shapes");
+  shapes_collection.set_collection_name("Shapes");
+  shapes_collection.add_preview()->set_image_url(kTestImageUrl);
+
+  ntp::background::Collection colors_collection;
+  colors_collection.set_collection_id("colors");
+  colors_collection.set_collection_name("Colors");
+
+  ntp::background::GetCollectionsResponse response;
+  *response.add_collections() = shapes_collection;
+  *response.add_collections() = colors_collection;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
+                        response_string);
+  if (BackgroundImageErrorDetectionEnabled()) {
+    SetUpResponseWithNetworkSuccess(GURL(
+        shapes_collection.preview(0).image_url() + GetThumbnailImageOptions()));
+  }
+
+  ASSERT_TRUE(service()->collection_info().empty());
+
+  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
+  service()->FetchCollectionInfo();
+  base::RunLoop().RunUntilIdle();
+
+  CollectionInfo shapes_collection_info;
+  shapes_collection_info.collection_id = shapes_collection.collection_id();
+  shapes_collection_info.collection_name = shapes_collection.collection_name();
+  shapes_collection_info.preview_image_url = GURL(
+      shapes_collection.preview(0).image_url() + GetThumbnailImageOptions());
+
+  CollectionInfo colors_collection_info;
+  colors_collection_info.collection_id = colors_collection.collection_id();
+  colors_collection_info.collection_name = colors_collection.collection_name();
+
+  if (BackgroundImageErrorDetectionEnabled()) {
+    EXPECT_EQ(1u, service()->collection_info().size());
+    EXPECT_THAT(service()->collection_info().at(0), Eq(shapes_collection_info));
+  } else {
+    EXPECT_EQ(2u, service()->collection_info().size());
+    EXPECT_THAT(service()->collection_info().at(0), Eq(shapes_collection_info));
+    EXPECT_THAT(service()->collection_info().at(1), Eq(colors_collection_info));
   }
 }
 
@@ -496,7 +550,8 @@ TEST_P(NtpBackgroundServiceTest,
   SetUpResponseWithData(service()->GetImagesURLForTesting(),
                         image_response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(GURL(collection.preview(0).image_url()));
+    SetUpResponseWithNetworkSuccess(
+        GURL(collection.preview(0).image_url() + GetThumbnailImageOptions()));
     SetUpResponseWithNetworkSuccess(
         GURL(image.image_url() + GetThumbnailImageOptions()));
   }

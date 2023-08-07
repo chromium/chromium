@@ -209,15 +209,8 @@ void NtpBackgroundService::OnCollectionInfoFetchComplete(
     for (int i = 0; i < collections_response.collections_size(); ++i) {
       ntp::background::Collection collection =
           collections_response.collections(i);
-      if (collection.preview_size() > 0 &&
-          collection.preview(0).has_image_url()) {
-        VerifyImageURL(
-            GURL(collection.preview(0).image_url()),
-            base::BindOnce(
-                &NtpBackgroundService::OnCollectionPreviewURLHeadersReceived,
-                base::Unretained(this), collection_fetch_complete_closure,
-                collection, collection.preview(0).image_url()));
-      } else {
+      if (collection.preview_size() <= 0 ||
+          !collection.preview(0).has_image_url()) {
         // If the collection has no preview image set server-side, we don't pass
         // its info to the renderer. Otherwise, users will be shown a broken
         // preview image.
@@ -226,12 +219,30 @@ void NtpBackgroundService::OnCollectionInfoFetchComplete(
         // collection requires adding a preview image and verifying that it
         // shows on the frontend.
         collection_fetch_complete_closure.Run();
+        return;
       }
+      const GURL preview_image_url = AddOptionsToImageURL(
+          collection.preview(0).image_url(), thumbnail_image_options_);
+      VerifyImageURL(
+          preview_image_url,
+          base::BindOnce(
+              &NtpBackgroundService::OnCollectionPreviewURLHeadersReceived,
+              base::Unretained(this), collection_fetch_complete_closure,
+              collection, preview_image_url));
     }
   } else {
     for (int i = 0; i < collections_response.collections_size(); ++i) {
-      collection_info_.push_back(CollectionInfo::CreateFromProto(
-          collections_response.collections(i), absl::nullopt));
+      ntp::background::Collection collection =
+          collections_response.collections(i);
+      if (collection.preview_size() > 0 &&
+          collection.preview(0).has_image_url()) {
+        collection_info_.push_back(CollectionInfo::CreateFromProto(
+            collection, /*preview_image_url=*/AddOptionsToImageURL(
+                collection.preview(0).image_url(), thumbnail_image_options_)));
+      } else {
+        collection_info_.push_back(CollectionInfo::CreateFromProto(
+            collection, /*preview_image_url=*/absl::nullopt));
+      }
     }
     NotifyObservers(FetchComplete::COLLECTION_INFO);
   }
@@ -434,7 +445,7 @@ void NtpBackgroundService::OnCollectionImageURLHeadersReceived(
 void NtpBackgroundService::OnCollectionPreviewURLHeadersReceived(
     base::OnceClosure collection_fetch_complete_closure,
     ntp::background::Collection collection,
-    const std::string& preview_image_url,
+    const GURL& preview_image_url,
     int headers_response_code) {
   if (headers_response_code == net::HTTP_OK) {
     collection_info_.push_back(
@@ -464,13 +475,17 @@ void NtpBackgroundService::OnFetchReplacementPreviewInfoComplete(
   // the first image's index, and increment, if needed, in the callback
   // |OnReplacementCollectionPreviewURLHeadersReceived|.
   const int replacement_preview_index = 0;
+  const GURL replacement_preview_image_url = AddOptionsToImageURL(
+      images_response.images(replacement_preview_index).image_url(),
+      thumbnail_image_options_);
   VerifyImageURL(
-      GURL(images_response.images(replacement_preview_index).image_url()),
+      replacement_preview_image_url,
       base::BindOnce(&NtpBackgroundService::
                          OnReplacementCollectionPreviewURLHeadersReceived,
                      base::Unretained(this),
                      std::move(collection_fetch_complete_closure), collection,
-                     images_response, replacement_preview_index));
+                     images_response, replacement_preview_index,
+                     replacement_preview_image_url));
 }
 
 void NtpBackgroundService::OnReplacementCollectionPreviewURLHeadersReceived(
@@ -478,24 +493,28 @@ void NtpBackgroundService::OnReplacementCollectionPreviewURLHeadersReceived(
     ntp::background::Collection collection,
     ntp::background::GetImagesInCollectionResponse images_response,
     int replacement_preview_index,
+    const GURL& preview_image_url,
     int headers_response_code) {
   if (headers_response_code == net::HTTP_OK) {
-    collection_info_.push_back(CollectionInfo::CreateFromProto(
-        collection,
-        images_response.images(replacement_preview_index).image_url()));
+    collection_info_.push_back(
+        CollectionInfo::CreateFromProto(collection, preview_image_url));
     std::move(collection_fetch_complete_closure).Run();
   } else if (replacement_preview_index == images_response.images_size() - 1) {
     // Every image in the collection has a broken image URL.
     std::move(collection_fetch_complete_closure).Run();
   } else {
     replacement_preview_index++;
+    const GURL replacement_preview_url = AddOptionsToImageURL(
+        images_response.images(replacement_preview_index).image_url(),
+        thumbnail_image_options_);
     VerifyImageURL(
-        GURL(images_response.images(replacement_preview_index).image_url()),
+        replacement_preview_url,
         base::BindOnce(&NtpBackgroundService::
                            OnReplacementCollectionPreviewURLHeadersReceived,
                        base::Unretained(this),
                        std::move(collection_fetch_complete_closure), collection,
-                       images_response, replacement_preview_index));
+                       images_response, replacement_preview_index,
+                       replacement_preview_url));
   }
 }
 
