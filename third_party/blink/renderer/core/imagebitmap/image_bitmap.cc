@@ -572,7 +572,9 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
         input->Data(), data_complete,
         parsed_options.premultiply_alpha ? ImageDecoder::kAlphaPremultiplied
                                          : ImageDecoder::kAlphaNotPremultiplied,
-        ImageDecoder::kDefaultBitDepth,
+        paint_image.GetColorType() == kRGBA_F16_SkColorType
+            ? ImageDecoder::kHighBitDepthToHalfFloat
+            : ImageDecoder::kDefaultBitDepth,
         parsed_options.has_color_space_conversion ? ColorBehavior::kTag
                                                   : ColorBehavior::kIgnore));
     auto skia_image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
