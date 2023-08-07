@@ -48,23 +48,31 @@ function applyPoliciesFromFile(jsonFile: File) {
 
         // Extension policies are ignored, they are not supported on this page
         try {
-          const policies = JSON.parse(
-              reader.result as string)['policyValues']['chrome']['policies'];
-
           const policyTable =
               getRequiredElement<PolicyTestTableElement>('policy-test-table');
-
           // Empty policy table
           policyTable.clearRows();
 
-          // Add row for each policy
-          for (const [key, value] of Object.entries(policies)) {
-            if (key.startsWith('_')) {
-              continue;
-            }
+          // Populate the test table after determining whether the array or
+          // object format is used.
+          const policies = JSON.parse(reader.result as string);
+          if (policies.constructor === Array) {
+            // Add row for each policy.
+            policies.forEach((policy: PolicyInfo) => {
+              policyTable.addRow(policy);
+            });
+          } else {
+            const policiesObj = policies['policyValues']['chrome']['policies'];
 
-            policyTable.addRow(
-                convertToPolicyInfo(key, value as {[key: string]: any}));
+            // Add row for each policy
+            for (const [key, value] of Object.entries(policiesObj)) {
+              if (key.startsWith('_')) {
+                continue;
+              }
+
+              policyTable.addRow(
+                  convertToPolicyInfo(key, value as {[key: string]: any}));
+            }
           }
 
           // Reset files
@@ -126,7 +134,7 @@ function resetPolicies(event: Event) {
 function exportAndDownloadPolicies() {
   const jsonString =
       getRequiredElement<PolicyTestTableElement>('policy-test-table')
-          .getTestPoliciesJsonStringForExport();
+          .getTestPoliciesJsonString();
   if (jsonString) {
     const blob = new Blob([jsonString], {type: 'application/json'});
     const blobUrl = URL.createObjectURL(blob);

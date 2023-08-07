@@ -5,7 +5,7 @@ import './policy_test_row.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {PoliciesForExport, PolicyInfo} from './policy_test_browser_proxy.js';
+import {PolicyInfo} from './policy_test_browser_proxy.js';
 import {PolicyTestRowElement} from './policy_test_row.js';
 import {getTemplate} from './policy_test_table.html.js';
 
@@ -77,40 +77,6 @@ export class PolicyTestTableElement extends CustomElement {
       return '';
     }
     return JSON.stringify(policyInfoArray);
-  }
-
-  // Class method for creating and returning a JSON string mapping policy names
-  // to an object containing their levels, values, scopes and sources, using the
-  // PoliciesForExport interface.
-  getTestPoliciesJsonStringForExport(): string {
-    const policyRowArray: PolicyTestRowElement[] =
-        Array.from(this.shadowRoot!.querySelectorAll('policy-test-row'));
-    const policyInfoObject: PoliciesForExport = {
-      policyValues: {
-        chrome: {
-          name: 'Chrome Test Policies',
-          policies: Array.from(policyRowArray)
-                        .reduce(
-                            (acc, row) => ({
-                              ...acc,
-                              [row.getPolicyAttribute('name')]: {
-                                source: row.getStringPolicyAttribute('source'),
-                                scope: row.getStringPolicyAttribute('scope'),
-                                level: row.getStringPolicyAttribute('level'),
-                                value: row.getPolicyValue(),
-                              },
-                            }),
-                            {}),
-        },
-      },
-    };
-    // If there is an error anywhere in the table, no policies should be
-    // applied.
-    const rowHasError = (row: PolicyTestRowElement) => row.getErrorState();
-    if (policyRowArray.some(rowHasError)) {
-      return '';
-    }
-    return JSON.stringify(policyInfoObject);
   }
 }
 

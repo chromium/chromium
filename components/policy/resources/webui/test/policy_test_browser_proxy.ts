@@ -44,30 +44,12 @@ export interface PolicyInfo {
   value: any;
 }
 
-// Object mapping policy detail types to their values.
-export interface PolicyInfoForExport {
-  source: string;
-  scope: string;
-  level: string;
-  value: any;
-}
-
 // Object mapping details that need to be copied between policy rows to their
 // enum values.
 export interface PresetAtrributes {
   source: PolicySource;
   scope: PolicyScope;
   level: PolicyLevel;
-}
-
-// Object mapping policy names to their corresponding PolicyDetails objects.
-export interface PoliciesForExport {
-  policyValues: {
-    chrome: {
-      name: 'Chrome Test Policies',
-      policies: {[key: string]: PolicyInfoForExport},
-    },
-  };
 }
 
 export const SourceNamesToValues: {[key: string]: PolicySource} = {
