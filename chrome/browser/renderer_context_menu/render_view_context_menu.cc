@@ -249,6 +249,8 @@
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
+#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif
 
@@ -491,13 +493,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SAVEPLUGINAS, 133},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED, 134},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 135},
+       {IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION, 137},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 136}});
+       {0, 138}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -1144,6 +1147,11 @@ void RenderViewContextMenu::InitMenu() {
       features::IsPdfOcrEnabled() && IsFrameInPdfViewer(GetRenderFrameHost())) {
     AppendPdfOcrItems();
     VLOG(2) << "Appended PDF OCR Items";
+  }
+
+  if (features::IsLayoutExtractionEnabled()) {
+    AppendLayoutExtractionItem();
+    VLOG(2) << "Appended Layout Extraction Item";
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -2092,6 +2100,12 @@ void RenderViewContextMenu::AppendPdfOcrItems() {
   observers_.AddObserver(pdf_ocr_submenu_model_observer_.get());
   pdf_ocr_submenu_model_observer_->InitMenu(params_);
 }
+
+void RenderViewContextMenu::AppendLayoutExtractionItem() {
+  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION,
+                                  IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION);
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void RenderViewContextMenu::AppendRotationItems() {
@@ -2715,6 +2729,11 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !!(params_.media_flags &
                 ContextMenuData::kMediaCanPictureInPicture);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    case IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION:
+      return true;
+#endif
+
     case IDC_CONTENT_CONTEXT_EMOJI:
       return params_.is_editable;
 
@@ -3087,6 +3106,12 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_RELOADFRAME:
       source_web_contents_->ReloadFocusedFrame();
       break;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    case IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION:
+      ExecRunLayoutExtraction();
+      break;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
     case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
       if (GetRenderFrameHost())
@@ -3990,6 +4015,13 @@ void RenderViewContextMenu::ExecRegionSearch(
                                         is_google_default_search_provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void RenderViewContextMenu::ExecRunLayoutExtraction() {
+  screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(GetProfile())
+      ->AnnotateScreenshot(source_web_contents_);
+}
+#endif
 
 void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
   CoreTabHelper* core_tab_helper =

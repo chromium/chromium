@@ -17,10 +17,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/ax_tree_id.h"
 
-class Browser;
-
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace gfx {
@@ -47,7 +46,7 @@ class AXScreenAIAnnotator : public KeyedService,
 
   // Takes a screenshot and sends it to `OnScreenshotReceived` through an async
   // call.
-  void AnnotateScreenshot(Browser* browser);
+  void AnnotateScreenshot(content::WebContents* web_contents);
 
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;

@@ -269,8 +269,8 @@ void FollowSite(content::WebContents* web_contents);
 void UnfollowSite(content::WebContents* web_contents);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// Triggers the Screen AI visual annotations to be run once on the |browser|.
-void RunScreenAIVisualAnnotation(Browser* browser);
+// Triggers the Screen AI layout extraction to be run once on the |browser|.
+void RunScreenAILayoutExtraction(Browser* browser);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void ExecLensRegionSearch(Browser* browser);

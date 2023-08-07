@@ -83,10 +83,9 @@ void AXScreenAIAnnotator::BindToScreenAIService(
   service_router->BindScreenAIAnnotator(std::move(screen_ai_receiver));
 }
 
-void AXScreenAIAnnotator::AnnotateScreenshot(Browser* browser) {
+void AXScreenAIAnnotator::AnnotateScreenshot(
+    content::WebContents* web_contents) {
   // Request screenshot from content area of the main frame.
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
   gfx::NativeView native_view = web_contents->GetContentNativeView();

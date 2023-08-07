@@ -284,6 +284,7 @@ class RenderViewContextMenu
   bool AppendAccessibilityLabelsItems();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendPdfOcrItems();
+  void AppendLayoutExtractionItem();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -368,6 +369,9 @@ class RenderViewContextMenu
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
   void ExecOpenInReadAnything();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ExecRunLayoutExtraction();
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);

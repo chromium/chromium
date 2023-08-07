@@ -180,7 +180,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -282,11 +281,6 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
-#endif
 
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
@@ -3239,12 +3233,3 @@ BackgroundContents* Browser::CreateBackgroundContents(
 
   return contents;
 }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(crbug.com/1443349): Update function name (and trigger chain) when usage
-// is finalized.
-void Browser::RunScreenAIAnnotator() {
-  screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(profile())
-      ->AnnotateScreenshot(this);
-}
-#endif

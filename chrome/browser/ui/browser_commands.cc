@@ -196,6 +196,11 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
+#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -2104,8 +2109,16 @@ void UnfollowSite(content::WebContents* web_contents) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RunScreenAIVisualAnnotation(Browser* browser) {
-  browser->RunScreenAIAnnotator();
+void RunScreenAILayoutExtraction(Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(
+      browser->profile())
+      ->AnnotateScreenshot(web_contents);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
