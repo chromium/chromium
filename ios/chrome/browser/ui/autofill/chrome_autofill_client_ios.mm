@@ -292,7 +292,7 @@ void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
   std::u16string account_name = base::UTF8ToUTF16(
       identity_manager_
           ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync))
+              signin::ConsentLevel::kSignin))
           .full_name);
 
   card_name_fix_flow_controller_.Show(
