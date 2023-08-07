@@ -15,6 +15,8 @@ namespace internal {
 #define HISTOGRAM_PREFIX "PageLoad.Clients.LCPP."
 const char kHistogramLCPPFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
+const char kHistogramLCPPLargestContentfulPaint[] =
+    HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
 
 }  // namespace internal
 
@@ -78,7 +80,7 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnPrerenderStart(
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  FinalizeLCPPSignals();
+  FinalizeLCP();
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -87,25 +89,13 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::
         const page_load_metrics::mojom::PageLoadTiming& timing) {
   // This follows UmaPageLoadMetricsObserver.
   if (GetDelegate().DidCommit()) {
-    FinalizeLCPPSignals();
+    FinalizeLCP();
   }
   return STOP_OBSERVING;
 }
 
-void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCPPSignals() {
-  if (!commit_url_ || !lcp_element_locator_) {
-    return;
-  }
-
-  // `loading_predictor` is nullptr in
-  // `LcpCriticalPathPredictorPageLoadMetricsObserverTest`, or if the profile
-  // `IsOffTheRecord`.
-  // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
-  // this. Unflag the feature.
-  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
-      Profile::FromBrowserContext(
-          GetDelegate().GetWebContents()->GetBrowserContext()));
-  if (!loading_predictor) {
+void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
+  if (!commit_url_) {
     return;
   }
 
@@ -114,12 +104,40 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCPPSignals() {
           .GetLargestContentfulPaintHandler()
           .MergeMainFrameAndSubframes();
 
-  if (largest_contentful_paint.ContainsValidTime() &&
-      WasStartedInForegroundOptionalEventInForeground(
+  if (!largest_contentful_paint.ContainsValidTime() ||
+      !WasStartedInForegroundOptionalEventInForeground(
           largest_contentful_paint.Time(), GetDelegate())) {
+    return;
+  }
+
+  // * Finalize the staged LCPP signals to the database.
+
+  // `loading_predictor` is nullptr in
+  // `LcpCriticalPathPredictorPageLoadMetricsObserverTest`, or if the profile
+  // `IsOffTheRecord`.
+  // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
+  // this. Unflag the feature.
+  if (auto* loading_predictor =
+          predictors::LoadingPredictorFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetDelegate().GetWebContents()->GetBrowserContext()))) {
     predictors::ResourcePrefetchPredictor* predictor =
         loading_predictor->resource_prefetch_predictor();
-    predictor->LearnLcpp(commit_url_->host(), *lcp_element_locator_);
+
+    if (lcp_element_locator_) {
+      predictor->LearnLcpp(commit_url_->host(), *lcp_element_locator_);
+    }
+  }
+
+  // * Emit LCPP breakdown PageLoad UMAs.
+  // The UMAs are recorded iff the navigation was made with a non-empty LCPP
+  // hint.
+  if (is_lcpp_hinted_navigation_) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), largest_contentful_paint.Time().value());
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPLargestContentfulPaint,
+                        corrected);
   }
 }
 

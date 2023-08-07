@@ -12,6 +12,7 @@ namespace internal {
 
 // Expose metrics for tests.
 extern const char kHistogramLCPPFirstContentfulPaint[];
+extern const char kHistogramLCPPLargestContentfulPaint[];
 
 }  // namespace internal
 
@@ -72,7 +73,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   PageLoadMetricsObserver::ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void RecordTimingHistograms();
-  void FinalizeLCPPSignals();
+  void FinalizeLCP();
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 

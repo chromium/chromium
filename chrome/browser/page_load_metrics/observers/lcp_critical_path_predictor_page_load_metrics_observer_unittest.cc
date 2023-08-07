@@ -9,6 +9,7 @@
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -28,6 +29,12 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     timing_.paint_timing->first_paint = base::Seconds(2);
     timing_.paint_timing->first_contentful_paint = base::Seconds(3);
     timing_.paint_timing->first_meaningful_paint = base::Seconds(4);
+
+    timing_.paint_timing->largest_contentful_paint->largest_image_paint =
+        base::Seconds(5);
+    timing_.paint_timing->largest_contentful_paint->largest_image_paint_size =
+        100u;
+
     PopulateRequiredTimingFields(&timing_);
   }
 
@@ -50,12 +57,16 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
       navigation->GetNavigationHandle()->SetLCPPNavigationHint(hint);
     }
     navigation->Commit();
-
     tester()->SimulateTimingUpdate(timing_);
 
+    // Navigate to about:blank to force histogram recording.
+    NavigateAndCommit(GURL("about:blank"));
+
+    base::Histogram::Count expected_count = provide_lcpp_hint ? 1 : 0;
     tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramLCPPFirstContentfulPaint,
-        provide_lcpp_hint ? 1 : 0);
+        internal::kHistogramLCPPFirstContentfulPaint, expected_count);
+    tester()->histogram_tester().ExpectTotalCount(
+        internal::kHistogramLCPPLargestContentfulPaint, expected_count);
   }
 
   page_load_metrics::mojom::PageLoadTiming timing_;
