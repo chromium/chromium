@@ -15,6 +15,7 @@
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
+#include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -63,6 +64,12 @@ UserEducationController::~UserEducationController() {
 // static
 UserEducationController* UserEducationController::Get() {
   return g_instance;
+}
+
+// static
+void UserEducationController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  welcome_tour_prefs::RegisterProfilePrefs(registry);
 }
 
 absl::optional<ui::ElementIdentifier>

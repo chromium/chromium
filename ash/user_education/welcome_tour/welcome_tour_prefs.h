@@ -1,0 +1,53 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_PREFS_H_
+#define ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_PREFS_H_
+
+#include "ash/ash_export.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefRegistrySimple;
+class PrefService;
+
+namespace ash {
+
+namespace welcome_tour_metrics {
+enum class Interaction;
+}  // namespace welcome_tour_metrics
+
+namespace welcome_tour_prefs {
+
+// Retrieves the time that the tour was first completed. If the time has not
+// been set, returns `absl::nullopt`.
+ASH_EXPORT absl::optional<base::Time> GetTimeOfFirstTourCompletion(
+    PrefService* prefs);
+
+// Retrieves the time that the tour was first prevented. If the time has not
+// been set, returns `absl::nullopt`.
+ASH_EXPORT absl::optional<base::Time> GetTimeOfFirstTourPrevention(
+    PrefService* prefs);
+
+// Marks now as the first time that a given `interaction` has occurred. Returns
+// true if it was successfully marked.
+ASH_EXPORT bool MarkTimeOfFirstInteraction(
+    PrefService* prefs,
+    welcome_tour_metrics::Interaction interaction);
+
+// Marks now as the first time the tour was completed. Returns true if it was
+// successfully marked.
+ASH_EXPORT bool MarkTimeOfFirstTourCompletion(PrefService* prefs);
+
+// Marks now as the first time the tour was prevented. Returns true if it was
+// successfully marked.
+ASH_EXPORT bool MarkTimeOfFirstTourPrevention(PrefService* prefs);
+
+// Registers the Welcome Tour prefs to the given `registry`.
+ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+}  // namespace welcome_tour_prefs
+}  // namespace ash
+
+#endif  // ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_PREFS_H_

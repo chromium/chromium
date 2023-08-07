@@ -14,6 +14,8 @@
 namespace ash::welcome_tour_metrics {
 namespace {
 
+// These strings are persisted to logs. These string values should never be
+// changed or reused. Any values added to `Step` must be added here.
 std::string ToString(Step step) {
   switch (step) {
     case Step::kDialog:
@@ -32,24 +34,6 @@ std::string ToString(Step step) {
       return "Shelf";
     case Step::kStatusArea:
       return "StatusArea";
-  }
-  NOTREACHED_NORETURN();
-}
-
-std::string ToString(Interaction interaction) {
-  switch (interaction) {
-    case Interaction::kExploreApp:
-      return "ExploreApp";
-    case Interaction::kFilesApp:
-      return "FilesApp";
-    case Interaction::kLauncher:
-      return "Launcher";
-    case Interaction::kQuickSettings:
-      return "QuickSettings";
-    case Interaction::kSearch:
-      return "Search";
-    case Interaction::kSettingsApp:
-      return "SettingsApp";
   }
   NOTREACHED_NORETURN();
 }
@@ -90,6 +74,24 @@ void RecordTourDuration(base::TimeDelta duration, bool completed) {
 
 void RecordTourPrevented(PreventedReason reason) {
   base::UmaHistogramEnumeration("Ash.WelcomeTour.Prevented.Reason", reason);
+}
+
+// These strings are persisted to logs. These string values should never be
+// changed or reused. Any values added to `Interaction` must be added here.
+std::string ToString(Interaction interaction) {
+  switch (interaction) {
+    case Interaction::kFilesApp:
+      return "FilesApp";
+    case Interaction::kLauncher:
+      return "Launcher";
+    case Interaction::kQuickSettings:
+      return "QuickSettings";
+    case Interaction::kSearch:
+      return "Search";
+    case Interaction::kSettingsApp:
+      return "SettingsApp";
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ash::welcome_tour_metrics

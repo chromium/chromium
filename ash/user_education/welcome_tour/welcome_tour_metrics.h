@@ -5,7 +5,10 @@
 #ifndef ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_METRICS_H_
 #define ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_METRICS_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
+#include "base/containers/enum_set.h"
 
 namespace base {
 class TimeDelta;
@@ -60,14 +63,17 @@ enum class Step {
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
 enum class Interaction {
-  kExploreApp,
-  kFilesApp,
-  kLauncher,
-  kQuickSettings,
-  kSearch,
-  kSettingsApp,
+  kMinValue = 0,
+  kFilesApp = kMinValue,
+  kLauncher = 1,
+  kQuickSettings = 2,
+  kSearch = 3,
+  kSettingsApp = 4,
   kMaxValue = kSettingsApp,
 };
+
+using AllInteractionsSet =
+    base::EnumSet<Interaction, Interaction::kMinValue, Interaction::kMaxValue>;
 
 // Utilities -------------------------------------------------------------------
 
@@ -95,6 +101,9 @@ ASH_EXPORT void RecordTourDuration(base::TimeDelta duration, bool completed);
 
 // Record that the Welcome Tour was prevented for the given `reason`.
 ASH_EXPORT void RecordTourPrevented(PreventedReason reason);
+
+// Returns a string representation of the given `interaction`.
+ASH_EXPORT std::string ToString(Interaction interaction);
 
 }  // namespace ash::welcome_tour_metrics
 

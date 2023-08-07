@@ -946,6 +946,8 @@ component("ash") {
     "user_education/welcome_tour/welcome_tour_metrics.h",
     "user_education/welcome_tour/welcome_tour_notification_blocker.cc",
     "user_education/welcome_tour/welcome_tour_notification_blocker.h",
+    "user_education/welcome_tour/welcome_tour_prefs.cc",
+    "user_education/welcome_tour/welcome_tour_prefs.h",
     "user_education/welcome_tour/welcome_tour_scrim.cc",
     "user_education/welcome_tour/welcome_tour_scrim.h",
     "user_education/welcome_tour/welcome_tour_window_minimizer.cc",

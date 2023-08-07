@@ -18,6 +18,8 @@
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefRegistrySimple;
+
 namespace ui {
 class ElementIdentifier;
 }  // namespace ui
@@ -41,6 +43,9 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // Returns the singleton instance owned by `Shell`.
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationController* Get();
+
+  // Registers user education prefs to the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns the identifier for an element associated with the specified
   // `app_id`, or an absent value if no such identifier exists. Note that
