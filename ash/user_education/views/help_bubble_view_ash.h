@@ -26,7 +26,6 @@
 namespace views {
 class ImageView;
 class Label;
-class MdTextButton;
 }  // namespace views
 
 namespace ash {
@@ -111,8 +110,8 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   std::vector<views::Label*> labels_;
 
   // If the bubble has buttons, it must be focusable.
-  std::vector<views::MdTextButton*> non_default_buttons_;
-  raw_ptr<views::MdTextButton> default_button_ = nullptr;
+  std::vector<views::LabelButton*> non_default_buttons_;
+  raw_ptr<views::LabelButton> default_button_ = nullptr;
   raw_ptr<views::Button> close_button_ = nullptr;
 
   // This is the base accessible name of the window.

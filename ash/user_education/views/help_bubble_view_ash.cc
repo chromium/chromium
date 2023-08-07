@@ -12,6 +12,7 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
@@ -57,7 +58,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -134,65 +134,6 @@ views::BubbleBorder::Arrow TranslateArrow(
       return views::BubbleBorder::RIGHT_CENTER;
   }
 }
-
-class MdIPHBubbleButton : public views::MdTextButton {
- public:
-  METADATA_HEADER(MdIPHBubbleButton);
-
-  MdIPHBubbleButton(PressedCallback callback,
-                    const std::u16string& text,
-                    bool is_default_button)
-      : MdTextButton(callback, text), is_default_button_(is_default_button) {
-    // Prominent style gives a button hover highlight.
-    SetProminent(true);
-    GetViewAccessibility().OverrideIsLeaf(true);
-  }
-  MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
-  MdIPHBubbleButton& operator=(const MdIPHBubbleButton&) = delete;
-  ~MdIPHBubbleButton() override = default;
-
-  void UpdateBackgroundColor() override {
-    // Prominent MD button does not have a border.
-    // Override this method to draw a border.
-    // Adapted from MdTextButton::UpdateBackgroundColor()
-    const auto* color_provider = GetColorProvider();
-    if (!color_provider) {
-      return;
-    }
-    SkColor background_color = color_provider->GetColor(
-        is_default_button_ ? cros_tokens::kCrosSysPrimary
-                           : cros_tokens::kCrosSysPrimaryContainer);
-    if (GetState() == STATE_PRESSED) {
-      background_color =
-          GetNativeTheme()->GetSystemButtonPressedColor(background_color);
-    }
-    SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                     GetCornerRadiusValue()));
-  }
-
-  void OnThemeChanged() override {
-    views::MdTextButton::OnThemeChanged();
-
-    const auto* color_provider = GetColorProvider();
-    views::FocusRing::Get(this)->SetColorId(
-        cros_tokens::kCrosSysDialogContainer);
-
-    const SkColor foreground_color = color_provider->GetColor(
-        is_default_button_ ? cros_tokens::kCrosSysOnPrimary
-                           : cros_tokens::kCrosSysOnPrimaryContainer);
-    SetEnabledTextColors(foreground_color);
-
-    // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
-    // inactive style when the bubble loses focus.
-    SetTextColor(ButtonState::STATE_DISABLED, foreground_color);
-  }
-
- private:
-  bool is_default_button_;
-};
-
-BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
-END_METADATA
 
 // Displays a simple "X" close button that will close a promo bubble view.
 // The alt-text and button callback can be set based on the needs of the
@@ -472,13 +413,15 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
     // We will hold the default button to add later, since where we add it in
     // the sequence depends on platform style.
-    std::unique_ptr<MdIPHBubbleButton> default_button;
+    std::unique_ptr<views::LabelButton> default_button;
     for (user_education::HelpBubbleButtonParams& button_params :
          params.buttons) {
-      auto button = std::make_unique<MdIPHBubbleButton>(
+      auto button = std::make_unique<PillButton>(
           base::BindRepeating(run_callback_and_close, base::Unretained(this),
                               base::Passed(std::move(button_params.callback))),
-          button_params.text, button_params.is_default);
+          button_params.text,
+          button_params.is_default ? PillButton::Type::kPrimaryWithoutIcon
+                                   : PillButton::Type::kSecondaryWithoutIcon);
       button->SetMinSize(gfx::Size(0, 0));
       if (button_params.is_default) {
         DCHECK(!default_button);
