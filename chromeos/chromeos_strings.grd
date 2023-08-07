@@ -2517,13 +2517,13 @@
           Art gallery
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY_DESCRIPTION" desc="Description for the radio button to choose the topic source from art gallery. The radio button allows the user to set Art gallery for ambient mode, which shows photos to the user when their device is idle.">
-          Select curated artwork and images
+          Choose curated artwork and images
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO" desc="Label for the radio button to choose the video topic source. The radio button allows the user to set which video ti play for ambient mode.">
           Dawn to dark
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO_DESCRIPTION" desc="Description for the radio button to choose the topic source from video animation. The radio button allows the user to set which video to play for ambient mode.">
-          Select <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive artwork
+          Choose <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive artwork
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW" desc="A11y label for the selected topic source row in ambient mode.">
           <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> <ph name="TOPIC_SOURCE_DESC">$2<ex>Select your memories</ex></ph> selected, press Enter to select <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> albums
