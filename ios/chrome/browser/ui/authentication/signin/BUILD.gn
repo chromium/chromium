@@ -75,9 +75,12 @@ source_set("signin_screen_provider") {
     "signin_screen_provider.mm",
     "signin_sync_screen_provider.h",
     "signin_sync_screen_provider.mm",
+    "uno_signin_screen_provider.h",
+    "uno_signin_screen_provider.mm",
   ]
   deps = [
     "//base",
+    "//components/sync/base:features",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",

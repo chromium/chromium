@@ -10,6 +10,7 @@ source_set("two_screens_signin") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
+    "//components/sync/base:features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/history_sync",

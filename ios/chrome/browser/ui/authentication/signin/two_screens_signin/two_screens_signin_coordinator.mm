@@ -6,10 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_sync_screen_provider.h"
+#import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
@@ -67,7 +70,12 @@ using base::UserMetricsAction;
 
 - (void)start {
   [super start];
-  _screenProvider = [[SigninSyncScreenProvider alloc] init];
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    _screenProvider = [[UnoSigninScreenProvider alloc] init];
+  } else {
+    _screenProvider = [[SigninSyncScreenProvider alloc] init];
+  }
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];

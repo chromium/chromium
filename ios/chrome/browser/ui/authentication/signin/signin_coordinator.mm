@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -100,9 +102,19 @@ using signin_metrics::PromoAction;
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser {
+  AccessPoint accessPoint = AccessPoint::ACCESS_POINT_SIGNIN_PROMO;
+  PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return [[TwoScreensSigninCoordinator alloc]
+        initWithBaseViewController:viewController
+                           browser:browser
+                       accessPoint:accessPoint
+                       promoAction:promoAction];
+  }
   UserSigninLogger* logger = [[UpgradeSigninLogger alloc]
-        initWithAccessPoint:AccessPoint::ACCESS_POINT_SIGNIN_PROMO
-                promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+        initWithAccessPoint:accessPoint
+                promoAction:promoAction
       accountManagerService:ChromeAccountManagerServiceFactory::
                                 GetForBrowserState(browser->GetBrowserState())];
   return [[UserSigninCoordinator alloc]
