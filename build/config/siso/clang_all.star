@@ -7,22 +7,12 @@
 load("@builtin//struct.star", "module")
 
 __filegroups = {
-    # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
-    "buildtools/third_party/libc++/trunk/include:headers": {
+    "third_party/libc++/src/include:headers": {
         "type": "glob",
         "includes": ["*"],
         # can't use "*.h", because c++ headers have no extension.
     },
-    "buildtools/third_party/libc++abi/trunk/include:headers": {
-        "type": "glob",
-        "includes": ["*.h"],
-    },
-    "third_party/libc++/trunk/include:headers": {
-        "type": "glob",
-        "includes": ["*"],
-        # can't use "*.h", because c++ headers have no extension.
-    },
-    "third_party/libc++abi/trunk/include:headers": {
+    "third_party/libc++abi/src/include:headers": {
         "type": "glob",
         "includes": ["*.h"],
     },
@@ -42,14 +32,10 @@ __filegroups = {
 
 __input_deps = {
     # need this because we use
-    # buildtools/third_party/libc++/trunk/include:headers,
+    # third_party/libc++/src/include:headers,
     # but scandeps doesn't scan `__config` file, which uses
     # `#include <__config_site>`
-    # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
-    "buildtools/third_party/libc++": [
-        "buildtools/third_party/libc++/__config_site",
-    ],
-    "third_party/libc++": [
+    "third_party/libc++/src/include": [
         "buildtools/third_party/libc++/__config_site",
     ],
 }
