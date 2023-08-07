@@ -457,7 +457,8 @@ TEST_F(WebViewUnitTest, MAYBE_ChangeAXMode) {
 
   // Case 2: WebView has no Widget and a WebContents.
   View* contents_view = top_level_widget()->GetContentsView();
-  contents_view->RemoveChildView(web_view());
+  // Remove the view but make sure to delete it at the end of the test.
+  auto scoped_view = contents_view->RemoveChildViewT(web_view());
   const std::unique_ptr<content::WebContents> web_contents =
       CreateWebContents();
   web_view()->SetWebContents(web_contents.get());
