@@ -23560,6 +23560,87 @@
       }
     ]
   },
+  "ReportWebsiteActivity": {
+    "os": [ "chromeos_ash", "chromeos_lacros" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": [],
+        "prefs": {
+          "reporting.report_website_activity": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportWebsiteActivity": [
+            "https://www.google.com",
+            "[*.]chromium.org"
+          ]
+        },
+        "prefs": {
+          "reporting.report_website_activity": {
+            "value": [ "https://www.google.com", "[*.]chromium.org" ]
+          }
+        }
+      }
+    ]
+  },
+  "ReportWebsiteUsage": {
+    "os": [ "chromeos_ash", "chromeos_lacros" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": [],
+        "prefs": {
+          "reporting.report_website_usage": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportWebsiteUsage": [
+            "https://www.google.com",
+            "[*.]chromium.org"
+          ]
+        },
+        "prefs": {
+          "reporting.report_website_usage": {
+            "value": [ "https://www.google.com", "[*.]chromium.org" ]
+          }
+        }
+      }
+    ]
+  },
+  "ReportWebsiteUsageCollectionRateMs": {
+    "os": [ "chromeos_ash", "chromeos_lacros" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_website_usage_collection_rate_ms": {
+            "default_value": 900000
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportWebsiteUsageCollectionRateMs": 300000
+        },
+        "prefs": {
+          "reporting.report_website_usage_collection_rate_ms": {
+            "value": 300000
+          }
+        }
+      }
+    ]
+  },
   "BrowserContextAwareAccessSignalsAllowlist": {
     "os": [
       "win",

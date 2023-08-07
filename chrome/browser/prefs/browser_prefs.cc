@@ -302,6 +302,7 @@
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_prefs.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -1855,6 +1856,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterListPref(
       chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
       PrefRegistry::PUBLIC);
+  ::reporting::RegisterProfilePrefs(registry);
 #if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(USE_CUPS)

@@ -148,6 +148,7 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #else
+#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -911,6 +912,13 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMandatoryExtensionsForIncognitoNavigation,
     prefs::kMandatoryExtensionsForIncognitoNavigation,
     base::Value::Type::LIST },
+  { key::kReportWebsiteActivity, ::reporting::kReportWebsiteActivity,
+    base::Value::Type::LIST },
+  { key::kReportWebsiteUsage, ::reporting::kReportWebsiteUsage,
+    base::Value::Type::LIST },
+  { key::kReportWebsiteUsageCollectionRateMs,
+    ::reporting::kReportWebsiteUsageCollectionRateMs,
+    base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

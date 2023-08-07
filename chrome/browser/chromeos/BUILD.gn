@@ -159,6 +159,8 @@ source_set("chromeos") {
     "reporting/metric_default_utils.h",
     "reporting/metric_reporting_manager_delegate_base.cc",
     "reporting/metric_reporting_manager_delegate_base.h",
+    "reporting/metric_reporting_prefs.cc",
+    "reporting/metric_reporting_prefs.h",
     "reporting/network/network_bandwidth_sampler.cc",
     "reporting/network/network_bandwidth_sampler.h",
     "reporting/user_reporting_settings.cc",
