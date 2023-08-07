@@ -7,9 +7,14 @@
   <title>$i18n{autofillMetadataPageTitle}</title>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="../css/about_sys.css">
+  <if expr="chromeos_ash">
+    <link rel="stylesheet" href="//theme/colors.css?sets=sys">
+    <link rel="stylesheet" href="//theme/typography.css">
+  </if>
   <link rel="stylesheet" href="../css/logs_map_page.css">
   <link rel="stylesheet" href="../css/feedback_shared_styles.css">
-<script type="module" src="../js/autofill_metadata.js"></script>
+
+  <script type="module" src="../js/autofill_metadata.js"></script>
 </head>
 
 <body>

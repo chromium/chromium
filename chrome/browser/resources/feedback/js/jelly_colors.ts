@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // dialog is opened in OS Feedback.
 // TODO(b/276493287): Move add class to HTML when jelly colors and OS Feedback
 // launches by default in ASH.
-function configureJellyColors() {
+export function configureJellyColors() {
   if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
     document.body.classList.add('jelly-enabled');
     ColorChangeUpdater.forDocument().start();
