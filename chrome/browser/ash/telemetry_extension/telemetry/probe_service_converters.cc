@@ -58,7 +58,7 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
     case crosapi::mojom::ProbeCategoryEnum::kDisplay:
       return cros_healthd::mojom::ProbeCategoryEnum::kDisplay;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -633,7 +633,7 @@ crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType input) {
     case cros_healthd::mojom::ErrorType::kServiceUnavailable:
       return crosapi::mojom::ProbeErrorType::kServiceUnavailable;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeUsbVersion Convert(cros_healthd::mojom::UsbVersion input) {
@@ -649,7 +649,7 @@ crosapi::mojom::ProbeUsbVersion Convert(cros_healthd::mojom::UsbVersion input) {
     case cros_healthd::mojom::UsbVersion::kUsb3:
       return crosapi::mojom::ProbeUsbVersion::kUsb3;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeUsbSpecSpeed Convert(
@@ -674,7 +674,7 @@ crosapi::mojom::ProbeUsbSpecSpeed Convert(
     case cros_healthd::mojom::UsbSpecSpeed::k20Gbps:
       return crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeFwupdVersionFormat Convert(
@@ -709,7 +709,7 @@ crosapi::mojom::ProbeFwupdVersionFormat Convert(
     case cros_healthd::mojom::FwupdVersionFormat::kHex:
       return crosapi::mojom::ProbeFwupdVersionFormat::kHex;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeCpuArchitectureEnum Convert(
@@ -724,7 +724,7 @@ crosapi::mojom::ProbeCpuArchitectureEnum Convert(
     case cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
       return crosapi::mojom::ProbeCpuArchitectureEnum::kArmv7l;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeTpmGSCVersion Convert(
@@ -737,7 +737,7 @@ crosapi::mojom::ProbeTpmGSCVersion Convert(
     case cros_healthd::mojom::TpmGSCVersion::kTi50:
       return crosapi::mojom::ProbeTpmGSCVersion::kTi50;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeDisplayInputType Convert(
@@ -750,7 +750,7 @@ crosapi::mojom::ProbeDisplayInputType Convert(
     case cros_healthd::mojom::DisplayInputType::kAnalog:
       return crosapi::mojom::ProbeDisplayInputType::kAnalog;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::BoolValuePtr Convert(bool input) {

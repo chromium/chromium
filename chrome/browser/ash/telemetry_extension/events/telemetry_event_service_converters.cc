@@ -258,7 +258,7 @@ crosapi::mojom::TelemetryKeyboardConnectionType Convert(
     case diagnostics::mojom::ConnectionType::kUnknown:
       return crosapi::mojom::TelemetryKeyboardConnectionType::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryKeyboardPhysicalLayout Convert(
@@ -276,7 +276,7 @@ crosapi::mojom::TelemetryKeyboardPhysicalLayout Convert(
     case diagnostics::mojom::PhysicalLayout::kChromeOSDellEnterpriseDrallion:
       return crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryKeyboardMechanicalLayout Convert(
@@ -294,7 +294,7 @@ crosapi::mojom::TelemetryKeyboardMechanicalLayout Convert(
     case diagnostics::mojom::MechanicalLayout::kJis:
       return crosapi::mojom::TelemetryKeyboardMechanicalLayout::kJis;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryKeyboardNumberPadPresence Convert(
@@ -310,7 +310,7 @@ crosapi::mojom::TelemetryKeyboardNumberPadPresence Convert(
     case diagnostics::mojom::NumberPadPresence::kNotPresent:
       return crosapi::mojom::TelemetryKeyboardNumberPadPresence::kNotPresent;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryKeyboardTopRowKey Convert(
@@ -366,7 +366,7 @@ crosapi::mojom::TelemetryKeyboardTopRowKey Convert(
     case diagnostics::mojom::TopRowKey::kDelete:
       return crosapi::mojom::TelemetryKeyboardTopRowKey::kDelete;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryKeyboardTopRightKey Convert(
@@ -383,7 +383,7 @@ crosapi::mojom::TelemetryKeyboardTopRightKey Convert(
     case diagnostics::mojom::TopRightKey::kControlPanel:
       return crosapi::mojom::TelemetryKeyboardTopRightKey::kControlPanel;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
@@ -397,7 +397,7 @@ crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
     case cros_healthd::mojom::AudioJackEventInfo_State::kRemove:
       return crosapi::mojom::TelemetryAudioJackEventInfo::State::kRemove;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
@@ -413,7 +413,7 @@ crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
       return crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::
           kMicrophone;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryLidEventInfo::State Convert(
@@ -426,7 +426,7 @@ crosapi::mojom::TelemetryLidEventInfo::State Convert(
     case cros_healthd::mojom::LidEventInfo_State::kOpened:
       return crosapi::mojom::TelemetryLidEventInfo::State::kOpened;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryUsbEventInfo::State Convert(
@@ -439,7 +439,7 @@ crosapi::mojom::TelemetryUsbEventInfo::State Convert(
     case cros_healthd::mojom::UsbEventInfo_State::kRemove:
       return crosapi::mojom::TelemetryUsbEventInfo::State::kRemove;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryExternalDisplayEventInfo::State Convert(
@@ -454,7 +454,7 @@ crosapi::mojom::TelemetryExternalDisplayEventInfo::State Convert(
     case cros_healthd::mojom::ExternalDisplayEventInfo_State::kRemove:
       return crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kRemove;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetrySdCardEventInfo::State Convert(
@@ -468,7 +468,7 @@ crosapi::mojom::TelemetrySdCardEventInfo::State Convert(
     case cros_healthd::mojom::SdCardEventInfo_State::kRemove:
       return crosapi::mojom::TelemetrySdCardEventInfo::State::kRemove;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryPowerEventInfo::State Convert(
@@ -485,7 +485,7 @@ crosapi::mojom::TelemetryPowerEventInfo::State Convert(
     case cros_healthd::mojom::PowerEventInfo_State::kOsResume:
       return crosapi::mojom::TelemetryPowerEventInfo::State::kOsResume;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
@@ -499,7 +499,7 @@ crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
     case cros_healthd::mojom::StylusGarageEventInfo_State::kRemoved:
       return crosapi::mojom::TelemetryStylusGarageEventInfo::State::kRemoved;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::TelemetryInputTouchButton Convert(
@@ -514,7 +514,7 @@ crosapi::mojom::TelemetryInputTouchButton Convert(
     case cros_healthd::mojom::InputTouchButton::kRight:
       return crosapi::mojom::TelemetryInputTouchButton::kRight;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::EventCategoryEnum Convert(
@@ -549,7 +549,7 @@ cros_healthd::mojom::EventCategoryEnum Convert(
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected:
       return cros_healthd::mojom::EventCategoryEnum::kStylus;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ash::converters::events

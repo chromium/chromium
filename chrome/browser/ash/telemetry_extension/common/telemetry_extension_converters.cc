@@ -79,7 +79,7 @@ crosapi::mojom::TelemetryExtensionException::Reason Convert(
     case cros_healthd::mojom::Exception_Reason::kUnsupported:
       return crosapi::mojom::TelemetryExtensionException::Reason::kUnsupported;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ash::converters

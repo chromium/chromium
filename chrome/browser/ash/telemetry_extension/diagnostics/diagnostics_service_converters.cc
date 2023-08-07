@@ -168,11 +168,7 @@ crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::
           kPressPowerButton;
   }
-  NOTREACHED();
-  return static_cast<crosapi::mojom::DiagnosticsRoutineUserMessageEnum>(
-      static_cast<int>(
-          crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
@@ -205,11 +201,7 @@ crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kNotRun:
       return crosapi::mojom::DiagnosticsRoutineStatusEnum::kNotRun;
   }
-  NOTREACHED();
-  return static_cast<crosapi::mojom::DiagnosticsRoutineStatusEnum>(
-      static_cast<int>(
-          crosapi::mojom::DiagnosticsRoutineStatusEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
@@ -226,11 +218,7 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
     case crosapi::mojom::DiagnosticsRoutineCommandEnum::kRemove:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::DiagnosticRoutineCommandEnum>(
-      static_cast<int>(
-          cros_healthd::mojom::DiagnosticRoutineCommandEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
@@ -243,9 +231,7 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
     case crosapi::mojom::DiagnosticsAcPowerStatusEnum::kDisconnected:
       return cros_healthd::mojom::AcPowerStatusEnum::kDisconnected;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::AcPowerStatusEnum>(
-      static_cast<int>(cros_healthd::mojom::AcPowerStatusEnum::kMaxValue) + 1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
@@ -258,10 +244,7 @@ cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
     case crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kLongSelfTest;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::NvmeSelfTestTypeEnum>(
-      static_cast<int>(cros_healthd::mojom::NvmeSelfTestTypeEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
@@ -275,11 +258,7 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
       // Fall-through to not-supported case.
       break;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::DiskReadRoutineTypeEnum>(
-      static_cast<int>(
-          cros_healthd::mojom::DiskReadRoutineTypeEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ash::converters::diagnostics
