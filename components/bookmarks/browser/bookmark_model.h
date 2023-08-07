@@ -496,7 +496,12 @@ class BookmarkModel final : public BookmarkUndoProvider,
   int64_t next_node_id_ = 1;
 
   // The observers.
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/1470748) Set the parameter to `true` on all platforms.
+  base::ObserverList<BookmarkModelObserver, true> observers_;
+#else
   base::ObserverList<BookmarkModelObserver> observers_;
+#endif
 
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
