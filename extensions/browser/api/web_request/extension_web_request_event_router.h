@@ -427,13 +427,10 @@ class ExtensionWebRequestEventRouter {
 
   using DataMap = std::map<BrowserContextID, BrowserContextData>;
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
-  // Map of request_id -> bit vector of EventTypes already signaled
-  using SignaledRequestMap = std::map<uint64_t, int>;
 
   ExtensionWebRequestEventRouter();
 
-  // Returns the EventListener with the given |id|, or nullptr. Must be called
-  // from the IO thread.
+  // Returns the EventListener with the given |id|, or nullptr.
   EventListener* FindEventListener(const EventListener::ID& id);
 
   // Returns the EventListener with the given |id| from |listeners|.
@@ -581,8 +578,8 @@ class ExtensionWebRequestEventRouter {
   content::BrowserContext* GetCrossBrowserContext(
       content::BrowserContext* browser_context) const;
 
-  // Returns true if |request| was already signaled to some event handlers.
-  bool WasSignaled(const WebRequestInfo& request) const;
+  // Returns true if |request_id| was already signaled to some event handlers.
+  bool WasSignaled(uint64_t request_id) const;
 
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);
@@ -593,10 +590,6 @@ class ExtensionWebRequestEventRouter {
   // A map of network requests that are waiting for at least one event handler
   // to respond.
   BlockedRequestMap blocked_requests_;
-
-  // A map of request ids to a bitvector indicating which events have been
-  // signaled and should not be sent again.
-  SignaledRequestMap signaled_requests_;
 
   typedef std::pair<BrowserContextID, int> RulesRegistryKey;
   // Maps each browser_context (and OTRBrowserContext) and a webview key to its

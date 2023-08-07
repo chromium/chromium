@@ -449,6 +449,66 @@ class CrossContextData {
   CrossContextMap cross_context_data_;
 };
 
+// This class is a singleton that tracks a bitmap of event types for a given
+// request ID.
+class SignaledRequestIDTracker {
+ public:
+  using EventTypes = ExtensionWebRequestEventRouter::EventTypes;
+
+  // The instance is leaked.
+  ~SignaledRequestIDTracker() = delete;
+  SignaledRequestIDTracker(const SignaledRequestIDTracker&) = delete;
+  SignaledRequestIDTracker& operator=(const SignaledRequestIDTracker&) = delete;
+
+  static SignaledRequestIDTracker& Get() {
+    static base::NoDestructor<SignaledRequestIDTracker> instance;
+    return *instance.get();
+  }
+
+  // Clears the request.
+  void ClearRequest(uint64_t request_id) {
+    signaled_requests_.erase(request_id);
+  }
+
+  // Gets the previous state of the event and sets the flag for that event.
+  bool GetAndSet(uint64_t request_id, EventTypes event_type) {
+    auto iter = signaled_requests_.find(request_id);
+    if (iter == signaled_requests_.end()) {
+      signaled_requests_[request_id] = event_type;
+      return false;
+    }
+    bool was_signaled_before = iter->second & event_type;
+    iter->second |= event_type;
+    return was_signaled_before;
+  }
+
+  // Clears the flag that `event_type` has been signaled for `request_id`.
+  void ClearEventType(uint64_t request_id, EventTypes event_type) {
+    auto iter = signaled_requests_.find(request_id);
+    if (iter != signaled_requests_.end()) {
+      iter->second &= ~event_type;
+    }
+  }
+
+  // Returns true if `request_id` was already signaled to some event handlers.
+  bool WasSignaled(uint64_t request_id) const {
+    auto flag = signaled_requests_.find(request_id);
+    return flag != signaled_requests_.end() && flag->second;
+  }
+
+ private:
+  friend class base::NoDestructor<SignaledRequestIDTracker>;
+
+  SignaledRequestIDTracker() = default;
+
+  // Map of request_id -> bit vector of EventTypes already signaled
+  using SignaledRequestMap = std::map<uint64_t, int>;
+
+  // A map of request IDs to a bitvector indicating which events have been
+  // signaled and should not be sent again.
+  SignaledRequestMap signaled_requests_;
+};
+
 }  // namespace
 
 // static
@@ -1216,7 +1276,7 @@ void ExtensionWebRequestEventRouter::OnCompleted(
   if (!browser_context ||
       (WebRequestPermissions::HideRequest(
            PermissionHelper::Get(browser_context), *request) &&
-       !WasSignaled(*request))) {
+       !WasSignaled(request->id))) {
     return;
   }
 
@@ -1270,7 +1330,7 @@ void ExtensionWebRequestEventRouter::OnErrorOccurred(
   if (!browser_context ||
       (WebRequestPermissions::HideRequest(
            PermissionHelper::Get(browser_context), *request) &&
-       !WasSignaled(*request))) {
+       !WasSignaled(request->id))) {
     return;
   }
 
@@ -1308,7 +1368,7 @@ void ExtensionWebRequestEventRouter::OnRequestWillBeDestroyed(
     content::BrowserContext* browser_context,
     const WebRequestInfo* request) {
   ClearPendingCallbacks(*request);
-  signaled_requests_.erase(request->id);
+  SignaledRequestIDTracker::Get().ClearRequest(request->id);
   GetExtensionWebRequestTimeTracker().LogRequestEndTime(request->id,
                                                         base::TimeTicks::Now());
 }
@@ -1889,10 +1949,8 @@ content::BrowserContext* ExtensionWebRequestEventRouter::GetCrossBrowserContext(
   return CrossContextData::Get().GetCrossBrowserContext(browser_context);
 }
 
-bool ExtensionWebRequestEventRouter::WasSignaled(
-    const WebRequestInfo& request) const {
-  auto flag = signaled_requests_.find(request.id);
-  return flag != signaled_requests_.end() && flag->second != 0;
+bool ExtensionWebRequestEventRouter::WasSignaled(uint64_t request_id) const {
+  return SignaledRequestIDTracker::Get().WasSignaled(request_id);
 }
 
 ExtensionWebRequestEventRouter::RawListeners
@@ -2366,22 +2424,12 @@ void ExtensionWebRequestEventRouter::OnRulesRegistryReady(
 
 bool ExtensionWebRequestEventRouter::GetAndSetSignaled(uint64_t request_id,
                                                        EventTypes event_type) {
-  auto iter = signaled_requests_.find(request_id);
-  if (iter == signaled_requests_.end()) {
-    signaled_requests_[request_id] = event_type;
-    return false;
-  }
-  bool was_signaled_before = (iter->second & event_type) != 0;
-  iter->second |= event_type;
-  return was_signaled_before;
+  return SignaledRequestIDTracker::Get().GetAndSet(request_id, event_type);
 }
 
 void ExtensionWebRequestEventRouter::ClearSignaled(uint64_t request_id,
                                                    EventTypes event_type) {
-  auto iter = signaled_requests_.find(request_id);
-  if (iter != signaled_requests_.end()) {
-    iter->second &= ~event_type;
-  }
+  SignaledRequestIDTracker::Get().ClearEventType(request_id, event_type);
 }
 
 }  // namespace extensions
