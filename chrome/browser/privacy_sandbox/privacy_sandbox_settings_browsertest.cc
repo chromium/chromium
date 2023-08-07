@@ -43,6 +43,8 @@ namespace {
 // `chrome/test/data/interest_group/bidding_logic.js` will send
 // "reserved.top_navigation" and "click" events to this URL.
 constexpr char kReportingURL[] = "/_report_event_server.html";
+// Used for event reporting to custom destination URLs.
+constexpr char kCustomReportingURL[] = "/_custom_report_event_server.html";
 
 constexpr char kPrivateAggregationSendHistogramReportHistogram[] =
     "PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult";
@@ -412,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
       LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
   ASSERT_NE(fenced_frame_node, nullptr);
 
-  // Set the automatic beacon
+  // Send the report to an enum destination.
   constexpr char kBeaconMessage[] = "this is the message";
   EXPECT_TRUE(
       ExecJs(fenced_frame_node, content::JsReplace(R"(
@@ -424,9 +426,42 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
     )",
                                                    "click", kBeaconMessage)));
 
-  // Verify the automatic beacon was sent and has the correct data.
+  // Verify the beacon was sent and has the correct data.
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, kBeaconMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
+                       ReportEventCustomURLDestinationEnrolled) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // In order to check events reported over the network, we register an HTTP
+  // response interceptor for each reportEvent request we expect.
+  net::test_server::ControllableHttpResponse response(&https_server_,
+                                                      kCustomReportingURL);
+
+  ASSERT_TRUE(https_server_.Start());
+
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience),
+       std::make_pair("d.test", AttestedApiStatus::kProtectedAudience)});
+
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  // Send the report to a custom URL destination.
+  GURL destinationURL = https_server_.GetURL("a.test", kCustomReportingURL);
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_node, content::JsReplace(R"(
+      window.fence.reportEvent({destinationURL: $1});
+    )",
+                                                   destinationURL.spec())));
+
+  // Verify the beacon was sent as a GET request.
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->method, net::test_server::METHOD_GET);
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
@@ -449,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
       LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
   ASSERT_NE(fenced_frame_node, nullptr);
 
-  // Set the automatic beacon
+  // Send the report to an enum destination.
   constexpr char kBeaconMessage[] = "this is the message";
   EXPECT_TRUE(
       ExecJs(fenced_frame_node, content::JsReplace(R"(
@@ -461,9 +496,45 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
     )",
                                                    "click", kBeaconMessage)));
 
-  // Verify the automatic beacon was not sent.
+  // Verify the beacon was not sent.
   fenced_frame_test_helper().SendBasicRequest(
       web_contents(), https_server_.GetURL("d.test", kReportingURL),
+      "response");
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, "response");
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
+                       ReportEventCustomURLDestinationNotEnrolled) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // In order to check events reported over the network, we register an HTTP
+  // response interceptor for each reportEvent request we expect.
+  net::test_server::ControllableHttpResponse response(&https_server_,
+                                                      kCustomReportingURL);
+
+  ASSERT_TRUE(https_server_.Start());
+
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience),
+       std::make_pair("d.test", AttestedApiStatus::kSharedStorage)});
+
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  // Send the report to a custom URL destination.
+  GURL destinationURL = https_server_.GetURL("d.test", kCustomReportingURL);
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_node, content::JsReplace(R"(
+      window.fence.reportEvent({destinationURL: $1});
+    )",
+                                                   destinationURL.spec())));
+
+  // Verify the beacon was not sent.
+  fenced_frame_test_helper().SendBasicRequest(
+      web_contents(), https_server_.GetURL("d.test", kCustomReportingURL),
       "response");
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, "response");

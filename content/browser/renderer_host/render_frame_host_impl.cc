@@ -8504,31 +8504,48 @@ void RenderFrameHostImpl::CreateFencedFrame(
 }
 
 // TODO(crbug.com/1400992): Move SendFencedFrameReportingBeacon into a separate
-// refcounted class.
+// refcounted class, so that pending beacons can outlive the RFHI.
 void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
+  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
+        "maximum length, which is 64KB.");
+    return;
+  }
+
   for (const blink::FencedFrame::ReportingDestination& destination :
        destinations) {
     SendFencedFrameReportingBeaconInternal(
-        event_data, event_type, destination,
+        DestinationEnumEvent(event_type, event_data), destination,
         /*from_renderer=*/true, attribution_reporting_runtime_features,
         GetFrameTreeNodeId());
   }
 }
 
 // TODO(crbug.com/1400992): Move SendFencedFrameReportingBeaconToCustomURL into
-// a separate refcounted class.
+// a separate refcounted class, so that pending beacons can outlive the RFHI.
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
     const GURL& destination_url,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
-  // TODO(gtanzer): Implement the body of this method.
-  std::ignore = destination_url;
-  std::ignore = attribution_reporting_runtime_features;
+  if (!destination_url.is_valid() ||
+      !destination_url.SchemeIs(url::kHttpsScheme)) {
+    mojo::ReportBadMessage(
+        "SendFencedFrameReportingBeaconToCustomURL() received an invalid or "
+        "non-HTTPS url, which should have been checked in the renderer.");
+    return;
+  }
+
+  SendFencedFrameReportingBeaconInternal(
+      DestinationURLEvent(destination_url),
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      /*from_renderer=*/true, attribution_reporting_runtime_features,
+      GetFrameTreeNodeId());
 }
 
 void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
@@ -8602,7 +8619,9 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
   for (blink::FencedFrame::ReportingDestination destination :
        info->destinations) {
     initiator_rfh->SendFencedFrameReportingBeaconInternal(
-        info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
+        DestinationEnumEvent(blink::kFencedFrameTopNavigationBeaconType,
+                             info->data),
+        destination,
         /*from_renderer=*/false, info->attribution_reporting_runtime_features,
         GetFrameTreeNodeId(), navigation_request.GetNavigationId());
   }
@@ -8612,8 +8631,8 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
 }
 
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
-    const std::string& event_data,
-    const std::string& event_type,
+    const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
+        event_variant,
     blink::FencedFrame::ReportingDestination destination,
     bool from_renderer,
     network::AttributionReportingRuntimeFeatures
@@ -8642,7 +8661,9 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     }
     // The only allowed event type from an ad component is
     // `reserved.top_navigation`.
-    CHECK_EQ(event_type, blink::kFencedFrameTopNavigationBeaconType);
+    CHECK(absl::holds_alternative<DestinationEnumEvent>(event_variant));
+    CHECK_EQ(absl::get<DestinationEnumEvent>(event_variant).type,
+             blink::kFencedFrameTopNavigationBeaconType);
   }
 
   if (!fenced_frame_properties.has_value() ||
@@ -8666,20 +8687,13 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     return;
   }
 
-  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
-    mojo::ReportBadMessage(
-        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
-        "maximum length, which is 64KB.");
-    return;
-  }
-
   std::string error_message;
   // By default, log w/ error severity. Can be overwritten to lower severity
   // depending on the error.
   blink::mojom::ConsoleMessageLevel console_message_level =
       blink::mojom::ConsoleMessageLevel::kError;
   if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
-          event_type, event_data, destination,
+          event_variant, destination,
           /*request_initiator_frame=*/this,
           attribution_reporting_runtime_features, error_message,
           console_message_level, initiator_frame_tree_node_id, navigation_id)) {

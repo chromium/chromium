@@ -139,13 +139,11 @@ base::StringPiece InvokingAPIAsString(
 }  // namespace
 
 FencedFrameReporter::PendingEvent::PendingEvent(
-    const std::string& type,
-    const std::string& data,
+    const absl::variant<DestinationEnumEvent, DestinationURLEvent>& event,
     const url::Origin& request_initiator,
     absl::optional<AttributionReportingData> attribution_reporting_data,
     int initiator_frame_tree_node_id)
-    : type(type),
-      data(data),
+    : event(event),
       request_initiator(request_initiator),
       attribution_reporting_data(std::move(attribution_reporting_data)),
       initiator_frame_tree_node_id(initiator_frame_tree_node_id) {}
@@ -273,8 +271,8 @@ void FencedFrameReporter::OnUrlMappingReady(
         blink::mojom::ConsoleMessageLevel::kError;
     const std::string devtools_request_id =
         base::UnguessableToken::Create().ToString();
-    SendReportInternal(it->second, pending_event.type, pending_event.data,
-                       reporting_destination, pending_event.request_initiator,
+    SendReportInternal(it->second, pending_event.event, reporting_destination,
+                       pending_event.request_initiator,
                        pending_event.attribution_reporting_data,
                        pending_event.initiator_frame_tree_node_id,
                        ignored_error_message, ignored_console_message_level,
@@ -283,8 +281,8 @@ void FencedFrameReporter::OnUrlMappingReady(
 }
 
 bool FencedFrameReporter::SendReport(
-    const std::string& event_type,
-    const std::string& event_data,
+    const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
+        event_variant,
     blink::FencedFrame::ReportingDestination reporting_destination,
     RenderFrameHostImpl* request_initiator_frame,
     network::AttributionReportingRuntimeFeatures
@@ -346,22 +344,21 @@ bool FencedFrameReporter::SendReport(
   // If the reporting URL map is pending, queue the event.
   if (it->second.reporting_url_map == absl::nullopt) {
     it->second.pending_events.emplace_back(
-        event_type, event_data, request_initiator,
-        std::move(attribution_reporting_data), initiator_frame_tree_node_id);
+        event_variant, request_initiator, std::move(attribution_reporting_data),
+        initiator_frame_tree_node_id);
     return true;
   }
 
-  return SendReportInternal(it->second, event_type, event_data,
-                            reporting_destination, request_initiator,
-                            attribution_reporting_data,
+  return SendReportInternal(it->second, event_variant, reporting_destination,
+                            request_initiator, attribution_reporting_data,
                             initiator_frame_tree_node_id, error_message,
                             console_message_level, devtools_request_id);
 }
 
 bool FencedFrameReporter::SendReportInternal(
     const ReportingDestinationInfo& reporting_destination_info,
-    const std::string& event_type,
-    const std::string& event_data,
+    const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
+        event_variant,
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
     const absl::optional<AttributionReportingData>& attribution_reporting_data,
@@ -372,29 +369,44 @@ bool FencedFrameReporter::SendReportInternal(
   // The URL map should not be pending at this point.
   DCHECK(reporting_destination_info.reporting_url_map);
 
-  // Check reporting url registration for given destination and event type.
-  const auto url_iter =
-      reporting_destination_info.reporting_url_map->find(event_type);
-  if (url_iter == reporting_destination_info.reporting_url_map->end()) {
-    error_message = base::StrCat(
-        {"This frame did not register reporting url for destination '",
-         ReportingDestinationAsString(reporting_destination),
-         "' and event_type '", event_type, "'."});
-    console_message_level = blink::mojom::ConsoleMessageLevel::kWarning;
-    NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
-    return false;
-  }
+  // Compute the destination url for the report.
+  GURL url;
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+    std::string event_type =
+        absl::get<DestinationEnumEvent>(event_variant).type;
 
-  // Validate the reporting url.
-  GURL url = url_iter->second;
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    error_message = base::StrCat(
-        {"This frame registered invalid reporting url for destination '",
-         ReportingDestinationAsString(reporting_destination),
-         "' and event_type '", event_type, "'."});
-    console_message_level = blink::mojom::ConsoleMessageLevel::kError;
-    NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
-    return false;
+    // Since the event references a destination enum, resolve the lookup based
+    // on the given destination and event type using the reporting metadata.
+    const auto url_iter =
+        reporting_destination_info.reporting_url_map->find(event_type);
+    if (url_iter == reporting_destination_info.reporting_url_map->end()) {
+      error_message = base::StrCat(
+          {"This frame did not register reporting url for destination '",
+           ReportingDestinationAsString(reporting_destination),
+           "' and event_type '", event_type, "'."});
+      console_message_level = blink::mojom::ConsoleMessageLevel::kWarning;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
+
+    // Validate the reporting url.
+    url = url_iter->second;
+    if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+      error_message = base::StrCat(
+          {"This frame registered invalid reporting url for destination '",
+           ReportingDestinationAsString(reporting_destination),
+           "' and event_type '", event_type, "'."});
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
+  } else {
+    CHECK(absl::holds_alternative<DestinationURLEvent>(event_variant));
+    // Since the event references a destination URL, use it directly.
+    // The URL should have been validated previously, to be a valid HTTPS url.
+    // TODO(gtanzer): Substitute macros from the reporting metadata as needed.
+    // TODO(gtanzer): Check whether the url is an allowlisted origin.
+    url = absl::get<DestinationURLEvent>(event_variant).url;
   }
 
   if (!GetContentClient()
@@ -420,7 +432,11 @@ bool FencedFrameReporter::SendReportInternal(
   request->mode = network::mojom::RequestMode::kCors;
   request->request_initiator = request_initiator;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  request->method = net::HttpRequestHeaders::kPostMethod;
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+    request->method = net::HttpRequestHeaders::kPostMethod;
+  } else {
+    request->method = net::HttpRequestHeaders::kGetMethod;
+  }
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();
@@ -457,8 +473,12 @@ bool FencedFrameReporter::SendReportInternal(
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        kReportingBeaconNetworkTag);
-  simple_url_loader->AttachStringForUpload(
-      event_data, /*upload_content_type=*/"text/plain;charset=UTF-8");
+
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+    simple_url_loader->AttachStringForUpload(
+        absl::get<DestinationEnumEvent>(event_variant).data,
+        /*upload_content_type=*/"text/plain;charset=UTF-8");
+  }
 
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
 

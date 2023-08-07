@@ -36,6 +36,21 @@ class BrowserContext;
 class PrivateAggregationManager;
 class RenderFrameHostImpl;
 
+// An event to be sent to a preregistered url.
+// `type` is the key for the `ReportingUrlMap`, and `data` is sent with the
+// request as a POST.
+struct DestinationEnumEvent {
+  std::string type;
+  std::string data;
+};
+
+// An event to be sent to a custom url.
+// `url` is the custom destination url, and the request is sent as a GET.
+// TODO(gtanzer): Macros are substituted using the `ReportingMacroMap`.
+struct DestinationURLEvent {
+  GURL url;
+};
+
 // Class that receives report events from fenced frames, and uses a
 // per-destination-type maps of events to URLs to send reports. The maps may be
 // received after the report event calls, in which case the reports will be
@@ -146,11 +161,20 @@ class CONTENT_EXPORT FencedFrameReporter
       ReportingUrlMap reporting_url_map,
       absl::optional<ReportingMacroMap> reporting_ad_macro_map = absl::nullopt);
 
-  // Uses `event_type`, `event_data` and the ReportingUrlMap associated with
-  // `reporting_destination` to send a report. If the map for
+  // Sends a report for the specified event, using the ReportingUrlMap
+  // associated with `reporting_destination`. If the map for
   // `reporting_destination` is pending, queues the report until the mapping
-  // information is received. If there's no matching information for
-  // `event_type`, does nothing.
+  // information is received.
+  //
+  // The event is specified with `event_variant`, which is either:
+  // * a `DestinationEnumEvent`, which contains a `type` and `data`
+  //   * Sends a POST to the url specified by `type` in the ReportingUrlMap,
+  //     with `data` attached.
+  //   * If there's no matching `type`, no beacon is sent.
+  //   sent.
+  // * a `DestinationURLEvent`, which contains a `url`
+  //   * Sends a GET to `url`.
+  //   * TODO(gtanzer): Substitutes macros from the ReportingMacroMap.
   //
   // Returns false and populated `error_message` and `console_message_level` if
   // no network request was attempted, unless the reporting URL map for
@@ -167,8 +191,8 @@ class CONTENT_EXPORT FencedFrameReporter
   // In all other cases (including the fence.reportEvent() case), the navigation
   // id will be null.
   bool SendReport(
-      const std::string& event_type,
-      const std::string& event_data,
+      const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
+          event_variant,
       blink::FencedFrame::ReportingDestination reporting_destination,
       RenderFrameHostImpl* request_initiator_frame,
       network::AttributionReportingRuntimeFeatures
@@ -237,8 +261,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
   struct PendingEvent {
     PendingEvent(
-        const std::string& type,
-        const std::string& data,
+        const absl::variant<DestinationEnumEvent, DestinationURLEvent>& event,
         const url::Origin& request_initiator,
         absl::optional<AttributionReportingData> attribution_reporting_data,
         int initiator_frame_tree_node_id);
@@ -251,8 +274,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
     ~PendingEvent();
 
-    std::string type;
-    std::string data;
+    absl::variant<DestinationEnumEvent, DestinationURLEvent> event;
     url::Origin request_initiator;
     // The data necessary for attribution reporting. Will be `absl::nullopt` if
     // attribution reporting is disallowed in the initiator frame.
@@ -290,8 +312,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // Helper to send a report, used by both SendReport() and OnUrlMappingReady().
   bool SendReportInternal(
       const ReportingDestinationInfo& reporting_destination_info,
-      const std::string& event_type,
-      const std::string& event_data,
+      const absl::variant<DestinationEnumEvent, DestinationURLEvent>& event,
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
       const absl::optional<AttributionReportingData>&

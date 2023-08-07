@@ -4662,6 +4662,9 @@ class FencedFrameReportEventBrowserTest
     // Whether attribution-reporting permission policy is expected to be
     // allowed.
     bool expect_attribution_reporting_allowed = true;
+    // Whether the report should disregard the `event` field and instead
+    // send to a custom destination URL.
+    bool use_custom_destination_url = false;
 
     struct Event {
       std::string type;
@@ -4949,7 +4952,18 @@ class FencedFrameReportEventBrowserTest
       }
 
       // Perform the reportEvent call, with a unique body.
-      if (!step.event.data) {
+      if (step.use_custom_destination_url) {
+        // Call reportEvent to a custom `destinationURL`.
+        EXPECT_TRUE(ExecJs(
+            navigation_target_node,
+            JsReplace(R"(
+              window.fence.reportEvent({
+                destinationURL: $1
+              });
+            )",
+                      https_server()->GetURL("c.test", kReportingURL).spec())));
+
+      } else if (!step.event.data) {
         // Call reportEvent without `eventData` field.
         EXPECT_TRUE(ExecJs(
             navigation_target_node,
@@ -4994,7 +5008,10 @@ class FencedFrameReportEventBrowserTest
         response.WaitForRequest();
 
         // Verify the request has the correct content.
-        if (!step.event.data) {
+        if (step.use_custom_destination_url) {
+          EXPECT_EQ(response.http_request()->method,
+                    net::test_server::METHOD_GET);
+        } else if (!step.event.data) {
           EXPECT_TRUE(response.http_request()->content.empty());
         } else {
           EXPECT_EQ(response.http_request()->content,
@@ -5453,6 +5470,113 @@ IN_PROC_BROWSER_TEST_F(
       {
           .is_target_nested_iframe = true,
           .expect_attribution_reporting_allowed = false,
+          .destination =
+              {"a.test",
+               "/fenced_frames/attribution_reporting_disallowed.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// Tests for reportEvent to a custom destinationURL:
+
+// The simplest test case: URN navigation into reportEvent.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventCustomURLEmbedderURNNavigation) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .use_custom_destination_url = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent should work in subframes that are same-origin to the most recent
+// embedder-initiated committed url in the fenced frame, regardless of the
+// fenced frame root's current url.
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventBrowserTest,
+    FencedFrameReportEventCustomURLNestedIframeSameOriginNavigation) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .use_custom_destination_url = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .use_custom_destination_url = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+      {
+          .use_custom_destination_url = true,
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .use_custom_destination_url = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent shouldn't work in subframes that are cross-origin to the most
+// recent embedder-initiated committed url in the fenced frame, regardless of
+// the fenced frame root's current url.
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventBrowserTest,
+    FencedFrameReportEventCustomURLNestedIframeCrossOriginNavigation) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .use_custom_destination_url = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .use_custom_destination_url = true,
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .use_custom_destination_url = true,
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .use_custom_destination_url = true,
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+  };
+  RunTest(config);
+}
+
+// Attribution Reporting headers are not set if attribution-reporting permission
+// policy is disallowed for the fenced frame.
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventBrowserTest,
+    FencedFrameReportEventCustomURLAttributionReportingDisallowed) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .expect_attribution_reporting_allowed = false,
+          .use_custom_destination_url = true,
           .destination =
               {"a.test",
                "/fenced_frames/attribution_reporting_disallowed.html"},
