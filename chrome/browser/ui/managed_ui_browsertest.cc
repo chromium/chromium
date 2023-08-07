@@ -533,13 +533,8 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiWebUIIconSupervised) {
 }
 
 IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
-  // Simulate a managed profile.
-  AddEnterpriseManagedPolicies();
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
   TestingProfile::Builder builder;
+  builder.SetProfileName("foo");
   auto profile = builder.Build();
 
   TestingProfile::Builder builder_with_domain;
@@ -561,29 +556,165 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
   std::unique_ptr<TestingProfile> profile_supervised =
       builder_supervised.Build();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(chrome::GetManagedUiWebUILabel(profile.get()).empty());
-  EXPECT_TRUE(chrome::GetManagedUiWebUILabel(profile_supervised.get()).empty());
-#else
-  EXPECT_EQ(
-      u"Your <a href=\"chrome://management\">browser is managed</a> by your "
-      u"organization",
-      chrome::GetManagedUiWebUILabel(profile.get()));
-  // Enterprise management takes precedence over supervision in the management
-  // UI.
-  EXPECT_EQ(
-      u"Your <a href=\"chrome://management\">browser is managed</a> by your "
-      u"organization",
-      chrome::GetManagedUiWebUILabel(profile_supervised.get()));
-#endif
-  EXPECT_EQ(
-      u"Your <a href=\"chrome://management\">browser is managed</a> by "
-      u"example.com",
-      chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
-  EXPECT_EQ(
-      u"Your <a href=\"chrome://management\">browser is managed</a> by "
-      u"hosteddomain.com",
-      chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+  const std::string unknown_device_manager = "";
+  chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+      unknown_device_manager.c_str());
+  {
+    // Simulate a managed profile
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_domain.get()),
+            policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">profile is managed</a> by "
+        u"example.com",
+        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_hosted_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_hosted_domain),
+            policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">profile is managed</a> by "
+        u"hosteddomain.com",
+        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+  }
+
+  {
+    // Simulate managed browser.
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(profile.get()),
+        policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization",
+        chrome::GetManagedUiWebUILabel(profile.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_domain.get()),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization",
+        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_hosted_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_hosted_domain),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization",
+        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_supervised_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_supervised.get()),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization",
+        chrome::GetManagedUiWebUILabel(profile_supervised.get()));
+  }
+
+  {
+    // Simulate managed browser and profile.
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(profile.get()),
+        policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization",
+        chrome::GetManagedUiWebUILabel(profile.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_domain.get()),
+            policy::EnterpriseManagementAuthority::CLOUD |
+                policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization and your <a href=\"chrome://management\">profile is "
+        u"managed</a> by example.com",
+        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_hosted_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_hosted_domain),
+            policy::EnterpriseManagementAuthority::CLOUD |
+                policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization and your <a href=\"chrome://management\">profile is "
+        u"managed</a> by hosteddomain.com",
+        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_supervised_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_supervised.get()),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by your "
+        u"organization",
+        chrome::GetManagedUiWebUILabel(profile_supervised.get()));
+  }
+
+  {
+    // Simulate managed browser with known manager and profile.
+    const std::string device_manager = "example.com";
+    chrome::ScopedDeviceManagerForTesting device_manager_for_testing(
+        device_manager.c_str());
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(profile.get()),
+        policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by "
+        u"example.com",
+        chrome::GetManagedUiWebUILabel(profile.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_domain.get()),
+            policy::EnterpriseManagementAuthority::CLOUD |
+                policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser and profile are "
+        u"managed</a> by example.com",
+        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_with_hosted_domain_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_with_hosted_domain),
+            policy::EnterpriseManagementAuthority::CLOUD |
+                policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by "
+        u"example.com "
+        u"and your <a href=\"chrome://management\">profile is "
+        u"managed</a> by hosteddomain.com",
+        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+
+    policy::ScopedManagementServiceOverrideForTesting
+        profile_supervised_management(
+            policy::ManagementServiceFactory::GetForProfile(
+                profile_supervised.get()),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    EXPECT_EQ(
+        u"Your <a href=\"chrome://management\">browser is managed</a> by "
+        u"example.com",
+        chrome::GetManagedUiWebUILabel(profile_supervised.get()));
+  }
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
