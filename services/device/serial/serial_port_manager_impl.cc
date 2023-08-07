@@ -154,10 +154,9 @@ void SerialPortManagerImpl::OpenBluetoothSerialPortOnUI(
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
     BluetoothSerialPortImpl::OpenCallback callback) {
-  BluetoothSerialPortImpl::Open(bluetooth_enumerator_->GetAdapter(), address,
-                                service_class_id, std::move(options),
-                                std::move(client), std::move(watcher),
-                                std::move(callback));
+  bluetooth_enumerator_->OpenPort(address, service_class_id, std::move(options),
+                                  std::move(client), std::move(watcher),
+                                  std::move(callback));
 }
 
 void SerialPortManagerImpl::OnPortAdded(const mojom::SerialPortInfo& port) {
