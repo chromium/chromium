@@ -100,7 +100,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
                          IDS_APP_LIST_EXTENSIONS_UNINSTALL);
   }
 
-  if (controller()->CanDoShowAppInfoFlow(profile, app_id)) {
+  if (controller()->CanDoShowAppInfoFlow(app_id)) {
     AddContextMenuOption(menu_model.get(), ash::SHOW_APP_INFO,
                          IDS_APP_CONTEXT_MENU_SHOW_INFO);
   }
@@ -196,8 +196,7 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
 
   switch (static_cast<ash::CommandId>(command_id)) {
     case ash::SHOW_APP_INFO:
-      controller()->DoShowAppInfoFlow(controller()->profile(),
-                                      item().id.app_id);
+      controller()->DoShowAppInfoFlow(item().id.app_id);
       break;
     case ash::USE_LAUNCH_TYPE_REGULAR:
       SetLaunchType(extensions::LAUNCH_TYPE_REGULAR);

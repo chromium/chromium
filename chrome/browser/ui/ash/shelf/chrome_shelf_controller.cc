@@ -30,6 +30,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -169,7 +170,7 @@ class ChromeShelfControllerUserSwitchObserver
       ChromeShelfController* controller)
       : controller_(controller) {
     DCHECK(user_manager::UserManager::IsInitialized());
-    user_manager::UserManager::Get()->AddSessionStateObserver(this);
+    user_session_state_observer_.Observe(user_manager::UserManager::Get());
   }
 
   ChromeShelfControllerUserSwitchObserver(
@@ -177,9 +178,7 @@ class ChromeShelfControllerUserSwitchObserver
   ChromeShelfControllerUserSwitchObserver& operator=(
       const ChromeShelfControllerUserSwitchObserver&) = delete;
 
-  ~ChromeShelfControllerUserSwitchObserver() override {
-    user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-  }
+  ~ChromeShelfControllerUserSwitchObserver() override = default;
 
   // user_manager::UserManager::UserSessionStateObserver overrides:
   void UserAddedToSession(const user_manager::User* added_user) override;
@@ -193,6 +192,10 @@ class ChromeShelfControllerUserSwitchObserver
 
   // The owning ChromeShelfController.
   raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
+      user_session_state_observer_{this};
 
   // Users which were just added to the system, but which profiles were not yet
   // (fully) loaded.
@@ -221,8 +224,7 @@ void ChromeShelfControllerUserSwitchObserver::OnUserProfileReadyToSwitch(
     // a set<AccountId>
     std::string user_id =
         multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
-    std::set<std::string>::iterator it =
-        base::ranges::find(added_user_ids_waiting_for_profiles_, user_id);
+    auto it = base::ranges::find(added_user_ids_waiting_for_profiles_, user_id);
     if (it != added_user_ids_waiting_for_profiles_.end()) {
       added_user_ids_waiting_for_profiles_.erase(it);
       AddUser(profile->GetOriginalProfile());
@@ -283,7 +285,7 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
         std::make_unique<ChromeShelfControllerUserSwitchObserver>(this);
   }
 
-  std::unique_ptr<AppServiceAppWindowShelfController> app_service_controller =
+  auto app_service_controller =
       std::make_unique<AppServiceAppWindowShelfController>(this);
   app_service_app_window_controller_ = app_service_controller.get();
   app_window_controllers_.emplace_back(std::move(app_service_controller));
@@ -490,20 +492,22 @@ void ChromeShelfController::UpdateAppState(content::WebContents* contents,
   ash::ShelfID shelf_id(shelf_controller_helper_->GetAppID(contents));
 
   // If the tab changed apps, remove its association with the previous app item.
-  if (web_contents_to_app_id_.find(contents) != web_contents_to_app_id_.end()) {
-    ash::ShelfID old_id(web_contents_to_app_id_[contents]);
+  auto iter = web_contents_to_app_id_.find(contents);
+  if (iter != web_contents_to_app_id_.end()) {
+    ash::ShelfID old_id(iter->second);
     if (old_id != shelf_id && GetItem(old_id)) {
       // Since GetAppState() will use |web_contents_to_app_id_| we remove
       // the connection before calling it.
-      web_contents_to_app_id_.erase(contents);
+      web_contents_to_app_id_.erase(iter);
       SetItemStatusOrRemove(old_id, GetAppState(old_id.app_id));
     }
   }
 
-  if (remove)
+  if (remove) {
     web_contents_to_app_id_.erase(contents);
-  else
+  } else {
     web_contents_to_app_id_[contents] = shelf_id.app_id;
+  }
 
   SetItemStatusOrRemove(shelf_id, GetAppState(shelf_id.app_id));
 }
@@ -606,9 +610,8 @@ std::vector<aura::Window*> ChromeShelfController::GetArcWindows() {
 bool ChromeShelfController::IsWebContentHandledByApplication(
     content::WebContents* web_contents,
     const std::string& app_id) {
-  return (web_contents_to_app_id_.find(web_contents) !=
-          web_contents_to_app_id_.end()) &&
-         (web_contents_to_app_id_[web_contents] == app_id);
+  auto iter = web_contents_to_app_id_.find(web_contents);
+  return iter != web_contents_to_app_id_.end() && iter->second == app_id;
 }
 
 gfx::Image ChromeShelfController::GetAppMenuIcon(
@@ -635,9 +638,8 @@ std::u16string ChromeShelfController::GetAppMenuTitle(
   const std::u16string& title = web_contents->GetTitle();
   if (!title.empty())
     return title;
-  WebContentsToAppIDMap::const_iterator iter =
-      web_contents_to_app_id_.find(web_contents);
-  if (iter != web_contents_to_app_id_.end()) {
+  if (auto iter = web_contents_to_app_id_.find(web_contents);
+      iter != web_contents_to_app_id_.end()) {
     std::string app_id = iter->second;
     const extensions::Extension* extension =
         GetExtensionForAppID(app_id, profile());
@@ -649,8 +651,8 @@ std::u16string ChromeShelfController::GetAppMenuTitle(
 
 BrowserShortcutShelfItemController*
 ChromeShelfController::GetBrowserShortcutShelfItemControllerForTesting() {
-  ash::ShelfID id(kChromeAppId);
-  ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(id);
+  ash::ShelfItemDelegate* delegate =
+      model_->GetShelfItemDelegate(ash::ShelfID(kChromeAppId));
   DCHECK(delegate) << "There should be always be a browser shortcut item.";
   return static_cast<BrowserShortcutShelfItemController*>(delegate);
 }
@@ -779,10 +781,9 @@ void ChromeShelfController::ReplacePinnedItem(const std::string& old_app_id,
     return;
   const int index = model_->ItemIndexByAppID(old_app_id);
 
-  const ash::ShelfID new_shelf_id(new_app_id);
   ash::ShelfItem item;
   item.type = ash::TYPE_PINNED_APP;
-  item.id = new_shelf_id;
+  item.id = ash::ShelfID(new_app_id);
 
   // Remove old_app at index and replace with new app.
   model_->RemoveItemAt(index);
@@ -797,10 +798,9 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
   if (target_index < 0 || model_->IsAppPinned(app_id))
     return;
 
-  const ash::ShelfID new_shelf_id(app_id);
   ash::ShelfItem item;
   item.type = ash::TYPE_PINNED_APP;
-  item.id = new_shelf_id;
+  item.id = ash::ShelfID(app_id);
 
   model_->AddAt(target_index, item,
                 std::make_unique<AppShortcutShelfItemController>(item.id));
@@ -828,17 +828,14 @@ AppIconLoader* ChromeShelfController::GetAppIconLoaderForApp(
 }
 
 bool ChromeShelfController::CanDoShowAppInfoFlow(
-    Profile* profile,
     const std::string& extension_id) {
-  return CanShowAppInfoDialog(profile, extension_id);
+  return CanShowAppInfoDialog(profile_, extension_id);
 }
 
-void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
-                                              const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
-  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+void ChromeShelfController::DoShowAppInfoFlow(const std::string& app_id) {
+  apps::AppType app_type = apps::AppServiceProxyFactory::GetForProfile(profile_)
+                               ->AppRegistryCache()
+                               .GetAppType(app_id);
 
   // Apps that are not in the App Service may call this function.
   // E.g. extensions, apps that are using their platform specific IDs.
@@ -849,10 +846,10 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
   if (app_type == apps::AppType::kWeb ||
       app_type == apps::AppType::kSystemWeb) {
     chrome::ShowAppManagementPage(
-        profile, app_id,
+        profile_, app_id,
         ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
   } else {
-    chrome::ShowAppManagementPage(profile,
+    chrome::ShowAppManagementPage(profile_,
                                   apps::GetEscapedAppId(app_id, app_type),
                                   ash::settings::AppManagementEntryPoint::
                                       kShelfContextMenuAppInfoChromeApp);
@@ -1274,7 +1271,7 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   // pin, move existing pin to current position specified by |index| or create
   // the new pin at that position.
   for (const auto& pref_shelf_id : pinned_apps) {
-    const std::string app_id = pref_shelf_id.app_id;
+    const std::string& app_id = pref_shelf_id.app_id;
     // Do not show apps in the shelf if they are explicitly forbidden.
     if (IsAppHiddenFromShelf(profile(), app_id)) {
       continue;
@@ -1394,9 +1391,9 @@ void ChromeShelfController::UpdateForcedPinStateForItemAtIndex(
 
 ash::ShelfItemStatus ChromeShelfController::GetAppState(
     const std::string& app_id) {
-  for (auto& it : web_contents_to_app_id_) {
-    if (it.second == app_id) {
-      Browser* browser = chrome::FindBrowserWithWebContents(it.first);
+  for (auto [web_contents, to_app_id] : web_contents_to_app_id_) {
+    if (app_id == to_app_id) {
+      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
       // Usually there should never be an item in our |web_contents_to_app_id_|
       // list which got deleted already. However - in some situations e.g.
       // Browser::SwapTabContent there is temporarily no associated browser.
@@ -1511,31 +1508,31 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
   }
 
   if (!base::Contains(app_updaters_, profile)) {
-    std::unique_ptr<ShelfAppUpdater> app_service_app_updater(
-        new ShelfAppServiceAppUpdater(this, profile));
-    app_updaters_[profile].push_back(std::move(app_service_app_updater));
+    std::vector<std::unique_ptr<ShelfAppUpdater>>& app_updaters_for_profile =
+        app_updaters_[profile];
+    app_updaters_for_profile.push_back(
+        std::make_unique<ShelfAppServiceAppUpdater>(this, profile));
 
     // Some special extensions open new windows, and on Chrome OS, those windows
     // should show the extension icon in the shelf. Extensions are not present
     // in the App Service, so use ShelfExtensionAppUpdater to handle
     // extensions life-cycle events.
-    std::unique_ptr<ShelfExtensionAppUpdater> extension_app_updater(
-        new ShelfExtensionAppUpdater(this, profile,
-                                     /*extensions_only=*/true));
-    app_updaters_[profile].push_back(std::move(extension_app_updater));
+    app_updaters_for_profile.push_back(
+        std::make_unique<ShelfExtensionAppUpdater>(this, profile,
+                                                   /*extensions_only=*/true));
 
     if (ash::features::ArePromiseIconsEnabled()) {
-      app_updaters_[profile].emplace_back(
+      app_updaters_for_profile.emplace_back(
           std::make_unique<ShelfPromiseAppUpdater>(this, profile));
     }
   }
 
   if (!base::Contains(app_icon_loaders_, profile)) {
-    std::unique_ptr<AppIconLoader> app_service_app_icon_loader =
+    std::vector<std::unique_ptr<AppIconLoader>>& app_icon_loaders_for_profile =
+        app_icon_loaders_[profile];
+    app_icon_loaders_for_profile.push_back(
         std::make_unique<AppServiceAppIconLoader>(
-            profile, extension_misc::EXTENSION_ICON_MEDIUM, this);
-    app_icon_loaders_[profile].push_back(
-        std::move(app_service_app_icon_loader));
+            profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
 
     if (ash::features::ArePromiseIconsEnabled()) {
       app_icon_loaders_[profile].emplace_back(
@@ -1547,12 +1544,12 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
     // should show the extension icon in the shelf. Extensions are not present
     // in the App Service, so try loading extensions icon using
     // ChromeAppIconLoader.
-    std::unique_ptr<extensions::ChromeAppIconLoader> chrome_app_icon_loader =
+    auto chrome_app_icon_loader =
         std::make_unique<extensions::ChromeAppIconLoader>(
             profile, extension_misc::EXTENSION_ICON_MEDIUM,
             base::BindRepeating(&app_list::MaybeResizeAndPadIconForMd), this);
     chrome_app_icon_loader->SetExtensionsOnly();
-    app_icon_loaders_[profile].push_back(std::move(chrome_app_icon_loader));
+    app_icon_loaders_for_profile.push_back(std::move(chrome_app_icon_loader));
   }
 }
 

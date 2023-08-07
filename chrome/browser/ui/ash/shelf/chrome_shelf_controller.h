@@ -261,11 +261,11 @@ class ChromeShelfController
 
   // Whether the controller supports a Show App Info flow for a specific
   // extension.
-  bool CanDoShowAppInfoFlow(Profile* profile, const std::string& extension_id);
+  bool CanDoShowAppInfoFlow(const std::string& extension_id);
 
   // Show the dialog with the application's information. Call only if
   // CanDoShowAppInfoFlow() returns true.
-  void DoShowAppInfoFlow(Profile* profile, const std::string& app_id);
+  void DoShowAppInfoFlow(const std::string& app_id);
 
   // ShelfAppUpdater::Delegate:
   void OnAppInstalled(content::BrowserContext* browser_context,
