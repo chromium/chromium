@@ -180,7 +180,6 @@ void AttestationCAClient::OnURLLoadComplete(
 void AttestationCAClient::FetchURL(const std::string& url,
                                    const std::string& request,
                                    DataCallback on_response) {
-  // TODO(b/285556135): Remove mention of DeviceAttestationEnabled
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("attestation_ca_client", R"(
         semantics {
@@ -203,10 +202,8 @@ void AttestationCAClient::FetchURL(const std::string& url,
         policy {
           cookies_allowed: NO
           setting:
-            "The device setting DeviceAttestationEnabled can disable the "
-            "attestation requests and AttestationForContentProtectionEnabled "
-            "can disable the attestation for content protection. But they "
-            "cannot be controlled by a policy or through settings."
+            "The device setting AttestationForContentProtectionEnabled "
+            "can disable the attestation for content protection."
           policy_exception_justification: "Not implemented."
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
