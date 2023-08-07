@@ -908,6 +908,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
         IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER);
     html_source->AddLocalizedString("sixPackKeyInsertSearch",
                                     IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER);
+    html_source->AddLocalizedString(
+        "touchpadSimulateRightClickOptionSearch",
+        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_LAUNCHER);
   } else {
     html_source->AddLocalizedString(
         "keyboardBlockMetaFunctionKeyRewrites",
@@ -935,6 +938,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
                                     IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH);
     html_source->AddLocalizedString("sixPackKeyInsertSearch",
                                     IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH);
+    html_source->AddLocalizedString(
+        "touchpadSimulateRightClickOptionSearch",
+        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH);
   }
 }
 
@@ -1822,8 +1828,6 @@ void DeviceSection::AddDevicePointersStrings(
        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT},
       {"touchpadSimulateRightClickOptionDisabled",
        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_DISABLED},
-      {"touchpadSimulateRightClickOptionSearch",
-       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH},
       {"learnMoreLabel", IDS_SETTINGS_LEARN_MORE_LABEL},
       {"modifierKeysLabel", IDS_SETTINGS_MODIFIER_KEYS_LABEL},
       {"otherKeysLabel", IDS_SETTINGS_OTHER_KEYS_LABEL},
