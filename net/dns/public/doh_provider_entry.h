@@ -42,13 +42,13 @@ enum class DohProviderIdForHistogram {
 // to associated DoH services in automatic mode and to populate the dropdown
 // menu for secure mode.
 //
-// To be eligible for auto-upgrade, an entry must have a non-empty `ip_strs` or
-// non-empty `dns_over_tls_hostnames`. To be eligible for the dropdown menu, the
-// entry must have non-empty `ui_name` and `privacy_policy`. If
-// `display_globally` is true, the entry is eligible to be displayed globally in
-// the dropdown menu. If `display_globally` is false, `display_countries` should
-// contain the two-letter ISO 3166-1 country codes, if any, where the entry is
-// eligible for being displayed in the dropdown menu.
+// To be eligible for auto-upgrade, an entry must have a non-empty
+// `dns_over_53_server_ip_strs` or non-empty `dns_over_tls_hostnames`. To be
+// eligible for the dropdown menu, the entry must have non-empty `ui_name` and
+// `privacy_policy`. If `display_globally` is true, the entry is eligible to be
+// displayed globally in the dropdown menu. If `display_globally` is false,
+// `display_countries` should contain the two-letter ISO 3166-1 country codes,
+// if any, where the entry is eligible for being displayed in the dropdown menu.
 //
 // If `feature` is disabled, the entry is eligible for neither auto-upgrade nor
 // the dropdown menu.
@@ -90,7 +90,7 @@ struct NET_EXPORT DohProviderEntry {
       std::string provider,
       const base::Feature* feature,
       absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
-      std::set<base::StringPiece> ip_strs,
+      std::set<base::StringPiece> dns_over_53_server_ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,
       std::string ui_name,
@@ -114,14 +114,15 @@ struct NET_EXPORT DohProviderEntry {
       // cannot be more than one `base::Feature` for a given feature name.
       const base::Feature* feature,
       absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
-      std::set<base::StringPiece> ip_strs,
+      std::set<base::StringPiece> dns_over_53_server_ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,
       std::string ui_name,
       std::string privacy_policy,
       bool display_globally,
       std::set<std::string> display_countries,
-      LoggingLevel logging_level);
+      LoggingLevel logging_level,
+      std::set<base::StringPiece> dns_over_https_server_ip_strs = {});
 };
 
 }  // namespace net

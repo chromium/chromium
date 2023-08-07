@@ -28,9 +28,23 @@ std::set<IPAddress> ParseIPs(const std::set<base::StringPiece>& ip_strs) {
   return ip_addresses;
 }
 
-DnsOverHttpsServerConfig ParseValidDohTemplate(std::string server_template) {
-  auto parsed_template =
-      DnsOverHttpsServerConfig::FromString(std::move(server_template));
+DnsOverHttpsServerConfig ParseValidDohTemplate(
+    std::string server_template,
+    const std::set<base::StringPiece>& endpoint_ip_strs) {
+  std::set<IPAddress> endpoint_ips = ParseIPs(endpoint_ip_strs);
+
+  std::vector<std::vector<IPAddress>> endpoints;
+
+  // Note: `DnsOverHttpsServerConfig` supports separate groups of endpoint IPs,
+  // but for now we'll just support all endpoint IPs combined into one grouping
+  // since the only use of the endpoint IPs in the server config combines them
+  // anyway.
+  if (!endpoint_ips.empty()) {
+    endpoints.emplace_back(endpoint_ips.begin(), endpoint_ips.end());
+  }
+
+  auto parsed_template = DnsOverHttpsServerConfig::FromString(
+      std::move(server_template), endpoints);
   DCHECK(parsed_template.has_value());  // Template must be valid.
   return std::move(*parsed_template);
 }
@@ -57,7 +71,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
               DohProviderAlekBergNl, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kAlekBergNl,
-          /*ip_strs=*/{}, /*dns_over_tls_hostnames=*/{},
+          /*dns_over_53_server_ip_strs=*/{}, /*dns_over_tls_hostnames=*/{},
           "https://dnsnl.alekberg.net/dns-query{?dns}",
           /*ui_name=*/"alekberg.net (NL)",
           /*privacy_policy=*/"https://alekberg.net/privacy",
@@ -189,17 +203,31 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "Iij",
           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
               DohProviderIij, base::FEATURE_ENABLED_BY_DEFAULT),
-          DohProviderIdForHistogram::kIij, /*ip_strs=*/{},
+          DohProviderIdForHistogram::kIij, /*dns_over_53_server_ip_strs=*/{},
           /*dns_over_tls_hostnames=*/{}, "https://public.dns.iij.jp/dns-query",
           /*ui_name=*/"IIJ (Public DNS)",
           /*privacy_policy=*/"https://public.dns.iij.jp/",
           /*display_globally=*/false, /*display_countries=*/{"JP"},
           LoggingLevel::kNormal),
       new DohProviderEntry(
+          "Levonet",
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderLevonet, base::FEATURE_ENABLED_BY_DEFAULT),
+          /*provider_id_for_histogram=*/absl::nullopt,
+          {"109.236.119.2", "109.236.120.2", "2a02:6ca3:0:1::2",
+           "2a02:6ca3:0:2::2"},
+          /*dns_over_tls_hostnames=*/{},
+          "https://dns.levonet.sk/dns-query{?dns}",
+          /*ui_name=*/"", /*privacy_policy=*/"", /*display_globally=*/false,
+          /*display_countries=*/{}, LoggingLevel::kNormal,
+          {"109.236.119.2", "109.236.120.2", "2a02:6ca3:0:1::2",
+           "2a02:6ca3:0:2::2"}),
+      new DohProviderEntry(
           "NextDns",
           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
               DohProviderNextDns, base::FEATURE_ENABLED_BY_DEFAULT),
-          DohProviderIdForHistogram::kNextDns, /*ip_strs=*/{},
+          DohProviderIdForHistogram::kNextDns,
+          /*dns_over_53_server_ip_strs=*/{},
           /*dns_over_tls_hostnames=*/{}, "https://chromium.dns.nextdns.io",
           /*ui_name=*/"NextDNS",
           /*privacy_policy=*/"https://nextdns.io/privacy",
@@ -307,7 +335,7 @@ DohProviderEntry DohProviderEntry::ConstructForTesting(
     std::string provider,
     const base::Feature* feature,
     absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
-    std::set<base::StringPiece> ip_strs,
+    std::set<base::StringPiece> dns_over_53_server_ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
     std::string dns_over_https_template,
     std::string ui_name,
@@ -315,10 +343,12 @@ DohProviderEntry DohProviderEntry::ConstructForTesting(
     bool display_globally,
     std::set<std::string> display_countries,
     LoggingLevel logging_level) {
-  return DohProviderEntry(provider, feature, provider_id_for_histogram, ip_strs,
-                          dns_over_tls_hostnames, dns_over_https_template,
-                          ui_name, privacy_policy, display_globally,
-                          display_countries, logging_level);
+  return DohProviderEntry(
+      std::move(provider), feature, std::move(provider_id_for_histogram),
+      std::move(dns_over_53_server_ip_strs), std::move(dns_over_tls_hostnames),
+      std::move(dns_over_https_template), std::move(ui_name),
+      std::move(privacy_policy), display_globally, std::move(display_countries),
+      logging_level);
 }
 
 DohProviderEntry::~DohProviderEntry() = default;
@@ -327,21 +357,23 @@ DohProviderEntry::DohProviderEntry(
     std::string provider,
     const base::Feature* feature,
     absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
-    std::set<base::StringPiece> ip_strs,
+    std::set<base::StringPiece> dns_over_53_server_ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
     std::string dns_over_https_template,
     std::string ui_name,
     std::string privacy_policy,
     bool display_globally,
     std::set<std::string> display_countries,
-    LoggingLevel logging_level)
+    LoggingLevel logging_level,
+    std::set<base::StringPiece> dns_over_https_server_ip_strs)
     : provider(std::move(provider)),
       feature(*feature),
       provider_id_for_histogram(std::move(provider_id_for_histogram)),
-      ip_addresses(ParseIPs(ip_strs)),
+      ip_addresses(ParseIPs(dns_over_53_server_ip_strs)),
       dns_over_tls_hostnames(std::move(dns_over_tls_hostnames)),
       doh_server_config(
-          ParseValidDohTemplate(std::move(dns_over_https_template))),
+          ParseValidDohTemplate(std::move(dns_over_https_template),
+                                std::move(dns_over_https_server_ip_strs))),
       ui_name(std::move(ui_name)),
       privacy_policy(std::move(privacy_policy)),
       display_globally(display_globally),

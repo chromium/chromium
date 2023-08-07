@@ -1551,6 +1551,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Google" label="Google."/>
   <suffix name="GoogleDns64" label="Google DNS64."/>
   <suffix name="Iij" label="Iij."/>
+  <suffix name="Levonet" label="Levonet s.r.o."/>
   <suffix name="NextDns" label="NextDNS."/>
   <suffix name="OpenDNS" label="OpenDNS standard service."/>
   <suffix name="OpenDNSFamily" label="OpenDNS Family Shield service."/>
