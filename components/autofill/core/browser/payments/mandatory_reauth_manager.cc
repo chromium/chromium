@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_google_chrome_strings.h"
@@ -53,6 +54,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
                                        FormDataImporter::CardLastFourDigits>>&
         card_identifier_if_non_interactive_authentication_flow_completed,
     FormDataImporter::CreditCardImportType import_type) {
+  opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
   // We should not offer to update a user pref in off the record mode.
   if (client_->IsOffTheRecord()) {
     return false;
@@ -121,7 +123,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
                   .value())) {
         return false;
       }
-
+      opt_in_source_ =
+          autofill_metrics::MandatoryReauthOptInOrOutSource::kCheckoutLocalCard;
       return LastFilledCardMatchesSubmittedCard(
           absl::get<FormDataImporter::CardGuid>(
               card_identifier_if_non_interactive_authentication_flow_completed
@@ -151,6 +154,9 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           // to check that the local card version of this card was the card most
           // recently filled into the form with non-interactive authentication,
           // as we should show the opt-in prompt in this case.
+          // Still use local card for metrics in this case.
+          opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
+              kCheckoutLocalCard;
           return LastFilledCardMatchesSubmittedCard(
               absl::get<FormDataImporter::CardGuid>(
                   card_identifier_if_non_interactive_authentication_flow_completed
@@ -179,6 +185,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
         return false;
       }
 
+      opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
+          kCheckoutVirtualCard;
       // If we have extracted a virtual card, we must check the last four digits
       // of the virtual card green pathed against the last four digits of the
       // card extracted from the form, as we do not store virtual cards in the
@@ -209,6 +217,10 @@ void MandatoryReauthManager::StartOptInFlow() {
 }
 
 void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
+  autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent(
+      opt_in_source_,
+      /*opt_in=*/true,
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
@@ -229,6 +241,13 @@ void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
 }
 
 void MandatoryReauthManager::OnOptInAuthenticationStepCompleted(bool success) {
+  autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent(
+      opt_in_source_,
+      /*opt_in=*/true,
+      success ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowSucceeded
+              : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowFailed);
   if (success) {
     client_->GetPersonalDataManager()->SetPaymentMethodsMandatoryReauthEnabled(
         /*enabled=*/true);

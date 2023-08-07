@@ -16,6 +16,10 @@ std::string_view GetSourceForOptInOrOptOutEvent(
   switch (source) {
     case MandatoryReauthOptInOrOutSource::kSettingsPage:
       return "SettingsPage";
+    case MandatoryReauthOptInOrOutSource::kCheckoutLocalCard:
+      return "CheckoutLocalCard";
+    case MandatoryReauthOptInOrOutSource::kCheckoutVirtualCard:
+      return "CheckoutVirtualCard";
     case MandatoryReauthOptInOrOutSource::kUnknown:
       return "Unknown";
   }

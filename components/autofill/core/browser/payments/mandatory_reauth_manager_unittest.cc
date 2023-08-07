@@ -6,6 +6,7 @@
 #include "base/strings/utf_string_conversions.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -57,6 +58,78 @@ class MandatoryReauthManagerTest : public testing::Test {
   CreditCard local_card_ = test::GetCreditCard();
   CreditCard server_card_ = test::GetMaskedServerCard();
   CreditCard virtual_card_ = test::GetVirtualCard();
+};
+
+// Params of the MandatoryReauthManagerOptInFlowTest:
+// -- autofill::FormDataImporter::CreditCardImportType CreditCardImportType
+class MandatoryReauthManagerOptInFlowTest
+    : public MandatoryReauthManagerTest,
+      public testing::WithParamInterface<
+          FormDataImporter::CreditCardImportType> {
+ public:
+  MandatoryReauthManagerOptInFlowTest() = default;
+  ~MandatoryReauthManagerOptInFlowTest() override = default;
+
+  CreditCard GetCreditCardBasedOnParam() {
+    switch (GetParam()) {
+      case FormDataImporter::kLocalCard:
+        autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+        return local_card_;
+      case FormDataImporter::kServerCard:
+        return server_card_;
+      case FormDataImporter::kVirtualCard:
+        return virtual_card_;
+      default:
+        NOTREACHED();
+        return local_card_;
+    }
+  }
+
+  absl::variant<FormDataImporter::CardGuid,
+                FormDataImporter::CardLastFourDigits>
+  GetCardIdentifierBasedOnParam() {
+    switch (GetParam()) {
+      case FormDataImporter::kLocalCard:
+        return FormDataImporter::CardGuid(local_card_.guid());
+      case FormDataImporter::kServerCard:
+        // For Server card, the only opt in case is if it had a matching local
+        // card.
+        autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+        return FormDataImporter::CardGuid(local_card_.guid());
+      case FormDataImporter::kVirtualCard:
+        return FormDataImporter::CardLastFourDigits(
+            base::UTF16ToUTF8(virtual_card_.LastFourDigits()));
+      default:
+        NOTREACHED();
+        return FormDataImporter::CardGuid(local_card_.guid());
+    }
+  }
+
+  std::string GetOtpInSource() {
+    switch (GetParam()) {
+      case FormDataImporter::kLocalCard:
+        return "CheckoutLocalCard";
+      case FormDataImporter::kServerCard:
+        return "CheckoutLocalCard";
+      case FormDataImporter::kVirtualCard:
+        return "CheckoutVirtualCard";
+      default:
+        NOTREACHED();
+        return "Unknown";
+    }
+  }
+
+  void SetUpDeviceAuthenticator(bool success) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    ON_CALL(*mock_device_authenticator_, AuthenticateWithMessage)
+#elif BUILDFLAG(IS_ANDROID)
+    ON_CALL(*mock_device_authenticator_, Authenticate)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+        .WillByDefault(testing::WithArg<1>(
+            [success](base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(success);
+            }));
+  }
 };
 
 // Test that `MandatoryReauthManager::Authenticate()` triggers
@@ -332,6 +405,10 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
   EXPECT_FALSE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
   EXPECT_FALSE(autofill_client_->GetMandatoryReauthOptInPromptWasReshown());
+  // Counter is increased by 1 since device authentication fails during opt in.
+  EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
+                prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
+            1);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*mock_device_authenticator_, AuthenticateWithMessage)
@@ -352,9 +429,6 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
   EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasReshown());
-  EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
-                prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
-            1);
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetUserPrefValue(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
 }
@@ -386,5 +460,93 @@ TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
             1);
 }
+
+TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  base::HistogramTester histogram_tester;
+
+  // Verify that we shall offer opt in.
+  EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
+      GetCreditCardBasedOnParam(), GetCardIdentifierBasedOnParam(),
+      GetParam()));
+
+  SetUpDeviceAuthenticator(/*success=*/true);
+
+  // Start OptIn flow.
+  static_cast<MandatoryReauthManager*>(mandatory_reauth_manager_.get())
+      ->StartOptInFlow();
+  // Simulate user accepts the opt in prompt.
+  mandatory_reauth_manager_->OnUserAcceptedOptInPrompt();
+
+  EXPECT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth));
+  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  // Counter is not changed since it's a successful opt in.
+  EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
+                prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
+            0);
+  EXPECT_TRUE(autofill_client_->GetPrefs()->GetUserPrefValue(
+      prefs::kAutofillPaymentMethodsMandatoryReauth));
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent." +
+          GetOtpInSource() + ".OptIn",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent." +
+          GetOtpInSource() + ".OptIn",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded,
+      1);
+}
+
+TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  base::HistogramTester histogram_tester;
+
+  // Verify that we shall offer opt in.
+  EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
+      GetCreditCardBasedOnParam(), GetCardIdentifierBasedOnParam(),
+      GetParam()));
+
+  // Simulate authentication failure.
+  SetUpDeviceAuthenticator(/*success=*/false);
+
+  // Start OptIn flow.
+  static_cast<MandatoryReauthManager*>(mandatory_reauth_manager_.get())
+      ->StartOptInFlow();
+  // Simulate user accepts the opt in prompt. But the device authentication
+  // fails.
+  mandatory_reauth_manager_->OnUserAcceptedOptInPrompt();
+
+  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  // Counter is increased by 1 since device authentication fails during opt in.
+  EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
+                prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
+            1);
+  // The reauth pref is still off since authentication fails.
+  EXPECT_FALSE(autofill_client_->GetPrefs()->GetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth));
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent." +
+          GetOtpInSource() + ".OptIn",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent." +
+          GetOtpInSource() + ".OptIn",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowFailed, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         MandatoryReauthManagerOptInFlowTest,
+                         testing::Values(FormDataImporter::kLocalCard,
+                                         FormDataImporter::kServerCard,
+                                         FormDataImporter::kVirtualCard));
 
 }  // namespace autofill::payments

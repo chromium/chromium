@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/device_reauth/device_authenticator.h"
 
 namespace autofill {
@@ -119,6 +120,10 @@ class MandatoryReauthManager {
   // `device_authenticator_` is destroyed if the tab owning this
   // MandatoryReauthManager is destroyed.
   scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+
+  // Used to store the opt in source for logging purposes.
+  autofill_metrics::MandatoryReauthOptInOrOutSource opt_in_source_ =
+      autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
 
   base::WeakPtrFactory<MandatoryReauthManager> weak_ptr_factory_{this};
 };

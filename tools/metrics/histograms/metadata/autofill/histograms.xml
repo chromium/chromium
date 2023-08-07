@@ -91,6 +91,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.MandatoryReauth.Source">
+  <variant name="CheckoutLocalCard"
+      summary="Feature is trying to be updated from local card checkout"/>
+  <variant name="CheckoutVirtualCard"
+      summary="Feature is trying to be updated from virtual card checkout"/>
   <variant name="SettingsPage"
       summary="Feature is trying to be updated from the Settings page"/>
   <variant name="Unknown"
