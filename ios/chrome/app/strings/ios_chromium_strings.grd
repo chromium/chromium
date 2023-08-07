@@ -517,6 +517,9 @@ Things to consider:
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account) [iOS only].">
         Your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, so your Chromium data will be cleared from this device
       </message>
+      <message name="IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO" desc="Body of a message that is shown certain error states, such as when account was removed in another app or the password was changed. This string follows the heading &quot;Verify it's you&quot;, and we want the user to tap on the button &quot;Verify&quot;. We are asking the user to sign back in to their Google Account, so that the user can sign back into Chrome and resume access to their Chrome data (such as bookmarks, passwords, history, settings, and more). The tone should be helpful and instructive.">
+        Keep using the Chromium data in your Google Account.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chromium Everywhere
       </message>

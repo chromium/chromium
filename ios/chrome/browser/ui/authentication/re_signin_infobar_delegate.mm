@@ -9,10 +9,12 @@
 #import <memory>
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/logging.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
@@ -111,7 +114,11 @@ ReSignInInfoBarDelegate::GetIdentifier() const {
 }
 
 std::u16string ReSignInInfoBarDelegate::GetMessageText() const {
-  return l10n_util::GetStringUTF16(IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE);
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? l10n_util::GetStringUTF16(
+                   IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO)
+             : l10n_util::GetStringUTF16(IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE);
 }
 
 int ReSignInInfoBarDelegate::GetButtons() const {
