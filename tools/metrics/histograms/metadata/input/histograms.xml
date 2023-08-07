@@ -1773,6 +1773,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Untrusted.InputMethod.PhysicalKeyboard.VietnameseActions"
+    enum="VietnameseActions" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Actions used by the Vietnamese engine to compose text. Since this is logged
+    from a sandboxed service so it has to be in the untrusted namespace.
+  </summary>
+</histogram>
+
 <!--
 These viewport metrics are in input/ since they're related to pinch-zoom, which
 is owned by the Blink input team.
