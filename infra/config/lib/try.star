@@ -94,6 +94,10 @@ SOURCELESS_BUILDER_CACHES = [
 defaults = args.defaults(
     extends = builders.defaults,
     check_for_flakiness = False,
+    # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+    # this should be deprecated in favor for the original check_for_flakiness
+    # argument.
+    check_for_flakiness_with_resultdb = False,
     cq_group = None,
     main_list_view = None,
     subproject_list_view = None,
@@ -158,6 +162,7 @@ def try_builder(
         name,
         branch_selector = branches.selector.MAIN,
         check_for_flakiness = args.DEFAULT,
+        check_for_flakiness_with_resultdb = args.DEFAULT,
         cq_group = args.DEFAULT,
         list_view = args.DEFAULT,
         main_list_view = args.DEFAULT,
@@ -176,6 +181,13 @@ def try_builder(
       check_for_flakiness - If True, it checks for new tests in a given try
         build and reruns them multiple times to ensure that they are not
         flaky.
+      # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+      # this should be deprecated in favor for the original check_for_flakiness
+      # argument.
+      check_for_flakiness_with_resultdb - If True, it checks for new tests in a
+        given try build using resultdb as the data source, instead of the
+        previous mechanism which utilized a pregenerated test history. New tests
+        are rerun multiple times to ensure that they are not flaky.
       cq_group - The CQ group to add the builder to. If tryjob is None, it will
         be added as includable_only.
       list_view - A string or list of strings identifying the ID(s) of the list
@@ -250,6 +262,7 @@ def try_builder(
 
     properties = kwargs.pop("properties", {})
     properties = dict(properties)
+
     check_for_flakiness = defaults.get_value(
         "check_for_flakiness",
         check_for_flakiness,
@@ -257,6 +270,18 @@ def try_builder(
     if check_for_flakiness:
         properties["$build/flakiness"] = {
             "check_for_flakiness": True,
+        }
+
+    # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+    # check_for_flakiness_with_resultdb should be deprecated in favor for the
+    # original check_for_flakiness argument.
+    check_for_flakiness_with_resultdb = defaults.get_value(
+        "check_for_flakiness_with_resultdb",
+        check_for_flakiness_with_resultdb,
+    )
+    if check_for_flakiness_with_resultdb:
+        properties["$build/flakiness"] = {
+            "check_for_flakiness_with_resultdb": True,
         }
 
     # Populate "cq" property if builder is a required or path-based CQ builder.
