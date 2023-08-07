@@ -1,273 +1,273 @@
 Tests `serialization` options.
-Testing 'undefined' with {"serialization":"deep"}
+Testing `undefined` with {"serialization":"deep"}
 {
     type : undefined
 }
-Testing 'undefined' with {"serialization":"deep","maxDepth":0}
+Testing `undefined` with {"serialization":"deep","maxDepth":0}
 {
     type : undefined
 }
-Testing 'undefined' with {"serialization":"deep","maxDepth":1}
+Testing `undefined` with {"serialization":"deep","maxDepth":1}
 {
     type : undefined
 }
-Testing 'undefined' with {"serialization":"deep","maxDepth":99}
+Testing `undefined` with {"serialization":"deep","maxDepth":99}
 {
     type : undefined
 }
-Testing 'null' with {"serialization":"deep"}
+Testing `null` with {"serialization":"deep"}
 {
     type : null
 }
-Testing 'null' with {"serialization":"deep","maxDepth":0}
+Testing `null` with {"serialization":"deep","maxDepth":0}
 {
     type : null
 }
-Testing 'null' with {"serialization":"deep","maxDepth":1}
+Testing `null` with {"serialization":"deep","maxDepth":1}
 {
     type : null
 }
-Testing 'null' with {"serialization":"deep","maxDepth":99}
+Testing `null` with {"serialization":"deep","maxDepth":99}
 {
     type : null
 }
-Testing ''some_string'' with {"serialization":"deep"}
+Testing `"some_string"` with {"serialization":"deep"}
 {
     type : string
     value : some_string
 }
-Testing ''some_string'' with {"serialization":"deep","maxDepth":0}
+Testing `"some_string"` with {"serialization":"deep","maxDepth":0}
 {
     type : string
     value : some_string
 }
-Testing ''some_string'' with {"serialization":"deep","maxDepth":1}
+Testing `"some_string"` with {"serialization":"deep","maxDepth":1}
 {
     type : string
     value : some_string
 }
-Testing ''some_string'' with {"serialization":"deep","maxDepth":99}
+Testing `"some_string"` with {"serialization":"deep","maxDepth":99}
 {
     type : string
     value : some_string
 }
-Testing ''2'' with {"serialization":"deep"}
+Testing `"2"` with {"serialization":"deep"}
 {
     type : string
     value : 2
 }
-Testing ''2'' with {"serialization":"deep","maxDepth":0}
+Testing `"2"` with {"serialization":"deep","maxDepth":0}
 {
     type : string
     value : 2
 }
-Testing ''2'' with {"serialization":"deep","maxDepth":1}
+Testing `"2"` with {"serialization":"deep","maxDepth":1}
 {
     type : string
     value : 2
 }
-Testing ''2'' with {"serialization":"deep","maxDepth":99}
+Testing `"2"` with {"serialization":"deep","maxDepth":99}
 {
     type : string
     value : 2
 }
-Testing 'Number.NaN' with {"serialization":"deep"}
+Testing `Number.NaN` with {"serialization":"deep"}
 {
     type : number
     value : NaN
 }
-Testing 'Number.NaN' with {"serialization":"deep","maxDepth":0}
+Testing `Number.NaN` with {"serialization":"deep","maxDepth":0}
 {
     type : number
     value : NaN
 }
-Testing 'Number.NaN' with {"serialization":"deep","maxDepth":1}
+Testing `Number.NaN` with {"serialization":"deep","maxDepth":1}
 {
     type : number
     value : NaN
 }
-Testing 'Number.NaN' with {"serialization":"deep","maxDepth":99}
+Testing `Number.NaN` with {"serialization":"deep","maxDepth":99}
 {
     type : number
     value : NaN
 }
-Testing '-0' with {"serialization":"deep"}
+Testing `-0` with {"serialization":"deep"}
 {
     type : number
     value : -0
 }
-Testing '-0' with {"serialization":"deep","maxDepth":0}
+Testing `-0` with {"serialization":"deep","maxDepth":0}
 {
     type : number
     value : -0
 }
-Testing '-0' with {"serialization":"deep","maxDepth":1}
+Testing `-0` with {"serialization":"deep","maxDepth":1}
 {
     type : number
     value : -0
 }
-Testing '-0' with {"serialization":"deep","maxDepth":99}
+Testing `-0` with {"serialization":"deep","maxDepth":99}
 {
     type : number
     value : -0
 }
-Testing 'Infinity' with {"serialization":"deep"}
+Testing `Infinity` with {"serialization":"deep"}
 {
     type : number
     value : Infinity
 }
-Testing 'Infinity' with {"serialization":"deep","maxDepth":0}
+Testing `Infinity` with {"serialization":"deep","maxDepth":0}
 {
     type : number
     value : Infinity
 }
-Testing 'Infinity' with {"serialization":"deep","maxDepth":1}
+Testing `Infinity` with {"serialization":"deep","maxDepth":1}
 {
     type : number
     value : Infinity
 }
-Testing 'Infinity' with {"serialization":"deep","maxDepth":99}
+Testing `Infinity` with {"serialization":"deep","maxDepth":99}
 {
     type : number
     value : Infinity
 }
-Testing '-Infinity' with {"serialization":"deep"}
+Testing `-Infinity` with {"serialization":"deep"}
 {
     type : number
     value : -Infinity
 }
-Testing '-Infinity' with {"serialization":"deep","maxDepth":0}
+Testing `-Infinity` with {"serialization":"deep","maxDepth":0}
 {
     type : number
     value : -Infinity
 }
-Testing '-Infinity' with {"serialization":"deep","maxDepth":1}
+Testing `-Infinity` with {"serialization":"deep","maxDepth":1}
 {
     type : number
     value : -Infinity
 }
-Testing '-Infinity' with {"serialization":"deep","maxDepth":99}
+Testing `-Infinity` with {"serialization":"deep","maxDepth":99}
 {
     type : number
     value : -Infinity
 }
-Testing '3' with {"serialization":"deep"}
+Testing `3` with {"serialization":"deep"}
 {
     type : number
     value : 3
 }
-Testing '3' with {"serialization":"deep","maxDepth":0}
+Testing `3` with {"serialization":"deep","maxDepth":0}
 {
     type : number
     value : 3
 }
-Testing '3' with {"serialization":"deep","maxDepth":1}
+Testing `3` with {"serialization":"deep","maxDepth":1}
 {
     type : number
     value : 3
 }
-Testing '3' with {"serialization":"deep","maxDepth":99}
+Testing `3` with {"serialization":"deep","maxDepth":99}
 {
     type : number
     value : 3
 }
-Testing '1.4' with {"serialization":"deep"}
+Testing `1.4` with {"serialization":"deep"}
 {
     type : number
     value : 1.4
 }
-Testing '1.4' with {"serialization":"deep","maxDepth":0}
+Testing `1.4` with {"serialization":"deep","maxDepth":0}
 {
     type : number
     value : 1.4
 }
-Testing '1.4' with {"serialization":"deep","maxDepth":1}
+Testing `1.4` with {"serialization":"deep","maxDepth":1}
 {
     type : number
     value : 1.4
 }
-Testing '1.4' with {"serialization":"deep","maxDepth":99}
+Testing `1.4` with {"serialization":"deep","maxDepth":99}
 {
     type : number
     value : 1.4
 }
-Testing 'true' with {"serialization":"deep"}
+Testing `true` with {"serialization":"deep"}
 {
     type : boolean
     value : true
 }
-Testing 'true' with {"serialization":"deep","maxDepth":0}
+Testing `true` with {"serialization":"deep","maxDepth":0}
 {
     type : boolean
     value : true
 }
-Testing 'true' with {"serialization":"deep","maxDepth":1}
+Testing `true` with {"serialization":"deep","maxDepth":1}
 {
     type : boolean
     value : true
 }
-Testing 'true' with {"serialization":"deep","maxDepth":99}
+Testing `true` with {"serialization":"deep","maxDepth":99}
 {
     type : boolean
     value : true
 }
-Testing 'false' with {"serialization":"deep"}
+Testing `false` with {"serialization":"deep"}
 {
     type : boolean
     value : false
 }
-Testing 'false' with {"serialization":"deep","maxDepth":0}
+Testing `false` with {"serialization":"deep","maxDepth":0}
 {
     type : boolean
     value : false
 }
-Testing 'false' with {"serialization":"deep","maxDepth":1}
+Testing `false` with {"serialization":"deep","maxDepth":1}
 {
     type : boolean
     value : false
 }
-Testing 'false' with {"serialization":"deep","maxDepth":99}
+Testing `false` with {"serialization":"deep","maxDepth":99}
 {
     type : boolean
     value : false
 }
-Testing '42n' with {"serialization":"deep"}
+Testing `42n` with {"serialization":"deep"}
 {
     type : bigint
     value : 42
 }
-Testing '42n' with {"serialization":"deep","maxDepth":0}
+Testing `42n` with {"serialization":"deep","maxDepth":0}
 {
     type : bigint
     value : 42
 }
-Testing '42n' with {"serialization":"deep","maxDepth":1}
+Testing `42n` with {"serialization":"deep","maxDepth":1}
 {
     type : bigint
     value : 42
 }
-Testing '42n' with {"serialization":"deep","maxDepth":99}
+Testing `42n` with {"serialization":"deep","maxDepth":99}
 {
     type : bigint
     value : 42
 }
-Testing '(Symbol('foo'))' with {"serialization":"deep"}
+Testing `(Symbol("foo"))` with {"serialization":"deep"}
 {
     type : symbol
 }
-Testing '(Symbol('foo'))' with {"serialization":"deep","maxDepth":0}
+Testing `(Symbol("foo"))` with {"serialization":"deep","maxDepth":0}
 {
     type : symbol
 }
-Testing '(Symbol('foo'))' with {"serialization":"deep","maxDepth":1}
+Testing `(Symbol("foo"))` with {"serialization":"deep","maxDepth":1}
 {
     type : symbol
 }
-Testing '(Symbol('foo'))' with {"serialization":"deep","maxDepth":99}
+Testing `(Symbol("foo"))` with {"serialization":"deep","maxDepth":99}
 {
     type : symbol
 }
-Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep"}
+Testing `[1, "foo", true, new RegExp(/foo/g), [1]]` with {"serialization":"deep"}
 {
     type : array
     value : [
@@ -301,11 +301,11 @@ Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep"
         }
     ]
 }
-Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep","maxDepth":0}
+Testing `[1, "foo", true, new RegExp(/foo/g), [1]]` with {"serialization":"deep","maxDepth":0}
 {
     type : array
 }
-Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep","maxDepth":1}
+Testing `[1, "foo", true, new RegExp(/foo/g), [1]]` with {"serialization":"deep","maxDepth":1}
 {
     type : array
     value : [
@@ -333,7 +333,7 @@ Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep"
         }
     ]
 }
-Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep","maxDepth":99}
+Testing `[1, "foo", true, new RegExp(/foo/g), [1]]` with {"serialization":"deep","maxDepth":99}
 {
     type : array
     value : [
@@ -367,7 +367,7 @@ Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]' with {"serialization":"deep"
         }
     ]
 }
-Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep"}
+Testing `({"foo": {"bar": "baz"}, "qux": "quux"})` with {"serialization":"deep"}
 {
     type : object
     value : [
@@ -395,11 +395,11 @@ Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep"}
         ]
     ]
 }
-Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep","maxDepth":0}
+Testing `({"foo": {"bar": "baz"}, "qux": "quux"})` with {"serialization":"deep","maxDepth":0}
 {
     type : object
 }
-Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep","maxDepth":1}
+Testing `({"foo": {"bar": "baz"}, "qux": "quux"})` with {"serialization":"deep","maxDepth":1}
 {
     type : object
     value : [
@@ -418,7 +418,7 @@ Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep",
         ]
     ]
 }
-Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep","maxDepth":99}
+Testing `({"foo": {"bar": "baz"}, "qux": "quux"})` with {"serialization":"deep","maxDepth":99}
 {
     type : object
     value : [
@@ -446,71 +446,71 @@ Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})' with {"serialization":"deep",
         ]
     ]
 }
-Testing '(()=>{})' with {"serialization":"deep"}
+Testing `(()=>{})` with {"serialization":"deep"}
 {
     type : function
 }
-Testing '(()=>{})' with {"serialization":"deep","maxDepth":0}
+Testing `(()=>{})` with {"serialization":"deep","maxDepth":0}
 {
     type : function
 }
-Testing '(()=>{})' with {"serialization":"deep","maxDepth":1}
+Testing `(()=>{})` with {"serialization":"deep","maxDepth":1}
 {
     type : function
 }
-Testing '(()=>{})' with {"serialization":"deep","maxDepth":99}
+Testing `(()=>{})` with {"serialization":"deep","maxDepth":99}
 {
     type : function
 }
-Testing '(function(){})' with {"serialization":"deep"}
+Testing `(function(){})` with {"serialization":"deep"}
 {
     type : function
 }
-Testing '(function(){})' with {"serialization":"deep","maxDepth":0}
+Testing `(function(){})` with {"serialization":"deep","maxDepth":0}
 {
     type : function
 }
-Testing '(function(){})' with {"serialization":"deep","maxDepth":1}
+Testing `(function(){})` with {"serialization":"deep","maxDepth":1}
 {
     type : function
 }
-Testing '(function(){})' with {"serialization":"deep","maxDepth":99}
+Testing `(function(){})` with {"serialization":"deep","maxDepth":99}
 {
     type : function
 }
-Testing '(async ()=>{})' with {"serialization":"deep"}
+Testing `(async ()=>{})` with {"serialization":"deep"}
 {
     type : function
 }
-Testing '(async ()=>{})' with {"serialization":"deep","maxDepth":0}
+Testing `(async ()=>{})` with {"serialization":"deep","maxDepth":0}
 {
     type : function
 }
-Testing '(async ()=>{})' with {"serialization":"deep","maxDepth":1}
+Testing `(async ()=>{})` with {"serialization":"deep","maxDepth":1}
 {
     type : function
 }
-Testing '(async ()=>{})' with {"serialization":"deep","maxDepth":99}
+Testing `(async ()=>{})` with {"serialization":"deep","maxDepth":99}
 {
     type : function
 }
-Testing '(async function(){})' with {"serialization":"deep"}
+Testing `(async function(){})` with {"serialization":"deep"}
 {
     type : function
 }
-Testing '(async function(){})' with {"serialization":"deep","maxDepth":0}
+Testing `(async function(){})` with {"serialization":"deep","maxDepth":0}
 {
     type : function
 }
-Testing '(async function(){})' with {"serialization":"deep","maxDepth":1}
+Testing `(async function(){})` with {"serialization":"deep","maxDepth":1}
 {
     type : function
 }
-Testing '(async function(){})' with {"serialization":"deep","maxDepth":99}
+Testing `(async function(){})` with {"serialization":"deep","maxDepth":99}
 {
     type : function
 }
-Testing 'new RegExp(/foo/g)' with {"serialization":"deep"}
+Testing `new RegExp(/foo/g)` with {"serialization":"deep"}
 {
     type : regexp
     value : {
@@ -518,7 +518,7 @@ Testing 'new RegExp(/foo/g)' with {"serialization":"deep"}
         pattern : foo
     }
 }
-Testing 'new RegExp(/foo/g)' with {"serialization":"deep","maxDepth":0}
+Testing `new RegExp(/foo/g)` with {"serialization":"deep","maxDepth":0}
 {
     type : regexp
     value : {
@@ -526,7 +526,7 @@ Testing 'new RegExp(/foo/g)' with {"serialization":"deep","maxDepth":0}
         pattern : foo
     }
 }
-Testing 'new RegExp(/foo/g)' with {"serialization":"deep","maxDepth":1}
+Testing `new RegExp(/foo/g)` with {"serialization":"deep","maxDepth":1}
 {
     type : regexp
     value : {
@@ -534,7 +534,7 @@ Testing 'new RegExp(/foo/g)' with {"serialization":"deep","maxDepth":1}
         pattern : foo
     }
 }
-Testing 'new RegExp(/foo/g)' with {"serialization":"deep","maxDepth":99}
+Testing `new RegExp(/foo/g)` with {"serialization":"deep","maxDepth":99}
 {
     type : regexp
     value : {
@@ -542,27 +542,27 @@ Testing 'new RegExp(/foo/g)' with {"serialization":"deep","maxDepth":99}
         pattern : foo
     }
 }
-Testing 'new Date(1654004849000)' with {"serialization":"deep"}
+Testing `new Date(1654004849000)` with {"serialization":"deep"}
 {
     type : date
     value : 2022-05-31T13:47:29.000Z
 }
-Testing 'new Date(1654004849000)' with {"serialization":"deep","maxDepth":0}
+Testing `new Date(1654004849000)` with {"serialization":"deep","maxDepth":0}
 {
     type : date
     value : 2022-05-31T13:47:29.000Z
 }
-Testing 'new Date(1654004849000)' with {"serialization":"deep","maxDepth":1}
+Testing `new Date(1654004849000)` with {"serialization":"deep","maxDepth":1}
 {
     type : date
     value : 2022-05-31T13:47:29.000Z
 }
-Testing 'new Date(1654004849000)' with {"serialization":"deep","maxDepth":99}
+Testing `new Date(1654004849000)` with {"serialization":"deep","maxDepth":99}
 {
     type : date
     value : 2022-05-31T13:47:29.000Z
 }
-Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"serialization":"deep"}
+Testing `new Map([[1, 2], ["foo", "bar"], [true, false], ["baz", [1]]])` with {"serialization":"deep"}
 {
     type : map
     value : [
@@ -607,11 +607,11 @@ Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"
         ]
     ]
 }
-Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"serialization":"deep","maxDepth":0}
+Testing `new Map([[1, 2], ["foo", "bar"], [true, false], ["baz", [1]]])` with {"serialization":"deep","maxDepth":0}
 {
     type : map
 }
-Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"serialization":"deep","maxDepth":1}
+Testing `new Map([[1, 2], ["foo", "bar"], [true, false], ["baz", [1]]])` with {"serialization":"deep","maxDepth":1}
 {
     type : map
     value : [
@@ -650,7 +650,7 @@ Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"
         ]
     ]
 }
-Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"serialization":"deep","maxDepth":99}
+Testing `new Map([[1, 2], ["foo", "bar"], [true, false], ["baz", [1]]])` with {"serialization":"deep","maxDepth":99}
 {
     type : map
     value : [
@@ -695,7 +695,7 @@ Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])' with {"
         ]
     ]
 }
-Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization":"deep"}
+Testing `new Set([1, "foo", true, [1], new Map([[1,2]])])` with {"serialization":"deep"}
 {
     type : set
     value : [
@@ -737,11 +737,11 @@ Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization"
         }
     ]
 }
-Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization":"deep","maxDepth":0}
+Testing `new Set([1, "foo", true, [1], new Map([[1,2]])])` with {"serialization":"deep","maxDepth":0}
 {
     type : set
 }
-Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization":"deep","maxDepth":1}
+Testing `new Set([1, "foo", true, [1], new Map([[1,2]])])` with {"serialization":"deep","maxDepth":1}
 {
     type : set
     value : [
@@ -765,7 +765,7 @@ Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization"
         }
     ]
 }
-Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization":"deep","maxDepth":99}
+Testing `new Set([1, "foo", true, [1], new Map([[1,2]])])` with {"serialization":"deep","maxDepth":99}
 {
     type : set
     value : [
@@ -807,103 +807,103 @@ Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])' with {"serialization"
         }
     ]
 }
-Testing 'new WeakMap()' with {"serialization":"deep"}
+Testing `new WeakMap()` with {"serialization":"deep"}
 {
     type : weakmap
 }
-Testing 'new WeakMap()' with {"serialization":"deep","maxDepth":0}
+Testing `new WeakMap()` with {"serialization":"deep","maxDepth":0}
 {
     type : weakmap
 }
-Testing 'new WeakMap()' with {"serialization":"deep","maxDepth":1}
+Testing `new WeakMap()` with {"serialization":"deep","maxDepth":1}
 {
     type : weakmap
 }
-Testing 'new WeakMap()' with {"serialization":"deep","maxDepth":99}
+Testing `new WeakMap()` with {"serialization":"deep","maxDepth":99}
 {
     type : weakmap
 }
-Testing 'new WeakSet()' with {"serialization":"deep"}
+Testing `new WeakSet()` with {"serialization":"deep"}
 {
     type : weakset
 }
-Testing 'new WeakSet()' with {"serialization":"deep","maxDepth":0}
+Testing `new WeakSet()` with {"serialization":"deep","maxDepth":0}
 {
     type : weakset
 }
-Testing 'new WeakSet()' with {"serialization":"deep","maxDepth":1}
+Testing `new WeakSet()` with {"serialization":"deep","maxDepth":1}
 {
     type : weakset
 }
-Testing 'new WeakSet()' with {"serialization":"deep","maxDepth":99}
+Testing `new WeakSet()` with {"serialization":"deep","maxDepth":99}
 {
     type : weakset
 }
-Testing 'new Error('SOME_ERROR_TEXT')' with {"serialization":"deep"}
+Testing `new Error("SOME_ERROR_TEXT")` with {"serialization":"deep"}
 {
     type : error
 }
-Testing 'new Error('SOME_ERROR_TEXT')' with {"serialization":"deep","maxDepth":0}
+Testing `new Error("SOME_ERROR_TEXT")` with {"serialization":"deep","maxDepth":0}
 {
     type : error
 }
-Testing 'new Error('SOME_ERROR_TEXT')' with {"serialization":"deep","maxDepth":1}
+Testing `new Error("SOME_ERROR_TEXT")` with {"serialization":"deep","maxDepth":1}
 {
     type : error
 }
-Testing 'new Error('SOME_ERROR_TEXT')' with {"serialization":"deep","maxDepth":99}
+Testing `new Error("SOME_ERROR_TEXT")` with {"serialization":"deep","maxDepth":99}
 {
     type : error
 }
-Testing 'Promise.resolve()' with {"serialization":"deep"}
+Testing `Promise.resolve()` with {"serialization":"deep"}
 {
     type : promise
 }
-Testing 'Promise.resolve()' with {"serialization":"deep","maxDepth":0}
+Testing `Promise.resolve()` with {"serialization":"deep","maxDepth":0}
 {
     type : promise
 }
-Testing 'Promise.resolve()' with {"serialization":"deep","maxDepth":1}
+Testing `Promise.resolve()` with {"serialization":"deep","maxDepth":1}
 {
     type : promise
 }
-Testing 'Promise.resolve()' with {"serialization":"deep","maxDepth":99}
+Testing `Promise.resolve()` with {"serialization":"deep","maxDepth":99}
 {
     type : promise
 }
-Testing 'new Int32Array()' with {"serialization":"deep"}
+Testing `new Int32Array()` with {"serialization":"deep"}
 {
     type : typedarray
 }
-Testing 'new Int32Array()' with {"serialization":"deep","maxDepth":0}
+Testing `new Int32Array()` with {"serialization":"deep","maxDepth":0}
 {
     type : typedarray
 }
-Testing 'new Int32Array()' with {"serialization":"deep","maxDepth":1}
+Testing `new Int32Array()` with {"serialization":"deep","maxDepth":1}
 {
     type : typedarray
 }
-Testing 'new Int32Array()' with {"serialization":"deep","maxDepth":99}
+Testing `new Int32Array()` with {"serialization":"deep","maxDepth":99}
 {
     type : typedarray
 }
-Testing 'new ArrayBuffer()' with {"serialization":"deep"}
+Testing `new ArrayBuffer()` with {"serialization":"deep"}
 {
     type : arraybuffer
 }
-Testing 'new ArrayBuffer()' with {"serialization":"deep","maxDepth":0}
+Testing `new ArrayBuffer()` with {"serialization":"deep","maxDepth":0}
 {
     type : arraybuffer
 }
-Testing 'new ArrayBuffer()' with {"serialization":"deep","maxDepth":1}
+Testing `new ArrayBuffer()` with {"serialization":"deep","maxDepth":1}
 {
     type : arraybuffer
 }
-Testing 'new ArrayBuffer()' with {"serialization":"deep","maxDepth":99}
+Testing `new ArrayBuffer()` with {"serialization":"deep","maxDepth":99}
 {
     type : arraybuffer
 }
-Testing 'document.body' with {"serialization":"deep"}
+Testing `document.body` with {"serialization":"deep"}
 {
     type : node
     value : {
@@ -917,7 +917,7 @@ Testing 'document.body' with {"serialization":"deep"}
         shadowRoot : null
     }
 }
-Testing 'document.body' with {"serialization":"deep","maxDepth":0}
+Testing `document.body` with {"serialization":"deep","maxDepth":0}
 {
     type : node
     value : {
@@ -931,7 +931,7 @@ Testing 'document.body' with {"serialization":"deep","maxDepth":0}
         shadowRoot : null
     }
 }
-Testing 'document.body' with {"serialization":"deep","maxDepth":1}
+Testing `document.body` with {"serialization":"deep","maxDepth":1}
 {
     type : node
     value : {
@@ -945,7 +945,7 @@ Testing 'document.body' with {"serialization":"deep","maxDepth":1}
         shadowRoot : null
     }
 }
-Testing 'document.body' with {"serialization":"deep","maxDepth":99}
+Testing `document.body` with {"serialization":"deep","maxDepth":99}
 {
     type : node
     value : {
@@ -959,23 +959,23 @@ Testing 'document.body' with {"serialization":"deep","maxDepth":99}
         shadowRoot : null
     }
 }
-Testing 'window' with {"serialization":"deep"}
+Testing `window` with {"serialization":"deep"}
 {
     type : window
 }
-Testing 'window' with {"serialization":"deep","maxDepth":0}
+Testing `window` with {"serialization":"deep","maxDepth":0}
 {
     type : window
 }
-Testing 'window' with {"serialization":"deep","maxDepth":1}
+Testing `window` with {"serialization":"deep","maxDepth":1}
 {
     type : window
 }
-Testing 'window' with {"serialization":"deep","maxDepth":99}
+Testing `window` with {"serialization":"deep","maxDepth":99}
 {
     type : window
 }
-Testing 'document.querySelector('body > div')' with {"serialization":"deep"}
+Testing `document.querySelector("body > div")` with {"serialization":"deep"}
 {
     type : node
     value : {
@@ -990,7 +990,7 @@ Testing 'document.querySelector('body > div')' with {"serialization":"deep"}
         shadowRoot : null
     }
 }
-Testing 'document.querySelector('body > div')' with {"serialization":"deep","maxDepth":0}
+Testing `document.querySelector("body > div")` with {"serialization":"deep","maxDepth":0}
 {
     type : node
     value : {
@@ -1005,7 +1005,7 @@ Testing 'document.querySelector('body > div')' with {"serialization":"deep","max
         shadowRoot : null
     }
 }
-Testing 'document.querySelector('body > div')' with {"serialization":"deep","maxDepth":1}
+Testing `document.querySelector("body > div")` with {"serialization":"deep","maxDepth":1}
 {
     type : node
     value : {
@@ -1020,7 +1020,7 @@ Testing 'document.querySelector('body > div')' with {"serialization":"deep","max
         shadowRoot : null
     }
 }
-Testing 'document.querySelector('body > div')' with {"serialization":"deep","maxDepth":99}
+Testing `document.querySelector("body > div")` with {"serialization":"deep","maxDepth":99}
 {
     type : node
     value : {
@@ -1035,7 +1035,7 @@ Testing 'document.querySelector('body > div')' with {"serialization":"deep","max
         shadowRoot : null
     }
 }
-Testing 'document.querySelector('body > div').attributes[0]' with {"serialization":"deep"}
+Testing `document.querySelector("body > div").attributes[0]` with {"serialization":"deep"}
 {
     type : node
     value : {
@@ -1047,7 +1047,7 @@ Testing 'document.querySelector('body > div').attributes[0]' with {"serializatio
         nodeValue : some_attr_value
     }
 }
-Testing 'document.querySelector('body > div').attributes[0]' with {"serialization":"deep","maxDepth":0}
+Testing `document.querySelector("body > div").attributes[0]` with {"serialization":"deep","maxDepth":0}
 {
     type : node
     value : {
@@ -1059,7 +1059,7 @@ Testing 'document.querySelector('body > div').attributes[0]' with {"serializatio
         nodeValue : some_attr_value
     }
 }
-Testing 'document.querySelector('body > div').attributes[0]' with {"serialization":"deep","maxDepth":1}
+Testing `document.querySelector("body > div").attributes[0]` with {"serialization":"deep","maxDepth":1}
 {
     type : node
     value : {
@@ -1071,7 +1071,7 @@ Testing 'document.querySelector('body > div').attributes[0]' with {"serializatio
         nodeValue : some_attr_value
     }
 }
-Testing 'document.querySelector('body > div').attributes[0]' with {"serialization":"deep","maxDepth":99}
+Testing `document.querySelector("body > div").attributes[0]` with {"serialization":"deep","maxDepth":99}
 {
     type : node
     value : {
@@ -1083,19 +1083,19 @@ Testing 'document.querySelector('body > div').attributes[0]' with {"serializatio
         nodeValue : some_attr_value
     }
 }
-Testing 'new URL('http://example.com')' with {"serialization":"deep"}
+Testing `new URL("http://example.com/")` with {"serialization":"deep"}
 {
     type : platformobject
 }
-Testing 'new URL('http://example.com')' with {"serialization":"deep","maxDepth":0}
+Testing `new URL("http://example.com/")` with {"serialization":"deep","maxDepth":0}
 {
     type : platformobject
 }
-Testing 'new URL('http://example.com')' with {"serialization":"deep","maxDepth":1}
+Testing `new URL("http://example.com/")` with {"serialization":"deep","maxDepth":1}
 {
     type : platformobject
 }
-Testing 'new URL('http://example.com')' with {"serialization":"deep","maxDepth":99}
+Testing `new URL("http://example.com/")` with {"serialization":"deep","maxDepth":99}
 {
     type : platformobject
 }
