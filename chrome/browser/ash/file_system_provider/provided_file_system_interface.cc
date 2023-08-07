@@ -7,6 +7,14 @@
 namespace ash {
 namespace file_system_provider {
 
+CloudIdentifier::CloudIdentifier(const std::string& provider_name,
+                                 const std::string& id)
+    : provider_name(provider_name), id(id) {}
+
+bool CloudIdentifier::operator==(const CloudIdentifier& other) const {
+  return provider_name == other.provider_name && id == other.id;
+}
+
 EntryMetadata::EntryMetadata() {}
 
 EntryMetadata::~EntryMetadata() {

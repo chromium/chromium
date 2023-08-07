@@ -32,6 +32,11 @@ bool ValidateIDLEntryMetadata(
 // Checks whether the passed name is valid or not.
 bool ValidateName(const std::string& name, bool root_entry);
 
+// Checks whether the passed identifier is valid or not (non-empty fields).
+bool ValidateCloudIdentifier(
+    const extensions::api::file_system_provider::CloudIdentifier&
+        cloud_identifier);
+
 // Bridge between fileapi get metadata operation and providing extension's get
 // metadata request. Created per request.
 class GetMetadata : public Operation {

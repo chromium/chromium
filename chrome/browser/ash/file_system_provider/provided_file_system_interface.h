@@ -37,6 +37,15 @@ namespace file_system_provider {
 class ProvidedFileSystemInfo;
 class OperationRequestManager;
 
+// Represents a file or directory in cloud storage.
+struct CloudIdentifier {
+  std::string provider_name;
+  std::string id;
+
+  CloudIdentifier(const std::string& provider_name, const std::string& id);
+  bool operator==(const CloudIdentifier&) const;
+};
+
 // Represents metadata for either a file or a directory.
 struct EntryMetadata {
   EntryMetadata();
@@ -54,6 +63,7 @@ struct EntryMetadata {
   std::unique_ptr<base::Time> modification_time;
   std::unique_ptr<std::string> mime_type;
   std::unique_ptr<std::string> thumbnail;
+  std::unique_ptr<CloudIdentifier> cloud_identifier;
 };
 
 // Represents actions for either a file or a directory.
@@ -108,7 +118,8 @@ class ProvidedFileSystemInterface {
     METADATA_FIELD_SIZE = 1 << 2,
     METADATA_FIELD_MODIFICATION_TIME = 1 << 3,
     METADATA_FIELD_MIME_TYPE = 1 << 4,
-    METADATA_FIELD_THUMBNAIL = 1 << 5
+    METADATA_FIELD_THUMBNAIL = 1 << 5,
+    METADATA_FIELD_CLOUD_IDENTIFIER = 1 << 6
   };
 
   // Callback for OpenFile(). In case of an error, file_handle is equal to 0
