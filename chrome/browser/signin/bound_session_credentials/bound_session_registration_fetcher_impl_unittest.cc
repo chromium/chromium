@@ -25,7 +25,8 @@
 namespace {
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
-constexpr char kResponseJsonBody[] = R"(
+const char kXSSIPrefix[] = ")]}'";
+const char kJSONRegistrationParams[] = R"(
     {
         "session_identifier": "007",
         "credentials": [
@@ -51,6 +52,24 @@ bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
   params.set_site("https://google.com");
   params.set_session_id("007");
   return params;
+}
+
+void ConfigureURLLoaderFactoryForRegistrationResponse(
+    network::TestURLLoaderFactory* url_loader_factory,
+    const std::string response_body,
+    bool* out_made_download) {
+  url_loader_factory->SetInterceptor(
+      base::BindLambdaForTesting([=](const network::ResourceRequest& request) {
+        *out_made_download = true;
+        ASSERT_TRUE(request.url.is_valid());
+        auto response_head = network::mojom::URLResponseHead::New();
+        response_head->headers =
+            base::MakeRefCounted<net::HttpResponseHeaders>("");
+        url_loader_factory->AddResponse(
+            GURL(request.url), std::move(response_head),
+            std::move(response_body),
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
 }
 
 MATCHER_P(ParamMatching, expected, "") {
@@ -84,18 +103,10 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoService) {
   network::TestURLLoaderFactory url_loader_factory;
   bool made_download = false;
 
-  url_loader_factory.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        made_download = true;
-        ASSERT_FALSE(request.url.is_valid());
-        auto response_head = network::mojom::URLResponseHead::New();
-        response_head->headers =
-            base::MakeRefCounted<net::HttpResponseHeaders>("");
-        url_loader_factory.AddResponse(
-            GURL(request.url), std::move(response_head),
-            std::string(kResponseJsonBody),
-            network::URLLoaderCompletionStatus(net::OK));
-      }));
+  ConfigureURLLoaderFactoryForRegistrationResponse(
+      &url_loader_factory,
+      std::string(kXSSIPrefix) + std::string(kJSONRegistrationParams),
+      &made_download);
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
@@ -120,18 +131,10 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   network::TestURLLoaderFactory url_loader_factory;
   bool made_download = false;
 
-  url_loader_factory.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        made_download = true;
-        ASSERT_TRUE(request.url.is_valid());
-        auto response_head = network::mojom::URLResponseHead::New();
-        response_head->headers =
-            base::MakeRefCounted<net::HttpResponseHeaders>("");
-        url_loader_factory.AddResponse(
-            GURL(request.url), std::move(response_head),
-            std::string(kResponseJsonBody),
-            network::URLLoaderCompletionStatus(net::OK));
-      }));
+  ConfigureURLLoaderFactoryForRegistrationResponse(
+      &url_loader_factory,
+      std::string(kXSSIPrefix) + std::string(kJSONRegistrationParams),
+      &made_download);
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
@@ -164,4 +167,66 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
       wrapped_key_to_key_id.GetCallback());
   EXPECT_TRUE(wrapped_key_to_key_id.IsReady());
   EXPECT_TRUE(wrapped_key_to_key_id.Get().has_value());
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  network::TestURLLoaderFactory url_loader_factory;
+  bool made_download = false;
+
+  // Incorrect format of response body, XSSI prefix missing. Expecting
+  // early termination and callback to be called with absl::nullopt.
+  ConfigureURLLoaderFactoryForRegistrationResponse(
+      &url_loader_factory, std::string(kJSONRegistrationParams),
+      &made_download);
+
+  BoundSessionRegistrationFetcherParam params =
+      BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
+          GURL("https://www.google.com/startsession"), CreateAlgArray());
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
+      std::make_unique<BoundSessionRegistrationFetcherImpl>(
+          std::move(params), url_loader_factory.GetSafeWeakWrapper(),
+          &unexportable_key_service());
+  base::test::TestFuture<
+      absl::optional<bound_session_credentials::RegistrationParams>>
+      future;
+
+  ASSERT_FALSE(made_download);
+  EXPECT_FALSE(future.IsReady());
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ASSERT_TRUE(made_download);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONRegistrationParams) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  network::TestURLLoaderFactory url_loader_factory;
+  bool made_download = false;
+
+  // Response body contains XSSI prefix but JSON of registration params
+  // missing. Expecting early termination and callback to be called with
+  // absl::nullopt.
+  ConfigureURLLoaderFactoryForRegistrationResponse(
+      &url_loader_factory, std::string(kXSSIPrefix), &made_download);
+
+  BoundSessionRegistrationFetcherParam params =
+      BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
+          GURL("https://www.google.com/startsession"), CreateAlgArray());
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
+      std::make_unique<BoundSessionRegistrationFetcherImpl>(
+          std::move(params), url_loader_factory.GetSafeWeakWrapper(),
+          &unexportable_key_service());
+  base::test::TestFuture<
+      absl::optional<bound_session_credentials::RegistrationParams>>
+      future;
+
+  ASSERT_FALSE(made_download);
+  EXPECT_FALSE(future.IsReady());
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ASSERT_TRUE(made_download);
 }

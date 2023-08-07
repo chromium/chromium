@@ -25,6 +25,7 @@
 
 namespace {
 constexpr char kSessionIdentifier[] = "session_identifier";
+const char kXSSIPrefix[] = ")]}'";
 
 bound_session_credentials::RegistrationParams CreateRegistrationParams(
     const std::string& url,
@@ -95,20 +96,33 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
 
   // Parse JSON response
   if (net_success && network::IsSuccessfulStatus(*http_response_code)) {
+    // JSON responses should start with XSSI-protection prefix which will be
+    // removed prior to parsing.
+    if (!base::StartsWith(*response_body, kXSSIPrefix,
+                          base::CompareCase::SENSITIVE)) {
+      // Incorrect format of response, XSSI prefix missing.
+      std::move(callback_).Run(absl::nullopt);
+      return;
+    }
+    *response_body = response_body->substr(strlen(kXSSIPrefix));
     absl::optional<base::Value::Dict> maybe_root =
         base::JSONReader::ReadDict(*response_body);
 
-    // TODO(b/273920956): Require proper registration params once the server
-    // returns correctly formatted registration response.
     std::string* session_id = nullptr;
     if (maybe_root) {
-      // TODO(kristianm): Also parse credentials field
+      // TODO(b/293985274): Also parse credentials field
       session_id = maybe_root->FindString(kSessionIdentifier);
     }
+    if (!session_id) {
+      // Incorrect registration params.
+      std::move(callback_).Run(absl::nullopt);
+      return;
+    }
+
     return_value = CreateRegistrationParams(
         net::SchemefulSite(registration_params_.RegistrationEndpoint())
             .Serialize(),
-        session_id ? *session_id : "", wrapped_key_str_);
+        *session_id, wrapped_key_str_);
   }
 
   // Finish the request, object is invalid after this

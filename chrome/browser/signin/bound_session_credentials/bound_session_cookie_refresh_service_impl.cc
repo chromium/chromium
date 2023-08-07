@@ -151,7 +151,8 @@ bool BoundSessionCookieRefreshServiceImpl::IsValidRegistrationParams(
     const bound_session_credentials::RegistrationParams& registration_params) {
   // TODO(crbug.com/1441168): Check for validity of other fields once they are
   // available.
-  return registration_params.has_wrapped_key();
+  return registration_params.has_session_id() &&
+         registration_params.has_wrapped_key();
 }
 
 bool BoundSessionCookieRefreshServiceImpl::PersistRegistrationParams(
