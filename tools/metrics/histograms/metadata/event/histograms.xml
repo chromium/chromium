@@ -342,25 +342,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.EndToEnd.Mouse" units="microseconds"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed in 2022-09. Replaced by EventLatency.Mouse*.TotalLatency metrics.
-  </obsolete>
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time between the OS receiving a mouse event and the resulting GPU frame
-    swap. If no swap was induced by the event, no recording is made.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
     expires_after="2023-12-24">
   <owner>nzolghadr@chromium.org</owner>

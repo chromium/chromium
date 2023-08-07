@@ -10,7 +10,6 @@ digraph LatencyInfo {
     end_to_end_metrics
       [label="\
 Event.Latency.EndToEnd.KeyPress\n\
-Event.Latency.EndToEnd.Mouse\n\
 Event.Latency.EndToEnd.TouchpadPinch2\n"];
     scroll_to_schedule_metrics
       [label="\
