@@ -45880,6 +45880,7 @@ Called by update_permissions_policy_enum.py.-->
   </summary>
   <int value="0" label="SetAsDefaultBrowser"/>
   <int value="1" label="SkipDefaultBrowser"/>
+  <int value="2" label="QuitOnDefaultBrowser"/>
 </enum>
 
 <enum name="FirstRunEntryPoint">

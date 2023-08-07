@@ -126,7 +126,12 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
       : ProfileManagementStepController(host),
         step_completed_callback_(std::move(step_completed_callback)) {}
 
-  ~DefaultBrowserStepController() override = default;
+  ~DefaultBrowserStepController() override {
+    if (step_completed_callback_) {
+      base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
+                                    DefaultBrowserChoice::kQuit);
+    }
+  }
 
   void Show(base::OnceCallback<void(bool success)> step_shown_callback,
             bool reset_state) override {
