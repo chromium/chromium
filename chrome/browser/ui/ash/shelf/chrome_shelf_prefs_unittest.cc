@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -103,16 +104,7 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
   SyncItemMap item_map_;
 };
 
-// A fake that stubs in functionality for testing.
-class ChromeShelfPrefsFake : public ChromeShelfPrefs {
- public:
-  explicit ChromeShelfPrefsFake(Profile* profile) : ChromeShelfPrefs(profile) {}
-  ~ChromeShelfPrefsFake() override {}
-  ChromeShelfPrefsFake(const ChromeShelfPrefsFake&) = delete;
-  ChromeShelfPrefsFake& operator=(const ChromeShelfPrefsFake&) = delete;
-
-  bool ShouldAddDefaultApps(PrefService* pref_service) override { return true; }
-};
+}  // namespace
 
 // Unit tests for ChromeShelfPrefs
 class ChromeShelfPrefsTest : public testing::Test {
@@ -141,7 +133,8 @@ class ChromeShelfPrefsTest : public testing::Test {
                       Profile::FromBrowserContext(browser_context));
                 }))
             .Build();
-    shelf_prefs_ = std::make_unique<ChromeShelfPrefsFake>(profile_.get());
+    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest();
+    shelf_prefs_ = std::make_unique<ChromeShelfPrefs>(profile_.get());
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
     helper_ = std::make_unique<ShelfControllerHelperFake>(profile_.get());
@@ -168,17 +161,23 @@ class ChromeShelfPrefsTest : public testing::Test {
         app_list::AppListSyncableServiceFactory::GetForProfile(profile_.get()));
   }
 
+  std::vector<std::string> GetPinnedAppIds() const {
+    return base::test::ToVector(
+        shelf_prefs_->GetPinnedAppsFromSync(helper_.get()),
+        &ash::ShelfID::app_id);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  std::unique_ptr<ChromeShelfPrefsFake> shelf_prefs_;
+  std::unique_ptr<ChromeShelfPrefs> shelf_prefs_;
   std::unique_ptr<ShelfControllerHelperFake> helper_;
 
   std::unique_ptr<Profile> profile_;
 };
 
 TEST_F(ChromeShelfPrefsTest, AddChromePinNoExistingOrdinal) {
-  shelf_prefs_->EnsureChromePinned(&syncable_service());
+  shelf_prefs_->EnsureChromePinned();
 
   // Check that chrome now has a valid ordinal.
   EXPECT_TRUE(syncable_service()
@@ -193,7 +192,7 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinExistingOrdinal) {
   syncable_service().item_map_[app_constants::kChromeAppId] =
       MakeSyncItem(app_constants::kChromeAppId, initial_ordinal);
 
-  shelf_prefs_->EnsureChromePinned(&syncable_service());
+  shelf_prefs_->EnsureChromePinned();
 
   // Check that the chrome ordinal did not change.
   ASSERT_TRUE(syncable_service()
@@ -206,8 +205,8 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinExistingOrdinal) {
 }
 
 TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
-  shelf_prefs_->EnsureChromePinned(&syncable_service());
-  shelf_prefs_->AddDefaultApps(profile_->GetPrefs(), &syncable_service());
+  shelf_prefs_->EnsureChromePinned();
+  shelf_prefs_->AddDefaultApps();
 
   ASSERT_TRUE(syncable_service()
                   .item_map_[app_constants::kChromeAppId]
@@ -223,12 +222,7 @@ TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
 TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   // Migration is necessary to begin with.
   ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
-  std::vector<ash::ShelfID> pinned_apps =
-      shelf_prefs_->GetPinnedAppsFromSync(helper_.get());
-  std::vector<std::string> pinned_apps_strs;
-  pinned_apps_strs.reserve(pinned_apps.size());
-  for (auto& shelf_id : pinned_apps)
-    pinned_apps_strs.push_back(shelf_id.app_id);
+  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
 
   // Pinned apps should have the chrome app as the first item.
   ASSERT_GE(pinned_apps_strs.size(), 1u);
@@ -254,13 +248,7 @@ TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
 
   // Migration is necessary to begin with.
   ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
-  std::vector<ash::ShelfID> pinned_apps =
-      shelf_prefs_->GetPinnedAppsFromSync(helper_.get());
-  std::vector<std::string> pinned_apps_strs;
-  pinned_apps_strs.reserve(pinned_apps.size());
-  for (auto& shelf_id : pinned_apps) {
-    pinned_apps_strs.push_back(shelf_id.app_id);
-  }
+  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
 
   // Pinned apps should have the chrome app as the first item.
   ASSERT_GE(pinned_apps_strs.size(), 1u);
@@ -290,13 +278,7 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   AddRegularUser("test@test.com");
 
   // Perform migration
-  std::vector<ash::ShelfID> pinned_apps =
-      shelf_prefs_->GetPinnedAppsFromSync(helper_.get());
-  std::vector<std::string> pinned_apps_strs;
-  pinned_apps_strs.reserve(pinned_apps.size());
-  for (auto& shelf_id : pinned_apps) {
-    pinned_apps_strs.push_back(shelf_id.app_id);
-  }
+  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
 
   // Confirm that the ash-chrome position gets replaced by lacros-chrome.
   EXPECT_TRUE(base::Contains(pinned_apps_strs, app_constants::kLacrosAppId));
@@ -322,17 +304,9 @@ TEST_F(ChromeShelfPrefsTest, EnableSideBySideLacrosDisable) {
   AddRegularUser("test@test.com");
 
   // Perform migration
-  std::vector<ash::ShelfID> pinned_apps =
-      shelf_prefs_->GetPinnedAppsFromSync(helper_.get());
-  std::vector<std::string> pinned_apps_strs;
-  pinned_apps_strs.reserve(pinned_apps.size());
-  for (auto& shelf_id : pinned_apps) {
-    pinned_apps_strs.push_back(shelf_id.app_id);
-  }
+  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
 
   // Confirm that the ash-chrome is present but lacros-chrome is not
   EXPECT_FALSE(base::Contains(pinned_apps_strs, app_constants::kLacrosAppId));
   EXPECT_TRUE(base::Contains(pinned_apps_strs, app_constants::kChromeAppId));
 }
-
-}  // namespace

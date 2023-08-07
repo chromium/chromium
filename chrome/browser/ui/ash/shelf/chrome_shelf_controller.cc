@@ -1651,7 +1651,7 @@ void ChromeShelfController::ShelfItemRemoved(int index,
                                              const ash::ShelfItem& old_item) {
   // Remove the pin position from preferences as needed.
   if (ShouldSyncItemWithReentrancy(old_item))
-    shelf_prefs_->RemovePinPosition(profile(), old_item.id);
+    shelf_prefs_->RemovePinPosition(old_item.id);
   if (auto* app_icon_loader = GetAppIconLoaderForApp(old_item.id.app_id))
     app_icon_loader->ClearImage(old_item.id.app_id);
 }
@@ -1670,7 +1670,7 @@ void ChromeShelfController::ShelfItemChanged(int index,
   if (!ItemTypeIsPinned(old_item) && ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
   else if (ShouldSyncItemWithReentrancy(old_item) && !ItemTypeIsPinned(item))
-    shelf_prefs_->RemovePinPosition(profile(), old_item.id);
+    shelf_prefs_->RemovePinPosition(old_item.id);
 
   ReportUpdateShelfIconList(model_);
 }
