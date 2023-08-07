@@ -7,13 +7,14 @@ import './mojo_api.js';
 import './multidevice_setup_shared.css.js';
 import './ui_page.js';
 import '//resources/ash/common/cr.m.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {ConnectivityStatus} from 'chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js';
 import {HostDevice} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
@@ -184,8 +185,11 @@ Polymer({
    * @param {boolean} enabled Whether the animation should play or not.
    */
   setPlayAnimation(enabled) {
-    /** @type {!CrLottieElement} */ (this.$.multideviceSetupAnimation)
-        .setPlay(enabled);
+    if (enabled) {
+      this.$.multideviceSetupAnimation.play();
+    } else {
+      this.$.multideviceSetupAnimation.pause();
+    }
   },
 
   /**
