@@ -14,6 +14,7 @@ class Transform;
 
 namespace views {
 class View;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -130,10 +131,11 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
     int shift_x);
 
 // Performs the slide out animation for `bar_view` when exiting overview. Please
-// note, unlike other animations where we animate directly on the objects, here
-// we use layer copies and destroy the object immediately, thus we do not need
-// the abort handle here.
-void PerformDeskBarSlideAnimation(DeskBarViewBase* bar_view);
+// note, unlike other animations where we animate directly on the objects using
+// `AnimationBuilder` we also pass ownership using `CleanupAnimationObserver`,
+// which does not support abort handle.
+void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
+                                  bool is_zero_state);
 
 }  // namespace ash
 

@@ -13,7 +13,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/overview/delayed_animation_observer_impl.h"
+#include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -29,6 +29,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -699,42 +700,37 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
   }
 }
 
-void PerformDeskBarSlideAnimation(DeskBarViewBase* bar_view) {
+void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
+                                  bool is_zero_state) {
   TRACE_EVENT0("ui", "PerformDeskBarSlideAnimation");
 
+  // The desks widget should no longer process events at this point.
+  desks_widget->SetVisibilityChangedAnimationsEnabled(false);
+  desks_widget->GetNativeWindow()->SetEventTargetingPolicy(
+      aura::EventTargetingPolicy::kNone);
+  desks_widget->widget_delegate()->SetCanActivate(false);
+
   gfx::Transform transform;
-  transform.Translate(0, -bar_view->height());
+  transform.Translate(0, -desks_widget->GetWindowBoundsInScreen().height());
 
-  // Create layer copies, get rid of the original desk bar widget, and add the
-  // layer copies to the parent layer.
-  ui::Layer* parent_layer = bar_view->GetWidget()->GetLayer()->parent();
-  std::unique_ptr<ui::LayerTreeOwner> layer_tree = wm::RecreateLayers(bar_view);
-  ui::Layer* layer_tree_root = layer_tree->root();
-  parent_layer->Add(layer_tree_root);
+  // Complete any on going animations before starting this one.
+  ui::Layer* layer = desks_widget->GetLayer();
+  layer->CompleteAllAnimations();
 
-  // Add slide out animation as part of the overview exit animation.
-  ui::ScopedLayerAnimationSettings settings{parent_layer->GetAnimator()};
-  auto exit_observer = std::make_unique<ExitAnimationObserver>();
+  // `CleanupAnimationObserver` ownership is passed to the overview controller
+  // which has a longer lifetime so animations can continue even after the
+  // overview session is destroyed. The observer owns the widget and will be
+  // deleted with overview controller, or when the animation is completed.
+  ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
+  auto exit_observer =
+      std::make_unique<CleanupAnimationObserver>(std::move(desks_widget));
   settings.AddObserver(exit_observer.get());
+  settings.SetTransitionDuration(is_zero_state ? kZeroDeskBarSlideDuration
+                                               : kExpandedDeskBarSlideDuration);
+  settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
   Shell::Get()->overview_controller()->AddExitAnimationObserver(
       std::move(exit_observer));
-
-  views::AnimationBuilder animation_builder;
-  base::OnceClosure ondone = base::BindOnce(
-      [](std::unique_ptr<ui::LayerTreeOwner> layer_tree) {
-        layer_tree.reset();
-      },
-      std::move(layer_tree));
-  auto split = base::SplitOnceCallback(std::move(ondone));
-  animation_builder
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(std::move(split.first))
-      .OnAborted(std::move(split.second))
-      .Once()
-      .SetDuration(bar_view->IsZeroState() ? kZeroDeskBarSlideDuration
-                                           : kExpandedDeskBarSlideDuration)
-      .SetTransform(layer_tree_root, transform, gfx::Tween::ACCEL_20_DECEL_100);
+  layer->SetTransform(transform);
 }
 
 }  // namespace ash

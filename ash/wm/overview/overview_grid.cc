@@ -516,7 +516,8 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   if (desks_widget_) {
     if (chromeos::features::IsJellyrollEnabled() &&
         exit_type != OverviewEnterExitType::kImmediateExit) {
-      PerformDeskBarSlideAnimation(desks_bar_view_);
+      PerformDeskBarSlideAnimation(std::move(desks_widget_),
+                                   desks_bar_view_->IsZeroState());
     }
     desks_widget_.reset();
     desks_bar_view_ = nullptr;
