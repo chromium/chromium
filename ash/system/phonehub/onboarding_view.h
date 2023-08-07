@@ -31,6 +31,7 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
   class Delegate {
    public:
     virtual void HideStatusHeaderView() = 0;
+    virtual bool IsPhoneHubIconClickedWhenNudgeVisible() = 0;
   };
 
   // The different onboarding flows that are supported.
@@ -46,6 +47,9 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
   // Update |content_view_| to display the dismiss prompt contents.
   // Invoked when user clicks the "Dismiss" button on the main onboarding view.
   void ShowDismissPrompt();
+
+  // Determine if OnboardingView is created when nudge is visible.
+  bool IsOnboardingViewStartedFromNudge();
 
   // PhoneHubContentView:
   void OnBubbleClose() override;

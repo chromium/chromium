@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -29,8 +28,6 @@
 
 namespace ash {
 namespace {
-const std::string kPhoneHubNudgeId = "PhoneHubNudge";
-
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
 }

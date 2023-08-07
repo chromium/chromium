@@ -128,6 +128,17 @@ enum class PermissionsOnboardingScreenEvent {
   kMaxValue = kNextOrTryAgain
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class MultiDeviceSetupDialogEntrypoint {
+  kSettingsPage = 0,
+  kSetupNotification = 1,
+  kPhoneHubBubble = 2,
+  kPhoneHubBubbleAferNudge = 3,
+  kMaxValue = kPhoneHubBubbleAferNudge
+};
+
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point);
 
@@ -168,6 +179,10 @@ void LogPermissionOnboardingSetupMode(PermissionsOnboardingSetUpMode mode);
 
 // Log setup result when multidevice permissions set up dialog is finished.
 void LogPermissionOnboardingSetupResult(PermissionsOnboardingSetUpMode mode);
+
+// Logs a given |entry_point| for MultiDevice setup dialog.
+void LogMultiDeviceSetupDialogEntryPoint(
+    MultiDeviceSetupDialogEntrypoint entry_point);
 
 }  // namespace util
 }  // namespace phonehub

@@ -12,6 +12,7 @@
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -367,6 +368,10 @@ void PhoneHubTray::HideStatusHeaderView() {
   bubble_->bubble_view()->UpdateBubble();
 }
 
+bool PhoneHubTray::IsPhoneHubIconClickedWhenNudgeVisible() {
+  return is_icon_clicked_when_nudge_visible_;
+}
+
 void PhoneHubTray::OnAppStreamUpdate(
     const phonehub::proto::AppStreamUpdate app_stream_update) {
   auto* app = &app_stream_update.foreground_app();
@@ -438,6 +443,9 @@ void PhoneHubTray::CloseBubble() {
   }
 
   bubble_.reset();
+  // Reset the value when bubble is closed so that next time when setup dialog
+  // is opened from Phone Hub bubble it will not be logged to wrong bucket.
+  is_icon_clicked_when_nudge_visible_ = false;
   SetIsActive(false);
   shelf()->UpdateAutoHideState();
 }
@@ -478,15 +486,20 @@ void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
 }
 
 void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
-  if (features::IsPhoneHubOnboardingNotifierRevampEnabled()) {
-    onboarding_nudge_controller_->HideNudge();
-    onboarding_nudge_controller_->MaybeRecordNudgeAction();
-  }
   // Simply toggle between visible/invisibvle
   if (bubble_ && bubble_->bubble_view()->GetVisible()) {
     CloseBubble();
     return;
   }
+
+  if (features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
+      AnchoredNudgeManager::Get()->IsNudgeShown(
+          OnboardingNudgeController::kPhoneHubNudgeId)) {
+    is_icon_clicked_when_nudge_visible_ = true;
+    onboarding_nudge_controller_->HideNudge();
+    onboarding_nudge_controller_->MaybeRecordNudgeAction();
+  }
+
   ShowBubble();
 
   if (message_center::MessageCenter::Get()->FindPopupNotificationById(

@@ -395,6 +395,8 @@ void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
     const base::Value::List& args) {
   DCHECK(args.empty());
   multidevice_setup::MultiDeviceSetupDialog::Show();
+  ash::phonehub::util::LogMultiDeviceSetupDialogEntryPoint(
+      ash::phonehub::util::MultiDeviceSetupDialogEntrypoint::kSettingsPage);
 }
 
 void MultideviceHandler::HandleGetPageContent(const base::Value::List& args) {

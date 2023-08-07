@@ -40,7 +40,7 @@ class OnboardingUiTrackerImpl
   // OnboardingUiTracker:
   bool ShouldShowOnboardingUi() const override;
   void DismissSetupUi() override;
-  void HandleGetStarted() override;
+  void HandleGetStarted(bool is_icon_clicked_when_nudge_visible) override;
 
  private:
   // FeatureStatusProvider::Observer:

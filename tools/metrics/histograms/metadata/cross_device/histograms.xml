@@ -2062,6 +2062,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MultiDeviceSetup.SetupDialogEntryPoint"
+    enum="MultiDeviceSetupDialogEntrypoint" expires_after="2024-07-31">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Tracks the UI surface with which users opened MultiDevice setup dialog.
+    Emitted when user clicks (settings page, notifications or Phone Hub bubble)
+    to enter the setup dialog.
+  </summary>
+</histogram>
+
 <histogram name="MultiDeviceSetup_NotificationClicked"
     enum="MultiDeviceSetupNotification" expires_after="2023-12-31">
   <owner>hansberry@google.com</owner>

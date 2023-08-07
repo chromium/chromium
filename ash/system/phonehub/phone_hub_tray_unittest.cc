@@ -834,6 +834,18 @@ TEST_F(PhoneHubTrayTest, ShowAndHideNudge) {
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 
   ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view()->GetID());
+  // It should display the onboarding main view.
+  EXPECT_TRUE(onboarding_main_view());
+  EXPECT_TRUE(onboarding_main_view()->GetVisible());
+  EXPECT_EQ(0u, GetOnboardingUiTracker()->handle_get_started_call_count());
+
+  // Simulate a click on the "Get started" button.
+  LeftClickOn(onboarding_get_started_button());
+  // It should invoke the |HandleGetStarted| call.
+  EXPECT_EQ(1u, GetOnboardingUiTracker()->handle_get_started_call_count());
+  EXPECT_TRUE(GetOnboardingUiTracker()->is_icon_clicked_when_nudge_visible());
   EXPECT_FALSE(
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 }
