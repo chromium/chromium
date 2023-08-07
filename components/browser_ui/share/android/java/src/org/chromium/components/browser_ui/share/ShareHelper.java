@@ -33,6 +33,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnownedUserData;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
@@ -253,6 +254,13 @@ public class ShareHelper {
             }
         }
 
+        @Override
+        public void onDetachedFromHost(UnownedUserDataHost host) {
+            // Remove the weak reference to the context and window when it is removed from the
+            // attaching window.
+            cancel();
+        }
+
         private boolean isUntrustedIntent(Intent intent) {
             return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
                     && !IntentUtils.isTrustedIntentFromSelf(intent);
@@ -274,6 +282,14 @@ public class ShareHelper {
 
         private void cancel() {
             if (mCallback != null) {
+                // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
+                // close the top ChooserActivity when share isn't completed.
+                Intent cleanerIntent = new Intent();
+                cleanerIntent.setClass(mAttachedContext.get(), mAttachedContext.get().getClass());
+                cleanerIntent.setFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                mAttachedContext.get().startActivity(cleanerIntent);
+
                 mCallback.onCancel();
                 mCallback = null;
             }
