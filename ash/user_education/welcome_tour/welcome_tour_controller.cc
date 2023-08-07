@@ -522,10 +522,17 @@ void WelcomeTourController::OnWelcomeTourEnded(
 
 void WelcomeTourController::SetCurrentStep(
     absl::optional<welcome_tour_metrics::Step> step) {
-  if (step.has_value()) {
+  if (current_step_) {
+    welcome_tour_metrics::RecordStepDuration(current_step_.value(),
+                                             current_step_timer_.Elapsed());
+  }
+
+  if (step) {
     welcome_tour_metrics::RecordStepShown(step.value());
   }
+
   current_step_ = step;
+  current_step_timer_ = base::ElapsedTimer();
 }
 
 }  // namespace ash

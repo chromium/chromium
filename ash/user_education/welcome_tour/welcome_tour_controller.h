@@ -96,6 +96,9 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // it is not directly available from the tutorial.
   absl::optional<welcome_tour_metrics::Step> current_step_;
 
+  // The elapsed time since the beginning of the `current_step_`.
+  base::ElapsedTimer current_step_timer_;
+
   // Blocks all notifications while the Welcome Tour is in progress. Any
   // notifications received during the tour will appear in the Notification
   // Center after the tour is over.

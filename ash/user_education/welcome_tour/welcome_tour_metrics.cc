@@ -61,8 +61,10 @@ void RecordStepAborted(Step step) {
 }
 
 void RecordStepDuration(Step step, base::TimeDelta duration) {
-  NOTIMPLEMENTED() << "Emit `Ash.WelcomeTour.Step.Duration." << ToString(step)
-                   << "`.";
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Ash.WelcomeTour.Step.Duration.", ToString(step)}),
+      duration, /*min=*/base::Milliseconds(1), /*max=*/base::Minutes(5),
+      /*buckets=*/50);
 }
 
 void RecordStepShown(Step step) {

@@ -49,6 +49,25 @@ chromium-metrics-reviews@google.com.
   <summary>Records that the Welcome Tour was aborted on a given step.</summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the duration of the {Step} step of the Welcome Tour.
+  </summary>
+  <token key="Step">
+    <variant name="Dialog" summary="dialog"/>
+    <variant name="ExploreApp" summary="Explore app"/>
+    <variant name="ExploreAppWindow" summary="Explore app window"/>
+    <variant name="HomeButton" summary="home button"/>
+    <variant name="Search" summary="search"/>
+    <variant name="SettingsApp" summary="Settings app"/>
+    <variant name="Shelf" summary="shelf"/>
+    <variant name="StatusArea" summary="status area"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
     expires_after="2024-01-01">
   <owner>angusmclean@google.com</owner>
