@@ -2322,14 +2322,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordMigrationWarning.Export.Result"
-    enum="HistogramExportResult" expires_after="2024-04-19">
+<histogram name="PasswordManager.PasswordMigrationWarning.Export.Result2"
+    enum="HistogramExportResult" expires_after="2024-02-19">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
     Records whether the export flow finished successfully or the type of error
     for passwords export started from local passwords migration warning.
-    Recorded when the export flow finishes. Logged only on Android.
+    Recorded when the export flow finishes. Logged only on Android. This is an
+    updated version of PasswordManager.PasswordMigrationWarning.Export.Result,
+    which logs more possible export flow results in adition to the old values.
   </summary>
 </histogram>
 
@@ -3121,14 +3123,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Settings.Export.Result"
-    enum="HistogramExportResult" expires_after="2023-11-19">
+<histogram name="PasswordManager.Settings.Export.Result2"
+    enum="HistogramExportResult" expires_after="2024-02-19">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
     Records whether the export flow finished successfully or the type of error
-    for passwords export in settings menu. Recorded when the export flow
-    finishes. Logged only on Android.
+    for passwords export started from password settings. Recorded when the
+    export flow finishes. Logged only on Android. This is an updated version of
+    PasswordManager.Settings.Export.Result, which logs more possible export flow
+    results in adition to the old values.
   </summary>
 </histogram>
 

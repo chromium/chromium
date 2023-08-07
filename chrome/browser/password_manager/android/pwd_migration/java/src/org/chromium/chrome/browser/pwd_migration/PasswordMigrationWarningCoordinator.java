@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_EXPORT_METRICS_ID;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** The coordinator of the password migration warning. */
 public class PasswordMigrationWarningCoordinator implements MigrationWarningOptionsHandler {
     // The prefix for the histograms, which will be used log the export flow metrics.
-    private static final String EXPORT_METRICS_ID =
+    public static final String EXPORT_METRICS_ID =
             "PasswordManager.PasswordMigrationWarning.Export";
     private final PasswordMigrationWarningMediator mMediator;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
@@ -124,7 +126,7 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
                 }, mPasswordStoreBridge);
                 deletionDialogFragment.show(mFragmentManager, null);
             }
-        }, EXPORT_METRICS_ID);
+        }, PASSWORD_MIGRATION_WARNING_EXPORT_METRICS_ID);
         mExportFlow.startExporting();
     }
 

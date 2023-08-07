@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult.ACTIVITY_DESTROYED;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator.EXPORT_METRICS_ID;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 
@@ -86,7 +90,16 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mOnResumeExportFlowCallback == null) return;
+        if (mOnResumeExportFlowCallback == null) {
+            // It can happen that the Activity which started the export flow was killed by Android
+            // while the export flow Activity was on screen, due to the low memory on the device
+            // running Chrome. If the export flow was started from the password migration warning
+            // sheet, the sheet will be destroyed together with the Activity. The Fragment that
+            // started the sheet will be recovered, but it won't contain the callback to resume the
+            // export flow.
+            PasswordMetricsUtil.logPasswordsExportResult(EXPORT_METRICS_ID, ACTIVITY_DESTROYED);
+            return;
+        }
 
         mOnResumeExportFlowCallback.run();
     }

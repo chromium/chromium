@@ -53,8 +53,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
-import org.chromium.chrome.browser.password_manager.settings.ExportFlow.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.FakePasswordManagerHandler;
 import org.chromium.chrome.browser.password_manager.settings.ManualCallbackDelayer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
@@ -148,7 +148,7 @@ public class PasswordMigrationWarningExportFlowTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(mExportFlow.getExportEventHistogramName(),
                                 ExportFlow.PasswordExportEvent.EXPORT_CONFIRMED)
-                        .expectIntRecord(mExportFlow.getExportResultHistogramNameForTesting(),
+                        .expectIntRecord(mExportFlow.getExportResultHistogramName2ForTesting(),
                                 HistogramExportResult.SUCCESS)
                         .build();
 
@@ -197,6 +197,29 @@ public class PasswordMigrationWarningExportFlowTest {
                 .perform(click());
 
         verify(mPasswordStoreBridge).clearAllPasswords();
+    }
+
+    /**
+     * Check that metrics are logged when the export flow ends because there is no screen lock set
+     * up.
+     */
+    @Test
+    @MediumTest
+    public void testExportFlowWithNoScreenLockRecordsMetrics() {
+        ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
+        ReauthenticationManager.setScreenLockSetUpOverride(
+                ReauthenticationManager.OverrideState.UNAVAILABLE);
+
+        var exportResultHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(PasswordMigrationWarningCoordinator.EXPORT_METRICS_ID
+                                        + PasswordMetricsUtil.EXPORT_RESULT_HISTOGRAM_SUFFIX,
+                                PasswordMetricsUtil.HistogramExportResult.NO_SCREEN_LOCK_SET_UP)
+                        .build();
+
+        requestExport();
+
+        exportResultHistogram.assertExpected();
     }
 
     /**
