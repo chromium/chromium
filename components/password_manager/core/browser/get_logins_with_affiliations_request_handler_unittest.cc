@@ -342,6 +342,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
        PslMatchesFilteredBecauseOfExtensionListTest) {
+  base::test::ScopedFeatureList feature_list(
+      features::kUseExtensionListForPSLMatching);
   backend()->AddLoginAsync(
       *CreateForm("https://a.slack.com/", u"test", u"test"), base::DoNothing());
   backend()->AddLoginAsync(

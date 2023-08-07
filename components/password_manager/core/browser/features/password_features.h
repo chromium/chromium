@@ -40,6 +40,8 @@ BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);
 
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 
+BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

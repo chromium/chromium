@@ -85,4 +85,15 @@ BASE_FEATURE(kPasswordManagerLogToTerminal,
              "PasswordManagerLogToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Improves PSL matching capabilities by utilizing PSL-extension list from
+// affiliation service. It fixes problem with incorrect password suggestions on
+// websites like slack.com.
+BASE_FEATURE(kUseExtensionListForPSLMatching,
+             "UseExtensionListForPSLMatching",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace password_manager::features

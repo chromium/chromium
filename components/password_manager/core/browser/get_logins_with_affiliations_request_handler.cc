@@ -18,12 +18,12 @@
 
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -45,6 +45,13 @@ bool IsExtendedPublicSuffixDomainMatch(
     const base::flat_set<std::string>& psl_extensions) {
   if (!url1.is_valid() || !url2.is_valid()) {
     return false;
+  }
+
+  // Always return true if the feature to use extension list is disabled since
+  // the normal PSL check had already passed inside GetMatchResult.
+  if (!base::FeatureList::IsEnabled(
+          features::kUseExtensionListForPSLMatching)) {
+    return true;
   }
 
   std::string domain1(
