@@ -63,6 +63,10 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // Sets `can_upload_data_` for tests.
   void SetAuthForTesting(const std::string& dm_token, bool authorized);
 
+  // Sets `token_fetcher_` for tests.
+  void SetTokenFetcherForTesting(
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
+
   // Returns the URL that requests are uploaded to. Scans for enterprise go to a
   // different URL than scans for Advanced Protection users and Enhanced
   // Protection users.
@@ -74,6 +78,14 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void FinishRequest(Request* request,
                      Result result,
                      enterprise_connectors::ContentAnalysisResponse response);
+
+  // This may destroy `request`.
+  // Virtual for testing.
+  virtual void OnGetRequestData(Request::Id request_id,
+                                Result result,
+                                Request::Data data);
+
+  Request* GetRequest(Request::Id request_id);
 
  private:
   using TokenAndConnector =
@@ -98,11 +110,6 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void OnGetAccessToken(Request::Id request_id,
                         const std::string& access_token);
 
-  // This may destroy `request`.
-  void OnGetRequestData(Request::Id request_id,
-                        Result result,
-                        Request::Data data);
-
   void OnUploadComplete(Request::Id request_id,
                         bool success,
                         int http_status,
@@ -116,8 +123,6 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void FinishIfActive(Request::Id request_id,
                       Result result,
                       enterprise_connectors::ContentAnalysisResponse response);
-
-  Request* GetRequest(Request::Id request_id);
 
   void MaybeUploadForDeepScanningCallback(std::unique_ptr<Request> request,
                                           bool authorized);

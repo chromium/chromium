@@ -860,6 +860,11 @@ void CloudBinaryUploadService::SetAuthForTesting(const std::string& dm_token,
   }
 }
 
+void CloudBinaryUploadService::SetTokenFetcherForTesting(
+    std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher) {
+  token_fetcher_ = std::move(token_fetcher);
+}
+
 // static
 GURL CloudBinaryUploadService::GetUploadUrl(bool is_consumer_scan_eligible) {
   if (is_consumer_scan_eligible) {

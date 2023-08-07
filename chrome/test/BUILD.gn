@@ -2690,6 +2690,7 @@ if (!is_android) {
         sources += [
           # crbug.com/1230268 These tests need to be fixed for Lacros.
           "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
+          "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
           "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
         ]
       }

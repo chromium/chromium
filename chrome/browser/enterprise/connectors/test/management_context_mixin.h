@@ -28,15 +28,6 @@ class ScopedDevicePolicyUpdate;
 namespace enterprise_connectors::test {
 
 struct ManagementContext {
-  ManagementContext();
-  ManagementContext(ManagementContext&&);
-  ManagementContext& operator=(ManagementContext&&);
-
-  ManagementContext(const ManagementContext&) = delete;
-  ManagementContext& operator=(const ManagementContext&) = delete;
-
-  ~ManagementContext();
-
   bool is_cloud_user_managed = false;
   bool is_cloud_machine_managed = false;
   bool affiliated = false;
