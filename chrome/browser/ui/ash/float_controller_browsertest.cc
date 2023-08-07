@@ -27,6 +27,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -81,6 +82,10 @@ class FloatControllerBrowserTest : public InProcessBrowserTest {
 // the window to freeze. Regression test for b/278917878.
 IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
                        TuckingBrowserDoesNotFreezeWindow) {
+  // Ensures files app can be floated in tablet mode.
+  display::test::DisplayManagerTestApi(ash::ShellTestApi().display_manager())
+      .UpdateDisplay("1600x1000");
+
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
