@@ -186,7 +186,9 @@ public class CardUnmaskPrompt implements EmptyTextWatcher, OnClickListener,
                     R.dimen.card_unmask_dialog_credit_card_icon_end_margin,
                     /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                     /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
-                    /* showCustomIcon= */ isVirtualCard
+                    /* showCustomIcon= */
+                    (isVirtualCard
+                            && cardArtUrl.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL))
                             || ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE));
         } else {
