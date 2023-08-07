@@ -164,6 +164,27 @@
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
   variants: *global-state-variants
 
+- name: 2d.layer.global-filter
+  desc: Tests that layers ignore the global context filter.
+  size: [150, 100]
+  code: |
+    ctx.filter = 'blur(5px)'
+
+    ctx.beginLayer();
+    ctx.fillRect(10, 10, 30, 30);  // `ctx.filter` applied to draw call.
+    ctx.endLayer();
+
+    ctx.beginLayer();
+    ctx.filter = 'none';
+    ctx.fillRect(60, 10, 30, 30);  // Should not be filted by the layer.
+    ctx.endLayer();
+
+    ctx.fillRect(110, 10, 30, 30);  // `ctx.filter` is still set.
+  reference: |
+    ctx.fillRect(60, 10, 30, 30);
+    ctx.filter = 'blur(5px)'
+    ctx.fillRect(10, 10, 30, 30);
+    ctx.fillRect(110, 10, 30, 30);
 
 - name: 2d.layer.nested
   desc: Tests nested canvas layers.

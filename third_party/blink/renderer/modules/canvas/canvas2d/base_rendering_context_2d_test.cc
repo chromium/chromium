@@ -276,8 +276,9 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
             filter->GetAsCanvasFilter()->Operations());
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
-  ASSERT_TRUE(context->filter()->IsString());
-  EXPECT_EQ(context->filter()->GetAsString(), "none");
+  ASSERT_TRUE(context->filter()->IsCanvasFilter());
+  EXPECT_EQ(context->filter()->GetAsCanvasFilter()->Operations(),
+            filter->GetAsCanvasFilter()->Operations());
 
   context->endLayer(exception_state);
 
@@ -895,9 +896,15 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BeginLayerIgnoresGlobalFilter) {
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
 
-  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
+  V8UnionCanvasFilterOrString* filter = MakeBlurCanvasFilter(20.0f);
+  context->setFilter(scope.GetScriptState(), filter);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
+
+  ASSERT_TRUE(context->filter()->IsCanvasFilter());
+  EXPECT_EQ(context->filter()->GetAsCanvasFilter()->Operations(),
+            filter->GetAsCanvasFilter()->Operations());
+
   context->endLayer(exception_state);
 
   EXPECT_THAT(

@@ -236,8 +236,6 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   DCHECK(!GetState().ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
-  setFilter(script_state,
-            MakeGarbageCollected<V8UnionCanvasFilterOrString>("none"));
 }
 
 CanvasRenderingContext2DState::SaveType
