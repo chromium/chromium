@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/first_run/uma/uma_table_view_controller.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -136,8 +138,10 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
   [model addItem:switchItem toSectionWithIdentifier:UMAMainSectionIdentifier];
 
   // Adds the footer.
-  NSString* string =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION);
+  NSString* string = l10n_util::GetNSString(
+      (base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))
+          ? IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION_NO_SYNC
+          : IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION);
   NSMutableDictionary* regularAttributes = [NSMutableDictionary dictionary];
   [regularAttributes
       setObject:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]

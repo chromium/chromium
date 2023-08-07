@@ -338,6 +338,17 @@ Things to consider:
 
   • If you turn on sync, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
       </message>
+      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION_NO_SYNC" desc="Text to explain how the user can help to improve Chrome by accepting the metrics reporting consent. Bullet points lines should start with 2 spaces, followed by • and with a space right after. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
+        When on:
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chromium better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
+
+Things to consider:
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chromium usage, but it isn't tied to you.
+
+  • If Chromium crashes, details about the crash may include some personal info.
+
+  • If you sync your history to your Google Account, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
+      </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="In Title Case: Title of the dialog where users can change their Chrome metrics sharing settings, like usage data. The title communicates that allowing Chrome to see this data can improve Chrome; this happens because we can better invent/improve features based on usage. This appears when they open the Chrome app for the first time on their phone. [iOS only]">
         Make Chromium Better
         </message>
