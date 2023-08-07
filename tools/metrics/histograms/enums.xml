@@ -16321,6 +16321,14 @@ Called by update_protocol_commands_enum.py.-->
   <int value="255" label="Unspecified/unknown error in user-mode"/>
 </enum>
 
+<enum name="ChromeOSRevenHwisPermission">
+  <int value="0" label="kPolicySuccess"/>
+  <int value="1" label="kPolicyDenial"/>
+  <int value="2" label="kOptInSuccess"/>
+  <int value="3" label="kOptInDenial"/>
+  <int value="4" label="kError"/>
+</enum>
+
 <enum name="ChromeOSRevenPartitionMigration">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kNoMigrationNeeded"/>
