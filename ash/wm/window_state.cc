@@ -906,8 +906,9 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
     window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
 
     // During `Shell` deletion, we can be here after the shadow controller has
-    // been destroyed.
-    if (auto* shadow_controller = Shell::Get()->shadow_controller()) {
+    // been destroyed
+    auto* shadow_controller = Shell::Get()->shadow_controller();
+    if (shadow_controller && shadow_controller->GetShadowForWindow(window_)) {
       // We change shadow radius based on WindowStateType. Shadow controller
       // does not react to ash's extended window state. Therefore we need to
       // manually call `UpdateShadowForWindow()`.
