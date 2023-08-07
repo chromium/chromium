@@ -55,7 +55,6 @@ class GridMediatorTestClass : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   FakeTabCollectionConsumer* consumer_;
-  BaseGridMediator* mediator_;
   NSSet<NSString*>* original_identifiers_;
   NSString* original_selected_identifier_;
   std::unique_ptr<Browser> browser_;

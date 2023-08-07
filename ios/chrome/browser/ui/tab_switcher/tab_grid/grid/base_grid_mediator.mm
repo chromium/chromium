@@ -330,6 +330,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     [self.consumer
         selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
   }
+  // Update toolbar's buttons as the number of tabs changed so the options
+  // changed (ex: No tabs selection when the grid is empty).
+  [self configureToolbarsButtons];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -342,6 +345,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
   [self addWebStateObservations];
   [self populateConsumerItems];
+  // Update toolbar's buttons as the number of tabs have probably changed so the
+  // options changed (ex: "Undo" may be available now).
+  [self configureToolbarsButtons];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1043,6 +1049,10 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return YES;
   }
   return NO;
+}
+
+- (void)configureToolbarsButtons {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 #pragma mark - TabGridPageMutator

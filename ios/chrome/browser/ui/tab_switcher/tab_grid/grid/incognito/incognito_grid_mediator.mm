@@ -52,10 +52,8 @@
   // TODO(crbug.com/1457146): Implement.
 }
 
-#pragma mark - Private
+#pragma mark - Parent's function
 
-// Creates and send a tab grid toolbar configuration with button that should be
-// displayed when incognito grid is selected.
 - (void)configureToolbarsButtons {
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];

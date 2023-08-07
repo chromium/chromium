@@ -11,18 +11,23 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 // To get access to web::features::kEnableSessionSerializationOptimizations.
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
 
-using BaseGridMediatorTest = GridMediatorTestClass;
-
 namespace {
+
+// BaseGridMediatorTest is parameterized on this enum to test all children
+// mediator.
+enum GridMediatorType { TEST_REGULAR_MEDIATOR, TEST_INCOGNITO_MEDIATOR };
 
 const char kPriceTrackingWithOptimizationGuideParam[] =
     "price_tracking_with_optimization_guide";
@@ -30,6 +35,35 @@ const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
 
 }  // namespace
+
+class BaseGridMediatorTest
+    : public GridMediatorTestClass,
+      public ::testing::WithParamInterface<GridMediatorType> {
+ public:
+  BaseGridMediatorTest() {}
+  ~BaseGridMediatorTest() override {}
+
+  void SetUp() override {
+    GridMediatorTestClass::SetUp();
+    if (GetParam() == TEST_INCOGNITO_MEDIATOR) {
+      mediator_ = [[IncognitoGridMediator alloc] initWithConsumer:consumer_];
+    } else {
+      mediator_ = [[RegularGridMediator alloc] initWithConsumer:consumer_];
+    }
+    mediator_.browser = browser_.get();
+  }
+
+  void TearDown() override {
+    // Forces the IncognitoGridMediator to removes its Observer from
+    // WebStateList before the Browser is destroyed.
+    mediator_.browser = nullptr;
+    mediator_ = nil;
+    GridMediatorTestClass::TearDown();
+  }
+
+ protected:
+  BaseGridMediator* mediator_;
+};
 
 // Variation on BaseGridMediatorTest which enable PriceDropIndicatorsFlag.
 class BaseGridMediatorWithPriceDropIndicatorsTest
@@ -47,13 +81,13 @@ class BaseGridMediatorWithPriceDropIndicatorsTest
 
 // Tests that the consumer is populated after the tab model is set on the
 // mediator.
-TEST_F(BaseGridMediatorTest, ConsumerPopulateItems) {
+TEST_P(BaseGridMediatorTest, ConsumerPopulateItems) {
   EXPECT_EQ(3UL, consumer_.items.count);
   EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
 }
 
 // Tests that the consumer is notified when a web state is inserted.
-TEST_F(BaseGridMediatorTest, ConsumerInsertItem) {
+TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.count);
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
@@ -72,7 +106,7 @@ TEST_F(BaseGridMediatorTest, ConsumerInsertItem) {
 // Tests that the consumer is notified when a web state is removed.
 // The selected web state at index 1 is removed. The web state originally
 // at index 2 should be the new selected item.
-TEST_F(BaseGridMediatorTest, ConsumerRemoveItem) {
+TEST_P(BaseGridMediatorTest, ConsumerRemoveItem) {
   browser_->GetWebStateList()->CloseWebStateAt(1, WebStateList::CLOSE_NO_FLAGS);
   EXPECT_EQ(2UL, consumer_.items.count);
   // Expect that a different web state is selected now.
@@ -80,7 +114,7 @@ TEST_F(BaseGridMediatorTest, ConsumerRemoveItem) {
 }
 
 // Tests that the consumer is notified when the active web state is changed.
-TEST_F(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
+TEST_P(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
   EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
   browser_->GetWebStateList()->ActivateWebStateAt(2);
   EXPECT_NSEQ(
@@ -91,7 +125,7 @@ TEST_F(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
 // Tests that the consumer is notified when a web state is replaced.
 // The selected item is replaced, so the new selected item id should be the
 // id of the new item.
-TEST_F(BaseGridMediatorTest, ConsumerReplaceItem) {
+TEST_P(BaseGridMediatorTest, ConsumerReplaceItem) {
   auto new_web_state = std::make_unique<web::FakeWebState>();
   new_web_state->SetWebFramesManager(
       std::make_unique<web::FakeWebFramesManager>());
@@ -106,7 +140,7 @@ TEST_F(BaseGridMediatorTest, ConsumerReplaceItem) {
 }
 
 // Tests that the consumer is notified when a web state is moved.
-TEST_F(BaseGridMediatorTest, ConsumerMoveItem) {
+TEST_P(BaseGridMediatorTest, ConsumerMoveItem) {
   NSString* item1 = consumer_.items[1];
   NSString* item2 = consumer_.items[2];
   browser_->GetWebStateList()->MoveWebStateAt(1, 2);
@@ -118,7 +152,7 @@ TEST_F(BaseGridMediatorTest, ConsumerMoveItem) {
 
 // Tests that the active index is updated when `-selectItemWithID:` is called.
 // Tests that the consumer's selected index is updated.
-TEST_F(BaseGridMediatorTest, SelectItemCommand) {
+TEST_P(BaseGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
   NSString* identifier =
       browser_->GetWebStateList()->GetWebStateAt(2)->GetStableIdentifier();
@@ -130,7 +164,7 @@ TEST_F(BaseGridMediatorTest, SelectItemCommand) {
 // Tests that the WebStateList count is decremented when
 // `-closeItemWithID:` is called.
 // Tests that the consumer's item count is also decremented.
-TEST_F(BaseGridMediatorTest, CloseItemCommand) {
+TEST_P(BaseGridMediatorTest, CloseItemCommand) {
   // Previously there were 3 items.
   NSString* identifier =
       browser_->GetWebStateList()->GetWebStateAt(0)->GetStableIdentifier();
@@ -143,7 +177,7 @@ TEST_F(BaseGridMediatorTest, CloseItemCommand) {
 // incremented, the `active_index` is at the end of WebStateList, the new
 // web state has no opener, and the URL is the New Tab Page.
 // Tests that the consumer has added an item with the correct identifier.
-TEST_F(BaseGridMediatorTest, AddNewItemAtEndCommand) {
+TEST_P(BaseGridMediatorTest, AddNewItemAtEndCommand) {
   // Previously there were 3 items and the selected index was 1.
   [mediator_ addNewItem];
   EXPECT_EQ(4, browser_->GetWebStateList()->count());
@@ -169,7 +203,7 @@ TEST_F(BaseGridMediatorTest, AddNewItemAtEndCommand) {
 // count is incremented, the `active_index` is the newly added index, the new
 // web state has no opener, and the URL is the new tab page.
 // Checks that the consumer has added an item with the correct identifier.
-TEST_F(BaseGridMediatorTest, InsertNewItemCommand) {
+TEST_P(BaseGridMediatorTest, InsertNewItemCommand) {
   // Previously there were 3 items and the selected index was 1.
   [mediator_ insertNewItemAtIndex:0];
   EXPECT_EQ(4, browser_->GetWebStateList()->count());
@@ -193,7 +227,7 @@ TEST_F(BaseGridMediatorTest, InsertNewItemCommand) {
 
 // Tests that `-insertNewItemAtIndex:` is a no-op if the mediator's browser
 // is bullptr.
-TEST_F(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
+TEST_P(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
   mediator_.browser = nullptr;
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_EQ(1, browser_->GetWebStateList()->active_index());
@@ -205,7 +239,7 @@ TEST_F(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
 // Tests that when `-moveItemFromIndex:toIndex:` is called, there is no change
 // in the item count in WebStateList, but that the constituent web states
 // have been reordered.
-TEST_F(BaseGridMediatorTest, MoveItemCommand) {
+TEST_P(BaseGridMediatorTest, MoveItemCommand) {
   // Capture ordered original IDs.
   NSMutableArray<NSString*>* pre_move_ids = [[NSMutableArray alloc] init];
   for (int i = 0; i < 3; i++) {
@@ -236,7 +270,7 @@ TEST_F(BaseGridMediatorTest, MoveItemCommand) {
 
 // Tests that when `-searchItemsWithText:` is called, there is no change in the
 // items in WebStateList and the correct items are populated by the consumer.
-TEST_F(BaseGridMediatorTest, SearchItemsWithTextCommand) {
+TEST_P(BaseGridMediatorTest, SearchItemsWithTextCommand) {
   // Capture ordered original IDs.
   NSMutableArray<NSString*>* pre_search_ids = [[NSMutableArray alloc] init];
   for (int i = 0; i < 3; i++) {
@@ -267,7 +301,7 @@ TEST_F(BaseGridMediatorTest, SearchItemsWithTextCommand) {
 
 // Tests that when `-resetToAllItems:` is called, the consumer gets all the
 // items from items in WebStateList and correct item selected.
-TEST_F(BaseGridMediatorTest, resetToAllItems) {
+TEST_P(BaseGridMediatorTest, resetToAllItems) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_EQ(3UL, consumer_.items.count);
 
@@ -291,7 +325,7 @@ TEST_F(BaseGridMediatorTest, resetToAllItems) {
   }
 }
 
-TEST_F(BaseGridMediatorWithPriceDropIndicatorsTest,
+TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
        TestSelectItemWithNoPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
@@ -303,7 +337,7 @@ TEST_F(BaseGridMediatorWithPriceDropIndicatorsTest,
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
 
-TEST_F(BaseGridMediatorWithPriceDropIndicatorsTest,
+TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
        TestSelectItemWithPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
@@ -314,10 +348,22 @@ TEST_F(BaseGridMediatorWithPriceDropIndicatorsTest,
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
 }
 
-TEST_F(BaseGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
+TEST_P(BaseGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
   [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    BaseGridMediatorTest,
+    ::testing::Values(GridMediatorType::TEST_REGULAR_MEDIATOR,
+                      GridMediatorType::TEST_INCOGNITO_MEDIATOR));
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    BaseGridMediatorWithPriceDropIndicatorsTest,
+    ::testing::Values(GridMediatorType::TEST_REGULAR_MEDIATOR,
+                      GridMediatorType::TEST_INCOGNITO_MEDIATOR));

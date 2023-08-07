@@ -68,10 +68,6 @@
       self.tabRestoreService
           ? self.tabRestoreService->entries().size() - old_size
           : 0;
-
-  // Update toolbar's buttons as the number of tabs changed so the options
-  // changed ("Undo" may be available now).
-  [self configureToolbarsButtons];
 }
 
 - (void)undoCloseAllItems {
@@ -87,9 +83,6 @@
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
 
-  // Update toolbar's buttons as the number of tabs changed so the options
-  // changed.
-  [self configureToolbarsButtons];
 }
 
 - (void)discardSavedClosedItems {
@@ -99,10 +92,6 @@
   _syncedClosedTabsCount = 0;
   _closedSessionWindow = nil;
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
-
-  // Update toolbar's buttons as the number of tabs changed so the options
-  // changed.
-  [self configureToolbarsButtons];
 }
 
 #pragma mark - TabGridPageMutator
@@ -117,10 +106,8 @@
   // TODO(crbug.com/1457146): Implement.
 }
 
-#pragma mark - Private
+#pragma mark - Parent's function
 
-// Creates and send a tab grid toolbar configuration with button that should be
-// displayed when regular grid is selected.
 - (void)configureToolbarsButtons {
   TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
       [self.containedGridToolbarsProvider toolbarsConfiguration];
@@ -140,6 +127,8 @@
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
+
+#pragma mark - Private
 
 // Removes `self.syncedClosedTabsCount` most recent entries from the
 // TabRestoreService.

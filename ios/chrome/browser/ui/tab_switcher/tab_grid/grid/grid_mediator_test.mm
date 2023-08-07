@@ -144,8 +144,6 @@ void GridMediatorTestClass::SetUp() {
   original_selected_identifier_ =
       browser_->GetWebStateList()->GetWebStateAt(1)->GetStableIdentifier();
   consumer_ = [[FakeTabCollectionConsumer alloc] init];
-  mediator_ = [[BaseGridMediator alloc] initWithConsumer:consumer_];
-  mediator_.browser = browser_.get();
 }
 
 std::unique_ptr<web::FakeWebState>
@@ -165,10 +163,6 @@ GridMediatorTestClass::CreateFakeWebStateWithURL(const GURL& url) {
 }
 
 void GridMediatorTestClass::TearDown() {
-  // Forces the BaseGridMediator to removes its Observer from WebStateList
-  // before the Browser is destroyed.
-  mediator_.browser = nullptr;
-  mediator_ = nil;
   PlatformTest::TearDown();
 }
 
