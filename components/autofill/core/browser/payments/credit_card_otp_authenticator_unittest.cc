@@ -179,6 +179,10 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   // TestPaymentsClient just stores the unmask request detail, won't invoke the
   // callback. OnDidGetRealPan below will manually invoke the callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+  // Verify the selected challenge option is correctly set in
+  // UnmaskRequestDetails.
+  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+            selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
   EXPECT_EQ(payments_client_->unmask_request()->otp, u"111111");
   // Also verify that risk data is set in UnmaskRequestDetails.
@@ -403,6 +407,10 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   // TestPaymentsClient just stores the unmask request detail, won't invoke the
   // callback. OnDidGetRealPan below will manually invoke the callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"222222");
+  // Verify the selected challenge option is correctly set in
+  // UnmaskRequestDetails.
+  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+            selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
   EXPECT_EQ(payments_client_->unmask_request()->otp, u"222222");
   // Also verify that risk data is set in UnmaskRequestDetails.
@@ -474,6 +482,10 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   // TestPaymentsClient just stores the unmask request detail, won't invoke the
   // callback. OnDidGetRealPan below will manually invoke the callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"4444444");
+  // Verify the selected challenge option is correctly set in
+  // UnmaskRequestDetails.
+  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+            selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
   EXPECT_EQ(payments_client_->unmask_request()->otp, u"4444444");
   // Also verify that risk data is set in UnmaskRequestDetails.
@@ -637,6 +649,10 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   // TestPaymentsClient just stores the unmask request detail, won't invoke
   // the callback. OnDidGetRealPan below will manually invoke the callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+  // Verify the selected challenge option is correctly set in
+  // UnmaskRequestDetails.
+  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+            selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
   EXPECT_EQ(payments_client_->unmask_request()->otp, u"111111");
   // Also verify that risk data is set in UnmaskRequestDetails.

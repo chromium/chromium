@@ -32,6 +32,7 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   unmask_request_->billing_customer_number = billing_customer_number_;
   unmask_request_->context_token = context_token_;
   unmask_request_->otp = otp_;
+  unmask_request_->selected_challenge_option = selected_challenge_option_;
   if (ShouldShowCardMetadata(*card_)) {
     unmask_request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
