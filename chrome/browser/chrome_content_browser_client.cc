@@ -3267,6 +3267,9 @@ void ChromeContentBrowserClient::FileSystemAccessed(
   // Record access to file system for potential display in UI.
   for (const auto& it : render_frames) {
     auto* rfh = content::RenderFrameHost::FromID(it);
+    if (!rfh) {
+      continue;
+    }
     content_settings::PageSpecificContentSettings::StorageAccessed(
         content_settings::mojom::ContentSettingsManager::StorageType::
             FILE_SYSTEM,
