@@ -944,6 +944,11 @@ TEST_F(IntegrationTest, MarshalInterface) {
 }
 
 TEST_F(IntegrationTest, LegacyProcessLauncher) {
+  // TODO(crbug.com/1453749): Remove procmon logging once flakiness is fixed.
+  const base::ScopedClosureRunner stop_procmon_logging(
+      base::BindOnce(&updater::test::StopProcmonLogging,
+                     updater::test::StartProcmonLogging()));
+
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
