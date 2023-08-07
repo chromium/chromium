@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/render_frame_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -42,12 +44,16 @@ class OmniboxPopupPresenter : public views::WebView,
   // Get the handler for communicating with the WebUI interface.
   RealboxHandler* GetHandler();
 
+  // views::WebView
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
+
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   // Returns the target popup bounds in screen coordinates based on the bounds
-  // of |location_bar_view_|.
-  gfx::Rect GetTargetBounds() const;
+  // of `location_bar_view_` and given preferred size `start_height`.
+  gfx::Rect GetTargetBounds(int start_height) const;
 
  private:
   friend class OmniboxPopupViewWebUITest;

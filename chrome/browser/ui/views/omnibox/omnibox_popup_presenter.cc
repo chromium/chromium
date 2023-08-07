@@ -64,11 +64,20 @@ void OmniboxPopupPresenter::Show() {
         std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
     widget_->AddObserver(this);
 
-    // TODO(crbug.com/1396174): Should be dynamically sized based on
-    // WebContents.
+    // Ideally this would have no size until determined by web contents, but
+    // zero size causes problems on some platforms.
+    // TODO(crbug.com/1396174): Don't size dynamically. Set widget to maximum
+    //  possible popup size, and let the webui content render at the appropriate
+    //  size including decorations like rounded borders, frame shadows, etc.
+    //  Such holistic sizing and rendering is necessary to avoid latency & state
+    //  disconnects between renderer process and browser UI (Views). Blending
+    //  the two rendering engines results in flashes and jank because they're
+    //  updating and drawing in completely separate processes.
     SetPreferredSize(gfx::Size(640, 480));
-
-    widget_->SetBounds(GetTargetBounds());
+    gfx::Rect content_rect = GetTargetBounds(GetPreferredSize().height());
+    widget_->SetBounds(content_rect);
+    EnableSizingFromWebContents(gfx::Size(content_rect.width(), 1),
+                                content_rect.size());
   }
 }
 
@@ -94,6 +103,14 @@ RealboxHandler* OmniboxPopupPresenter::GetHandler() {
   return omnibox_popup_ui->handler();
 }
 
+void OmniboxPopupPresenter::FrameSizeChanged(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::Size& frame_size) {
+  if (widget_) {
+    widget_->SetBounds(GetTargetBounds(frame_size.height()));
+  }
+}
+
 void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   // TODO(crbug.com/1445142): Consider restoring if not closed logically by
   // omnibox.
@@ -102,8 +119,8 @@ void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
-gfx::Rect OmniboxPopupPresenter::GetTargetBounds() const {
-  int popup_height = GetPreferredSize().height();
+gfx::Rect OmniboxPopupPresenter::GetTargetBounds(int start_height) const {
+  int popup_height = start_height;
 
   // Add enough space on the top and bottom so it looks like there is the same
   // amount of space between the text and the popup border as there is in the
