@@ -80,6 +80,16 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
     return;
   }
 
+  auto new_guest_id = MakeBruschettaId(config_id);
+  for (const auto& guest_id :
+       guest_os::GetContainers(profile_, guest_os::VmType::BRUSCHETTA)) {
+    if (guest_id == new_guest_id) {
+      Error(BruschettaInstallResult::kVmAlreadyExists);
+      LOG(ERROR) << "Tried to install a VM that already exists";
+      return;
+    }
+  }
+
   NotifyObserver(State::kInstallStarted);
 
   install_running_ = true;

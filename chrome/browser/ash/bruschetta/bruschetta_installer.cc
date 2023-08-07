@@ -25,6 +25,7 @@ const char16_t* BruschettaInstallResultString(
     ENTRY(kStartVmFailed);
     ENTRY(kInstallPflashError);
     ENTRY(kFirmwareDlcInstallError);
+    ENTRY(kVmAlreadyExists);
   }
 #undef ENTRY
 #undef USTR

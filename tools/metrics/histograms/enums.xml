@@ -13952,6 +13952,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="10" label="kStartVmFailed"/>
   <int value="11" label="kInstallPflashError"/>
   <int value="12" label="kFirmwareDlcInstallError"/>
+  <int value="13" label="kVmAlreadyExists"/>
 </enum>
 
 <enum name="BruschettaResult">
