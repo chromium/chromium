@@ -107,15 +107,27 @@ public class ReadAloudControllerUnitTest {
         assertFalse(mController.isAvailable());
     }
 
-    @Test
-    public void checkReadabilityOnPageLoad_notValid() {
-        mTab.setGurlOverrideForTesting(new GURL("invalid"));
+    // Helper function for checkReadabilityOnPageLoad_URLnotReadAloudSupported() to check
+    // the provided url is recognized as unreadable
+    private void checkURLNotReadAloudSupported(GURL url) {
+        mTab.setGurlOverrideForTesting(url);
 
         mController.getTabModelTabObserver().onPageLoadStarted(mTab, mTab.getUrl());
 
         verify(mHooksImpl, never())
                 .isPageReadable(Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
+    }
+
+    @Test
+    public void checkReadabilityOnPageLoad_URLnotReadAloudSupported() {
+        checkURLNotReadAloudSupported(new GURL("invalid"));
+        checkURLNotReadAloudSupported(GURL.emptyGURL());
+        checkURLNotReadAloudSupported(new GURL("chrome://history/"));
+        checkURLNotReadAloudSupported(new GURL("about:blank"));
+        checkURLNotReadAloudSupported(new GURL("https://www.google.com/search?q=weather"));
+        checkURLNotReadAloudSupported(new GURL("https://myaccount.google.com/"));
+        checkURLNotReadAloudSupported(new GURL("https://myactivity.google.com/"));
     }
 
     @Test

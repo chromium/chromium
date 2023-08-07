@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class ReadAloudController {
                 @Override
                 public void onPageLoadStarted(Tab tab, GURL url) {
                     Log.i(TAG, "onPageLoad called for %s", url.getPossiblyInvalidSpec());
-                    if (!url.isValid()) {
+                    if (!isURLReadAloudSupported(url)) {
                         return;
                     }
                     String urlSpec = url.getSpec();
@@ -96,6 +97,24 @@ public class ReadAloudController {
                 }
             };
         }
+    }
+
+    /**
+     * Checks if URL is supported by Read Aloud before sending a readability request.
+     * Read Aloud won't be supported on the following URLs:
+     * - pages without an HTTP(S) scheme
+     * - myaccount.google.com and myactivity.google.com
+     * - www.google.com/...
+     *   - Based on standards.google/processes/domains/domain-guidelines-by-use-case,
+     *     www.google.com/... is reserved for Search features and content.
+     */
+    public boolean isURLReadAloudSupported(GURL url) {
+        return url.isValid() && !url.isEmpty()
+                && (url.getScheme().equals(UrlConstants.HTTP_SCHEME)
+                        || url.getScheme().equals(UrlConstants.HTTPS_SCHEME))
+                && !url.getSpec().startsWith(UrlConstants.GOOGLE_ACCOUNT_HOME_URL)
+                && !url.getSpec().startsWith(UrlConstants.MY_ACTIVITY_HOME_URL)
+                && !url.getSpec().startsWith(UrlConstants.GOOGLE_URL);
     }
 
     /**
