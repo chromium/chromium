@@ -1238,6 +1238,22 @@ void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
 
 void SyncServiceImpl::SetPassphraseType(PassphraseType passphrase_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // if kReplaceSyncPromosWithSignInPromos is enabled, kAutofill should be
+  // disabled for newly sign in users who have already custom passphrase set.
+  // The first `SetPassphraseType()` call reflects the server-side passphrase
+  // type before signing in.
+  if (!sync_prefs_.GetCachedPassphraseType().has_value() &&
+      IsExplicitPassphrase(passphrase_type) &&
+      GetSyncAccountStateForPrefs() ==
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing &&
+      base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+    GetUserSettings()->SetSelectedType(UserSelectableType::kAutofill, false);
+    // When the auto fill data type is updated, the payments should be updated
+    // too. Payments should not be enabled when auto fill data type disabled.
+    // TODO(crbug.com/1435431): This can be removed once kPayments is decoupled
+    // from kAutofill.
+    GetUserSettings()->SetSelectedType(UserSelectableType::kPayments, false);
+  }
   sync_prefs_.SetCachedPassphraseType(passphrase_type);
 }
 
