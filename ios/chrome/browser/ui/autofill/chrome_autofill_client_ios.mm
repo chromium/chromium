@@ -464,7 +464,7 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void ChromeAutofillClientIOS::PropagateAutofillPredictions(
+void ChromeAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
   web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();

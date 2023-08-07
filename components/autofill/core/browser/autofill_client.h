@@ -802,7 +802,9 @@ class AutofillClient : public RiskDataLoader {
 
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
-  virtual void PropagateAutofillPredictions(
+  //
+  // TODO(crbug.com/1466435): Do not use or rely on this function anymore.
+  virtual void PropagateAutofillPredictionsDeprecated(
       AutofillDriver* driver,
       const std::vector<FormStructure*>& forms) = 0;
 

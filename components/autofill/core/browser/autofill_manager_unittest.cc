@@ -134,7 +134,7 @@ class MockAutofillManager : public AutofillManager {
                const std::u16string& old_value),
               (override));
   MOCK_METHOD(void,
-              PropagateAutofillPredictions,
+              PropagateAutofillPredictionsDeprecated,
               (const std::vector<FormStructure*>& forms),
               (override));
   MOCK_METHOD(void,

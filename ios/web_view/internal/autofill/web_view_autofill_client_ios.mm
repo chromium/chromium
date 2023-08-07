@@ -341,7 +341,7 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void WebViewAutofillClientIOS::PropagateAutofillPredictions(
+void WebViewAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
   [bridge_

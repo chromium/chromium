@@ -276,7 +276,7 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(bool, IsAutocompleteEnabled, (), (const, override));
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void,
-              PropagateAutofillPredictions,
+              PropagateAutofillPredictionsDeprecated,
               (autofill::AutofillDriver*,
                const std::vector<autofill::FormStructure*>&),
               (override));

@@ -158,7 +158,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   void HideAutofillPopup(autofill::PopupHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
-  void PropagateAutofillPredictions(
+  void PropagateAutofillPredictionsDeprecated(
       autofill::AutofillDriver* driver,
       const std::vector<autofill::FormStructure*>& forms) override;
   void DidFillOrPreviewForm(autofill::mojom::RendererFormDataAction action,

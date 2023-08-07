@@ -163,7 +163,7 @@ void AndroidAutofillManager::OnHidePopupImpl() {
     provider->OnHidePopup(this);
 }
 
-void AndroidAutofillManager::PropagateAutofillPredictions(
+void AndroidAutofillManager::PropagateAutofillPredictionsDeprecated(
     const std::vector<FormStructure*>& forms) {
   has_server_prediction_ = true;
   if (auto* provider = GetAutofillProvider())

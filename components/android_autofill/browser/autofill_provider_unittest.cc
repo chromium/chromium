@@ -21,7 +21,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
       : AndroidAutofillManager(driver, client) {}
 
   void SimulatePropagateAutofillPredictions() {
-    PropagateAutofillPredictions({});
+    PropagateAutofillPredictionsDeprecated({});
   }
 
   void SimulateOnAskForValuesToFillImpl() {

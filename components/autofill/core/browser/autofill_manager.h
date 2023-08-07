@@ -278,7 +278,7 @@ class AutofillManager
 
   // Invoked when the field type predictions are downloaded from the autofill
   // server.
-  virtual void PropagateAutofillPredictions(
+  virtual void PropagateAutofillPredictionsDeprecated(
       const std::vector<FormStructure*>& forms) = 0;
 
   virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;

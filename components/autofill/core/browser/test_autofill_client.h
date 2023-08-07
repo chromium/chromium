@@ -453,7 +453,7 @@ class TestAutofillClientTemplate : public T {
 
   bool IsPasswordManagerEnabled() override { return true; }
 
-  void PropagateAutofillPredictions(
+  void PropagateAutofillPredictionsDeprecated(
       AutofillDriver* driver,
       const std::vector<FormStructure*>& forms) override {}
 

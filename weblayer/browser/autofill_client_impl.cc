@@ -355,7 +355,7 @@ bool AutofillClientImpl::IsPasswordManagerEnabled() {
   return false;
 }
 
-void AutofillClientImpl::PropagateAutofillPredictions(
+void AutofillClientImpl::PropagateAutofillPredictionsDeprecated(
     autofill::AutofillDriver* driver,
     const std::vector<autofill::FormStructure*>& forms) {
   NOTREACHED();

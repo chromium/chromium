@@ -1003,7 +1003,7 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Forward form structures to the password generation manager to detect
   // account creation forms.
-  PropagateAutofillPredictions(queried_forms);
+  PropagateAutofillPredictionsDeprecated(queried_forms);
 
   for (const FormStructure* form : queried_forms) {
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),

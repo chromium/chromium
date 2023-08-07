@@ -1076,7 +1076,7 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() {
       password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-void ChromeAutofillClient::PropagateAutofillPredictions(
+void ChromeAutofillClient::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* autofill_driver,
     const std::vector<FormStructure*>& forms) {
   // This cast is safe because all non-iOS clients use ContentAutofillDriver as

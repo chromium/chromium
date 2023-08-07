@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Use autofill predictions
   autofill::ContentAutofillClient* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(WebContents());
-  autofill_client->PropagateAutofillPredictions(
+  autofill_client->PropagateAutofillPredictionsDeprecated(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame()),
       {&form_structure});
@@ -1291,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Use autofill predictions
   autofill::AutofillClient* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(WebContents());
-  autofill_client->PropagateAutofillPredictions(
+  autofill_client->PropagateAutofillPredictionsDeprecated(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame()),
       {&form_structure});
