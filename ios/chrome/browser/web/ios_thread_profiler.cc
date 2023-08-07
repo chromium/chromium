@@ -47,9 +47,11 @@ constexpr double kFractionOfExecutionTimeToSample = 0.02;
 bool IsCurrentProcessBackgrounded() {
 #if BUILDFLAG(USE_BLINK)
   base::SelfPortProvider self_provider;
-  return base::Process::Current().IsProcessBackgrounded(&self_provider);
+  return base::Process::Current().GetPriority(&self_provider) ==
+         base::Process::Priority::kBestEffort;
 #else
-  return base::Process::Current().IsProcessBackgrounded();
+  return base::Process::Current().GetPriority() ==
+         base::Process::Priority::kBestEffort;
 #endif
 }
 
