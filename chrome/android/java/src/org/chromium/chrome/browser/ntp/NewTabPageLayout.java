@@ -19,8 +19,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -130,7 +128,6 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
     private boolean mIsNtpAsHomeSurfaceEnabled;
-    private boolean mIsMultiColumnFeedEnabled;
 
     /**
      * Vertical inset to add to the top and bottom of the search box bounds. May be 0 if no inset
@@ -192,7 +189,6 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isIncognito Whether the new tab page is in incognito mode.
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
-     * @param isMultiColumnFeedEnabled {@code true} if the number of feed columns is 2.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      * @param isSurfacePolishOmniboxSizeEnabled {@code true} if the NTP surface is polished
      *          and the omnibox size is changed.
@@ -202,8 +198,7 @@ public class NewTabPageLayout extends LinearLayout {
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isMultiColumnFeedEnabled, boolean isSurfacePolishEnabled,
-            boolean isSurfacePolishOmniboxSizeEnabled) {
+            boolean isSurfacePolishEnabled, boolean isSurfacePolishOmniboxSizeEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -213,7 +208,6 @@ public class NewTabPageLayout extends LinearLayout {
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
-        mIsMultiColumnFeedEnabled = isMultiColumnFeedEnabled;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
 
@@ -234,7 +228,7 @@ public class NewTabPageLayout extends LinearLayout {
             }
         }
 
-        if (mIsMultiColumnFeedEnabled && mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
             // shown. There is only one exception that we don't shorten the width of the fake search
             // box: one row of MV tiles in portrait mode.
@@ -490,7 +484,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled && isScrollableMvtEnabled()) {
+        if (mIsNtpAsHomeSurfaceEnabled && isScrollableMvtEnabled()) {
             calculateTabletMvtMargin(MeasureSpec.getSize(widthMeasureSpec));
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -603,7 +597,7 @@ public class NewTabPageLayout extends LinearLayout {
         if (isScrollableMvtEnabled()) {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
             setClipToPadding(false);
-            if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled) {
+            if (mIsNtpAsHomeSurfaceEnabled) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
                 int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
@@ -1014,8 +1008,7 @@ public class NewTabPageLayout extends LinearLayout {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!mIsNtpAsHomeSurfaceEnabled || !isScrollableMvtEnabled()
-                || !mIsMultiColumnFeedEnabled) {
+        if (!mIsNtpAsHomeSurfaceEnabled || !isScrollableMvtEnabled()) {
             return;
         }
         MarginLayoutParams marginLayoutParams =

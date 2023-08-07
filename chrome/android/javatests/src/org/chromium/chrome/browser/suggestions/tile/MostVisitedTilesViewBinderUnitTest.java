@@ -11,8 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
@@ -140,12 +140,12 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
     @Test
     @UiThreadTest
     @SmallTest
-    public void testIsMultiColumnFeedOnTabletEnabledSet() {
-        mModel.set(IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED, true);
-        Assert.assertEquals(true, mMvTilesLayout.getIsMultiColumnFeedOnTabletEnabledForTesting());
+    public void testIsNtpAsHomeSurfaceEnabledSet() {
+        mModel.set(IS_NTP_AS_HOME_SURFACE_ENABLED, true);
+        Assert.assertEquals(true, mMvTilesLayout.getIsNtpAsHomeSurfaceEnabledForTesting());
 
-        mModel.set(IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED, false);
-        Assert.assertEquals(false, mMvTilesLayout.getIsMultiColumnFeedOnTabletEnabledForTesting());
+        mModel.set(IS_NTP_AS_HOME_SURFACE_ENABLED, false);
+        Assert.assertEquals(false, mMvTilesLayout.getIsNtpAsHomeSurfaceEnabledForTesting());
     }
 
     @Test

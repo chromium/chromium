@@ -314,26 +314,6 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.START_SURFACE_ON_TABLET})
-    // clang-format off
-    public void testFakeSearchBoxWidthNotChangeWith1RowMvTitles() {
-        // clang-format on
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
-
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
-        // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
-        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
     @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     // clang-format off
@@ -359,26 +339,6 @@ public class StartSurfaceOnTabletTest {
         // Verifies there is additional margin added for the fake search box in both landscape
         // and portrait modes.
         verifyFakeSearchBoxWidth(expectedTwoSideMargin, expectedTwoSideMargin, ntp);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
-    // clang-format off
-    public void testFakeSearchBoxWidthNotChangeWith2RowMvTitles() {
-        // clang-format on
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
-
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
-        // Verifies that 2 row MV tiles are shown when "Start surface on tablet" flag is disabled.
-        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesGridLayout);
     }
 
     @Test
@@ -435,38 +395,6 @@ public class StartSurfaceOnTabletTest {
         Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
         Assert.assertEquals(expectedMarginTop, marginLayoutParams.topMargin);
         Assert.assertEquals(expectedMarginBottom, marginLayoutParams.bottomMargin);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    // clang-format off
-    public void testDefaultSingleTabViewMargin() throws IOException {
-        // clang-format on
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-
-        // Verifies that a new NTP is created and set as the active Tab.
-        verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
-        waitForNtpLoaded(cta.getActivityTab());
-
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        View singleTabView = ntp.getView().findViewById(R.id.single_tab_view);
-
-        Resources res = cta.getResources();
-        int defaultLateralMargin =
-                res.getDimensionPixelSize(R.dimen.single_tab_card_lateral_margin_landscape_tablet);
-
-        // Verifies that the single Tab card has its original margins.
-        MarginLayoutParams marginLayoutParams =
-                (MarginLayoutParams) singleTabView.getLayoutParams();
-        Assert.assertEquals(defaultLateralMargin, marginLayoutParams.getMarginStart());
-        Assert.assertEquals(defaultLateralMargin, marginLayoutParams.getMarginEnd());
     }
 
     @Test

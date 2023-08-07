@@ -488,9 +488,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
-                mIsNtpAsHomeSurfaceEnabled,
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext),
-                mIsSurfacePolishEnabled,
+                mIsNtpAsHomeSurfaceEnabled, mIsSurfacePolishEnabled,
                 StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue());
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the

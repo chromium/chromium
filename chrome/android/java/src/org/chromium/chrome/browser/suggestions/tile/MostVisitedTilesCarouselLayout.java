@@ -28,7 +28,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     private Integer mInitialTileNum;
     private Integer mIntervalPaddingsLandscapeTablet;
     private Integer mIntervalPaddingsPortraitTablet;
-    private boolean mIsMultiColumnFeedOnTabletEnabled;
+    private boolean mIsNtpAsHomeSurfaceEnabled;
 
     /**
      * Constructor for inflating from XML.
@@ -131,7 +131,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mIsMultiColumnFeedOnTabletEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled) {
             if (mInitialTileNum == null) {
                 mInitialTileNum = getChildCount();
             }
@@ -157,12 +157,12 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     }
 
     @Override
-    public void setIsMultiColumnFeedOnTabletEnabled(boolean isMultiColumnFeedOnTabletEnabled) {
-        mIsMultiColumnFeedOnTabletEnabled = isMultiColumnFeedOnTabletEnabled;
+    public void setIsNtpAsHomeSurfaceEnabled(boolean isNtpAsHomeSurfaceEnabled) {
+        mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
     }
 
-    boolean getIsMultiColumnFeedOnTabletEnabledForTesting() {
-        return mIsMultiColumnFeedOnTabletEnabled;
+    boolean getIsNtpAsHomeSurfaceEnabledForTesting() {
+        return mIsNtpAsHomeSurfaceEnabled;
     }
 
     public void setInitialTileNumForTesting(int initialTileNum) {

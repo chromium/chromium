@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
@@ -55,7 +55,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final PropertyModel mModel;
     private final boolean mIsScrollableMVTEnabled;
     private final boolean mIsTablet;
-    private final boolean mIsMultiColumnFeedOnTabletEnabled;
+    private final boolean mIsNtpAsHomeSurfaceEnabled;
     private final boolean mIsSurfacePolishEnabled;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
@@ -75,7 +75,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
             boolean shouldShowSkeletonUIPreNative, boolean isScrollableMVTEnabled, boolean isTablet,
             @Nullable Runnable snapshotTileGridChangedRunnable,
-            @Nullable Runnable tileCountChangedRunnable, boolean isMultiColumnFeedOnTabletEnabled) {
+            @Nullable Runnable tileCountChangedRunnable, boolean isNtpAsHomeSurfaceEnabled) {
         mResources = resources;
         mUiConfig = uiConfig;
         mRenderer = renderer;
@@ -99,8 +99,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
         if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
 
-        mIsMultiColumnFeedOnTabletEnabled = isMultiColumnFeedOnTabletEnabled;
-        mModel.set(IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED, mIsMultiColumnFeedOnTabletEnabled);
+        mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
+        mModel.set(IS_NTP_AS_HOME_SURFACE_ENABLED, mIsNtpAsHomeSurfaceEnabled);
     }
 
     /**
@@ -256,7 +256,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         // {@link MostVisitedTilesGridLayout}
         if (!mIsScrollableMVTEnabled || mMvTilesLayout.getChildCount() < 1) return;
 
-        if (mIsMultiColumnFeedOnTabletEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, 0);
             mModel.set(UPDATE_INTERVAL_PADDINGS_TABLET,
                     mResources.getConfiguration().orientation

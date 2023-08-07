@@ -105,7 +105,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub), mRenderer,
                 propertyModel, shouldShowSkeletonUIPreNative, isScrollableMVTEnabled, isTablet,
                 snapshotTileGridChangedRunnable, tileCountChangedRunnable,
-                StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet) && isTablet);
+                StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet));
     }
 
     /**
