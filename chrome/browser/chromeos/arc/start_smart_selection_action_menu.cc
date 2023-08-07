@@ -170,6 +170,19 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
       std::make_unique<apps::WindowInfo>(display.id()), base::DoNothing());
 }
 
+void StartSmartSelectionActionMenu::OnContextMenuShown(
+    const content::ContextMenuParams& params,
+    const gfx::Rect& rect) {
+  // Since entries are kept as place holders, make them non editable and hidden.
+  for (size_t i = 0; i < kMaxMainMenuCommands; i++) {
+    proxy_->UpdateMenuItem(
+        IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1 + i,
+        /*enabled=*/false,
+        /*hidden=*/true,
+        /*title=*/std::u16string());
+  }
+}
+
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(
     std::vector<ArcIntentHelperMojoDelegate::TextSelectionAction> actions) {
   actions_ = std::move(actions);
