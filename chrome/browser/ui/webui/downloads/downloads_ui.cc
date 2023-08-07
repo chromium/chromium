@@ -119,7 +119,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"controlRetry", IDS_DOWNLOAD_LINK_RETRY},
       {"controlledByUrl", IDS_DOWNLOAD_BY_EXTENSION_URL},
       {"controlOpenNow", IDS_OPEN_DOWNLOAD_NOW},
-      {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN},
       {"controlOpenAnyway", IDS_OPEN_DOWNLOAD_ANYWAY},
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
@@ -159,6 +158,10 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                              update_deep_scanning_ux
                                  ? IDS_DOWNLOAD_DEEP_SCAN_UPDATED
                                  : IDS_DOWNLOAD_DEEP_SCAN);
+  source->AddLocalizedString("controlBypassDeepScan",
+                             update_deep_scanning_ux
+                                 ? IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED
+                                 : IDS_DOWNLOAD_BYPASS_DEEP_SCAN);
   source->AddBoolean("updateDeepScanningUX", update_deep_scanning_ux);
 
   // Build an Accelerator to describe undo shortcut

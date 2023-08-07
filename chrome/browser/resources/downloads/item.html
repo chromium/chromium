@@ -387,14 +387,12 @@
             $i18n{controlDeepScan}
           </cr-button>
         </span>
-        <template is="dom-if" if="[[!updateDeepScanningUx_]]" restamp>
-          <span role="gridcell">
-            <cr-button on-click="onBypassDeepScanClick_" id="bypassDeepScan"
-                       focus-row-control focus-type="open">
-              $i18n{controlBypassDeepScan}
-            </cr-button>
-          </span>
-        </template>
+        <span role="gridcell">
+          <cr-button on-click="onBypassDeepScanClick_" id="bypassDeepScan"
+                     focus-row-control focus-type="open">
+            $i18n{controlBypassDeepScan}
+          </cr-button>
+        </span>
       </template>
       <template is="dom-if" if="[[showCancel_]]">
         <span role="gridcell">

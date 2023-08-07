@@ -2446,6 +2446,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="In the download view, the 'Open' button when prompt for deep scan">
         Open
       </message>
+      <message name="IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED"
+               desc="In the download view, the 'Open' button when prompt for deep scan">
+        Open anyway
+      </message>
 
 
       <!-- Download Alerts for Accessibility -->

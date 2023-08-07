@@ -137,7 +137,6 @@ suite('item tests', function() {
   });
 
   test('deep scan buttons shown on correct state', () => {
-    loadTimeData.overrideValues({'updateDeepScanningUX': false});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -149,21 +148,6 @@ suite('item tests', function() {
     flush();
     assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
     assertTrue(!!item.shadowRoot!.querySelector('#bypassDeepScan'));
-  });
-
-  test('deep scan buttons shown on correct state for updated ux', () => {
-    loadTimeData.overrideValues({'updateDeepScanningUX': true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               state: States.PROMPT_FOR_SCANNING,
-             }));
-    flush();
-    assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
-    assertFalse(!!item.shadowRoot!.querySelector('#bypassDeepScan'));
   });
 
   test('open anyway button shown on failed deep scan', () => {
