@@ -1333,8 +1333,8 @@ message ChromeUnguessableToken {
 }
 
 message FrameSinkId {
-  optional uint32 client_id = 1;
-  optional uint32 sink_id = 2;
+  optional uint32 frame_sink_client_id = 1;
+  optional uint32 frame_sink_id = 2;
 }
 
 message LocalSurfaceId {
