@@ -53,6 +53,7 @@
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
@@ -561,6 +562,11 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::VirtualKeyboard,
                   &crosapi::mojom::Crosapi::BindVirtualKeyboard,
                   Crosapi::MethodMinVersions::kBindVirtualKeyboardMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::FileSystemAccessCloudIdentifierProvider,
+      &crosapi::mojom::Crosapi::BindFileSystemAccessCloudIdentifierProvider,
+      Crosapi::MethodMinVersions::
+          kBindFileSystemAccessCloudIdentifierProviderMinVersion>();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is not available on production devices as tests only

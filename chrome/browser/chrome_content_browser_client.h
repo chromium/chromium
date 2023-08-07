@@ -921,6 +921,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<url::Origin>& top_frame_origin,
       const net::CookieSettingOverrides overrides) override;
 
+  void GetCloudIdentifiers(
+      const storage::FileSystemURL& url,
+      content::FileSystemAccessPermissionContext::HandleType handle_type,
+      GetCloudIdentifiersCallback callback) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
@@ -1055,7 +1060,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<content::SmartCardDelegate> smart_card_delegate_;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_VR)
   std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;

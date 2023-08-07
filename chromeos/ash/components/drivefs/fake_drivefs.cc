@@ -451,6 +451,7 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   }
 
   const auto& stored_metadata = metadata_[path];
+  metadata->item_id = stored_metadata.doc_id;
   metadata->pinned = stored_metadata.pinned;
   metadata->dirty = stored_metadata.dirty;
   metadata->available_offline =

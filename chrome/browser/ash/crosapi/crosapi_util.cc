@@ -80,6 +80,7 @@
 #include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
@@ -291,7 +292,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 113,
+static_assert(crosapi::mojom::Crosapi::Version_ == 114,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -341,6 +342,8 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Feedback>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FieldTrialService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileManager>(),
+    MakeInterfaceVersionEntry<
+        crosapi::mojom::FileSystemAccessCloudIdentifierProvider>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileSystemProviderService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FirewallHoleServiceDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ForceInstalledTracker>(),

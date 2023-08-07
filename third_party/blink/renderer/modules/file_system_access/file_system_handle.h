@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_HANDLE_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
@@ -66,6 +67,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
                             FileSystemHandle* other,
                             ExceptionState&);
   ScriptPromise getUniqueId(ScriptState*, ExceptionState&);
+  ScriptPromise getCloudIdentifiers(ScriptState*, ExceptionState&);
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote
   // if the context is already destroyed.
@@ -96,6 +98,10 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   virtual void GetUniqueIdImpl(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               const WTF::String&)>) = 0;
+  virtual void GetCloudIdentifiersImpl(
+      base::OnceCallback<
+          void(mojom::blink::FileSystemAccessErrorPtr,
+               Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>)>) = 0;
 
   String name_;
 };

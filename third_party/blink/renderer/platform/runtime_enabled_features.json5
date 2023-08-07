@@ -1673,6 +1673,16 @@
       base_feature: "none",
     },
     {
+      // The FileSystemHandle.getCloudIdentifiers() method (see
+      // crbug.com/1443354).
+      name: "FileSystemAccessGetCloudIdentifiers",
+      status: {
+        "ChromeOS_Ash": "experimental",
+        "ChromeOS_Lacros": "experimental",
+        "default": "",
+      }
+    },
+    {
       // Non-OPFS File System Access API.
       name: "FileSystemAccessLocal",
       status: {"Android": "test", "default": "stable"},

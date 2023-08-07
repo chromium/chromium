@@ -53,6 +53,7 @@
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
+#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
@@ -223,6 +224,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
+      file_system_access_cloud_identifier_provider_ash_(
+          std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
       force_installed_tracker_ash_(
@@ -527,6 +530,13 @@ void CrosapiAsh::BindFieldTrialService(
 void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(
+    mojo::PendingReceiver<
+        crosapi::mojom::FileSystemAccessCloudIdentifierProvider> receiver) {
+  file_system_access_cloud_identifier_provider_ash_->BindReceiver(
+      std::move(receiver));
 }
 
 void CrosapiAsh::BindFileSystemProviderService(

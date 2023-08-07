@@ -13,7 +13,10 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -92,6 +95,12 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
                 bool recurse,
                 base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                     callback);
+
+  // Implementation for the GetCloudIdentifiers method in the
+  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
+  void DoGetCloudIdentifiers(
+      FileSystemAccessPermissionContext::HandleType handle_type,
+      ContentBrowserClient::GetCloudIdentifiersCallback callback);
 
   // Invokes `callback`, possibly after first requesting write permission. If
   // permission isn't granted, `no_permission_callback` is invoked instead. The

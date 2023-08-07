@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -100,8 +101,9 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
             ExecutionContext* context = resolver->GetExecutionContext();
-            if (!context)
+            if (!context) {
               return;
+            }
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               file_system_access_error::Reject(resolver, *result);
               return;
@@ -139,8 +141,9 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
             ExecutionContext* context = resolver->GetExecutionContext();
-            if (!context)
+            if (!context) {
               return;
+            }
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               file_system_access_error::Reject(resolver, *result);
               return;
@@ -222,8 +225,9 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
 mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
 FileSystemDirectoryHandle::Transfer() {
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> result;
-  if (mojo_ptr_.is_bound())
+  if (mojo_ptr_.is_bound()) {
     mojo_ptr_->Transfer(result.InitWithNewPipeAndPassReceiver());
+  }
   return result;
 }
 
@@ -327,6 +331,21 @@ void FileSystemDirectoryHandle::GetUniqueIdImpl(
     return;
   }
   mojo_ptr_->GetUniqueId(std::move(callback));
+}
+
+void FileSystemDirectoryHandle::GetCloudIdentifiersImpl(
+    base::OnceCallback<void(
+        mojom::blink::FileSystemAccessErrorPtr,
+        Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>)> callback) {
+  if (!mojo_ptr_.is_bound()) {
+    std::move(callback).Run(
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
+            base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"),
+        {});
+    return;
+  }
+  mojo_ptr_->GetCloudIdentifiers(std::move(callback));
 }
 
 }  // namespace blink

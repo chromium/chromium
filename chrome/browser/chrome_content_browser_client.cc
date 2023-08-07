@@ -476,6 +476,7 @@
 #include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
+#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
@@ -7934,4 +7935,17 @@ bool ChromeContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
   CHECK(cookie_settings);
   return cookie_settings->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin, overrides);
+}
+
+void ChromeContentBrowserClient::GetCloudIdentifiers(
+    const storage::FileSystemURL& url,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
+    GetCloudIdentifiersCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS)
+  cloud_identifier::GetCloudIdentifierFromAsh(url, handle_type,
+                                              std::move(callback));
+#else   // BUILDFLAG(IS_CHROMEOS)
+  return ContentBrowserClient::GetCloudIdentifiers(url, handle_type,
+                                                   std::move(callback));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

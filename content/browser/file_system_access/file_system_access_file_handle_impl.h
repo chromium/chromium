@@ -67,6 +67,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
   void GetUniqueId(GetUniqueIdCallback callback) override;
+  void GetCloudIdentifiers(GetCloudIdentifiersCallback callback) override;
 
   void set_max_swap_files_for_testing(int max) { max_swap_files_ = max; }
 #if BUILDFLAG(IS_MAC)

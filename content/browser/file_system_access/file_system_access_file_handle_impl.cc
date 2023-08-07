@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -783,6 +784,13 @@ bool FileSystemAccessFileHandleImpl::CanUseCowSwapFile() const {
          url().type() == storage::kFileSystemTypeLocal;
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+void FileSystemAccessFileHandleImpl::GetCloudIdentifiers(
+    GetCloudIdentifiersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DoGetCloudIdentifiers(FileSystemAccessPermissionContext::HandleType::kFile,
+                        std::move(callback));
+}
 
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessFileHandleImpl::AsWeakPtr() {

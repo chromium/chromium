@@ -23,6 +23,7 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -557,6 +558,34 @@ void FileSystemAccessHandleBase::DoRemove(
   manager()->DoFileSystemOperation(FROM_HERE,
                                    &storage::FileSystemOperationRunner::Remove,
                                    std::move(wrapped_callback), url, recurse);
+}
+
+void FileSystemAccessHandleBase::DoGetCloudIdentifiers(
+    FileSystemAccessPermissionContext::HandleType handle_type,
+    ContentBrowserClient::GetCloudIdentifiersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessGetCloudIdentifiers)) {
+    mojo::ReportBadMessage(
+        "feature 'FileSystemAccessGetCloudIdentifiers' not enabled");
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kSecurityError),
+        {});
+    return;
+  }
+
+  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied),
+        {});
+    return;
+  }
+
+  GetContentClient()->browser()->GetCloudIdentifiers(url_, handle_type,
+                                                     std::move(callback));
 }
 
 // Calculates the parent URL fom current context, propagating any

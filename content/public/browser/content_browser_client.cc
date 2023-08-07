@@ -50,6 +50,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/capture/content/screen_enumerator.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
@@ -71,6 +72,8 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -1553,6 +1556,20 @@ bool ContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
     const absl::optional<url::Origin>& top_frame_origin,
     const net::CookieSettingOverrides overrides) {
   return true;
+}
+
+void ContentBrowserClient::GetCloudIdentifiers(
+    const storage::FileSystemURL& url,
+    FileSystemAccessPermissionContext::HandleType handle_type,
+    GetCloudIdentifiersCallback callback) {
+  mojo::ReportBadMessage("Cloud identifiers not supported on this platform");
+  std::move(callback).Run(
+      blink::mojom::FileSystemAccessError::New(
+          blink::mojom::FileSystemAccessStatus::kNotSupportedError,
+          base::File::Error::FILE_ERROR_FAILED,
+          "Cloud identifiers are not supported on this platform"),
+      {});
+  return;
 }
 
 }  // namespace content

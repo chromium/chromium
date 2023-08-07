@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -824,6 +825,14 @@ void FileSystemAccessDirectoryHandleImpl::GetUniqueId(
   DCHECK(id.is_valid());
   std::move(callback).Run(file_system_access_error::Ok(),
                           id.AsLowercaseString());
+}
+
+void FileSystemAccessDirectoryHandleImpl::GetCloudIdentifiers(
+    GetCloudIdentifiersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DoGetCloudIdentifiers(
+      FileSystemAccessPermissionContext::HandleType::kDirectory,
+      std::move(callback));
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>

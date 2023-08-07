@@ -32,6 +32,7 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/interest_group_api_operation.h"
 #include "content/public/browser/interest_group_manager.h"
@@ -65,6 +66,8 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
@@ -2576,6 +2579,20 @@ class CONTENT_EXPORT ContentBrowserClient {
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       const net::CookieSettingOverrides overrides);
+
+  // Callback will be called with either an error
+  // (!=`FileSystemAccessStatus::kOk`) or a list of cloud file handles as
+  // result.
+  using GetCloudIdentifiersCallback = base::OnceCallback<void(
+      blink::mojom::FileSystemAccessErrorPtr,
+      std::vector<blink::mojom::FileSystemAccessCloudIdentifierPtr>)>;
+
+  // Retrieve the identifiers the cloud storage providers use for a given
+  // file/directory.
+  virtual void GetCloudIdentifiers(
+      const storage::FileSystemURL& url,
+      FileSystemAccessPermissionContext::HandleType handle_type,
+      GetCloudIdentifiersCallback callback);
 };
 
 }  // namespace content

@@ -75,6 +75,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
   void GetUniqueId(GetUniqueIdCallback callback) override;
+  void GetCloudIdentifiers(GetCloudIdentifiersCallback callback) override;
 
   // Calculates a FileSystemURL for a (direct) child of this directory with the
   // given basename.  Returns an error when `basename` includes invalid input

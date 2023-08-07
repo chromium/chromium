@@ -2826,6 +2826,7 @@ if (!is_android) {
         "../browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate_browsertest.cc",
         "../browser/chromeos/video_conference/video_conference_media_listener_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
+        "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",
       ]
     }
@@ -3907,6 +3908,7 @@ if (!is_android) {
         "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
         "../browser/ash/crosapi/video_conference_ash_browsertest.cc",
         "../browser/ash/crosapi/vpn_extension_observer_ash_browsertest.cc",
+        "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
       ]
       deps += [
         "../browser/ash/video_conference",

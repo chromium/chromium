@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
@@ -58,8 +59,9 @@ ScriptPromise FileSystemFileHandle::createWritable(
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
             ScriptState* script_state = resolver->GetScriptState();
-            if (!script_state)
+            if (!script_state) {
               return;
+            }
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               file_system_access_error::Reject(resolver, *result);
               return;
@@ -132,8 +134,9 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
         DCHECK(access_handle_remote.is_valid());
 
         ExecutionContext* context = resolver->GetExecutionContext();
-        if (!context)
+        if (!context) {
           return;
+        }
 
         FileSystemAccessFileDelegate* file_delegate = nullptr;
         if (file->is_regular_file()) {
@@ -166,8 +169,9 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
 mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
 FileSystemFileHandle::Transfer() {
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> result;
-  if (mojo_ptr_.is_bound())
+  if (mojo_ptr_.is_bound()) {
     mojo_ptr_->Transfer(result.InitWithNewPipeAndPassReceiver());
+  }
   return result;
 }
 
@@ -261,6 +265,21 @@ void FileSystemFileHandle::GetUniqueIdImpl(
     return;
   }
   mojo_ptr_->GetUniqueId(std::move(callback));
+}
+
+void FileSystemFileHandle::GetCloudIdentifiersImpl(
+    base::OnceCallback<void(
+        mojom::blink::FileSystemAccessErrorPtr,
+        Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>)> callback) {
+  if (!mojo_ptr_.is_bound()) {
+    std::move(callback).Run(
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
+            base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"),
+        {});
+    return;
+  }
+  mojo_ptr_->GetCloudIdentifiers(std::move(callback));
 }
 
 }  // namespace blink
