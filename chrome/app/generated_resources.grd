@@ -3877,9 +3877,9 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the cookie controls bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
         {COUNT, plural,
-              =0 {Chrome will start blocking cookies again today}
-              =1 {Chrome will start blocking cookies again tomorrow}
-              other {# days until Chrome starts blocking cookies again}}
+              =0 {Chrome will block cookies again today}
+              =1 {Chrome will block cookies again tomorrow}
+              other {# days until Chrome blocks cookies again}}
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY" desc="Descriptive text in the cookie controls bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
         You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
