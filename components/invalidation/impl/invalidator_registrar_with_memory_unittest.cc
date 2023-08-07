@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
@@ -280,10 +281,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
             "topic_4_3": {"handler": "handler_4", "is_public": false}
       }})";
 
-  auto stored_topics =
-      base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson);
-  ASSERT_TRUE(stored_topics.has_value()) << stored_topics.error().message;
-  pref_service.Set(kTopicsToHandler, std::move(*stored_topics));
+  ASSERT_OK_AND_ASSIGN(
+      auto stored_topics,
+      base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson));
+  pref_service.Set(kTopicsToHandler, std::move(stored_topics));
 
   // Create an invalidator and make sure it correctly restored state from the
   // pref.
@@ -321,10 +322,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, ShouldKeepSubscriptionsAfterRestart) {
             "topic_2": {"handler": "handler", "is_public": true}
       }})";
 
-  auto stored_topics =
-      base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson);
-  ASSERT_TRUE(stored_topics.has_value()) << stored_topics.error().message;
-  pref_service.Set(kTopicsToHandler, std::move(*stored_topics));
+  ASSERT_OK_AND_ASSIGN(
+      auto stored_topics,
+      base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson));
+  pref_service.Set(kTopicsToHandler, std::move(stored_topics));
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service, "sender_id");

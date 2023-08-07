@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 
 #include "base/json/json_reader.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -151,12 +152,13 @@ TEST_F(AutofillFeedbackDataUnitTest, CreatesCompleteReport) {
   base::Value::Dict autofill_feedback_data =
       data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get());
 
-  auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
-      kExpectedFeedbackDataJSON,
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(expected_data.has_value()) << expected_data.error().message;
-  ASSERT_TRUE(expected_data->is_dict());
-  EXPECT_EQ(autofill_feedback_data, expected_data->GetDict());
+  ASSERT_OK_AND_ASSIGN(
+      auto expected_data,
+      base::JSONReader::ReadAndReturnValueWithError(
+          kExpectedFeedbackDataJSON,
+          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+  ASSERT_TRUE(expected_data.is_dict());
+  EXPECT_EQ(autofill_feedback_data, expected_data.GetDict());
 }
 
 TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
@@ -171,22 +173,23 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
       u"TestValue", PopupItemId::kIbanEntry, form, field);
 
-  auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
-      kExpectedFeedbackDataJSON,
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(expected_data.has_value()) << expected_data.error().message;
-  ASSERT_TRUE(expected_data->is_dict());
+  ASSERT_OK_AND_ASSIGN(
+      auto expected_data,
+      base::JSONReader::ReadAndReturnValueWithError(
+          kExpectedFeedbackDataJSON,
+          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+  ASSERT_TRUE(expected_data.is_dict());
 
   // Update the expected data with a last_autofill_event entry.
   base::Value::Dict last_autofill_event;
   last_autofill_event.Set("associatedCountry", "");
   last_autofill_event.Set("type", "SingleFieldFormFillerIban");
-  expected_data->GetDict().Set("lastAutofillEvent",
-                               std::move(last_autofill_event));
+  expected_data.GetDict().Set("lastAutofillEvent",
+                              std::move(last_autofill_event));
 
   EXPECT_EQ(
       data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get()),
-      expected_data->GetDict());
+      expected_data.GetDict());
 }
 
 TEST_F(AutofillFeedbackDataUnitTest,
@@ -207,15 +210,16 @@ TEST_F(AutofillFeedbackDataUnitTest,
   clock.Advance(base::Minutes(4));
 
   // Expected data does not contain the last_autofill_event entry.
-  auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
-      kExpectedFeedbackDataJSON,
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(expected_data.has_value()) << expected_data.error().message;
-  ASSERT_TRUE(expected_data->is_dict());
+  ASSERT_OK_AND_ASSIGN(
+      auto expected_data,
+      base::JSONReader::ReadAndReturnValueWithError(
+          kExpectedFeedbackDataJSON,
+          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+  ASSERT_TRUE(expected_data.is_dict());
 
   EXPECT_EQ(
       data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get()),
-      expected_data->GetDict());
+      expected_data.GetDict());
 }
 
 TEST_F(AutofillFeedbackDataUnitTest, IncludesExtraLogs) {
@@ -233,14 +237,15 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesExtraLogs) {
       data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get(),
                                            extra_logs.Clone());
 
-  auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
-      kExpectedFeedbackDataJSON,
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(expected_data.has_value()) << expected_data.error().message;
-  ASSERT_TRUE(expected_data->is_dict());
+  ASSERT_OK_AND_ASSIGN(
+      auto expected_data,
+      base::JSONReader::ReadAndReturnValueWithError(
+          kExpectedFeedbackDataJSON,
+          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+  ASSERT_TRUE(expected_data.is_dict());
   // Include extra logs in the expected report.
-  expected_data->GetDict().Merge(std::move(extra_logs));
-  EXPECT_EQ(autofill_feedback_data, expected_data->GetDict());
+  expected_data.GetDict().Merge(std::move(extra_logs));
+  EXPECT_EQ(autofill_feedback_data, expected_data.GetDict());
 }
 
 }  // namespace autofill

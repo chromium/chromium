@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -170,11 +171,12 @@ class SafeTemplateURLParser {
 void SafeTemplateURLParser::OnXmlParseComplete(
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   std::move(callback_).Run([&]() -> std::unique_ptr<TemplateURL> {
-    if (!value_or_error.has_value()) {
-      DLOG(ERROR) << "Failed to parse XML: " << value_or_error.error();
-      return nullptr;
-    }
-    const base::Value& root = *value_or_error;
+    ASSIGN_OR_RETURN(const base::Value root, std::move(value_or_error),
+                     [](std::string error) -> std::unique_ptr<TemplateURL> {
+                       DLOG(ERROR)
+                           << "Failed to parse XML: " << std::move(error);
+                       return nullptr;
+                     });
 
     // Get the namespaces used in the XML document, which will be used
     // to access nodes by tag name in GetChildElementsByTag().

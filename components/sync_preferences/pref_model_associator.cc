@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/features.h"
@@ -142,14 +143,13 @@ void PrefModelAssociator::InitPrefAndAssociate(
   if (sync_pref.IsValid()) {
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_pref);
     CHECK_EQ(pref_name, preference.name());
-    base::JSONReader::Result parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(preference.value());
-    if (!parsed_json.has_value()) {
-      LOG(ERROR) << "Failed to deserialize value of preference '" << pref_name
-                 << "': " << parsed_json.error().message;
-      return;
-    }
-    base::Value sync_value = std::move(*parsed_json);
+    ASSIGN_OR_RETURN(
+        base::Value sync_value,
+        base::JSONReader::ReadAndReturnValueWithError(preference.value()),
+        [&](base::JSONReader::Error error) {
+          LOG(ERROR) << "Failed to deserialize value of preference '"
+                     << pref_name << "': " << std::move(error).message;
+        });
 
     if (user_pref_value) {
       DVLOG(1) << "Found user pref value for " << pref_name;
