@@ -102,6 +102,10 @@ extern NSString* const kBookmarkUseCount;
 // events.
 extern NSString* const kAutofillUseCount;
 
+// Key in storage containing an array of dates where each date correspond to
+// a pinned tab or remote tab use event.
+extern NSString* const kSpecialTabsUseCount;
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
@@ -210,6 +214,12 @@ void LogBookmarkUseForDefaultBrowserPromo();
 
 // Logs in NSUserDefaults that user used autofill suggestions
 void LogAutofillUseForDefaultBrowserPromo();
+
+// Logs that the user has used remote tabs.
+void LogRemoteTabsUsedForDefaultBrowserPromo();
+
+// Logs that the user has used pinned tabs.
+void LogPinnedTabsUsedForDefaultBrowserPromo();
 
 // Returns YES if the user has opened the app through first-party intent 2
 // times in the last 7 days, but across 2 user sessions (default 6 hours). Also

@@ -38,6 +38,7 @@ source_set("tab_utils") {
   deps = [
     ":tab_switcher",
     "//base",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",

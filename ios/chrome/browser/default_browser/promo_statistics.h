@@ -38,9 +38,9 @@
 // Number of times user used the autofill suggestions in the last
 // `kTriggerCriteriaExperimentStatExpiration` days.
 @property(nonatomic, assign) int autofillUseCount;
-
-// TODO(crbug.com/1456438): Implement rest of the metrics:
-// SpecialTabsUseCount
+// Number of times special tabs such as pinned or remote tabs were used in the
+// last `kTriggerCriteriaExperimentStatExpiration` days.
+@property(nonatomic, assign) int specialTabsUseCount;
 
 @end
 

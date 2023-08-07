@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_multi_source_observation.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -331,6 +332,8 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   }
 
   itemWebStateList->ActivateWebStateAt(index);
+
+  LogPinnedTabsUsedForDefaultBrowserPromo();
 }
 
 - (void)closeItemWithID:(NSString*)itemID {

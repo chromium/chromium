@@ -639,6 +639,9 @@ chromium-metrics-reviews@google.com.
     <variant name="PromoDisplayCount"
         summary="Represents number of default browser promos displayed to the
                  user"/>
+    <variant name="SpecialTabsUseCount"
+        summary="Represents number of time special tabs such as pinned or
+                 remote tabs were used"/>
   </token>
 </histogram>
 

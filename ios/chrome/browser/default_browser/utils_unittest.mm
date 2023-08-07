@@ -661,4 +661,44 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_AutofillUseCount) {
     EXPECT_EQ(2, promo_stats.autofillUseCount);
   }
 }
+
+// Test `CalculatePromoStatistics` for pinned or remote tab use.
+TEST_F(DefaultBrowserUtilsTest,
+       CalculatePromoStatisticsTest_SpecialTabUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.specialTabsUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kLastSignificantUserEventStaySafe,
+                             @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.specialTabsUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kSpecialTabsUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.specialTabsUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogRemoteTabsUsedForDefaultBrowserPromo();
+  LogPinnedTabsUsedForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(3, promo_stats.specialTabsUseCount);
+  }
+}
 }  // namespace
