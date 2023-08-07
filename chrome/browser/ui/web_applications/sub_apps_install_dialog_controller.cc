@@ -60,6 +60,7 @@ void SubAppsInstallDialogController::Init(
 }
 
 void SubAppsInstallDialogController::OnWidgetDestroying(views::Widget* widget) {
+  widget_->RemoveObserver(this);
   widget_ = nullptr;
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
