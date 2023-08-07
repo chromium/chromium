@@ -414,20 +414,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible.Articles.Prefetched.Offline2"
-    units="suggestions" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The number of prefetched suggestion cards that were available in
-    Articles category if it was visible at the time an NTP was opened and the
-    user was offline. This metric is reported after all URL prefetched
-    asynchronous checks finish.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.Opened" units="index"
     expires_after="never">
 <!-- expires-never: key feature metric.  We will need the Opened

@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.DeletedPageInfo;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
@@ -40,12 +39,12 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
 
     @Override
     public void offlinePageModelLoaded() {
-        updateAllSuggestionsOfflineAvailability(/* reportPrefetchedSuggestionsCount = */ false);
+        updateAllSuggestionsOfflineAvailability();
     }
 
     @Override
     public void offlinePageAdded(OfflinePageItem addedPage) {
-        updateAllSuggestionsOfflineAvailability(/* reportPrefetchedSuggestionsCount = */ false);
+        updateAllSuggestionsOfflineAvailability();
     }
 
     @Override
@@ -60,49 +59,27 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
             // The old value cannot be simply removed without a request to the
             // model, because there may be an older offline page for the same
             // URL.
-            updateSuggestionOfflineAvailability(suggestion, /* prefetchedReporter = */ null);
+            updateSuggestionOfflineAvailability(suggestion);
         }
     }
 
     /**
      * Update offline information for all offlinable suggestions by querying offline page model.
-     * @param reportPrefetchedSuggestionsCount whether to report prefetched suggestions count after
-     *         querying the model.
      */
-    public void updateAllSuggestionsOfflineAvailability(boolean reportPrefetchedSuggestionsCount) {
-        NumberPrefetchedReporter prefetchedReporter = null;
-        if (reportPrefetchedSuggestionsCount) {
-            int pendingRequestsCount = 0;
-            for (T suggestion : getOfflinableSuggestions()) {
-                ++pendingRequestsCount;
-            }
-            prefetchedReporter = new NumberPrefetchedReporter(pendingRequestsCount);
-        }
+    public void updateAllSuggestionsOfflineAvailability() {
         for (T suggestion : getOfflinableSuggestions()) {
-            if (suggestion.requiresExactOfflinePage()) {
-                if (prefetchedReporter != null) {
-                    prefetchedReporter.requestCompleted(/* prefetched = */ false);
-                }
-                continue;
-            }
-            updateSuggestionOfflineAvailability(suggestion, prefetchedReporter);
+            updateSuggestionOfflineAvailability(suggestion);
         }
     }
 
     /**
      * Update offline information for given offlinable suggestion by querying offline page model.
      * @param suggestion given suggestion for which to update the offline information.
-     * @param prefetchedReporter reporter of prefetched suggestions count, null if reporting is
-     *         disabled.
      */
-    public void updateSuggestionOfflineAvailability(
-            final T suggestion, @Nullable final NumberPrefetchedReporter prefetchedReporter) {
+    public void updateSuggestionOfflineAvailability(final T suggestion) {
         // This method is not applicable to articles for which the exact offline id must specified.
         assert !suggestion.requiresExactOfflinePage();
         if (!mOfflinePageBridge.isOfflinePageModelLoaded()) {
-            if (prefetchedReporter != null) {
-                prefetchedReporter.requestCompleted(/* prefetched = */ false);
-            }
             return;
         }
 
@@ -112,9 +89,6 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
                 suggestion.getUrl(), /* tabId = */ 0, new Callback<OfflinePageItem>() {
                     @Override
                     public void onResult(OfflinePageItem item) {
-                        if (prefetchedReporter != null) {
-                            prefetchedReporter.requestCompleted(isPrefetchedOfflinePage(item));
-                        }
                         onSuggestionOfflineIdChanged(suggestion, item);
                     }
                 });
@@ -139,21 +113,4 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
 
     /** Handle to the suggestions for which to observe changes. */
     public abstract Iterable<T> getOfflinableSuggestions();
-
-    private static class NumberPrefetchedReporter {
-        private int mRemainingRequests;
-        private int mPrefetched;
-
-        public NumberPrefetchedReporter(int requests) {
-            mRemainingRequests = requests;
-        }
-
-        public void requestCompleted(boolean prefetched) {
-            mRemainingRequests--;
-            if (prefetched) mPrefetched++;
-            if (mRemainingRequests == 0) {
-                NewTabPageUma.recordPrefetchedArticleSuggestionsCount(mPrefetched);
-            }
-        }
-    }
 }

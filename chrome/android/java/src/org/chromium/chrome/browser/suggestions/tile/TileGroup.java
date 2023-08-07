@@ -390,8 +390,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         if (!dataChanged) return;
 
-        mOfflineModelObserver.updateAllSuggestionsOfflineAvailability(
-                /* reportPrefetchedSuggestionsCount = */ false);
+        mOfflineModelObserver.updateAllSuggestionsOfflineAvailability();
 
         if (countChanged) mObserver.onTileCountChanged();
 

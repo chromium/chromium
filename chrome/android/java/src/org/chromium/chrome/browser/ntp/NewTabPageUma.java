@@ -99,10 +99,6 @@ public class NewTabPageUma {
     /** The number of possible NTP impression types */
     private static final int NUM_NTP_IMPRESSION = 2;
 
-    /** The maximal number of suggestions per section. Keep in sync with kMaxSuggestionsPerCategory
-     * in content_suggestions_metrics.cc. */
-    private static final int MAX_SUGGESTIONS_PER_SECTION = 20;
-
     /**
      * Possible results when updating content suggestions list in the UI. Keep in sync with the
      * ContentSuggestionsUIUpdateResult2 enum in enums.xml. Do not remove or change existing
@@ -213,17 +209,6 @@ public class NewTabPageUma {
     public void monitorNTPCreation() {
         mTabCreationRecorder = new TabCreationRecorder();
         mTabModelSelector.addObserver(mTabCreationRecorder);
-    }
-
-    /**
-     * Records number of prefetched article suggestions, which were available when content
-     * suggestions surface was opened and there was no network connection.
-     */
-    public static void recordPrefetchedArticleSuggestionsCount(int count) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible."
-                        + "Articles.Prefetched.Offline2",
-                count, MAX_SUGGESTIONS_PER_SECTION);
     }
 
     /**
