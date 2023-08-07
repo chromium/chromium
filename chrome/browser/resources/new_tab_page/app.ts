@@ -847,7 +847,9 @@ export class AppElement extends AppElementBase {
   }
 
   private onWebstoreToastButtonClick_() {
-    window.location.assign('https://chromewebstore.google.com');
+    window.location.assign(
+        `https://chrome.google.com/webstore/category/collection/chrome_color_themes?hl=${
+            window.navigator.language}`);
   }
 
   private onWindowClick_(e: Event) {
