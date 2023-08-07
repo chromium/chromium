@@ -184,11 +184,13 @@ struct WebAppInstallInfo {
     MOBILE_CAPABLE_APPLE
   };
 
-  // Returns a copy of the |other| that has only the fields that should be
-  // copied/derived from various sources (e.g generated icons, manifest
-  // properties). This will strip out app-like fields such as file handlers etc.
+  // Returns a copy of `other` retaining only the fields that are needed for
+  // a shortcut (e.g icons), and using the document title and URL instead of
+  // manifest properties. This will strip out app-like fields (e.g. file
+  // handlers).
   static WebAppInstallInfo CreateInstallInfoForCreateShortcut(
       const GURL& document_url,
+      const std::u16string& document_title,
       const WebAppInstallInfo& other);
 
   // This creates a WebAppInstallInfo where the `manifest_id` is derived from

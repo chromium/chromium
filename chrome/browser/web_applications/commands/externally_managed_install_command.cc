@@ -176,7 +176,8 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
 
   if (install_params_.install_as_shortcut) {
     *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
-        web_contents_->GetLastCommittedURL(), *web_app_info_);
+        web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
+        *web_app_info_);
   }
 
   app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);

@@ -2,15 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <initializer_list>
+#include <map>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,21 +27,29 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
@@ -61,6 +77,15 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
     AppId app_id = observer.Wait();
     chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
     return app_id;
+  }
+
+  // Start URL points to `PageWithDifferentStartUrlManifestStartUrl`.
+  GURL PageWithDifferentStartUrl() {
+    return https_server()->GetURL("/web_apps/different_start_url.html");
+  }
+
+  GURL PageWithDifferentStartUrlManifestStartUrl() {
+    return https_server()->GetURL("/web_apps/basic.html");
   }
 
   WebAppRegistrar& registrar() {
@@ -300,5 +325,63 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
       GenerateBitmap(icon_size::k128, static_cast<char32_t>('E'));
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, generated_icon_bitmap));
 }
+
+class CreateShortcutBrowserTest_CreateShortcutIgnoresManifest
+    : public CreateShortcutBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CreateShortcutBrowserTest_CreateShortcutIgnoresManifest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          webapps::features::kCreateShortcutIgnoresManifest);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          webapps::features::kCreateShortcutIgnoresManifest);
+    }
+  }
+
+  ~CreateShortcutBrowserTest_CreateShortcutIgnoresManifest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
+                       InstallableSiteDifferentStartUrl) {
+  bool create_shortcut_ignores_manifest = GetParam();
+  NavigateToURLAndWait(browser(), PageWithDifferentStartUrl());
+  AppId app_id = InstallShortcutAppForCurrentUrl();
+
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kBrowser);
+
+  // Using the manifest makes it a non-shortcut, even though we used "Create
+  // Shortcut". Could be considered a bug (crbug.com/1469482).
+  EXPECT_EQ(registrar().IsShortcutApp(app_id),
+            create_shortcut_ignores_manifest);
+
+  if (create_shortcut_ignores_manifest) {
+    // Title set to current page title.
+    EXPECT_EQ(registrar().GetAppShortName(app_id),
+              "Page with manifest with different start URL");
+  } else {
+    // Title from manifest.
+    EXPECT_EQ(registrar().GetAppShortName(app_id), "Basic web app");
+  }
+
+  if (create_shortcut_ignores_manifest) {
+    // Start URL set to current page.
+    EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
+              PageWithDifferentStartUrl());
+  } else {
+    // Start URL from manifest.
+    EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
+              PageWithDifferentStartUrlManifestStartUrl());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
+    testing::Bool());
 
 }  // namespace web_app
