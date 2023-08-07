@@ -189,6 +189,7 @@ class BorderView : public views::View {
 
   void SetBorderRadii(const gfx::RoundedCornersF& radii) {
     border_->SetBorderRadii(radii);
+    SchedulePaint();
   }
 
   void Layout() override {
@@ -259,7 +260,6 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   // Since the border_view paints the background, by adding rounded
   // corners to border will paint a rounded background for the side panel.
   static_cast<BorderView*>(border_view_)->SetBorderRadii(background_radii_);
-  SchedulePaint();
 }
 
 void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
