@@ -6537,6 +6537,9 @@ crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstiti
 # Until LCPP is unflagged, LCPP tests run in virtual tests.
 crbug.com/1419756 http/tests/lcp_critical_path_predictor/* [ Crash Failure ]
 
+# Accessibility causes unrelated rendering change
+crbug.com/1470474 fast/ruby/ruby-position-modern-japanese-fonts.html [ Failure Pass ]
+
 # Gardnener 2023-07-07
 crbug.com/1462462 http/tests/history/replacestate-post-to-get-2.html [ Failure Pass Timeout ]
 
