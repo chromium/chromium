@@ -29,6 +29,21 @@
     margin: 0;
     width: 18px;
   }
+
+  :host-context([chrome-refresh-2023]) #hoverButton {
+    line-height: 16px;
+    padding: 8px 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) #icon {
+    --cr-icon-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) customize-chrome-button-label {
+    align-self: center;
+  }
 </style>
 <div id="hoverButton" role="button" tabindex="0">
   <customize-chrome-button-label label="[[label]]"
