@@ -159,24 +159,37 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </variant>
 </variants>
 
-<histogram name="ChromeOS.AnomalousProcCount.{AnomalyType}" units="processes"
-    expires_after="2024-01-31">
+<histogram name="ChromeOS.AnomalousProcCount.AttemptedMemfdExec"
+    units="processes" expires_after="2024-01-31">
   <owner>enlightened@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
-    Records the number of unique processes on the system that deviate from the
-    ChromeOS security posture based on a specific criteria. This metric tracks
-    processes that were flagged due to: {AnomalyType}.
+    Records the number of unique processes on the system that attempted to
+    execute a memory file descriptor.
 
-    Processes are scanned for anomalies every thirty seconds, but the metric is
-    recorded every two hours on ChromeOS devices. If the metric is recorded
+    Processes are scanned for this anomaly every thirty seconds, but the metric
+    is recorded every two hours on ChromeOS devices. If the metric is recorded
     successfully, the process count is reset. So the metric represents the
     number of anomalous processes found in a two-hour scan window or since the
     last successful recording event.
   </summary>
-  <token key="AnomalyType">
-    <variant name="AttemptedMemfdExec"/>
-  </token>
+</histogram>
+
+<histogram name="ChromeOS.AnomalousProcCount.ForbiddenIntersection"
+    units="processes" expires_after="2024-01-31">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Records the number of unique processes on the system that do not have the
+    minimum sandboxing measures applied in order to avoid the forbidden
+    intersection:
+    https://chromium.googlesource.com/chromiumos/docs/+/HEAD/sandboxing.md#The-forbidden-intersection
+    As a caveat, SELinux is not considered as only an enforcing domain provides
+    meaningful coverage.
+
+    Processes are scanned for this anomaly every thirty seconds, but the metric
+    is only sent once per boot and only in the logged-in state.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
