@@ -140,6 +140,10 @@ void OverlayWindowAndroid::OnActivityStopped() {
 void OverlayWindowAndroid::Destroy(JNIEnv* env) {
   java_ref_.reset();
 
+  // Stop the timer for completeness, though resetting `java_ref_` will make it
+  // a no-op.
+  update_action_timer_->Stop();
+
   if (window_android_) {
     window_android_->RemoveObserver(this);
     window_android_ = nullptr;
@@ -233,6 +237,11 @@ void OverlayWindowAndroid::CloseInternal() {
   window_android_ = nullptr;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_close(env, java_ref_.get(env));
+
+  // Stop any in-flight action button updates.  We won't find out if the Android
+  // window is destroyed since that comes from `WindowAndroidObserver` but we
+  // just unregistered from that.
+  update_action_timer_->Stop();
 }
 
 bool OverlayWindowAndroid::IsActive() const {
