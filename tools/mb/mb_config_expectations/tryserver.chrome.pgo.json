@@ -122,6 +122,19 @@
       "use_remoteexec": true
     }
   },
+  "win-arm64-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "dcheck_always_on": false,
+      "is_chrome_branded": true,
+      "is_debug": false,
+      "is_official_build": true,
+      "is_on_release_branch": true,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
   "win32-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,

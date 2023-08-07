@@ -54,6 +54,7 @@
       'linux-pgo': 'official_linux_pgo',
       'mac-arm-pgo': 'official_mac_arm_pgo',
       'mac-pgo': 'official_mac_pgo',
+      'win-arm64-pgo': 'official_win_arm64_pgo',
       'win32-pgo': 'official_x86_pgo',
       'win64-pgo': 'official_x64_pgo',
     },
@@ -993,6 +994,7 @@
       'linux-pgo': 'official_linux_pgo',
       'mac-arm-pgo': 'official_mac_arm_pgo',
       'mac-pgo': 'official_mac_pgo',
+      'win-arm64-pgo': 'official_win_arm64_pgo',
       'win32-pgo': 'official_x86_pgo',
       'win64-pgo': 'official_x64_pgo',
     },
@@ -3407,6 +3409,10 @@
 
     'official_reclient_x86': [
       'official', 'reclient', 'x86',
+    ],
+
+    'official_win_arm64_pgo': [
+      'official', 'reclient', 'arm64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_x64_pgo': [
