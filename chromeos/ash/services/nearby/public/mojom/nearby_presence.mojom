@@ -39,9 +39,12 @@ struct PresenceScanFilter {
   PresenceDeviceType device_type;
 };
 
-// Possible Presence Scan device types.
+// Possible Presence Scan device types. These are defined in
+// //third_party/src/nearby/internal/proto/metadata.proto and should be kept
+// consistent with the types defined in `DeviceType`.
 enum PresenceDeviceType {
-  kUnspecified = 0,
+  // The type of the device found during the scan is unknown.
+  kUnknown = 0,
   kPhone = 1,
   kTablet = 2,
   kDisplay = 3,

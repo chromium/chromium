@@ -30,7 +30,7 @@ mojom::PresenceDeviceType DeviceTypeToMojom(
     ::nearby::internal::DeviceType device_type) {
   switch (device_type) {
     case ::nearby::internal::DeviceType::DEVICE_TYPE_UNKNOWN:
-      return mojom::PresenceDeviceType::kUnspecified;
+      return mojom::PresenceDeviceType::kUnknown;
     case ::nearby::internal::DeviceType::DEVICE_TYPE_PHONE:
       return mojom::PresenceDeviceType::kPhone;
     case ::nearby::internal::DeviceType::DEVICE_TYPE_TABLET:
@@ -44,7 +44,7 @@ mojom::PresenceDeviceType DeviceTypeToMojom(
     case ::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS:
       return mojom::PresenceDeviceType::kChromeos;
     default:
-      return mojom::PresenceDeviceType::kUnspecified;
+      return mojom::PresenceDeviceType::kUnknown;
   }
 }
 

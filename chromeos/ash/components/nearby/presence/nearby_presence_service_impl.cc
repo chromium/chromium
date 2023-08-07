@@ -21,7 +21,7 @@ namespace {
 ::nearby::internal::DeviceType ConvertMojomDeviceType(
     ash::nearby::presence::mojom::PresenceDeviceType mojom_type) {
   switch (mojom_type) {
-    case ash::nearby::presence::mojom::PresenceDeviceType::kUnspecified:
+    case ash::nearby::presence::mojom::PresenceDeviceType::kUnknown:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_UNKNOWN;
     case ash::nearby::presence::mojom::PresenceDeviceType::kPhone:
       return ::nearby::internal::DeviceType::DEVICE_TYPE_PHONE;
