@@ -184,11 +184,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
                 initWithBrowser:self.browser];
-        if (controller) {
-          controller.dispatcher = self.dispatcher;
-          [self.navigationController pushViewController:controller
-                                               animated:YES];
-        }
+        controller.dispatcher = self.dispatcher;
+        [self.navigationController pushViewController:controller animated:YES];
       }
       break;
     }
