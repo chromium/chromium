@@ -25,8 +25,6 @@ source_set("ios_thread") {
 
 source_set("browser_state") {
   sources = [
-    "bookmark_model_loaded_observer.cc",
-    "bookmark_model_loaded_observer.h",
     "browser_state_keyed_service_factories.h",
     "browser_state_keyed_service_factories.mm",
     "chrome_browser_state_impl.h",
