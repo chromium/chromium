@@ -79,8 +79,8 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
      * The {@link MessageContainer} view should be laid out for this method to return a meaningful
      * value.
      *
-     * @return The maximum translation Y value the message banner can have as a result of the
-     *         animations or the gestures. Positive values mean the message banner can be translated
+     * @return The maximum translation Y value the message banner can have as a result of
+     *         the gestures. Positive values mean the message banner can be translated
      *         upward from the top of the MessagesContainer.
      */
     public int getMessageMaxTranslation() {
@@ -89,6 +89,15 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         final int messageHeightWithShadow =
                 mContainer.getMessageBannerHeight() + mContainer.getMessageShadowTopMargin();
         return messageHeightWithShadow + getContainerTopOffset();
+    }
+
+    /**
+     * @return The available offset between message's top side and app's top edge.
+     */
+    public int getMessageTopOffset() {
+        // The top offset is message shadow + controls height (adjusted for
+        // Message container offsets)
+        return getContainerTopOffset() + mContainer.getMessageShadowTopMargin();
     }
 
     @Override

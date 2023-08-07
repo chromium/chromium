@@ -793,6 +793,7 @@ public class RootUiCoordinator
             };
             mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
+                    mMessageContainerCoordinator::getMessageTopOffset,
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     new ChromeMessageAutodismissDurationProvider(),
                     mWindowAndroid::startAnimationOverContent, mWindowAndroid);
