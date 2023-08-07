@@ -156,8 +156,9 @@ export enum PrivacyGuideInteractions {
   PROMO_ENTRY = 7,
   SWAA_COMPLETION_LINK = 8,
   PRIVACY_SANDBOX_COMPLETION_LINK = 9,
+  SEARCH_SUGGESTIONS_NEXT_BUTTON = 10,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 10,
+  MAX_VALUE = 11,
 }
 
 /**
@@ -189,8 +190,12 @@ export enum PrivacyGuideSettingsStates {
   SAFE_BROWSING_ENHANCED_TO_STANDARD = 13,
   SAFE_BROWSING_STANDARD_TO_ENHANCED = 14,
   SAFE_BROWSING_STANDARD_TO_STANDARD = 15,
+  SEARCH_SUGGESTIONS_ON_TO_ON = 16,
+  SEARCH_SUGGESTIONS_ON_TO_OFF = 17,
+  SEARCH_SUGGESTIONS_OFF_TO_ON = 18,
+  SEARCH_SUGGESTIONS_OFF_TO_OFF = 19,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 16,
+  MAX_VALUE = 20,
 }
 
 /**
@@ -215,8 +220,10 @@ export enum PrivacyGuideStepsEligibleAndReached {
   COOKIES_REACHED = 7,
   COMPLETION_ELIGIBLE = 8,
   COMPLETION_REACHED = 9,
+  SEARCH_SUGGESTIONS_ELIGIBLE = 10,
+  SEARCH_SUGGESTIONS_REACHED = 11,
   // Leave this at the end.
-  COUNT = 10,
+  COUNT = 12,
 }
 
 /**

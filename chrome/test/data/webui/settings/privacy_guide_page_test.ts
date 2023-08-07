@@ -1438,6 +1438,7 @@ suite('SearchSuggestionsCardNavigations', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testHatsBrowserProxy: TestHatsBrowserProxy;
 
   suiteSetup(function() {
@@ -1446,6 +1447,8 @@ suite('SearchSuggestionsCardNavigations', function() {
   });
 
   setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -1472,6 +1475,11 @@ suite('SearchSuggestionsCardNavigations', function() {
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        actionResult, 'Settings.PrivacyGuide.BackClickSearchSuggestions');
   });
 
   test('searchSuggestionsCardBackNavigationSafeBrowsingOff', async function() {
@@ -1492,6 +1500,16 @@ suite('SearchSuggestionsCardNavigations', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
         flush();
         assertCompletionCardVisible(page);
+
+        const result = await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideNextNavigationHistogram');
+        assertEquals(
+            PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON, result);
+
+        const actionResult =
+            await testMetricsBrowserProxy.whenCalled('recordAction');
+        assertEquals(
+            actionResult, 'Settings.PrivacyGuide.NextClickSearchSuggestions');
       });
 
   test('hatsInformedOnFinish', async function() {

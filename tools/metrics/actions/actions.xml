@@ -29931,6 +29931,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.BackClickSearchSuggestions">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User clicks the back button on the search suggestions card in Privacy guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.ChangeCookiesBlock3P">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
@@ -29995,6 +30003,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.ChangeSearchSuggestionsOff">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User changes Search Suggestions to off in Privacy guide.
+  </description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeSearchSuggestionsOn">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User changes Search Suggestions to on in Privacy guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.CompletionPSClick">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
@@ -30056,6 +30080,14 @@ should be able to be added at any place in this file.
   <owner>chrome-friendly-settings@google.com</owner>
   <description>
     User clicks the next button on the Safe Browsing card in Privacy guide.
+  </description>
+</action>
+
+<action name="Settings.PrivacyGuide.NextClickSearchSuggestions">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User clicks the next button on the search suggestions card in Privacy guide.
   </description>
 </action>
 

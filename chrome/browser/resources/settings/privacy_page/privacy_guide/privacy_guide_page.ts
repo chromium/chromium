@@ -62,6 +62,8 @@ function eligibilityToRecord(step: PrivacyGuideStep):
       return PrivacyGuideStepsEligibleAndReached.COOKIES_ELIGIBLE;
     case PrivacyGuideStep.SAFE_BROWSING:
       return PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_ELIGIBLE;
+    case PrivacyGuideStep.SEARCH_SUGGESTIONS:
+      return PrivacyGuideStepsEligibleAndReached.SEARCH_SUGGESTIONS_ELIGIBLE;
     case PrivacyGuideStep.COMPLETION:
       return PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE;
     default:
@@ -298,6 +300,15 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
             onForwardNavigation: () => {
               HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
                   TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
+              this.metricsBrowserProxy_
+                  .recordPrivacyGuideNextNavigationHistogram(
+                      PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON);
+              this.metricsBrowserProxy_.recordAction(
+                  'Settings.PrivacyGuide.NextClickSearchSuggestions');
+            },
+            onBackwardNavigation: () => {
+              this.metricsBrowserProxy_.recordAction(
+                  'Settings.PrivacyGuide.BackClickSearchSuggestions');
             },
             isAvailable: () => true,
           },
@@ -492,9 +503,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private recordEligibleSteps_(): void {
     for (const key in PrivacyGuideStep) {
       const step = PrivacyGuideStep[key as keyof typeof PrivacyGuideStep];
-      if (step === PrivacyGuideStep.SEARCH_SUGGESTIONS) {
-        // TODO(crbug.com/1215630): Remove when we add metrics for the
-        // SEARCH_SUGGESTION step.
+      if (!loadTimeData.getBoolean('enablePrivacyGuide3') &&
+          step === PrivacyGuideStep.SEARCH_SUGGESTIONS) {
+        // TODO(crbug.com/1215630): Search suggestion metrics should only be
+        // recorded if the feature is enabled.
         continue;
       }
 

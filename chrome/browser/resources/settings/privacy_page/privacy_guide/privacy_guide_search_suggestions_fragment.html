@@ -14,7 +14,8 @@
   <div class="embedded-setting-wrapper">
     <settings-toggle-button id="searchSuggestToggle"
         pref="{{prefs.search.suggest_enabled}}"
-        label="$i18n{searchSuggestPref}">
+        label="$i18n{searchSuggestPref}"
+        on-change="onSearchSuggestionsToggleClick_">
     </settings-toggle-button>
   </div>
   <div class="description-wrapper two-column">
