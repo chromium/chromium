@@ -517,7 +517,6 @@ WebTestControlHost::WebTestControlHost() {
                                     ->GetDefaultStoragePartition());
 
   GpuDataManager::GetInstance()->AddObserver(this);
-  ResetBrowserAfterWebTest();
 }
 
 WebTestControlHost::~WebTestControlHost() {
