@@ -86,13 +86,26 @@ class CONTENT_EXPORT TracingScenario {
   virtual std::unique_ptr<perfetto::TracingSession> CreateTracingSession();
 
  private:
+  // Helper deleter to automatically clear on-error callback from
+  // perfetto::TracingSession. Without clearing the callback, it is
+  // invoked whenever a session is deleted.
+  struct TracingSessionDeleter {
+    TracingSessionDeleter() = default;
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    TracingSessionDeleter(std::default_delete<perfetto::TracingSession>) {}
+    void operator()(perfetto::TracingSession* ptr) const;
+  };
+  using TracingSession =
+      std::unique_ptr<perfetto::TracingSession, TracingSessionDeleter>;
+  class TraceReader;
+
   bool Initialize(bool requires_anonymized_data);
 
   void SetupTracingSession();
   void OnTracingError(perfetto::TracingError error);
   void OnTracingStop();
   void OnTracingStart();
-  void OnFinalizingDone(std::string trace_data);
+  void OnFinalizingDone(std::string trace_data, TracingSession tracing_session);
 
   bool OnSetupTrigger(const BackgroundTracingRule* rule);
   bool OnStartTrigger(const BackgroundTracingRule* rule);
@@ -112,7 +125,7 @@ class CONTENT_EXPORT TracingScenario {
   perfetto::TraceConfig trace_config_;
   raw_ptr<Delegate> scenario_delegate_;
   raw_ptr<TracingDelegate> tracing_delegate_;
-  std::unique_ptr<perfetto::TracingSession> tracing_session_;
+  TracingSession tracing_session_;
   std::string raw_data_;
   const bool requires_anonymized_data_ = false;
 

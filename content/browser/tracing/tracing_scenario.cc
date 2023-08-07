@@ -16,6 +16,27 @@
 
 namespace content {
 
+void TracingScenario::TracingSessionDeleter::operator()(
+    perfetto::TracingSession* ptr) const {
+  ptr->SetOnErrorCallback({});
+  delete ptr;
+}
+
+class TracingScenario::TraceReader
+    : public base::RefCountedThreadSafe<TraceReader> {
+ public:
+  explicit TraceReader(TracingSession tracing_session)
+      : tracing_session(std::move(tracing_session)) {}
+
+  TracingSession tracing_session;
+  std::string serialized_trace;
+
+ private:
+  friend class base::RefCountedThreadSafe<TraceReader>;
+
+  ~TraceReader() = default;
+};
+
 using Metrics = BackgroundTracingManagerImpl::Metrics;
 
 // static
@@ -209,8 +230,8 @@ bool TracingScenario::OnStopTrigger(
     scenario_delegate_->OnScenarioIdle(this);
     return true;
   }
-  SetState(State::kStopping);
   tracing_session_->Stop();
+  SetState(State::kStopping);
   return true;
 }
 
@@ -237,8 +258,10 @@ bool TracingScenario::OnUploadTrigger(
   CHECK(current_state_ == State::kRecording ||
         current_state_ == State::kStopping)
       << static_cast<int>(current_state_);
+  if (current_state_ != State::kStopping) {
+    tracing_session_->Stop();
+  }
   SetState(State::kFinalizing);
-  tracing_session_->Stop();
   return true;
 }
 
@@ -304,29 +327,31 @@ void TracingScenario::OnTracingStop() {
     return;
   }
   CHECK_EQ(current_state_, State::kFinalizing);
-  auto raw_data =
-      base::MakeRefCounted<base::RefCountedData<std::string>>(std::string());
-  tracing_session_->ReadTrace(
+  auto reader = base::MakeRefCounted<TraceReader>(std::move(tracing_session_));
+  reader->tracing_session->ReadTrace(
       [task_runner = task_runner_, weak_ptr = GetWeakPtr(),
-       raw_data](perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
+       reader](perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
         if (args.size) {
-          raw_data->data.append(args.data, args.size);
+          reader->serialized_trace.append(args.data, args.size);
         }
         if (!args.has_more) {
           task_runner->PostTask(
-              FROM_HERE, base::BindOnce(&TracingScenario::OnFinalizingDone,
-                                        weak_ptr, std::move(raw_data->data)));
+              FROM_HERE,
+              base::BindOnce(&TracingScenario::OnFinalizingDone, weak_ptr,
+                             std::move(reader->serialized_trace),
+                             std::move(reader->tracing_session)));
         }
       });
-}
-
-void TracingScenario::OnFinalizingDone(std::string trace_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  tracing_session_.reset();
-  scenario_delegate_->SaveTrace(this, std::move(trace_data));
   SetState(State::kDisabled);
   scenario_delegate_->OnScenarioIdle(this);
+}
+
+void TracingScenario::OnFinalizingDone(std::string trace_data,
+                                       TracingSession tracing_session) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  tracing_session.reset();
+  scenario_delegate_->SaveTrace(this, std::move(trace_data));
 }
 
 void TracingScenario::SetState(State new_state) {

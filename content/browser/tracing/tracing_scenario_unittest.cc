@@ -429,9 +429,8 @@ TEST_F(TracingScenarioTest, Upload) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, "this is a trace"))
-      .Times(1);
-  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario)).Times(1);
 
   EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
       "upload_trigger"));
@@ -452,9 +451,8 @@ TEST_F(TracingScenarioTest, StopUpload) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, "this is a trace"))
-      .Times(1);
-  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario)).Times(1);
 
   EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
       "stop_trigger"));

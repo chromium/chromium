@@ -465,6 +465,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("upload_trigger"));
   background_tracing_helper.WaitForScenarioIdle();
 
+  background_tracing_helper.WaitForTraceReceived();
   EXPECT_TRUE(background_tracing_helper.trace_received());
 }
 
@@ -539,6 +540,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("upload_trigger"));
   background_tracing_helper.WaitForScenarioIdle();
 
+  background_tracing_helper.WaitForTraceReceived();
   EXPECT_TRUE(background_tracing_helper.trace_received());
   EXPECT_TRUE(background_tracing_helper.TraceHasMatchingString("{"));
   EXPECT_TRUE(background_tracing_helper.TraceHasMatchingString("src_file"));
