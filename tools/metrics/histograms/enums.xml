@@ -113723,6 +113723,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-1068416040" label="/multidevice/features/smartLock"/>
   <int value="-1058065329" label="/languages"/>
   <int value="-1048015830" label="/"/>
+  <int value="-1037867189" label="/content/storageAccess"/>
   <int value="-1028177121" label="/content/serialPorts"/>
   <int value="-1007016915" label="/help/management"/>
   <int value="-1006445425" label="/importData"/>
@@ -113794,6 +113795,7 @@ Called by update_scheduler_enums.py.-->
   <int value="805959528" label="/security"/>
   <int value="834907708" label="/privacy/guide"/>
   <int value="838443004" label="/safetyCheck"/>
+  <int value="851467961" label="/content/siteData"/>
   <int value="856943564" label="/content/siteDetails"/>
   <int value="868952532" label="/pointer-overlay"/>
   <int value="872535792" label="/parentalControls"/>
