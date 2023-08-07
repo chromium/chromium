@@ -6,11 +6,13 @@
 
 #include <utility>
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_test_constants.h"
 #include "printing/mojom/print.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -260,23 +262,19 @@ const PageOutputQualityAttributes kPageOutputQualities = {
 
 TEST(XpsUtilTest, ParseCorrectPageOutputQualityForXpsPrinterCapabilities) {
   // Assert that parsing XPS printer capabilities is successful.
-  base::expected<XpsCapabilities, mojom::ResultCode> result =
-      ParseValueForXpsPrinterCapabilities(
-          base::test::ParseJson(kCorrectCapabilities));
-  ASSERT_TRUE(result.has_value());
-  ASSERT_TRUE(result.value().page_output_quality);
-  ASSERT_EQ(result.value().page_output_quality->qualities,
-            kPageOutputQualities);
+  ASSERT_OK_AND_ASSIGN(const XpsCapabilities result,
+                       ParseValueForXpsPrinterCapabilities(
+                           base::test::ParseJson(kCorrectCapabilities)));
+  ASSERT_TRUE(result.page_output_quality);
+  EXPECT_EQ(result.page_output_quality->qualities, kPageOutputQualities);
 }
 
 TEST(XpsUtilTest, ParseIncorrectPageOutputQualityForXpsPrinterCapabilities) {
   // The property inside option ns0000:Draft does not have any value,
   // so parsing XPS printer capabilities should fail.
-  base::expected<XpsCapabilities, mojom::ResultCode> result =
-      ParseValueForXpsPrinterCapabilities(
-          base::test::ParseJson(kIncorrectCapabilities));
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error(), mojom::ResultCode::kFailed);
+  EXPECT_THAT(ParseValueForXpsPrinterCapabilities(
+                  base::test::ParseJson(kIncorrectCapabilities)),
+              base::test::ErrorIs(mojom::ResultCode::kFailed));
 }
 
 TEST(XpsUtilTest, MergeXpsCapabilitiesPageOutputQuality) {

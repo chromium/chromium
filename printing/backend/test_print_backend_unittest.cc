@@ -22,7 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/types/expected.h"
+#include "base/test/gmock_expected_support.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
@@ -321,11 +321,9 @@ TEST_F(TestPrintBackendTest, IsValidPrinter) {
 #if BUILDFLAG(IS_WIN)
 TEST_F(TestPrintBackendTest, GetXmlPrinterCapabilitiesForXpsDriver) {
   // Should fail when there are no printers in the environment.
-  base::expected<std::string, mojom::ResultCode> result =
-      GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-          kDefaultPrinterName);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), mojom::ResultCode::kFailed);
+  EXPECT_THAT(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+                  kDefaultPrinterName),
+              base::test::ErrorIs(mojom::ResultCode::kFailed));
 
   AddPrinters();
 
@@ -335,17 +333,15 @@ TEST_F(TestPrintBackendTest, GetXmlPrinterCapabilitiesForXpsDriver) {
                   ->GetXmlPrinterCapabilitiesForXpsDriver(kDefaultPrinterName)
                   .has_value());
 
-  result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-      kInvalidPrinterName);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), mojom::ResultCode::kFailed);
+  EXPECT_THAT(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+                  kInvalidPrinterName),
+              base::test::ErrorIs(mojom::ResultCode::kFailed));
 
   // Printers set with invalid XML should return failure. Invalid XML is
   // considered an empty string for these tests.
-  result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-      kNullDataPrinterName);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), mojom::ResultCode::kFailed);
+  EXPECT_THAT(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+                  kNullDataPrinterName),
+              base::test::ErrorIs(mojom::ResultCode::kFailed));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

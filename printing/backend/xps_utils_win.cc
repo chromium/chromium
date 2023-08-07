@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
@@ -99,12 +100,8 @@ ParseValueForXpsPrinterCapabilities(const base::Value& capabilities) {
         data_decoder::GetXmlElementAttribute(*feature, kName);
     DVLOG(2) << feature_name;
     if (feature_name == kPageOutputQuality) {
-      base::expected<PageOutputQuality, mojom::ResultCode> page_output_quality =
-          LoadPageOutputQuality(*feature);
-      if (!page_output_quality.has_value())
-        return base::unexpected(page_output_quality.error());
-      xps_capabilities.page_output_quality =
-          std::move(page_output_quality.value());
+      ASSIGN_OR_RETURN(xps_capabilities.page_output_quality,
+                       LoadPageOutputQuality(*feature));
     }
 
     // TODO(crbug.com/1291257): Each feature needs to be parsed. More work is
