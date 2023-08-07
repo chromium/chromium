@@ -51,13 +51,18 @@ void LogEventSerializedSizeBytes(int64_t event_size_bytes) {
 }
 
 void LogUploadSizeBytes(int64_t upload_size_bytes) {
-  base::UmaHistogramCounts1000("UMA.StructuredMetrics.UploadSize",
-                               upload_size_bytes);
+  base::UmaHistogramCounts100000("StructuredMetrics.UploadSize",
+                                 upload_size_bytes);
 }
 
 void LogExternalMetricsScanInUpload(int num_scans) {
   base::UmaHistogramExactLinear(
       "UMA.StructuredMetrics.ExternalMetricScansPerUpload", num_scans, 10);
+}
+
+void LogDroppedExternalMetrics(int num_dropped) {
+  base::UmaHistogramCounts1000("StructuredMetrics.ExternalMetricsDropped",
+                               num_dropped);
 }
 
 }  // namespace metrics::structured

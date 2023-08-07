@@ -89,6 +89,9 @@ void LogUploadSizeBytes(int64_t upload_size_bytes);
 // Logs the number of external metrics were scanned for an upload.
 void LogExternalMetricsScanInUpload(int num_scans);
 
+// Logs the number of external metrics that were dropped.
+void LogDroppedExternalMetrics(int num_dropped);
+
 }  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_HISTOGRAM_UTIL_H_

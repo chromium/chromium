@@ -89,6 +89,7 @@ EventsProto ReadAndDeleteEvents(
   base::FileEnumerator enumerator(directory, false,
                                   base::FileEnumerator::FILES);
   int file_counter = 0;
+  int dropped_events = 0;
 
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
@@ -107,6 +108,7 @@ EventsProto ReadAndDeleteEvents(
     // processed. Events will be dropped if recording has been disabled.
     if (!recording_enabled || file_counter > GetFileLimitPerScan()) {
       base::DeleteFile(path);
+      ++dropped_events;
       continue;
     }
 
@@ -139,6 +141,10 @@ EventsProto ReadAndDeleteEvents(
     // all the protos here are expected to be small, so let's keep it simple.
     result.mutable_uma_events()->MergeFrom(proto.uma_events());
     result.mutable_non_uma_events()->MergeFrom(proto.non_uma_events());
+  }
+
+  if (recording_enabled) {
+    LogDroppedExternalMetrics(dropped_events);
   }
 
   LogNumFilesPerExternalMetricsScan(file_counter);
