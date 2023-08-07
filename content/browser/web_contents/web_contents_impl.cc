@@ -9611,12 +9611,6 @@ void WebContentsImpl::OnCaptionStyleUpdated() {
 }
 
 void WebContentsImpl::OnColorProviderChanged() {
-  // TODO(tluk): Currently changes to theme related web prefs are being
-  // propagated in OnNativeThemeUpdated(). This logic should be moved here since
-  // there are instances where the system theme may not change but clients
-  // manually change the ColorProviderSource currently being observed by this
-  // WebContents.
-
   // OnColorProviderChanged() might have been triggered as the result of the
   // observed source being reset. If this is the case fallback to the default
   // source.
@@ -9625,6 +9619,20 @@ void WebContentsImpl::OnColorProviderChanged() {
     return;
   }
   observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
+
+  // Web preferences may change in response to events such as
+  // OnNativeThemeUpdated(). However web preferences may also depend on
+  // ColorProvider state and the associated ColorProvider may change
+  // independently of the native theme. Ensure we propagate web preferences here
+  // to cover this case.
+  // OnColorProviderChanged() can be emitted during the WebContentsImpl's
+  // constructor in response to setting the ColorProviderSource. In this case
+  // Init() will not yet have been called and the current frame host will not be
+  // defined, so we must guard against this here.
+  // TODO(tluk): There may be a more appropriate way to identify this condition.
+  if (GetRenderManager()->current_frame_host()) {
+    NotifyPreferencesChanged();
+  }
 }
 
 const ui::ColorProvider& WebContentsImpl::GetColorProvider() const {

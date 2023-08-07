@@ -858,8 +858,12 @@ bool RenderViewHostImpl::ShouldContributePriorityToProcess() {
 }
 
 void RenderViewHostImpl::SendWebPreferencesToRenderer() {
-  if (auto& broadcast = GetAssociatedPageBroadcast())
+  if (auto& broadcast = GetAssociatedPageBroadcast()) {
+    if (!will_send_web_preferences_callback_for_testing_.is_null()) {
+      will_send_web_preferences_callback_for_testing_.Run();
+    }
     broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences());
+  }
 }
 
 void RenderViewHostImpl::SendRendererPreferencesToRenderer(
@@ -972,6 +976,11 @@ void RenderViewHostImpl::SetWillEnterBackForwardCacheCallbackForTesting(
 void RenderViewHostImpl::SetWillSendRendererPreferencesCallbackForTesting(
     const WillSendRendererPreferencesCallbackForTesting& callback) {
   will_send_renderer_preferences_callback_for_testing_ = callback;
+}
+
+void RenderViewHostImpl::SetWillSendWebPreferencesCallbackForTesting(
+    const WillSendWebPreferencesCallbackForTesting& callback) {
+  will_send_web_preferences_callback_for_testing_ = callback;
 }
 
 void RenderViewHostImpl::WriteIntoTrace(

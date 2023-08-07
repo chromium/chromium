@@ -6002,6 +6002,105 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
   EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 }
 
+class MockColorProviderSource : public ui::ColorProviderSource {
+ public:
+  MockColorProviderSource() { provider_.GenerateColorMap(); }
+  MockColorProviderSource(const MockColorProviderSource&) = delete;
+  MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
+  ~MockColorProviderSource() override = default;
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &provider_;
+  }
+  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+
+ private:
+  ui::ColorProvider provider_;
+  ui::ColorProviderKey key_;
+};
+
+class OutgoingSetWebPreferencesMojoWatcher {
+ public:
+  explicit OutgoingSetWebPreferencesMojoWatcher(RenderViewHostImpl* rvh)
+      : rvh_(rvh), outgoing_message_seen_(false) {
+    rvh_->SetWillSendWebPreferencesCallbackForTesting(base::BindRepeating(
+        &OutgoingSetWebPreferencesMojoWatcher::OnWebPreferencesSent,
+        base::Unretained(this)));
+  }
+  ~OutgoingSetWebPreferencesMojoWatcher() {
+    rvh_->SetWillSendWebPreferencesCallbackForTesting(base::RepeatingClosure());
+  }
+
+  void WaitForIpc() {
+    if (outgoing_message_seen_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+  bool outgoing_message_seen() const { return outgoing_message_seen_; }
+
+ private:
+  void OnWebPreferencesSent() {
+    outgoing_message_seen_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  raw_ptr<RenderViewHostImpl> rvh_ = nullptr;
+  bool outgoing_message_seen_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       UpdatesWebPreferencesOnColorProviderChanges) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Navigate to a site with two iframes in different origins.
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c)");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Retrieve all unique render view hosts. Multiple frame hosts can be
+  // associated to the same RenderViewHost, so use a set to avoid duplication.
+  std::unordered_set<RenderViewHostImpl*> render_view_hosts;
+  for (FrameTreeNode* frame_tree_node :
+       web_contents->GetPrimaryFrameTree().Nodes()) {
+    RenderViewHostImpl* render_view_host = static_cast<RenderViewHostImpl*>(
+        frame_tree_node->current_frame_host()->GetRenderViewHost());
+    ASSERT_NE(nullptr, render_view_host);
+    render_view_hosts.insert(render_view_host);
+  }
+
+  // Set up watchers for SetWebPreferences message being sent from render view
+  // hosts.
+  std::vector<std::unique_ptr<OutgoingSetWebPreferencesMojoWatcher>>
+      mojo_watchers;
+  for (auto* render_view_host : render_view_hosts) {
+    mojo_watchers.push_back(
+        std::make_unique<OutgoingSetWebPreferencesMojoWatcher>(
+            render_view_host));
+  }
+
+  // Create a mock source, set it as the source for the contents and propagate
+  // color provider change notifications.
+  MockColorProviderSource color_provider_source;
+  web_contents->SetColorProviderSource(&color_provider_source);
+  color_provider_source.NotifyColorProviderChanged();
+
+  // Ensure Mojo messages are sent to each frame.
+  for (auto& mojo_watcher : mojo_watchers) {
+    mojo_watcher->WaitForIpc();
+    EXPECT_TRUE(mojo_watcher->outgoing_message_seen());
+  }
+}
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 
 }  // namespace content
