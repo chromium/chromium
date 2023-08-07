@@ -44,7 +44,7 @@ QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
                               kPhoneHubSilencePhoneIcon);
-  item_->icon_button()->set_button_behavior(
+  item_->icon_button()->SetButtonBehavior(
       FeaturePodIconButton::DisabledButtonBehavior::
           kCanDisplayDisabledToggleValue);
   OnDndStateChanged();

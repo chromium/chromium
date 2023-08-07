@@ -157,7 +157,7 @@ IconButton::IconButton(PressedCallback callback,
                                    /*highlight_on_focus=*/false);
 
   UpdateBackground();
-  UpdateVectorIcon(/*icon_changed=*/true);
+  UpdateVectorIcon();
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(
@@ -175,7 +175,7 @@ IconButton::IconButton(PressedCallback callback,
   views::InstallCircleHighlightPathGenerator(this);
 
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
-      &IconButton::UpdateBackground, base::Unretained(this)));
+      &IconButton::OnEnabledStateChanged, base::Unretained(this)));
 }
 
 IconButton::IconButton(PressedCallback callback,
@@ -203,14 +203,30 @@ IconButton::IconButton(PressedCallback callback,
 
 IconButton::~IconButton() = default;
 
+void IconButton::SetButtonBehavior(DisabledButtonBehavior button_behavior) {
+  if(button_behavior_ == button_behavior) {
+    return;
+  }
+
+  button_behavior_ = button_behavior;
+  // Change button behavior may impact the toggled state.
+  if(toggled_ && !GetEnabled()) {
+    UpdateVectorIcon();
+  }
+}
+
 void IconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
-  UpdateVectorIcon(/*icon_changed=*/true);
+  if (!IsToggledOn()) {
+    UpdateVectorIcon();
+  }
 }
 
 void IconButton::SetToggledVectorIcon(const gfx::VectorIcon& icon) {
   toggled_icon_ = &icon;
-  UpdateVectorIcon();
+  if (IsToggledOn()) {
+    UpdateVectorIcon();
+  }
 }
 
 void IconButton::SetBackgroundColor(const SkColor background_color) {
@@ -273,8 +289,9 @@ void IconButton::SetIconColor(const SkColor icon_color) {
   icon_color_ = icon_color;
   icon_color_id_ = absl::nullopt;
 
-  if (!IsToggledOn())
-    UpdateVectorIcon();
+  if (!IsToggledOn()) {
+    UpdateVectorIcon(/*color_changes_only=*/true);
+  }
 }
 
 void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
@@ -285,7 +302,7 @@ void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
   icon_toggled_color_id_ = absl::nullopt;
 
   if (IsToggledOn())
-    UpdateVectorIcon();
+    UpdateVectorIcon(/*color_changes_only=*/true);
 }
 
 void IconButton::SetIconColorId(ui::ColorId icon_color_id) {
@@ -296,7 +313,7 @@ void IconButton::SetIconColorId(ui::ColorId icon_color_id) {
   icon_color_ = absl::nullopt;
 
   if (!IsToggledOn())
-    UpdateVectorIcon();
+    UpdateVectorIcon(/*color_changes_only=*/true);
 }
 
 void IconButton::SetIconToggledColorId(ui::ColorId icon_toggled_color_id) {
@@ -307,7 +324,7 @@ void IconButton::SetIconToggledColorId(ui::ColorId icon_toggled_color_id) {
   icon_toggled_color_ = absl::nullopt;
 
   if (IsToggledOn())
-    UpdateVectorIcon();
+    UpdateVectorIcon(/*color_changes_only=*/true);
 }
 
 void IconButton::SetIconSize(int size) {
@@ -329,19 +346,24 @@ void IconButton::SetToggled(bool toggled) {
   if (GetEnabled())
     UpdateBackground();
 
-  UpdateVectorIcon();
+  // If toggle state is changed with `toggled_`, update the icon.
+  if (GetEnabled() ||
+      button_behavior_ ==
+          DisabledButtonBehavior::kCanDisplayDisabledToggleValue) {
+    UpdateVectorIcon();
+  }
 }
 
 void IconButton::OnFocus() {
   // Update prominent floating type button's icon color on focus.
   if (IsProminentFloatingType(type_) && !IsToggledOn())
-    UpdateVectorIcon();
+    UpdateVectorIcon(/*color_changes_only=*/true);
 }
 
 void IconButton::OnBlur() {
   // Update prominent floating type button's icon color on blur.
   if (IsProminentFloatingType(type_) && !IsToggledOn())
-    UpdateVectorIcon();
+    UpdateVectorIcon(/*color_changes_only=*/true);
 }
 
 void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -434,7 +456,7 @@ void IconButton::UpdateBackground() {
   return;
 }
 
-void IconButton::UpdateVectorIcon(bool icon_changed) {
+void IconButton::UpdateVectorIcon(bool color_changes_only) {
   const bool is_toggled = IsToggledOn();
   const gfx::VectorIcon* icon =
       is_toggled && toggled_icon_ ? toggled_icon_.get() : icon_.get();
@@ -502,11 +524,20 @@ void IconButton::UpdateVectorIcon(bool icon_changed) {
   }
 
   SetImageModel(views::Button::STATE_NORMAL, new_normal_image_model);
-  if (icon_changed) {
+  if (!color_changes_only) {
     SetImageModel(views::Button::STATE_DISABLED,
                   ui::ImageModel::FromVectorIcon(
                       *icon, cros_tokens::kCrosSysDisabled, icon_size));
   }
+}
+
+void IconButton::OnEnabledStateChanged() {
+  // Enabled state change may cause toggled state change.
+  if (toggled_ && button_behavior_ !=
+                      DisabledButtonBehavior::kCanDisplayDisabledToggleValue) {
+    UpdateVectorIcon();
+  }
+  UpdateBackground();
 }
 
 SkColor IconButton::GetBackgroundColor() const {
