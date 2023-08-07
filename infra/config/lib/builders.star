@@ -174,7 +174,7 @@ xcode = struct(
     # A newer Xcode 14 RC  used on beta bots.
     x14betabots = xcode_enum("14e222b"),
     # Default Xcode 15 for chromium iOS
-    x15main = xcode_enum("15a5195m"),
+    x15main = xcode_enum("15a5209g"),
     # A newer Xcode 15 version used on beta bots.
     x15betabots = xcode_enum("15a5209g"),
     # in use by ios-webkit-tot
