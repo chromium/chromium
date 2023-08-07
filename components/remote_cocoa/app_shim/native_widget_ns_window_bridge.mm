@@ -464,8 +464,8 @@ void NativeWidgetNSWindowBridge::InitWindow(
 
   [[NSNotificationCenter defaultCenter]
       addObserver:window_delegate_
-         selector:@selector(onSystemControlTintChanged:)
-             name:NSControlTintDidChangeNotification
+         selector:@selector(onSystemColorsChanged:)
+             name:NSSystemColorsDidChangeNotification
            object:nil];
 
   // Validate the window's initial state, otherwise the bridge's initial
@@ -1124,7 +1124,7 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
   host_->OnVisibilityChanged(window_visible_);
 }
 
-void NativeWidgetNSWindowBridge::OnSystemControlTintChanged() {
+void NativeWidgetNSWindowBridge::OnSystemColorsChanged() {
   host_->OnWindowNativeThemeChanged();
 }
 

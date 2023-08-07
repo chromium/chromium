@@ -96,8 +96,8 @@
   _parent->OnVisibilityChanged();
 }
 
-- (void)onSystemControlTintChanged:(NSNotification*)notification {
-  _parent->OnSystemControlTintChanged();
+- (void)onSystemColorsChanged:(NSNotification*)notification {
+  _parent->OnSystemColorsChanged();
 }
 
 - (void)sheetDidEnd:(NSWindow*)sheet
