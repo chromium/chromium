@@ -54,6 +54,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #import "components/signin/core/browser/account_reconcilor.h"
@@ -1126,6 +1127,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMagicStack,
                                     kMagicStackVariations,
                                     flag_descriptions::kMagicStackName)},
+    {"ios-magic-stack-segmentation-ranking",
+     flag_descriptions::kSegmentationPlatformIosModuleRankerName,
+     flag_descriptions::kSegmentationPlatformIosModuleRankerDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(segmentation_platform::features::
+                            kSegmentationPlatformIosModuleRanker)},
     {"default-browser-intents-show-settings",
      flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
      flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,

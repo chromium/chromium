@@ -4978,6 +4978,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "ios-magic-stack-segmentation-ranking",
+    "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "ios-new-tab-page-retention",
     "owners": ["bwwilliams", "guiperez", "bling-flags@google.com"],
     "expiry_milestone": 120

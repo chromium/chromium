@@ -956,6 +956,11 @@ const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
 
+const char kSegmentationPlatformIosModuleRankerName[] =
+    "Enable Magic Stack Segmentation Ranking";
+const char kSegmentationPlatformIosModuleRankerDescription[] =
+    "Enables the Segmentation platform to rank Magic Stack modules";
+
 const char kSendTabToSelfSigninPromoName[] = "Send tab to self sign-in promo";
 const char kSendTabToSelfSigninPromoDescription[] =
     "Enables a sign-in promo if the user attempts to share a tab while being "
