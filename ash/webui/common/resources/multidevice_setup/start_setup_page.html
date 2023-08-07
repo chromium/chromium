@@ -115,10 +115,9 @@
       <iron-media-query query="(prefers-color-scheme: dark)"
           query-matches="{{isDarkModeActive_}}">
       </iron-media-query>
-      <cros-lottie-renderer id="multideviceSetupAnimation"
-          asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
-          autoplay="true" dynamic="true" aria-hidden="true">
-      </cros-lottie-renderer>
+      <cr-lottie id="multideviceSetupAnimation"
+          animation-url="[[getAnimationUrl_(isDarkModeActive_)]]">
+      </cr-lottie>
     </div>
   </span>
   <div id="additional-content-container" slot="additional-content"
