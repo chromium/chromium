@@ -31,8 +31,14 @@ constexpr int kIconSize = 20;
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
 
 constexpr int kBackgroundRadius = 4;
-constexpr auto kInteriorMargin = gfx::Insets::VH(8, 0);
-constexpr auto kButtonMargin = gfx::Insets(18);
+constexpr auto kTimeIconMargin = gfx::Insets::TLBR(0, 0, 0, 4);
+constexpr auto kSubtaskIconMargin = gfx::Insets::TLBR(0, 4, 0, 0);
+
+constexpr auto kSingleRowButtonMargin = gfx::Insets::VH(13, 18);
+constexpr auto kDoubleRowButtonMargin = gfx::Insets::VH(16, 18);
+
+constexpr auto kSingleRowTextMargins = gfx::Insets::VH(13, 0);
+constexpr auto kDoubleRowTextMargins = gfx::Insets::VH(7, 0);
 
 views::Label* SetupLabel(views::FlexLayoutView* parent) {
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
@@ -75,8 +81,6 @@ namespace ash {
 GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
                                          const GlanceablesTask* task)
     : task_list_id_(task_list_id), task_id_(task->id) {
-  SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  SetInteriorMargin(kInteriorMargin);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
@@ -87,7 +91,6 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   SetupButtonContents(button_, /*checked=*/false);
   // TODO(b:277268122): set accessible name once spec is available.
   button_->SetAccessibleName(u"Glanceables Task View Button");
-  button_->SetProperty(views::kMarginsKey, kButtonMargin);
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -114,6 +117,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   if (task->due.has_value()) {
     views::ImageView* time_icon_view =
         tasks_details_view_->AddChildView(std::make_unique<views::ImageView>());
+    time_icon_view->SetProperty(views::kMarginsKey, kTimeIconMargin);
 
     views::Label* due_date_label = SetupLabel(tasks_details_view_);
     due_date_label->SetText(GetFormattedDueDate(task->due.value()));
@@ -125,13 +129,11 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 
     if (chromeos::features::IsJellyEnabled()) {
       time_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kGlanceablesTasksDueDateIcon, cros_tokens::kCrosSysOnSurfaceVariant,
-          kIconSize));
+          kGlanceablesTasksDueDateIcon, cros_tokens::kCrosSysOnSurfaceVariant));
       due_date_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
     } else {
       time_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kGlanceablesTasksDueDateIcon, kColorAshTextColorSecondary,
-          kIconSize));
+          kGlanceablesTasksDueDateIcon, kColorAshTextColorSecondary));
       due_date_label->SetEnabledColorId(kColorAshTextColorSecondary);
     }
   }
@@ -139,15 +141,24 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   if (task->has_subtasks) {
     views::ImageView* has_subtask_icon_view =
         tasks_details_view_->AddChildView(std::make_unique<views::ImageView>());
+    has_subtask_icon_view->SetProperty(views::kMarginsKey, kSubtaskIconMargin);
     if (chromeos::features::IsJellyEnabled()) {
       has_subtask_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kGlanceablesSubtaskIcon, cros_tokens::kCrosSysOnSurfaceVariant,
-          kIconSize));
+          kGlanceablesSubtaskIcon, cros_tokens::kCrosSysOnSurfaceVariant));
     } else {
       has_subtask_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kGlanceablesSubtaskIcon, kColorAshTextColorSecondary, kIconSize));
+          kGlanceablesSubtaskIcon, kColorAshTextColorSecondary));
     }
   }
+
+  // Use different margins depending on the number of
+  // rows of text shown.
+  const bool double_row = tasks_details_view_->children().size() > 0;
+  contents_view_->SetProperty(views::kMarginsKey, double_row
+                                                      ? kDoubleRowTextMargins
+                                                      : kSingleRowTextMargins);
+  button_->SetProperty(views::kMarginsKey, double_row ? kDoubleRowButtonMargin
+                                                      : kSingleRowButtonMargin);
 
   // TODO(b:277268122): Implement accessibility behavior.
   SetAccessibleRole(ax::mojom::Role::kListBox);

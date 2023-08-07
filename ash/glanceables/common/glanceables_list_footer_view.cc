@@ -30,15 +30,32 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
-namespace {
 
 constexpr int kSeeAllIconSize = 24;
-
 constexpr int kFooterVerticalSpacing = 7;
-
 constexpr int kFooterStartSpacing = 6;
 
-}  // namespace
+class ASH_EXPORT SeeAllButton : public views::LabelButton {
+ public:
+  SeeAllButton(base::RepeatingClosure on_see_all_pressed) {
+    SetText(l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL));
+    SetCallback(std::move(on_see_all_pressed));
+    SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                                 cros_tokens::kCrosSysOnSurface,
+                                                 kSeeAllIconSize));
+    SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label());
+  }
+
+  SeeAllButton(const SeeAllButton&) = delete;
+  SeeAllButton& operator=(const SeeAllButton&) = delete;
+  ~SeeAllButton() override = default;
+};
 
 GlanceablesListFooterView::GlanceablesListFooterView(
     base::RepeatingClosure on_see_all_pressed) {
@@ -63,22 +80,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
           .Build());
 
   see_all_button_ =
-      AddChildView(views::Builder<views::LabelButton>()
-                       .SetText(l10n_util::GetStringUTF16(
-                           IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL))
-                       .SetCallback(std::move(on_see_all_pressed))
-                       .SetID(base::to_underlying(
-                           GlanceablesViewId::kListFooterSeeAllButton))
-                       .Build());
-  see_all_button_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_RIGHT);
-  see_all_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                     cros_tokens::kCrosSysOnSurface,
-                                     kSeeAllIconSize));
-  see_all_button_->SetTextColorId(views::Button::STATE_NORMAL,
-                                  cros_tokens::kCrosSysOnSurface);
+      AddChildView(std::make_unique<SeeAllButton>(on_see_all_pressed));
 
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(kFooterVerticalSpacing, kFooterStartSpacing,

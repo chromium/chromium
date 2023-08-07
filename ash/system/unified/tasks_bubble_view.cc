@@ -39,7 +39,7 @@
 namespace {
 
 constexpr int kMaximumTasks = 5;
-constexpr int kTasksIconRightPadding = 4;
+constexpr int kTasksIconRightPadding = 14;
 constexpr int kTasksIconViewSize = 32;
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr auto kAddNewTaskButtonMargins = gfx::Insets::TLBR(0, 0, 16, 0);
