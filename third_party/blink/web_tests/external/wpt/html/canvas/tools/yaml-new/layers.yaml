@@ -55,6 +55,7 @@
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+        ctx.shadowBlur = 3;
     alpha.blending:
       render_states: |-
         ctx.globalAlpha = 0.6;
@@ -69,6 +70,7 @@
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+        ctx.shadowBlur = 3;
     alpha.blending.shadow:
       render_states: |-
         ctx.globalAlpha = 0.6;
@@ -76,6 +78,7 @@
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+        ctx.shadowBlur = 3;
     alpha.composite.shadow:
       render_states: |-
         ctx.globalAlpha = 0.6;
@@ -83,18 +86,21 @@
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+        ctx.shadowBlur = 3;
     blending.shadow:
       render_states: |-
         ctx.globalCompositeOperation = 'multiply';
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+        ctx.shadowBlur = 3;
     composite.shadow:
       render_states: |-
         ctx.globalCompositeOperation = 'source-in';
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+        ctx.shadowBlur = 3;
 
 
 - name: 2d.layer.global-states.filter
@@ -490,7 +496,7 @@
     ctx.shadowOffsetX = -10;
     ctx.shadowOffsetY = 10;
     ctx.shadowColor = 'orange';
-
+    ctx.shadowBlur = 3
 
     for (let i = 0; i < 5; i++) {
       ctx.beginLayer();
@@ -510,6 +516,7 @@
     ctx.shadowOffsetX = -10;
     ctx.shadowOffsetY = 10;
     ctx.shadowColor = 'orange';
+    ctx.shadowBlur = 3;
 
     var canvas2 = [5];
     var ctx2 = [5];
@@ -534,6 +541,7 @@
     ctx.shadowOffsetX = -3;
     ctx.shadowOffsetY = 3;
     ctx.shadowColor = 'rgba(0, 30, 0, 0.3)';
+    ctx.shadowBlur = 3;
 
     ctx.beginLayer({filter: {name: 'dropShadow', dx: -3, dy: 3}});
 
@@ -543,6 +551,7 @@
     ctx.shadowOffsetX = -6;
     ctx.shadowOffsetY = 6;
     ctx.shadowColor = 'rgba(0, 60, 0, 0.6)';
+    ctx.shadowBlur = 3;
 
     ctx.reset();
 
