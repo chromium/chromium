@@ -16,6 +16,7 @@ namespace wolvic {
 namespace {
 
 const int64_t kFrameTimeOutMilliseconds = 1000;
+constexpr double kThumbstickDeadzone = 0.16; // From gamepad_builder.cc
 
 void WvrMatToTransform(const float in[16], gfx::Transform* out) {
   *out = gfx::Transform::RowMajor(in[0], in[1], in[2], in[3], in[4], in[5],
@@ -65,19 +66,19 @@ device::Gamepad ToGamepad(const mozilla::gfx::VRControllerState& controller) {
   device::Gamepad gamepad;
   gamepad.hand = ToGamepadHand(controller.hand);
 
-  size_t num_buttons = controller.numButtons;
-  if (num_buttons > device::Gamepad::kButtonsLengthCap) {
-    num_buttons = device::Gamepad::kButtonsLengthCap;
-    DLOG(WARNING) << "Controller has too many buttons, truncating to "
-                  << num_buttons;
-  }
-
-  gamepad.buttons_length = num_buttons;
-  for (uint32_t i = 0; i < controller.numButtons; ++i) {
+  DCHECK_LT(controller.numButtons, device::Gamepad::kButtonsLengthCap);
+  gamepad.buttons_length = controller.numButtons;
+  for (uint32_t i = 0; i < gamepad.buttons_length; ++i) {
     gamepad.buttons[i].pressed = controller.buttonPressed & (1 << i);
     gamepad.buttons[i].touched = controller.buttonTouched & (1 << i);
     gamepad.buttons[i].value = controller.triggerValue[i];
   }
+
+  DCHECK_LT(controller.numAxes, device::Gamepad::kAxesLengthCap);
+  gamepad.axes_length = controller.numAxes;
+  for (uint32_t i = 0; i < gamepad.axes_length; ++i) {
+    gamepad.axes[i] = std::fabs(controller.axisValue[i]) < kThumbstickDeadzone ? 0.0 : controller.axisValue[i];
+  };
 
   return gamepad;
 }
