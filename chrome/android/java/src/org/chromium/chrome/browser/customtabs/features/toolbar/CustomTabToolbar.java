@@ -340,11 +340,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // Hide the button if we can't.
             maximizeButton.setVisibility(View.GONE);
         } else {
+            mLocationBar.removeMaximizeButtonVisibilityUpdater();
+
             // Take some space from the title/url for maximization button.
             var lpTitle = (ViewGroup.MarginLayoutParams) mLocationBar.mTitleBar.getLayoutParams();
             var lpUrl = (ViewGroup.MarginLayoutParams) mLocationBar.mUrlBar.getLayoutParams();
             lpTitle.rightMargin = maximizeButtonWidthPx;
             lpUrl.rightMargin = maximizeButtonWidthPx;
+            mLocationBar.mTitleBar.setLayoutParams(lpTitle);
+            mLocationBar.mUrlBar.setLayoutParams(lpUrl);
             maximizeButton.setVisibility(View.VISIBLE);
         }
     }
@@ -853,6 +857,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         };
 
         private final Runnable[] mAfterBrandingRunnables = new Runnable[TOTAL_POST_BRANDING_KEYS];
+        private final View.OnLayoutChangeListener mMaximizeButtonVisibilityUpdater =
+                (v, l, t, r, b, ol, ot, or, ob) -> setMaximizeButtonVisibility();
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
         private boolean mAnimateIconTransition = true;
@@ -956,8 +962,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mSecurityButton = container.findViewById(R.id.security_button);
             mAnimDelegate = new CustomTabToolbarAnimationDelegate(
                     mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
-            mTitleUrlContainer.addOnLayoutChangeListener(
-                    (v, l, t, r, b, ol, ot, or, ob) -> setMaximizeButtonVisibility());
+            mTitleUrlContainer.addOnLayoutChangeListener(mMaximizeButtonVisibilityUpdater);
+        }
+
+        private void removeMaximizeButtonVisibilityUpdater() {
+            mTitleUrlContainer.removeOnLayoutChangeListener(mMaximizeButtonVisibilityUpdater);
         }
 
         public void init(LocationBarDataProvider locationBarDataProvider,
