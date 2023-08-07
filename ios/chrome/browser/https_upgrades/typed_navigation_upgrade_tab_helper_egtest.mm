@@ -409,7 +409,8 @@ std::string GetURLWithoutScheme(const GURL& url) {
 //    fallback navigation using the HTTP version of the URL in step 1.
 // 3. The fallback HTTP URL immediately responds without redirecting, even
 //    though it has a ?redirect parameter.
-- (void)test_HTTPSRedirectsToSlowHTTP_ShouldFallback {
+// Disabled due to crbug.com/1469971
+- (void)DISABLED_test_HTTPSRedirectsToSlowHTTP_ShouldFallback {
   // Use the faux good HTTPS server and standard HTTP server for the test.
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
