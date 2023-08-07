@@ -379,6 +379,9 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
       "ChromeOS.Settings.Device.Mouse.AccelerationEnabled.Initial",
       mouse.settings->acceleration_enabled);
   base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.Mouse.ScrollAcceleration.Initial",
+      mouse.settings->scroll_acceleration);
+  base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Mouse.ReverseScrolling.Initial",
       mouse.settings->reverse_scrolling);
   base::UmaHistogramEnumeration(
@@ -397,6 +400,11 @@ void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
     base::UmaHistogramBoolean(
         "ChromeOS.Settings.Device.Mouse.AccelerationEnabled.Changed",
         mouse.settings->acceleration_enabled);
+  }
+  if (mouse.settings->scroll_acceleration != old_settings.scroll_acceleration) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.Mouse.ScrollAcceleration.Changed",
+        mouse.settings->scroll_acceleration);
   }
   if (mouse.settings->reverse_scrolling != old_settings.reverse_scrolling) {
     base::UmaHistogramBoolean(

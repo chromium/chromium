@@ -2799,6 +2799,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="PeripheralSetting">
     <variant name="AccelerationEnabled"/>
     <variant name="ReverseScrolling"/>
+    <variant name="ScrollAcceleration"/>
     <variant name="SwapPrimaryButtons"/>
   </token>
 </histogram>
@@ -2819,6 +2820,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="PeripheralSetting">
     <variant name="AccelerationEnabled"/>
     <variant name="ReverseScrolling"/>
+    <variant name="ScrollAcceleration"/>
     <variant name="SwapPrimaryButtons"/>
   </token>
 </histogram>
