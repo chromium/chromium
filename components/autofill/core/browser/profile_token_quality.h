@@ -99,6 +99,10 @@ class ProfileTokenQuality {
   ProfileTokenQuality(const ProfileTokenQuality& other);
   ~ProfileTokenQuality();
 
+  // Determines if a `type` is considered stored. Observations are only tracked
+  // for stored types.
+  static bool IsStoredType(ServerFieldType type);
+
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation
   // for the same type are considered.
@@ -140,6 +144,13 @@ class ProfileTokenQuality {
     CHECK(profile);
     profile_ = profile;
   }
+
+  // Copy the observations for the `type` from `other`.
+  void CopyObservationsForStoredType(ServerFieldType type,
+                                     const ProfileTokenQuality& other);
+
+  // Resets all observations for the `type`.
+  void ResetObservationsForStoredType(ServerFieldType type);
 
   // Returns true if `a` and `b` are within Levenshtein distance `k`.
   static bool IsWithinLevenshteinDistanceForTesting(std::u16string_view a,

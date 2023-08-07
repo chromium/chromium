@@ -46,7 +46,7 @@ ServerFieldTypeSet GetSupportedTypes(const AutofillProfile& profile) {
 // to represent the root node of the address tree. The type is not stored and
 // not used for filling.
 ServerFieldType GetStoredTypeOf(ServerFieldType type) {
-  if (base::Contains(AutofillTable::GetStoredTypesForAutofillProfile(), type)) {
+  if (ProfileTokenQuality::IsStoredType(type)) {
     return type;
   }
   CHECK_NE(type, ADDRESS_HOME_ADDRESS);
@@ -203,6 +203,12 @@ ProfileTokenQuality::ProfileTokenQuality(const ProfileTokenQuality& other) =
 
 ProfileTokenQuality::~ProfileTokenQuality() = default;
 
+// static
+bool ProfileTokenQuality::IsStoredType(ServerFieldType type) {
+  return base::Contains(AutofillTable::GetStoredTypesForAutofillProfile(),
+                        type);
+}
+
 bool ProfileTokenQuality::AddObservationsForFilledForm(
     const FormStructure& form_structure,
     const FormData& form_data,
@@ -345,10 +351,8 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
   const ServerFieldType type = field.Type().GetStorableType();
   if (field.is_autofilled) {
     // The filled value was accepted without editing.
-    return base::Contains(AutofillTable::GetStoredTypesForAutofillProfile(),
-                          type)
-               ? ObservationType::kAccepted
-               : ObservationType::kPartiallyAccepted;
+    return IsStoredType(type) ? ObservationType::kAccepted
+                              : ObservationType::kPartiallyAccepted;
   }
 
   // Since the `autofill_source_profile_guid()` is set and the field is not
@@ -356,6 +360,23 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
   CHECK(field.previously_autofilled());
   return GetObservationTypeForEditedField(type, current_field_value, *profile_,
                                           other_profiles, app_locale);
+}
+
+void ProfileTokenQuality::CopyObservationsForStoredType(
+    ServerFieldType type,
+    const ProfileTokenQuality& other) {
+  CHECK(IsStoredType(type));
+  if (auto it = other.observations_.find(type);
+      it != other.observations_.end()) {
+    observations_[type] = it->second;
+  } else {
+    ResetObservationsForStoredType(type);
+  }
+}
+
+void ProfileTokenQuality::ResetObservationsForStoredType(ServerFieldType type) {
+  CHECK(IsStoredType(type));
+  observations_.erase(type);
 }
 
 ProfileTokenQuality::FormSignatureHash

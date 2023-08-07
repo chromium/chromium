@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -28,9 +29,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::UTF8ToUTF16;
-
 namespace autofill {
+
+using base::UTF8ToUTF16;
+using ObservationType = ProfileTokenQuality::ObservationType;
 
 constexpr VerificationStatus kObserved = VerificationStatus::kObserved;
 
@@ -1079,6 +1081,37 @@ TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
   EXPECT_FALSE(a.MergeDataFrom(c, "en-US"));
   // Merge has not modified anything.
   EXPECT_EQ(3u, a.use_count());
+}
+
+// Tests that when merging two profiles, the token quality is merged.
+TEST(AutofillProfileTest, MergeDataFrom_TokenQuality) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackProfileTokenQuality};
+
+  AutofillProfile a, b;
+  // Set the same state for both profiles. Expect that a's quality will be kept.
+  a.SetRawInfo(ADDRESS_HOME_STATE, u"TX");
+  b.SetRawInfo(ADDRESS_HOME_STATE, u"TX");
+  a.token_quality().AddObservationForTesting(ADDRESS_HOME_STATE,
+                                             ObservationType::kAccepted);
+  b.token_quality().AddObservationForTesting(ADDRESS_HOME_STATE,
+                                             ObservationType::kEditedFallback);
+
+  // Only set a city for b. Expect that its quality is carried over.
+  b.SetRawInfo(ADDRESS_HOME_CITY, u"City");
+  b.token_quality().AddObservationForTesting(ADDRESS_HOME_CITY,
+                                             ObservationType::kAccepted);
+
+  // Finalize, merge and verify expectations.
+  a.FinalizeAfterImport();
+  b.FinalizeAfterImport();
+  ASSERT_TRUE(a.MergeDataFrom(b, "en-US"));
+  EXPECT_THAT(
+      a.token_quality().GetObservationTypesForFieldType(ADDRESS_HOME_STATE),
+      testing::UnorderedElementsAre(ObservationType::kAccepted));
+  EXPECT_THAT(
+      a.token_quality().GetObservationTypesForFieldType(ADDRESS_HOME_CITY),
+      testing::UnorderedElementsAre(ObservationType::kAccepted));
 }
 
 TEST(AutofillProfileTest, OverwriteName_AddNameFull) {

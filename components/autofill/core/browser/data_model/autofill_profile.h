@@ -333,6 +333,17 @@ class AutofillProfile : public AutofillDataModel {
   // Same as operator==, but ignores differences in GUID.
   bool EqualsSansGuid(const AutofillProfile& profile) const;
 
+  // Merging two AutofillProfiles is done by merging their `FormGroups()`. While
+  // doing so, the `token_quality_` needs to be merged too. This function is
+  // responsible for carring over or resetting the token quality of all
+  // supported types of the `merged_group`.
+  // `merged_group` represents the merged form group of `*this` with the same
+  // form group of `other_profile`.
+  // By calling this function, `token_quality_` is updated to match the
+  // information represented by the `merged_group`.
+  void MergeFormGroupTokenQuality(const FormGroup& merged_group,
+                                  const AutofillProfile& other_profile);
+
   // Personal information for this profile.
   NameInfo name_;
   EmailInfo email_;

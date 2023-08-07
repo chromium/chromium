@@ -647,36 +647,77 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   bool modified = false;
 
   if (name_ != name) {
+    MergeFormGroupTokenQuality(name, profile);
     name_ = name;
     modified = true;
   }
 
   if (email_ != email) {
+    MergeFormGroupTokenQuality(email, profile);
     email_ = email;
     modified = true;
   }
 
   if (company_ != company) {
+    MergeFormGroupTokenQuality(company, profile);
     company_ = company;
     modified = true;
   }
 
   if (phone_number_ != phone_number) {
+    MergeFormGroupTokenQuality(phone_number, profile);
     phone_number_ = phone_number;
     modified = true;
   }
 
   if (address_ != address) {
+    MergeFormGroupTokenQuality(address, profile);
     address_ = address;
     modified = true;
   }
 
   if (birthdate_ != birthdate) {
+    MergeFormGroupTokenQuality(birthdate, profile);
     birthdate_ = birthdate;
     modified = true;
   }
 
   return modified;
+}
+
+void AutofillProfile::MergeFormGroupTokenQuality(
+    const FormGroup& merged_group,
+    const AutofillProfile& other_profile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTrackProfileTokenQuality)) {
+    return;
+  }
+  ServerFieldTypeSet supported_types;
+  merged_group.GetSupportedTypes(&supported_types);
+  for (ServerFieldType type : supported_types) {
+    const std::u16string& merged_value = merged_group.GetRawInfo(type);
+    if (!ProfileTokenQuality::IsStoredType(type) ||
+        merged_value == GetRawInfo(type)) {
+      // Quality information is only tracked for stored types. If the merged
+      // value matches the existing value, its token quality is kept.
+      continue;
+    }
+    if (merged_value == other_profile.GetRawInfo(type)) {
+      // The merged value comes from the `other_profile`, so its token quality
+      // is carried over.
+      token_quality_.CopyObservationsForStoredType(
+          type, other_profile.token_quality_);
+    } else {
+      // The `merged_value` matches neither `*this` nor the `other_profile`'s
+      // value, because the values were combined in some way. This generally
+      // doesn't happen, because the merging logic only merges values if one is
+      // a subset/substring of the other. However, in some cases, formatting
+      // differences can make this case reachable. For example, merging the
+      // phone numbers "5550199" and "555.0199" gives "555-0199".
+      // Since observations cannot be merged, reset the token quality.
+      token_quality_.ResetObservationsForStoredType(type);
+    }
+  }
 }
 
 bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
