@@ -83,6 +83,12 @@ class UnifiedBrightnessViewTest : public AshTestBase {
         ->more_button();
   }
 
+  views::Button* night_light_button() {
+    return static_cast<UnifiedBrightnessView*>(
+               controller()->unified_brightness_view_)
+        ->night_light_button();
+  }
+
   const gfx::VectorIcon& GetIcon(float level) {
     return unified_brightness_view_->GetBrightnessIconForLevel(level);
   }
@@ -225,6 +231,33 @@ TEST_F(UnifiedBrightnessViewTest, MoreButton) {
   // Make sure the more button is not disabled.
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   EXPECT_TRUE(more_button()->GetEnabled());
+}
+
+// Tests that the night light button is disabled in the sign-in and lock screen.
+// TODO(b/294868714): remove the test for the lock screen.
+TEST_F(UnifiedBrightnessViewTest, NightLightButtonState) {
+  // Close the bubble so the brightness view can be recreated.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // In the sign-in screen, the `night_light_button_` is disabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(night_light_button()->GetEnabled());
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  // In the lock screen, the `night_light_button_` is disabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(night_light_button()->GetEnabled());
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  // In the active user session, the `night_light_button_` is enabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_TRUE(night_light_button()->GetEnabled());
 }
 
 }  // namespace ash

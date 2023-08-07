@@ -47,16 +47,16 @@ UnifiedBrightnessView::UnifiedBrightnessView(
       return;
     }
 
-    const bool enabled = night_light_controller_->GetEnabled();
+    const bool toggled = night_light_controller_->GetEnabled();
     night_light_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(&UnifiedBrightnessView::OnNightLightButtonPressed,
                             base::Unretained(this)),
         IconButton::Type::kMedium,
-        enabled ? &kUnifiedMenuNightLightIcon : &kUnifiedMenuNightLightOffIcon,
+        toggled ? &kUnifiedMenuNightLightIcon : &kUnifiedMenuNightLightOffIcon,
         l10n_util::GetStringFUTF16(
             IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP,
             l10n_util::GetStringUTF16(
-                enabled
+                toggled
                     ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
                     : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP)),
         /*is_togglable=*/true,
@@ -74,8 +74,15 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     night_light_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
     night_light_button_->SetBackgroundColorId(
         cros_tokens::kCrosSysSystemOnBase);
-
-    night_light_button_->SetToggled(enabled);
+    // `night_light_button_` should show the toggled on icon even when disabled.
+    night_light_button_->SetButtonBehavior(
+        IconButton::DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+    // Sets the enabled state based on whether the settings button should be
+    // enabled. In the lock screen and sign-in screen, the `night_light_button_`
+    // should be disabled.
+    night_light_button_->SetEnabled(
+        Shell::Get()->session_controller()->ShouldEnableSettings());
+    night_light_button_->SetToggled(toggled);
 
     more_button_ = AddChildView(std::make_unique<IconButton>(
         std::move(detailed_button_callback.value()),
@@ -131,15 +138,17 @@ void UnifiedBrightnessView::OnNightLightButtonPressed() {
 }
 
 void UnifiedBrightnessView::UpdateNightLightButton() {
-  const bool enabled = night_light_controller_->GetEnabled();
+  night_light_button_->SetEnabled(
+      Shell::Get()->session_controller()->ShouldEnableSettings());
+  const bool toggled = night_light_controller_->GetEnabled();
 
   // Sets `night_light_button_` toggle state to update its icon, icon color,
   // and background color.
-  night_light_button_->SetToggled(enabled);
+  night_light_button_->SetToggled(toggled);
 
   // Updates the tooltip of `night_light_button_`.
   std::u16string toggle_tooltip = l10n_util::GetStringUTF16(
-      enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
+      toggled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
               : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
   night_light_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP, toggle_tooltip));

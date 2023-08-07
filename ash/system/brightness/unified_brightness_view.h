@@ -49,6 +49,8 @@ class ASH_EXPORT UnifiedBrightnessView
 
   IconButton* more_button() { return more_button_; }
 
+  IconButton* night_light_button() { return night_light_button_; }
+
  private:
   friend class UnifiedBrightnessViewTest;
 
