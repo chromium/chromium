@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -112,6 +113,58 @@ TEST_F(PasswordMigrationWarningStartupLauncherTest, DoesntFetchIfAlreadyShown) {
       web_contents(), profile(), show_migration_warning_callback().Get()};
   EXPECT_CALL(*mock_store, GetAutofillableLogins).Times(0);
   launcher.MaybeFetchPasswordsAndShowWarning(mock_store.get());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordMigrationWarningStartupLauncherTest,
+       DoesntReshowIfAlreadyShownAndResetCounterIncreased) {
+  std::vector<base::test::FeatureRefAndParams> features_and_params = {
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+       {{password_manager::features::kLocalPasswordMigrationWarningPrefsVersion
+             .name,
+         "0"}}}};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(features_and_params, {});
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
+      true);
+  profile()->GetPrefs()->SetTime(
+      password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
+      base::Time::Now());
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
+
+  EXPECT_CALL(show_migration_warning_callback(), Run).Times(0);
+  store()->AddLogin(CreateTestPasswordForm());
+  task_environment()->RunUntilIdle();
+  warning_startup_launcher()->MaybeFetchPasswordsAndShowWarning(store());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordMigrationWarningStartupLauncherTest,
+       ReshowsIfAlreadyShownAndResetCounterIncreased) {
+  std::vector<base::test::FeatureRefAndParams> features_and_params = {
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+       {{password_manager::features::kLocalPasswordMigrationWarningPrefsVersion
+             .name,
+         "1"}}}};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(features_and_params, {});
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
+      true);
+  profile()->GetPrefs()->SetTime(
+      password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
+      base::Time::Now());
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
+
+  EXPECT_CALL(show_migration_warning_callback(), Run).Times(1);
+  store()->AddLogin(CreateTestPasswordForm());
+  task_environment()->RunUntilIdle();
+  warning_startup_launcher()->MaybeFetchPasswordsAndShowWarning(store());
   task_environment()->RunUntilIdle();
 }
 

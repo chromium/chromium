@@ -54,6 +54,8 @@ const char kLocalPasswordsMigrationWarningShownTimestamp[] =
     "local_passwords_migration_warning_shown_timestamp";
 const char kLocalPasswordMigrationWarningShownAtStartup[] =
     "local_passwords_migration_warning_shown_at_startup";
+const char kLocalPasswordMigrationWarningPrefsVersion[] =
+    "local_passwords_migration_warning_reset_count";
 #endif
 
 #if BUILDFLAG(IS_WIN)

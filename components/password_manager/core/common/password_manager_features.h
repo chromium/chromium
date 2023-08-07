@@ -133,6 +133,8 @@ extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;
 inline constexpr base::FeatureParam<bool> kIgnoreMigrationWarningTimeout = {
     &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     "ignore_migration_warning_timeout", false};
+
+extern const base::FeatureParam<int> kLocalPasswordMigrationWarningPrefsVersion;
 #endif
 
 // Field trial and corresponding parameters.

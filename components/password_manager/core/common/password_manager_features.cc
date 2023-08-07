@@ -210,6 +210,16 @@ BASE_FEATURE(kPasswordManagerPasskeys,
 // currently are 2 and 3.
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion = {
     &kExploratorySaveUpdatePasswordStrings, "syncing_string_version", 2};
+
+// The version of the password migration warning prefs. When the version
+// increases, the value of the pref LocalPasswordMigrationWarningPrefsVersion
+// increases and the affected prefs are reset. The affected prefs are:
+// LocalPasswordMigrationWarningShownAtStartup and
+// LocalPasswordsMigrationWarningShownTimestamp.
+extern const base::FeatureParam<int>
+    kLocalPasswordMigrationWarningPrefsVersion = {
+        &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+        "pwd_migration_warning_prefs_version", 0};
 #endif
 
 // Field trial identifier for password generation requirements.

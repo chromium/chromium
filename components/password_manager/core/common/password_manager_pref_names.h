@@ -126,6 +126,9 @@ extern const char kLocalPasswordsMigrationWarningShownTimestamp[];
 
 // Whether the local password migration warning was already shown at startup.
 extern const char kLocalPasswordMigrationWarningShownAtStartup[];
+
+// The version of the password migration warning prefs.
+extern const char kLocalPasswordMigrationWarningPrefsVersion[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

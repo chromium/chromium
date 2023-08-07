@@ -313,6 +313,8 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kLocalPasswordsMigrationWarningShownTimestamp, base::Time());
   registry->RegisterBooleanPref(
       prefs::kLocalPasswordMigrationWarningShownAtStartup, false);
+  registry->RegisterIntegerPref(
+      prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
 #endif
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);

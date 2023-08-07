@@ -5,11 +5,13 @@
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +31,24 @@ PasswordMigrationWarningStartupLauncher::
 
 void PasswordMigrationWarningStartupLauncher::MaybeFetchPasswordsAndShowWarning(
     password_manager::PasswordStoreInterface* store) {
+  int server_prefs_version =
+      password_manager::features::kLocalPasswordMigrationWarningPrefsVersion
+          .Get();
+  PrefService* prefs = profile_->GetPrefs();
+  int local_prefs_version = prefs->GetInteger(
+      password_manager::prefs::kLocalPasswordMigrationWarningPrefsVersion);
+  if (server_prefs_version > local_prefs_version) {
+    prefs->SetBoolean(
+        password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
+        false);
+    prefs->SetTime(
+        password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
+        base::Time());
+    prefs->SetInteger(
+        password_manager::prefs::kLocalPasswordMigrationWarningPrefsVersion,
+        server_prefs_version);
+  }
+
   bool local_migration_warning_shown_at_startup =
       profile_->GetPrefs()->GetBoolean(
           password_manager::prefs::
