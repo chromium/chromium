@@ -431,11 +431,6 @@
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
   E_CPONLY(kColorSidePanelHeaderButtonIcon) \
   E_CPONLY(kColorSidePanelHeaderButtonIconDisabled) \
-  E_CPONLY(kColorSidePanelMenuBackground) \
-  E_CPONLY(kColorSidePanelMenuDisabled) \
-  E_CPONLY(kColorSidePanelMenuDivider) \
-  E_CPONLY(kColorSidePanelMenuForeground) \
-  E_CPONLY(kColorSidePanelMenuIcon) \
   E_CPONLY(kColorSidePanelResizeAreaHandle) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \

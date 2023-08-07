@@ -41,13 +41,6 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelDialogSecondaryForeground] = {
       ui::kColorSysOnSurfaceSubtle};
 
-  /* Menus within the side panel. */
-  mixer[kColorSidePanelMenuBackground] = {ui::kColorSysSurface};
-  mixer[kColorSidePanelMenuDisabled] = {ui::kColorSysStateDisabled};
-  mixer[kColorSidePanelMenuDivider] = {ui::kColorSysDivider};
-  mixer[kColorSidePanelMenuForeground] = {ui::kColorSysOnSurface};
-  mixer[kColorSidePanelMenuIcon] = {ui::kColorSysOnSurfaceSubtle};
-
   mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorSidePanelBadgeBackgroundUpdated] = {
       ui::kColorSysTertiaryContainer};

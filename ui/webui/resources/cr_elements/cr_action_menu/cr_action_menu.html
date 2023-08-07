@@ -19,6 +19,21 @@
         }
       }
 
+      :host-context([chrome-refresh-2023]) {
+        --cr-hairline: 1px solid var(--color-menu-separator,
+            var(--cr-fallback-color-divider));
+        --cr-action-menu-disabled-item-color:
+            var(--color-menu-item-foreground-disabled,
+                var(--cr-fallback-color-disabled-foreground));
+        --cr-action-menu-disabled-item-opacity: 1;
+        --cr-menu-background-color: var(--color-menu-background,
+            var(--cr-fallback-color-surface));
+        --cr-menu-background-focus-color: var(--cr-hover-background-color);
+        --cr-menu-shadow: var(--cr-elevation-2);
+        --cr-primary-text-color: var(--color-menu-item-foreground,
+            var(--cr-fallback-color-on-surface));
+      }
+
       :host dialog::backdrop {
         background-color: transparent;
       }

@@ -283,6 +283,8 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-error: rgb(179, 38, 30);
 
+  --cr-fallback-color-divider: rgb(211, 227, 253);
+
   --cr-fallback-color-state-hover-on-prominent_: rgba(253, 252, 251, .1);
 
   --cr-fallback-color-state-on-subtle-rgb_: 31, 31, 31;
@@ -353,6 +355,7 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-on-tonal-container: rgb(194, 231, 255);
     --cr-fallback-color-tonal-outline: rgb(0, 99, 155);
     --cr-fallback-color-error: rgb(242, 184, 181);
+    --cr-fallback-color-divider: rgb(71, 71, 71);
     --cr-fallback-color-state-hover-on-prominent_: rgba(31, 31, 31, .06);
     --cr-fallback-color-state-on-subtle-rgb_: 253, 252, 251;
     --cr-fallback-color-state-hover-on-subtle_: rgba(
