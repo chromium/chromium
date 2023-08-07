@@ -15,8 +15,7 @@
       <!-- KEEP THESE IN ALPHABETICAL ORDER!  DO NOT ADD TO RANDOM PLACES JUST
            BECAUSE YOUR RESOURCES ARE FUNCTIONALLY RELATED OR FALL UNDER THE
            SAME CONDITIONALS. -->
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_ARROW_CHECKMARK_SPINNER_DARKMODE" file="common/arrow_checkmark_spinner_darkmode.png" />
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_ARROW_CHECKMARK_SPINNER_LIGHTMODE" file="common/arrow_checkmark_spinner_lightmode.png" />
+      <structure type="lottie" name="IDR_LOGIN_ARROW_CHECKMARK_ANIMATION" file="arrow_checkmark_animation.json" compress="brotli" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER" file="common/fingerprint_unlock_spinner.png" />
     </structures>
   </release>
