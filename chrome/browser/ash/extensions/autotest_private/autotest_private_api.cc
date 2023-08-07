@@ -2249,7 +2249,7 @@ AutotestPrivateGetCryptohomeRecoveryDataFunction::Run() {
   if (!context) {
     return RespondNow(Error("WizardContext is not available"));
   }
-  ash::UserContext* user_context;
+  const ash::UserContext* user_context;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     if (!context->extra_factors_token.has_value()) {
       return RespondNow(Error("UserContext is not available"));

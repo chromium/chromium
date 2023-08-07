@@ -116,15 +116,8 @@ void UserContext::CryptohomeContext::ClearAuthFactorsConfiguration() {
 }
 
 const AuthFactorsConfiguration&
-UserContext::CryptohomeContext::GetAuthFactorsConfiguration() {
-  if (!auth_factors_configuration_.has_value()) {
-    // Crash with debug assertions, try to stay alive otherwise. This method
-    // could be const if we didn't set auth_factors_configuration_ if
-    // necessary.
-    DCHECK(false) << "AuthFactorsConfiguration has not been set";
-    auth_factors_configuration_ = AuthFactorsConfiguration();
-  }
-
+UserContext::CryptohomeContext::GetAuthFactorsConfiguration() const {
+  CHECK(auth_factors_configuration_.has_value());
   return *auth_factors_configuration_;
 }
 
@@ -429,7 +422,8 @@ void UserContext::ClearAuthFactorsConfiguration() {
   cryptohome_.ClearAuthFactorsConfiguration();
 }
 
-const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
+const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration()
+    const {
   return cryptohome_.GetAuthFactorsConfiguration();
 }
 

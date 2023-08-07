@@ -88,7 +88,7 @@ bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
 }
 
 void RecoveryEligibilityScreen::ShowImpl() {
-  UserContext* user_context = nullptr;
+  const UserContext* user_context = nullptr;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     CHECK(context()->extra_factors_token.has_value());
     auto* storage = ash::AuthSessionStorage::Get();
