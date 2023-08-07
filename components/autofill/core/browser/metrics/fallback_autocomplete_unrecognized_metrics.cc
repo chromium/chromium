@@ -19,6 +19,20 @@ AutocompleteUnrecognizedFallbackEventLogger::
                                 "ClassifiedFieldAutocompleteUnrecognized");
   EmitExplicitlyTriggeredMetric(ac_recognized_context_menu_state,
                                 "ClassifiedFieldAutocompleteRecognized");
+  EmitFillAfterSuggestionMetric();
+}
+
+void AutocompleteUnrecognizedFallbackEventLogger::OnDidShowSuggestions() {
+  if (suggestion_state_ == SuggestionState::kNotShown) {
+    suggestion_state_ = SuggestionState::kShown;
+  }
+}
+
+void AutocompleteUnrecognizedFallbackEventLogger::OnDidFillSuggestion() {
+  CHECK_NE(suggestion_state_, SuggestionState::kNotShown);
+  if (suggestion_state_ != SuggestionState::kFilled) {
+    suggestion_state_ = SuggestionState::kFilled;
+  }
 }
 
 void AutocompleteUnrecognizedFallbackEventLogger::ContextMenuEntryShown(
@@ -55,6 +69,17 @@ void AutocompleteUnrecognizedFallbackEventLogger::EmitExplicitlyTriggeredMetric(
   const bool was_accepted = state == ContextMenuEntryState::kAccepted;
   base::UmaHistogramBoolean(metric_name(bucket), was_accepted);
   base::UmaHistogramBoolean(metric_name("Total"), was_accepted);
+}
+
+void AutocompleteUnrecognizedFallbackEventLogger::
+    EmitFillAfterSuggestionMetric() {
+  if (suggestion_state_ == SuggestionState::kNotShown) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized."
+      "FillAfterSuggestion.Address",
+      suggestion_state_ == SuggestionState::kFilled);
 }
 
 }  // namespace autofill::autofill_metrics
