@@ -640,8 +640,9 @@ void MaybeRegisterChromeTutorials(
           HiddenStep::WaitForHidden(kChromeThemeBackElementName),
 
           // Completion of the tutorial.
-          BubbleStep(kTopContainerElementId)
+          BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
               .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+              .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
               .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY)
               .InAnyContext()));
 
