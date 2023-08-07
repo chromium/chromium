@@ -419,7 +419,7 @@ FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
   const DeskTemplate* floating_workspace_template = nullptr;
   std::vector<const ash::DeskTemplate*> fws_entries =
       GetFloatingWorkspaceTemplateEntries();
-
+  VLOG(1) << "Found " << fws_entries.size() << " floating workspace entries";
   for (const DeskTemplate* entry : fws_entries) {
     if (!entry) {
       continue;
@@ -430,7 +430,6 @@ FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
       floating_workspace_template = entry;
     }
   }
-
   DoGarbageCollection(/*exclude template=*/floating_workspace_template);
   return floating_workspace_template;
 }
@@ -467,6 +466,9 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
   if (desk_template == nullptr) {
+    LOG(WARNING) << "No floating workspace entry found. Won't "
+                    "restore. This is only possible if this is the first time "
+                    "a user is using Floating Workspace.";
     should_run_restore_ = false;
     return;
   }
@@ -499,7 +501,8 @@ void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
     return;
   }
   base::Uuid active_desk_uuid = GetDesksClient()->GetActiveDesk();
-
+  VLOG(1) << "Launching Floating Workspace template with timestamp of "
+          << desk_template->GetLastUpdatedTime();
   RemoveAllPreviousDesksExceptActiveDesk(
       /*exclude_desk_uuid=*/active_desk_uuid);
   GetDesksClient()->LaunchDeskTemplate(
@@ -557,7 +560,7 @@ bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
   return true;
 }
 
-void FloatingWorkspaceService::HandleTemplateUploadErrors(
+void FloatingWorkspaceService::HandleTemplateLaunchErrors(
     DesksClient::DeskActionError error) {
   switch (error) {
     case DesksClient::DeskActionError::kUnknownError:
@@ -565,26 +568,70 @@ void FloatingWorkspaceService::HandleTemplateUploadErrors(
           RecordFloatingWorkspaceV2TemplateLaunchFailureType(
               floating_workspace_metrics_util::LaunchTemplateFailureType::
                   kUnknownError);
+      LOG(WARNING) << "Failed to launch template: unknown error.";
       return;
     case DesksClient::DeskActionError::kStorageError:
       floating_workspace_metrics_util::
           RecordFloatingWorkspaceV2TemplateLaunchFailureType(
               floating_workspace_metrics_util::LaunchTemplateFailureType::
                   kStorageError);
+      LOG(WARNING) << "Failed to launch template: storage error.";
       return;
     case DesksClient::DeskActionError::kDesksCountCheckFailedError:
       floating_workspace_metrics_util::
           RecordFloatingWorkspaceV2TemplateLaunchFailureType(
               floating_workspace_metrics_util::LaunchTemplateFailureType::
                   kDesksCountCheckFailedError);
+      LOG(WARNING) << "Failed to launch template: max number of desks open.";
       return;
     // No need to record metrics for the below desk action errors since they
     // do not relate to template launch.
     case DesksClient::DeskActionError::kNoCurrentUserError:
+      LOG(WARNING) << "Failed to launch template: no active user.";
+      return;
     case DesksClient::DeskActionError::kBadProfileError:
+      LOG(WARNING) << "Failed to launch template: bad profile.";
+      return;
     case DesksClient::DeskActionError::kResourceNotFoundError:
+      LOG(WARNING) << "Failed to launch template: resource not found.";
+      return;
     case DesksClient::DeskActionError::kInvalidIdError:
+      LOG(WARNING) << "Failed to launch template: desk id is invalid.";
+      return;
     case DesksClient::DeskActionError::kDesksBeingModifiedError:
+      LOG(WARNING)
+          << "Failed to launch template: desk is currently being modified.";
+      return;
+  }
+}
+
+void FloatingWorkspaceService::HandleTemplateCaptureErrors(
+    DesksClient::DeskActionError error) {
+  switch (error) {
+    case DesksClient::DeskActionError::kUnknownError:
+      LOG(WARNING) << "Failed to capture template: unknown error.";
+      return;
+    case DesksClient::DeskActionError::kStorageError:
+      LOG(WARNING) << "Failed to capture template: storage error.";
+      return;
+    case DesksClient::DeskActionError::kDesksCountCheckFailedError:
+      LOG(WARNING) << "Failed to capture template: max number of desks open.";
+      return;
+    case DesksClient::DeskActionError::kNoCurrentUserError:
+      LOG(WARNING) << "Failed to capture template: no active user.";
+      return;
+    case DesksClient::DeskActionError::kBadProfileError:
+      LOG(WARNING) << "Failed to capture template: bad profile.";
+      return;
+    case DesksClient::DeskActionError::kResourceNotFoundError:
+      LOG(WARNING) << "Failed to capture template: resource not found.";
+      return;
+    case DesksClient::DeskActionError::kInvalidIdError:
+      LOG(WARNING) << "Failed to capture template: desk id is invalid.";
+      return;
+    case DesksClient::DeskActionError::kDesksBeingModifiedError:
+      LOG(WARNING)
+          << "Failed to capture template: desk is currently being modified.";
       return;
   }
 }
@@ -593,7 +640,7 @@ void FloatingWorkspaceService::OnTemplateLaunched(
     absl::optional<DesksClient::DeskActionError> error,
     const base::Uuid& desk_uuid) {
   if (error) {
-    HandleTemplateUploadErrors(error.value());
+    HandleTemplateLaunchErrors(error.value());
     return;
   }
   RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
@@ -604,7 +651,11 @@ void FloatingWorkspaceService::OnTemplateCaptured(
     absl::optional<DesksClient::DeskActionError> error,
     std::unique_ptr<DeskTemplate> desk_template) {
   // Desk capture was not successful, nothing to upload.
+  if (error) {
+    HandleTemplateCaptureErrors(error.value());
+  }
   if (!desk_template) {
+    LOG(WARNING) << "Desk capture failed. Nothing to upload.";
     return;
   }
   // Check if there's an associated floating workspace uuid from the desk
@@ -649,6 +700,7 @@ void FloatingWorkspaceService::OnTemplateUploaded(
   previously_captured_desk_template_ = std::move(new_entry);
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(status);
+  VLOG(1) << "Desk template uploaded successfully.";
 }
 
 absl::optional<base::Uuid>

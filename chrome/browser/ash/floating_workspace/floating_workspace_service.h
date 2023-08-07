@@ -159,7 +159,10 @@ class FloatingWorkspaceService : public KeyedService,
   bool IsCurrentDeskSameAsPrevious(DeskTemplate* current_desk_template) const;
 
   // Handles the recording of the error for template launch.
-  void HandleTemplateUploadErrors(DesksClient::DeskActionError error);
+  void HandleTemplateLaunchErrors(DesksClient::DeskActionError error);
+
+  // Handles the recording of the error for template capture.
+  void HandleTemplateCaptureErrors(DesksClient::DeskActionError error);
 
   // Callback function that is run after a floating workspace template
   // is downloaded and launched.
