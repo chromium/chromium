@@ -37,6 +37,10 @@ void ThunkNotificationDelegate::DisableNotification() {
     impl_->DisableNotification();
 }
 
+void ThunkNotificationDelegate::ExpandStateChanged() {
+  // Not implemented by default.
+}
+
 ThunkNotificationDelegate::~ThunkNotificationDelegate() = default;
 
 // HandleNotificationClickDelegate:

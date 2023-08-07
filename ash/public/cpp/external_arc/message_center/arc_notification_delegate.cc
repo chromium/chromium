@@ -53,4 +53,9 @@ void ArcNotificationDelegate::SettingsClick() {
   item_->OpenSettings();
 }
 
+void ArcNotificationDelegate::ExpandStateChanged() {
+  DCHECK(item_);
+  item_->ToggleExpansion();
+}
+
 }  // namespace ash
