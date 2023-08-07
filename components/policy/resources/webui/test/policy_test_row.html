@@ -5,23 +5,27 @@
 
   div {
     display: table-cell;
-    border: 1px solid black;
+    border: none;
     padding: 1px;
   }
 
   [role="cell"] > * {
     width: 100%;
     box-sizing: border-box;
-    padding: 3px;
     border: none;
     background: none;
+    padding: 7px;
   }
 
   .error {
     border: solid 1px red;
   }
+
+  .name-cell {
+    border-right: 1px solid rgba(0, 0, 0, .06);
+  }
 </style>
-<div role="cell">
+<div role="cell" class="name-cell">
   <select class="name">
     <option selected disabled hidden>$i18n{testNameSelect}</option>
   </select>
@@ -93,5 +97,5 @@
   </select>
 </div>
 <div role="cell">
-  <button class="remove-btn">$i18n{testTableRemove}</button>
+  <button class="remove-btn">x</button>
 </div>

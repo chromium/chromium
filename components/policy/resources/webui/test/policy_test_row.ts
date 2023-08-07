@@ -51,8 +51,8 @@ export class PolicyTestRowElement extends CustomElement {
         // enable/disable or allow/disallow if the policy name contains 'enable'
         // or 'allow' respectively.
         const boolOptions = {
-          'true': ['true', 'enabled', 'allow'],
-          'false': ['false', 'disabled', 'disallow'],
+          'true': ['True', 'Enabled', 'Allow'],
+          'false': ['False', 'Disabled', 'Disallow'],
         };
         let boolOptionIndex = 0;
         const policyNameLower =

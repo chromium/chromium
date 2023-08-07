@@ -2,28 +2,47 @@
   .table {
     display: table;
     width: 100%;
+    border: 1px solid rgba(0, 0, 0, .06);
   }
 
   header {
     display: table-row;
     text-align: center;
+    background-color: rgb(240, 240, 240);
   }
 
   .cell {
     display: table-cell;
-    border: 1px solid black;
-    padding: 1px;
+    padding: 7px;
+  }
+
+  #name-header {
+    border-right: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  button {
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  button:hover {
+    filter: brightness(90%);
+  }
+
+  button:active {
+    filter: brightness(85%);
   }
 </style>
 <div class="table" role="table">
   <header role="row">
-    <div class="cell">$i18n{testTableName}</div>
+    <div class="cell" id="name-header">$i18n{testTableName}</div>
     <div class="cell">$i18n{testTableValue}</div>
     <div class="cell">$i18n{testTablePreset}</div>
     <div class="cell">$i18n{testTableSource}</div>
     <div class="cell">$i18n{testTableTarget}</div>
     <div class="cell">$i18n{testTableLevel}</div>
-    <div class="cell">$i18n{testTableRemove}</div>
+    <div class="cell"></div>
   </header>
   <policy-test-row></policy-test-row>
 </div>
