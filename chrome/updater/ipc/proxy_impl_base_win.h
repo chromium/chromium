@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -70,8 +71,8 @@ class ProxyImplBase {
     // Retry creating the object if the call fails. Don't retry if
     // the error is `REGDB_E_CLASSNOTREG` because the error can occur during
     // normal operation and retrying on registration issues does not help.
-    HResultOr<Microsoft::WRL::ComPtr<IUnknown>> server =
-        [](REFCLSID clsid) -> decltype(server) {
+    const auto create_server =
+        [](REFCLSID clsid) -> HResultOr<Microsoft::WRL::ComPtr<IUnknown>> {
       constexpr int kNumTries = 2;
       HRESULT hr = E_FAIL;
       for (int i = 0; i != kNumTries; ++i) {
@@ -91,15 +92,13 @@ class ProxyImplBase {
         base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
       }
       return base::unexpected(hr);
-    }(Derived::GetClassGuid(scope_));
-
-    if (!server.has_value()) {
-      return base::unexpected(server.error());
-    }
+    };
+    ASSIGN_OR_RETURN(Microsoft::WRL::ComPtr<IUnknown> server,
+                     create_server(Derived::GetClassGuid(scope_)));
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
     REFIID iid = IsSystemInstall(scope_) ? iid_system : iid_user;
-    HRESULT hr = server->CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
+    HRESULT hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
     if (FAILED(hr)) {
       VLOG(2) << "Failed to query the interface: "
               << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;

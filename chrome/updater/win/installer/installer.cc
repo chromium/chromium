@@ -32,6 +32,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
@@ -303,13 +304,14 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
   // updater.exe must happen from a secure directory.
   base::CommandLine elevated_command_line = command_line;
   elevated_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
-  HResultOr<DWORD> result = RunElevated(
-      command_line.GetProgram(), elevated_command_line.GetArgumentsString());
-
-  return result.has_value()
-             ? ProcessExitResult(result.value())
-             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS,
-                                 result.error());
+  ASSIGN_OR_RETURN(DWORD result,
+                   RunElevated(command_line.GetProgram(),
+                               elevated_command_line.GetArgumentsString()),
+                   [](HRESULT error) {
+                     return ProcessExitResult(
+                         RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, error);
+                   });
+  return ProcessExitResult(result);
 }
 
 ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {

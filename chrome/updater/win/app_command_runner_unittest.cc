@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_localalloc.h"
 #include "build/branding_buildflags.h"
@@ -400,19 +401,20 @@ INSTANTIATE_TEST_SUITE_P(RunAppCommandFormatTestCases,
                          }));
 
 TEST_P(RunAppCommandFormatTest, TestCases) {
-  HResultOr<AppCommandRunner> app_command_runner;
+  AppCommandRunner app_command_runner;
 
   base::Process process;
-  ASSERT_EQ(app_command_runner->Run(GetParam().substitutions, process),
+  ASSERT_EQ(app_command_runner.Run(GetParam().substitutions, process),
             E_UNEXPECTED);
 
-  app_command_runner = CreateAppCommandRunner(
-      kAppId1, kCmdId1,
-      base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
-                    base::JoinString(GetParam().input, L" ")}));
-  ASSERT_TRUE(app_command_runner.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      app_command_runner,
+      CreateAppCommandRunner(
+          kAppId1, kCmdId1,
+          base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                        base::JoinString(GetParam().input, L" ")})));
   ASSERT_HRESULT_SUCCEEDED(
-      app_command_runner->Run(GetParam().substitutions, process));
+      app_command_runner.Run(GetParam().substitutions, process));
 
   int exit_code = 0;
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
@@ -542,9 +544,9 @@ TEST_P(RunBothFormatsTest, TestCases) {
     GTEST_SKIP();
   }
 
-  HResultOr<AppCommandRunner> app_command_runner;
+  AppCommandRunner app_command_runner;
   base::Process process;
-  ASSERT_EQ(app_command_runner->Run({}, process), E_UNEXPECTED);
+  ASSERT_EQ(app_command_runner.Run({}, process), E_UNEXPECTED);
 
   if (GetParam().cmd_id_appcommand) {
     CreateAppCommandRegistry(
@@ -562,11 +564,11 @@ TEST_P(RunBothFormatsTest, TestCases) {
              base::JoinString(GetParam().input_processlauncher, L" ")}));
   }
 
-  app_command_runner = AppCommandRunner::LoadAppCommand(
-      GetTestScope(), kAppId1, GetParam().cmd_id_to_execute);
-  ASSERT_TRUE(app_command_runner.has_value());
+  ASSERT_OK_AND_ASSIGN(app_command_runner, AppCommandRunner::LoadAppCommand(
+                                               GetTestScope(), kAppId1,
+                                               GetParam().cmd_id_to_execute));
 
-  ASSERT_HRESULT_SUCCEEDED(app_command_runner->Run({}, process));
+  ASSERT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
 
   int exit_code = 0;
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),

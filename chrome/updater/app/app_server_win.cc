@@ -27,6 +27,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
@@ -227,14 +228,12 @@ HRESULT IsCOMCallerAllowed() {
     return S_OK;
   }
 
-  const HResultOr<bool> result = IsCOMCallerAdmin();
-  if (!result.has_value()) {
-    HRESULT hr = result.error();
-    LOG(ERROR) << "IsCOMCallerAdmin failed: " << std::hex << hr;
-    return hr;
-  }
+  ASSIGN_OR_RETURN(const bool result, IsCOMCallerAdmin(), [](HRESULT error) {
+    LOG(ERROR) << "IsCOMCallerAdmin failed: " << std::hex << error;
+    return error;
+  });
 
-  return result.value() ? S_OK : E_ACCESSDENIED;
+  return result ? S_OK : E_ACCESSDENIED;
 }
 
 scoped_refptr<App> MakeAppServer() {

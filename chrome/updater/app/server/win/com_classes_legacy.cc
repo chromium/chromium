@@ -29,6 +29,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/updater/app/app_server_win.h"
@@ -805,12 +806,9 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     const WCHAR* command_id,
     DWORD caller_proc_id,
     ULONG_PTR* proc_handle) {
-  HResultOr<AppCommandRunner> app_command_runner =
-      AppCommandRunner::LoadAppCommand(UpdaterScope::kSystem, app_id,
-                                       command_id);
-  if (!app_command_runner.has_value()) {
-    return app_command_runner.error();
-  }
+  ASSIGN_OR_RETURN(auto app_command_runner,
+                   AppCommandRunner::LoadAppCommand(UpdaterScope::kSystem,
+                                                    app_id, command_id));
 
   base::win::ScopedHandle caller_proc_handle;
   if (HRESULT hr = OpenCallerProcessHandle(caller_proc_id, caller_proc_handle);
@@ -820,7 +818,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   }
 
   base::Process process;
-  if (HRESULT hr = app_command_runner->Run({}, process); FAILED(hr)) {
+  if (HRESULT hr = app_command_runner.Run({}, process); FAILED(hr)) {
     return hr;
   }
 

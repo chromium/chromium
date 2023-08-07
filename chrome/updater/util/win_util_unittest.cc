@@ -29,6 +29,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
@@ -139,17 +140,14 @@ TEST(WinUtil, BuildExeCommandLine) {
 }
 
 TEST(WinUtil, ShellExecuteAndWait) {
-  HResultOr<DWORD> result =
-      ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {});
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+  EXPECT_THAT(ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {}),
+              base::test::ErrorIs(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)));
 
-  result = ShellExecuteAndWait(
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
-          .GetProgram(),
-      {}, {});
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), DWORD{0});
+  EXPECT_THAT(ShellExecuteAndWait(
+                  GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
+                      .GetProgram(),
+                  {}, {}),
+              base::test::ValueIs(DWORD{0}));
 }
 
 TEST(WinUtil, RunElevated) {
@@ -160,11 +158,9 @@ TEST(WinUtil, RunElevated) {
 
   const base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
-  HResultOr<DWORD> result =
-      RunElevated(test_process_cmd_line.GetProgram(),
-                  test_process_cmd_line.GetArgumentsString());
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), DWORD{0});
+  EXPECT_THAT(RunElevated(test_process_cmd_line.GetProgram(),
+                          test_process_cmd_line.GetArgumentsString()),
+              base::test::ValueIs(DWORD{0}));
 }
 
 TEST(WinUtil, RunDeElevated_Exe) {
@@ -319,9 +315,7 @@ TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
 }
 
 TEST(WinUtil, IsCOMCallerAdmin) {
-  HResultOr<bool> is_com_caller_admin = IsCOMCallerAdmin();
-  ASSERT_TRUE(is_com_caller_admin.has_value());
-  EXPECT_EQ(is_com_caller_admin.value(), ::IsUserAnAdmin());
+  EXPECT_THAT(IsCOMCallerAdmin(), base::test::ValueIs(::IsUserAnAdmin()));
 }
 
 TEST(WinUtil, EnableSecureDllLoading) {
