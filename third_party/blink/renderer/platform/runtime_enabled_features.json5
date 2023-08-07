@@ -343,6 +343,7 @@
       origin_trial_allows_third_party: true,
       status: "experimental",
       base_feature: "none",
+      public: true,
     },
     {
       name: "AttributionReportingCrossAppWeb",
@@ -1718,6 +1719,7 @@
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
+      public: true,
     },
     {
       name: "FledgeBiddingAndAuctionServer",

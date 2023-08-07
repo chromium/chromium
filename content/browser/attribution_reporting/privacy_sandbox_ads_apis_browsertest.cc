@@ -695,4 +695,48 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideBrowserTest,
   EXPECT_EQ(1U, root()->child_count());
 }
 
+class PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest
+    : public PrivacySandboxAdsAPIsBrowserTestBase {
+ public:
+  PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kPrivacySandboxAdsAPIsM1Override},
+        {blink::features::kConversionMeasurement,
+         blink::features::kBrowsingTopics,
+         blink::features::kBrowsingTopicsDocumentAPI,
+         blink::features::kInterestGroupStorage, blink::features::kFencedFrames,
+         blink::features::kSharedStorageAPI});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest,
+                       OverrideWithoutFeature_IDLNotExposed) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_without_ads_apis_ot.html")));
+
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "attribution-reporting')"));
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "browsing-topics')"));
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "join-ad-interest-group')"));
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "run-ad-auction')"));
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "shared-storage')"));
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "private-aggregation')"));
+  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
+  EXPECT_EQ(0U, root()->child_count());
+}
+
 }  // namespace content
