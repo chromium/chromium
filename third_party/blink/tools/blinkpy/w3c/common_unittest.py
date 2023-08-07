@@ -13,10 +13,6 @@ from blinkpy.w3c.common import (read_credentials, is_testharness_baseline,
 
 
 class CommonTest(unittest.TestCase):
-    def setUp(self):
-        host = MockHost()
-        self.project_config = host.project_config
-
     def test_get_credentials_empty(self):
         host = MockHost()
         host.filesystem.write_text_file('/tmp/credentials.json', '{}')
@@ -108,42 +104,33 @@ class CommonTest(unittest.TestCase):
 
     def test_is_file_exportable(self):
         self.assertTrue(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'html/fake-test.html',
-                               self.project_config))
+            is_file_exportable(RELATIVE_WPT_TESTS + 'html/fake-test.html'))
         self.assertFalse(
-            is_file_exportable(
-                RELATIVE_WPT_TESTS + 'html/fake-test-expected.txt',
-                self.project_config))
+            is_file_exportable(RELATIVE_WPT_TESTS +
+                               'html/fake-test-expected.txt'))
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'MANIFEST.json',
-                               self.project_config))
+            is_file_exportable(RELATIVE_WPT_TESTS + 'MANIFEST.json'))
+        self.assertFalse(is_file_exportable(RELATIVE_WPT_TESTS + 'dom/OWNERS'))
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/OWNERS',
-                               self.project_config))
-        self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/DIR_METADATA',
-                               self.project_config))
+            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/DIR_METADATA'))
         self.assertFalse(
             is_file_exportable(
                 RELATIVE_WPT_TESTS +
-                'infrastructure/metadata/infrastructure/expected-fail/timeout.html.ini',
-                self.project_config))
+                'infrastructure/metadata/infrastructure/expected-fail/timeout.html.ini'
+            ))
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/historical.html.ini',
-                               self.project_config))
+            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/historical.html.ini'))
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'html/tools/PRESUBMIT.py',
-                               self.project_config))
+            is_file_exportable(RELATIVE_WPT_TESTS + 'html/tools/PRESUBMIT.py'))
 
     def test_is_file_exportable_asserts_path(self):
         # Rejects basenames.
         with self.assertRaises(AssertionError):
-            is_file_exportable('MANIFEST.json', self.project_config)
+            is_file_exportable('MANIFEST.json')
         # Rejects files not in Chromium WPT.
         with self.assertRaises(AssertionError):
-            is_file_exportable('third_party/fake/OWNERS', self.project_config)
+            is_file_exportable('third_party/fake/OWNERS')
         # Rejects absolute paths.
         with self.assertRaises(AssertionError):
-            is_file_exportable(
-                '/mock-checkout/' + RELATIVE_WPT_TESTS + 'OWNERS',
-                self.project_config)
+            is_file_exportable('/mock-checkout/' + RELATIVE_WPT_TESTS +
+                               'OWNERS')
