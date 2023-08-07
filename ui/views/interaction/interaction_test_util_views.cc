@@ -606,24 +606,12 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateSurface(
     return ui::test::ActionResult::kNotAttempted;
 
   auto* const widget = element->AsA<TrackedElementViews>()->view()->GetWidget();
-#if HANDLE_WAYLAND_FAILURE
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
-    WidgetActivationWaiterWayland waiter(widget);
-    widget->Activate();
-    if (!waiter.Wait()) {
-      LOG(WARNING)
-          << "Unable to activate widget due to lack of Wayland support for "
-             "widget activation; test is not meaningful on this platform.";
-      return ui::test::ActionResult::kKnownIncompatible;
-    }
-    return ui::test::ActionResult::kSucceeded;
+  if (!widget) {
+    LOG(WARNING) << "View not assocaited with a widget.";
+    return ui::test::ActionResult::kFailed;
   }
-#endif  // HANDLE_WAYLAND_FAILURE
 
-  views::test::WidgetActivationWaiter waiter(widget, true);
-  widget->Activate();
-  waiter.Wait();
-  return ui::test::ActionResult::kSucceeded;
+  return ActivateWidget(widget);
 }
 
 ui::test::ActionResult InteractionTestUtilSimulatorViews::SendAccelerator(
@@ -666,6 +654,30 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
   return ui::test::ActionResult::kSucceeded;
 }
 
+// static
+ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateWidget(
+    Widget* widget) {
+#if HANDLE_WAYLAND_FAILURE
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    WidgetActivationWaiterWayland waiter(widget);
+    widget->Activate();
+    if (!waiter.Wait()) {
+      LOG(WARNING)
+          << "Unable to activate widget due to lack of Wayland support for "
+             "widget activation; test is not meaningful on this platform.";
+      return ui::test::ActionResult::kKnownIncompatible;
+    }
+    return ui::test::ActionResult::kSucceeded;
+  }
+#endif  // HANDLE_WAYLAND_FAILURE
+
+  views::test::WidgetActivationWaiter waiter(widget, true);
+  widget->Activate();
+  waiter.Wait();
+  return ui::test::ActionResult::kSucceeded;
+}
+
+// static
 bool InteractionTestUtilSimulatorViews::DoDefaultAction(View* view,
                                                         InputType input_type) {
   switch (input_type) {

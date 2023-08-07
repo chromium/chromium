@@ -7,16 +7,47 @@
 #include <memory>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace views::test::internal {
+
+namespace {
+
+// Basic observer for low-level activation changes. Relays when a widget
+// receives focus.
+class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
+                                      public WidgetFocusChangeListener {
+ public:
+  NativeViewWidgetFocusSupplier() {
+    observation_.Observe(WidgetFocusManager::GetInstance());
+  }
+  ~NativeViewWidgetFocusSupplier() override = default;
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  void OnNativeFocusChanged(gfx::NativeView focused_now) override {
+    OnWidgetFocusChanged(focused_now);
+  }
+
+ private:
+  base::ScopedObservation<WidgetFocusManager, WidgetFocusChangeListener>
+      observation_{this};
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(NativeViewWidgetFocusSupplier)
+
+}  // namespace
 
 // Caches the last-known native window associated with a context.
 // Useful for executing ClickMouse() and ReleaseMouse() commands, as no target
@@ -51,7 +82,10 @@ class InteractiveViewsTestPrivate::WindowHintCacheEntry {
 
 InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
     std::unique_ptr<ui::test::InteractionTestUtil> test_util)
-    : InteractiveTestPrivate(std::move(test_util)) {}
+    : InteractiveTestPrivate(std::move(test_util)) {
+  WidgetFocusSupplier::MaybeRegisterFocusSupplier<
+      NativeViewWidgetFocusSupplier>();
+}
 InteractiveViewsTestPrivate::~InteractiveViewsTestPrivate() = default;
 
 void InteractiveViewsTestPrivate::OnSequenceComplete() {

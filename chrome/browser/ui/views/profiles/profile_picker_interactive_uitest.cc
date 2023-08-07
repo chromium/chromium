@@ -124,14 +124,6 @@ class ProfilePickerInteractiveUiTest
     };
   }
 
-  void SimulateUserActivation() {
-    content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-        web_contents()->GetPrimaryMainFrame());
-    user_activation_interceptor.UpdateUserActivationState(
-        blink::mojom::UserActivationUpdateType::kNotifyActivation,
-        blink::mojom::UserActivationNotificationType::kTest);
-  }
-
   StateChange Exists(const DeepQuery& where) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
     StateChange state_change;
@@ -357,10 +349,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                                              .last_committed_entry_index = 1})),
 
       // Focus the window to ensure the keyboard shortcut reaches it.
-      Do([&] { SimulateUserActivation(); }),
+      FocusWebContents(kPickerWebContentsId),
 
       // Navigate back with the keyboard.
-      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      SendAccelerator(kPickerWebContentsId, GetAccelerator(IDC_BACK)),
       CheckResult(HasPendingNav(), IsTrue(),
                   /*check_description=*/"HasPendingNav"),
       WaitForStateChange(kPickerWebContentsId,
