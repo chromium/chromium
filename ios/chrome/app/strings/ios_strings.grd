@@ -1268,7 +1268,7 @@ See your search engine’s instructions for deleting your search history, if app
         Sign Out
       </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE" desc="Snackbar message shown after signing out from account settings. [iOS only]">
-        Signed out. Sign back in to see the bookmarks, passwords, and more in your account.
+        Signed out. Sign back in to use the bookmarks, passwords, and more in your account.
       </message>
       <message name="IDS_IOS_SYNC_SETTINGS_TITLE" desc="Title for the navigation item in Advanced Settings. [Length: 26em] [iOS only]">
         Sync
