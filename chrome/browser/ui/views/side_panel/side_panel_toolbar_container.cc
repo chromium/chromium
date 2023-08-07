@@ -40,6 +40,7 @@
 SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
     PinnedSidePanelToolbarButton(BrowserView* browser_view,
                                  SidePanelEntry::Id id,
+                                 std::u16string accessible_name,
                                  std::u16string name,
                                  const gfx::VectorIcon& icon)
     : ToolbarButton(
@@ -50,6 +51,10 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
       browser_view_(browser_view),
       id_(id) {
   SetTooltipText(name);
+  SetAccessibleName(accessible_name);
+  GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
   SetVectorIcon(icon);
 
   button_controller()->set_notify_action(
@@ -204,19 +209,21 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
           browser_view_->browser());
   AddPinnedEntryButtonFor(
       SidePanelEntry::Id::kSearchCompanion,
+      search_companion_coordinator->accessible_name(),
       search_companion_coordinator->GetTooltipForToolbarButton(),
       search_companion_coordinator->icon());
 }
 
 void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
     SidePanelEntry::Id id,
+    std::u16string accessible_name,
     std::u16string name,
     const gfx::VectorIcon& icon) {
   if (HasPinnedEntryButtonFor(id)) {
     return;
   }
-  auto button = std::make_unique<PinnedSidePanelToolbarButton>(browser_view_,
-                                                               id, name, icon);
+  auto button = std::make_unique<PinnedSidePanelToolbarButton>(
+      browser_view_, id, accessible_name, name, icon);
   button->SetProperty(views::kElementIdentifierKey,
                       kSidePanelCompanionToolbarButtonElementId);
   button->SetVisible(false);
