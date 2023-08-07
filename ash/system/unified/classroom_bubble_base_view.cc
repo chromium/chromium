@@ -17,6 +17,8 @@
 #include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
@@ -25,6 +27,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
@@ -77,8 +80,10 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
   combo_box_view_->SetSelectedIndex(0);
-  // TODO(b:283370907): Implement accessibility behavior.
-  combo_box_view_->SetTooltipTextAndAccessibleName(u"Assignment list selector");
+  // TODO(b/294681832): Finalize, and then localize strings.
+  combo_box_view_->SetTooltipTextAndAccessibleName(u"Classwork type");
+  combo_box_view_->SetAccessibleDescription(u"");
+  combobox_view_observation_.Observe(combo_box_view_);
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
@@ -94,6 +99,7 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
       list_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
   layout->set_between_child_spacing(2);
+  list_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
 
   const auto* const typography_provider = TypographyProvider::Get();
   empty_list_label_ = AddChildView(
@@ -117,23 +123,26 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
 
 ClassroomBubbleBaseView::~ClassroomBubbleBaseView() = default;
 
-// views::View:
-void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(b:283370907): Implement accessibility behavior.
-  if (!GetVisible()) {
-    return;
-  }
-  node_data->role = ax::mojom::Role::kListBox;
-  node_data->SetName(u"Glanceables Bubble Classroom View Accessible Name");
+void ClassroomBubbleBaseView::OnViewFocused(views::View* view) {
+  CHECK_EQ(view, combo_box_view_);
+
+  AnnounceListStateOnComboBoxAccessibility();
+}
+
+void ClassroomBubbleBaseView::AboutToRequestAssignments() {
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
+  combo_box_view_->SetAccessibleDescription(u"");
 }
 
 void ClassroomBubbleBaseView::OnGetAssignments(
+    const std::u16string& list_name,
     bool success,
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   const size_t old_item_count = list_container_view_->children().size();
   list_container_view_->RemoveAllChildViews();
+  total_assignments_ = assignments.size();
 
   for (const auto& assignment : assignments) {
     list_container_view_->AddChildView(
@@ -146,14 +155,26 @@ void ClassroomBubbleBaseView::OnGetAssignments(
       break;
     }
   }
-  list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
-                                      assignments.size());
+  const size_t shown_assignments = list_container_view_->children().size();
+  list_footer_view_->UpdateItemsCount(shown_assignments, total_assignments_);
 
-  const bool is_list_empty = list_container_view_->children().size() == 0;
+  const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);
   list_footer_view_->SetVisible(!is_list_empty);
 
-  if (list_container_view_->children().size() != old_item_count) {
+  // TODO(b/294681832): Finalize, and then localize strings.
+  list_container_view_->SetAccessibleName(u"Classwork " + list_name);
+  list_container_view_->SetAccessibleDescription(
+      list_footer_view_->items_count_label());
+  list_container_view_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kChildrenChanged,
+      /*send_native_event=*/true);
+
+  // The list is shown in response to the action on the assignment selector
+  // combobox, notify the user of the list state id the combox is still focused.
+  AnnounceListStateOnComboBoxAccessibility();
+
+  if (shown_assignments != old_item_count) {
     PreferredSizeChanged();
   }
 }
@@ -163,6 +184,16 @@ void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
       Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
   if (client) {
     client->OpenUrl(url);
+  }
+}
+
+void ClassroomBubbleBaseView::AnnounceListStateOnComboBoxAccessibility() {
+  if (empty_list_label_->GetVisible()) {
+    combo_box_view_->GetViewAccessibility().AnnounceText(
+        empty_list_label_->GetText());
+  } else if (list_footer_view_->items_count_label()->GetVisible()) {
+    combo_box_view_->GetViewAccessibility().AnnounceText(
+        list_footer_view_->items_count_label()->GetText());
   }
 }
 

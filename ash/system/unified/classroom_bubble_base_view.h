@@ -7,7 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view_observer.h"
 
 class GURL;
 
@@ -26,7 +28,8 @@ class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 struct GlanceablesClassroomAssignment;
 
-class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
+class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
+                                           public views::ViewObserver {
  public:
   METADATA_HEADER(ClassroomBubbleBaseView);
 
@@ -37,21 +40,34 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
   ClassroomBubbleBaseView& operator=(const ClassroomBubbleBaseView&) = delete;
   ~ClassroomBubbleBaseView() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // views::ViewObserver:
+  void OnViewFocused(views::View* view) override;
 
  protected:
   // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
   // classroom web UI based on the selected menu option.
   virtual void OnSeeAllPressed() = 0;
 
+  // Called from the bubble view implementation before it requests new list of
+  // assignments. Updates base bubble UI to indicate the content is being
+  // updated.
+  void AboutToRequestAssignments();
+
   // Handles received assignments by rendering them in `list_container_view_`.
   void OnGetAssignments(
+      const std::u16string& list_name,
       bool success,
       std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments);
 
   // Opens classroom url.
   void OpenUrl(const GURL& url) const;
+
+  // Announces text describing the assignment list state through a screen
+  // reader, using `combo_box_view_` view accessibility helper.
+  void AnnounceListStateOnComboBoxAccessibility();
+
+  // Total number of assignments in the selected assignment list.
+  size_t total_assignments_ = 0u;
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> header_view_ = nullptr;
@@ -61,6 +77,9 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> empty_list_label_ = nullptr;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      combobox_view_observation_{this};
 
   base::WeakPtrFactory<ClassroomBubbleBaseView> weak_ptr_factory_{this};
 };

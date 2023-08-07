@@ -35,6 +35,7 @@ class ASH_EXPORT GlanceablesListFooterView : public views::FlexLayoutView {
   // `total_items_count`   - total number of items returned from API.
   void UpdateItemsCount(size_t visible_items_count, size_t total_items_count);
 
+  views::Label* items_count_label() { return items_count_label_; }
   views::LabelButton* see_all_button() const { return see_all_button_; }
 
  private:

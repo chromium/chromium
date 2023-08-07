@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/time/date_helper.h"
+#include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -66,31 +67,62 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
   return date_helper->GetFormattedTime(&formatter, due);
 }
 
-void SetupButtonContents(views::ImageButton* button, bool checked) {
-  button->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          checked ? ash::kHollowCheckCircleIcon : ash::kHollowCircleIcon,
-          cros_tokens::kFocusRingColor, kIconSize));
-}
-
 }  // namespace
 
 namespace ash {
 
+class GlanceablesTaskView::CheckButton : public views::ImageButton {
+ public:
+  CheckButton(PressedCallback pressed_callback)
+      : views::ImageButton(pressed_callback) {
+    SetAccessibleRole(ax::mojom::Role::kCheckBox);
+    // TODO(b/294681832): Finalize, and then localize strings.
+    SetAccessibleName(u"Mark completed");
+    UpdateImage();
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    views::ImageButton::GetAccessibleNodeData(node_data);
+
+    const ax::mojom::CheckedState checked_state =
+        checked_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse;
+    node_data->SetCheckedState(checked_state);
+    node_data->SetDefaultActionVerb(checked_
+                                        ? ax::mojom::DefaultActionVerb::kUncheck
+                                        : ax::mojom::DefaultActionVerb::kCheck);
+  }
+
+  void SetChecked(bool checked) {
+    checked_ = checked;
+    UpdateImage();
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
+  }
+
+  bool checked() const { return checked_; }
+
+ private:
+  void UpdateImage() {
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            checked_ ? ash::kHollowCheckCircleIcon : ash::kHollowCircleIcon,
+            cros_tokens::kFocusRingColor, kIconSize));
+  }
+
+  bool checked_ = false;
+};
+
 GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
                                          const GlanceablesTask* task)
     : task_list_id_(task_list_id), task_id_(task->id) {
+  SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
 
-  button_ =
-      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
-          &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
-  SetupButtonContents(button_, /*checked=*/false);
-  // TODO(b:277268122): set accessible name once spec is available.
-  button_->SetAccessibleName(u"Glanceables Task View Button");
+  button_ = AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
+      &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -114,6 +146,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
       TypographyToken::kCrosButton2));
   SetupTasksLabel(/*completed=*/false);
 
+  std::vector<std::u16string> details;
   if (task->due.has_value()) {
     views::ImageView* time_icon_view =
         tasks_details_view_->AddChildView(std::make_unique<views::ImageView>());
@@ -121,6 +154,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 
     views::Label* due_date_label = SetupLabel(tasks_details_view_);
     due_date_label->SetText(GetFormattedDueDate(task->due.value()));
+    // TODO(b/294681832): Finalize, and then localize strings.
+    details.push_back(u"Due " + GetFormattedDueDate(task->due.value()));
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation1));
@@ -139,6 +174,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   }
 
   if (task->has_subtasks) {
+    // TODO(b/294681832): Finalize, and then localize strings.
+    details.push_back(u"Has subtasks");
     views::ImageView* has_subtask_icon_view =
         tasks_details_view_->AddChildView(std::make_unique<views::ImageView>());
     has_subtask_icon_view->SetProperty(views::kMarginsKey, kSubtaskIconMargin);
@@ -160,17 +197,20 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   button_->SetProperty(views::kMarginsKey, double_row ? kDoubleRowButtonMargin
                                                       : kSingleRowButtonMargin);
 
-  // TODO(b:277268122): Implement accessibility behavior.
-  SetAccessibleRole(ax::mojom::Role::kListBox);
-  SetAccessibleName(u"Glanceables Task View Accessible Name");
+  button_->SetAccessibleDescription(base::UTF8ToUTF16(task->title) + u", " +
+                                    base::JoinString(details, u", "));
+  button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 GlanceablesTaskView::~GlanceablesTaskView() = default;
 
 void GlanceablesTaskView::ButtonPressed() {
+  if (button_->checked()) {
+    return;
+  }
+
   // Visually mark the task as completed.
-  SetupButtonContents(button_, /*checked=*/true);
-  SetupTasksLabel(/*completed=*/true);
+  button_->SetChecked(true);
 
   ash::Shell::Get()
       ->glanceables_v2_controller()
@@ -180,13 +220,21 @@ void GlanceablesTaskView::ButtonPressed() {
                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
+const views::ImageButton* GlanceablesTaskView::GetButtonForTest() const {
+  return button_;
+}
+
+bool GlanceablesTaskView::GetCompletedForTest() const {
+  return button_->checked();
+}
+
 void GlanceablesTaskView::MarkedAsCompleted(bool success) {
   if (!success) {
-    // Uncheck button if the tasks is not successfully marked as completed.
-    SetupButtonContents(button_, /*checked=*/false);
     SetupTasksLabel(/*completed=*/false);
   }
-  completed_ = true;
+
+  // Uncheck button if the tasks is not successfully marked as completed.
+  button_->SetChecked(success);
 }
 
 void GlanceablesTaskView::SetupTasksLabel(bool completed) {

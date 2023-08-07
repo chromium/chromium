@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
@@ -22,6 +23,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -31,6 +34,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -121,6 +125,27 @@ std::unique_ptr<views::View> BuildIcon() {
       .SetPreferredSize(kIconViewPreferredSize)
       .SetProperty(views::kMarginsKey, kIconViewMargin)
       .Build();
+}
+
+std::u16string GetAssignmentAccessibleDescription(
+    const GlanceablesClassroomAssignment* assignment) {
+  // TODO(b/294681832): Finalize, and then localize strings.
+  std::vector<std::u16string> components;
+  components.push_back(base::UTF8ToUTF16(assignment->course_title));
+
+  if (assignment->due) {
+    components.push_back(u"Due: " + GetFormattedDueDate(*assignment->due) +
+                         u", " + GetFormattedDueTime(*assignment->due));
+  }
+
+  if (assignment->submissions_state.has_value()) {
+    components.push_back(base::UTF8ToUTF16(
+        base::StringPrintf("%d of %d turned in, %d graded",
+                           assignment->submissions_state->number_turned_in,
+                           assignment->submissions_state->total_count,
+                           assignment->submissions_state->number_graded)));
+  }
+  return base::JoinString(components, u", ");
 }
 
 std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
@@ -217,8 +242,6 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetInteriorMargin(kInteriorMargin);
 
-  // TODO(b/283370862): update accessible name.
-  SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
 
@@ -227,9 +250,21 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   if (assignment->due.has_value()) {
     AddChildView(BuildDueLabels(assignment));
   }
+
+  SetAccessibleRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().OverrideIsLeaf(true);
+  SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
+  SetAccessibleDescription(GetAssignmentAccessibleDescription(assignment));
 }
 
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
+
+void GlanceablesClassroomItemView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  views::Button::GetAccessibleNodeData(node_data);
+
+  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+}
 
 BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
 END_METADATA

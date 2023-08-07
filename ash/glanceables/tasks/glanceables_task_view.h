@@ -47,20 +47,21 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   void ButtonPressed();
   void MarkedAsCompleted(bool success);
 
-  const views::ImageButton* GetButtonForTest() const { return button_; }
-  bool GetCompletedForTest() const { return completed_; }
+  const views::ImageButton* GetButtonForTest() const;
+  bool GetCompletedForTest() const;
 
  private:
+  class CheckButton;
+
   void SetupTasksLabel(bool completed);
+
   // Owned by views hierarchy.
-  raw_ptr<views::ImageButton> button_ = nullptr;
+  raw_ptr<CheckButton> button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> contents_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_title_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_details_view_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> tasks_label_ = nullptr;
 
-  // Whether the task shown by this view is being marked as completed.
-  bool completed_ = false;
   // ID for the task list that owns this task.
   const std::string task_list_id_;
   // ID for the task represented by this view.

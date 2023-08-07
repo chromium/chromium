@@ -58,6 +58,16 @@ constexpr char kClassroomWebUIMissingUrl[] =
 constexpr char kClassroomWebUIDoneUrl[] =
     "https://classroom.google.com/u/0/a/turned-in/all";
 
+std::u16string GetAssignmentListName(size_t index) {
+  CHECK(index >= 0 || index < kStudentAssignmentsListTypeOrdered.size());
+
+  const auto* const iter = kStudentAssignmentsListTypeToLabel.find(
+      kStudentAssignmentsListTypeOrdered[index]);
+  CHECK(iter != kStudentAssignmentsListTypeToLabel.end());
+
+  return base::UTF8ToUTF16(iter->second);
+}
+
 class ClassroomStudentComboboxModel : public ui::ComboboxModel {
  public:
   ClassroomStudentComboboxModel() = default;
@@ -71,13 +81,7 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
   }
 
   std::u16string GetItemAt(size_t index) const override {
-    CHECK(index >= 0 || index < kStudentAssignmentsListTypeOrdered.size());
-
-    const auto* const iter = kStudentAssignmentsListTypeToLabel.find(
-        kStudentAssignmentsListTypeOrdered[index]);
-    CHECK(iter != kStudentAssignmentsListTypeToLabel.end());
-
-    return base::UTF8ToUTF16(iter->second);
+    return GetAssignmentListName(index);
   }
 
   absl::optional<size_t> GetDefaultIndex() const override { return 0; }
@@ -132,10 +136,11 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
   // Cancel any old pending assignment requests.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
+  AboutToRequestAssignments();
 
   auto callback = base::BindOnce(&ClassroomBubbleStudentView::OnGetAssignments,
-                                 weak_ptr_factory_.GetWeakPtr());
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 GetAssignmentListName(selected_index));
   switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
     case StudentAssignmentsListType::kAssigned:
       empty_list_label_->SetText(l10n_util::GetStringUTF16(

@@ -32,6 +32,8 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
   // not enabled, the calendar view will be added to the
   // `UnifiedSystemTrayBubble` which also has its own style settings.
   if (features::AreGlanceablesV2Enabled()) {
+    SetAccessibleRole(ax::mojom::Role::kGroup);
+
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);

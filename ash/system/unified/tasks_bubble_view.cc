@@ -5,6 +5,7 @@
 #include "ash/system/unified/tasks_bubble_view.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
@@ -62,13 +63,10 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate)
 
 TasksBubbleView::~TasksBubbleView() = default;
 
-void TasksBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(b:277268122): Implement accessibility behavior.
-  if (!GetVisible()) {
-    return;
-  }
-  node_data->role = ax::mojom::Role::kListBox;
-  node_data->SetName(u"Glanceables Bubble Task View Accessible Name");
+void TasksBubbleView::OnViewFocused(views::View* view) {
+  CHECK_EQ(view, task_list_combo_box_view_);
+
+  AnnounceListStateOnComboBoxAccessibility();
 }
 
 void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
@@ -99,6 +97,8 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   task_items_container_view_ = AddChildView(std::make_unique<views::View>());
+  task_items_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
+
   task_items_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer));
   task_items_container_view_->SetPaintToLayer();
@@ -153,10 +153,12 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   task_list_combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox));
   task_list_combo_box_view_->SetSizeToLargestLabel(false);
+  combobox_view_observation_.Observe(task_list_combo_box_view_);
 
-  // TODO(b:277268122): Implement accessibility behavior.
+  // TODO(b/294681832): Finalize, and then localize strings.
   task_list_combo_box_view_->SetTooltipTextAndAccessibleName(
-      u"Task list selector");
+      u"Google tasks list");
+  task_list_combo_box_view_->SetAccessibleDescription(u"");
   task_list_combo_box_view_->SetCallback(base::BindRepeating(
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
   task_list_combo_box_view_->SetSelectedIndex(0);
@@ -194,22 +196,25 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
   }
 
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
+  task_list_combo_box_view_->SetAccessibleDescription(u"");
 
   GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
       active_task_list->id,
       base::BindOnce(&TasksBubbleView::UpdateTasksList,
-                     weak_ptr_factory_.GetWeakPtr(), active_task_list->id));
+                     weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
+                     active_task_list->title));
 }
 
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
+                                      const std::string& task_list_title,
                                       ui::ListModel<GlanceablesTask>* tasks) {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   const int old_tasks_shown = num_tasks_shown_;
   num_tasks_shown_ = 0;
-  int num_tasks = 0;
+  num_tasks_ = 0;
   for (const auto& task : *tasks) {
     if (task->completed) {
       continue;
@@ -222,16 +227,38 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
       view->SetOrientation(views::LayoutOrientation::kHorizontal);
       ++num_tasks_shown_;
     }
-    ++num_tasks;
+    ++num_tasks_;
   }
   task_items_container_view_->SetVisible(num_tasks_shown_ > 0);
   add_new_task_button_->SetVisible(num_tasks_shown_ == 0);
 
-  list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks);
+  list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
   list_footer_view_->SetVisible(num_tasks_shown_ > 0);
+
+  // TODO(b/294681832): Finalize, and then localize strings.
+  task_items_container_view_->SetAccessibleName(base::UTF8ToUTF16(
+      base::StringPrintf("Tasks list: %s", task_list_title.c_str())));
+  task_items_container_view_->SetAccessibleDescription(
+      list_footer_view_->items_count_label());
+  task_items_container_view_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kChildrenChanged,
+      /*send_native_event=*/true);
+
+  AnnounceListStateOnComboBoxAccessibility();
 
   if (old_tasks_shown != num_tasks_shown_) {
     PreferredSizeChanged();
+  }
+}
+
+void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {
+  if (add_new_task_button_->GetVisible()) {
+    // TODO(b/294681832): Finalize, and then localize strings.
+    task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
+        u"Selected list empty, navigate down to add a new task");
+  } else if (list_footer_view_->items_count_label()->GetVisible()) {
+    task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
+        list_footer_view_->items_count_label()->GetText());
   }
 }
 

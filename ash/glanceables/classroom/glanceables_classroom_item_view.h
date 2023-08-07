@@ -27,6 +27,9 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =
       delete;
   ~GlanceablesClassroomItemView() override;
+
+  // views::Button:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace ash

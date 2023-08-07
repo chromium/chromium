@@ -9,9 +9,11 @@
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class Combobox;
@@ -67,7 +69,8 @@ class TasksComboboxModel;
 // |'list_footer_view_'                                           |
 // +--------------------------------------------------------------+
 
-class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
+class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
+                                   public views::ViewObserver {
  public:
   METADATA_HEADER(TasksBubbleView);
 
@@ -76,8 +79,8 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // views::ViewObserver:
+  void OnViewFocused(views::View* view) override;
 
  private:
   // Setup child views.
@@ -91,13 +94,19 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   void SelectedTasksListChanged();
   void ScheduleUpdateTasksList();
   void UpdateTasksList(const std::string& task_list_id,
+                       const std::string& task_list_title,
                        ui::ListModel<GlanceablesTask>* tasks);
+
+  // Announces text describing the task list state through a screen
+  // reader, using `task_list_combo_box_view_` view accessibility helper.
+  void AnnounceListStateOnComboBoxAccessibility();
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
 
   // Tracks the number of tasks show. Used for sizing.
   int num_tasks_shown_ = 0;
+  int num_tasks_ = 0;
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ = nullptr;
@@ -109,6 +118,9 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      combobox_view_observation_{this};
 
   base::WeakPtrFactory<TasksBubbleView> weak_ptr_factory_{this};
 };
