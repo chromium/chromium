@@ -79,8 +79,7 @@ const int kNoActiveCopy = 0;
 
 - (void)stop {
   self.browser = nullptr;
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+  [self stopAlertCoordinator];
 }
 
 - (void)copyImageAtURL:(const GURL&)url
@@ -106,7 +105,7 @@ const int kNoActiveCopy = 0;
   tabHelper->GetImageData(url, referrer, ^(NSData* data) {
     // Check that the copy has not been canceled.
     if (callbackID == weakSelf.activeID) {
-      [weakSelf.alertCoordinator stop];
+      [weakSelf stopAlertCoordinator];
       weakSelf.activeID = kNoActiveCopy;
 
       ImageCopyResult result =
@@ -125,7 +124,7 @@ const int kNoActiveCopy = 0;
   });
 
   // Dismiss current alert.
-  [self.alertCoordinator stop];
+  [self stopAlertCoordinator];
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:baseViewController
                          browser:self.browser
@@ -137,7 +136,7 @@ const int kNoActiveCopy = 0;
                 action:^() {
                   // Cancels current copy and closes the alert.
                   weakSelf.activeID = kNoActiveCopy;
-                  [weakSelf.alertCoordinator stop];
+                  [weakSelf stopAlertCoordinator];
                   [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kCanceled];
                 }
                  style:UIAlertActionStyleCancel];
@@ -156,8 +155,17 @@ const int kNoActiveCopy = 0;
   [self recordCopyImageUMA:ContextMenuCopyImage::kInvoked];
 }
 
+#pragma mark - Private
+
+// Records in UMA the Copy Image with `UMAEnum`.
 - (void)recordCopyImageUMA:(ContextMenuCopyImage)UMAEnum {
   UMA_HISTOGRAM_ENUMERATION("Mobile.ContextMenu.CopyImage", UMAEnum);
+}
+
+// Stops the alert coordinator.
+- (void)stopAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end
