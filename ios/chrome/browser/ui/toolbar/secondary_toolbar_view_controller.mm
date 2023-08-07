@@ -85,7 +85,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   [super updateForFullscreenProgress:progress];
 
-  CGFloat alphaValue = fmax(progress * 2 - 1, 0);
+  CGFloat alphaValue = fmax(progress * 1.1 - 0.1, 0);
   if (IsBottomOmniboxSteadyStateEnabled()) {
     self.view.buttonStackView.alpha = alphaValue;
   }
