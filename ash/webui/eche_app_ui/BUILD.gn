@@ -117,8 +117,6 @@ static_library("eche_app_ui") {
     "feature_status_provider.h",
     "launch_app_helper.cc",
     "launch_app_helper.h",
-    "system_info.cc",
-    "system_info.h",
     "untrusted_eche_app_ui.cc",
     "untrusted_eche_app_ui.h",
     "url_constants.cc",
@@ -129,7 +127,6 @@ static_library("eche_app_ui") {
     ":eche_app_ui_pref",
     ":eche_connection_status",
     ":feature_status",
-    ":system_info_provider",
     "//ash",
     "//ash/components/arc/mojom:mojom",
     "//ash/constants",
@@ -155,6 +152,8 @@ static_library("eche_app_ui") {
     "//mojo/public/js:resources",
     "//ui/webui",
   ]
+
+  public_deps = [ ":system_info_provider" ]
 }
 
 static_library("test_support") {
