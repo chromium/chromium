@@ -35,7 +35,6 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeAutofillProfile,
   SettingsItemTypeVoiceSearch,
   SettingsItemTypeAddressBar,
-  SettingsItemTypeBottomOmnibox,
   SettingsItemTypeNotifications,
   SettingsItemTypePrivacy,
   SettingsItemTypeLanguageSettings,

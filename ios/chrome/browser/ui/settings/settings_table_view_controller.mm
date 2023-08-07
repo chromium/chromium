@@ -484,10 +484,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (IsBottomOmniboxSteadyStateEnabled()) {
-    [model addItem:[self bottomOmniboxItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  };
   [model addItem:[self safetyCheckDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
@@ -961,23 +957,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return _voiceSearchDetailItem;
 }
 
-- (TableViewItem*)bottomOmniboxItem {
-  DCHECK(IsBottomOmniboxSteadyStateEnabled());
-  if (!_bottomOmniboxItem) {
-    _bottomOmniboxItem =
-        [self switchItemWithType:SettingsItemTypeBottomOmnibox
-                              // TODO(crbug.com/1430093): add title.
-                              title:@"Bottom Omnibox"
-                             // TODO(crbug.com/1430093): add symbol.
-                             symbol:DefaultSettingsRootSymbol(kDiscoverSymbol)
-              // TODO(crbug.com/1430093): change background color.
-              symbolBackgroundColor:[UIColor colorNamed:kGreen500Color]
-            accessibilityIdentifier:kSettingsBottomOmniboxCellId];
-    _bottomOmniboxItem.on = [_bottomOmniboxEnabled value];
-  }
-  return _bottomOmniboxItem;
-}
-
 - (SettingsCheckItem*)safetyCheckDetailItem {
   NSString* safetyCheckTitle =
       l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_SAFETY_CHECK);
@@ -1247,14 +1226,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(articlesForYouSwitchToggled:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
-    case SettingsItemTypeBottomOmnibox: {
-      TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(bottomOmniboxSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -1597,21 +1568,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   BOOL newSwitchValue = sender.isOn;
   switchItem.on = newSwitchValue;
   [_articlesEnabled setValue:newSwitchValue];
-}
-
-- (void)bottomOmniboxSwitchToggled:(UISwitch*)sender {
-  DCHECK(IsBottomOmniboxSteadyStateEnabled());
-  NSIndexPath* switchPath = [self.tableViewModel
-      indexPathForItemType:SettingsItemTypeBottomOmnibox
-         sectionIdentifier:SettingsSectionIdentifierAdvanced];
-
-  TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
-          [self.tableViewModel itemAtIndexPath:switchPath]);
-
-  BOOL newSwitchValue = sender.isOn;
-  switchItem.on = newSwitchValue;
-  [_bottomOmniboxEnabled setValue:newSwitchValue];
 }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
