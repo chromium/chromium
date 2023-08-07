@@ -2093,6 +2093,21 @@ chromium-metrics-reviews@google.com.
   <summary>The count of HTTP Response codes encountered.</summary>
 </histogram>
 
+<histogram name="Net.HttpResponseHeaders.HeaderCount" units="count"
+    expires_after="2023-10-10">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The total number of headers for an HTTP Response. This is recorded by the
+    HttpResponseHeaders destructor, which means that in addition to responses
+    read from the network and cache, there will also be entries created
+    elsewhere in the code that don't reflect real web behaviour.
+
+    Since the main purpose of this histogram is to determine a good size for the
+    vector of parsed headers, this limitation is acceptable.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpServerProperties.CountOfServers" units="units"
     expires_after="M85">
   <owner>mmenke@chromium.org</owner>
