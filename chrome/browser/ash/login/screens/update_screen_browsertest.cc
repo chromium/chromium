@@ -653,8 +653,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   histogram_tester_.ExpectTotalCount(kTimeFinalize, 0);
 }
 
-// TODO(https://crbug.com/1449334): Flaky on Chrome OS.
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_TestTwoOfflineNetworks) {
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
   // Change ethernet state to portal.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
