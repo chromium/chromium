@@ -15,8 +15,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -75,6 +77,16 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
     }
   }
   return trigger_form_logs;
+}
+
+autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger&
+GetAutocompleteUnrecognizedEventLogger(content::RenderFrameHost* rfh) {
+  CHECK(rfh);
+  AutofillManager* manager =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
+  CHECK(manager);
+  return static_cast<BrowserAutofillManager*>(manager)
+      ->GetAutocompleteUnrecognizedFallbackEventLogger();
 }
 
 }  // namespace
@@ -177,17 +189,15 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   }
 }
 
-void AutofillContextMenuManager::OnMenuClosed() {
-  fallback_metric_logger_.ContextMenuClosed();
-}
-
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
     content::RenderFrameHost* rfh) {
-  AutofillManager* manager =
-      ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
-  if (!manager) {
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  if (!driver) {
     return;
   }
+  AutofillManager* manager = driver->autofill_manager();
+  CHECK(manager);
   new_badge_tracker_->ActionPerformed("autofill_feedback_activated");
 
   chrome::ShowFeedbackPage(
@@ -204,7 +214,8 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
 void AutofillContextMenuManager::
     ExecuteFallbackForAutocompleteUnrecognizedCommand(
         content::RenderFrameHost* rfh) {
-  auto* driver = ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver) {
     return;
   }
@@ -218,7 +229,10 @@ void AutofillContextMenuManager::
   driver->browser_events().RendererShouldTriggerSuggestions(
       field->global_id(), AutofillSuggestionTriggerSource::
                               kManualFallbackForAutocompleteUnrecognized);
-  fallback_metric_logger_.ContextMenuEntryAccepted();
+  GetAutocompleteUnrecognizedEventLogger(delegate_->GetRenderFrameHost())
+      .ContextMenuEntryAccepted(
+          /*address_field_has_ac_unrecognized=*/field
+              ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
 void AutofillContextMenuManager::
@@ -253,9 +267,10 @@ void AutofillContextMenuManager::
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED,
       ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnIcon));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  fallback_metric_logger_.ContextMenuEntryShown(
-      /*field_has_ac_unrecognized=*/field
-          ->ShouldSuppressSuggestionsAndFillingByDefault());
+  GetAutocompleteUnrecognizedEventLogger(delegate_->GetRenderFrameHost())
+      .ContextMenuEntryShown(
+          /*address_field_has_ac_unrecognized=*/field
+              ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
 AutofillField* AutofillContextMenuManager::GetAutofillField() const {
@@ -263,9 +278,7 @@ AutofillField* AutofillContextMenuManager::GetAutofillField() const {
   CHECK(rfh);
   AutofillManager* manager =
       ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
-  if (!manager) {
-    return nullptr;
-  }
+  CHECK(manager);
   LocalFrameToken frame_token(rfh->GetFrameToken().value());
   // Formless forms don't have a renderer ID.
   FormStructure* form = manager->FindCachedFormById(

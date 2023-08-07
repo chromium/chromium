@@ -5,36 +5,49 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_METRICS_H_
 
+#include <string_view>
+
 namespace autofill::autofill_metrics {
 
-// The lifetime of this class is attached to that of the
-// `AutofillContextMenuManager`. As such, a separate instance exists per
-// right-click.
+// Metrics logger for autocomplete=unrecognized fallback related events.
+// Like other form event loggers, the lifetime of this class is attached to that
+// of BrowserAutofillManager. It collects events until it is destroyed, at
+// which point metrics are emitted.
 // Tested by autofill_context_menu_manager_unittest.cc.
-class AutocompleteUnrecognizedFallbackMetricLogger {
+class AutocompleteUnrecognizedFallbackEventLogger {
  public:
+  // Emits metrics before destruction.
+  ~AutocompleteUnrecognizedFallbackEventLogger();
+
   // Called when context menu was opened on a qualifying field.
-  // `field_has_ac_unrecognized` indicates if the field that was right-clicked
-  // on has an unrecognized autocomplete attribute (when
+  // `address_field_has_ac_unrecognized` indicates if the field that was right
+  // clicked on has an unrecognized autocomplete attribute (when
   // `kAutofillFallForAutocompleteUnrecognizedOnAllAddressField` is enabled,
   // this is not necessarily true).
-  void ContextMenuEntryShown(bool field_has_ac_unrecognized);
+  // Generally, this is only relevant for address fields, since no manual
+  // fallbacks exist for payment forms.
+  void ContextMenuEntryShown(bool address_field_has_ac_unrecognized);
 
   // Called when the fallback entry was accepted (not just hovered).
-  void ContextMenuEntryAccepted();
-
-  // Called when the context menu closes, independently of whether the fallback
-  // entry was shown in the context menu.
-  void ContextMenuClosed();
+  // `field_has_ac_unrecognized`'s meaning matches `ContextMenuEntryShown()`.
+  void ContextMenuEntryAccepted(bool address_field_has_ac_unrecognized);
 
  private:
-  enum class State {
-    kFallbackNotShown = 0,
-    kShownOnAutocompleteRecognizedField = 1,
-    kShownOnAutocompleteUnrecognizedField = 2,
-  } state_ = State::kFallbackNotShown;
+  enum class ContextMenuEntryState { kNotShown = 0, kShown = 1, kAccepted = 2 };
 
-  bool was_accepted_ = false;
+  // If the context menu was used according to the `state`, emits whether the
+  // entry was accepted or not into the explicit triggering metric of the given
+  // `bucket` (ac recognized or unrecognized).
+  void EmitExplicitlyTriggeredMetric(ContextMenuEntryState state,
+                                     std::string_view bucket);
+
+  // Tracks if the manual fallback context menu entry was shown or accepted.
+  // Since the metric is split by the triggering field's autocomplete attribute,
+  // this is tracked twice.
+  ContextMenuEntryState ac_unrecognized_context_menu_state =
+      ContextMenuEntryState::kNotShown;
+  ContextMenuEntryState ac_recognized_context_menu_state =
+      ContextMenuEntryState::kNotShown;
 };
 
 }  // namespace autofill::autofill_metrics

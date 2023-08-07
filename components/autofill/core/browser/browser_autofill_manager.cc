@@ -71,6 +71,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -600,6 +601,8 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
           driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
           client->GetPersonalDataManager(), client);
+  autocomplete_unrecognized_fallback_logger_ = std::make_unique<
+      autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
 
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver, client, client->GetPersonalDataManager(),
@@ -2226,6 +2229,8 @@ void BrowserAutofillManager::Reset() {
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       &driver(), &unsafe_client(), unsafe_client().GetPersonalDataManager(),
       credit_card_form_event_logger_.get());
+  autocomplete_unrecognized_fallback_logger_ = std::make_unique<
+      autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
 
   has_logged_autofill_enabled_ = false;
   has_logged_address_suggestions_count_ = false;

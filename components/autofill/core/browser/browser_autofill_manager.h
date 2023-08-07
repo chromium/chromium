@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -365,6 +366,11 @@ class BrowserAutofillManager : public AutofillManager,
   // autofilled. Returns NULL if the field cannot be autofilled.
   [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
                                                 const FormFieldData& field);
+
+  autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger&
+  GetAutocompleteUnrecognizedFallbackEventLogger() {
+    return *autocomplete_unrecognized_fallback_logger_;
+  }
 
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
@@ -742,11 +748,22 @@ class BrowserAutofillManager : public AutofillManager,
   // Autocomplete and merchant promo codes.
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
 
-  // Utilities for logging form events.
+  // Utilities for logging form events. The loggers emit metrics during their
+  // destruction, effectively when the BrowserAutofillManager is reset or
+  // destroyed.
+  // The address and credit card event loggers are used to emit key and funnel
+  // metrics.
   std::unique_ptr<autofill_metrics::AddressFormEventLogger>
       address_form_event_logger_;
   std::unique_ptr<autofill_metrics::CreditCardFormEventLogger>
       credit_card_form_event_logger_;
+  // The autocomplete unrecognized fallback logger is used to collect metrics
+  // around the manual fallback for autocomplete=unrecognized fields.
+  // Since no metrics for autocomplete=unrecognized fields are emitted through
+  // the `address_form_event_logger_`, a separate logger specifically for
+  // autocomplete=unrecognized fields is used.
+  std::unique_ptr<autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>
+      autocomplete_unrecognized_fallback_logger_;
 
   // Have we logged whether Autofill is enabled for this page load?
   bool has_logged_autofill_enabled_ = false;

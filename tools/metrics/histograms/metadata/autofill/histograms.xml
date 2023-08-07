@@ -2814,8 +2814,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the acceptance of manual fallback suggestions, by tracking the
     number of times a user accepted/didn't accept the manual fallback option in
-    the context menu. Emitted when the context menu is closed, but only if the
-    manual fallback entry was available.
+    the context menu. Emitted on navigation (when the AutofillManager is
+    destroyed), at most once per page.
   </summary>
   <token key="AutocompleteState">
     <variant name="ClassifiedFieldAutocompleteRecognized"

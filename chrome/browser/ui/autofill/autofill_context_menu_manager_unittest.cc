@@ -119,6 +119,10 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
   MockAutofillDriver* driver() { return autofill_driver_injector_[main_rfh()]; }
 
+  BrowserAutofillManager* autofill_manager() {
+    return static_cast<BrowserAutofillManager*>(driver()->autofill_manager());
+  }
+
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
 
   AutofillContextMenuManager* autofill_context_menu_manager() const {
@@ -140,11 +144,10 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
   // Adds the `form` to the `driver()`'s manager.
   void AddSeenForm(const FormData& form) {
-    AutofillManager& manager = *driver()->autofill_manager();
-    TestAutofillManagerWaiter waiter(manager,
+    TestAutofillManagerWaiter waiter(*autofill_manager(),
                                      {AutofillManagerEvent::kFormsSeen});
-    manager.OnFormsSeen(/*updated_forms=*/{form},
-                        /*removed_forms=*/{});
+    autofill_manager()->OnFormsSeen(/*updated_forms=*/{form},
+                                    /*removed_forms=*/{});
     ASSERT_TRUE(waiter.Wait());
   }
 
@@ -261,10 +264,10 @@ TEST_F(AutofillContextMenuManagerTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect that when closing the context menu without accepting, the explicitly
+  // Expect that when the autofill_manager() is destroyed, the explicitly
   // triggered metric is emitted correctly.
   base::HistogramTester histogram_tester;
-  autofill_context_menu_manager()->OnMenuClosed();
+  autofill_manager()->Reset();
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManualFallback.ExplicitlyTriggered."
       "ClassifiedFieldAutocompleteUnrecognized.Address",
@@ -274,7 +277,7 @@ TEST_F(AutofillContextMenuManagerTest,
 }
 
 TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_ExplicitlyTriggeringMetric_Accepted) {
+       AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_Accepted) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -282,12 +285,12 @@ TEST_F(AutofillContextMenuManagerTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect that when accepting a suggestion, the explicitly triggered metric is
-  // emitted correctly.
+  // Expect that when the autofill_manager() is destroyed, the explicitly
+  // triggered metric is emitted correctly.
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
   base::HistogramTester histogram_tester;
-  autofill_context_menu_manager()->OnMenuClosed();
+  autofill_manager()->Reset();
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManualFallback.ExplicitlyTriggered."
       "ClassifiedFieldAutocompleteUnrecognized.Address",
