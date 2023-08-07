@@ -159,6 +159,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
     return knowledge_factor_auth_failure_count_;
   }
 
+  // Return a string containing all `events_`.
+  std::string GetAuthEventsLog();
+
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
