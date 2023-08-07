@@ -956,6 +956,7 @@ const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 // Deprecated 07/2023.
 const char kShutdownNumProcesses[] = "shutdown.num_processes";
 const char kShutdownNumProcessesSlow[] = "shutdown.num_processes_slow";
+const char kShutdownType[] = "shutdown.type";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1091,6 +1092,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 07/2023.
   registry->RegisterIntegerPref(kShutdownNumProcesses, 0);
   registry->RegisterIntegerPref(kShutdownNumProcessesSlow, 0);
+  registry->RegisterIntegerPref(kShutdownType, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2206,6 +2208,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 07/2023.
   local_state->ClearPref(kShutdownNumProcesses);
   local_state->ClearPref(kShutdownNumProcessesSlow);
+  local_state->ClearPref(kShutdownType);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

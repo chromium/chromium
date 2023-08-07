@@ -111,8 +111,6 @@ void CheckAccessedOnCorrectThread() {
 }  // namespace
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kShutdownType,
-                                static_cast<int>(ShutdownType::kNotValid));
   registry->RegisterBooleanPref(prefs::kRestartLastSessionOnShutdown, false);
 }
 
@@ -248,12 +246,6 @@ void RecordShutdownMetrics() {
 bool RecordShutdownInfoPrefs() {
   CheckAccessedOnCorrectThread();
   PrefService* prefs = g_browser_process->local_state();
-  if (g_shutdown_type != ShutdownType::kNotValid &&
-      g_shutdown_num_processes > 0) {
-    // Record the shutdown info so that we can put it into a histogram at next
-    // startup.
-    prefs->SetInteger(prefs::kShutdownType, static_cast<int>(g_shutdown_type));
-  }
 
   // Check local state for the restart flag so we can restart the session later.
   bool restart_last_session = false;
@@ -335,17 +327,6 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-void ReadLastShutdownInfo() {
-  PrefService* prefs = g_browser_process->local_state();
-  ShutdownType type =
-      static_cast<ShutdownType>(prefs->GetInteger(prefs::kShutdownType));
-  // clear the prefs immediately so we don't pick them up on a future run
-  prefs->SetInteger(prefs::kShutdownType,
-                    static_cast<int>(ShutdownType::kNotValid));
-
-  base::UmaHistogramEnumeration("Shutdown.ShutdownType", type);
-}
 
 void SetTryingToQuit(bool quitting) {
   CheckAccessedOnCorrectThread();

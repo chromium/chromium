@@ -11463,18 +11463,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Shutdown.ShutdownType" enum="ShutdownType"
-    expires_after="2024-01-14">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>
-    The type of the last shutdown.
-
-    In M-108, the detection of shutdown due to early exit paths changed and
-    these shutdowns will be moved from the NotValid bucket to the Other bucket.
-  </summary>
-</histogram>
-
 <histogram name="Shutdown.ShutdownType2" enum="ShutdownType"
     expires_after="2024-01-14">
   <owner>etienneb@chromium.org</owner>

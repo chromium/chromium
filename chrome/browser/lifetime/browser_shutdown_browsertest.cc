@@ -81,8 +81,16 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   histogram_tester_.ExpectTotalCount("Shutdown.Renderers.Total2", 1);
 }
 
+// Flakes on Mac12.0: https://crbug.com/1259913
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  DISABLED_TwoBrowsersClosingShutdownHistograms
+#else
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  TwoBrowsersClosingShutdownHistograms
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
-                       PRE_TwoBrowsersClosingShutdownHistograms) {
+                       MAYBE_TwoBrowsersClosingShutdownHistograms) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -112,21 +120,6 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
       static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
   histogram_tester_.ExpectTotalCount("Shutdown.WindowClose.Time2", 1);
   histogram_tester_.ExpectTotalCount("Shutdown.Renderers.Total2", 1);
-}
-
-// Flakes on Mac12.0: https://crbug.com/1259913
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TwoBrowsersClosingShutdownHistograms \
-  DISABLED_TwoBrowsersClosingShutdownHistograms
-#else
-#define MAYBE_TwoBrowsersClosingShutdownHistograms \
-  TwoBrowsersClosingShutdownHistograms
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
-                       MAYBE_TwoBrowsersClosingShutdownHistograms) {
-  histogram_tester_.ExpectUniqueSample(
-      "Shutdown.ShutdownType",
-      static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
 }
 #else
 // On Chrome OS, the shutdown accelerator is handled by Ash and requires

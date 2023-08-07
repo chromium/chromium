@@ -2127,9 +2127,6 @@ inline constexpr char kLastKnownIntranetRedirectOrigin[] =
 inline constexpr char kDNSInterceptionChecksEnabled[] =
     "browser.dns_interception_checks_enabled";
 
-// An enum value of how the browser was shut down (see browser_shutdown.h).
-inline constexpr char kShutdownType[] = "shutdown.type";
-
 // Whether to restart the current Chrome session automatically as the last thing
 // before shutting everything down.
 inline constexpr char kRestartLastSessionOnShutdown[] =

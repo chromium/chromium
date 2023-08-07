@@ -1404,9 +1404,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // running.
   browser_process_->PreMainMessageLoopRun();
 
-  // Record last shutdown time into a histogram.
-  browser_shutdown::ReadLastShutdownInfo();
-
 #if BUILDFLAG(IS_WIN)
   // If the command line specifies 'uninstall' then we need to work here
   // unless we detect another chrome browser running.
