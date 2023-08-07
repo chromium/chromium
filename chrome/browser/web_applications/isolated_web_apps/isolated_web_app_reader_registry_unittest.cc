@@ -97,7 +97,7 @@ class FakeSignatureVerifier
       : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
   void VerifySignatures(
-      scoped_refptr<web_package::SharedFile> file,
+      base::File file,
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback) override {
     on_verify_signatures_.Run();

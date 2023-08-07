@@ -15,7 +15,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
-#include "components/web_package/shared_file.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "net/base/net_errors.h"
@@ -67,7 +66,7 @@ class SafeWebBundleParserConnection {
   // So far it is better to leave these fields in such an ugly form
   // to pay attention to them in the nearest future.
   // TODO(peletskyi): Make proper encapsulation here.
-  scoped_refptr<web_package::SharedFile> file_;
+  std::unique_ptr<base::File> file_;
   std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
 
   // These fields we may not need after refactoring of the tests.
@@ -80,17 +79,12 @@ class SafeWebBundleParserConnection {
     kInitializing,
     kConnected,
     kDisconnected,
-    kReconnecting,
   };
 
   void OnFileOpened(InitCompleteCallback init_complete_callback,
                     std::unique_ptr<base::File> file);
 
-  void OnFileDuplicated(InitCompleteCallback init_complete_callback,
-                        base::File file);
   void OnParserDisconnected();
-  void ReconnectForFile(ReconnectCompleteCallback reconnect_callback,
-                        base::File file);
 
   base::FilePath web_bundle_path_;
   absl::optional<GURL> base_url_;

@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/web_bundle_file_data_source.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -36,14 +37,14 @@
 namespace web_app {
 namespace {
 // This is blocking operation.
-base::expected<uint64_t, base::File::Error> ReadLengthOfSharedFile(
-    scoped_refptr<web_package::SharedFile> file) {
-  int64_t length = (*file)->GetLength();
+base::expected<uint64_t, base::File::Error> ReadLengthOfFile(base::File file) {
+  int64_t length = file.GetLength();
   if (length < 0) {
-    return base::unexpected((*file)->GetLastFileError());
+    return base::unexpected(file.GetLastFileError());
   }
   return static_cast<uint64_t>(length);
 }
+
 }  // namespace
 
 namespace internal {
@@ -54,7 +55,14 @@ SafeWebBundleParserConnection::SafeWebBundleParserConnection(
     : web_bundle_path_(std::move(web_bundle_path)),
       base_url_(std::move(base_url)) {}
 
-SafeWebBundleParserConnection::~SafeWebBundleParserConnection() = default;
+SafeWebBundleParserConnection::~SafeWebBundleParserConnection() {
+  if (file_) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce([](std::unique_ptr<base::File> file) { file->Close(); },
+                       std::move(file_)));
+  }
+}
 
 void SafeWebBundleParserConnection::Initialize(
     InitCompleteCallback init_complete_callback) {
@@ -101,19 +109,10 @@ void SafeWebBundleParserConnection::OnFileOpened(
     return;
   }
 
-  file_ = base::MakeRefCounted<web_package::SharedFile>(std::move(file));
-  file_->DuplicateFile(base::BindOnce(
-      &SafeWebBundleParserConnection::OnFileDuplicated,
-      weak_ptr_factory_.GetWeakPtr(), std::move(init_complete_callback)));
-}
+  file_ = std::move(file);
 
-void SafeWebBundleParserConnection::OnFileDuplicated(
-    InitCompleteCallback init_complete_callback,
-    base::File file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kInitializing);
-
-  base::File::Error file_error = parser_->OpenFile(std::move(file));
+  base::File file_to_open = file_->Duplicate();
+  base::File::Error file_error = parser_->OpenFile(std::move(file_to_open));
   if (file_error != base::File::FILE_OK) {
     UnusableSwbnFileError error = UnusableSwbnFileError(
         UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
@@ -144,18 +143,8 @@ void SafeWebBundleParserConnection::Reconnect(
   CHECK(!parser_);
   CHECK_EQ(state_, State::kDisconnected);
   parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(base_url_);
-  state_ = State::kReconnecting;
 
-  file_->DuplicateFile(base::BindOnce(
-      &SafeWebBundleParserConnection::ReconnectForFile,
-      weak_ptr_factory_.GetWeakPtr(), std::move(reconnect_callback)));
-}
-
-void SafeWebBundleParserConnection::ReconnectForFile(
-    ReconnectCompleteCallback reconnect_callback,
-    base::File file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kReconnecting);
+  base::File file = file_->Duplicate();
   base::File::Error file_error;
   if (reconnection_file_error_for_testing_.has_value()) {
     CHECK_IS_TEST();
@@ -293,7 +282,7 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
     case SignatureVerificationAction::Type::kContinueAndVerifySignatures:
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
-          base::BindOnce(ReadLengthOfSharedFile, connection_->file_),
+          base::BindOnce(ReadLengthOfFile, connection_->file_->Duplicate()),
           base::BindOnce(&SignedWebBundleReader::OnFileLengthRead,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(integrity_block), std::move(callback)));
@@ -318,7 +307,7 @@ void SignedWebBundleReader::OnFileLengthRead(
   });
 
   signature_verifier_->VerifySignatures(
-      connection_->file_, std::move(integrity_block),
+      connection_->file_->Duplicate(), std::move(integrity_block),
       base::BindOnce(&SignedWebBundleReader::OnSignaturesVerified,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                      *file_length, std::move(callback)));
@@ -510,8 +499,9 @@ void SignedWebBundleReader::ReadResponseBody(
       std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
   mojo::DataPipeProducer* raw_producer = data_producer.get();
   raw_producer->Write(
-      connection_->file_->CreateDataSource(response->payload_offset,
-                                           response->payload_length),
+      web_package::WebBundleFileDataSource::CreateDataSource(
+          connection_->file_->Duplicate(), response->payload_offset,
+          response->payload_length),
       base::BindOnce(
           // `producer` is passed to this callback purely for its lifetime
           // management so that it is deleted once this callback runs.

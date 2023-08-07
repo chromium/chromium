@@ -63,7 +63,7 @@ class FakeSignatureVerifier
       : error_(error) {}
 
   void VerifySignatures(
-      scoped_refptr<web_package::SharedFile> file,
+      base::File file,
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "base/files/file.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
@@ -16,7 +16,6 @@
 
 namespace web_package {
 
-class SharedFile;
 class SignedWebBundleIntegrityBlock;
 
 // This class can be used to verify the signatures contained in a Signed Web
@@ -57,7 +56,7 @@ class SignedWebBundleSignatureVerifier {
   // currently supported.
   //
   // TODO(crbug.com/1366303): Support more than one signature.
-  virtual void VerifySignatures(scoped_refptr<SharedFile> file,
+  virtual void VerifySignatures(base::File file,
                                 SignedWebBundleIntegrityBlock integrity_block,
                                 SignatureVerificationCallback callback);
 
@@ -69,7 +68,7 @@ class SignedWebBundleSignatureVerifier {
   // Calculate the SHA512 hash of the Signed Web Bundle excluding the integrity
   // block, i.e., the unsigned Web Bundle.
   static base::expected<std::array<uint8_t, kSHA512DigestLength>, std::string>
-  CalculateHashOfUnsignedWebBundle(scoped_refptr<SharedFile> file,
+  CalculateHashOfUnsignedWebBundle(base::File file,
                                    int64_t web_bundle_chunk_size,
                                    int64_t integrity_block_size);
 
