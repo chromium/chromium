@@ -4101,6 +4101,40 @@ TEST_F(SellerWorkletTest,
       /*expected_debug_win_report_url=*/absl::nullopt);
 }
 
+TEST_F(SellerWorkletTest, AuctionRequestedSizeIsPresentReportResultJavascript) {
+  auction_ad_config_non_shared_params_.requested_size = blink::AdSize(
+      /*width=*/1920,
+      /*width_units=*/blink::mojom::AdSize_LengthUnit::kPixels,
+      /*height=*/100,
+      /*height_units*/ blink::mojom::AdSize_LengthUnit::kScreenHeight);
+
+  std::string requested_size_validator =
+      R"(if (!(auctionConfig.requestedSize.width === '1920px' &&
+               auctionConfig.requestedSize.height === '100sh')) {
+          throw new Error('Requested size is incorrect or missing.');
+        })";
+
+  RunReportResultCreatedScriptExpectingResult(
+      "1", requested_size_validator,
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/absl::nullopt);
+}
+
+TEST_F(SellerWorkletTest,
+       AuctionRequestedSizeIsMissingFromReportResultJavascriptWhenNotProvided) {
+  // Because we didn't modify auction_ad_config_non_shared_params_,
+  // requestedSize should be empty.
+  std::string requested_size_validator =
+      R"(if (auctionConfig.hasOwnProperty('requestedSize')) {
+          throw new Error('Requested size is present but should be missing.');
+        })";
+
+  RunReportResultCreatedScriptExpectingResult(
+      "1", requested_size_validator,
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/absl::nullopt);
+}
+
 class SellerWorkletSharedStorageAPIDisabledTest : public SellerWorkletTest {
  public:
   SellerWorkletSharedStorageAPIDisabledTest() {
