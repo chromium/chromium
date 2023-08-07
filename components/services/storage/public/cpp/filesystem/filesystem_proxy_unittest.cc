@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
@@ -135,32 +136,28 @@ TEST_P(FilesystemProxyTest, PathExists) {
 TEST_P(FilesystemProxyTest, GetDirectoryEntries) {
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       base::FilePath(), FilesystemProxy::DirectoryEntryType::kFilesOnly);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(),
-              UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2)));
+  EXPECT_THAT(result, base::test::ValueIs(UnorderedElementsAre(
+                          MakeAbsolute(kFile1), MakeAbsolute(kFile2))));
 
   result = proxy().GetDirectoryEntries(
       base::FilePath(),
       FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(),
-              UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2),
-                                   MakeAbsolute(kDir1), MakeAbsolute(kDir2)));
+  EXPECT_THAT(result, base::test::ValueIs(UnorderedElementsAre(
+                          MakeAbsolute(kFile1), MakeAbsolute(kFile2),
+                          MakeAbsolute(kDir1), MakeAbsolute(kDir2))));
 
   result = proxy().GetDirectoryEntries(
       kDir1, FilesystemProxy::DirectoryEntryType::kFilesOnly);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(),
-              UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
-                                   MakeAbsolute(kDir1.Append(kDir1File2))));
+  EXPECT_THAT(result, base::test::ValueIs(UnorderedElementsAre(
+                          MakeAbsolute(kDir1.Append(kDir1File1)),
+                          MakeAbsolute(kDir1.Append(kDir1File2)))));
 
   result = proxy().GetDirectoryEntries(
       kDir1, FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(),
-              UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
-                                   MakeAbsolute(kDir1.Append(kDir1File2)),
-                                   MakeAbsolute(kDir1.Append(kDir1Dir1))));
+  EXPECT_THAT(result, base::test::ValueIs(UnorderedElementsAre(
+                          MakeAbsolute(kDir1.Append(kDir1File1)),
+                          MakeAbsolute(kDir1.Append(kDir1File2)),
+                          MakeAbsolute(kDir1.Append(kDir1Dir1)))));
 
   EXPECT_EQ(
       base::File::FILE_ERROR_NOT_FOUND,
@@ -179,11 +176,11 @@ TEST_P(FilesystemProxyTest, OpenFileOpenIfExists) {
                                             base::File::FLAG_WRITE)
                 .error());
 
-  FileErrorOr<base::File> file1 =
+  ASSERT_OK_AND_ASSIGN(
+      base::File file1,
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                   base::File::FLAG_WRITE);
-  ASSERT_TRUE(file1.has_value());
-  EXPECT_EQ(kFile1Contents, ReadFileContents(&file1.value()));
+                                   base::File::FLAG_WRITE));
+  EXPECT_EQ(kFile1Contents, ReadFileContents(&file1));
 }
 
 TEST_P(FilesystemProxyTest, OpenFileCreateAndOpenOnlyIfNotExists) {
@@ -195,50 +192,53 @@ TEST_P(FilesystemProxyTest, OpenFileCreateAndOpenOnlyIfNotExists) {
           .error());
 
   const base::FilePath kNewFilename{FILE_PATH_LITERAL("new_file")};
-  FileErrorOr<base::File> new_file = proxy().OpenFile(
-      kNewFilename,
-      base::File::FLAG_CREATE | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  ASSERT_TRUE(new_file.has_value());
-  EXPECT_EQ("", ReadFileContents(&new_file.value()));
+  ASSERT_OK_AND_ASSIGN(
+      base::File new_file,
+      proxy().OpenFile(kNewFilename, base::File::FLAG_CREATE |
+                                         base::File::FLAG_READ |
+                                         base::File::FLAG_WRITE));
+  EXPECT_EQ("", ReadFileContents(&new_file));
 
   const std::string kData = "yeet";
   EXPECT_TRUE(
-      new_file->WriteAndCheck(0, base::as_bytes(base::make_span(kData))));
-  EXPECT_EQ(kData, ReadFileContents(&new_file.value()));
+      new_file.WriteAndCheck(0, base::as_bytes(base::make_span(kData))));
+  EXPECT_EQ(kData, ReadFileContents(&new_file));
 }
 
 TEST_P(FilesystemProxyTest, OpenFileAlwaysOpen) {
-  FileErrorOr<base::File> file1 = proxy().OpenFile(
-      kFile1, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                  base::File::FLAG_WRITE);
-  ASSERT_TRUE(file1.has_value());
-  EXPECT_TRUE(file1->IsValid());
-  EXPECT_EQ(kFile1Contents, ReadFileContents(&file1.value()));
+  ASSERT_OK_AND_ASSIGN(base::File file1,
+                       proxy().OpenFile(kFile1, base::File::FLAG_OPEN_ALWAYS |
+                                                    base::File::FLAG_READ |
+                                                    base::File::FLAG_WRITE));
+  EXPECT_TRUE(file1.IsValid());
+  EXPECT_EQ(kFile1Contents, ReadFileContents(&file1));
 
   const base::FilePath kNewFilename{FILE_PATH_LITERAL("new_file")};
-  FileErrorOr<base::File> new_file = proxy().OpenFile(
-      kNewFilename, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                        base::File::FLAG_WRITE);
-  ASSERT_TRUE(new_file.has_value());
-  EXPECT_TRUE(new_file->IsValid());
-  EXPECT_EQ("", ReadFileContents(&new_file.value()));
+  ASSERT_OK_AND_ASSIGN(
+      base::File new_file,
+      proxy().OpenFile(kNewFilename, base::File::FLAG_OPEN_ALWAYS |
+                                         base::File::FLAG_READ |
+                                         base::File::FLAG_WRITE));
+  EXPECT_TRUE(new_file.IsValid());
+  EXPECT_EQ("", ReadFileContents(&new_file));
 }
 
 TEST_P(FilesystemProxyTest, OpenFileAlwaysCreate) {
-  FileErrorOr<base::File> file1 = proxy().OpenFile(
-      kFile1, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                  base::File::FLAG_WRITE);
-  ASSERT_TRUE(file1.has_value());
-  EXPECT_TRUE(file1->IsValid());
-  EXPECT_EQ("", ReadFileContents(&file1.value()));
+  ASSERT_OK_AND_ASSIGN(base::File file1,
+                       proxy().OpenFile(kFile1, base::File::FLAG_CREATE_ALWAYS |
+                                                    base::File::FLAG_READ |
+                                                    base::File::FLAG_WRITE));
+  EXPECT_TRUE(file1.IsValid());
+  EXPECT_EQ("", ReadFileContents(&file1));
 
   const base::FilePath kNewFilename{FILE_PATH_LITERAL("new_file")};
-  FileErrorOr<base::File> new_file = proxy().OpenFile(
-      kNewFilename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                        base::File::FLAG_WRITE);
-  ASSERT_TRUE(new_file.has_value());
-  EXPECT_TRUE(new_file->IsValid());
-  EXPECT_EQ("", ReadFileContents(&new_file.value()));
+  ASSERT_OK_AND_ASSIGN(
+      base::File new_file,
+      proxy().OpenFile(kNewFilename, base::File::FLAG_CREATE_ALWAYS |
+                                         base::File::FLAG_READ |
+                                         base::File::FLAG_WRITE));
+  EXPECT_TRUE(new_file.IsValid());
+  EXPECT_EQ("", ReadFileContents(&new_file));
 }
 
 TEST_P(FilesystemProxyTest, OpenFileOpenIfExistsAndTruncate) {
@@ -250,24 +250,25 @@ TEST_P(FilesystemProxyTest, OpenFileOpenIfExistsAndTruncate) {
                                             base::File::FLAG_WRITE)
                 .error());
 
-  FileErrorOr<base::File> file1 = proxy().OpenFile(
-      kFile1, base::File::FLAG_OPEN_TRUNCATED | base::File::FLAG_READ |
-                  base::File::FLAG_WRITE);
-  ASSERT_TRUE(file1.has_value());
-  EXPECT_TRUE(file1->IsValid());
-  EXPECT_EQ("", ReadFileContents(&file1.value()));
+  ASSERT_OK_AND_ASSIGN(
+      base::File file1,
+      proxy().OpenFile(kFile1, base::File::FLAG_OPEN_TRUNCATED |
+                                   base::File::FLAG_READ |
+                                   base::File::FLAG_WRITE));
+  EXPECT_TRUE(file1.IsValid());
+  EXPECT_EQ("", ReadFileContents(&file1));
 }
 
 TEST_P(FilesystemProxyTest, OpenFileReadOnly) {
-  FileErrorOr<base::File> file =
-      proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  ASSERT_TRUE(file.has_value());
-  EXPECT_TRUE(file->IsValid());
+  ASSERT_OK_AND_ASSIGN(
+      base::File file,
+      proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base::File::FLAG_READ));
+  EXPECT_TRUE(file.IsValid());
 
   // Writes should fail.
-  EXPECT_FALSE(file->WriteAtCurrentPosAndCheck(
+  EXPECT_FALSE(file.WriteAtCurrentPosAndCheck(
       base::as_bytes(base::make_span("doesn't matter"))));
-  EXPECT_EQ(kFile1Contents, ReadFileContents(&file.value()));
+  EXPECT_EQ(kFile1Contents, ReadFileContents(&file));
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -277,18 +278,18 @@ TEST_P(FilesystemProxyTest, OpenFileReadOnly) {
 #define MAYBE_OpenFileWriteOnly OpenFileWriteOnly
 #endif
 TEST_P(FilesystemProxyTest, MAYBE_OpenFileWriteOnly) {
-  FileErrorOr<base::File> file = proxy().OpenFile(
-      kFile2, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  ASSERT_TRUE(file.has_value());
-  EXPECT_TRUE(file->IsValid());
+  ASSERT_OK_AND_ASSIGN(base::File file,
+                       proxy().OpenFile(kFile2, base::File::FLAG_CREATE_ALWAYS |
+                                                    base::File::FLAG_WRITE));
+  EXPECT_TRUE(file.IsValid());
 
   const std::string kData{"files can have a little data, as a treat"};
-  EXPECT_TRUE(file->WriteAndCheck(0, base::as_bytes(base::make_span(kData))));
+  EXPECT_TRUE(file.WriteAndCheck(0, base::as_bytes(base::make_span(kData))));
 
   // Reading from this handle should fail.
   std::vector<uint8_t> data;
-  EXPECT_FALSE(file->ReadAndCheck(0, data));
-  file->Close();
+  EXPECT_FALSE(file.ReadAndCheck(0, data));
+  file.Close();
 
   // But the file contents should still have been written.
   EXPECT_EQ(kData, ReadFileContentsAtPath(kFile2));
@@ -302,42 +303,41 @@ TEST_P(FilesystemProxyTest, MAYBE_OpenFileWriteOnly) {
 #endif
 TEST_P(FilesystemProxyTest, MAYBE_OpenFileAppendOnly) {
   const base::FilePath kFile3{FILE_PATH_LITERAL("file3")};
-  FileErrorOr<base::File> file = proxy().OpenFile(
-      kFile3, base::File::FLAG_CREATE | base::File::FLAG_APPEND);
-  ASSERT_TRUE(file.has_value());
-  EXPECT_TRUE(file->IsValid());
+  ASSERT_OK_AND_ASSIGN(base::File file,
+                       proxy().OpenFile(kFile3, base::File::FLAG_CREATE |
+                                                    base::File::FLAG_APPEND));
+  EXPECT_TRUE(file.IsValid());
 
   const std::string kData{"files can have a little data, as a treat"};
   EXPECT_TRUE(
-      file->WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(kData))));
+      file.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(kData))));
 
   // Attempt to write somewhere other than the end of the file. The offset
   // should be ignored and the data should be appended instead.
   const std::string kMoreData{"!"};
   EXPECT_TRUE(
-      file->WriteAndCheck(0, base::as_bytes(base::make_span(kMoreData))));
+      file.WriteAndCheck(0, base::as_bytes(base::make_span(kMoreData))));
 
   // Reading should still fail.
   std::vector<uint8_t> data;
-  EXPECT_FALSE(file->ReadAndCheck(0, data));
-  file->Close();
+  EXPECT_FALSE(file.ReadAndCheck(0, data));
+  file.Close();
 
   // But we should have all the appended data in the file.
   EXPECT_EQ(kData + kMoreData, ReadFileContentsAtPath(kFile3));
 }
 
 TEST_P(FilesystemProxyTest, DeleteFile) {
-  FileErrorOr<base::File> file =
-      proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
-  ASSERT_TRUE(file.has_value());
-  EXPECT_TRUE(file->IsValid());
-  file->Close();
+  ASSERT_OK_AND_ASSIGN(
+      base::File file,
+      proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ));
+  EXPECT_TRUE(file.IsValid());
+  file.Close();
 
   EXPECT_TRUE(proxy().DeleteFile(kFile1));
-  file =
-      proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
-  EXPECT_FALSE(file.has_value());
-  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, file.error());
+  EXPECT_THAT(
+      proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ),
+      base::test::ErrorIs(base::File::FILE_ERROR_NOT_FOUND));
 }
 
 TEST_P(FilesystemProxyTest, CreateAndRemoveDirectory) {
@@ -408,12 +408,13 @@ TEST_P(FilesystemProxyTest, RenameFile) {
                                 base::File::FLAG_WRITE)
           .error());
 
-  FileErrorOr<base::File> new_file = proxy().OpenFile(
-      kNewFilename,
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  ASSERT_TRUE(new_file.has_value());
-  EXPECT_TRUE(new_file->IsValid());
-  EXPECT_EQ(kFile1Contents, ReadFileContents(&new_file.value()));
+  ASSERT_OK_AND_ASSIGN(
+      base::File new_file,
+      proxy().OpenFile(kNewFilename, base::File::FLAG_OPEN |
+                                         base::File::FLAG_READ |
+                                         base::File::FLAG_WRITE));
+  EXPECT_TRUE(new_file.IsValid());
+  EXPECT_EQ(kFile1Contents, ReadFileContents(&new_file));
 }
 
 TEST_P(FilesystemProxyTest, RenameNonExistentFile) {
@@ -425,30 +426,26 @@ TEST_P(FilesystemProxyTest, RenameNonExistentFile) {
 
 TEST_P(FilesystemProxyTest, LockFile) {
   const base::FilePath kLockFilename{FILE_PATH_LITERAL("lox")};
-  FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>> result =
-      proxy().LockFile(kLockFilename);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_NE(nullptr, result.value());
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FilesystemProxy::FileLock> result,
+                       proxy().LockFile(kLockFilename));
+  EXPECT_NE(nullptr, result);
 
-  FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>> result2 =
-      proxy().LockFile(kLockFilename);
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_EQ(base::File::FILE_ERROR_IN_USE, result2.error());
+  EXPECT_THAT(proxy().LockFile(kLockFilename),
+              base::test::ErrorIs(base::File::FILE_ERROR_IN_USE));
 
   // Synchronously release so we can re-acquire the lock.
-  EXPECT_EQ(base::File::Error::FILE_OK, result.value()->Release());
+  EXPECT_EQ(base::File::Error::FILE_OK, result->Release());
 
-  result2 = proxy().LockFile(kLockFilename);
-  ASSERT_TRUE(result2.has_value());
-  EXPECT_NE(nullptr, result2.value());
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FilesystemProxy::FileLock> result2,
+                       proxy().LockFile(kLockFilename));
+  EXPECT_NE(nullptr, result2);
 
   // Test that destruction also implicitly releases the lock.
-  result2 = base::unexpected(base::File::FILE_ERROR_FAILED);
+  result2.reset();
 
   // And once again we should be able to reacquire the lock.
-  result = proxy().LockFile(kLockFilename);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_NE(nullptr, result.value());
+  ASSERT_OK_AND_ASSIGN(result, proxy().LockFile(kLockFilename));
+  EXPECT_NE(nullptr, result);
 }
 
 TEST_P(FilesystemProxyTest, ComputeDirectorySize) {
@@ -464,10 +461,9 @@ TEST_P(FilesystemProxyTest, AbsolutePathEqualToRoot) {
   // operate correctly.
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       GetTestRoot(), FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(),
-              UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2),
-                                   MakeAbsolute(kDir1), MakeAbsolute(kDir2)));
+  EXPECT_THAT(result, base::test::ValueIs(UnorderedElementsAre(
+                          MakeAbsolute(kFile1), MakeAbsolute(kFile2),
+                          MakeAbsolute(kDir1), MakeAbsolute(kDir2))));
 }
 
 TEST_P(FilesystemProxyTest, AbsolutePathWithinRoot) {
@@ -477,11 +473,10 @@ TEST_P(FilesystemProxyTest, AbsolutePathWithinRoot) {
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       GetTestRoot().Append(kDir1),
       FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(),
-              UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
-                                   MakeAbsolute(kDir1.Append(kDir1File2)),
-                                   MakeAbsolute(kDir1.Append(kDir1Dir1))));
+  EXPECT_THAT(result, base::test::ValueIs(UnorderedElementsAre(
+                          MakeAbsolute(kDir1.Append(kDir1File1)),
+                          MakeAbsolute(kDir1.Append(kDir1File2)),
+                          MakeAbsolute(kDir1.Append(kDir1Dir1)))));
 }
 
 TEST_P(FilesystemProxyTest, WriteFileAtomically) {

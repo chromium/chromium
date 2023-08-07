@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
@@ -429,12 +430,12 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
-  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+  ASSERT_OK_AND_ASSIGN(auto parsed_json,
+                       base::JSONReader::ReadAndReturnValueWithError(json));
 
   // Validate the allocators summary.
   const base::Value::Dict* malloc_summary =
-      parsed_json->GetDict().FindDictByDottedPath("allocators.malloc");
+      parsed_json.GetDict().FindDictByDottedPath("allocators.malloc");
   ASSERT_TRUE(malloc_summary);
   const std::string* malloc_size =
       malloc_summary->FindStringByDottedPath("attrs.size.value");
@@ -448,7 +449,7 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
   // Validate allocators details.
   // heaps_v2.allocators.malloc.sizes.reduce((a,s)=>a+s,0).
   const base::Value::Dict* malloc =
-      parsed_json->GetDict().FindDictByDottedPath("heaps_v2.allocators.malloc");
+      parsed_json.GetDict().FindDictByDottedPath("heaps_v2.allocators.malloc");
   const base::Value::List* malloc_sizes = malloc->FindList("sizes");
   EXPECT_EQ(1u, malloc_sizes->size());
   EXPECT_EQ(0x9876543210ul, (*malloc_sizes)[0].GetDouble());
