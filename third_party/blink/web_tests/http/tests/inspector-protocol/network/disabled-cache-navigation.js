@@ -4,25 +4,18 @@
 
   async function navigateAndGetResponse() {
     dp.Page.navigate({url: testRunner.url('resources/cached.php')});
-    const responseReceivedExtraInfoEvents = [];
-    dp.Network.onResponseReceivedExtraInfo(event => {
-      responseReceivedExtraInfoEvents.push(event);
-    });
-    const [responseReceived] = await Promise.all([
+    const [responseReceived, responseReceivedExtraInfo] = await Promise.all([
       dp.Network.onceResponseReceived(),
+      dp.Network.onceResponseReceivedExtraInfo(),
       dp.Network.onceLoadingFinished()]
     );
     const response = responseReceived.params;
-    if (response.hasExtraInfo && responseReceivedExtraInfoEvents.length !== 1) {
-      testRunner.fail(`ResponseReceivedExtraInfo is missing`);
-    }
-    const [responseReceivedExtraInfo] = responseReceivedExtraInfoEvents;
     const content = (await dp.Network.getResponseBody({requestId: response.requestId})).result.body;
     if (typeof content != 'string' || !content.startsWith('<html>'))
       testRunner.fail(`Invalid response: ${content}`);
     return {
       status: response.response.status,
-      extraInfoStatus: responseReceivedExtraInfo ? responseReceivedExtraInfo.params.statusCode : undefined,
+      extraInfoStatus: responseReceivedExtraInfo.params.statusCode,
       content: content
     };
   }
