@@ -1687,6 +1687,9 @@ void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
                                  form_structure->form_parsed_timestamp(),
                                  sync_state_, client().IsOffTheRecord());
+  } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    // Suggestions were triggered on an ac=unrecognized address field.
+    autocomplete_unrecognized_fallback_logger_->OnDidShowSuggestions();
   }
 
   if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard &&
@@ -2689,13 +2692,19 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
           newly_filled_fields,
           base::flat_set<FieldGlobalId>(std::move(safe_fields)), sync_state_,
           trigger_source);
-    }
-
-    if (!is_credit_card) {
-      address_form_event_logger_->OnDidFillSuggestion(
-          *absl::get<const AutofillProfile*>(profile_or_credit_card),
-          *form_structure, *autofill_trigger_field, sync_state_,
-          trigger_source);
+    } else {
+      // An address form was filled.
+      CHECK(absl::holds_alternative<const AutofillProfile*>(
+          profile_or_credit_card));
+      if (autofill_trigger_field
+              ->ShouldSuppressSuggestionsAndFillingByDefault()) {
+        autocomplete_unrecognized_fallback_logger_->OnDidFillSuggestion();
+      } else {
+        address_form_event_logger_->OnDidFillSuggestion(
+            *absl::get<const AutofillProfile*>(profile_or_credit_card),
+            *form_structure, *autofill_trigger_field, sync_state_,
+            trigger_source);
+      }
     }
   }
 

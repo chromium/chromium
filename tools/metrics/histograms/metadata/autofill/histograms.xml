@@ -2163,6 +2163,22 @@ chromium-metrics-reviews@google.com.
   <summary>The autofill state related to a submitted form.</summary>
 </histogram>
 
+<histogram
+    name="Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized.FillAfterSuggestion.Address"
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="M125">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Like Autofill.Funnel.FillAfterSuggestion.Address, but conditioned on
+    autocomplete=unrecognized fields. The metric is only recorded if the user
+    saw a suggestion on an autocomplete=unrecognized field. On desktop, that
+    means using the manual fallback option through the context menu. On mobile,
+    keyboard accessory suggestions appear independently of the autocomplete
+    attribute. Emitted on navigation (when the AutofillManager is destroyed), at
+    most once per page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Funnel.FillAfterSuggestion{AutofillFormType}"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>
