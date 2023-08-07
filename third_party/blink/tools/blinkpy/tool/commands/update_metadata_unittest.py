@@ -1271,6 +1271,40 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         smoke_test_port.skipped_due_to_smoke_tests.assert_called_once_with(
             'external/wpt/variant.html?foo=baz')
 
+    def test_no_fill_for_unsupported_configs(self):
+        from wptrunner.browsers import content_shell
+        browser_info = {
+            **content_shell.__wptrunner__,
+            # Pretend `content_shell` does not support reftests.
+            'executor': {},
+        }
+        with patch('wptrunner.browsers.content_shell.__wptrunner__',
+                   browser_info):
+            self.update(
+                {
+                    'run_info': {
+                        'product': 'chrome',
+                    },
+                    'results': [{
+                        'test': '/fail.html',
+                        'status': 'FAIL',
+                        'expected': 'PASS',
+                    }],
+                }, {
+                    'run_info': {
+                        'product': 'content_shell',
+                    },
+                    'results': [],
+                })
+        # `update-metadata` should write the expectation unconditionally instead
+        # of as:
+        #   if product == "chrome": FAIL
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
+            """)
+
     def test_condition_initialization_without_starting_metadata(self):
         self.update(
             {

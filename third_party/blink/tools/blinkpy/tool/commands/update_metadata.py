@@ -733,6 +733,7 @@ class MetadataUpdater:
             (self._primary_properties, self._dependent_properties),
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
+        expected.set('type', test_file.item_type)
         for test_id in test_file.data:
             test = expected.get_test(test_id)
             if not test:

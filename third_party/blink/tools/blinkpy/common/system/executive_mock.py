@@ -263,9 +263,15 @@ class MockExecutive(object):
 
     @contextlib.contextmanager
     def patch_builtins(self):
+        # `mozprocess` subclasses `subprocess.Popen`, so patch in a real type,
+        # not just a callable.
+        class MockPopen:
+            def __new__(cls, *args, **kwargs):
+                return self.popen(*args, **kwargs)
+
         with contextlib.ExitStack() as stack:
             stack.enter_context(patch('subprocess.run', self._run_mock))
-            stack.enter_context(patch('subprocess.Popen', self.popen))
+            stack.enter_context(patch('subprocess.Popen', MockPopen))
             yield
 
 

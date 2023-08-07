@@ -15,7 +15,7 @@ from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import manifestexpected, manifestupdate, metadata
+from wptrunner import manifestexpected, manifestupdate, metadata, products
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.manifestexpected import TestNode, SubtestNode
 
@@ -140,6 +140,13 @@ class TestConfigurations(collections.abc.Mapping):
                     test_id = self._finder.wpt_prefix() + test_id
                 if port.skipped_due_to_smoke_tests(test_id):
                     return True
+        with contextlib.suppress(KeyError):
+            product = products.Product({}, config['product'])
+            executor_cls = product.executor_classes.get(test.test_type)
+            # This test is implicitly disabled because its type is not supported
+            # by the product under test.
+            if not executor_cls:
+                return True
         with contextlib.suppress(KeyError):
             return test.get('disabled', config)
         test_dir = test.parent.test_path
