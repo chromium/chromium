@@ -746,10 +746,6 @@ void LogSaveUIDismissalReason(
     autofill::mojom::SubmissionIndicatorEvent submission_event,
     absl::optional<PasswordAccountStorageUserState> user_state);
 
-// Log the |reason| a user dismissed the save password prompt after previously
-// having unblocklisted the origin while on the page.
-void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason);
-
 // Log the |reason| a user dismissed the update password bubble. If the
 // submission is detected on a cleared change password form, dismissal reason is
 // also recorded in a histogram specific for this type of submission.

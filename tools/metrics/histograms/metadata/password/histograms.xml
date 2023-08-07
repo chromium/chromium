@@ -3039,18 +3039,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
-    enum="PasswordManagerUIDismissalReason" expires_after="M117">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Why was the save password UI (bubble or infobar) closed? This is currently
-    recorded only for Android and only after the user has unblacklisted an
-    origin for saving from the accessory sheet.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.SaveUIDismissalReason{UserSyncingType}"
     enum="PasswordManagerUIDismissalReason" expires_after="2024-02-12">
   <owner>vasilii@chromium.org</owner>

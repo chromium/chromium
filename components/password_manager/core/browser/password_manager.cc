@@ -424,29 +424,6 @@ PasswordManagerClient* PasswordManager::GetClient() {
   return client_;
 }
 
-void PasswordManager::MarkWasUnblocklistedInFormManagers(
-    CredentialCache* credential_cache) {
-  if (owned_submitted_form_manager_) {
-    const OriginCredentialStore& credential_store =
-        credential_cache->GetCredentialStore(
-            url::Origin::Create(owned_submitted_form_manager_->GetURL()));
-    if (credential_store.GetBlocklistedStatus() ==
-        BlocklistedStatus::kWasBlocklisted) {
-      owned_submitted_form_manager_->MarkWasUnblocklisted();
-    }
-  }
-
-  for (const auto& form_manager : form_managers_) {
-    const OriginCredentialStore& credential_store =
-        credential_cache->GetCredentialStore(
-            url::Origin::Create(form_manager->GetURL()));
-    if (credential_store.GetBlocklistedStatus() ==
-        BlocklistedStatus::kWasBlocklisted) {
-      form_manager->MarkWasUnblocklisted();
-    }
-  }
-}
-
 void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {

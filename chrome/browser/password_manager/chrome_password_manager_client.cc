@@ -1372,11 +1372,6 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   content_credential_manager_.DisconnectBinding();
 
 #if BUILDFLAG(IS_ANDROID)
-  // This unblocklisted info is only used after form submission to determine
-  // whether to record PasswordManager.SaveUIDismissalReasonAfterUnblacklisting.
-  // Therefore it is sufficient to save it only once on navigation and not
-  // every time the user changes the UI toggle.
-  password_manager_.MarkWasUnblocklistedInFormManagers(&credential_cache_);
   credential_cache_.ClearCredentials();
 #endif  // BUILDFLAG(IS_ANDROID)
 

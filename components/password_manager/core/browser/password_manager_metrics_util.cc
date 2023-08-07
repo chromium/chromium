@@ -119,12 +119,6 @@ void LogSaveUIDismissalReason(
   }
 }
 
-void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.SaveUIDismissalReasonAfterUnblacklisting", reason,
-      NUM_UI_RESPONSES);
-}
-
 void LogUpdateUIDismissalReason(
     UIDismissalReason reason,
     autofill::mojom::SubmissionIndicatorEvent submission_event) {

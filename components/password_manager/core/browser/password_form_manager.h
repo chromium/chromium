@@ -142,9 +142,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password);
 
-  // Sets |was_unblocklisted_while_on_page| to true.
-  void MarkWasUnblocklisted();
-
   // Check if the |possible_username| field is present in the |observed_form()|.
   bool FormHasPossibleUsername(
       const PossibleUsernameData* possible_username) const;
@@ -159,7 +156,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   base::span<const InteractionsStats> GetInteractionsStats() const override;
   std::vector<const PasswordForm*> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
-  bool WasUnblocklisted() const override;
   bool IsMovableToAccountStore() const override;
 
   void Save() override;
@@ -380,11 +376,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // reading from PasswordStore again. Upon reading from the store again, we set
   // this boolean to false again.
   bool newly_blocklisted_ = false;
-
-  // Set to true when the user unblocklists the origin while on the page.
-  // This is used to decide when to record
-  // |PasswordManager.ResultOfSavingAfterUnblacklisting|.
-  bool was_unblocklisted_while_on_page_ = false;
 
   // Takes care of recording metrics and events for |*this|.
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;

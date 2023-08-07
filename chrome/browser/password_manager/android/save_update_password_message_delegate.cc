@@ -586,10 +586,6 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
     password_manager::metrics_util::LogSaveUIDismissalReason(
         ui_dismissal_reason, submission_event,
         /*user_state=*/absl::nullopt);
-    if (passwords_state_.form_manager()->WasUnblocklisted()) {
-      password_manager::metrics_util::
-          LogSaveUIDismissalReasonAfterUnblocklisting(ui_dismissal_reason);
-    }
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);

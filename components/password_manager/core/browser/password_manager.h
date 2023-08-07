@@ -131,11 +131,6 @@ class PasswordManager : public PasswordManagerInterface {
   void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                    const autofill::FormData& form_data);
 
-  // Called upon navigation to persist the state from |CredentialCache|
-  // used to decide when to record
-  // |PasswordManager.ResultOfSavingFlowAfterUnblacklistin|.
-  void MarkWasUnblocklistedInFormManagers(CredentialCache* credential_cache);
-
   // Handles a dynamic form submission. In contrast to OnPasswordFormSubmitted()
   // this method does not wait for OnPasswordFormsRendered() before invoking
   // OnLoginSuccessful(), provided that a password form was provisionally saved

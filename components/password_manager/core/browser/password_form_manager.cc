@@ -269,10 +269,6 @@ bool PasswordFormManager::IsBlocklisted() const {
   return form_fetcher_->IsBlocklisted() || newly_blocklisted_;
 }
 
-bool PasswordFormManager::WasUnblocklisted() const {
-  return was_unblocklisted_while_on_page_;
-}
-
 bool PasswordFormManager::IsMovableToAccountStore() const {
   DCHECK(
       client_->GetPasswordFeatureManager()->ShouldShowAccountStorageBubbleUi())
@@ -951,10 +947,6 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   }
   parsed_form->password_value = password;
   password_save_manager_->GeneratedPasswordAccepted(*parsed_form, driver_);
-}
-
-void PasswordFormManager::MarkWasUnblocklisted() {
-  was_unblocklisted_while_on_page_ = true;
 }
 
 bool PasswordFormManager::FormHasPossibleUsername(
