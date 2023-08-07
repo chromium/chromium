@@ -949,13 +949,15 @@ void TCPSocketWin::DidCompleteConnect() {
   int rv = WSAEnumNetworkEvents(socket_, core_->read_event_, &events);
   int os_error = WSAGetLastError();
   if (rv == SOCKET_ERROR) {
-    NOTREACHED();
+    DLOG(FATAL)
+        << "WSAEnumNetworkEvents() failed with SOCKET_ERROR, os_error = "
+        << os_error;
     result = MapSystemError(os_error);
   } else if (events.lNetworkEvents & FD_CONNECT) {
     os_error = events.iErrorCode[FD_CONNECT_BIT];
     result = MapConnectError(os_error);
   } else {
-    NOTREACHED();
+    DLOG(FATAL) << "WSAEnumNetworkEvents() failed, rv = " << rv;
     result = ERR_UNEXPECTED;
   }
 
