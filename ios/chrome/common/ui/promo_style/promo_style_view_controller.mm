@@ -626,6 +626,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     if (self.headerImageType == PromoStyleImageType::kAvatar) {
       _headerImageView.layer.cornerRadius = kheaderImageSize / 2.;
     }
+    _headerImageView.accessibilityLabel = _headerAccessibilityLabel;
+    _headerImageView.isAccessibilityElement = _headerAccessibilityLabel != nil;
   }
   return _headerImageView;
 }
@@ -636,18 +638,19 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     DCHECK_EQ(headerImage.size.width, kheaderImageSize);
     DCHECK_EQ(headerImage.size.height, kheaderImageSize);
   }
-  if (self.headerImageType != PromoStyleImageType::kNone) {
-    self.headerImageView.image = headerImage;
-  }
+  // `self.headerImageView` should not be used to avoid creating the image.
+  // The owner might set the image first and then change the value of
+  // `self.headerImageType`.
+  _headerImageView.image = headerImage;
 }
 
 - (void)setHeaderAccessibilityLabel:(NSString*)headerAccessibilityLabel {
   _headerAccessibilityLabel = headerAccessibilityLabel;
-  if (self.headerImageType != PromoStyleImageType::kNone) {
-    self.headerImageView.accessibilityLabel = headerAccessibilityLabel;
-    self.headerImageView.isAccessibilityElement =
-        headerAccessibilityLabel != nil;
-  }
+  // `self.headerImageView` should not be used to avoid creating the image.
+  // The owner might set the accessibility label and then change the value of
+  // `self.headerImageType`.
+  _headerImageView.accessibilityLabel = headerAccessibilityLabel;
+  _headerImageView.isAccessibilityElement = headerAccessibilityLabel != nil;
 }
 
 - (UILabel*)titleLabel {
@@ -1244,7 +1247,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   UIImageView* imageView =
       [[UIImageView alloc] initWithImage:self.headerBackgroundImage];
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  imageView.accessibilityLabel =
+  imageView.accessibilityIdentifier =
       kPromoStyleHeaderViewBackgroundAccessibilityIdentifier;
   return imageView;
 }

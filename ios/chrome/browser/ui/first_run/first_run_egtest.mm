@@ -46,6 +46,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 namespace {
 
@@ -196,7 +197,8 @@ void DismissDefaultBrowserPromo() {
       [self isRunningTest:@selector(testHistorySyncSkipIfSyncDisabled)] ||
       [self isRunningTest:@selector(testHistorySyncSkipIfTabsSyncDisabled)] ||
       [self isRunningTest:@selector
-            (testHistorySyncShownIfBookmarksSyncDisabled)]) {
+            (testHistorySyncShownIfBookmarksSyncDisabled)] ||
+      [self isRunningTest:@selector(testHistorySyncLayout)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -1184,6 +1186,41 @@ void DismissDefaultBrowserPromo() {
           userBooleanPref:unified_consent::prefs::
                               kUrlKeyedAnonymizedDataCollectionEnabled],
       @"MSBB consent should not be granted.");
+}
+
+// Tests that the History Sync Opt-In screen contains the avatar of the
+// signed-in user, and the correct background image for the avatar.
+- (void)testHistorySyncLayout {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the user's avatar is shown.
+  NSString* avatarLabel =
+      [NSString stringWithFormat:@"%@ %@", fakeIdentity.userFullName,
+                                 fakeIdentity.userEmail];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(avatarLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the avatar background is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kPromoStyleHeaderViewBackgroundAccessibilityIdentifier),
+              chrome_test_util::ImageViewWithImageNamed(
+                  @"history_sync_opt_in_background"),
+              grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Helper
