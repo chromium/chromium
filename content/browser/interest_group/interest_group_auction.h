@@ -23,6 +23,7 @@
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -535,6 +536,33 @@ class CONTENT_EXPORT InterestGroupAuction
       uint32_t pos,
       std::vector<mojo_base::BigBuffer> additional_bids);
 
+  // Called by AuctionRunner when the promise providing the
+  // `direct_from_seller_signals_header_ad_slot` string has been resolved, if
+  // one exists.
+  //
+  // The implementation must not hold on to `auction_page_data` after returning,
+  // since `auction_page_data` can be freed when navigating away.
+  void NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
+      AdAuctionPageData* auction_page_data,
+      const absl::optional<std::string>&
+          direct_from_seller_signals_header_ad_slot);
+
+  // Called by AuctionRunner when the value of
+  // `direct_from_seller_signals_header_ad_slot` for component
+  // auction with position `pos` in the original configuration has been
+  // resolved.
+  //
+  // Assumes that `pos` has already been range-checked, and that this is
+  // a parent auction.
+  //
+  // The implementation must not hold on to `auction_page_data` after returning,
+  // since `auction_page_data` can be freed when navigating away.
+  void NotifyComponentDirectFromSellerSignalsHeaderAdSlotConfig(
+      uint32_t pos,
+      AdAuctionPageData* auction_page_data,
+      const absl::optional<std::string>&
+          direct_from_seller_signals_header_ad_slot);
+
   // Close all Mojo pipes and release all weak pointers. Called when an
   // auction fails and on auction complete.
   void ClosePipes();
@@ -989,6 +1017,14 @@ class CONTENT_EXPORT InterestGroupAuction
   void OnLoadedWinningGroup(BiddingAndAuctionResponse response,
                             absl::optional<StorageInterestGroup> maybe_group);
 
+  // Completion callback for HeaderDirectFromSellerSignals::ParseAndFind(). Sets
+  // `direct_from_seller_signals_header_ad_slot_`, and sets
+  // `direct_from_seller_signals_header_ad_slot_pending_` to false, appending
+  // `errors` to `errors_`.
+  void OnDirectFromSellerSignalHeaderAdSlotResolved(
+      std::unique_ptr<HeaderDirectFromSellerSignals> signals,
+      std::vector<std::string> errors);
+
   // Tracing ID associated with the Auction. A nestable
   // async "Auction" trace event lasts for the combined lifetime of `this`
   // and a possible InterestGroupAuctionReporter. Sequential events that
@@ -1017,6 +1053,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // been resolved. (Note that if `this` is a component auction, it only looks
   // at itself; while main auctions do look at their components recursively).
   bool config_promises_resolved_ = false;
+
+  // Will be set to `true` while parsing JSON to find a matching
+  // directFromSellerSignalsHeaderAdSlot response. Bid generation will be
+  // blocked while true, even if promises have all resolved.
+  bool direct_from_seller_signals_header_ad_slot_pending_ = false;
 
   // If this is a component auction, the parent Auction. Null, otherwise.
   const raw_ptr<const InterestGroupAuction> parent_;
@@ -1110,6 +1151,17 @@ class CONTENT_EXPORT InterestGroupAuction
   // comes in from a potential promises, and in successful auctions gets
   // transferred to InterestGroupAuctionReporter.
   std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder_;
+
+  // Stores the loaded HeaderDirectFromSellerSignals, if there were any. Should
+  // never be null.
+  //
+  // After `direct_from_seller_signals_header_ad_slot_` has been
+  // set to true, the default constructed value gets replaced with the found
+  // signals, if the auction config provided an ad-slot, and it matched one of
+  // the captured responses for the seller's origin.
+  std::unique_ptr<HeaderDirectFromSellerSignals>
+      direct_from_seller_signals_header_ad_slot_ =
+          std::make_unique<HeaderDirectFromSellerSignals>();
 
   // The number of buyers in the AuctionConfig that passed the
   // IsInterestGroupApiAllowedCallback filter and interest groups were found

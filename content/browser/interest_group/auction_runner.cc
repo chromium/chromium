@@ -292,6 +292,23 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
     return;
   }
 
+  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  if (!page_data) {
+    // There's no page data attached so we can't find matching responses.
+    // There's no way the auction can proceed.
+    FailAuction(false);
+    return;
+  }
+
+  if (auction_id->is_main_auction()) {
+    auction_.NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
+        page_data, std::move(direct_from_seller_signals_header_ad_slot));
+  } else {
+    auction_.NotifyComponentDirectFromSellerSignalsHeaderAdSlotConfig(
+        auction_id->get_component_auction(), page_data,
+        std::move(direct_from_seller_signals_header_ad_slot));
+  }
+
   config->expects_direct_from_seller_signals_header_ad_slot = false;
   NotifyPromiseResolved(auction_id.get(), config);
 }

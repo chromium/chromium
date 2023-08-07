@@ -46,6 +46,7 @@
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -972,6 +973,12 @@ class InterestGroupAuction::BuyerHelper
   void NotifyConfigPromisesResolved() {
     DCHECK(auction_->config_promises_resolved_);
 
+    NotifyConfigDependencyResolved();
+  }
+
+  // Called when promises resolve, or directFromSellerSignalsHeaderAdSlot
+  // finishes parsing and finding a matching ad slot response.
+  void NotifyConfigDependencyResolved() {
     // If there are no outstanding bids, just do nothing. It's safest to exit
     // early in the case that bidder worklet process crashed or failed to fetch
     // the necessary script(s) before all config promises were resolved, rather
@@ -1233,7 +1240,8 @@ class InterestGroupAuction::BuyerHelper
   }
 
   void FinishGenerateBidIfReady(BidState* bid_state) {
-    if (!auction_->config_promises_resolved_) {
+    if (!auction_->config_promises_resolved_ ||
+        auction_->direct_from_seller_signals_header_ad_slot_pending_) {
       return;
     }
 
@@ -1597,9 +1605,13 @@ class InterestGroupAuction::BuyerHelper
     DCHECK_GT(num_outstanding_bids_, 0);
 
     // Do nothing if still waiting on the seller to provide more of the
-    // AuctionConfig, or waiting on a process to be assigned (which would mean
-    // that this may be waiting behind other buyers).
-    if (!auction_->config_promises_resolved_ || !bidder_process_received_) {
+    // AuctionConfig, or directFromSellerSignalsHeaderAdSlot is still
+    // parsing and finding a matching ad slot response, or waiting on a process
+    // to be assigned (which would mean that this may be waiting behind other
+    // buyers).
+    if (!auction_->config_promises_resolved_ ||
+        auction_->direct_from_seller_signals_header_ad_slot_pending_ ||
+        !bidder_process_received_) {
       return;
     }
 
@@ -1805,9 +1817,10 @@ class InterestGroupAuction::BuyerHelper
   bool bidder_process_received_ = false;
 
   // Timer for applying the perBidderCumulativeTimeout, if one is applicable.
-  // Starts once `bidder_process_received_` and
-  // `auction_->config_promises_resolved_` are true, if
-  // `cumulative_buyer_timeout_` is not nullopt.
+  // Starts once `bidder_process_received_`,
+  // `auction_->config_promises_resolved_` are true, and
+  // `auction_->direct_from_seller_signals_header_ad_slot_pending_` is false,
+  // if `cumulative_buyer_timeout_` is not nullopt.
   base::OneShotTimer cumulative_buyer_timeout_timer_;
 
   int num_outstanding_bidding_signals_received_calls_ = 0;
@@ -2390,6 +2403,42 @@ void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
   }
 
   it->second->NotifyAdditionalBidsConfig(std::move(additional_bids));
+}
+
+void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
+    AdAuctionPageData* auction_page_data,
+    const absl::optional<std::string>&
+        direct_from_seller_signals_header_ad_slot) {
+  if (!direct_from_seller_signals_header_ad_slot) {
+    return;
+  }
+
+  direct_from_seller_signals_header_ad_slot_pending_ = true;
+  HeaderDirectFromSellerSignals::ParseAndFind(
+      auction_page_data->GetAuctionSignalsForOrigin(config_->seller),
+      *direct_from_seller_signals_header_ad_slot,
+      base::BindOnce(
+          &InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InterestGroupAuction::
+    NotifyComponentDirectFromSellerSignalsHeaderAdSlotConfig(
+        uint32_t pos,
+        AdAuctionPageData* auction_page_data,
+        const absl::optional<std::string>&
+            direct_from_seller_signals_header_ad_slot) {
+  CHECK(!parent_);  // Should not be called on a component.
+  auto it = component_auctions_.find(pos);
+
+  if (it == component_auctions_.end()) {
+    // Empty component auctions shouldn't be dropped, but component
+    // auctions may still be dropped if they fail permissions checks.
+    return;
+  }
+
+  it->second->NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
+      auction_page_data, std::move(direct_from_seller_signals_header_ad_slot));
 }
 
 void InterestGroupAuction::ClosePipes() {
@@ -3987,6 +4036,18 @@ void InterestGroupAuction::OnLoadedWinningGroup(
   saved_response_ = std::move(response);
 
   OnBiddingAndScoringComplete(AuctionResult::kSuccess);
+}
+
+void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
+    std::unique_ptr<HeaderDirectFromSellerSignals> signals,
+    std::vector<std::string> errors) {
+  direct_from_seller_signals_header_ad_slot_ = std::move(signals);
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
+
+  direct_from_seller_signals_header_ad_slot_pending_ = false;
+  for (const auto& buyer_helper : buyer_helpers_) {
+    buyer_helper->NotifyConfigDependencyResolved();
+  }
 }
 
 }  // namespace content
