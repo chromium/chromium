@@ -45,7 +45,7 @@ public class DeviceLockActivityLauncherImplTest {
     @MediumTest
     public void testLaunchDeviceLockActivity_launchesIntent() {
         DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(
-                mContext, true, "testSelectedAccount", mWindowAndroid, mIntentCallback);
+                mContext, "testSelectedAccount", mWindowAndroid, mIntentCallback);
         verify(mWindowAndroid, times(1))
                 .showIntent(any(Intent.class), eq(mIntentCallback), isNull());
     }
@@ -61,6 +61,6 @@ public class DeviceLockActivityLauncherImplTest {
                 .when(mWindowAndroid)
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
         DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(
-                mContext, true, "testSelectedAccount", mWindowAndroid, mIntentCallback);
+                mContext, "testSelectedAccount", mWindowAndroid, mIntentCallback);
     }
 }

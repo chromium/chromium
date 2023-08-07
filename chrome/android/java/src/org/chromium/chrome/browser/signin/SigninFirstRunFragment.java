@@ -248,7 +248,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
         mDeviceLockCoordinator = new DeviceLockCoordinator(
-                true, this, getPageDelegate().getWindowAndroid(), getActivity(), selectedAccount);
+                this, getPageDelegate().getWindowAndroid(), getActivity(), selectedAccount);
     }
 
     /** Implements {@link DeviceLockCoordinator.Delegate}. */

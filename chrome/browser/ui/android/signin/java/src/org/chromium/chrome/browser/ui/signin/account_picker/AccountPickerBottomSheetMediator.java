@@ -254,8 +254,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
                 || viewState == ViewState.SIGNIN_GENERAL_ERROR) {
             if (BuildInfo.getInstance().isAutomotive) {
-                mDeviceLockActivityLauncher.launchDeviceLockActivity(mActivity, true,
-                        mSelectedAccountEmail, mWindowAndroid, (resultCode, data) -> {
+                mDeviceLockActivityLauncher.launchDeviceLockActivity(
+                        mActivity, mSelectedAccountEmail, mWindowAndroid, (resultCode, data) -> {
                             if (resultCode == Activity.RESULT_OK) {
                                 signIn();
                             }

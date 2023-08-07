@@ -917,9 +917,8 @@ public class AccountPickerBottomSheetTest {
         CustomDeviceLockActivityLauncher() {}
 
         @Override
-        public void launchDeviceLockActivity(Context context, boolean inSignInFlow,
-                String selectedAccount, WindowAndroid windowAndroid,
-                WindowAndroid.IntentCallback callback) {
+        public void launchDeviceLockActivity(Context context, String selectedAccount,
+                WindowAndroid windowAndroid, WindowAndroid.IntentCallback callback) {
             mCallback = callback;
             mLaunched = true;
         }

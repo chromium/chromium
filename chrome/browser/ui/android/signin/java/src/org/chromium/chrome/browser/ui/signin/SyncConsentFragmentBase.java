@@ -417,7 +417,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                     coreAccountInfos, mSelectedAccountEmail);
             assert selectedCoreAccountInfo != null;
 
-            mDeviceLockCoordinator = new DeviceLockCoordinator(true, this, getWindowAndroid(),
+            mDeviceLockCoordinator = new DeviceLockCoordinator(this, getWindowAndroid(),
                     getActivity(), CoreAccountInfo.getAndroidAccountFrom(selectedCoreAccountInfo));
         });
     }
