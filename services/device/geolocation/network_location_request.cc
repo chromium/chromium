@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
@@ -386,14 +387,14 @@ mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
   DVLOG(1) << "ParseServerResponse() : Parsing response " << response_body;
 
   // Parse the response, ignoring comments.
-  auto response_result =
-      base::JSONReader::ReadAndReturnValueWithError(response_body);
-  if (!response_result.has_value()) {
-    LOG(WARNING) << "ParseServerResponse() : JSONReader failed : "
-                 << response_result.error().message;
-    return nullptr;
-  }
-  base::Value response_value = std::move(*response_result);
+  ASSIGN_OR_RETURN(base::Value response_value,
+                   base::JSONReader::ReadAndReturnValueWithError(response_body),
+                   [](base::JSONReader::Error error) -> mojom::GeopositionPtr {
+                     LOG(WARNING)
+                         << "ParseServerResponse() : JSONReader failed : "
+                         << std::move(error).message;
+                     return nullptr;
+                   });
 
   const base::Value::Dict* response_object = response_value.GetIfDict();
   if (!response_object) {

@@ -26,6 +26,7 @@
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/types/expected_macros.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #endif
 
@@ -215,10 +216,9 @@ void DataDecoder::ParseJson(const std::string& json,
                     return;
                   }
 
-                  if (!result.has_value()) {
-                    std::move(callback).Run(base::unexpected(result.error()));
-                    return;
-                  }
+                  RETURN_IF_ERROR(result, [&](std::string error) {
+                    std::move(callback).Run(base::unexpected(std::move(error)));
+                  });
 
                   ParsingComplete(is_cancelled, std::move(callback),
                                   base::JSONReader::ReadAndReturnValueWithError(
