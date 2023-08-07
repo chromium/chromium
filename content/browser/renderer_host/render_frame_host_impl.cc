@@ -1176,11 +1176,6 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             ? ukm::kInvalidSourceId
             : frame.GetPageUkmSourceId());
 
-    if (frame.GetIsThirdPartyCookiesUserBypassEnabled()) {
-      result.cookie_setting_overrides_.Put(
-          net::CookieSettingOverride::kForceThirdPartyByUser);
-    }
-
     return result;
   }
 
@@ -1222,11 +1217,6 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin(),
               network::mojom::TrustTokenOperationType::kIssuance);
-
-      if (navigation_request.GetIsThirdPartyCookiesUserBypassEnabled()) {
-        result.cookie_setting_overrides_.Put(
-            net::CookieSettingOverride::kForceThirdPartyByUser);
-      }
     }
 
     return result;
@@ -15659,20 +15649,6 @@ RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo
 RenderFrameHostImpl::GetCookieChangeInfo() {
   return cookie_change_listener_ ? cookie_change_listener_->cookie_change_info()
                                  : CookieChangeListener::CookieChangeInfo{};
-}
-
-// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
-// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
-// or GetOutermostMainFrameOrEmbedder.
-bool RenderFrameHostImpl::GetIsThirdPartyCookiesUserBypassEnabled() {
-  auto* document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(GetMainFrame());
-  if (!document_data) {
-    return false;
-  }
-  blink::RuntimeFeatureStateReadContext read_context =
-      document_data->runtime_feature_state_read_context();
-  return read_context.IsThirdPartyCookiesUserBypassEnabled();
 }
 
 void RenderFrameHostImpl::SetResourceCacheRemote(

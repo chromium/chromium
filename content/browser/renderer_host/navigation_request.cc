@@ -9526,18 +9526,6 @@ StoragePartition* NavigationRequest::GetStoragePartitionWithCurrentSiteInfo() {
       ->GetStoragePartition(site_info_.storage_partition_config());
 }
 
-// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
-// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
-// or GetOutermostMainFrameOrEmbedder.
-bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
-  if (IsInMainFrame()) {
-    blink::RuntimeFeatureStateContext state_context =
-        GetRuntimeFeatureStateContext();
-    return state_context.IsThirdPartyCookiesUserBypassEnabled();
-  }
-  return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
-}
-
 void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   TRACE_EVENT1("content", "NavigationRequest::CreateWebUI", "url", GetURL());
 

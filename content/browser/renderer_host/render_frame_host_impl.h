@@ -2948,17 +2948,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // used on primary main frames.
   bool IsPageReadyToBeClosed();
 
-  // When this returns true, the user has specified that third-party cookies
-  // should remain enabled for this frame.
-  // It does so by checking the Blink runtime-enabled feature (BREF) for
-  // third-party cookie deprecation user bypass. This pulls the BREF from the
-  // committed document context; for a committing navigation use
-  // NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled.
-  // For a subframe, the BREF is pulled from the main frame context. If the main
-  // frame has no committed navigation (eg. an empty initial document), then
-  // false is returned.
-  bool GetIsThirdPartyCookiesUserBypassEnabled();
-
   // Retrieves the information about the cookie changes that are observed on the
   // last committed document.
   CookieChangeListener::CookieChangeInfo GetCookieChangeInfo();
