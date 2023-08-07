@@ -48,19 +48,18 @@ constexpr char kFeedbackPlaceholder[] =
     "What happened instead? (Please include the screenshot below)";
 
 base::Value::Dict LoadTriggerFormAndFieldLogs(
-    AutofillManager* manager,
-    content::RenderFrameHost* rfh,
+    AutofillManager& manager,
+    const LocalFrameToken& frame_token,
     const content::ContextMenuParams& params) {
   if (!params.form_renderer_id) {
     return base::Value::Dict();
   }
 
-  LocalFrameToken frame_token(rfh->GetFrameToken().value());
   FormGlobalId form_global_id = {frame_token,
                                  FormRendererId(*params.form_renderer_id)};
 
   base::Value::Dict trigger_form_logs;
-  if (FormStructure* form = manager->FindCachedFormById(form_global_id)) {
+  if (FormStructure* form = manager.FindCachedFormById(form_global_id)) {
     trigger_form_logs.Set("triggerFormSignature", form->FormSignatureAsStr());
 
     if (params.field_renderer_id) {
@@ -77,16 +76,6 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
     }
   }
   return trigger_form_logs;
-}
-
-autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger&
-GetAutocompleteUnrecognizedEventLogger(content::RenderFrameHost* rfh) {
-  CHECK(rfh);
-  AutofillManager* manager =
-      ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
-  CHECK(manager);
-  return static_cast<BrowserAutofillManager*>(manager)
-      ->GetAutocompleteUnrecognizedFallbackEventLogger();
 }
 
 }  // namespace
@@ -129,7 +118,7 @@ void AutofillContextMenuManager::AppendItems() {
     return;
 
   if (params_.field_renderer_id) {
-    LocalFrameToken frame_token(rfh->GetFrameToken().value());
+    const LocalFrameToken frame_token = driver->GetFrameToken();
     // Formless fields have default form renderer id.
     FormGlobalId form_global_id = {
         frame_token, params_.form_renderer_id
@@ -159,7 +148,7 @@ void AutofillContextMenuManager::AppendItems() {
   if (params_.field_renderer_id &&
       base::FeatureList::IsEnabled(
           features::kAutofillFallbackForAutocompleteUnrecognized)) {
-    MaybeAddFallbackForAutocompleteUnrecognizedToMenu();
+    MaybeAddFallbackForAutocompleteUnrecognizedToMenu(*driver);
   }
 }
 
@@ -173,24 +162,9 @@ bool AutofillContextMenuManager::IsCommandIdEnabled(int command_id) {
 
 void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
-  if (!rfh)
-    return;
-
-  CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
-
-  if (command_id == kAutofillContextFeedback) {
-    ExecuteAutofillFeedbackCommand(rfh);
+  if (!rfh) {
     return;
   }
-
-  if (command_id == kAutofillFallbackForAutocompleteUnrecognized) {
-    ExecuteFallbackForAutocompleteUnrecognizedCommand(rfh);
-    return;
-  }
-}
-
-void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
-    content::RenderFrameHost* rfh) {
   ContentAutofillDriver* driver =
       ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver) {
@@ -198,8 +172,24 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
   }
   AutofillManager* manager = driver->autofill_manager();
   CHECK(manager);
-  new_badge_tracker_->ActionPerformed("autofill_feedback_activated");
 
+  CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
+
+  if (command_id == kAutofillContextFeedback) {
+    ExecuteAutofillFeedbackCommand(driver->GetFrameToken(), *manager);
+    return;
+  }
+
+  if (command_id == kAutofillFallbackForAutocompleteUnrecognized) {
+    ExecuteFallbackForAutocompleteUnrecognizedCommand(*manager);
+    return;
+  }
+}
+
+void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
+    const LocalFrameToken& frame_token,
+    AutofillManager& manager) {
+  new_badge_tracker_->ActionPerformed("autofill_feedback_activated");
   chrome::ShowFeedbackPage(
       browser_, chrome::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/std::string(),
@@ -208,38 +198,39 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/
       data_logs::FetchAutofillFeedbackData(
-          manager, LoadTriggerFormAndFieldLogs(manager, rfh, params_)));
+          &manager,
+          LoadTriggerFormAndFieldLogs(manager, frame_token, params_)));
 }
 
 void AutofillContextMenuManager::
     ExecuteFallbackForAutocompleteUnrecognizedCommand(
-        content::RenderFrameHost* rfh) {
-  ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(rfh);
-  if (!driver) {
-    return;
-  }
-  AutofillField* field = GetAutofillField();
+        AutofillManager& manager) {
+  auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
+  AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
   if (!field) {
     // The field should generally exist, since the fallback option is only shown
     // when the field can be retrieved. But if the website removed the field
     // before the entry was select, it might not be available anymore.
     return;
   }
-  driver->browser_events().RendererShouldTriggerSuggestions(
+  driver.browser_events().RendererShouldTriggerSuggestions(
       field->global_id(), AutofillSuggestionTriggerSource::
                               kManualFallbackForAutocompleteUnrecognized);
-  GetAutocompleteUnrecognizedEventLogger(delegate_->GetRenderFrameHost())
+  static_cast<BrowserAutofillManager&>(manager)
+      .GetAutocompleteUnrecognizedFallbackEventLogger()
       .ContextMenuEntryAccepted(
           /*address_field_has_ac_unrecognized=*/field
               ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
 void AutofillContextMenuManager::
-    MaybeAddFallbackForAutocompleteUnrecognizedToMenu() {
+    MaybeAddFallbackForAutocompleteUnrecognizedToMenu(
+        ContentAutofillDriver& driver) {
+  AutofillManager* manager = driver.autofill_manager();
+  CHECK(manager);
   // Only show the context menu entry for address fields, which can be filled
   // with at least one of the user's profiles.
-  AutofillField* field = GetAutofillField();
+  AutofillField* field = GetAutofillField(*manager, driver.GetFrameToken());
   if (!field || FieldTypeGroupToFormType(field->Type().group()) !=
                     FormType::kAddressForm) {
     return;
@@ -267,21 +258,18 @@ void AutofillContextMenuManager::
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED,
       ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnIcon));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  GetAutocompleteUnrecognizedEventLogger(delegate_->GetRenderFrameHost())
+  static_cast<BrowserAutofillManager*>(manager)
+      ->GetAutocompleteUnrecognizedFallbackEventLogger()
       .ContextMenuEntryShown(
           /*address_field_has_ac_unrecognized=*/field
               ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
-AutofillField* AutofillContextMenuManager::GetAutofillField() const {
-  content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
-  CHECK(rfh);
-  AutofillManager* manager =
-      ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
-  CHECK(manager);
-  LocalFrameToken frame_token(rfh->GetFrameToken().value());
+AutofillField* AutofillContextMenuManager::GetAutofillField(
+    AutofillManager& manager,
+    const LocalFrameToken& frame_token) const {
   // Formless forms don't have a renderer ID.
-  FormStructure* form = manager->FindCachedFormById(
+  FormStructure* form = manager.FindCachedFormById(
       {frame_token, FormRendererId(params_.form_renderer_id.value_or(0))});
   CHECK(params_.field_renderer_id);
   return form ? form->GetFieldById(

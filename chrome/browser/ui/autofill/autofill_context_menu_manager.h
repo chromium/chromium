@@ -8,7 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
-#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/context_menu_params.h"
@@ -67,19 +68,23 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
  private:
   // If an address field was clicked, depending on its autocomplete attribute,
   // adds an option to the context menu to trigger Autofill suggestions.
-  void MaybeAddFallbackForAutocompleteUnrecognizedToMenu();
+  void MaybeAddFallbackForAutocompleteUnrecognizedToMenu(
+      ContentAutofillDriver& driver);
 
   // Triggers the feedback flow for Autofill command.
-  void ExecuteAutofillFeedbackCommand(content::RenderFrameHost* rfh);
+  void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
+                                      AutofillManager& manager);
 
   // Triggers Autofill suggestions on the field that the context menu was
   // opened on.
   void ExecuteFallbackForAutocompleteUnrecognizedCommand(
-      content::RenderFrameHost* rfh);
+      AutofillManager& manager);
 
-  // Gets the `AutofillField` described by the `params_` from the context menu's
-  // render frame host.
-  AutofillField* GetAutofillField() const;
+  // Gets the `AutofillField` described by the `params_` from the `manager`.
+  // The `frame_token` is used to map from the `params_` renderer id to a global
+  // id.
+  AutofillField* GetAutofillField(AutofillManager& manager,
+                                  const LocalFrameToken& frame_token) const;
 
   const raw_ptr<PersonalDataManager> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
