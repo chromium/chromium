@@ -267,7 +267,8 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
-    should_reload_ = false;
+    should_reload_ =
+        base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI);
     cookie_settings_->ResetThirdPartyCookieSetting(url);
     return;
   }

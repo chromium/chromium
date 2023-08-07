@@ -64,7 +64,9 @@ public class PageInfoCookiesController
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
-        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) updateRowViewSubtitle(mStatus);
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            updateRowViewSubtitle(CookieControlsStatus.UNINITIALIZED);
+        }
     }
 
     private void launchSubpage() {
@@ -226,13 +228,8 @@ public class PageInfoCookiesController
                         : R.string.page_info_cookies_subtitle_allowed));
     }
 
-    void onUiClosing() {
-        if (mBridge != null) {
-            mBridge.onUiClosing();
-        }
-    }
-
     void destroy() {
+        mBridge.onUiClosing();
         mBridge.destroy();
         mBridge = null;
     }

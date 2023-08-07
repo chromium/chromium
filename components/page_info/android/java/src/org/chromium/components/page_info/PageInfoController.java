@@ -213,10 +213,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         // Setup View.
         PageInfoView.Params viewParams = new PageInfoView.Params();
-        viewParams.onUiClosingCallback = () -> {
-            // |this| may have already been destroyed by the time this is called.
-            if (mCookiesController != null) mCookiesController.onUiClosing();
-        };
         mDelegate.initOfflinePageUiParams(viewParams, this::runAfterDismiss);
         viewParams.httpsImageCompressionMessageShown = mDelegate.isHttpsImageCompressionApplied();
         mView = new PageInfoView(mContext, viewParams);
