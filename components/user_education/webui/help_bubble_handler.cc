@@ -28,6 +28,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom-shared.h"
@@ -80,9 +81,10 @@ std::string SnakeCaseFromCamelCase(std::string input) {
   std::string output;
   output.reserve(input.size());
   for (const char c : input) {
-    if (std::isupper(c) && !output.empty())
+    if (absl::ascii_isupper(static_cast<unsigned char>(c)) && !output.empty()) {
       output.push_back('_');
-    output.push_back(std::tolower(c));
+    }
+    output.push_back(absl::ascii_tolower(static_cast<unsigned char>(c)));
   }
   return output;
 }

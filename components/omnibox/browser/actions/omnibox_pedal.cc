@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 
-#include <cctype>
 #include <numeric>
 
 #include "base/metrics/histogram_functions.h"

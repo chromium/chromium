@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 
 #include <stddef.h>
-#include <cctype>
 
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_form.h"

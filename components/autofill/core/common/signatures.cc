@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/common/signatures.h"
 
-#include <cctype>
-
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/strcat.h"

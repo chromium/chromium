@@ -9,6 +9,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -41,8 +42,10 @@ std::string CapitalizeWords(const std::string& sentence) {
   std::string capitalized_sentence;
   bool use_upper_case = true;
   for (char ch : sentence) {
-    capitalized_sentence += (use_upper_case ? toupper(ch) : ch);
-    use_upper_case = !isalpha(ch);
+    capitalized_sentence +=
+        (use_upper_case ? absl::ascii_toupper(static_cast<unsigned char>(ch))
+                        : ch);
+    use_upper_case = !absl::ascii_isalpha(static_cast<unsigned char>(ch));
   }
   return capitalized_sentence;
 }

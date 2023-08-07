@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 
-#include <cctype>
 #include <numeric>
 
 #include "build/build_config.h"

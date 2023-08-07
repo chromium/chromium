@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/phone_number.h"
 
+#include <limits.h>
+
 #include <algorithm>
 
 #include "base/check_op.h"
@@ -18,6 +20,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace autofill {
 
@@ -245,8 +248,12 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
       // shows a US number as (888) 123-1234. The following retains only the
       // digits.
       national_number.erase(
-          std::remove_if(national_number.begin(), national_number.end(),
-                         [](auto c) { return !std::isdigit(c); }),
+          std::remove_if(
+              national_number.begin(), national_number.end(),
+              [](char16_t c) {
+                return c > UCHAR_MAX || !absl::ascii_isdigit(
+                    static_cast<unsigned char>(c));
+              }),
           national_number.end());
       return national_number;
     }

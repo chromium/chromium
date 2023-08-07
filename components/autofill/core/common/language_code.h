@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_LANGUAGE_CODE_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_LANGUAGE_CODE_H_
 
-#include <cctype>
 #include <string>
 #include <utility>
 

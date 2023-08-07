@@ -4,7 +4,6 @@
 
 #include "components/url_matcher/url_matcher_factory.h"
 
-#include <cctype>
 #include <memory>
 #include <utility>
 

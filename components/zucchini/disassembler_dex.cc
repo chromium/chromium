@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include <algorithm>
-#include <cctype>
 #include <cmath>
 #include <iterator>
 #include <set>
@@ -24,6 +23,7 @@
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/io_utils.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
@@ -846,8 +846,9 @@ bool ReadDexHeader(ConstBufferView image, ReadDexHeaderResults* opt_results) {
   // Magic matches: More detailed tests can be conducted.
   int dex_version = 0;
   for (int i = 4; i < 7; ++i) {
-    if (!isdigit(header->magic[i]))
+    if (!absl::ascii_isdigit(header->magic[i])) {
       return false;
+    }
     dex_version = dex_version * 10 + (header->magic[i] - '0');
   }
 

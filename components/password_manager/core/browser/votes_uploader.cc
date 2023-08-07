@@ -4,8 +4,6 @@
 
 #include "components/password_manager/core/browser/votes_uploader.h"
 
-#include <ctype.h>
-
 #include <iostream>
 #include <utility>
 

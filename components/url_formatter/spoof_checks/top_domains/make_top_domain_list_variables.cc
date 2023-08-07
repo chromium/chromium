@@ -19,7 +19,6 @@
 // IMPORTANT: This binary asserts that there are at least enough sites in the
 // input file to generate 500 skeletons and 500 keywords.
 
-#include <cctype>
 #include <iostream>
 #include <set>
 #include <sstream>

@@ -15,6 +15,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/optimization_guide/proto/page_topics_override_list.pb.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -114,7 +115,7 @@ int MeaninglessPrefixLength(const std::string& host) {
       if (host[i] == '.') {
         return i + 1;
       }
-      if (!isdigit(host[i])) {
+      if (!absl::ascii_isdigit(static_cast<unsigned char>(host[i]))) {
         return 0;
       }
     }
