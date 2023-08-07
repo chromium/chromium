@@ -354,10 +354,6 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Downloads",
   "network.ConfigBaseline.login",
 
-  # http://b/288976666, until the 15567 LKGM uprev
-  "crostini.ShareMovies.bullseye_stable_gaia",
-  "crostini.ShareMovies.buster_stable_gaia",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
