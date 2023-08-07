@@ -6205,6 +6205,11 @@ class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest,
     return *image_with_effects.Get()->uncompressed.bitmap();
   }
 
+  apps::AppRegistryCache& app_cache() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->AppRegistryCache();
+  }
+
   apps::PromiseAppRegistryCache* cache() {
     return apps::AppServiceProxyFactory::GetForProfile(profile())
         ->PromiseAppRegistryCache();
@@ -6383,6 +6388,46 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
 
   // Confirm the initial icon and the updated icon are different.
   EXPECT_FALSE(gfx::BitmapsAreEqual(result_bitmap, result_updated_bitmap));
+}
+
+TEST_F(ChromeShelfControllerPromiseAppsTest, RemoveShelfItem) {
+  // Register a promise app.
+  apps::AppType app_type = apps::AppType::kArc;
+  std::string identifier = "test.com.example";
+  apps::PackageId package_id(app_type, identifier);
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->name = "Name";
+  promise_app->progress = 0.9;
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Create a shelf item for the promise app.
+  InitShelfController();
+  PinAppWithIDToShelf(package_id.ToString());
+
+  // Verify the details of the shelf item.
+  EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
+  ash::ShelfID id(package_id.ToString());
+  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
+  EXPECT_TRUE(item);
+
+  // Register (i.e. "install") an app in AppRegistryCache with a matching
+  // package ID. This should trigger removal of the promise app and hence the
+  // unpinning of the shelf item.
+  std::string app_id = "qwertyuiopasdfghjkl";
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->publisher_id = identifier;
+  app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache().OnApps(std::move(apps), app_type,
+                     /*should_notify_initialized=*/false);
+
+  // Item should no longer be in the shelf.
+  EXPECT_FALSE(model_->IsAppPinned(package_id.ToString()));
+  item = shelf_controller_->GetItem(id);
+  EXPECT_FALSE(item);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -1058,6 +1058,19 @@ void ChromeShelfController::OnPromiseAppUpdate(
   model_->Set(index, item);
 }
 
+void ChromeShelfController::OnPromiseAppRemoved(
+    const apps::PackageId& package_id) {
+  int index = model_->ItemIndexByAppID(package_id.ToString());
+  if (index == kInvalidIndex) {
+    return;
+  }
+  const ash::ShelfItem& item = model_->items()[index];
+
+  // TODO(b/288832707): Instead of just unpinning the shelf item, replace it
+  // with the installed app item after the animation completes.
+  UnpinShelfItemInternal(item.id);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // AppIconLoaderDelegate:
 

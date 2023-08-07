@@ -280,6 +280,7 @@ class ChromeShelfController
                                 const std::string& app_id,
                                 bool by_migration) override;
   void OnPromiseAppUpdate(const apps::PromiseAppUpdate& update) override;
+  void OnPromiseAppRemoved(const apps::PackageId& package_id) override;
 
   // AppIconLoaderDelegate:
   void OnAppImageUpdated(const std::string& app_id,
