@@ -1487,7 +1487,7 @@ content::PreloadingEligibility Browser::IsPrerender2Supported(
     content::WebContents& web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs(), &web_contents);
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
 std::unique_ptr<content::WebContents> Browser::ActivatePortalWebContents(

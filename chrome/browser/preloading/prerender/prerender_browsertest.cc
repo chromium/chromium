@@ -104,11 +104,12 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 class PrerenderHoldbackBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderHoldbackBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kPreloadingHoldback);
+    preloading_config_override_.SetHoldback("Prerender", "SpeculationRules",
+                                            true);
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 // An end-to-end test of prerendering and activating.
@@ -276,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 }
 
-// Tests that Devtools open overrides PreloadingHoldback.
+// Tests that DevTools open overrides PreloadingConfig's holdback.
 IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
                        PreloadingHoldbackOverridden) {
   base::HistogramTester histogram_tester;
@@ -285,8 +286,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
   PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+
+  // IsSomePreloadingEnabled is *not* affected by PreloadingConfig.
   ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
+            content::PreloadingEligibility::kEligible);
 
   // Emulating Devtools attached to make PreloadingHoldback overridden. Retain
   // the returned host until the test finishes to avoid DevTools termination.
@@ -312,8 +315,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
       kFinalStatusActivated, 1);
 }
 
-// Tests that Prerender2 cannot be triggered when PreloadingHoldback is not
-// overridden by Devtools.
+// Tests that Prerender2 cannot be triggered when PreloadingConfig's
+// holdback is not overridden by DevTools.
 IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
                        PreloadingHoldbackNotOverridden) {
   // Navigate to an initial page.
@@ -321,8 +324,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+
+  // IsSomePreloadingEnabled is *not* affected by PreloadingConfig.
   ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
+            content::PreloadingEligibility::kEligible);
+
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
 

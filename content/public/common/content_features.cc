@@ -789,12 +789,6 @@ BASE_FEATURE(kPreloadingConfig,
              "PreloadingConfig",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Please note this feature is only used for experimental purposes, please don't
-// enable this feature by default.
-BASE_FEATURE(kPreloadingHoldback,
-             "PreloadingHoldback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables exposure of the core milestone 1 (M1) APIs in the renderer without an
 // origin trial token: Attribution Reporting, FLEDGE, Topics.
 BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,

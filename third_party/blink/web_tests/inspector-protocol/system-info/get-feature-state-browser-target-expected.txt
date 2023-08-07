@@ -1,8 +1,0 @@
-Tests SystemInfo.getFeatureState() from browser target
-{
-    id : <number>
-    result : {
-        featureEnabled : false
-    }
-}
-

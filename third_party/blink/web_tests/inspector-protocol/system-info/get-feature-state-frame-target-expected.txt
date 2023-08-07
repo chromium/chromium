@@ -1,9 +1,0 @@
-Tests SystemInfo.getFeatureState() from frame target
-{
-    id : <number>
-    result : {
-        featureEnabled : false
-    }
-    sessionId : <string>
-}
-

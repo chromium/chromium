@@ -286,17 +286,6 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
-class PreloadingHoldbackDevToolsProtocolTest
-    : public PrerenderDevToolsProtocolTest {
- public:
-  PreloadingHoldbackDevToolsProtocolTest() {
-    feature_list_.InitAndEnableFeature(features::kPreloadingHoldback);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class MultiplePrerendersDevToolsProtocolTest
     : public PrerenderDevToolsProtocolTest {
  public:
@@ -3926,26 +3915,6 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_THAT(*result.FindString("disallowedMojoInterface"),
               Eq("device.mojom.GamepadMonitor"));
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
-                       CheckReportedPreloadingFeatures) {
-  AttachToBrowserTarget();
-  base::Value::Dict paramsPreloadingHolback;
-  paramsPreloadingHolback.Set("featureState", "PreloadingHoldback");
-  const base::Value::Dict* result = SendCommand(
-      "SystemInfo.getFeatureState", std::move(paramsPreloadingHolback));
-  EXPECT_THAT(result->FindBool("featureEnabled"), false);
-}
-
-IN_PROC_BROWSER_TEST_F(PreloadingHoldbackDevToolsProtocolTest,
-                       CheckReportedPreloadingFeatures) {
-  AttachToBrowserTarget();
-  base::Value::Dict params;
-  params.Set("featureState", "PreloadingHoldback");
-  const base::Value::Dict* result =
-      SendCommand("SystemInfo.getFeatureState", std::move(params));
-  EXPECT_THAT(result->FindBool("featureEnabled"), true);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,

@@ -79,7 +79,7 @@ class PrefetchPrefsPreloadingTest : public ::testing::Test {
   PrefetchPrefsPreloadingTest() = default;
   ~PrefetchPrefsPreloadingTest() override = default;
 
-  // IsSomePreloadingEnabled[IgnoringFinch]() requires a threaded environment.
+  // IsSomePreloadingEnabled() requires a threaded environment.
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -115,101 +115,13 @@ TEST_F(PrefetchPrefsPreloadingTest, IsSomePreloadingEnabled) {
             content::PreloadingEligibility::kEligible);
 }
 
-TEST_F(PrefetchPrefsPreloadingTest,
-       IsSomePreloadingEnabled_PreloadingHoldback) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kPreloadingHoldback);
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterIntegerPref(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(
-          prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
-}
-
-TEST_F(PrefetchPrefsPreloadingTest, IsSomePreloadingEnabledIgnoringFinch) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kPreloadingHoldback);
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterIntegerPref(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
-            content::PreloadingEligibility::kPreloadingDisabled);
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
-            content::PreloadingEligibility::kEligible);
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(
-          prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
-            content::PreloadingEligibility::kEligible);
-
-  prefs.SetInteger(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
-            content::PreloadingEligibility::kEligible);
-}
-
-class PrefetchPrefsWithBatterySaverTest : public ::testing::Test {
+class PrefetchPrefsWithBatterySaverTest : public PrefetchPrefsPreloadingTest {
  public:
   PrefetchPrefsWithBatterySaverTest() = default;
   ~PrefetchPrefsWithBatterySaverTest() override = default;
 
   void TearDown() override { battery::ResetIsBatterySaverEnabledForTesting(); }
-
-  // IsSomePreloadingEnabled[IgnoringFinch]() requires a threaded environment.
-  base::test::TaskEnvironment task_environment_;
 };
-
-TEST_F(PrefetchPrefsWithBatterySaverTest,
-       IsSomePreloadingEnabledIgnoringFinch) {
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterIntegerPref(
-      prefs::kNetworkPredictionOptions,
-      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
-
-  battery::OverrideIsBatterySaverEnabledForTesting(false);
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
-            content::PreloadingEligibility::kEligible);
-
-  battery::OverrideIsBatterySaverEnabledForTesting(true);
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
-            content::PreloadingEligibility::kBatterySaverEnabled);
-}
 
 TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
   TestingPrefServiceSimple prefs;
@@ -230,27 +142,24 @@ TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
             content::PreloadingEligibility::kBatterySaverEnabled);
 }
 
-class PrefetchPrefsWithDataSaverTest : public ::testing::Test {
+class PrefetchPrefsWithDataSaverTest : public PrefetchPrefsPreloadingTest {
  public:
   PrefetchPrefsWithDataSaverTest() = default;
   ~PrefetchPrefsWithDataSaverTest() override = default;
 
   void TearDown() override { data_saver::ResetIsDataSaverEnabledForTesting(); }
-
-  // IsSomePreloadingEnabledIgnoringFinch() requires a threaded environment.
-  base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PrefetchPrefsWithDataSaverTest, IsSomePreloadingEnabledIgnoringFinch) {
+TEST_F(PrefetchPrefsWithDataSaverTest, IsSomePreloadingEnabled) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
   data_saver::OverrideIsDataSaverEnabledForTesting(false);
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
             content::PreloadingEligibility::kEligible);
 
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
             content::PreloadingEligibility::kDataSaverEnabled);
 }
