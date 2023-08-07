@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -119,18 +120,16 @@ TEST_P(HttpNoVarySearchResponseHeadersTest, ParsingSuccess) {
       net::HttpUtil::AssembleRawHeaders(test.raw_headers);
 
   const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
-  const auto no_vary_search_data =
-      HttpNoVarySearchData::ParseFromHeaders(*parsed);
+  ASSERT_OK_AND_ASSIGN(const auto no_vary_search_data,
+                       HttpNoVarySearchData::ParseFromHeaders(*parsed));
 
-  ASSERT_TRUE(no_vary_search_data.has_value());
-  EXPECT_EQ(no_vary_search_data->vary_on_key_order(),
+  EXPECT_EQ(no_vary_search_data.vary_on_key_order(),
             test.expected_vary_on_key_order);
-  EXPECT_EQ(no_vary_search_data->vary_by_default(),
+  EXPECT_EQ(no_vary_search_data.vary_by_default(),
             test.expected_vary_by_default);
 
-  EXPECT_EQ(no_vary_search_data->no_vary_params(),
-            test.expected_no_vary_params);
-  EXPECT_EQ(no_vary_search_data->vary_params(), test.expected_vary_params);
+  EXPECT_EQ(no_vary_search_data.no_vary_params(), test.expected_no_vary_params);
+  EXPECT_EQ(no_vary_search_data.vary_params(), test.expected_vary_params);
 }
 
 struct FailureData {
@@ -151,9 +150,8 @@ TEST_P(HttpNoVarySearchResponseHeadersParseFailureTest,
   const auto no_vary_search_data =
       HttpNoVarySearchData::ParseFromHeaders(*parsed);
 
-  ASSERT_FALSE(no_vary_search_data.has_value())
-      << "Headers = " << GetParam().raw_headers;
-  EXPECT_EQ(GetParam().expected_error, no_vary_search_data.error())
+  EXPECT_THAT(no_vary_search_data,
+              base::test::ErrorIs(GetParam().expected_error))
       << "Headers = " << GetParam().raw_headers;
 }
 
