@@ -715,6 +715,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void ClampScrollOffsetAfterOverflowChangeInternal();
   Element* GetElementForScrollStart() const;
 
+  void SetShouldCheckForPaintInvalidation();
+
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
   // be set to nullptr by the Dispose method.

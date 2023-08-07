@@ -4547,6 +4547,15 @@ void LayoutObject::SetShouldCheckForPaintInvalidation() {
 
   bitfields_.SetShouldCheckForPaintInvalidation(true);
   bitfields_.SetShouldCheckLayoutForPaintInvalidation(true);
+
+  // This is not a good place to be during pre-paint. Marking the the ancestry
+  // for paint invalidation checking during pre-paint is bad, since we may
+  // already be done with those objects, and never get to visit them again in
+  // the pre-paint phase. LayoutObject ancestors as they may be, the structure
+  // of the physical fragment tree could be different.
+  DCHECK(GetDocument().Lifecycle().GetState() !=
+         DocumentLifecycle::kInPrePaint);
+
   for (LayoutObject* ancestor = Parent();
        ancestor && !ancestor->DescendantShouldCheckLayoutForPaintInvalidation();
        ancestor = ancestor->Parent()) {
