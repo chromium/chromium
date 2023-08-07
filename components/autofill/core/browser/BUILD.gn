@@ -983,7 +983,6 @@ source_set("unit_tests") {
     "merchant_promo_code_manager_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
     "metrics/converge_to_extreme_length_address_metrics_unittest.cc",
-    "metrics/fallback_autocomplete_unrecognized_metrics_unittest.cc",
     "metrics/form_events/address_form_event_logger_unittest.cc",
     "metrics/form_events/form_event_logger_base_unittest.cc",
     "metrics/payments/card_metadata_metrics_unittest.cc",
