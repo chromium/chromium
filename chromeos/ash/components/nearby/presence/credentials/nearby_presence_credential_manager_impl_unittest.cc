@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -328,6 +329,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   FakeNearbyPresenceServerClient::Factory server_client_factory_;
   ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, SetDeviceMetadata) {
@@ -383,6 +385,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
   create_credential_manager_run_loop.Run();
   EXPECT_TRUE(credential_manager_);
   EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Upload.FailureReason", 0);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.AttemptsNeededCount",
+      /*bucket: attempt_count=*/1, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationTimeout) {
@@ -471,6 +480,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/false,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.FailureReason",
+      /*bucket: NearbyHttpResult::kTimeout*/
+      ash::nearby::NearbyHttpResult::kTimeout, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
@@ -504,6 +520,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/false,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.FailureReason",
+      /*bucket: NearbyHttpResult::kHttpErrorInternalServerError*/
+      ash::nearby::NearbyHttpResult::kHttpErrorInternalServerError, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
@@ -636,6 +659,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   // Expect daily sync success, which only happens after credentials are
   // saved to the NP library.
   EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Upload.FailureReason", 0);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.AttemptsNeededCount",
+      /*bucket: attempt_count=*/1, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
@@ -669,6 +699,12 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   // Expect daily sync success, which only happens after credentials are
   // saved to the NP library.
   EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Upload.Result", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Upload.FailureReason", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Upload.AttemptsNeededCount", 0);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
@@ -712,6 +748,15 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
 
   // Expect daily sync failure, which also indicates exponential retries.
   EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/false,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.Upload.FailureReason",
+      /*bucket: NearbyHttpResult::kHttpErrorInternalServerError*/
+      ash::nearby::NearbyHttpResult::kHttpErrorInternalServerError, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Upload.AttemptsNeededCount", 0);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
@@ -788,6 +833,12 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
     EXPECT_EQ(expected_num_requests,
               daily_sync_scheduler_->num_immediate_requests());
     EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
+    histogram_tester_.ExpectTotalCount(
+        "Nearby.Presence.Credentials.Upload.Result", 0);
+    histogram_tester_.ExpectTotalCount(
+        "Nearby.Presence.Credentials.Upload.FailureReason", 0);
+    histogram_tester_.ExpectTotalCount(
+        "Nearby.Presence.Credentials.Upload.AttemptsNeededCount", 0);
   }
 }
 

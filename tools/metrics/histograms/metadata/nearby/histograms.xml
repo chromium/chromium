@@ -316,6 +316,42 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Nearby.Presence.Credentials.Upload.AttemptsNeededCount"
+    units="attempts" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of attempts of uploading the local device's
+    SharedCredentials to the Nearby Presence Web Server needed for a successful
+    upload. Emitted on success to reflect the final count of attempts required
+    to upload credentials to the server. No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Presence.Credentials.Upload.FailureReason"
+    enum="NearbyHttpResult" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the failure reason of a single attempt to upload the local device's
+    SharedCredentials to the Nearby Presence Web Server. Emitted after every
+    unsuccessful attempt to upload credentials to the server. No metric is
+    emitted on success.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Presence.Credentials.Upload.Result"
+    enum="BooleanSuccess" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the overall success or failure of uploading the local device's
+    SharedCredentials to the Nearby Presence Web Server. Emitted after all
+    retries to upload to the server have been completed, to reflect the final
+    result of uploading credentials to the server.
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow"
     enum="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent"

@@ -25,6 +25,7 @@ static_library("presence") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/nearby/presence/credentials",
+    "//chromeos/ash/components/nearby/presence/metrics",
     "//chromeos/ash/components/nearby/presence/proto",
     "//chromeos/ash/services/nearby/public/cpp:cpp",
     "//chromeos/ash/services/nearby/public/mojom",

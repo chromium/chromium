@@ -212,7 +212,7 @@ class NearbyPresenceCredentialManagerImpl
       base::RepeatingCallback<void(bool)> upload_credentials_result_callback);
   void HandleUploadCredentialsResult(
       base::RepeatingCallback<void(bool)> upload_credentials_callback,
-      bool success);
+      ash::nearby::NearbyHttpResult result);
   void OnUploadCredentialsTimeout(
       base::RepeatingCallback<void(bool)> upload_credentials_callback);
   void OnUploadCredentialsSuccess(
@@ -265,6 +265,12 @@ class NearbyPresenceCredentialManagerImpl
   // flow.
   std::unique_ptr<ash::nearby::NearbyScheduler> upload_on_demand_scheduler_;
   std::unique_ptr<ash::nearby::NearbyScheduler> download_on_demand_scheduler_;
+
+  // Stores the number of current attempts for uploading credentials to the
+  // server. Increments on each attempt to upload credentials, and is reset to 0
+  // once the upload request is completed (either resulting in final
+  // success or failure).
+  int upload_credentials_attempts_needed_count_ = 0;
 
   // Initialized during the first time registration flow kicked off in
   // `RegisterPresence()`. Not expected to be a valid pointer unless used during

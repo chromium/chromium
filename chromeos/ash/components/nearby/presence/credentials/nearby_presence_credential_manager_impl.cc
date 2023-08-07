@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
+#include "chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h"
 #include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
@@ -631,6 +632,7 @@ void NearbyPresenceCredentialManagerImpl::ScheduleDownloadCredentials(
 void NearbyPresenceCredentialManagerImpl::UploadCredentials(
     std::vector<::nearby::internal::SharedCredential> credentials,
     base::RepeatingCallback<void(bool)> upload_credentials_result_callback) {
+  upload_credentials_attempts_needed_count_++;
   ash::nearby::proto::UpdateDeviceRequest request;
   request.mutable_device()->set_name(
       kDeviceIdPrefix + local_device_data_provider_->GetDeviceId());
@@ -669,13 +671,13 @@ void NearbyPresenceCredentialManagerImpl::UploadCredentials(
 
 void NearbyPresenceCredentialManagerImpl::HandleUploadCredentialsResult(
     base::RepeatingCallback<void(bool)> upload_credentials_callback,
-    bool success) {
-  // TODO(b/276307539): Add metrics to record success and failures.
-
+    ash::nearby::NearbyHttpResult result) {
   server_client_.reset();
 
   CHECK(upload_on_demand_scheduler_);
-  if (!success) {
+  if (result != ash::nearby::NearbyHttpResult::kSuccess) {
+    metrics::RecordSharedCredentialUploadAttemptFailureReason(result);
+
     // Allow the scheduler to exponentially attempt uploading credentials
     // until the max. Once it reaches the max attempts, notify consumers of
     // failure.
@@ -688,14 +690,20 @@ void NearbyPresenceCredentialManagerImpl::HandleUploadCredentialsResult(
 
     // We've exceeded the max attempts; registration has failed.
     upload_on_demand_scheduler_->Stop();
+    metrics::RecordSharedCredentialUploadResult(/*success=*/false);
     upload_on_demand_scheduler_.reset();
     CHECK(upload_credentials_callback);
     upload_credentials_callback.Run(/*success=*/false);
+    upload_credentials_attempts_needed_count_ = 0;
     return;
   }
 
   upload_on_demand_scheduler_->HandleResult(/*success=*/true);
+  metrics::RecordSharedCredentialUploadResult(/*success=*/true);
+  metrics::RecordSharedCredentialUploadTotalAttemptsNeededCount(
+      upload_credentials_attempts_needed_count_);
   upload_on_demand_scheduler_.reset();
+  upload_credentials_attempts_needed_count_ = 0;
   CHECK(upload_credentials_callback);
   upload_credentials_callback.Run(/*success=*/true);
 }
@@ -703,8 +711,9 @@ void NearbyPresenceCredentialManagerImpl::HandleUploadCredentialsResult(
 void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsTimeout(
     base::RepeatingCallback<void(bool)> upload_credentials_callback) {
   // TODO(b/276307539): Add metrics to record timeout.
-  HandleUploadCredentialsResult(upload_credentials_callback,
-                                /*success=*/false);
+  HandleUploadCredentialsResult(
+      upload_credentials_callback,
+      /*result=*/ash::nearby::NearbyHttpResult::kTimeout);
 }
 
 void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsSuccess(
@@ -714,18 +723,18 @@ void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsSuccess(
   // image url returned from the server.
 
   server_response_timer_.Stop();
-  HandleUploadCredentialsResult(upload_credentials_callback,
-                                /*success=*/true);
+  HandleUploadCredentialsResult(
+      upload_credentials_callback,
+      /*result=*/ash::nearby::NearbyHttpResult::kSuccess);
 }
 
 void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsFailure(
     base::RepeatingCallback<void(bool)> upload_credentials_callback,
     ash::nearby::NearbyHttpError error) {
-  // TODO(b/276307539): Add metrics to record the type of NearbyHttpError.
-
   server_response_timer_.Stop();
-  HandleUploadCredentialsResult(upload_credentials_callback,
-                                /*success=*/false);
+  HandleUploadCredentialsResult(
+      upload_credentials_callback,
+      /*result=*/ash::nearby::NearbyHttpErrorToResult(error));
 }
 
 void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
