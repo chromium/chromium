@@ -948,8 +948,6 @@ crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-016.html [ 
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-021.html [ Failure ]
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-filled-001.xht [ Failure ]
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-open-001.xht [ Failure ]
-crbug.com/1281409 external/wpt/css/css-text-decor/text-emphasis-style-property-010Cf.html [ Failure ]
-crbug.com/1281409 external/wpt/css/css-text-decor/text-emphasis-style-property-010Cn.html [ Failure ]
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-shape-001.xht [ Failure ]
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-string-001.xht [ Failure ]
 crbug.com/1281289 external/wpt/css/css-text/letter-spacing/letter-spacing-211.html [ Failure ]
