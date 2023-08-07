@@ -11561,6 +11561,21 @@
             ]
         }
     ],
+    "PrintWithPostScriptType42Fonts": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrintWithPostScriptType42Fonts"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrintWithReducedRasterization": [
         {
             "platforms": [
