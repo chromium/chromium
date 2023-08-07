@@ -159,8 +159,7 @@ Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
     }
     result.emplace_back(
         blink::mojom::blink::ChooseFileSystemEntryAcceptsOption::New(
-            t->hasDescription() ? t->description() : g_empty_string,
-            std::move(mimeTypes), std::move(extensions)));
+            t->description(), std::move(mimeTypes), std::move(extensions)));
   }
   return result;
 }

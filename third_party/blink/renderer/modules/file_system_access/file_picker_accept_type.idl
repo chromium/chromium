@@ -4,6 +4,6 @@
 
 // https://wicg.github.io/file-system-access/#dictdef-filepickeraccepttype
 dictionary FilePickerAcceptType {
-  USVString description;
+  USVString description = "";
   record<USVString, (USVString or sequence<USVString>)> accept;
 };
