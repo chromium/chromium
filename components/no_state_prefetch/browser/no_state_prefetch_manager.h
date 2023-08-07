@@ -56,7 +56,7 @@ class PrerenderInProcessBrowserTest;
 }
 
 class NoStatePrefetchHandle;
-class PrerenderHistory;
+class NoStatePrefetchHistory;
 
 // Observer interface for NoStatePrefetchManager events.
 class NoStatePrefetchManagerObserver {
@@ -461,8 +461,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   base::Value::List GetActivePrerenders() const;
 
   // Records the final status a prerender in the case that a
-  // NoStatePrefetchContents was never created, adds a PrerenderHistory entry,
-  // and may also initiate a preconnect to |url|.
+  // NoStatePrefetchContents was never created, adds a NoStatePrefetchHistory
+  // entry, and may also initiate a preconnect to |url|.
   void SkipNoStatePrefetchContentsAndMaybePreconnect(
       const GURL& url,
       Origin origin,
@@ -509,7 +509,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   std::vector<std::unique_ptr<OnCloseWebContentsDeleter>>
       on_close_web_contents_deleters_;
 
-  const std::unique_ptr<PrerenderHistory> prerender_history_;
+  const std::unique_ptr<NoStatePrefetchHistory> prefetch_history_;
 
   const std::unique_ptr<PrerenderHistograms> histograms_;
 

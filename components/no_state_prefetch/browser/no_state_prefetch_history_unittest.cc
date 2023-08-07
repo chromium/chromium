@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_history.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_history.h"
 
 #include <stddef.h>
 
@@ -21,8 +21,9 @@ bool ListEntryMatches(const base::Value::List& list,
                       FinalStatus expected_final_status,
                       Origin expected_origin,
                       const std::string& expected_end_time) {
-  if (index >= list.size())
+  if (index >= list.size()) {
     return false;
+  }
   const base::Value& value = list[index];
   if (!value.is_dict()) {
     return false;
@@ -32,31 +33,39 @@ bool ListEntryMatches(const base::Value::List& list,
     return false;
   }
   const std::string* url = dict.FindString("url");
-  if (!url)
+  if (!url) {
     return false;
-  if (*url != expected_url)
+  }
+  if (*url != expected_url) {
     return false;
+  }
   const std::string* final_status = dict.FindString("final_status");
-  if (!final_status)
+  if (!final_status) {
     return false;
-  if (*final_status != NameFromFinalStatus(expected_final_status))
+  }
+  if (*final_status != NameFromFinalStatus(expected_final_status)) {
     return false;
+  }
   const std::string* origin = dict.FindString("origin");
-  if (!origin)
+  if (!origin) {
     return false;
-  if (*origin != NameFromOrigin(expected_origin))
+  }
+  if (*origin != NameFromOrigin(expected_origin)) {
     return false;
+  }
   const std::string* end_time = dict.FindString("end_time");
-  if (!end_time)
+  if (!end_time) {
     return false;
-  if (*end_time != expected_end_time)
+  }
+  if (*end_time != expected_end_time) {
     return false;
+  }
   return true;
 }
 
-TEST(PrerenderHistoryTest, GetAsValue) {
+TEST(NoStatePrefetchHistoryTest, GetAsValue) {
   // Create a history with only 2 values.
-  PrerenderHistory history(2);
+  NoStatePrefetchHistory history(2);
 
   // Make sure an empty list exists when retrieving as value.
   base::Value::List entry_value = history.CopyEntriesAsValue();
@@ -70,8 +79,8 @@ TEST(PrerenderHistoryTest, GetAsValue) {
   const char* const kFirstUrl = "http://www.alpha.com/";
   const FinalStatus kFirstFinalStatus = FINAL_STATUS_USED;
   const Origin kFirstOrigin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
-  PrerenderHistory::Entry entry_first(GURL(kFirstUrl), kFirstFinalStatus,
-                                      kFirstOrigin, epoch_start);
+  NoStatePrefetchHistory::Entry entry_first(GURL(kFirstUrl), kFirstFinalStatus,
+                                            kFirstOrigin, epoch_start);
   history.AddEntry(entry_first);
   entry_value = history.CopyEntriesAsValue();
   EXPECT_EQ(1u, entry_value.size());
@@ -82,9 +91,9 @@ TEST(PrerenderHistoryTest, GetAsValue) {
   const char* const kSecondUrl = "http://www.beta.com/";
   const FinalStatus kSecondFinalStatus = FINAL_STATUS_DUPLICATE;
   const Origin kSecondOrigin = ORIGIN_OMNIBOX;
-  PrerenderHistory::Entry entry_second(GURL(kSecondUrl), kSecondFinalStatus,
-                                       kSecondOrigin,
-                                       epoch_start + base::Milliseconds(1));
+  NoStatePrefetchHistory::Entry entry_second(
+      GURL(kSecondUrl), kSecondFinalStatus, kSecondOrigin,
+      epoch_start + base::Milliseconds(1));
   history.AddEntry(entry_second);
   entry_value = history.CopyEntriesAsValue();
   EXPECT_EQ(2u, entry_value.size());
@@ -97,9 +106,9 @@ TEST(PrerenderHistoryTest, GetAsValue) {
   const char* const kThirdUrl = "http://www.gamma.com/";
   const FinalStatus kThirdFinalStatus = FINAL_STATUS_AUTH_NEEDED;
   const Origin kThirdOrigin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
-  PrerenderHistory::Entry entry_third(GURL(kThirdUrl), kThirdFinalStatus,
-                                      kThirdOrigin,
-                                      epoch_start + base::Milliseconds(2));
+  NoStatePrefetchHistory::Entry entry_third(
+      GURL(kThirdUrl), kThirdFinalStatus, kThirdOrigin,
+      epoch_start + base::Milliseconds(2));
   history.AddEntry(entry_third);
   entry_value = history.CopyEntriesAsValue();
   EXPECT_EQ(2u, entry_value.size());

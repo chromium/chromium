@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_HISTORY_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_HISTORY_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HISTORY_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HISTORY_H_
 
 #include <stddef.h>
 
@@ -18,13 +18,13 @@
 
 namespace prerender {
 
-// PrerenderHistory maintains a per-session history of prerendered pages
+// NoStatePrefetchHistory maintains a per-session history of prefetched pages
 // and their final dispositions. It has a fixed maximum capacity, and old
 // items in history will be removed when the capacity is reached.
-class PrerenderHistory {
+class NoStatePrefetchHistory {
  public:
   // Entry is an individual entry in the history list. It corresponds to a
-  // specific prerendered page.
+  // specific prefetched page.
   struct Entry {
     Entry() : final_status(FINAL_STATUS_UNKNOWN), origin(ORIGIN_MAX) {}
 
@@ -37,16 +37,16 @@ class PrerenderHistory {
           origin(origin_arg),
           end_time(end_time_arg) {}
 
-    // The URL which was prerendered. This should be the URL included in the
+    // The URL which was prefetched. This should be the URL included in the
     // <link rel="prerender"> tag, and not any URLs which it may have redirected
     // to.
     GURL url;
 
-    // The FinalStatus describing whether the prerendered page was used or why
+    // The FinalStatus describing whether the prefetched page was used or why
     // it was cancelled.
     FinalStatus final_status;
 
-    // The Origin describing where the prerender originated from.
+    // The Origin describing where the prefetch originated from.
     Origin origin;
 
     // Time the NoStatePrefetchContents was destroyed.
@@ -54,12 +54,12 @@ class PrerenderHistory {
   };
 
   // Creates a history with capacity for |max_items| entries.
-  explicit PrerenderHistory(size_t max_items);
+  explicit NoStatePrefetchHistory(size_t max_items);
 
-  PrerenderHistory(const PrerenderHistory&) = delete;
-  PrerenderHistory& operator=(const PrerenderHistory&) = delete;
+  NoStatePrefetchHistory(const NoStatePrefetchHistory&) = delete;
+  NoStatePrefetchHistory& operator=(const NoStatePrefetchHistory&) = delete;
 
-  ~PrerenderHistory();
+  ~NoStatePrefetchHistory();
 
   // Adds |entry| to the history. If at capacity, the oldest entry is dropped.
   void AddEntry(const Entry& entry);
@@ -78,4 +78,4 @@ class PrerenderHistory {
 };
 
 }  // namespace prerender
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_HISTORY_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HISTORY_H_

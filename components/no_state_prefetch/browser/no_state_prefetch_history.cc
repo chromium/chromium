@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_history.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_history.h"
 
 #include <memory>
 #include <utility>
@@ -14,26 +14,28 @@
 
 namespace prerender {
 
-PrerenderHistory::PrerenderHistory(size_t max_items) : max_items_(max_items) {
+NoStatePrefetchHistory::NoStatePrefetchHistory(size_t max_items)
+    : max_items_(max_items) {
   DCHECK(max_items > 0);
 }
 
-PrerenderHistory::~PrerenderHistory() {
+NoStatePrefetchHistory::~NoStatePrefetchHistory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PrerenderHistory::AddEntry(const Entry& entry) {
+void NoStatePrefetchHistory::AddEntry(const Entry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  while (entries_.size() >= max_items_)
+  while (entries_.size() >= max_items_) {
     entries_.pop_front();
+  }
   entries_.push_back(entry);
 }
 
-void PrerenderHistory::Clear() {
+void NoStatePrefetchHistory::Clear() {
   entries_.clear();
 }
 
-base::Value::List PrerenderHistory::CopyEntriesAsValue() const {
+base::Value::List NoStatePrefetchHistory::CopyEntriesAsValue() const {
   base::Value::List return_list;
   // Javascript needs times in terms of milliseconds since Jan 1, 1970.
   base::Time epoch_start = base::Time::UnixEpoch();
