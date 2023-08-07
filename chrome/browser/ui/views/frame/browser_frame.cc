@@ -428,6 +428,15 @@ void BrowserFrame::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
 
+  key.app_controller = browser_view_->browser()->app_controller();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS SystemWebApps use the OS theme all the time.
+  if (ash::IsSystemWebApp(browser_view_->browser())) {
+    return key;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // color_mode.
   [this, &key]() {
     // Currently the incognito browser is implemented as unthemed dark mode.
@@ -450,13 +459,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
 
   // user_color.
   [this, &key]() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // ChromeOS SystemWebApps use the OS theme all the time.
-    if (ash::IsSystemWebApp(browser_view_->browser())) {
-      return;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     // Incognito profiles should always fall back to the material baseline.
     if (IsIncognitoBrowser()) {
       key.user_color = absl::nullopt;
@@ -487,10 +489,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   // frame_type.
   key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
                                     : ui::ColorProviderKey::FrameType::kNative;
-
-  // app_controller.
-  auto* app_controller = browser_view_->browser()->app_controller();
-  key.app_controller = app_controller;
 
   // is_grayscale.
   // Incognito mode browser should be forced to grayscale.
