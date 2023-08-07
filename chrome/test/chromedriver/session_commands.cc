@@ -215,15 +215,11 @@ base::Value::Dict CreateCapabilities(Session* session,
       "%s.%sVersion", base::ToLowerASCII(kBrowserShortName).c_str(),
       base::ToLowerASCII(kChromeDriverProductShortName).c_str());
   caps.SetByDottedPath(chrome_driver_version_key, kChromeDriverVersion);
-
-  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (!cmd_line->HasSwitch("remote-debugging-pipe")) {
-    const std::string debugger_address_key = base::StringPrintf(
-        "%s.debuggerAddress", kChromeDriverOptionsKeyPrefixed);
-    caps.SetByDottedPath(debugger_address_key, session->chrome->GetBrowserInfo()
-                                                   ->debugger_endpoint.Address()
-                                                   .ToString());
-  }
+  const std::string debugger_address_key =
+      base::StringPrintf("%s.debuggerAddress", kChromeDriverOptionsKeyPrefixed);
+  caps.SetByDottedPath(debugger_address_key, session->chrome->GetBrowserInfo()
+                                                 ->debugger_endpoint.Address()
+                                                 .ToString());
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
   if (status.IsOk()) {
