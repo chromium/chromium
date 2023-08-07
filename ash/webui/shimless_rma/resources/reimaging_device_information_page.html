@@ -1,10 +1,18 @@
 <style include="cr-shared-style shimless-rma-shared shimless-fonts">
+  :host {
+    --device-info-input-width: 336px;
+  }
+
   hr {
     border: 0;
     border-top: 1px solid var(--cros-separator-color);
     display: block;
     height: 1px;
-    width: 100%;
+    margin-inline-start: 0;
+    margin-top: 0;
+    /* 90px is the width (including margins) of the revert button to the right
+     * of each input. */
+    width: calc(var(--device-info-input-width) + 90px);
   }
 
   /* Include div selector to increase specificity. */
@@ -74,9 +82,9 @@
 
   cr-input,
   .md-select {
-    width: 336px;
+    width: var(--device-info-input-width);
   }
- 
+
   .label-wrapper {
     align-items: center;
     display: inline-flex;
@@ -230,7 +238,7 @@
       </div>
       <div hidden="[[!shouldShowComplianceSection_(featureLevel_)]]">
         <div hidden="[[!isComplianceStatusKnown_(featureLevel_)]]">
-          <hr>
+          <hr aria-hidden="true">
           <div class="input-row">
             <div class="compliance-status-string">
               [[getComplianceStatusString_(featureLevel_)]]
@@ -249,7 +257,10 @@
               <label id="isChassisBrandedLabel" class="cr-form-field-label">
                 [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]
               </label>
-              <span class="required-field-asterisk cr-form-field-label">*</span>
+              <span class="required-field-asterisk cr-form-field-label"
+                  aria-hidden="true">
+                *
+              </span>
             </div>
             <div class="input-holder">
               <select id="isChassisBranded" class="md-select"
@@ -273,7 +284,10 @@
               <label id="doesMeetRequirementsLabel" class="cr-form-field-label">
                 [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirements')]]
               </label>
-              <span class="required-field-asterisk cr-form-field-label">*</span>
+              <span class="required-field-asterisk cr-form-field-label"
+                  aria-hidden="true">
+                *
+              </span>
               <iron-icon icon="shimless-icon:info" class="info-icon"
                 id="requirements-icon">
               </iron-icon>
