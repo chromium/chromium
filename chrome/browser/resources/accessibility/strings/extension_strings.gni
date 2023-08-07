@@ -1,0 +1,33 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+# Same as the locales list but in the format the extension system expects:
+# it uses underscores instead of hyphens, and "en" instead of "en-US".
+# Very similar to locales_as_apple_outputs, except pseudolocales are not included.
+accessibility_locales = []
+foreach(locale, locales_without_pseudolocales) {
+  if (locale == "en-US") {
+    accessibility_locales += [ "en" ]
+  } else {
+    accessibility_locales += [ string_replace(locale, "-", "_") ]
+  }
+}
+
+template("extension_strings") {
+  grit(target_name) {
+    source =
+        "//chrome/browser/resources/accessibility/strings/extension_strings.grd"
+    defines = chrome_grit_defines
+    outputs =
+        process_file_template(accessibility_locales,
+                              "_locales/{{source_name_part}}/messages.json.gz")
+    output_dir = invoker.out_dir
+
+    resource_ids = ""
+  }
+}

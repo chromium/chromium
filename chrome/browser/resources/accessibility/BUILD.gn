@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 if (is_chromeos_lacros) {
   import("//chrome/browser/resources/chromeos/accessibility/manifest.gni")
+  import("strings/extension_strings.gni")
 }
 
 build_webui("build") {
@@ -27,6 +28,7 @@ if (is_chromeos_lacros) {
     deps = [
       ":chromevox_helper_manifest",
       ":embedded_a11y_helper_manifest",
+      ":extension_strings",
       "chromevox_helper:build",
       "embedded_a11y_helper:build",
     ]
@@ -52,5 +54,9 @@ if (is_chromeos_lacros) {
     # and uniquely maps to the extension ID.
     # Providing the key in manifest.json will keep the extension ID stable.
     key = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDG3J14i99Qtu/QZ5zsJl4Z7EHaG+ndaVIajg91rxleFu3YpuJqS3u3aOE/FCjIOUp6uqn/e5l+8As3RK6NBNiQzGVXZn/5orW/iaRUk2kflUNDCrBjdgvgE5TGgjtfCuHJITc/L184ss2GKBkWrcUWw0ZR9YSTzZ1AeEfFfLT0e0Ic3u4BnM82gAJKpDV6dmvR9rcWs8yhume6kXB7hLMY9pAtBOKlx8vhHo0QAiDHK/9hxDyNIHcgKsCN4jpUn2odIBCA+dfHPlHshztqAW6FkuC91dUP5PH3QS0Z+ZB8uCm0viEXa/twH3KEE+BSkDtThTNX1lDTAT+rilQlSECpAgMBAAECggEADRma6QZD0Ygfj6nHsVnMsKX655CXrR2DSlsJ4y2D/QoDJJbHywtKbNhkoDhmgFwfzyptSPZ+M9nBz2P/oKwNTSqd0W5f51TD5sh9MhIc5nb5fZjeakrsONhpYFNTcG0h1xNQVaH8AprqxZfuISuU1G1MPFlxYKA2p/jUd4rBy+oWBHZrxaThVUdIFENkkDQQsGaCZlegF+B4ma0Mym1i9tqKrCDJuFiCXl6tBQ8iQSW/z7+ekpanVLtAdeb98W/0DDsHB9VFLgfkEynNh8PGro+TrSjmBZRQIxZu9aTFjL1bMbj2pf3oU0r5RqRRRH9Q1w84I9vHxfXkhoqL9yh5gQKBgQDhs+tnYNQAg2ecz9sYvsOA8GQMutfT8HeFslQDsWhs7GDkMbkW5e+HKbONtZKOTlYd6hUh7R0X7aDvaaJWhTfVyesEp65a/V7t5SrrVGE24po+x+VWDT9vgvw3EcGifEgq5kVxvY5Gco2Iw/tEwyQf29ryE7sawcAVhGcEXIO96QKBgQDhjlOtSS3KpKZRQbbBWc6G0cnDpJmyMCr5B9xEz1Fs7OJuI70uRzxkvni/AIhPYCciiAJ04KnDmBReK56600emGm0FoYIZZ1x8gBi3s7VUiervkQLxCi/hko0X06ro8irUTPywELR92ORRKFHk2PXg8t2rHxR87Yh4Ws+dENT0wQKBgH+1yZ6+SFdeA1PUvTmcP42G+GXHl3ZCG69X/3fze44elpiolf2h784AR6wIsLu7EbltibWfsJWojSbLE+N3D+f1j/kbVGoB8iQURxvPrA5dXD/n5hmx91IGwOX8Mx/YyREVKPg59PZhvTpFArme3aL1SUcu6PEz7pd+SrhKDPV5AoGBAJOXkmGdtP0Y6EvbeD7lCSNnO2Nt3bSfmD8ESbos/tcL2s6/TBdwPbCeglxZeNiXzoPmA9V+/Rcj+I/2cxNFFWk3eYdpu7vryrUdDQ+H5GvBI55HgWlAhTxRrUmeFAQCEsyA5AhBphmDR0Nj4tKgtaPQyAQlfj6RH+/BXIEmdnMBAoGBANlUyyA0mcyX/FgcYB27ul2dpcicrqjIQi3lk4LDzdXJp5Qm/P+PUl7PbLrf1UizIv4q/89uyp3zuX3sFw6ISdYExC5Xh4mC4naSEnysQgA/c/329kXdSjCNVHEKkm3ngoDTh1ZT+kU4x/PAEBIrW5Q1lQguYLCBMdsLivuvqnh8"
+  }
+
+  extension_strings("extension_strings") {
+    out_dir = accessibility_out_dir
   }
 }

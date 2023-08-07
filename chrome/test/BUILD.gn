@@ -5368,6 +5368,7 @@ if (is_chromeos_lacros) {
       "//components/user_manager:user_manager",
       "//services/preferences/public/cpp:cpp",
       "//ui/display:test_support",
+      "//ui/events:test_support",
       "//ui/gfx/codec",
       "//ui/ozone",
       "//ui/platform_window",

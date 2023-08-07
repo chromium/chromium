@@ -6,10 +6,23 @@
   "name": "Accessibility Helper",
   "version": "{{set_version}}",
   "description": "Provides support for Ash accessibility features from non-Ash browsers",
+  "default_locale": "en",
+  "background": {
+    "service_worker": "embedded_a11y_helper/service_worker.js",
+    "type":"module"
+  },
   "permissions": [
-    "scripting"
+    "accessibilityFeatures.read",
+    "contextMenus",
+    "scripting",
+    "storage"
   ],
   "incognito": "split",
+  "icons": {
+      "128": "embedded_a11y_helper/sts-icon-128.png",
+      "16": "embedded_a11y_helper/sts-icon-16.png",
+      "48": "embedded_a11y_helper/sts-icon-48.png"
+  },
   "content_scripts": [
     {
       "matches": [ "https://docs.google.com/document*",

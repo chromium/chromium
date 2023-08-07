@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,7 +26,8 @@ namespace {
 
 absl::optional<base::Value::Dict> LoadManifestOnFileThread(
     const base::FilePath& path,
-    const base::FilePath::CharType* manifest_filename) {
+    const base::FilePath::CharType* manifest_filename,
+    bool localize) {
   CHECK(extensions::GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   std::string error;
   auto manifest =
@@ -34,6 +36,16 @@ absl::optional<base::Value::Dict> LoadManifestOnFileThread(
     LOG(ERROR) << "Can't load " << path.Append(manifest_filename).AsUTF8Unsafe()
                << ": " << error;
     return absl::nullopt;
+  }
+  if (localize) {
+    // This is only called for Lacros component extensions which are loaded
+    // from a read-only rootfs partition, so it is safe to set
+    // |gzip_permission| to kAllowForTrustedSource.
+    bool localized = extension_l10n_util::LocalizeExtension(
+        path, &manifest.value(),
+        extension_l10n_util::GzippedMessagesPermission::kAllowForTrustedSource,
+        &error);
+    CHECK(localized) << error;
   }
   return manifest;
 }
@@ -228,7 +240,10 @@ void EmbeddedA11yManagerLacros::MaybeInstallExtension(
   auto path = resources_path.Append(extension_path);
 
   extensions::GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadManifestOnFileThread, path, manifest_name),
+      FROM_HERE,
+      base::BindOnce(&LoadManifestOnFileThread, path, manifest_name,
+                     /*localize=*/extension_id ==
+                         extension_misc::kEmbeddedA11yHelperExtensionId),
       base::BindOnce(&EmbeddedA11yManagerLacros::InstallExtension,
                      weak_ptr_factory_.GetWeakPtr(), component_loader, path,
                      extension_id));

@@ -13,16 +13,25 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget.h"
 
 // Tests for EmbeddedA11yManagerLacros, ensuring it can install
 // the correct accessibility helper extensions on all the profiles
@@ -39,6 +48,57 @@
 namespace {
 
 using AssistiveTechnologyType = crosapi::mojom::AssistiveTechnologyType;
+
+gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
+                                 const std::string& field_id) {
+  // Use var instead of const or let so that this can be executed many
+  // times within a context on different elements without Javascript
+  // variable redeclaration errors.
+  content::ExecJs(web_contents, base::StringPrintf(R"(
+      var element = document.getElementById('%s');
+      var bounds = element.getBoundingClientRect();
+    )",
+                                                   field_id.c_str()));
+  int top = content::EvalJs(web_contents, "bounds.top").ExtractInt();
+  int left = content::EvalJs(web_contents, "bounds.left").ExtractInt();
+  int width = content::EvalJs(web_contents, "bounds.width").ExtractInt();
+  int height = content::EvalJs(web_contents, "bounds.height").ExtractInt();
+  gfx::Rect rect(left, top, width, height);
+
+  content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
+  gfx::Rect view_bounds_in_screen = view->GetViewBounds();
+  gfx::Point origin = rect.origin();
+  origin.Offset(view_bounds_in_screen.x(), view_bounds_in_screen.y());
+  gfx::Rect rect_in_screen(origin.x(), origin.y(), rect.width(), rect.height());
+  return rect_in_screen;
+}
+
+// Waits for a context menu to be shown.
+class ContextMenuWaiter {
+ public:
+  ContextMenuWaiter() {
+    RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
+        base::BindOnce(&ContextMenuWaiter::MenuShown, base::Unretained(this)));
+  }
+  ContextMenuWaiter(const ContextMenuWaiter&) = delete;
+  ContextMenuWaiter& operator=(const ContextMenuWaiter&) = delete;
+
+  ~ContextMenuWaiter() = default;
+
+  RenderViewContextMenu* WaitForMenuShown() {
+    waiter_.Run();
+    return context_menu_;
+  }
+
+ private:
+  void MenuShown(RenderViewContextMenu* context_menu) {
+    waiter_.Quit();
+    context_menu_ = context_menu;
+  }
+
+  base::RunLoop waiter_;
+  raw_ptr<RenderViewContextMenu> context_menu_ = nullptr;
+};
 
 }  // namespace
 
@@ -57,7 +117,6 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
         ->AddExtensionChangedCallbackForTest(base::BindRepeating(
             &EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
             base::Unretained(this)));
-
     auto* lacros_service = chromeos::LacrosService::Get();
     if (!lacros_service ||
         !lacros_service->IsAvailable<crosapi::mojom::TestController>() ||
@@ -65,12 +124,6 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kSetAssistiveTechnologyEnabledMinVersion)) {
       GTEST_SKIP() << "Ash version doesn't have required test API";
-    }
-  }
-
-  void OnExtensionChanged() {
-    if (waiter_ && waiter_->running()) {
-      waiter_->Quit();
     }
   }
 
@@ -123,7 +176,54 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     WaitForExtensionUnloaded(profile, extension_id);
   }
 
+  RenderViewContextMenu* LoadTestPageAndSelectTextAndRightClick() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    content::AccessibilityNotificationWaiter waiter(
+        web_contents, ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+    CHECK(ui_test_utils::NavigateToURL(
+        browser(), GURL(("data:text/html;charset=utf-8,<p "
+                         "id='selected'>This is some selected text</p>"))));
+    std::ignore = waiter.WaitForNotification();
+
+    content::AccessibilityNotificationWaiter selection_waiter(
+        web_contents, ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED);
+    content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
+
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    views::Widget* widget = browser_view->GetWidget();
+    aura::Window* window = widget->GetNativeWindow();
+
+    ui::test::EventGenerator generator(window->GetRootWindow());
+    const gfx::Rect text_bounds =
+        GetControlBoundsInRoot(web_contents, "selected");
+    generator.MoveMouseTo(text_bounds.CenterPoint());
+    generator.ClickLeftButton();
+
+    // Set selection with ctrl+a.
+    generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+
+    bounding_box_waiter.Wait();
+    CHECK(selection_waiter.WaitForNotification());
+
+    ContextMenuWaiter menu_waiter;
+    generator.PressRightButton();
+
+    RenderViewContextMenu* menu = menu_waiter.WaitForMenuShown();
+    CHECK(menu);
+    return menu;
+  }
+
  private:
+  void OnExtensionChanged() {
+    if (waiter_ && waiter_->running()) {
+      waiter_->Quit();
+    }
+  }
+
   std::unique_ptr<base::RunLoop> waiter_;
 };
 
@@ -290,3 +390,38 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
       guest_browser->profile(), AssistiveTechnologyType::kChromeVox,
       extension_misc::kChromeVoxHelperExtensionId);
 }
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       DoesNotShowStsContextMenuWhenStsDisabled) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  ASSERT_TRUE(profile);
+
+  extensions::service_worker_test_utils::TestRegistrationObserver
+      service_worker_observer(profile);
+
+  SetEnabledAndWaitForExtensionLoaded(
+      profile, AssistiveTechnologyType::kSwitchAccess,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  service_worker_observer.WaitForWorkerStart();
+
+  RenderViewContextMenu* menu = LoadTestPageAndSelectTextAndRightClick();
+
+  const ui::SimpleMenuModel& menu_model = menu->menu_model();
+  const std::u16string menu_item_name = u"Listen to selected text";
+  bool found = false;
+  for (size_t i = 0; i < menu_model.GetItemCount(); i++) {
+    if (menu_model.GetLabelAt(i) == menu_item_name) {
+      found = true;
+      break;
+    }
+  }
+  ASSERT_FALSE(found);
+
+  SetDisabledAndWaitForExtensionUnloaded(
+      profile, AssistiveTechnologyType::kSwitchAccess,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+// TODO(b/271633121): Add a test that the STS context menu is shown
+// when STS is enabled.
