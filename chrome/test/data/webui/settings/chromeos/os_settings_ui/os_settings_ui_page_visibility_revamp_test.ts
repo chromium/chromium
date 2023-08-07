@@ -171,8 +171,6 @@ suite('<os-settings-ui> page visibility', () => {
   });
 
   // Sort by order of menu items
-  // TODO(b/292678609) Include test for kSystemPreferences Section once there
-  // is a corresponding L1 page.
   const routeNames: Array<keyof OsSettingsRoutes> = [
     'INTERNET',
     'BLUETOOTH',
@@ -184,6 +182,7 @@ suite('<os-settings-ui> page visibility', () => {
     'OS_PRIVACY',
     'APPS',
     'OS_ACCESSIBILITY',
+    'SYSTEM_PREFERENCES',
     'ABOUT',
   ];
   for (const routeName of routeNames) {

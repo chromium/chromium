@@ -24,6 +24,7 @@ import '../os_people_page/os_people_page.js';
 import '../os_privacy_page/os_privacy_page.js';
 import '../os_search_page/os_search_page.js';
 import '../personalization_page/personalization_page.js';
+import '../system_preferences_page/system_preferences_page.js';
 // clang-format on
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';

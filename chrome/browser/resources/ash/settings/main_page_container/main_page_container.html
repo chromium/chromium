@@ -226,6 +226,14 @@
         </os-settings-a11y-page>
       </page-displayer>
     </template>
+    <template is="dom-if"
+        if="[[shouldStampPage_(pageAvailability, Section.kSystemPreferences)]]"
+        restamp>
+      <page-displayer section="[[Section.kSystemPreferences]]">
+        <settings-system-preferences-page prefs="{{prefs}}">
+        </settings-system-preferences-page>
+      </page-displayer>
+    </template>
 </div>
 
 <template is="dom-if" if="[[shouldShowAdvancedToggle_]]">

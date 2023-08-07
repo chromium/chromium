@@ -19,8 +19,6 @@ interface SectionData {
 }
 
 // Keep sorted by order of menu items.
-// TODO(b/292678609) Include test for kSystemPreferences Section once there
-// is a corresponding L1 page.
 // TODO(b/272139610) Update entries below as Sections get incorporated into
 // their respective Revamp Section.
 export const SECTION_EXPECTATIONS: SectionData[] = [
@@ -87,6 +85,12 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
   {
     name: 'kAccessibility',
     availableBeforeRevamp: true,
+    availableAfterRevamp: true,
+    availableForGuest: true,
+  },
+  {
+    name: 'kSystemPreferences',
+    availableBeforeRevamp: false,
     availableAfterRevamp: true,
     availableForGuest: true,
   },

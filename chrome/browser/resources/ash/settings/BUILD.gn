@@ -307,6 +307,7 @@ build_webui("build") {
     "parental_controls_page/parental_controls_page.ts",
     "personalization_page/personalization_page.ts",
     "settings_scheduler_slider/settings_scheduler_slider.ts",
+    "system_preferences_page/system_preferences_page.ts",
   ]
 
   non_web_component_files = [

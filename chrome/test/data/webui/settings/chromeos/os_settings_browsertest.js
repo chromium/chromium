@@ -783,6 +783,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'settings_scheduler_slider/settings_scheduler_slider_test.js'
  ],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
+ [
+   'SystemPreferencesPage',
+   'system_preferences_page/system_preferences_page_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {
