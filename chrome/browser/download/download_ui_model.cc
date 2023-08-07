@@ -1098,32 +1098,14 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
   switch (GetInsecureDownloadStatus()) {
     case download::DownloadItem::InsecureDownloadStatus::BLOCK:
     case download::DownloadItem::InsecureDownloadStatus::WARN:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        // The insecure warning uses the suspicious warning pattern but has a
-        // primary button to keep the file.
-        return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
-                   l10n_util::GetStringUTF16(
-                       IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_INSECURE),
-                   l10n_util::GetStringUTF16(
-                       IDS_DOWNLOAD_BUBBLE_CONTINUE_INSECURE_FILE))
-            .AddPrimaryButton(DownloadCommands::Command::KEEP);
-      }
-      return DownloadUIModel::BubbleUIInfo()
-          .AddPrimaryButton(DownloadCommands::Command::KEEP)
-          .AddSubpageSummary(l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE))
-          .AddIconAndColor(features::IsChromeRefresh2023()
-                               ? kDownloadWarningIcon
-                               : vector_icons::kNotSecureWarningIcon,
-                           kColorDownloadItemIconWarning)
-          .AddSecondaryTextColor(kColorDownloadItemTextWarning)
-          .AddPrimarySubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD)
-          .AddSecondarySubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP, kColorDownloadItemTextWarning);
+      // The insecure warning uses the suspicious warning pattern but has a
+      // primary button to keep the file.
+      return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
+                 l10n_util::GetStringUTF16(
+                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_INSECURE),
+                 l10n_util::GetStringUTF16(
+                     IDS_DOWNLOAD_BUBBLE_CONTINUE_INSECURE_FILE))
+          .AddPrimaryButton(DownloadCommands::Command::KEEP);
     case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
     case download::DownloadItem::InsecureDownloadStatus::SAFE:
     case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
@@ -1718,14 +1700,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
   switch (model_->GetInsecureDownloadStatus()) {
     case download::DownloadItem::InsecureDownloadStatus::BLOCK:
     case download::DownloadItem::InsecureDownloadStatus::WARN:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        // "Insecure download blocked"
-        return l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_INSECURE);
-      }
-      // "Blocked • Insecure download"
-      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_WARNING_STATUS_INSECURE);
+      // "Insecure download blocked"
+      return l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_INSECURE);
     case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
     case download::DownloadItem::InsecureDownloadStatus::SAFE:
     case download::DownloadItem::InsecureDownloadStatus::VALIDATED:

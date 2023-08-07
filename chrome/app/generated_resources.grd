@@ -3010,14 +3010,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item when the file could not be finished.">
         Couldn&#x2019;t finish download
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_STATUS_INSECURE"
-               desc="Status text for a download item when the download is insecure.">
-        Insecure download
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE"
-               desc="Subpage summary text for a download item when the download is insecure.">
-        This file may have been read or edited because this site isn't using a secure connection
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_INSECURE"
                desc="Subpage summary text for a download item when the download is insecure.">
         This site isn't using a secure connection and the file may have been tampered with

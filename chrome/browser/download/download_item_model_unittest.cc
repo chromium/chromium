@@ -563,9 +563,9 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
     std::string expected_bubble_status_msg;
   } kInsecureDownloadStatusTestCases[] = {
       {download::DownloadItem::InsecureDownloadStatus::BLOCK,
-       "Blocked \xE2\x80\xA2 Insecure download"},
+       "Insecure download blocked"},
       {download::DownloadItem::InsecureDownloadStatus::WARN,
-       "Blocked \xE2\x80\xA2 Insecure download"},
+       "Insecure download blocked"},
   };
   for (const auto& test_case : kInsecureDownloadStatusTestCases) {
     SetupDownloadItemDefaults();
