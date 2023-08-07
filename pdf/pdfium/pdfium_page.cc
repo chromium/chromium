@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/skbitmap_operations.h"
 
 using printing::ConvertUnitFloat;
 using printing::kPixelsPerInch;
@@ -1322,8 +1323,27 @@ void PDFiumPage::CalculateImages() {
         kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
     const size_t row_bytes = FPDFBitmap_GetStride(bitmap.get());
     SkPixmap pixels(info, FPDFBitmap_GetBuffer(bitmap.get()), row_bytes);
-    if (image.image_data.tryAllocPixels(info, row_bytes))
-      image.image_data.writePixels(pixels);
+    if (!image.image_data.tryAllocPixels(info, row_bytes)) {
+      continue;
+    }
+    image.image_data.writePixels(pixels);
+
+    SkBitmapOperations::RotationAmount rotation;
+    switch (FPDFPage_GetRotation(page)) {
+      case 0:
+        continue;
+      case 1:
+        rotation = SkBitmapOperations::RotationAmount::ROTATION_90_CW;
+        break;
+      case 2:
+        rotation = SkBitmapOperations::RotationAmount::ROTATION_180_CW;
+        break;
+      case 3:
+        rotation = SkBitmapOperations::RotationAmount::ROTATION_270_CW;
+        break;
+    }
+
+    image.image_data = SkBitmapOperations::Rotate(image.image_data, rotation);
   }
 }
 

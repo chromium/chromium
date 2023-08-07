@@ -553,6 +553,23 @@ TEST_P(PDFiumPageImageDataTest, ImageData) {
   EXPECT_EQ(page.images_[1].image_data.height(), 50);
 }
 
+TEST_P(PDFiumPageImageDataTest, RotatedPageImageData) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("rotated_page.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  page.CalculateImages();
+  ASSERT_EQ(1u, page.images_.size());
+
+  // This page is rotated, therefore the extracted image size is 25x100 while
+  // the stored image is 100x25.
+  EXPECT_EQ(page.images_[0].image_data.width(), 25);
+  EXPECT_EQ(page.images_[0].image_data.height(), 100);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageDataTest, testing::Bool());
 
 using PDFiumPageTextTest = PDFiumTestBase;
