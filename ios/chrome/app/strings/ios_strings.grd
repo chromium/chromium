@@ -5055,6 +5055,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION" desc="Tag label title displayed for the bottom address bar preference option. [iOS only]">
         Bottom
       </message>
+      <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE" desc="This string is on a sign-in page, shown several weeks after the user has installed Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
+        Get your bookmarks, passwords, and more on all your devices.
+      </message>
     </messages>
   </release>
 </grit>
