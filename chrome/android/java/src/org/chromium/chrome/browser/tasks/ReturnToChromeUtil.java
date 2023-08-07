@@ -189,10 +189,6 @@ public final class ReturnToChromeUtil {
                 mLayoutStateObserver = new LayoutStateObserver() {
                     @Override
                     public void onFinishedShowing(int layoutType) {
-                        if (!mIsHandleTabSwitcherShownEnabled
-                                || layoutType != LayoutType.TAB_SWITCHER) {
-                            return;
-                        }
                         onBackPressStateChanged();
                     }
                 };
