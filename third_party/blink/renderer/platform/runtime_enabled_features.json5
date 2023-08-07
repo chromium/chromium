@@ -2061,7 +2061,7 @@
     },
     {
       name: "LayoutFlexNewRowAlgorithmV3",
-      status: "stable",
+      status: "test",
     },
     {
       name: "LayoutIgnoreMarginsForSticky",
