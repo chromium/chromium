@@ -191,7 +191,7 @@ class DedicatedWebTransportHttp3ClientSession
     quic::WebTransportHttp3VersionSet versions =
         quic::WebTransportHttp3VersionSet(
             {quic::WebTransportHttp3Version::kDraft02});
-    if (base::FeatureList::IsEnabled(features::kAlpsForHttp2)) {
+    if (base::FeatureList::IsEnabled(features::kEnableWebTransportDraft07)) {
       versions.Set(quic::WebTransportHttp3Version::kDraft07);
     }
     return versions;
