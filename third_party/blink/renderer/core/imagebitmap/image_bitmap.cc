@@ -353,13 +353,22 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
 scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
     ImageBitmap::ParsedOptions& options) {
-  sk_sp<SkColorSpace> color_space = SkColorSpace::MakeSRGB();
-  SkColorType color_type =
-      image->IsTextureBacked() ? kRGBA_8888_SkColorType : kN32_SkColorType;
   SkImageInfo src_image_info =
       image->PaintImageForCurrentFrame().GetSkImageInfo();
   if (src_image_info.isEmpty())
     return nullptr;
+
+  // TODO(crbug.com/1154589): This path has historically performed a copy
+  // that converts to 8-bit sRGB. Remove this copy.
+  sk_sp<SkColorSpace> color_space = src_image_info.refColorSpace();
+  if (!color_space) {
+    color_space = SkColorSpace::MakeSRGB();
+  }
+  SkColorType color_type = src_image_info.colorType();
+  if (color_type != kRGBA_F16_SkColorType) {
+    color_type =
+        image->IsTextureBacked() ? kRGBA_8888_SkColorType : kN32_SkColorType;
+  }
 
   // This will always convert to 8-bit sRGB.
   return image->ConvertToColorSpace(color_space, color_type);
