@@ -24,7 +24,11 @@
     for await (const logs of ALL_TEST_LOGS) {
       const [description, result] = logs;
       testRunner.log(description);
-      testRunner.log(result);
+      testRunner.log(
+        result,
+        undefined,
+        TestRunner.extendStabilizeNames(['context']),
+      );
     }
   }
 

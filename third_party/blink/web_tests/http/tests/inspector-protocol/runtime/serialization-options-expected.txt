@@ -962,18 +962,30 @@ Testing `document.body` with {"serialization":"deep","maxDepth":99}
 Testing `window` with {"serialization":"deep"}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing `window` with {"serialization":"deep","maxDepth":0}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing `window` with {"serialization":"deep","maxDepth":1}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing `window` with {"serialization":"deep","maxDepth":99}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing `document.querySelector("body > div")` with {"serialization":"deep"}
 {

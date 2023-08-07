@@ -1843,10 +1843,16 @@ Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","add
 Testing 'window' with {"serialization":"deep"}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
 {
@@ -1869,38 +1875,65 @@ Testing 'window' with {"serialization":"deep","additionalParameters":{"INVALID_P
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
 {
     type : window
+    value : {
+        context : <string>
+    }
 }
 Testing 'new URL('http://example.com')' with {"serialization":"deep"}
 {

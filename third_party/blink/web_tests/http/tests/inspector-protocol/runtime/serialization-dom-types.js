@@ -83,6 +83,10 @@
       expression,
       serializationOptions
     })
-    testRunner.log(evalResult?.result?.result?.deepSerializedValue ?? evalResult);
+    testRunner.log(
+      evalResult?.result?.result?.deepSerializedValue ?? evalResult,
+      undefined,
+      TestRunner.extendStabilizeNames(['context']),
+    );
   }
 })

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
@@ -414,6 +415,26 @@ std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNode(
   return std::make_unique<v8_inspector::DeepSerializedValue>(
       std::move(type_string_buffer), value_v8_object);
 }
+
+std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeWindow(
+    DOMWindow* window,
+    v8::Isolate* isolate) {
+  static const char kContextParameterName[] = "context";
+
+  Vector<v8::Local<v8::Name>> keys;
+  Vector<v8::Local<v8::Value>> values;
+
+  keys.push_back(V8String(isolate, kContextParameterName));
+  values.push_back(
+      V8String(isolate, IdentifiersFactory::IdFromToken(
+                            window->GetFrame()->GetDevToolsFrameToken())));
+
+  return std::make_unique<v8_inspector::DeepSerializedValue>(
+      ToV8InspectorStringBuffer("window"),
+      v8::Object::New(isolate, v8::Null(isolate), keys.data(), values.data(),
+                      keys.size()));
+}
+
 }  // namespace
 
 // If `additional_parameters` cannot be parsed, return `false` and provide
@@ -527,10 +548,9 @@ ThreadDebuggerCommonImpl::deepSerialize(
                               include_shadow_tree));
   }
 
-  if (V8Window::HasInstance(isolate_, v8_value)) {
+  if (DOMWindow* window = V8Window::ToWrappable(isolate_, v8_value)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
-        std::make_unique<v8_inspector::DeepSerializedValue>(
-            ToV8InspectorStringBuffer("window")));
+        DeepSerializeWindow(window, isolate_));
   }
 
   if (V8DOMWrapper::IsWrapper(isolate_, v8_value)) {
