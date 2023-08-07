@@ -630,7 +630,28 @@ TEST(FileEnumerator, OnlyName) {
   EXPECT_THAT(found_paths, UnorderedElementsAre(subdir, dummy_file));
 }
 
-TEST(FileEnumerator, ForEach) {
+struct FileEnumeratorForEachTestCase {
+  const bool recursive = false;
+  const int file_type = 0;
+  const int expected_invocation_count = 0;
+};
+
+class FileEnumeratorForEachTest
+    : public ::testing::TestWithParam<FileEnumeratorForEachTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    FileEnumeratorForEachTestCases,
+    FileEnumeratorForEachTest,
+    ::testing::ValuesIn(std::vector<FileEnumeratorForEachTestCase>{
+        {false, FileEnumerator::FILES, 2},
+        {true, FileEnumerator::FILES, 8},
+        {false, FileEnumerator::DIRECTORIES, 3},
+        {true, FileEnumerator::DIRECTORIES, 3},
+        {false, FileEnumerator::FILES | FileEnumerator::DIRECTORIES, 5},
+        {true, FileEnumerator::FILES | FileEnumerator::DIRECTORIES, 11},
+    }));
+
+TEST_P(FileEnumeratorForEachTest, TestCases) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const FilePath mock_path(temp_dir.GetPath());
@@ -651,34 +672,19 @@ TEST(FileEnumerator, ForEach) {
     }
   }
 
-  const struct {
-    bool recursive;
-    int file_type;
-    const int expected_invocation_count;
-  } test_cases[] = {
-      {false, FileEnumerator::FILES, 2},
-      {true, FileEnumerator::FILES, 8},
-      {false, FileEnumerator::DIRECTORIES, 3},
-      {true, FileEnumerator::DIRECTORIES, 3},
-      {false, FileEnumerator::FILES | FileEnumerator::DIRECTORIES, 5},
-      {true, FileEnumerator::FILES | FileEnumerator::DIRECTORIES, 11},
-  };
+  int invocation_count = 0;
 
-  for (const auto& test_case : test_cases) {
-    int invocation_count = 0;
+  FileEnumerator(mock_path, GetParam().recursive, GetParam().file_type)
+      .ForEach([&invocation_count](const FilePath& item) {
+        ++invocation_count;
+        if (invocation_count > GetParam().expected_invocation_count) {
+          ADD_FAILURE() << "Unexpected file/directory found: " << item << ": "
+                        << invocation_count << ": "
+                        << GetParam().expected_invocation_count;
+        }
+      });
 
-    FileEnumerator(mock_path, test_case.recursive, test_case.file_type)
-        .ForEach([&invocation_count, &test_case](const FilePath& item) {
-          ++invocation_count;
-          if (invocation_count > test_case.expected_invocation_count) {
-            ADD_FAILURE() << "Unexpected file/directory found: " << item << ": "
-                          << invocation_count << ": "
-                          << test_case.expected_invocation_count;
-          }
-        });
-
-    EXPECT_EQ(invocation_count, test_case.expected_invocation_count);
-  }
+  EXPECT_EQ(invocation_count, GetParam().expected_invocation_count);
 }
 
 }  // namespace base

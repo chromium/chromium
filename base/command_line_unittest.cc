@@ -329,61 +329,73 @@ TEST(CommandLineTest, AppendSwitchesDashDash) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST(CommandLineTest, QuoteForCommandLineToArgvW) {
- const struct {
-   const wchar_t* input_arg;
-   const wchar_t* expected_output_arg;
- } test_cases[] = {
-     {L"", L""},
-     {L"abc = xyz", LR"("abc = xyz")"},
-     {LR"(C:\AppData\Local\setup.exe)", LR"("C:\AppData\Local\setup.exe")"},
-     {LR"(C:\Program Files\setup.exe)", LR"("C:\Program Files\setup.exe")"},
-     {LR"("C:\Program Files\setup.exe")",
-      LR"("\"C:\Program Files\setup.exe\"")"},
- };
+struct CommandLineQuoteTestCase {
+ const wchar_t* const input_arg = nullptr;
+ const wchar_t* const expected_output_arg = nullptr;
+};
 
- for (const auto& test_case : test_cases) {
-   EXPECT_EQ(CommandLine::QuoteForCommandLineToArgvW(test_case.input_arg),
-             test_case.expected_output_arg);
- }
+class CommandLineQuoteTest
+    : public ::testing::TestWithParam<CommandLineQuoteTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    CommandLineQuoteTestCases,
+    CommandLineQuoteTest,
+    ::testing::ValuesIn(std::vector<CommandLineQuoteTestCase>{
+        {L"", L""},
+        {L"abc = xyz", LR"("abc = xyz")"},
+        {LR"(C:\AppData\Local\setup.exe)", LR"("C:\AppData\Local\setup.exe")"},
+        {LR"(C:\Program Files\setup.exe)", LR"("C:\Program Files\setup.exe")"},
+        {LR"("C:\Program Files\setup.exe")",
+         LR"("\"C:\Program Files\setup.exe\"")"},
+    }));
+
+TEST_P(CommandLineQuoteTest, TestCases) {
+ EXPECT_EQ(CommandLine::QuoteForCommandLineToArgvW(GetParam().input_arg),
+           GetParam().expected_output_arg);
 }
 
-TEST(CommandLineTest, QuoteForCommandLineToArgvW_After_CommandLineToArgvW) {
- const struct {
-   std::vector<std::wstring> input_args;
-   const wchar_t* expected_output;
- } test_cases[] = {
-     {{L"abc=1"}, L"abc=1"},
-     {{L"abc=1", L"xyz=2"}, L"abc=1 xyz=2"},
-     {{L"abc=1", L"xyz=2", L"q"}, L"abc=1 xyz=2 q"},
-     {{L" abc=1  ", L"  xyz=2", L"q "}, L"abc=1 xyz=2 q"},
-     {{LR"("abc = 1")"}, LR"("abc = 1")"},
-     {{LR"(abc" = "1)", L"xyz=2"}, LR"("abc = 1" xyz=2)"},
-     {{LR"(abc" = "1)"}, LR"("abc = 1")"},
-     {{LR"(\\)", LR"(\\\")"}, LR"("\\\\" "\\\"")"},
- };
+struct CommandLineQuoteAfterTestCase {
+ const std::vector<std::wstring> input_args;
+ const wchar_t* const expected_output = nullptr;
+};
 
- for (const auto& test_case : test_cases) {
-   std::wstring input_command_line =
-       base::StrCat({LR"(c:\test\process.exe )",
-                     base::JoinString(test_case.input_args, L" ")});
-   int num_args = 0;
-   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-       ::CommandLineToArgvW(&input_command_line[0], &num_args));
-   ASSERT_EQ(num_args - 1U, test_case.input_args.size());
+class CommandLineQuoteAfterTest
+    : public ::testing::TestWithParam<CommandLineQuoteAfterTestCase> {};
 
-   std::wstring recreated_command_line;
-   for (int i = 1; i < num_args; ++i) {
-     recreated_command_line.append(
-         CommandLine::QuoteForCommandLineToArgvW(argv.get()[i]));
+INSTANTIATE_TEST_SUITE_P(
+    CommandLineQuoteAfterTestCases,
+    CommandLineQuoteAfterTest,
+    ::testing::ValuesIn(std::vector<CommandLineQuoteAfterTestCase>{
+        {{L"abc=1"}, L"abc=1"},
+        {{L"abc=1", L"xyz=2"}, L"abc=1 xyz=2"},
+        {{L"abc=1", L"xyz=2", L"q"}, L"abc=1 xyz=2 q"},
+        {{L" abc=1  ", L"  xyz=2", L"q "}, L"abc=1 xyz=2 q"},
+        {{LR"("abc = 1")"}, LR"("abc = 1")"},
+        {{LR"(abc" = "1)", L"xyz=2"}, LR"("abc = 1" xyz=2)"},
+        {{LR"(abc" = "1)"}, LR"("abc = 1")"},
+        {{LR"(\\)", LR"(\\\")"}, LR"("\\\\" "\\\"")"},
+    }));
 
-     if (i + 1 < num_args) {
-       recreated_command_line.push_back(L' ');
-     }
+TEST_P(CommandLineQuoteAfterTest, TestCases) {
+ std::wstring input_command_line =
+     base::StrCat({LR"(c:\test\process.exe )",
+                   base::JoinString(GetParam().input_args, L" ")});
+ int num_args = 0;
+ base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+     ::CommandLineToArgvW(&input_command_line[0], &num_args));
+ ASSERT_EQ(num_args - 1U, GetParam().input_args.size());
+
+ std::wstring recreated_command_line;
+ for (int i = 1; i < num_args; ++i) {
+   recreated_command_line.append(
+       CommandLine::QuoteForCommandLineToArgvW(argv.get()[i]));
+
+   if (i + 1 < num_args) {
+     recreated_command_line.push_back(L' ');
    }
-
-   EXPECT_EQ(recreated_command_line, test_case.expected_output);
  }
+
+ EXPECT_EQ(recreated_command_line, GetParam().expected_output);
 }
 
 TEST(CommandLineTest, GetCommandLineStringForShell) {
