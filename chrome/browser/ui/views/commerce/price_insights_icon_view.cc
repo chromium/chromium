@@ -21,6 +21,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/view_class_properties.h"
 
 PriceInsightsIconView::PriceInsightsIconView(
@@ -178,6 +180,7 @@ void PriceInsightsIconView::OnExecuting(
   base::UmaHistogramEnumeration(
       "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown",
       last_shown_label_type_);
+  SetHighlighted(false);
 }
 
 bool PriceInsightsIconView::ShouldShow() const {
@@ -196,6 +199,11 @@ bool PriceInsightsIconView::ShouldShow() const {
 
 const std::u16string& PriceInsightsIconView::GetIconLabelForTesting() {
   return label()->GetText();
+}
+
+bool PriceInsightsIconView::IsIconHighlightedForTesting() {
+  return views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
+         views::InkDropState::ACTIVATED;
 }
 
 BEGIN_METADATA(PriceInsightsIconView, PageActionIconView)

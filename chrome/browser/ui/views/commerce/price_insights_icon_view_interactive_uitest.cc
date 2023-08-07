@@ -154,6 +154,27 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 2);
 }
 
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
+                       IconIsNotHighlightedAfterClicking) {
+  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
+  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
+
+  const bool expected_to_highlight = false;
+
+  RunTestSequence(
+      InstrumentTab(kShoppingTab),
+      NavigateWebContents(kShoppingTab,
+                          embedded_test_server()->GetURL(kShoppingURL)),
+      FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
+      PressButton(kPriceInsightsChipElementId), FlushEvents(),
+      CheckView(
+          kPriceInsightsChipElementId,
+          [](PriceInsightsIconView* icon) {
+            return icon->IsIconHighlightedForTesting();
+          },
+          expected_to_highlight));
+}
+
 class PriceInsightsIconViewEngagementTest
     : public PriceInsightsIconViewInteractiveTest {
  public:
