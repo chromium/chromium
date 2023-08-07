@@ -477,6 +477,7 @@ build_webui("build") {
     "//ash/webui/common/resources:build_ts",
     "//chrome/browser/resources/nearby_share/shared:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
+    "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",

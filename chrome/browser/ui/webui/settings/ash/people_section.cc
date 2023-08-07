@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -332,6 +333,9 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
                              bool are_fingerprint_settings_allowed) {
   html_source->AddBoolean("fingerprintUnlockEnabled",
                           are_fingerprint_settings_allowed);
+
+  html_source->AddResourcePath("fingerprint_scanner_animation.json",
+                               IDR_FINGERPRINT_DEFAULT_ANIMATION);
 
   if (are_fingerprint_settings_allowed)
     quick_unlock::AddFingerprintResources(html_source);

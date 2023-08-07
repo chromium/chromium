@@ -210,6 +210,7 @@ export class FingerprintProgressElement extends PolymerElement {
     this.updateAnimationAsset_();
     this.resizeAndCenterIcon_(scanningAnimation);
     scanningAnimation.hidden = false;
+    scanningAnimation.onColorSchemeChanged();
   }
 
   /**

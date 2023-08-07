@@ -285,7 +285,9 @@ js_library("fingerprint_setup") {
     "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc_externs.js" ]
+  externs_list = [
+    "//ash/webui/common/resources/quick_unlock/fingerprint_progress_externs.js",
+  ]
 
   extra_deps = [ ":web_components" ]
 }

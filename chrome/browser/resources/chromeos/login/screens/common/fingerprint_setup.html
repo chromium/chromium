@@ -29,8 +29,8 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
   <div slot="content" class="flex layout vertical center center-justified">
     <div id="sensorLocationContainer" class="oobe-illustration">
-      <oobe-cr-lottie id="scannerLocationLottie" dynamic="false"
-          animation-url="fingerprint_scanner_animation_light.json">
+      <oobe-cr-lottie id="scannerLocationLottie"
+          animation-url="fingerprint_scanner_animation.json">
       </oobe-cr-lottie>
     </div>
   </div>
@@ -73,8 +73,9 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'setupFingerprintScanTryAgain')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <cr-fingerprint-progress-arc id="arc">
-    </cr-fingerprint-progress-arc>
+    <fingerprint-progress id="arc" dynamic="[[isDynamicColor_]]"
+        autoplay>
+    </fingerprint-progress>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="skipProgress"

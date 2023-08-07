@@ -29,16 +29,14 @@
       <span>[[getInstructionMessage_(step_, problemMessage_)]]</span>
     </div>
     <div id="scannerLocationLottie" hidden="[[!showScannerLocation_(step_)]]">
-      <iron-media-query query="(prefers-color-scheme: dark)"
-          query-matches="{{isDarkModeActive_}}">
-      </iron-media-query>
-      <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
-          autoplay>
-      </cr-lottie>
+      <cros-lottie-renderer asset-url="fingerprint_scanner_animation.json"
+          autoplay dynamic="[[isDynamicColor_]]">
+      </cros-lottie-renderer>
     </div>
-    <cr-fingerprint-progress-arc id="arc" circle-radius="100" autoplay
-        hidden="[[!showArc_(step_)]]">
-    </cr-fingerprint-progress-arc>
+    <fingerprint-progress id="arc" dynamic="[[isDynamicColor_]]"
+        circle-radius="100"
+        autoplay hidden="[[!showArc_(step_)]]">
+    </fingerprint-progress>
   </div>
   <div slot="button-container">
     <cr-button id="addAnotherButton" on-click="onAddAnotherFingerprint_"
