@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -362,11 +363,11 @@ ManagementGetPermissionWarningsByManifestFunction::Run() {
 void ManagementGetPermissionWarningsByManifestFunction::OnParse(
     data_decoder::DataDecoder::ValueOrError result) {
   Respond([&]() -> ResponseValue {
-    if (!result.has_value()) {
-      return Error(result.error());
-    }
+    ASSIGN_OR_RETURN(
+        base::Value value, std::move(result),
+        [&](std::string error) { return Error(std::move(error)); });
 
-    const base::Value::Dict* parsed_manifest = result->GetIfDict();
+    const base::Value::Dict* parsed_manifest = value.GetIfDict();
     if (!parsed_manifest) {
       return Error(keys::kManifestParseError);
     }
