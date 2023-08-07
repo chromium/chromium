@@ -14,6 +14,7 @@ import {SpEmptyStateElement} from 'chrome://bookmarks-side-panel.top-chrome/shar
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -298,6 +299,57 @@ suite('SidePanelPowerBookmarksListTest', () => {
         folderElement.shadowRoot!.querySelector('cr-url-list-item');
     const expandedDescription = 'child - All Bookmarks';
     assertTrue(urlListItemElement!.description!.includes(expandedDescription));
+  });
+
+  test('RenamesBookmark', async () => {
+    const renamedBookmarkId = '4';
+    powerBookmarksList.setRenamingIdForTests(renamedBookmarkId);
+
+    await flushTasks();
+
+    const rowElement =
+        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            `#bookmark-${renamedBookmarkId}`);
+    assertTrue(!!rowElement);
+    let input =
+        rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertTrue(!!input);
+    const newName = 'foo';
+    input.value = newName;
+    input.inputElement.dispatchEvent(new Event('change'));
+
+    await flushTasks();
+
+    // Committing a new input value should rename the bookmark and remove the
+    // input.
+    assertEquals(1, bookmarksApi.getCallCount('renameBookmark'));
+    assertEquals(
+        renamedBookmarkId, bookmarksApi.getArgs('renameBookmark')[0][0]);
+    assertEquals(newName, bookmarksApi.getArgs('renameBookmark')[0][1]);
+    input = rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertFalse(!!input);
+  });
+
+  test('BlursRenameInput', async () => {
+    const renamedBookmarkId = '4';
+    powerBookmarksList.setRenamingIdForTests(renamedBookmarkId);
+
+    await flushTasks();
+
+    const rowElement =
+        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            `#bookmark-${renamedBookmarkId}`);
+    assertTrue(!!rowElement);
+    let input =
+        rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertTrue(!!input);
+    input.inputElement.blur();
+
+    await flushTasks();
+
+    // Blurring the input should remove it.
+    input = rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    assertFalse(!!input);
   });
 
   test('ShowsFolderImages', () => {

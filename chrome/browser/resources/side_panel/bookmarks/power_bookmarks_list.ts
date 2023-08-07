@@ -419,6 +419,17 @@ export class PowerBookmarksListElement extends PolymerElement {
     }, {once: true});
   }
 
+  setRenamingIdForTests(id: string) {
+    const event = new CustomEvent('rename', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        id: id,
+      },
+    });
+    this.setRenamingId_(event);
+  }
+
   private canDrag_() {
     return !this.editing_ && !this.renamingId_ && !this.searchQuery_ &&
         !this.hasActiveLabels_();
@@ -780,9 +791,11 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private onRename_(
       event: CustomEvent<
-          {bookmark: chrome.bookmarks.BookmarkTreeNode, value: string}>) {
-    this.bookmarksApi_.renameBookmark(
-        event.detail.bookmark.id, event.detail.value);
+          {bookmark: chrome.bookmarks.BookmarkTreeNode, value: string|null}>) {
+    const newName = event.detail.value;
+    if (newName != null) {
+      this.bookmarksApi_.renameBookmark(event.detail.bookmark.id, newName);
+    }
     this.renamingId_ = '';
   }
 
