@@ -27286,6 +27286,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="94" label="Override Content Context Menu Activate Disabled"/>
   <int value="95" label="Override Content Context Menu Open Existing File"/>
   <int value="96" label="Override Content Context Menu Save New File"/>
+  <int value="97" label="Show All Overrides From Sources Context Menu"/>
+  <int value="98" label="Show All Overrides From Network Context Menu"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
