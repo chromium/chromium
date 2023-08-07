@@ -313,6 +313,10 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
             this.processPinProblems_.bind(this));
       } else {
         this.enableSubmit = false;
+        this.showProblem_(
+            MessageType.TOO_SHORT,
+            this.pinHasPassedMinimumLength_ ? ProblemType.ERROR :
+                                              ProblemType.WARNING);
       }
       return;
     }
