@@ -30,7 +30,7 @@ build_webui("build") {
 
   if (is_chromeos_ash) {
     static_files += [
-      "css/assistant_logs_info.css",
+      "css/logs_info.css",
       "html/assistant_logs_info.html",
       "html/bluetooth_logs_info.html",
     ]
@@ -38,6 +38,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "js/autofill_metadata.ts",
+    "js/jelly_colors.ts",
     "js/feedback.ts",
     "js/feedback_util.ts",
     "js/logs_map_page.ts",

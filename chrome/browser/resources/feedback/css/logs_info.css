@@ -17,7 +17,7 @@ body {
   width: 100%;
 }
 
-#assistant-logs-info-container {
+.logs-info-container {
   line-height: 20px;
   margin-bottom: 20px;
   margin-inline-end: 20px;
@@ -25,4 +25,12 @@ body {
   margin-top: 20px;
   text-align: justify;
   text-justify: inter-word;
+}
+
+html:has(body.jelly-enabled),
+html:has(body.jelly-enabled) body,
+html:has(body.jelly-enabled) .logs-info-container {
+  background-color: var(--feedback-bg-color);
+  color: var(--cros-sys-on_surface_variant);
+  font: var(--cros-body-2-font);
 }
