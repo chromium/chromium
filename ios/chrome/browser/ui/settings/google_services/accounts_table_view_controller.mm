@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 
+#import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -253,7 +254,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       title = authenticatedIdentity.userEmail;
     }
   }
-  if ([self isAccountSignedInNotSyncing]) {
+  if ([self isAccountSignedInNotSyncing] ||
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     title = l10n_util::GetNSString(
         IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE);
   }
