@@ -8,6 +8,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -18,17 +19,24 @@
 class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
                                              public BrowserWithTestWindowTest {
  public:
-  MediaToolbarButtonContextualMenuTest() = default;
+  MediaToolbarButtonContextualMenuTest() : debugger_(profile()) {}
   ~MediaToolbarButtonContextualMenuTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     feature_list_.InitAndEnableFeature(
         media_router::kGlobalMediaControlsCastStartStop);
-    media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&media_router::MockMediaRouter::Create));
+    media_router::MockMediaRouter* router =
+        static_cast<media_router::MockMediaRouter*>(
+            media_router::ChromeMediaRouterFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile(), base::BindRepeating(
+                                   &media_router::MockMediaRouter::Create)));
 
     menu_ = MediaToolbarButtonContextualMenu::Create(browser());
+
+    ON_CALL(*router, GetDebugger())
+        .WillByDefault(testing::ReturnRef(debugger_));
   }
 
   void ExecuteToggleOtherSessionCommand() {
@@ -59,6 +67,7 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
   }
 
  private:
+  media_router::MediaRouterDebuggerImpl debugger_;
   std::unique_ptr<MediaToolbarButtonContextualMenu> menu_;
   base::test::ScopedFeatureList feature_list_;
 };

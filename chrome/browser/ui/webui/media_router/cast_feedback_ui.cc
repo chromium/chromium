@@ -131,13 +131,27 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
 
   JSONStringValueSerializer serializer(&log_data);
   serializer.set_pretty_print(true);
-  if (!serializer.Serialize(router->GetState()))
+  if (!serializer.Serialize(router->GetState())) {
     log_data.clear();
+  }
 
   LoggerImpl* const logger = router->GetLogger();
   if (logger) {
     log_data += logger->GetLogsAsJson();
+  }
 
+  MediaRouterDebugger& debugger = router->GetDebugger();
+  if (debugger.ShouldFetchMirroringStats()) {
+    std::string mirroring_stats_json;
+    JSONStringValueSerializer mirroring_stats_serializer(&mirroring_stats_json);
+    mirroring_stats_serializer.set_pretty_print(true);
+    if (mirroring_stats_serializer.Serialize(debugger.GetMirroringStats())) {
+      log_data += mirroring_stats_json;
+    }
+  }
+
+  // If there is any log data, add it to the `source`.
+  if (!log_data.empty()) {
     source->AddString("logData", log_data);
   }
 
