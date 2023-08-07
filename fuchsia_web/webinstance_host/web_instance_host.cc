@@ -32,6 +32,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/fuchsia_component_support/serialize_arguments.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
@@ -586,12 +587,9 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     Initialize();
   }
 
-  auto expected_builder = InstanceBuilder::Create(*outgoing_directory_, *realm_,
-                                                  std::move(extra_args));
-  if (!expected_builder.has_value()) {
-    return expected_builder.error();
-  }
-  auto builder = std::move(expected_builder.value());
+  ASSIGN_OR_RETURN(auto builder,
+                   InstanceBuilder::Create(*outgoing_directory_, *realm_,
+                                           std::move(extra_args)));
 
   if (zx_status_t status = AppendLaunchArgs(params, builder->args());
       status != ZX_OK) {
