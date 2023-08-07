@@ -4,7 +4,7 @@
 <title>HTML OffscreenCanvas Test: the 'fontVariantCaps' property</title>
 <link rel="author" title="Jonathan Kew" href="mailto:jkew@mozilla.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-fontvariantcaps">
-<link rel="match" href="reference/fontVariantCaps-1-ref.html">
+<link rel="match" href="2d.text.fontVariantCaps3-expected.html">
 <meta name="assert" content="text rendering respects the fontVariantCaps property">
 
 <canvas id="canvas1"></canvas>
@@ -13,10 +13,8 @@
 
 <script>
 const testContent = `
-  ctx.font = "small-caps 32px serif";
-  // fontVariantCaps 'normal' does not override the setting from the font attribute.
-  // (spec unclear, cf. https://github.com/whatwg/html/issues/8103)
-  ctx.fontVariantCaps = "normal";
+  ctx.font = "32px serif";
+  ctx.fontVariantCaps = "all-small-caps";
   ctx.fillText("Hello World", 20, 100);
 `;
 
