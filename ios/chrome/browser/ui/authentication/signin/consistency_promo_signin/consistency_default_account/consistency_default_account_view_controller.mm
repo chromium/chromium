@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -42,22 +44,73 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
       return l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-      return l10n_util::GetNSString(
-          IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+      return base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);
+    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS);
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       // No text.
       return nil;
-    default:
+    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.
       return nil;
+    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
+      NOTREACHED_NORETURN();
   }
 }
 

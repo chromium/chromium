@@ -1333,6 +1333,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO" desc="Text in the sheet that offers the user to sign-in to Chrome, when the sheet is opened from one of the NTP feed promos [iOS only].">
         Sign in to get content based on your interests.
       </message>
+      <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS" desc="This string is on a sign-in page, after the user taps on a promotion about signing in to Chrome with the user's Google Account. It explains the specific user benefit of signing in from this page (access to tabs from other devices). We want users to understand why signing in is beneficial, and click 'Turn on' to sign in to their Google Account. The tone should be informative and lightweight. [iOS only]">
+        Sign in to see your tabs from your other devices.
+      </message>
       <message name="IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE" desc="Subtitle of the button in the Tab Grid that opens the grid of Inactive Tabs.">
         Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days
       </message>
