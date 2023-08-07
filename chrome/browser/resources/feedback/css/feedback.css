@@ -97,7 +97,6 @@ html:has(body.jelly-enabled) .bottom-buttons button {
 html:has(body.jelly-enabled) #send-report-button {
   background-color: var(--cros-sys-primary);
   color: var(--cros-sys-on_primary);
-  font: var(--cros-button-1-font);
 }
 
 html:has(body.jelly-enabled) #cancel-button {
