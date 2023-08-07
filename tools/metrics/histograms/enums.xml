@@ -42094,9 +42094,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3318" label="DynamicImportModuleScriptRelativeClassicSameOrigin"/>
   <int value="3319"
       label="DynamicImportModuleScriptRelativeClassicCrossOrigin"/>
-  <int value="3320" label="V8WasmBulkMemory"/>
+  <int value="3320" label="OBSOLETE_V8WasmBulkMemory"/>
   <int value="3321" label="V8WasmRefTypes"/>
-  <int value="3322" label="V8WasmMultiValue"/>
+  <int value="3322" label="OBSOLETE_V8WasmMultiValue"/>
   <int value="3323" label="HiddenBackfaceWithPossible3D"/>
   <int value="3324" label="HiddenBackfaceWithPreserve3D"/>
   <int value="3325" label="CSSAtRuleScrollTimeline"/>

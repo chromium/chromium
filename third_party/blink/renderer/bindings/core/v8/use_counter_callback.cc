@@ -372,12 +372,6 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmRefTypes:
       blink_feature = WebFeature::kV8WasmRefTypes;
       break;
-    case v8::Isolate::kWasmBulkMemory:
-      blink_feature = WebFeature::kV8WasmBulkMemory;
-      break;
-    case v8::Isolate::kWasmMultiValue:
-      blink_feature = WebFeature::kV8WasmMultiValue;
-      break;
     case v8::Isolate::kWasmExceptionHandling:
       blink_feature = WebFeature::kV8WasmExceptionHandling;
       break;
