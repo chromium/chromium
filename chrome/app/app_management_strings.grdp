@@ -213,4 +213,8 @@
     Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for its installed and streamed apps.
   </message>
 
+  <message name="IDS_APP_MANAGEMENT_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app.">
+    Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for this app.
+  </message>
+
 </grit-part>

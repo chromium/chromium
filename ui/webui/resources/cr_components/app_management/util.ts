@@ -103,6 +103,18 @@ export function getSubAppsOfSelectedApp(state: AppManagementPageState): App[] {
 }
 
 /**
+ * Returns the selected app's parent app or null.
+ */
+export function getParentApp(state: AppManagementPageState): App|null {
+  const selectedAppId = state.selectedAppId;
+  if (selectedAppId) {
+    const parentAppId = state.subAppToParentAppId[selectedAppId];
+    return parentAppId ? state.apps[parentAppId] : null;
+  }
+  return null;
+}
+
+/**
  * A comparator function to sort strings alphabetically.
  */
 export function alphabeticalSort(a: string, b: string) {

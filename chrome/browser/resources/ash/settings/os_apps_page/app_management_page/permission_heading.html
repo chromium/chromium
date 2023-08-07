@@ -15,4 +15,9 @@
             [[getParentAppPermissionExplanationString_(app)]]
         </div>
     </template>
+    <template is="dom-if" if="[[isSubApp_]]">
+        <div class="permission-text-row secondary-text" id="subAppPermissionExplanation">
+            [[getSubAppPermissionExplanationString_(app)]]
+        </div>
+    </template>
 </div>

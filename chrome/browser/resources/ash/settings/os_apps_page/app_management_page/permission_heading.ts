@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {getSubAppsOfSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {getParentApp, getSubAppsOfSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,23 +29,47 @@ export class AppManagementPermissionHeadingElement extends
     return {
       app: Object,
       hasSubApps_: Boolean,
+      parentApp_: Object,
+      isSubApp_: {
+        type: Boolean,
+        computed: 'has_(parentApp_)',
+      },
     };
   }
 
   app: App;
   private hasSubApps_: boolean;
+  private parentApp_: App|null;
+  private isSubApp_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
     this.watch(
         'hasSubApps_', state => getSubAppsOfSelectedApp(state).length > 0);
+    this.watch('parentApp_', state => getParentApp(state));
     this.updateFromStore();
   }
 
+  private has_(parentApp: Object): boolean {
+    return !!parentApp;
+  }
+
   private getParentAppPermissionExplanationString_(): string {
-    return this.i18n(
-        'appManagementParentAppPermissionExplanation',
-        this.app.title ? this.app.title : '');
+    if (this.hasSubApps_) {
+      return this.i18n(
+          'appManagementParentAppPermissionExplanation',
+          this.app.title ? this.app.title : '');
+    }
+    return '';
+  }
+
+  private getSubAppPermissionExplanationString_(): string {
+    if (this.parentApp_) {
+      return this.i18n(
+          'appManagementSubAppPermissionExplanation',
+          this.parentApp_.title ? this.parentApp_.title : '');
+    }
+    return '';
   }
 }
 
