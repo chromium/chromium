@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
@@ -31,10 +32,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/system/sys_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -418,7 +415,8 @@ std::string GpuHostImpl::GetShaderPrefixKey() {
 
     shader_prefix_key_ = params_.product + "-" + info.gl_vendor + "-" +
                          info.gl_renderer + "-" + active_gpu.driver_version +
-                         "-" + active_gpu.driver_vendor;
+                         "-" + active_gpu.driver_vendor + "-" +
+                         base::SysInfo::ProcessCPUArchitecture();
 
 #if BUILDFLAG(IS_ANDROID)
     std::string build_fp =
