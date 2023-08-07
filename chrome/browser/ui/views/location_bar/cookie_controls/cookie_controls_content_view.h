@@ -49,6 +49,9 @@ class CookieControlsContentView : public views::View {
   base::CallbackListSubscription RegisterFeedbackButtonPressedCallback(
       base::RepeatingClosureList::CallbackType callback);
 
+ protected:
+  gfx::Size CalculatePreferredSize() const override;
+
  private:
   friend class CookieControlsContentViewUnitTest;
 

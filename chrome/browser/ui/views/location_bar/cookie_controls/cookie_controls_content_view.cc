@@ -24,6 +24,7 @@ namespace {
 
 constexpr int kDefaultIconSize = 16;
 constexpr int kDefaultIconSizeChromeRefresh = 20;
+constexpr int kMaxBubbleWidth = 1000;
 
 int GetDefaultIconSize() {
   return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
@@ -207,6 +208,28 @@ void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
 }
 
 CookieControlsContentView::~CookieControlsContentView() = default;
+
+gfx::Size CookieControlsContentView::CalculatePreferredSize() const {
+  // Ensure that the width is only increased to support a longer title string,
+  // or a longer toggle. Other information can be wrapped or elided to keep the
+  // standard size.
+  auto size = views::View::CalculatePreferredSize();
+
+  auto* provider = ChromeLayoutProvider::Get();
+  const int margins = provider->GetInsetsMetric(views::INSETS_DIALOG).left() +
+                      provider->GetInsetsMetric(views::INSETS_DIALOG).right();
+
+  int title_width = title_->GetPreferredSize().width() + margins;
+  int toggle_width = toggle_row_->GetPreferredSize().width();
+
+  int desired_width =
+      std::clamp(std::max(title_width, toggle_width),
+                 ChromeLayoutProvider::Get()->GetDistanceMetric(
+                     views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH),
+                 kMaxBubbleWidth);
+
+  return gfx::Size(desired_width, size.height());
+}
 
 base::CallbackListSubscription
 CookieControlsContentView::RegisterToggleButtonPressedCallback(
