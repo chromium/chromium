@@ -312,8 +312,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)dealloc {
   DCHECK(!_accountManagerServiceObserver.get());
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!self.prefService);
 }
 
 - (void)setReauthenticationModule:
