@@ -1135,6 +1135,7 @@ policies:
   1134: DeviceReportRuntimeCounters
   1135: DeviceReportRuntimeCountersCheckingRateMs
   1136: BruschettaInstallerConfiguration
+  1137: ForcePermissionPolicyUnloadDefaultEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

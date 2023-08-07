@@ -4,8 +4,10 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 
+#include "base/command_line.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_features_generated.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "url/origin.h"
 
 // This file contains static code that is combined with templated code of
@@ -45,20 +47,29 @@ bool ShouldUnloadBeNone(const url::Origin& origin, int percent, int bucket) {
 
 const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
     const url::Origin& origin) {
-  if (base::FeatureList::IsEnabled(features::kDeprecateUnload)) {
-    if (base::FeatureList::IsEnabled(
-            features::kDeprecateUnloadByUserAndOrigin)) {
-      if (ShouldUnloadBeNone(origin, features::kDeprecateUnloadPercent.Get(),
-                             features::kDeprecateUnloadBucket.Get())) {
-        // If the flag is on and the rollout % is high enough, disable unload by
-        // default.
-        return GetPermissionsPolicyFeatureListUnloadNone();
-      }
-    } else {
-      return GetPermissionsPolicyFeatureListUnloadNone();
-    }
+  // Respect enterprise policy.
+  if (!base::CommandLine::InitializedForCurrentProcess() ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForcePermissionPolicyUnloadDefaultEnabled)) {
+    return GetPermissionsPolicyFeatureListUnloadAll();
   }
-  return GetPermissionsPolicyFeatureListUnloadAll();
+
+  // Consider the finch flags and params.
+  if (!base::FeatureList::IsEnabled(features::kDeprecateUnload)) {
+    return GetPermissionsPolicyFeatureListUnloadAll();
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kDeprecateUnloadByUserAndOrigin)) {
+    return GetPermissionsPolicyFeatureListUnloadNone();
+  }
+  if (ShouldUnloadBeNone(origin, features::kDeprecateUnloadPercent.Get(),
+                         features::kDeprecateUnloadBucket.Get())) {
+    // If the flag is on and the rollout % is high enough, disable unload by
+    // default.
+    return GetPermissionsPolicyFeatureListUnloadNone();
+  } else {
+    return GetPermissionsPolicyFeatureListUnloadAll();
+  }
 }
 
 void UpdatePermissionsPolicyFeatureListForTesting() {

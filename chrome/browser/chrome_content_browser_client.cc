@@ -1667,6 +1667,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
           kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
       true);
 
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, true);
+
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
 #endif
@@ -2745,6 +2748,15 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                   kAllowBackForwardCacheForCacheControlNoStorePageEnabled)) {
         command_line->AppendSwitch(
             switches::kDisableBackForwardCacheForCacheControlNoStorePage);
+      }
+
+      // The policy is "enabled" to follow policy naming convention but the
+      // switch is "disable" because we want the default to have no switch since
+      // this is the default case.
+      if (!prefs->GetBoolean(policy::policy_prefs::
+                                 kForcePermissionPolicyUnloadDefaultEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kForcePermissionPolicyUnloadDefaultEnabled);
       }
 
 #if !BUILDFLAG(IS_ANDROID)

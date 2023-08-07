@@ -3659,6 +3659,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     blink::switches::kDarkModeSettings,
     blink::switches::kDefaultTileWidth,
     blink::switches::kDefaultTileHeight,
+    blink::switches::kForcePermissionPolicyUnloadDefaultEnabled,
     blink::switches::kDisableImageAnimationResync,
     blink::switches::kDisableLowResTiling,
     blink::switches::kDisableNewBaseUrlInheritanceBehavior,

@@ -157,5 +157,11 @@ const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
 const char kLocalTestPoliciesForNextStartup[] =
     "local_test_policies_for_next_startup";
 
+// A boolean pref indicating whether to allow deprecation of the "unload"
+// event.
+// If false, the deprecation rollout will be ignored.
+const char kForcePermissionPolicyUnloadDefaultEnabled[] =
+    "policy.force_permission_policy_unload_default_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy

@@ -33727,6 +33727,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1134" label="DeviceReportRuntimeCounters"/>
   <int value="1135" label="DeviceReportRuntimeCountersCheckingRateMs"/>
   <int value="1136" label="BruschettaInstallerConfiguration"/>
+  <int value="1137" label="ForcePermissionPolicyUnloadDefaultEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
