@@ -324,7 +324,8 @@ AutocompleteActionPredictor::RecommendAction(
   // Map the confidence to an action.
   Action action = DecideActionByConfidence(confidence);
 
-  // Downgrade prefetch to preconnect if this is a search match.
+  // Downgrade prerender to preconnect if this is a search match.
+  // Default search result engine pre* is managed by `SearchPrefetchService`.
   if (action == ACTION_PRERENDER && AutocompleteMatch::IsSearchType(match.type))
     action = ACTION_PRECONNECT;
 
