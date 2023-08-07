@@ -77,6 +77,21 @@
 
 namespace content {
 
+CONTENT_EXPORT BASE_FEATURE(kBiddingAndAuctionEncryptionMediaType,
+                            "BiddingAndAuctionEncryptionMediaType",
+                            base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string>
+    kBiddingAndAuctionEncryptionRequestMediaType{
+        &kBiddingAndAuctionEncryptionMediaType,
+        "BiddingAndAuctionEncryptionRequestMediaType",
+        quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel.data()};
+const base::FeatureParam<std::string>
+    kBiddingAndAuctionEncryptionResponseMediaType{
+        &kBiddingAndAuctionEncryptionMediaType,
+        "BiddingAndAuctionEncryptionResponseMediaType",
+        quiche::ObliviousHttpHeaderKeyConfig::kOhttpResponseLabel.data()};
+
 namespace {
 
 constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
@@ -2093,7 +2108,8 @@ void InterestGroupAuction::StartFromServerResponse(
       quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
           std::string(reinterpret_cast<char*>(response.data()),
                       response.size()),
-          request_context->context);
+          request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType.Get());
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
     OnBiddingAndScoringComplete(

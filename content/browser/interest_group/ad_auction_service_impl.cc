@@ -805,7 +805,8 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   auto maybe_request =
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
           std::string(state.data.request.begin(), state.data.request.end()),
-          maybe_key->key, maybe_key_config.value());
+          maybe_key->key, maybe_key_config.value(),
+          kBiddingAndAuctionEncryptionRequestMediaType.Get());
   if (!maybe_request.ok()) {
     std::move(state.callback).Run({}, {});
     return;

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -54,6 +55,12 @@ class AuctionMetricsRecorder;
 class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBiddingAndAuctionEncryptionMediaType);
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kBiddingAndAuctionEncryptionRequestMediaType;
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kBiddingAndAuctionEncryptionResponseMediaType;
 
 // An InterestGroupAuction Handles running an auction, or a component auction.
 // Consumers should use AuctionRunner, which sets up InterestGroupAuction and

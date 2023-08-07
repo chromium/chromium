@@ -8410,7 +8410,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   EXPECT_EQ(0x02, plaintext_data[0]);
   size_t request_size = 0;
   for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
-    request_size = (request_size << 8) | plaintext_data[idx + 1];
+    request_size =
+        (request_size << 8) | static_cast<uint8_t>(plaintext_data[idx + 1]);
   }
 
   // The generation ID is random, so match against everything before and
@@ -8548,6 +8549,185 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
           response, request_context->context)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  EXPECT_TRUE(result);
+  InvokeCallbackForURN(*result);
+
+  // Fast forward enough for all reports to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+
+  EXPECT_EQ(network_responder_->ReportCount(), 2u);
+  EXPECT_TRUE(network_responder_->ReportSent("/buyerReporting"));
+  EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
+
+  absl::optional<FencedFrameProperties> properties =
+      GetFencedFramePropertiesForURN(*result);
+  ASSERT_TRUE(properties);
+  EXPECT_THAT(
+      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://e.test/buyerInteractionReporting")))),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://e.test/sellerInteractionReporting")))),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::ElementsAre())));
+
+  // Request should be padded to 256 bytes with 7 byte encryption header.
+  const size_t expected_ba_data_size = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", expected_ba_data_size,
+                          1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 1);
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
+  const std::string kCustomRequestType = "message/ba-request";
+  const std::string kCustomResponseType = "message/ba-response";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      content::kBiddingAndAuctionEncryptionMediaType,
+      {{"BiddingAndAuctionEncryptionRequestMediaType", kCustomRequestType},
+       {"BiddingAndAuctionEncryptionResponseMediaType", kCustomResponseType}});
+
+  base::HistogramTester hist;
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
+                     /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/absl::nullopt,
+                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  absl::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+                        .value();
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          key_config)
+          .value();
+
+  auto request = ohttp_gateway.DecryptObliviousHttpRequest(
+      auction_data->request, kCustomRequestType);
+  EXPECT_TRUE(request.ok()) << request.status();
+  auto plaintext_data = request->GetPlaintextData();
+
+  // The message should be a power of 2 in length
+  EXPECT_EQ(1, absl::popcount(plaintext_data.size()));
+
+  EXPECT_EQ(0x02, plaintext_data[0]);
+  size_t request_size = 0;
+  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
+    request_size =
+        (request_size << 8) | static_cast<uint8_t>(plaintext_data[idx + 1]);
+  }
+
+  // The generation ID is random, so match against everything before and
+  // everything after.
+  std::string got_str = cbor::DiagnosticWriter::Write(
+      cbor::Reader::Read(base::as_bytes(base::make_span(
+                             plaintext_data.substr(5, request_size))))
+          .value());
+  EXPECT_THAT(got_str, testing::StartsWith(
+                           R"({"version": 0, "publisher": "https://a.test", )"
+                           R"("generationId": ")"));
+  EXPECT_THAT(
+      got_str,
+      testing::EndsWith(
+          R"(", )"
+          R"("interestGroups": {"https://a.test": )"
+          R"(h'1F8B08000000000000006B5C9C9C9852DC986268646C929297989B9A929C58)"
+          R"(549C9754945F5E9C5A149C999E979853BC24BD283539352FB99231232933C539)"
+          R"(BF34AF8421A3A028B52C3C33AFB821332B3F330F2CC80800BE10ED8B4E000000)"
+          R"('}, "enableDebugReporting": false})"));
+
+  std::string response;
+  // CBOR response computed using https://cbor.me/
+  /* Response:
+  {
+    "adRenderURL":"https://c.test/ad.html",
+    "interestGroupName":"cars",
+    "interestGroupOwner":"https://a.test/",
+    "biddingGroups": {
+      "https://a.test/": [0]
+      },
+    "winReportingURLs": {
+      "buyerReportingURLs": {
+        "reportingURL": "https://d.test/buyerReporting",
+        "interactionReportingURLs": {
+          "click": "https://e.test/buyerInteractionReporting"
+          }
+        },
+      "topLevelSellerReportingURLs": {
+        "reportingURL": "https://d.test/sellerReporting",
+        "interactionReportingURLs": {
+          "click": "https://e.test/sellerInteractionReporting"
+          }
+        }
+      }
+    }
+  */
+  // Converted to base64 with `cat | sed 's/#.*//' | xxd -r -p | gzip | base64`
+  ASSERT_TRUE(base::Base64Decode(
+      "AgAAAMcfiwgAAAAAAAADhZBBCsIwEEU9hiC61k279wIiFIWKB0iTwQbTJE6mbVx6lAre09JS"
+      "aErR5Xz+e3zmc2ciBS0Ar2lS5UTW7eOYRwSOYiainApVZFIIqW8HNKV1jRlarG+"
+      "9FraWOgVrkNpW63FvzMonYJgpHJ1+PVhEbwkBv5SaABknaUJ1A1xJfvfbgYcRf5yB/"
+      "IqMTaACdQGlfo/aTEa5kPi/ajdZ1QvmZj06VdvpvnpiBQjO0GEQn2sNOP33Fyx+ip+zAQAA",
+      &response));
+
+  network_responder_->RegisterReportResponse("/buyerReporting",
+                                             /*response=*/"");
+  network_responder_->RegisterReportResponse("/sellerReporting",
+                                             /*response=*/"");
+
+  std::string encrypted_response =
+      ohttp_gateway
+          .CreateObliviousHttpResponse(response, request_context->context,
+                                       kCustomResponseType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
