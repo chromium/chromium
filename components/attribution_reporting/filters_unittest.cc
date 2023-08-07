@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -225,8 +226,8 @@ TEST(FilterDataTest, FromJSON) {
     absl::optional<base::Value> json_copy =
         test_case.json ? absl::make_optional(test_case.json->Clone())
                        : absl::nullopt;
-    EXPECT_EQ(FilterData::FromJSON(base::OptionalToPtr(json_copy)),
-              base::unexpected(test_case.expected_filter_data_error))
+    EXPECT_THAT(FilterData::FromJSON(base::OptionalToPtr(json_copy)),
+                base::test::ErrorIs(test_case.expected_filter_data_error))
         << test_case.description;
   }
 
@@ -341,8 +342,8 @@ TEST(FiltersTest, FromJSON_list) {
         base::test::ParseJson(R"json([{"a":["b"]},"invalid"])json");
     auto actual =
         FiltersFromJSONForTesting(&one_valid_and_one_invalid_filter_values);
-    ASSERT_FALSE(actual.has_value());
-    EXPECT_EQ(actual.error(), TriggerRegistrationError::kFiltersWrongType);
+    EXPECT_THAT(actual, base::test::ErrorIs(
+                            TriggerRegistrationError::kFiltersWrongType));
   }
 }
 

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
@@ -94,9 +95,9 @@ TEST(AggregatableValuesTest, Parse_KeyLength) {
     EXPECT_TRUE(parse_dict_with_key_length(length).has_value());
   }
 
-  EXPECT_EQ(parse_dict_with_key_length(26),
-            base::unexpected(
-                TriggerRegistrationError::kAggregatableValuesKeyTooLong));
+  EXPECT_THAT(parse_dict_with_key_length(26),
+              base::test::ErrorIs(
+                  TriggerRegistrationError::kAggregatableValuesKeyTooLong));
 }
 
 TEST(AggregatableValuesTest, Parse_KeyCount) {
@@ -114,9 +115,9 @@ TEST(AggregatableValuesTest, Parse_KeyCount) {
     EXPECT_TRUE(parse_dict_with_key_count(count).has_value());
   }
 
-  EXPECT_EQ(
+  EXPECT_THAT(
       parse_dict_with_key_count(kMaxAggregationKeysPerSourceOrTrigger + 1),
-      base::unexpected(
+      base::test::ErrorIs(
           TriggerRegistrationError::kAggregatableValuesTooManyKeys));
 }
 

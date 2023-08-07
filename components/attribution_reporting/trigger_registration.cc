@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
@@ -108,11 +109,8 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
   vec.reserve(list->size());
 
   for (auto& value : *list) {
-    base::expected<T, TriggerRegistrationError> element = build_element(value);
-    if (!element.has_value()) {
-      return base::unexpected(element.error());
-    }
-    vec.push_back(std::move(*element));
+    ASSIGN_OR_RETURN(T element, build_element(value));
+    vec.push_back(std::move(element));
   }
 
   return vec;
@@ -157,48 +155,34 @@ std::string SerializeAggregatableSourceRegistrationTime(
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value::Dict registration) {
-  auto filters = FilterPair::FromJSON(registration);
-  if (!filters.has_value()) {
-    return base::unexpected(filters.error());
-  }
-  auto aggregatable_dedup_keys = ParseList<AggregatableDedupKey>(
-      registration.Find(kAggregatableDeduplicationKeys),
-      TriggerRegistrationError::kAggregatableDedupKeyListWrongType,
-      &AggregatableDedupKey::FromJSON);
-  if (!aggregatable_dedup_keys.has_value()) {
-    return base::unexpected(aggregatable_dedup_keys.error());
-  }
-  auto event_triggers = ParseList<EventTriggerData>(
-      registration.Find(kEventTriggerData),
-      TriggerRegistrationError::kEventTriggerDataListWrongType,
-      &EventTriggerData::FromJSON);
-  if (!event_triggers.has_value()) {
-    return base::unexpected(event_triggers.error());
-  }
-  auto aggregatable_trigger_data = ParseList<AggregatableTriggerData>(
-      registration.Find(kAggregatableTriggerData),
-      TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
-      &AggregatableTriggerData::FromJSON);
-  if (!aggregatable_trigger_data.has_value()) {
-    return base::unexpected(aggregatable_trigger_data.error());
-  }
-  auto aggregatable_values =
-      AggregatableValues::FromJSON(registration.Find(kAggregatableValues));
-  if (!aggregatable_values.has_value()) {
-    return base::unexpected(aggregatable_values.error());
-  }
-
+  ASSIGN_OR_RETURN(FilterPair filters, FilterPair::FromJSON(registration));
+  ASSIGN_OR_RETURN(
+      std::vector<AggregatableDedupKey> aggregatable_dedup_keys,
+      ParseList<AggregatableDedupKey>(
+          registration.Find(kAggregatableDeduplicationKeys),
+          TriggerRegistrationError::kAggregatableDedupKeyListWrongType,
+          &AggregatableDedupKey::FromJSON));
+  ASSIGN_OR_RETURN(std::vector<EventTriggerData> event_triggers,
+                   ParseList<EventTriggerData>(
+                       registration.Find(kEventTriggerData),
+                       TriggerRegistrationError::kEventTriggerDataListWrongType,
+                       &EventTriggerData::FromJSON));
+  ASSIGN_OR_RETURN(
+      std::vector<AggregatableTriggerData> aggregatable_trigger_data,
+      ParseList<AggregatableTriggerData>(
+          registration.Find(kAggregatableTriggerData),
+          TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
+          &AggregatableTriggerData::FromJSON));
+  ASSIGN_OR_RETURN(
+      AggregatableValues aggregatable_values,
+      AggregatableValues::FromJSON(registration.Find(kAggregatableValues)));
   absl::optional<SuitableOrigin> aggregation_coordinator;
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    auto parsed_aggregation_coordinator = ParseAggregationCoordinator(
-        registration.Find(kAggregationCoordinatorOrigin));
-    if (!parsed_aggregation_coordinator.has_value()) {
-      return base::unexpected(parsed_aggregation_coordinator.error());
-    }
-    aggregation_coordinator = *parsed_aggregation_coordinator;
+    ASSIGN_OR_RETURN(aggregation_coordinator,
+                     ParseAggregationCoordinator(
+                         registration.Find(kAggregationCoordinatorOrigin)));
   }
-
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   bool debug_reporting = ParseDebugReporting(registration);
 
@@ -206,18 +190,15 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
       mojom::SourceRegistrationTimeConfig::kInclude;
   if (base::FeatureList::IsEnabled(
           kAttributionReportingNullAggregatableReports)) {
-    auto parsed_config = ParseAggregatableSourceRegistrationTime(
-        registration.Find(kAggregatableSourceRegistrationTime));
-    if (!parsed_config.has_value()) {
-      return base::unexpected(parsed_config.error());
-    }
-    source_registration_time_config = *parsed_config;
+    ASSIGN_OR_RETURN(source_registration_time_config,
+                     ParseAggregatableSourceRegistrationTime(registration.Find(
+                         kAggregatableSourceRegistrationTime)));
   }
 
   return TriggerRegistration(
-      std::move(*filters), debug_key, std::move(*aggregatable_dedup_keys),
-      std::move(*event_triggers), std::move(*aggregatable_trigger_data),
-      std::move(*aggregatable_values), debug_reporting, aggregation_coordinator,
+      std::move(filters), debug_key, std::move(aggregatable_dedup_keys),
+      std::move(event_triggers), std::move(aggregatable_trigger_data),
+      std::move(aggregatable_values), debug_reporting, aggregation_coordinator,
       source_registration_time_config);
 }
 

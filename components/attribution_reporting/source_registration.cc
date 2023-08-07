@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -117,25 +118,16 @@ SourceRegistration& SourceRegistration::operator=(SourceRegistration&&) =
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
 SourceRegistration::Parse(base::Value::Dict registration) {
-  base::expected<DestinationSet, SourceRegistrationError> destination_set =
-      DestinationSet::FromJSON(registration.Find(kDestination));
-  if (!destination_set.has_value()) {
-    return base::unexpected(destination_set.error());
-  }
-  SourceRegistration result(std::move(*destination_set));
+  ASSIGN_OR_RETURN(DestinationSet destination_set,
+                   DestinationSet::FromJSON(registration.Find(kDestination)));
+  SourceRegistration result(std::move(destination_set));
 
-  base::expected<FilterData, SourceRegistrationError> filter_data =
-      FilterData::FromJSON(registration.Find(kFilterData));
-  if (!filter_data.has_value()) {
-    return base::unexpected(filter_data.error());
-  }
-  result.filter_data = std::move(*filter_data);
+  ASSIGN_OR_RETURN(result.filter_data,
+                   FilterData::FromJSON(registration.Find(kFilterData)));
 
-  base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
-      AggregationKeys::FromJSON(registration.Find(kAggregationKeys));
-  if (!aggregation_keys.has_value())
-    return base::unexpected(aggregation_keys.error());
-  result.aggregation_keys = std::move(*aggregation_keys);
+  ASSIGN_OR_RETURN(
+      result.aggregation_keys,
+      AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
 
   absl::optional<uint64_t> source_event_id;
   if (!ParseUint64(registration, kSourceEventId, source_event_id)) {

@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -210,12 +211,11 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
         NOTREACHED_NORETURN();
     }
   };
-  auto filter_values = ParseFilterValuesFromJSON(std::move(*dict),
-                                                 /*check_sizes=*/true);
-  if (!filter_values.has_value()) {
-    return base::unexpected(map_errors(filter_values.error()));
-  }
-  return FilterData(std::move(*filter_values));
+  ASSIGN_OR_RETURN(auto filter_values,
+                   ParseFilterValuesFromJSON(std::move(*dict),
+                                             /*check_sizes=*/true)
+                       .transform_error(map_errors));
+  return FilterData(std::move(filter_values));
 }
 
 FilterData::FilterData() = default;
@@ -382,14 +382,13 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
       CHECK_EQ(FilterValuesError::kListWrongType, error);
       return TriggerRegistrationError::kFiltersListWrongType;
     };
-    auto filter_values =
-        ParseFilterValuesFromJSON(std::move(*dict), /*check_sizes=*/false);
-    if (!filter_values.has_value()) {
-      return base::unexpected(map_errors(filter_values.error()));
-    }
-    if (!filter_values->empty() || lookback_window.has_value()) {
-      auto config = FilterConfig::Create(std::move(filter_values.value()),
-                                         lookback_window);
+    ASSIGN_OR_RETURN(
+        auto filter_values,
+        ParseFilterValuesFromJSON(std::move(*dict), /*check_sizes=*/false)
+            .transform_error(map_errors));
+    if (!filter_values.empty() || lookback_window.has_value()) {
+      auto config =
+          FilterConfig::Create(std::move(filter_values), lookback_window);
       if (!config.has_value()) {
         return base::unexpected(
             TriggerRegistrationError::kFiltersValueWrongType);
@@ -402,12 +401,10 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
   if (base::Value::List* list = input_value->GetIfList()) {
     disjunction.reserve(list->size());
     for (base::Value& item : *list) {
-      if (auto result = append_if_valid(item); !result.has_value()) {
-        return base::unexpected(result.error());
-      }
+      RETURN_IF_ERROR(append_if_valid(item));
     }
-  } else if (auto result = append_if_valid(*input_value); !result.has_value()) {
-    return base::unexpected(result.error());
+  } else {
+    RETURN_IF_ERROR(append_if_valid(*input_value));
   }
   return disjunction;
 }
@@ -431,15 +428,9 @@ base::Value::List ToJson(const FiltersDisjunction& filters) {
 // static
 base::expected<FilterPair, mojom::TriggerRegistrationError>
 FilterPair::FromJSON(base::Value::Dict& dict) {
-  auto positive = FiltersFromJSON(dict.Find(kFilters));
-  if (!positive.has_value()) {
-    return base::unexpected(positive.error());
-  }
-  auto negative = FiltersFromJSON(dict.Find(kNotFilters));
-  if (!negative.has_value()) {
-    return base::unexpected(negative.error());
-  }
-  return FilterPair(std::move(*positive), std::move(*negative));
+  ASSIGN_OR_RETURN(auto positive, FiltersFromJSON(dict.Find(kFilters)));
+  ASSIGN_OR_RETURN(auto negative, FiltersFromJSON(dict.Find(kNotFilters)));
+  return FilterPair(std::move(positive), std::move(negative));
 }
 
 FilterPair::FilterPair() = default;
