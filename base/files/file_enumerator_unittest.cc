@@ -631,9 +631,9 @@ TEST(FileEnumerator, OnlyName) {
 }
 
 struct FileEnumeratorForEachTestCase {
-  const bool recursive = false;
-  const int file_type = 0;
-  const int expected_invocation_count = 0;
+  const bool recursive;
+  const int file_type;
+  const int expected_invocation_count;
 };
 
 class FileEnumeratorForEachTest

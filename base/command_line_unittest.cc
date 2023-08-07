@@ -330,8 +330,8 @@ TEST(CommandLineTest, AppendSwitchesDashDash) {
 
 #if BUILDFLAG(IS_WIN)
 struct CommandLineQuoteTestCase {
- const wchar_t* const input_arg = nullptr;
- const wchar_t* const expected_output_arg = nullptr;
+  const wchar_t* const input_arg;
+  const wchar_t* const expected_output_arg;
 };
 
 class CommandLineQuoteTest
@@ -350,13 +350,13 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(CommandLineQuoteTest, TestCases) {
- EXPECT_EQ(CommandLine::QuoteForCommandLineToArgvW(GetParam().input_arg),
-           GetParam().expected_output_arg);
+  EXPECT_EQ(CommandLine::QuoteForCommandLineToArgvW(GetParam().input_arg),
+            GetParam().expected_output_arg);
 }
 
 struct CommandLineQuoteAfterTestCase {
- const std::vector<std::wstring> input_args;
- const wchar_t* const expected_output = nullptr;
+  const std::vector<std::wstring> input_args;
+  const wchar_t* const expected_output;
 };
 
 class CommandLineQuoteAfterTest
@@ -377,25 +377,25 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(CommandLineQuoteAfterTest, TestCases) {
- std::wstring input_command_line =
-     base::StrCat({LR"(c:\test\process.exe )",
-                   base::JoinString(GetParam().input_args, L" ")});
- int num_args = 0;
- base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-     ::CommandLineToArgvW(&input_command_line[0], &num_args));
- ASSERT_EQ(num_args - 1U, GetParam().input_args.size());
+  std::wstring input_command_line =
+      base::StrCat({LR"(c:\test\process.exe )",
+                    base::JoinString(GetParam().input_args, L" ")});
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      ::CommandLineToArgvW(&input_command_line[0], &num_args));
+  ASSERT_EQ(num_args - 1U, GetParam().input_args.size());
 
- std::wstring recreated_command_line;
- for (int i = 1; i < num_args; ++i) {
-   recreated_command_line.append(
-       CommandLine::QuoteForCommandLineToArgvW(argv.get()[i]));
+  std::wstring recreated_command_line;
+  for (int i = 1; i < num_args; ++i) {
+    recreated_command_line.append(
+        CommandLine::QuoteForCommandLineToArgvW(argv.get()[i]));
 
-   if (i + 1 < num_args) {
-     recreated_command_line.push_back(L' ');
-   }
- }
+    if (i + 1 < num_args) {
+      recreated_command_line.push_back(L' ');
+    }
+  }
 
- EXPECT_EQ(recreated_command_line, GetParam().expected_output);
+  EXPECT_EQ(recreated_command_line, GetParam().expected_output);
 }
 
 TEST(CommandLineTest, GetCommandLineStringForShell) {
