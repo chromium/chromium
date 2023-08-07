@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6333260925957816943">Informació sobre aquesta botiga</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupa la pestanya seleccionada (<ph name="TABS_COUNT_ONE" />)}other{Desagrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Pots trobar les pestanyes tancades a Pestanyes recents, al menú principal de Chrome. La pestanya d'incògnit no estarà disponible.}other{Pots trobar les pestanyes tancades a Pestanyes recents, al menú principal de Chrome. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="6549021453810473782">Consulta la informació de la botiga</translation>
 <translation id="6562820390860419811">Mou la pestanya cap a l'esquerra</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
+<translation id="661742612106409204">Pots trobar les pestanyes tancades a Pestanyes recents, al menú principal de Chrome.</translation>
 <translation id="6840760312327750441">Per agrupar les pestanyes, mantén-ne una premuda. A continuació, arrossega-la fins a una altra.</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>
