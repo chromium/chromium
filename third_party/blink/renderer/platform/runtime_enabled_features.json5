@@ -4005,6 +4005,11 @@
       status: "test",
       base_feature: "none",
     },
+    // Kill switch for making BigInt handling in WebIDL use ToBigInt.
+    {
+      name: "WebIDLBigIntUsesToBigInt",
+      status: "stable",
+    },
     // Legacy ::-webkit-scrollbar* pseudo element styling. Enabled for stable
     // but configurable via WebPreferences.
     {

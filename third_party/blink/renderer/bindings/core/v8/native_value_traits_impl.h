@@ -144,11 +144,7 @@ struct CORE_EXPORT NativeValueTraits<IDLBigint>
   static BigInt NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state) {
-    if (!value->IsBigInt()) {
-      exception_state.ThrowTypeError("The provided value is not a BigInt.");
-      return BigInt();
-    }
-    return BigInt(value.As<v8::BigInt>());
+    return ToBigInt(isolate, value, exception_state);
   }
 };
 

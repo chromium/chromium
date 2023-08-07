@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h"
 #include "third_party/blink/renderer/core/testing/internals.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -320,6 +321,63 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
         NativeValueTraits<IDLSequence<IDLBoolean>>::NativeValue(
             scope.GetIsolate(), v8_object, exception_state);
     EXPECT_EQ(Vector<bool>({true, false}), boolean_sequence);
+  }
+}
+
+TEST(NativeValueTraitsImplTest, IDLBigint) {
+  V8TestingScope scope;
+  {
+    v8::Local<v8::BigInt> v8_bigint = v8::BigInt::New(scope.GetIsolate(), 123);
+    NonThrowableExceptionState exception_state;
+    const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
+        scope.GetIsolate(), v8_bigint, exception_state);
+    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    ASSERT_TRUE(val.has_value());
+    EXPECT_EQ(*val, 123u);
+  }
+  {
+    // Numbers don't convert to BigInt.
+    v8::Local<v8::Number> v8_number = v8::Number::New(scope.GetIsolate(), 123);
+    DummyExceptionStateForTesting exception_state;
+    const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
+        scope.GetIsolate(), v8_number, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+  {
+    // Strings do convert to BigInt.
+    v8::Local<v8::String> v8_string =
+        v8::String::NewFromUtf8Literal(scope.GetIsolate(), "123");
+    NonThrowableExceptionState exception_state;
+    const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
+        scope.GetIsolate(), v8_string, exception_state);
+    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    ASSERT_TRUE(val.has_value());
+    EXPECT_EQ(*val, 123u);
+  }
+  {
+    // Can also go via valueOf.
+    const char kScript[] = R"(
+      let obj = {
+        valueOf: () => BigInt(123)
+      }; obj
+    )";
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, kScript);
+    NonThrowableExceptionState exception_state;
+    const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
+        scope.GetIsolate(), v8_object, exception_state);
+    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    ASSERT_TRUE(val.has_value());
+    EXPECT_EQ(*val, 123u);
+  }
+  {
+    // Test legacy behavior.
+    ScopedWebIDLBigIntUsesToBigIntForTest disable_to_bigint(false);
+    v8::Local<v8::String> v8_string =
+        v8::String::NewFromUtf8Literal(scope.GetIsolate(), "123");
+    DummyExceptionStateForTesting exception_state;
+    const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
+        scope.GetIsolate(), v8_string, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
   }
 }
 
