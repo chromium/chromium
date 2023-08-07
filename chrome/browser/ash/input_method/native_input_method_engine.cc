@@ -24,6 +24,12 @@
 namespace ash {
 
 namespace input_method {
+namespace {
+bool ShouldRouteToFirstPartyVietnameseInput(std::string_view engine_id) {
+  return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput) &&
+         (engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex");
+}
+}  // namespace
 
 NativeInputMethodEngine::NativeInputMethodEngine()
     : NativeInputMethodEngine(/*use_ime_service=*/true) {}
@@ -166,7 +172,8 @@ bool NativeInputMethodEngine::UpdateMenuItems(
 }
 
 void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
-  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId()) ||
+      ShouldRouteToFirstPartyVietnameseInput(GetActiveComponentId())) {
     Enable(GetActiveComponentId());
   } else {
     InputMethodEngine::OnInputMethodOptionsChanged();

@@ -873,8 +873,7 @@ void NativeInputMethodEngineObserver::OnFocus(
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
     grammar_manager_->OnFocus(context_id, context.spellcheck_mode);
   }
-  if (ShouldRouteToNativeMojoEngine(engine_id) ||
-      ShouldRouteToFirstPartyVietnameseInput(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (IsInputMethodBound()) {
       if (assistive_suggester_.get()) {
         assistive_suggester_->FetchEnabledSuggestionsFromBrowserContextThen(
