@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/buildflags.h"
 #include "base/process/memory.h"
+
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"

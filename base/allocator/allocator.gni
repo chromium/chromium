@@ -22,3 +22,6 @@ if (!use_partition_alloc_as_malloc) {
   assert(!enable_pointer_compression_support,
          "Pointer compressions likely doesn't make sense without PA-E")
 }
+
+assert(use_allocator_shim || !use_partition_alloc_as_malloc,
+       "PartitionAlloc-Everywhere requires the allocator shim")

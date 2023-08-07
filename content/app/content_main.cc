@@ -4,8 +4,8 @@
 
 #include "content/public/app/content_main.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"

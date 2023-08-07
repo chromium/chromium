@@ -11,14 +11,8 @@ import("//build/config/dcheck_always_on.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  assert(use_allocator_shim || !use_partition_alloc_as_malloc,
-         "PartitionAlloc-Everywhere requires the allocator shim")
-
-  flags = [
-    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
-
-    "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support",
-  ]
+  flags =
+      [ "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support" ]
 }
 
 if (is_apple) {

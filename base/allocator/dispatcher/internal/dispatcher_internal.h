@@ -5,7 +5,6 @@
 #ifndef BASE_ALLOCATOR_DISPATCHER_INTERNAL_DISPATCHER_INTERNAL_H_
 #define BASE_ALLOCATOR_DISPATCHER_INTERNAL_DISPATCHER_INTERNAL_H_
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/configuration.h"
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
 #include "base/allocator/dispatcher/internal/tools.h"

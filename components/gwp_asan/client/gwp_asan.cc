@@ -10,7 +10,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/debug/crash_logging.h"

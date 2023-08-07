@@ -4,7 +4,6 @@
 
 #include "base/allocator/allocator_check.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 

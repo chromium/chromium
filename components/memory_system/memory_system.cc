@@ -4,9 +4,9 @@
 
 #include "components/memory_system/memory_system.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/initializer.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"

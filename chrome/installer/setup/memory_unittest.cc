@@ -6,7 +6,7 @@
 
 #include <limits>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
