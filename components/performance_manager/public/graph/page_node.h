@@ -127,6 +127,9 @@ class PageNode : public Node {
   // Returns the type of the page.
   virtual PageType GetType() const = 0;
 
+  // Returns true if this page has the focus.
+  virtual bool IsFocused() const = 0;
+
   // Returns true if this page is currently visible, false otherwise.
   // See PageNodeObserver::OnIsVisibleChanged.
   virtual bool IsVisible() const = 0;
@@ -287,6 +290,9 @@ class PageNodeObserver {
   virtual void OnTypeChanged(const PageNode* page_node,
                              PageType previous_type) = 0;
 
+  // Invoked when the IsFocused property changes.
+  virtual void OnIsFocusedChanged(const PageNode* page_node) = 0;
+
   // Invoked when the IsVisible property changes.
   //
   // GetTimeSinceLastVisibilityChange() will return the time since the previous
@@ -384,6 +390,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
       EmbeddingType previous_embedding_type) override {}
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override {}
+  void OnIsFocusedChanged(const PageNode* page_node) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
   void OnLoadingStateChanged(const PageNode* page_node,

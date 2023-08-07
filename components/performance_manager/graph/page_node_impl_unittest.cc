@@ -271,6 +271,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD3(OnEmbedderFrameNodeChanged,
                void(const PageNode*, const FrameNode*, EmbeddingType));
   MOCK_METHOD2(OnTypeChanged, void(const PageNode*, PageType));
+  MOCK_METHOD1(OnIsFocusedChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
   MOCK_METHOD2(OnLoadingStateChanged,
@@ -322,6 +323,11 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
   auto page_node = CreateNode<PageNodeImpl>();
   const PageNode* raw_page_node = page_node.get();
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_CALL(obs, OnIsFocusedChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetIsFocused(true);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   EXPECT_CALL(obs, OnIsVisibleChanged(_))
@@ -399,6 +405,7 @@ TEST_F(PageNodeImplTest, PublicInterface) {
 
   EXPECT_EQ(page_node->browser_context_id(),
             public_page_node->GetBrowserContextID());
+  EXPECT_EQ(page_node->is_focused(), public_page_node->IsFocused());
   EXPECT_EQ(page_node->is_visible(), public_page_node->IsVisible());
   EXPECT_EQ(page_node->is_audible(), public_page_node->IsAudible());
   EXPECT_EQ(page_node->loading_state(), public_page_node->GetLoadingState());

@@ -60,6 +60,7 @@ class PageNodeImpl
   const WebContentsProxy& contents_proxy() const;
 
   void SetType(PageType type);
+  void SetIsFocused(bool is_focused);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
   void SetLoadingState(LoadingState loading_state);
@@ -98,6 +99,7 @@ class PageNodeImpl
   FrameNodeImpl* embedder_frame_node() const;
   EmbeddingType embedding_type() const;
   PageType type() const;
+  bool is_focused() const;
   bool is_visible() const;
   bool is_audible() const;
   LoadingState loading_state() const;
@@ -214,6 +216,7 @@ class PageNodeImpl
   const FrameNode* GetEmbedderFrameNode() const override;
   EmbeddingType GetEmbeddingType() const override;
   PageType GetType() const override;
+  bool IsFocused() const override;
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
@@ -319,6 +322,10 @@ class PageNodeImpl
       &PageNodeObserver::OnTypeChanged>
       type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
 
+  // Whether or not the page is focused. Driven by browser instrumentation.
+  ObservedProperty::NotifiesOnlyOnChanges<bool,
+                                          &PageNodeObserver::OnIsFocusedChanged>
+      is_focused_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Whether or not the page is visible. Driven by browser instrumentation.
   // Initialized on construction.
   ObservedProperty::NotifiesOnlyOnChanges<bool,

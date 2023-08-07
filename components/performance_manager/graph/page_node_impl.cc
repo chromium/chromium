@@ -124,6 +124,11 @@ void PageNodeImpl::SetType(PageType type) {
   type_.SetAndMaybeNotify(this, type);
 }
 
+void PageNodeImpl::SetIsFocused(bool is_focused) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_focused_.SetAndMaybeNotify(this, is_focused);
+}
+
 void PageNodeImpl::SetIsVisible(bool is_visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_visible_.SetAndMaybeNotify(this, is_visible)) {
@@ -255,6 +260,11 @@ PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
 PageType PageNodeImpl::type() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return type_.value();
+}
+
+bool PageNodeImpl::is_focused() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_focused_.value();
 }
 
 bool PageNodeImpl::is_visible() const {
@@ -480,6 +490,11 @@ PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
 PageType PageNodeImpl::GetType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return type();
+}
+
+bool PageNodeImpl::IsFocused() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_focused();
 }
 
 bool PageNodeImpl::IsVisible() const {
