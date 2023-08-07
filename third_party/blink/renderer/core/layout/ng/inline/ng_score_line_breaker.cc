@@ -14,6 +14,42 @@
 
 namespace blink {
 
+namespace {
+
+// Determines whether `NGScoreLineBreaker` should be applied or not from the
+// greedy line break results. Because the `NGScoreLineBreaker` is expensive,
+// and it often produces the similar results to the greedy algorithm, apply
+// it only when its benefit is obvious.
+ALWAYS_INLINE bool ShouldOptimize(const NGLineInfoList& line_info_list,
+                                  NGLineBreaker& line_breaker) {
+  // The optimization benefit is most visible when the last line is short.
+  // Otherwise, the improvement is not worth the performance impact.
+  const NGLineInfo& last_line = line_info_list.Back();
+  constexpr int kShortLineDenominator = 3;
+  if (last_line.Width() < last_line.AvailableWidth() / kShortLineDenominator &&
+      // Similarly, optimize only when the last line has a single word; i.e.,
+      // has no break opportunities. This takes some cost, but the performance
+      // improvement by reducing the applicability wins over the cost.
+      !line_breaker.CanBreakInside(last_line)) {
+    return true;
+  }
+
+  // Hyphenating the second to last line is not desirable, and consecutive
+  // hyphenated lines are not desirable either. For now, apply only if both
+  // occur, to minimize the performance impact.
+  constexpr wtf_size_t kNumLastHyphenatedLines = 2;
+  const wtf_size_t num_lines = line_info_list.Size();
+  if (num_lines >= kNumLastHyphenatedLines + 1 &&
+      line_info_list[num_lines - 2].IsHyphenated() &&
+      line_info_list[num_lines - 3].IsHyphenated()) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
+
 void NGScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
   scores_out_for_testing_ = scores_out;
 }
@@ -84,15 +120,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
     return;  // Optimization not needed for single line paragraphs.
   }
   if (!is_balanced_) {
-    const NGLineInfo& last_line = line_info_list.Back();
-    if (last_line.Width() >= last_line.AvailableWidth() / 3) {
-      // The optimization benefit is most visible when the last line is short.
-      // Otherwise, the improvement is not worth the performance impact.
-      return;
-    }
-    if (line_breaker.CanBreakInside(last_line)) {
-      // Similarly, optimize only when the last line has a single word; i.e.,
-      // has no break opportunities.
+    if (!ShouldOptimize(line_info_list, line_breaker)) {
       return;
     }
   }
