@@ -827,7 +827,10 @@ if (is_win || is_mac || is_linux) {
         "util/util_win_unittest.cc",
         "util/win_util_unittest.cc",
         "win/app_command_runner_unittest.cc",
+        "win/installer/configuration_unittest.cc",
+        "win/installer/installer_unittest.cc",
         "win/installer/msi_custom_action_unittest.cc",
+        "win/installer/string_unittest.cc",
         "win/installer_api_unittest.cc",
         "win/manifest_util_unittest.cc",
         "win/protocol_parser_xml_unittest.cc",
@@ -840,6 +843,7 @@ if (is_win || is_mac || is_linux) {
         "app/server/win:updater_idl_idl",
         "app/server/win:updater_internal_idl_idl",
         "app/server/win:updater_legacy_idl_idl",
+        "win/installer:lib",
         "win/installer:msi_custom_action_sources",
         "win/test:test_executables",
         "win/test:test_strings",
@@ -853,7 +857,6 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:updater",
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
-        "//chrome/updater/win/installer:installer_unittest",
         "//chrome/updater/win/test:updater_test_process",
       ]
 

@@ -13,6 +13,7 @@ executable("test_meta_installer") {
   ]
   deps = [
     "//base",
+    "//chrome/updater:constants_test",
     "//chrome/updater/win/installer:lib",
   ]
 }
