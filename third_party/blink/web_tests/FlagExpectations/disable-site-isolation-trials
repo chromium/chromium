@@ -75,7 +75,6 @@ http/tests/inspector-protocol/page/frame-detached-oopif.js [ Skip ]
 
 # Rely on OOPIF for an iframe to be a separate devtools target
 http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
-virtual/fledge/http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
 http/tests/inspector-protocol/page/frame-started-stopped-loading.js [ Skip ]
 http/tests/inspector-protocol/page/frame-attached.js [ Skip ]
 
