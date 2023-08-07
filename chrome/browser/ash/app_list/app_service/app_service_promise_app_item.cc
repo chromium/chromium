@@ -7,31 +7,13 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_context_menu.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
-
-namespace {
-
-// TODO(b/261907495): Update this method to return the appropriate icon effects
-// for each promise status. These icon effects are currently placeholders.
-apps::IconEffects GetIconEffectsForPromiseStatus(apps::PromiseStatus status) {
-  switch (status) {
-    case apps::PromiseStatus::kUnknown:
-      // Fallthrough.
-    case apps::PromiseStatus::kPending:
-      return apps::IconEffects::kPaused;
-    case apps::PromiseStatus::kInstalling:
-      return apps::IconEffects::kCrOsStandardMask;
-    case apps::PromiseStatus::kRemove:
-      NOTREACHED();
-      return apps::IconEffects::kNone;
-  }
-}
-}  // namespace
 
 // static
 const char AppServicePromiseAppItem::kItemType[] = "AppServicePromiseAppItem";

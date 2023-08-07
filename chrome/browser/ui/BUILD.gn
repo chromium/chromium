@@ -2066,6 +2066,8 @@ static_library("ui") {
       "../ash/app_list/app_service/app_service_context_menu.h",
       "../ash/app_list/app_service/app_service_promise_app_context_menu.cc",
       "../ash/app_list/app_service/app_service_promise_app_context_menu.h",
+      "../ash/app_list/app_service/app_service_promise_app_icon_loader.cc",
+      "../ash/app_list/app_service/app_service_promise_app_icon_loader.h",
       "../ash/app_list/app_service/app_service_promise_app_item.cc",
       "../ash/app_list/app_service/app_service_promise_app_item.h",
       "../ash/app_list/app_service/app_service_promise_app_model_builder.cc",

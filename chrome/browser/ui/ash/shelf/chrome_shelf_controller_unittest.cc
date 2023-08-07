@@ -61,6 +61,8 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -68,10 +70,12 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -198,6 +202,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -6179,20 +6184,62 @@ TEST_F(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
   EXPECT_TRUE(IsAppPinEditable(app_type, app_id, profile()));
 }
 
-class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest {
+class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest,
+                                             public ash::ShelfModelObserver {
  public:
   ChromeShelfControllerPromiseAppsTest() {
     feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
   }
   ~ChromeShelfControllerPromiseAppsTest() override = default;
 
+  SkBitmap ApplyEffectsToBitmap(SkBitmap bitmap, apps::IconEffects effects) {
+    auto iv = std::make_unique<apps::IconValue>();
+    iv->uncompressed = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+    iv->icon_type = apps::IconType::kUncompressed;
+
+    base::test::TestFuture<apps::IconValuePtr> image_with_effects;
+    apps::ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt,
+                           effects, bitmap.width(), std::move(iv),
+                           image_with_effects.GetCallback());
+
+    return *image_with_effects.Get()->uncompressed.bitmap();
+  }
+
   apps::PromiseAppRegistryCache* cache() {
     return apps::AppServiceProxyFactory::GetForProfile(profile())
         ->PromiseAppRegistryCache();
   }
 
+  apps::PromiseAppService* service() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->PromiseAppService();
+  }
+
+  void WaitForItemUpdate() {
+    if (!obs_.IsObserving()) {
+      obs_.Observe(model_.get());
+    }
+    wait_run_loop_ = std::make_unique<base::RunLoop>();
+    wait_run_loop_->Run();
+  }
+
+  // ShelfModelObserver overrides:
+  void ShelfItemChanged(int, const ash::ShelfItem&) override {
+    if (wait_run_loop_ && wait_run_loop_->running()) {
+      wait_run_loop_->Quit();
+    }
+  }
+
+  void ShelfItemAdded(int) override {
+    if (wait_run_loop_ && wait_run_loop_->running()) {
+      wait_run_loop_->Quit();
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedObservation<ash::ShelfModel, ash::ShelfModelObserver> obs_{this};
+  std::unique_ptr<base::RunLoop> wait_run_loop_;
 };
 
 TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
@@ -6280,6 +6327,62 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   const ash::ShelfItem* other_item_after_update =
       shelf_controller_->GetItem(other_id);
   EXPECT_EQ(other_item_after_update->title, std::u16string(u"Other"));
+}
+
+TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
+  // Register the main promise app that we will check the updates for.
+  const apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, "com.example.test");
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->name = "Name";
+  promise_app->status = apps::PromiseStatus::kPending;
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Add a test icon for the promise app.
+  SkBitmap base_bitmap =
+      gfx::test::CreateBitmap(extension_misc::EXTENSION_ICON_MEDIUM,
+                              extension_misc::EXTENSION_ICON_MEDIUM);
+
+  apps::PromiseAppIconPtr icon = std::make_unique<apps::PromiseAppIcon>();
+  icon->icon = base_bitmap;
+  icon->width_in_pixels = extension_misc::EXTENSION_ICON_MEDIUM;
+  service()->PromiseAppIconCache()->SaveIcon(package_id, std::move(icon));
+
+  // Create shelf items for the promise apps. This should trigger the
+  // AppServicePromiseAppIconLoader to fetch the image.
+  InitShelfController();
+  PinAppWithIDToShelf(package_id.ToString());
+  WaitForItemUpdate();
+
+  // Verify that the icon has the correct effects applied to it.
+  EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
+  ash::ShelfID id(package_id.ToString());
+  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
+  SkBitmap result_bitmap = *item->image.bitmap();
+  SkBitmap expected_bitmap = ApplyEffectsToBitmap(
+      base_bitmap,
+      GetIconEffectsForPromiseStatus(apps::PromiseStatus::kPending));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(result_bitmap, expected_bitmap));
+
+  // Change the status of the promise app.
+  apps::PromiseAppPtr update = std::make_unique<apps::PromiseApp>(package_id);
+  update->status = apps::PromiseStatus::kInstalling;
+  cache()->OnPromiseApp(std::move(update));
+  WaitForItemUpdate();
+
+  // Verify that the shelf item has an updated icon.
+  const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
+  SkBitmap result_updated_bitmap = *item_after_update->image.bitmap();
+  SkBitmap expected_updated_bitmap = ApplyEffectsToBitmap(
+      base_bitmap,
+      GetIconEffectsForPromiseStatus(apps::PromiseStatus::kInstalling));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(result_updated_bitmap, expected_updated_bitmap));
+
+  // Confirm the initial icon and the updated icon are different.
+  EXPECT_FALSE(gfx::BitmapsAreEqual(result_bitmap, result_updated_bitmap));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -1063,8 +1064,11 @@ void ChromeShelfController::OnPromiseAppUpdate(
 void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
                                               const gfx::ImageSkia& image) {
   bool is_standard_icon = true;
-  if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id))
+  if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
+      !AppServicePromiseAppIconLoader::CanLoadImage(latest_active_profile_,
+                                                    app_id)) {
     is_standard_icon = false;
+  }
 
   if (is_standard_icon) {
     UpdateAppImage(app_id, image);
@@ -1520,8 +1524,11 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
     app_icon_loaders_[profile].push_back(
         std::move(app_service_app_icon_loader));
 
-    // TODO(b/261907856): Create AppServicePromiseAppIconLoader and add it to
-    // app_icon_loaders_.
+    if (ash::features::ArePromiseIconsEnabled()) {
+      app_icon_loaders_[profile].emplace_back(
+          std::make_unique<AppServicePromiseAppIconLoader>(
+              profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
+    }
 
     // Some special extensions open new windows, and on Chrome OS, those windows
     // should show the extension icon in the shelf. Extensions are not present

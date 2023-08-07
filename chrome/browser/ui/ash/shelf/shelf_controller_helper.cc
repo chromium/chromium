@@ -310,5 +310,15 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
         }
       });
 
+  if (ash::features::ArePromiseIconsEnabled()) {
+    absl::optional<apps::PackageId> possible_package_id =
+        apps::PackageId::FromString(app_id);
+    if (possible_package_id.has_value()) {
+      return apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->PromiseAppRegistryCache()
+          ->HasPromiseApp(possible_package_id.value());
+    }
+  }
+
   return is_valid;
 }
