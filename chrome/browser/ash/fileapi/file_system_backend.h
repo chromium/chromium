@@ -63,7 +63,7 @@ constexpr char kSystemMountNameRemovable[] = "removable";
 //
 // Other mounts are also registered by VolumeManager for MyFiles, Drive, VMs
 // (crostini, arc, etc), Android Document Providers, fileSystemProviders, etc.
-class FileSystemBackend : public storage::ExternalFileSystemBackend {
+class FileSystemBackend : public storage::FileSystemBackend {
  public:
   using storage::FileSystemBackend::ResolveURLCallback;
 
@@ -85,6 +85,9 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
 
   ~FileSystemBackend() override;
 
+  // Gets the ChromeOS FileSystemBackend.
+  static FileSystemBackend* Get(const storage::FileSystemContext& context);
+
   // Adds system mount points, such as "archive", and "removable". This
   // function is no-op if these mount points are already present.
   void AddSystemMountPoints();
@@ -93,6 +96,40 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   // file system type matches with what this provider supports.
   // This could be called on any threads.
   static bool CanHandleURL(const storage::FileSystemURL& url);
+
+  // Returns true if |url| is allowed to be accessed.
+  // This is supposed to perform ExternalFileSystem-specific security
+  // checks.
+  bool IsAccessAllowed(const storage::FileSystemURL& url) const;
+
+  // Returns the list of top level directories that are exposed by this
+  // provider. This list is used to set appropriate child process file access
+  // permissions.
+  std::vector<base::FilePath> GetRootDirectories() const;
+
+  // Grants access to |virtual_path| from |origin| URL.
+  void GrantFileAccessToOrigin(const url::Origin& origin,
+                               const base::FilePath& virtual_path);
+
+  // Revokes file access from origin identified with |origin|.
+  void RevokeAccessForOrigin(const url::Origin& origin);
+
+  // Gets virtual path by known filesystem path. Returns false when filesystem
+  // path is not exposed by this provider.
+  bool GetVirtualPath(const base::FilePath& file_system_path,
+                      base::FilePath* virtual_path) const;
+
+  // Gets a redirect URL for contents. e.g. Google Drive URL for hosted
+  // documents. Returns empty URL if the entry does not have the redirect URL.
+  void GetRedirectURLForContents(const storage::FileSystemURL& url,
+                                 storage::URLCallback callback) const;
+
+  // Creates an internal File System URL for performing internal operations such
+  // as confirming if a file or a directory exist before granting the final
+  // permission to the entry. The path must be an absolute path.
+  storage::FileSystemURL CreateInternalURL(
+      storage::FileSystemContext* context,
+      const base::FilePath& entry_path) const;
 
   // storage::FileSystemBackend overrides.
   bool CanHandleType(storage::FileSystemType type) const override;
@@ -133,20 +170,6 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
       storage::FileSystemType type) const override;
   const storage::AccessObserverList* GetAccessObservers(
       storage::FileSystemType type) const override;
-
-  // storage::ExternalFileSystemBackend overrides.
-  bool IsAccessAllowed(const storage::FileSystemURL& url) const override;
-  std::vector<base::FilePath> GetRootDirectories() const override;
-  void GrantFileAccessToOrigin(const url::Origin& origin,
-                               const base::FilePath& virtual_path) override;
-  void RevokeAccessForOrigin(const url::Origin& origin) override;
-  bool GetVirtualPath(const base::FilePath& filesystem_path,
-                      base::FilePath* virtual_path) const override;
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) const override;
-  storage::FileSystemURL CreateInternalURL(
-      storage::FileSystemContext* context,
-      const base::FilePath& entry_path) const override;
 
  private:
   const AccountId account_id_;

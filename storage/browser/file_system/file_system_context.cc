@@ -422,11 +422,6 @@ std::vector<FileSystemType> FileSystemContext::GetFileSystemTypes() const {
   return types;
 }
 
-ExternalFileSystemBackend* FileSystemContext::external_backend() const {
-  return static_cast<ExternalFileSystemBackend*>(
-      GetFileSystemBackend(kFileSystemTypeExternal));
-}
-
 void FileSystemContext::OpenFileSystem(
     const blink::StorageKey& storage_key,
     const absl::optional<storage::BucketLocator>& bucket,

@@ -164,39 +164,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
       FileSystemType type) const = 0;
 };
 
-// An interface to control external file system access permissions.
-// TODO(satorux): Move this out of 'storage/browser/fileapi'. crbug.com/257279
-class ExternalFileSystemBackend : public FileSystemBackend {
- public:
-  // Returns true if |url| is allowed to be accessed.
-  // This is supposed to perform ExternalFileSystem-specific security
-  // checks.
-  virtual bool IsAccessAllowed(const FileSystemURL& url) const = 0;
-  // Returns the list of top level directories that are exposed by this
-  // provider. This list is used to set appropriate child process file access
-  // permissions.
-  virtual std::vector<base::FilePath> GetRootDirectories() const = 0;
-  // Grants access to |virtual_path| from |origin| URL.
-  virtual void GrantFileAccessToOrigin(const url::Origin& origin,
-                                       const base::FilePath& virtual_path) = 0;
-  // Revokes file access from origin identified with |origin|.
-  virtual void RevokeAccessForOrigin(const url::Origin& origin) = 0;
-  // Gets virtual path by known filesystem path. Returns false when filesystem
-  // path is not exposed by this provider.
-  virtual bool GetVirtualPath(const base::FilePath& file_system_path,
-                              base::FilePath* virtual_path) const = 0;
-  // Gets a redirect URL for contents. e.g. Google Drive URL for hosted
-  // documents. Returns empty URL if the entry does not have the redirect URL.
-  virtual void GetRedirectURLForContents(const FileSystemURL& url,
-                                         URLCallback callback) const = 0;
-  // Creates an internal File System URL for performing internal operations such
-  // as confirming if a file or a directory exist before granting the final
-  // permission to the entry. The path must be an absolute path.
-  virtual FileSystemURL CreateInternalURL(
-      FileSystemContext* context,
-      const base::FilePath& entry_path) const = 0;
-};
-
 }  // namespace storage
 
 #endif  // STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_BACKEND_H_

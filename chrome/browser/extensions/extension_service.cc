@@ -125,8 +125,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/extensions/install_limiter.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #endif
 
@@ -1215,9 +1215,9 @@ void ExtensionService::PostDeactivateExtension(
   storage::FileSystemContext* filesystem_context =
       util::GetStoragePartitionForExtensionId(extension->id(), profile_)
           ->GetFileSystemContext();
-  if (filesystem_context && filesystem_context->external_backend()) {
-    filesystem_context->external_backend()->RevokeAccessForOrigin(
-        extension->origin());
+  if (filesystem_context && ash::FileSystemBackend::Get(*filesystem_context)) {
+    ash::FileSystemBackend::Get(*filesystem_context)
+        ->RevokeAccessForOrigin(extension->origin());
   }
 #endif
 

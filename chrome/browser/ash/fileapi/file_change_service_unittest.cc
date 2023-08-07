@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"
 #include "chrome/browser/ash/fileapi/file_change_service_observer.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -112,8 +112,9 @@ class TempFileSystem {
             name_, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), temp_dir_.GetPath()));
 
-    GetFileSystemContext(profile_)->external_backend()->GrantFileAccessToOrigin(
-        file_manager::util::GetFilesAppOrigin(), base::FilePath(name_));
+    ash::FileSystemBackend::Get(*GetFileSystemContext(profile_))
+        ->GrantFileAccessToOrigin(file_manager::util::GetFilesAppOrigin(),
+                                  base::FilePath(name_));
   }
 
   // Synchronously creates the file specified by `url`.

@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/fileapi/file_access_permissions.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 #include "chrome/browser/ash/fileapi/observable_file_system_operation_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -92,6 +93,13 @@ FileSystemBackend::FileSystemBackend(
       system_mount_points_(system_mount_points) {}
 
 FileSystemBackend::~FileSystemBackend() {}
+
+// static
+FileSystemBackend* FileSystemBackend::Get(
+    const storage::FileSystemContext& context) {
+  return static_cast<FileSystemBackend*>(
+      context.GetFileSystemBackend(storage::kFileSystemTypeExternal));
+}
 
 void FileSystemBackend::AddSystemMountPoints() {
   // RegisterFileSystem() is no-op if the mount point with the same name

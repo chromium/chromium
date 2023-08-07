@@ -133,8 +133,7 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
     const std::vector<FileSystemURL>& file_urls) {
   DCHECK(handler_extension.get());
 
-  storage::ExternalFileSystemBackend* backend =
-      file_system_context_handler->external_backend();
+  auto* backend = ash::FileSystemBackend::Get(*file_system_context_handler);
 
   std::unique_ptr<FileDefinitionList> file_definition_list(
       new FileDefinitionList);

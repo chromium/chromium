@@ -333,8 +333,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           Profile::FromBrowserContext(browser_context()), render_frame_host());
 
-  storage::ExternalFileSystemBackend* const backend =
-      file_system_context->external_backend();
+  auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(backend);
 
   const std::vector<Profile*>& profiles =
@@ -1197,8 +1196,8 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
           profile, render_frame_host());
   DCHECK(file_system_context.get());
 
-  const storage::ExternalFileSystemBackend* external_backend =
-      file_system_context->external_backend();
+  const auto* external_backend =
+      ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(external_backend);
 
   file_manager::util::FileDefinitionList file_definition_list;

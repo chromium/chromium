@@ -54,7 +54,6 @@ namespace storage {
 
 class AsyncFileUtil;
 class CopyOrMoveFileValidatorFactory;
-class ExternalFileSystemBackend;
 class ExternalMountPoints;
 class FileStreamReader;
 class FileStreamWriter;
@@ -209,11 +208,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // Returns all registered filesystem types.
   std::vector<FileSystemType> GetFileSystemTypes() const;
-
-  // Returns a FileSystemBackend instance for external filesystem
-  // type, which is used only by chromeos for now.  This is equivalent to
-  // calling GetFileSystemBackend(kFileSystemTypeExternal).
-  ExternalFileSystemBackend* external_backend() const;
 
   // Used for OpenFileSystem.
   using OpenFileSystemCallback =

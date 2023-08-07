@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,7 +26,6 @@
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -141,13 +141,12 @@ class FileManagerEventRouterTest : public testing::Test {
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         temp_dir_.GetPath());
 
-    file_manager::util::GetFileSystemContextForSourceURL(
-        profile_.get(), GURL("chrome-extension://abc"))
-        ->external_backend()
-        ->GrantFileAccessToOrigin(
-            url::Origin::Create(GURL("chrome-extension://abc")),
-            base::FilePath(file_manager::util::GetDownloadsMountPointName(
-                profile_.get())));
+    auto* context = file_manager::util::GetFileSystemContextForSourceURL(
+        profile_.get(), GURL("chrome-extension://abc"));
+    ash::FileSystemBackend::Get(*context)->GrantFileAccessToOrigin(
+        url::Origin::Create(GURL("chrome-extension://abc")),
+        base::FilePath(
+            file_manager::util::GetDownloadsMountPointName(profile_.get())));
   }
 
   const io_task::EntryStatus CreateSuccessfulEntryStatusForFileName(

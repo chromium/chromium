@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/file_errors.h"
@@ -35,7 +36,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/common/task_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
 
@@ -365,8 +365,7 @@ void PrepareNonNativeLocalFileForWritableApp(
   scoped_refptr<storage::FileSystemContext> const file_system_context =
       GetFileManagerFileSystemContext(profile);
   DCHECK(file_system_context);
-  storage::ExternalFileSystemBackend* const backend =
-      file_system_context->external_backend();
+  auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(backend);
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), path);

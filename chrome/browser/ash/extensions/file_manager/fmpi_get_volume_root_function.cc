@@ -9,11 +9,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/storage_partition.h"
-#include "storage/browser/file_system/file_system_backend.h"
 
 namespace extensions {
 
@@ -54,8 +54,7 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   scoped_refptr<storage::FileSystemContext> file_system_context =
       render_frame_host()->GetStoragePartition()->GetFileSystemContext();
   DCHECK(file_system_context.get());
-  storage::ExternalFileSystemBackend* const backend =
-      file_system_context->external_backend();
+  auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(backend);
   file_manager::util::FileDefinition fd;
   if (!backend->GetVirtualPath(volume->mount_path(), &fd.virtual_path)) {
