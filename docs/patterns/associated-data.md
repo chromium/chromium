@@ -208,9 +208,13 @@ KeyedService.
 A third note: on iOS, use [BrowserStateKeyedServiceFactory] instead, which
 attaches a KeyedService to a [BrowserState].
 
+A fourth note: on Android, C++ keyed services often have a corresponding Java
+object. The C++ part should own the Java one, as detailed in [JavaCppOwnership].
+
 [BrowserContextKeyedServiceFactory]: https://chromium.googlesource.com/chromium/src/+/HEAD/components/keyed_service/content/browser_context_keyed_service_factory.h
 [BrowserStateKeyedServiceFactory]: https://chromium.googlesource.com/chromium/src/+/HEAD/components/keyed_service/ios/browser_state_keyed_service_factory.h
 [BrowserState]: https://chromium.googlesource.com/chromium/src/+/HEAD/ios/web/public/browser_state.h
+[JavaCppOwnership]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_jni_ownership_best_practices.md
 [KeyedService]: https://chromium.googlesource.com/chromium/src/+/HEAD/components/keyed_service/core/keyed_service.h
 [SupportsUserData]: https://chromium.googlesource.com/chromium/src/+/HEAD/base/supports_user_data.h
 [TabHelper]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/tab_helpers.md
