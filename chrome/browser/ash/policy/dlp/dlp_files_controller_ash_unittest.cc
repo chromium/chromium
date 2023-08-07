@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,34 +31,24 @@
 #include "base/test/mock_callback.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/fake_crostini_features.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/test/dlp_files_test_with_mounts.h"
+#include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
-#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
-#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
-#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/file_access/scoped_file_access.h"
@@ -67,11 +56,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/constants.h"
-#include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/test/test_file_system_context.h"
-#include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -140,9 +124,6 @@ const DlpRulesManager::RuleMetadata kRuleMetadata2(kRuleName2, kRuleId2);
 const DlpRulesManager::RuleMetadata kRuleMetadata3(kRuleName3, kRuleId3);
 const DlpRulesManager::RuleMetadata kRuleMetadata4(kRuleName4, kRuleId4);
 
-bool CreateDummyFile(const base::FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
-}
 
 // For a given |root| converts the given virtual |path| to a GURL.
 GURL ToGURL(const base::FilePath& root, const std::string& path) {
@@ -187,7 +168,7 @@ using FileDaemonInfo = policy::DlpFilesControllerAsh::FileDaemonInfo;
 
 }  // namespace
 
-class DlpFilesControllerAshTest : public DlpFilesTestBase {
+class DlpFilesControllerAshTest : public DlpFilesTestWithMounts {
  public:
   DlpFilesControllerAshTest(const DlpFilesControllerAshTest&) = delete;
   DlpFilesControllerAshTest& operator=(const DlpFilesControllerAshTest&) =
@@ -195,80 +176,7 @@ class DlpFilesControllerAshTest : public DlpFilesTestBase {
 
  protected:
   DlpFilesControllerAshTest() = default;
-
   ~DlpFilesControllerAshTest() override = default;
-
-  void SetUp() override {
-    DlpFilesTestBase::SetUp();
-    ASSERT_TRUE(rules_manager_);
-    files_controller_ =
-        std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
-
-    event_storage_ = files_controller_->GetEventStorageForTesting();
-    DCHECK(event_storage_);
-
-    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-    event_storage_->SetTaskRunnerForTesting(task_runner_);
-
-    reporting_manager_ = std::make_unique<DlpReportingManager>();
-    SetReportQueueForReportingManager(
-        reporting_manager_.get(), events,
-        base::SequencedTaskRunner::GetCurrentDefault());
-    ON_CALL(*rules_manager_, GetReportingManager)
-        .WillByDefault(::testing::Return(reporting_manager_.get()));
-
-    // Set FilesPolicyNotificationManager.
-    policy::FilesPolicyNotificationManagerFactory::GetInstance()
-        ->SetTestingFactory(
-            profile_.get(),
-            base::BindRepeating(
-                &DlpFilesControllerAshTest::SetFilesPolicyNotificationManager,
-                base::Unretained(this)));
-
-    ASSERT_TRUE(
-        policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-            profile_.get()));
-    ASSERT_TRUE(fpnm_);
-
-    chromeos::DlpClient::InitializeFake();
-    chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
-
-    my_files_dir_ =
-        file_manager::util::GetMyFilesFolderForProfile(profile_.get());
-    ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
-    file_system_context_ =
-        storage::CreateFileSystemContextForTesting(nullptr, my_files_dir_);
-    my_files_dir_url_ = CreateFileSystemURL(my_files_dir_.value());
-
-    ASSERT_TRUE(files_controller_);
-    files_controller_->SetFileSystemContextForTesting(
-        file_system_context_.get());
-  }
-
-  void TearDown() override {
-    DlpFilesTestBase::TearDown();
-    reporting_manager_.reset();
-
-    if (chromeos::DlpClient::Get()) {
-      chromeos::DlpClient::Shutdown();
-    }
-  }
-
-  std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
-      content::BrowserContext* context) {
-    auto fpnm = std::make_unique<
-        testing::StrictMock<MockFilesPolicyNotificationManager>>(
-        profile_.get());
-    fpnm_ = fpnm.get();
-
-    return fpnm;
-  }
-
-  storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
-    return storage::FileSystemURL::CreateForTest(
-        kTestStorageKey, storage::kFileSystemTypeLocal,
-        base::FilePath::FromUTF8Unsafe(path));
-  }
 
   void AddFilesToDlpClient(std::vector<FileDaemonInfo> files,
                            std::vector<FileSystemURL>& out_files_urls) {
@@ -285,27 +193,13 @@ class DlpFilesControllerAshTest : public DlpFilesTestBase {
       add_file_req->set_source_url(file.source_url.spec());
       add_file_req->set_referrer_url(file.referrer_url.spec());
 
-      auto file_url = CreateFileSystemURL(file.path.value());
+      auto file_url = CreateFileSystemURL(kTestStorageKey, file.path.value());
       ASSERT_TRUE(file_url.is_valid());
       out_files_urls.push_back(std::move(file_url));
     }
     chromeos::DlpClient::Get()->AddFiles(request, add_files_cb.Get());
     testing::Mock::VerifyAndClearExpectations(&add_files_cb);
   }
-
-  raw_ptr<MockFilesPolicyNotificationManager, ExperimentalAsh> fpnm_ = nullptr;
-  std::unique_ptr<DlpFilesControllerAsh> files_controller_;
-  std::unique_ptr<DlpReportingManager> reporting_manager_;
-  std::vector<DlpPolicyEvent> events;
-  raw_ptr<DlpFilesEventStorage, ExperimentalAsh> event_storage_ = nullptr;
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
-
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
-  base::FilePath my_files_dir_;
-  FileSystemURL my_files_dir_url_;
 };
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
@@ -331,17 +225,11 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RegisterFileSystem(
+  mount_points_->RegisterFileSystem(
       ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
-
-  auto dst_url = mount_points->CreateExternalFileSystemURL(
+  auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), "archive",
       base::FilePath("file.rar/path/in/archive"));
 
@@ -397,7 +285,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_SameFileSystem) {
   ASSERT_TRUE(files_controller_);
   files_controller_->CheckIfTransferAllowed(
       /*task_id=*/absl::nullopt, transferred_files,
-      CreateFileSystemURL("Downloads"),
+      CreateFileSystemURL(kTestStorageKey, "Downloads"),
       /*is_move=*/false, future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
@@ -416,17 +304,11 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ClientNotRunning) {
   std::vector<storage::FileSystemURL> transferred_files(
       {files_urls[0], files_urls[1], files_urls[2]});
 
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RegisterFileSystem(
+  mount_points_->RegisterFileSystem(
       ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
-
-  auto dst_url = mount_points->CreateExternalFileSystemURL(
+  auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), "archive",
       base::FilePath("file.rar/path/in/archive"));
 
@@ -528,19 +410,13 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
   AddFilesToDlpClient(std::move(files), files_urls);
 
   std::vector<storage::FileSystemURL> transferred_files(
-      {CreateFileSystemURL(sub_dir1.GetPath().value())});
+      {CreateFileSystemURL(kTestStorageKey, sub_dir1.GetPath().value())});
 
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RegisterFileSystem(
+  mount_points_->RegisterFileSystem(
       ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
-
-  auto dst_url = mount_points->CreateExternalFileSystemURL(
+  auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), "archive",
       base::FilePath("file.rar/path/in/archive"));
 
@@ -595,10 +471,10 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ExternalFiles) {
   ASSERT_TRUE(external_dir.CreateUniqueTempDir());
   base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(file_path1.value());
+  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
   base::FilePath file_path2 = external_dir.GetPath().AppendASCII(kFilePath2);
   ASSERT_TRUE(CreateDummyFile(file_path2));
-  auto file_url2 = CreateFileSystemURL(file_path2.value());
+  auto file_url2 = CreateFileSystemURL(kTestStorageKey, file_path2.value());
 
   std::vector<FileSystemURL> transferred_files({file_url1, file_url2});
   base::test::TestFuture<std::vector<FileSystemURL>> future;
@@ -630,15 +506,9 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_EmptyList) {
 }
 
 TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MixedFiles) {
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  ASSERT_TRUE(mount_points);
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
 
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, kCrtime1, my_files_dir_.AppendASCII(kFilePath1),
@@ -700,15 +570,9 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MixedFiles) {
 }
 
 TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  ASSERT_TRUE(mount_points);
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
 
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, kCrtime1, my_files_dir_.AppendASCII(kFilePath1),
@@ -762,15 +626,9 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
 }
 
 TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MultiFolder) {
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  ASSERT_TRUE(mount_points);
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
 
   base::ScopedTempDir sub_dir1;
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
@@ -987,7 +845,7 @@ TEST_F(DlpFilesControllerAshTest, GetDlpMetadata_FileNotAvailable) {
 
   auto file_path = my_files_dir_.AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path));
-  auto file_url = CreateFileSystemURL(file_path.value());
+  auto file_url = CreateFileSystemURL(kTestStorageKey, file_path.value());
   ASSERT_TRUE(file_url.is_valid());
 
   std::vector<storage::FileSystemURL> files_to_check({file_url});
@@ -1429,19 +1287,13 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  ASSERT_TRUE(mount_points);
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
 
   base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(file_path1.value());
+  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
 
   // Set CheckFilesTransferResponse to return an error.
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
@@ -1475,29 +1327,23 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
 
 // Tests dropping a mix of an external file and a local directory.
 TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  ASSERT_TRUE(mount_points);
-  ASSERT_TRUE(mount_points->RegisterFileSystem(
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
 
   base::ScopedTempDir external_dir;
   ASSERT_TRUE(external_dir.CreateUniqueTempDir());
   base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(file_path1.value());
+  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
 
   base::ScopedTempDir sub_dir1;
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
   base::FilePath file_path2 = sub_dir1.GetPath().AppendASCII(kFilePath2);
   ASSERT_TRUE(CreateDummyFile(file_path2));
-  auto file_url2 = CreateFileSystemURL(file_path2.value());
+  auto file_url2 = CreateFileSystemURL(kTestStorageKey, file_path2.value());
 
-  // Set CheckFilesTransfer response to restrict the local file.
+  //  Set CheckFilesTransfer response to restrict the local file.
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(file_path2.value());
   ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
@@ -1573,86 +1419,6 @@ TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
                        base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
-class DlpFilesTestWithMounts : public DlpFilesControllerAshTest {
- public:
-  DlpFilesTestWithMounts(const DlpFilesTestWithMounts&) = delete;
-  DlpFilesTestWithMounts& operator=(const DlpFilesTestWithMounts&) = delete;
-
- protected:
-  DlpFilesTestWithMounts() = default;
-
-  ~DlpFilesTestWithMounts() override = default;
-
-  void SetUp() override {
-    DlpFilesControllerAshTest::SetUp();
-
-    mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
-    ASSERT_TRUE(mount_points_);
-
-    mount_points_->RevokeAllFileSystems();
-
-    ASSERT_TRUE(mount_points_->RegisterFileSystem(
-        file_manager::util::GetAndroidFilesMountPointName(),
-        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        base::FilePath(file_manager::util::GetAndroidFilesPath())));
-
-    ASSERT_TRUE(mount_points_->RegisterFileSystem(
-        ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
-        storage::FileSystemMountOption(),
-        base::FilePath(file_manager::util::kRemovableMediaPath)));
-
-    // Setup for Crostini.
-    crostini::FakeCrostiniFeatures crostini_features;
-    crostini_features.set_is_allowed_now(true);
-    crostini_features.set_enabled(true);
-
-    ash::ChunneldClient::InitializeFake();
-    ash::CiceroneClient::InitializeFake();
-    ash::ConciergeClient::InitializeFake();
-    ash::SeneschalClient::InitializeFake();
-
-    crostini::CrostiniManager* crostini_manager =
-        crostini::CrostiniManager::GetForProfile(profile_.get());
-    ASSERT_TRUE(crostini_manager);
-    crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
-    crostini_manager->AddRunningContainerForTesting(
-        crostini::kCrostiniDefaultVmName,
-        crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
-                                "testuser", "/home/testuser",
-                                "PLACEHOLDER_IP"));
-    ASSERT_TRUE(mount_points_->RegisterFileSystem(
-        file_manager::util::GetCrostiniMountPointName(profile_.get()),
-        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        file_manager::util::GetCrostiniMountDirectory(profile_.get())));
-
-    // Setup for DriveFS.
-    profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
-    drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get())
-        ->SetEnabled(true);
-    drive::DriveIntegrationService* integration_service =
-        drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get());
-    ASSERT_TRUE(integration_service);
-    base::FilePath mount_point_drive = integration_service->GetMountPointPath();
-    ASSERT_TRUE(mount_points_->RegisterFileSystem(
-        mount_point_drive.BaseName().value(), storage::kFileSystemTypeLocal,
-        storage::FileSystemMountOption(), mount_point_drive));
-  }
-
-  void TearDown() override {
-    DlpFilesControllerAshTest::TearDown();
-
-    ash::ChunneldClient::Shutdown();
-    ash::CiceroneClient::Shutdown();
-    ash::ConciergeClient::Shutdown();
-    ash::SeneschalClient::Shutdown();
-
-    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-  }
-
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
-      nullptr;
-};
-
 class DlpFilesExternalDestinationTest
     : public DlpFilesTestWithMounts,
       public ::testing::WithParamInterface<
@@ -1665,8 +1431,12 @@ class DlpFilesExternalDestinationTest
 
  protected:
   DlpFilesExternalDestinationTest() = default;
-
   ~DlpFilesExternalDestinationTest() override = default;
+
+  void SetUp() override {
+    DlpFilesTestWithMounts::SetUp();
+    MountExternalComponents();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2546,7 +2316,7 @@ TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
   base::FilePath file_path1 = sub_dir1.GetPath().AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(file_path1.value());
+  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
 
   // Set CheckFilesTransfer response to restrict the local file.
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
@@ -2597,6 +2367,11 @@ class DlpFilesControllerAshComponentsTest
  protected:
   DlpFilesControllerAshComponentsTest() = default;
   ~DlpFilesControllerAshComponentsTest() = default;
+
+  void SetUp() override {
+    DlpFilesTestWithMounts::SetUp();
+    MountExternalComponents();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(

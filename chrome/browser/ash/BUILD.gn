@@ -5547,6 +5547,8 @@ source_set("unit_tests") {
     "policy/dlp/dlp_files_controller_ash_unittest.cc",
     "policy/dlp/dlp_files_event_storage_unittest.cc",
     "policy/dlp/files_policy_notification_manager_unittest.cc",
+    "policy/dlp/test/dlp_files_test_with_mounts.cc",
+    "policy/dlp/test/dlp_files_test_with_mounts.h",
     "policy/dlp/test/files_policy_notification_manager_test_utils.cc",
     "policy/dlp/test/files_policy_notification_manager_test_utils.h",
     "policy/dlp/test/mock_dlp_files_controller_ash.cc",
