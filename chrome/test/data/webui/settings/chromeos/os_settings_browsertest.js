@@ -641,7 +641,16 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
- ['OsPageAvailability', 'os_page_availability_test.js'],
+ [
+   'OsPageAvailability',
+   'os_page_availability_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsPageAvailabilityRevamp',
+   'os_page_availability_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsPeoplePage', 'os_people_page/os_people_page_test.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  [
@@ -722,6 +731,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsSettingsUiPageAvailability',
    'os_settings_ui/os_settings_ui_page_availability_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiPageAvailabilityRevamp',
+   'os_settings_ui/os_settings_ui_page_availability_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsSettingsUiPageVisibilityRevamp',

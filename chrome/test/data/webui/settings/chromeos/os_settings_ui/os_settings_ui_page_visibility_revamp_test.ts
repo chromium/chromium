@@ -14,12 +14,13 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, Router, routes, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, PageDisplayerElement, Router, routes, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<os-settings-ui> page visibility', () => {
   let ui: OsSettingsUiElement;
@@ -90,6 +91,54 @@ suite('<os-settings-ui> page visibility', () => {
     assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
   }
 
+  function isDefaultRouteElement(element: HTMLElement) {
+    return element.getAttribute('route-path') === 'default';
+  }
+
+  /**
+   * Verifies the page has a visible element (L1 page) for the default route,
+   * and that any subpages are hidden.
+   */
+  function assertSubpagesHidden(section: routesMojom.Section): void {
+    const pageDisplayer =
+        mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
+            `page-displayer[section="${section}"]`);
+    assert(pageDisplayer);
+
+    const pages = pageDisplayer.firstElementChild!.shadowRoot!.querySelector(
+        'os-settings-animated-pages');
+    assert(pages);
+
+    const children =
+        pages.shadowRoot!.querySelector('slot')!.assignedNodes({flatten: true})
+            .filter(n => n.nodeType === Node.ELEMENT_NODE) as HTMLElement[];
+
+    const stampedChildren = children.filter((element) => {
+      return element.tagName !== 'TEMPLATE';
+    });
+
+    // The page's default route element should be stamped and visible.
+    const defaultRouteElements = stampedChildren.filter(isDefaultRouteElement);
+    assertEquals(
+        1, defaultRouteElements.length,
+        `Default route element not found for section ${section}`);
+    const defaultRouteEl = defaultRouteElements[0];
+    assert(defaultRouteEl);
+    assertTrue(
+        isVisible(defaultRouteEl),
+        `Default route element for section ${section} should be visible.`);
+
+    // Any other stamped subpages should not be visible.
+    const subpages = stampedChildren.filter((element) => {
+      return !isDefaultRouteElement(element);
+    });
+    for (const subpage of subpages) {
+      assertFalse(
+          isVisible(subpage),
+          `Subpages for section ${section} should be hidden.`);
+    }
+  }
+
   suiteSetup(async () => {
     assertTrue(
         loadTimeData.getBoolean('isRevampWayfindingEnabled'),
@@ -107,6 +156,9 @@ suite('<os-settings-ui> page visibility', () => {
 
   suiteTeardown(() => {
     ui.remove();
+  });
+
+  teardown(() => {
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -143,15 +195,14 @@ suite('<os-settings-ui> page visibility', () => {
           const menuItem = queryMenuItemByHref(route.path);
           assert(menuItem, `Menu item with href="${route.path}" not found.`);
 
-          const pageReadyPromise = eventToPromise('show-container', window);
           menuItem.click();
-          flush();
-          await pageReadyPromise;
+          await flushTasks();
 
           const section = route.section;
           assert(section !== null);  // Value can be 0 (valid enum value)
           assertIsOnlyActiveAndVisiblePage(section);
           assertPageIsFocused(section);
+          assertSubpagesHidden(section);
         });
   }
 });
