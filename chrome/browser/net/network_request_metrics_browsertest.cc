@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -106,11 +105,7 @@ class NetworkRequestMetricsBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<RequestType> {
  public:
-  NetworkRequestMetricsBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        predictors::kSpeculativePreconnectFeature);
-  }
-  ~NetworkRequestMetricsBrowserTest() override {}
+  ~NetworkRequestMetricsBrowserTest() override = default;
 
   // ContentBrowserTest implementation:
   void SetUpOnMainThread() override {
@@ -329,7 +324,6 @@ class NetworkRequestMetricsBrowserTest
   base::HistogramTester* histograms() { return histograms_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       uninteresting_main_frame_response_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
