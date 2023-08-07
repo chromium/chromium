@@ -2055,6 +2055,9 @@ chromium-metrics-reviews@google.com.
     request. Logged each time a top frame URL navigation happens for users who
     have the real time URL lookups enabled. It can also be logged for
     non-mainframe URL hits for EnhancedProtection users.
+
+    Until M117, this was being logged twice each time for iOS. Bucket ratios
+    were still correct, just not total counts.
   </summary>
   <token key="IsMainframe">
     <variant name="Mainframe" summary="mainframe"/>

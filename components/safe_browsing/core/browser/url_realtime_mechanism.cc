@@ -32,9 +32,11 @@ void RecordLocalMatchResult(
   std::string frame_suffix = is_mainframe ? ".Mainframe" : ".NonMainframe";
   base::UmaHistogramEnumeration(kMatchResultHistogramName + frame_suffix,
                                 match_result);
-  base::UmaHistogramEnumeration(kMatchResultHistogramName + frame_suffix +
-                                    url_lookup_service_metric_suffix,
-                                match_result);
+  if (!url_lookup_service_metric_suffix.empty()) {
+    base::UmaHistogramEnumeration(kMatchResultHistogramName + frame_suffix +
+                                      url_lookup_service_metric_suffix,
+                                  match_result);
+  }
 }
 
 }  // namespace
