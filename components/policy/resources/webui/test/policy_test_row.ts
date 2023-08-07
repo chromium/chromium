@@ -29,17 +29,18 @@ export class PolicyTestRowElement extends CustomElement {
     return this.hasAnError_;
   }
 
-  // Event listener function for changing the type of input in the value cell of
-  // this row depending on the value type of the selected policy.
+  // Event listener function for changing the input type when a policy name is
+  // selected.
   private changeInputTypeEvent_(event: Event) {
-    const selectElement: HTMLSelectElement = event.target! as HTMLSelectElement;
-    this.changeInputType_(selectElement);
+    this.changeInputType(event.target! as HTMLSelectElement);
   }
 
-  private changeInputType_(selectElement: HTMLSelectElement) {
+  // Class method for changing the type of input in the value cell of this row
+  // depending on the value type of the selected policy.
+  changeInputType(selectElement: HTMLSelectElement) {
     const newValueType =
-        selectElement.options[selectElement.selectedIndex]!.classList[0];
-    const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
+        selectElement.options[selectElement.selectedIndex]!.className;
+    const inputElement = this.getRequiredElement('.value');
     const inputElementCell = inputElement.parentNode! as HTMLElement;
     inputElement.remove();
     switch (newValueType) {
@@ -249,7 +250,7 @@ export class PolicyTestRowElement extends CustomElement {
     if (policyNameInput.selectedIndex === -1) {
       this.setInErrorState_(policyNameInput);
     } else {
-      this.changeInputType_(policyNameInput);
+      this.changeInputType(policyNameInput);
     }
 
     const policyValueInput =

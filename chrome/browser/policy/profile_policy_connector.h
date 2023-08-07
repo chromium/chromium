@@ -195,7 +195,7 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   std::unique_ptr<bool> is_managed_override_;
 
-  raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_;
+  raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns |true| when this is the main profile.

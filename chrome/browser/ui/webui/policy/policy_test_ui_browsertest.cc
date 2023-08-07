@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
@@ -103,13 +104,7 @@ class PolicyTestPageUITest
     provider_.UpdatePolicy(std::move(bundle));
   }
 
-  Profile* GetProfile() {
-#if BUILDFLAG(IS_ANDROID)
-    return chrome_test_utils::GetProfile(this);
-#else
-    return browser()->profile();
-#endif
-  }
+  Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
@@ -218,6 +213,8 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
     return handler;
   }
 
+  Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
+
  protected:
   content::TestWebUI* web_ui() { return &web_ui_; }
 
@@ -260,9 +257,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
 
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
-  Profile* profile = chrome_test_utils::GetProfile(this);
   policy::PolicyService* policy_service =
-      profile->GetProfilePolicyConnector()->policy_service();
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
 
   // Check correct policies applied
   const policy::PolicyMap* policy_map =
@@ -341,9 +337,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
 
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
-  Profile* profile = chrome_test_utils::GetProfile(this);
   policy::PolicyService* policy_service =
-      profile->GetProfilePolicyConnector()->policy_service();
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
 
   const policy::PolicyMap* policy_map =
       &policy_service->GetPolicies(chrome_namespace);
@@ -359,14 +354,17 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // TODO(b:293632195) Implement test on android and chromeos
-IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, PRE_RestartBrowser) {
+// Test that test policies stored in the pref kLocalTestPoliciesForNextStartup
+// are applied after restart.
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
+                       PRE_PRE_ApplyTestPoliciesAfterRestart) {
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
 
-  // Trigger handler
+  // Set the value of AccessCodeCastDeviceDuration to 100.
   const std::string jsonString =
       R"([
       {"level": 0,"scope": 0,"source": 0,
-      "name": "DefaultSearchProviderEnabled","value": false}
+      "name": "AccessCodeCastDeviceDuration","value": 100}
       ])";
 
   base::Value::List list_args;
@@ -374,22 +372,48 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, PRE_RestartBrowser) {
   list_args.Append("restartBrowser");
   list_args.Append(jsonString);
 
+  // Restart the browser.
   web_ui()->HandleReceivedMessage("restartBrowser", list_args);
 
   handler.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, RestartBrowser) {
-  const std::string jsonString =
-      R"([
-      {"level": 0,"scope": 0,"source": 0,
-      "name": "DefaultSearchProviderEnabled","value": false}
-      ])";
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
+                       PRE_ApplyTestPoliciesAfterRestart) {
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service =
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
+  const policy::PolicyMap* policy_map =
+      &policy_service->GetPolicies(chrome_namespace);
 
-  // Check preference has correct value set
-  PrefService* pref = g_browser_process->local_state();
-  EXPECT_EQ(
-      jsonString,
-      pref->GetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup));
+  ASSERT_TRUE(policy_map);
+
+  // Check that the AccessCodeCastDeviceDuration policy is in the policy map and
+  // its value is 100.
+  const policy::PolicyMap::Entry* entry =
+      policy_map->Get(policy::key::kAccessCodeCastDeviceDuration);
+  EXPECT_TRUE(entry);
+  EXPECT_EQ(entry->value(base::Value::Type::INTEGER)->GetInt(), 100);
+
+  // Restart the browser.
+  chrome::AttemptRestart();
 }
-#endif
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, ApplyTestPoliciesAfterRestart) {
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service =
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
+  const policy::PolicyMap* policy_map =
+      &policy_service->GetPolicies(chrome_namespace);
+
+  ASSERT_TRUE(policy_map);
+
+  // Check that the AccessCodeCastDeviceDuration policy is not in the policy
+  // map.
+  const policy::PolicyMap::Entry* entry =
+      policy_map->Get(policy::key::kAccessCodeCastDeviceDuration);
+  EXPECT_FALSE(entry);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

@@ -311,6 +311,9 @@ void ProfilePolicyConnector::Init(
                                                         std::move(migrators));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  if (local_test_policy_provider_ && local_test_policy_provider_->is_active()) {
+    UseLocalTestPolicyProvider();
+  }
   DoPostInit();
 }
 

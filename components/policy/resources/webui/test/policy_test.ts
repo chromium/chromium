@@ -154,7 +154,9 @@ function restartBrowser() {
   const jsonString =
       getRequiredElement<PolicyTestTableElement>('policy-test-table')
           .getTestPoliciesJsonString();
-  policyTestBrowserProxy.restartWithTestPolicies(jsonString);
+  if (jsonString) {
+    policyTestBrowserProxy.restartWithTestPolicies(jsonString);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

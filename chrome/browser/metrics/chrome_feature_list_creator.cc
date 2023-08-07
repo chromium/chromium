@@ -117,8 +117,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   };
 
   for (const auto& info : chrome_layer_override_info) {
-    if (command_line.HasSwitch(info.switch_name))
+    if (command_line.HasSwitch(info.switch_name)) {
       overrides.emplace_back(info.feature, info.override_state);
+    }
   }
   return overrides;
 }
@@ -228,6 +229,10 @@ void ChromeFeatureListCreator::CreatePrefService() {
       browser_policy_connector_->GetPolicyService(), std::move(pref_registry),
       browser_policy_connector_.get());
 
+  // Apply local test policies from the kLocalTestPoliciesForNextStartup pref if
+  // there are any.
+  browser_policy_connector_->MaybeApplyLocalTestPolicies(local_state_.get());
+
 // TODO(asvitkine): This is done here so that the pref is set before
 // VariationsService queries the locale. This should potentially be moved to
 // somewhere better, e.g. as a helper in first_run namespace.
@@ -326,13 +331,15 @@ void ChromeFeatureListCreator::SetupInitialPrefs() {
     return;
   }
 #else
-  if (!first_run::IsChromeFirstRun())
+  if (!first_run::IsChromeFirstRun()) {
     return;
+  }
 #endif
 
   installer_initial_prefs_ = first_run::LoadInitialPrefs();
-  if (!installer_initial_prefs_)
+  if (!installer_initial_prefs_) {
     return;
+  }
 
   // Store the initial VariationsService seed in local state, if it exists
   // in master prefs. Note: The getters we call remove them from the installer

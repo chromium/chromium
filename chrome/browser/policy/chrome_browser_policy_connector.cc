@@ -34,9 +34,11 @@
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -188,6 +190,24 @@ ChromeBrowserPolicyConnector::GetPlatformProvider() {
 void ChromeBrowserPolicyConnector::SetLocalTestPolicyProviderForTesting(
     ConfigurationPolicyProvider* provider) {
   local_test_provider_ = provider;
+}
+
+void ChromeBrowserPolicyConnector::MaybeApplyLocalTestPolicies(
+    PrefService* local_state) {
+  std::string policies_to_apply = local_state->GetString(
+      policy::policy_prefs::kLocalTestPoliciesForNextStartup);
+  if (policies_to_apply.empty()) {
+    return;
+  }
+  for (policy::ConfigurationPolicyProvider* provider : GetPolicyProviders()) {
+    provider->set_active(false);
+  }
+  policy::LocalTestPolicyProvider* local_test_policy_provider =
+      static_cast<policy::LocalTestPolicyProvider*>(local_test_provider_);
+  local_test_policy_provider->set_active(true);
+  local_test_policy_provider->LoadJsonPolicies(policies_to_apply);
+  local_state->ClearPref(
+      policy::policy_prefs::kLocalTestPoliciesForNextStartup);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
