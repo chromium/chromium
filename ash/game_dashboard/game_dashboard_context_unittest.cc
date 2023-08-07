@@ -8,6 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -35,7 +36,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -63,6 +66,15 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         << "The toolbar must be opened first before trying to retrieve its "
            "height.";
     return test_api_->GetToolbarWidget()->GetWindowBoundsInScreen().height();
+  }
+
+  // Starts the video recording from `CaptureModeBarView`.
+  void ClickOnStartRecordingButtonInCaptureModeBarView() {
+    auto* start_recording_button = GetStartRecordingButton();
+    ASSERT_TRUE(start_recording_button);
+    LeftClickOn(start_recording_button);
+    WaitForRecordingToStart();
+    EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
   }
 
   // If `is_arc_window` is true, this function creates the window as an ARC
@@ -187,6 +199,96 @@ class GameDashboardContextTest : public GameDashboardTestBase {
                                    window_center_point.y() - y_offset});
     EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
               GameDashboardContext::ToolbarSnapLocation::kTopLeft);
+  }
+
+  // Starts recording `recording_window_test_api`'s window, and verifies its
+  // record game buttons are enabled and toggled on, while the record game
+  // buttons in `other_window_test_api` are disabled and toggled off.
+  void RecordGameAndVerifyButtons(
+      GameDashboardContextTestApi* recording_window_test_api,
+      GameDashboardContextTestApi* other_window_test_api) {
+    // Verify the initial state of the record buttons.
+    for (auto* test_api : {recording_window_test_api, other_window_test_api}) {
+      wm::ActivateWindow(test_api->context()->game_window());
+
+      test_api->OpenTheMainMenu();
+      auto* record_game_tile = test_api->GetMainMenuRecordGameTile();
+      ASSERT_TRUE(record_game_tile);
+      EXPECT_TRUE(record_game_tile->GetEnabled());
+      EXPECT_FALSE(record_game_tile->IsToggled());
+
+      test_api->OpenTheToolbar();
+      auto* record_game_button = test_api->GetToolbarRecordGameButton();
+      ASSERT_TRUE(record_game_button);
+      EXPECT_TRUE(record_game_button->GetEnabled());
+      EXPECT_FALSE(record_game_button->toggled());
+    }
+
+    // Activate the recording_window.
+    auto* recording_window =
+        recording_window_test_api->context()->game_window();
+    ASSERT_TRUE(recording_window);
+    wm::ActivateWindow(recording_window);
+
+    // Start recording recording_window.
+    LeftClickOn(recording_window_test_api->GetMainMenuRecordGameTile());
+    ClickOnStartRecordingButtonInCaptureModeBarView();
+
+    // Reopen the recording window's main menu, because clicking on the button
+    // closed it.
+    recording_window_test_api->OpenTheMainMenu();
+
+    // Retrieve the record game buttons from both windows.
+    auto* recording_window_record_game_tile =
+        recording_window_test_api->GetMainMenuRecordGameTile();
+    ASSERT_TRUE(recording_window_record_game_tile);
+    auto* recording_window_record_game_button =
+        recording_window_test_api->GetToolbarRecordGameButton();
+    ASSERT_TRUE(recording_window_record_game_button);
+    auto* other_window_record_game_tile =
+        other_window_test_api->GetMainMenuRecordGameTile();
+    ASSERT_TRUE(other_window_record_game_tile);
+    auto* other_window_record_game_button =
+        other_window_test_api->GetToolbarRecordGameButton();
+    ASSERT_TRUE(other_window_record_game_button);
+
+    // Verify the recording_window's buttons are enabled and toggled on.
+    EXPECT_TRUE(recording_window_record_game_tile->GetEnabled());
+    EXPECT_TRUE(recording_window_record_game_tile->IsToggled());
+    EXPECT_TRUE(recording_window_record_game_button->GetEnabled());
+    EXPECT_TRUE(recording_window_record_game_button->toggled());
+
+    // Verify the other window's buttons are disabled and toggled off.
+    EXPECT_FALSE(other_window_record_game_tile->GetEnabled());
+    EXPECT_FALSE(other_window_record_game_tile->IsToggled());
+    EXPECT_FALSE(other_window_record_game_button->GetEnabled());
+    EXPECT_FALSE(other_window_record_game_button->toggled());
+
+    // Stop the video recording session.
+    CaptureModeTestApi().StopVideoRecording();
+    EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+
+    // TODO(b/286889161): Update the record game button pointers after the bug
+    // has been addressed. The main menu will no longer remain open, which makes
+    // button pointers invalid.
+    // Verify all the record game buttons are enabled and toggled off.
+    EXPECT_TRUE(recording_window_record_game_tile->GetEnabled());
+    EXPECT_TRUE(recording_window_record_game_button->GetEnabled());
+    EXPECT_TRUE(other_window_record_game_tile->GetEnabled());
+    EXPECT_TRUE(other_window_record_game_button->GetEnabled());
+
+    // Verify all the record game buttons are toggled off.
+    EXPECT_FALSE(recording_window_record_game_tile->IsToggled());
+    EXPECT_FALSE(recording_window_record_game_button->toggled());
+    EXPECT_FALSE(other_window_record_game_tile->IsToggled());
+    EXPECT_FALSE(other_window_record_game_button->toggled());
+
+    // Close the toolbar and main menu in both windows.
+    for (auto* test_api : {recording_window_test_api, other_window_test_api}) {
+      wm::ActivateWindow(test_api->context()->game_window());
+      test_api->CloseTheToolbar();
+      test_api->CloseTheMainMenu();
+    }
   }
 
  protected:
@@ -383,6 +485,38 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
       /*setup_exists=*/false);
 }
 
+// Verifies that when one game window starts a recording session, it's
+// record game buttons are enabled and the other game's record game buttons
+// are disabled.
+TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcGameControlsFlagsKey,
+                            ArcGameControlsFlag::kKnown);
+  // Create a GFN game window.
+  auto gfn_game_window =
+      CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
+                      gfx::Rect(50, 50, 400, 200));
+  auto* gfn_game_context =
+      GameDashboardController::Get()->GetGameDashboardContext(
+          gfn_game_window.get());
+  ASSERT_TRUE(gfn_game_context);
+  auto gfn_window_test_api =
+      GameDashboardContextTestApi(gfn_game_context, GetEventGenerator());
+
+  // Start recording the ARC game window, and verify both windows' record game
+  // button states.
+  RecordGameAndVerifyButtons(
+      /*recording_window_test_api=*/test_api_.get(),
+      /*other_window_test_api=*/&gfn_window_test_api);
+
+  // Start recording the GFN game window, and verify both windows' "record
+  // game" button states.
+  RecordGameAndVerifyButtons(
+      /*recording_window_test_api=*/&gfn_window_test_api,
+      /*other_window_test_api=*/test_api_.get());
+}
+
 // -----------------------------------------------------------------------------
 // GameTypeGameDashboardContextTest:
 // Test fixture to test both ARC and GeForceNow game window depending on the
@@ -537,7 +671,7 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromMainMenu) {
 }
 
 // Verifies the main menu record game tile can video record the game window.
-TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
+TEST_P(GameTypeGameDashboardContextTest, RecordGameFromMainMenu) {
   if (IsArcGame()) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
@@ -550,18 +684,64 @@ TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
 
   LeftClickOn(record_game_tile);
 
-  // Start video recording from `CaptureModeBarView`.
-  auto* recording_button = GetStartRecordingButton();
-  ASSERT_TRUE(recording_button);
-
-  LeftClickOn(recording_button);
-  WaitForRecordingToStart();
-  EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
+  // Start the video recording using the record game tile.
+  LeftClickOn(record_game_tile);
+  ClickOnStartRecordingButtonInCaptureModeBarView();
 
   // Stop video recording.
   // TODO(b/286889385): Stop video recording using `GameDashboardMainMenuView`.
   CaptureModeTestApi().StopVideoRecording();
   EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+}
+
+// Verifies the record game buttons in the main menu and toolbar are disabled,
+// if a recording session was started outside of the Game Dashboard.
+TEST_P(GameTypeGameDashboardContextTest,
+       CaptureSessionStartedOutsideOfTheGameDashboard) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+  auto* capture_mode_controller = CaptureModeController::Get();
+
+  test_api_->OpenTheMainMenu();
+
+  // Retrieve the record game tile from the main menu, and verify it's
+  // enabled and toggled off.
+  auto* main_menu_record_game_button = test_api_->GetMainMenuRecordGameTile();
+  EXPECT_TRUE(main_menu_record_game_button);
+  EXPECT_TRUE(main_menu_record_game_button->GetEnabled());
+  EXPECT_FALSE(main_menu_record_game_button->IsToggled());
+
+  test_api_->OpenTheToolbar();
+  // Retrieve the record game button from the toolbar, and verify it's
+  // enabled and toggled off.
+  auto* toolbar_record_game_button = test_api_->GetToolbarRecordGameButton();
+  EXPECT_TRUE(toolbar_record_game_button);
+  EXPECT_TRUE(toolbar_record_game_button->GetEnabled());
+  EXPECT_FALSE(toolbar_record_game_button->toggled());
+
+  // Start video recording from `CaptureModeController`.
+  EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
+
+  // Verify the record game buttons are disabled and toggled off.
+  EXPECT_FALSE(main_menu_record_game_button->GetEnabled());
+  EXPECT_FALSE(main_menu_record_game_button->IsToggled());
+  EXPECT_FALSE(toolbar_record_game_button->GetEnabled());
+  EXPECT_FALSE(toolbar_record_game_button->toggled());
+
+  // Stop video recording.
+  CaptureModeTestApi().StopVideoRecording();
+  EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
+
+  // Verify the record game buttons are now enabled and toggled off.
+  EXPECT_TRUE(main_menu_record_game_button->GetEnabled());
+  EXPECT_FALSE(main_menu_record_game_button->IsToggled());
+  EXPECT_TRUE(toolbar_record_game_button->GetEnabled());
+  EXPECT_FALSE(toolbar_record_game_button->toggled());
 }
 
 // Verifies the toolbar opens and closes when the toolbar button in the main

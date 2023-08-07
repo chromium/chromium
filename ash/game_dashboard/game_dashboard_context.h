@@ -53,19 +53,33 @@ class GameDashboardContext {
   // Sets whether the main menu button is enabled/clickable.
   void SetMainMenuButtonEnabled(bool enable);
 
-  // Toggles the main menu, called only by the accelerator, or hides the menu
-  // if it is already shown.
+  // Toggles the creation/deletion of the main menu within the game window.
   void ToggleMainMenu();
+
+  // Closes the main menu. Clears `main_menu_widget_` and `main_menu_view_`.
+  void CloseMainMenu();
 
   // Toggles the creation/deletion of the toolbar within the game window.
   // Returns the toolbar visibility state.
   bool ToggleToolbar();
+
+  // Closes the toolbar. Clears `toolbar_widget_` and `toolbar_view_`.
+  void CloseToolbar();
 
   // Conditionally, updates the toolbar widget's bounds and location, relative
   // to the `game_window_`.
   void MaybeUpdateToolbarWidgetBounds();
 
   bool IsToolbarVisible() const;
+
+  // Called only when `CaptureModeController` has started a recording session.
+  // If `is_recording_game_window` is true, then the recording session was
+  // initiated by the Game Dashboard and the `game_window_` is being recorded.
+  void OnRecordingStarted(bool is_recording_game_window);
+
+  // Called only when `CaptureModeController` has ended a recording session or
+  // if the recording session was aborted.
+  void OnRecordingEnded();
 
  private:
   friend class GameDashboardContextTestApi;

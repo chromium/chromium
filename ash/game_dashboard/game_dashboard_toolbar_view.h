@@ -28,6 +28,16 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   GameDashboardToolbarView& operator=(const GameDashboardToolbarView) = delete;
   ~GameDashboardToolbarView() override;
 
+  // Updates `record_game_button_` to the stop button. Called when
+  // `CaptureModeController` has started a recording session. If
+  // `is_recording_game_window` is true, then the `context_`'s game_window is
+  // being recorded.
+  void OnRecordingStarted(bool is_recording_game_window);
+
+  // Updates `record_game_button_` to the default state. Called when
+  // `CaptureModeController` has ended a recording session or was aborted.
+  void OnRecordingEnded();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -61,6 +71,11 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   void AddShortcutTiles();
   // Adds Game Controls button if needed.
   void MayAddGameControlsTile();
+
+  // Updates the `record_game_button_` UI. If `is_recording_game_window` is
+  // true, then the button will change to a stop button, otherwise it will show
+  // the default UI.
+  void UpdateRecordGameButton(bool is_recording_game_window);
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

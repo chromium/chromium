@@ -102,9 +102,15 @@ void GameDashboardContext::ToggleMainMenu() {
             std::move(widget_delegate)));
     main_menu_widget_->Show();
   } else {
-    main_menu_view_ = nullptr;
-    main_menu_widget_.reset();
+    CloseMainMenu();
   }
+}
+
+void GameDashboardContext::CloseMainMenu() {
+  DCHECK(main_menu_view_);
+  DCHECK(main_menu_widget_.get());
+  main_menu_view_ = nullptr;
+  main_menu_widget_.reset();
 }
 
 bool GameDashboardContext::ToggleToolbar() {
@@ -121,9 +127,15 @@ bool GameDashboardContext::ToggleToolbar() {
     return true;
   }
 
+  CloseToolbar();
+  return false;
+}
+
+void GameDashboardContext::CloseToolbar() {
+  DCHECK(toolbar_view_);
+  DCHECK(toolbar_widget_);
   toolbar_view_ = nullptr;
   toolbar_widget_.reset();
-  return false;
 }
 
 void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
@@ -134,6 +146,26 @@ void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
 
 bool GameDashboardContext::IsToolbarVisible() const {
   return toolbar_widget_ && toolbar_widget_->IsVisible();
+}
+
+void GameDashboardContext::OnRecordingStarted(bool is_recording_game_window) {
+  // TODO(b/273641154): Update the the main menu button to the recording state.
+  if (main_menu_view_) {
+    main_menu_view_->OnRecordingStarted(is_recording_game_window);
+  }
+  if (toolbar_view_) {
+    toolbar_view_->OnRecordingStarted(is_recording_game_window);
+  }
+}
+
+void GameDashboardContext::OnRecordingEnded() {
+  // TODO(b/273641154): Update the the main menu button to the default state.
+  if (main_menu_view_) {
+    main_menu_view_->OnRecordingEnded();
+  }
+  if (toolbar_view_) {
+    toolbar_view_->OnRecordingEnded();
+  }
 }
 
 void GameDashboardContext::CreateAndAddMainMenuButtonWidget() {

@@ -44,9 +44,20 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Checks whether the `window` can respond to accelerator commands.
   static bool ReadyForAccelerator(aura::Window* window);
 
+  GameDashboardContext* active_recording_context() {
+    return active_recording_context_;
+  }
+
   // Returns a pointer to the `GameDashboardContext` if the given `window` is a
   // game window, otherwise nullptr.
   GameDashboardContext* GetGameDashboardContext(aura::Window* window) const;
+
+  // Represents the start of the `context`'s game window capture session.
+  // Sets `context` as the `active_recording_context_`, and requests
+  // `CaptureModeController` to start a capture session for the `context`'s game
+  // window. The session ends when `OnRecordingEnded` or
+  // `OnRecordingStartAborted` is called.
+  void StartCaptureSession(GameDashboardContext* context);
 
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
@@ -70,10 +81,10 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   void OnRecordingStartAborted() override;
 
  private:
-  enum class WindowGameState { kGame, kNotGame, kNotYetKnown };
-
   friend class GameDashboardControllerTest;
   friend class GameDashboardTestBase;
+
+  enum class WindowGameState { kGame, kNotGame, kNotYetKnown };
 
   // Checks to see if the given window is a game. If there's not enough
   // information, then returns `kNotYetKnown`, otherwise returns `kGame` or
@@ -98,6 +109,14 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  // Represents the active `GameDashboardContext`. If
+  // `active_recording_context_` is non-null, then `CaptureModeController` is
+  // recording the game window, or has been requested to record it. Resets
+  // when the recording session ends or aborted.
+  // Owned by `game_window_contexts_`.
+  raw_ptr<GameDashboardContext, ExperimentalAsh> active_recording_context_ =
+      nullptr;
 };
 
 }  // namespace ash

@@ -39,6 +39,8 @@ class GameDashboardContextTestApi {
   GameDashboardContextTestApi& operator=(GameDashboardContextTestApi&) = delete;
   ~GameDashboardContextTestApi() = default;
 
+  GameDashboardContext* context() { return context_; }
+
   // Returns the main menu button widget and button.
   GameDashboardWidget* GetMainMenuButtonWidget();
   PillButton* GetMainMenuButton();

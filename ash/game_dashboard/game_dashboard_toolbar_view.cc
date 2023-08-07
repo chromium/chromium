@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
@@ -85,6 +86,15 @@ GameDashboardToolbarView::~GameDashboardToolbarView() {
   context_->game_window()->RemoveObserver(this);
 }
 
+void GameDashboardToolbarView::OnRecordingStarted(
+    bool is_recording_game_window) {
+  UpdateRecordGameButton(is_recording_game_window);
+}
+
+void GameDashboardToolbarView::OnRecordingEnded() {
+  UpdateRecordGameButton(/*is_recording_game_window=*/false);
+}
+
 bool GameDashboardToolbarView::OnMousePressed(const ui::MouseEvent& event) {
   is_dragging_ = true;
   return true;
@@ -154,7 +164,8 @@ void GameDashboardToolbarView::OnGameControlsButtonPressed() {
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
-  // TODO(b/273641250): Add screen record support.
+  // TODO(b/273641250): Add support to instantly record the game window without
+  // showing the Screen Capture UI.
 }
 
 void GameDashboardToolbarView::OnScreenshotButtonPressed() {
@@ -183,7 +194,9 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         base::to_underlying(ToolbarViewId::kScreenRecordButton),
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
-        /*is_togglable=*/false));
+        /*is_togglable=*/true));
+    UpdateRecordGameButton(
+        GameDashboardController::Get()->active_recording_context() == context_);
   }
 
   AddChildView(CreateIconButton(
@@ -220,6 +233,20 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
     game_controls_button_->SetToggled(
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
   }
+}
+
+void GameDashboardToolbarView::UpdateRecordGameButton(
+    bool is_recording_game_window) {
+  if (!record_game_button_) {
+    return;
+  }
+
+  record_game_button_->SetEnabled(
+      is_recording_game_window ||
+      !CaptureModeController::Get()->is_recording_in_progress());
+  record_game_button_->SetToggled(is_recording_game_window);
+  // TODO(b/273641154): Update record_game_button_'s UI to reflect the updated
+  // state.
 }
 
 void GameDashboardToolbarView::OnWindowPropertyChanged(aura::Window* window,

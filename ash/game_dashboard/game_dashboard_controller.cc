@@ -74,6 +74,19 @@ GameDashboardContext* GameDashboardController::GetGameDashboardContext(
   return it != game_window_contexts_.end() ? it->second.get() : nullptr;
 }
 
+void GameDashboardController::StartCaptureSession(
+    GameDashboardContext* game_context) {
+  CHECK(!active_recording_context_);
+  auto* game_window = game_context->game_window();
+  CHECK(game_window_contexts_.contains(game_window));
+  auto* capture_mode_controller = CaptureModeController::Get();
+  CHECK(!capture_mode_controller->is_recording_in_progress());
+
+  active_recording_context_ = game_context;
+  capture_mode_controller->StartForGameDashboard(
+      active_recording_context_->game_window());
+}
+
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
   auto* top_level_window = new_window->GetToplevelWindow();
   if (!top_level_window ||
@@ -114,9 +127,17 @@ void GameDashboardController::OnWindowDestroying(aura::Window* window) {
 void GameDashboardController::OnRecordingStarted(aura::Window* current_root) {
   // Update any needed game dashboard UIs if and only if this recording started
   // from a request by a game dashboard entry point.
+  for (auto const& [game_window, context] : game_window_contexts_) {
+    context->OnRecordingStarted(context.get() == active_recording_context_);
+  }
 }
 
-void GameDashboardController::OnRecordingEnded() {}
+void GameDashboardController::OnRecordingEnded() {
+  active_recording_context_ = nullptr;
+  for (auto const& [game_window, context] : game_window_contexts_) {
+    context->OnRecordingEnded();
+  }
+}
 
 void GameDashboardController::OnVideoFileFinalized(
     bool user_deleted_video_file,
@@ -131,7 +152,7 @@ void GameDashboardController::OnRecordedWindowChangingRoot(
 }
 
 void GameDashboardController::OnRecordingStartAborted() {
-  // Reset the Gamedashboard UI state to its initial state.
+  OnRecordingEnded();
 }
 
 GameDashboardController::WindowGameState

@@ -33,6 +33,16 @@ class ASH_EXPORT GameDashboardMainMenuView
       delete;
   ~GameDashboardMainMenuView() override;
 
+  // Updates `record_game_tile_` to the stop button. Called when
+  // `CaptureModeController` has started a recording session. If
+  // `is_recording_game_window` is true, then the `context_`'s game_window is
+  // being recorded.
+  void OnRecordingStarted(bool is_recording_game_window);
+
+  // Updates `record_game_tile_` to the default state. Called when
+  // `CaptureModeController` has ended a recording session or was aborted.
+  void OnRecordingEnded();
+
  private:
   friend class GameDashboardContextTestApi;
 
@@ -89,6 +99,11 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
+  // Updates the `record_game_tile_` UI. If `is_recording_game_window` is
+  // true, then the tile will change to a stop button, otherwise it will show
+  // the default UI.
+  void UpdateRecordGameTile(bool is_recording_game_window);
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
