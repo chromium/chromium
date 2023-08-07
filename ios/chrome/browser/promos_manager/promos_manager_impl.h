@@ -44,6 +44,9 @@ class PromosManagerImpl : public PromosManager {
                     PromosManagerEventExporter* event_exporter);
   ~PromosManagerImpl() override;
 
+  // Loads and sorts impression history from prefs.
+  void RefreshImpressionHistoryFromPrefs();
+
   // `promo`-specific impression limits, if defined. May return an empty
   // NSArray, indicating no promo-specific impression limits were defined for
   // `promo`.

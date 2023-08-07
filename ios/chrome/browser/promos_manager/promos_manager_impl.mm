@@ -57,6 +57,12 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
   update->Append(promo_name);
 }
 
+// Returns true if the first impression is more recent and false otherwise.
+bool CompareImpressions(promos_manager::Impression impression1,
+                        promos_manager::Impression impression2) {
+  return impression1.day > impression2.day;
+}
+
 }  // namespace
 
 #pragma mark - PromosManagerImpl
@@ -82,6 +88,14 @@ PromosManagerImpl::PromosManagerImpl(PrefService* local_state,
 
 PromosManagerImpl::~PromosManagerImpl() = default;
 
+void PromosManagerImpl::RefreshImpressionHistoryFromPrefs() {
+  impression_history_ = ImpressionHistory(
+      local_state_->GetList(prefs::kIosPromosManagerImpressions));
+  // Sort impressions from most recent to least recent.
+  std::sort(impression_history_.begin(), impression_history_.end(),
+            CompareImpressions);
+}
+
 #pragma mark - Public
 
 void PromosManagerImpl::Init() {
@@ -93,9 +107,7 @@ void PromosManagerImpl::Init() {
       local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos));
 
   InitializePendingPromos();
-
-  impression_history_ = ImpressionHistory(
-      local_state_->GetList(prefs::kIosPromosManagerImpressions));
+  RefreshImpressionHistoryFromPrefs();
 }
 
 // Impression history should grow in sorted order. Given this happens on the
@@ -117,8 +129,7 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
 
   update->Append(std::move(impression));
 
-  impression_history_ = ImpressionHistory(
-      local_state_->GetList(prefs::kIosPromosManagerImpressions));
+  RefreshImpressionHistoryFromPrefs();
 
   // Auto-deregister `promo`.
   // Edge case: Possible to remove two instances of promo in
@@ -135,8 +146,7 @@ void PromosManagerImpl::OnFeatureEngagementTrackerInitialized(bool success) {
   if (success) {
     // Loading the tracker may cause event migration to take place, so re-load
     // the impressions in case they have changed.
-    impression_history_ = ImpressionHistory(
-        local_state_->GetList(prefs::kIosPromosManagerImpressions));
+    RefreshImpressionHistoryFromPrefs();
   }
 }
 
