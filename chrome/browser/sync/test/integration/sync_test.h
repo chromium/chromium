@@ -448,9 +448,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // A factory-like callback to create a model updater for testing, which will
   // take the place of the real updater in AppListSyncableService for testing.
-  std::unique_ptr<
-      app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
-      model_updater_factory_;
+  std::unique_ptr<base::ScopedClosureRunner> model_updater_factory_scope_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

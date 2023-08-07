@@ -25,6 +25,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -452,11 +453,8 @@ const SyncServiceImplHarness* SyncTest::GetClient(int index) const {
 }
 
 std::vector<SyncServiceImplHarness*> SyncTest::GetSyncClients() {
-  std::vector<SyncServiceImplHarness*> clients(clients_.size());
-  for (size_t i = 0; i < clients_.size(); ++i) {
-    clients[i] = clients_[i].get();
-  }
-  return clients;
+  return base::test::ToVector(clients_,
+                              &std::unique_ptr<SyncServiceImplHarness>::get);
 }
 
 SyncServiceImpl* SyncTest::GetSyncService(int index) const {
@@ -536,14 +534,14 @@ bool SyncTest::SetupClients() {
   }
 
   // Uses a fake app list model updater to avoid interacting with Ash.
-  model_updater_factory_ = std::make_unique<
-      app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-      base::BindRepeating(
-          [](app_list::reorder::AppListReorderDelegate* reorder_delegate)
-              -> std::unique_ptr<AppListModelUpdater> {
-            return std::make_unique<FakeAppListModelUpdater>(
-                /*profile=*/nullptr, reorder_delegate);
-          }));
+  model_updater_factory_scope_ =
+      app_list::AppListSyncableService::SetScopedModelUpdaterFactoryForTest(
+          base::BindRepeating(
+              [](app_list::reorder::AppListReorderDelegate* reorder_delegate)
+                  -> std::unique_ptr<AppListModelUpdater> {
+                return std::make_unique<FakeAppListModelUpdater>(
+                    /*profile=*/nullptr, reorder_delegate);
+              }));
 #endif
 
   for (int i = 0; i < num_clients_; ++i) {

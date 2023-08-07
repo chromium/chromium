@@ -136,20 +136,10 @@ class AppListSyncableService : public syncer::SyncableService,
       base::RepeatingCallback<std::unique_ptr<AppListModelUpdater>(
           reorder::AppListReorderDelegate*)>;
 
-  // Sets and resets an app list model updater factory function for tests.
-  class ScopedModelUpdaterFactoryForTest {
-   public:
-    explicit ScopedModelUpdaterFactoryForTest(
-        ModelUpdaterFactoryCallback factory);
-    ScopedModelUpdaterFactoryForTest(const ScopedModelUpdaterFactoryForTest&) =
-        delete;
-    ScopedModelUpdaterFactoryForTest& operator=(
-        const ScopedModelUpdaterFactoryForTest&) = delete;
-    ~ScopedModelUpdaterFactoryForTest();
-
-   private:
-    ModelUpdaterFactoryCallback factory_;
-  };
+  // Sets an app list model updater factory function for tests. Its lifetime is
+  // bound to the lifetime of the returned unique_ptr<>.
+  static std::unique_ptr<base::ScopedClosureRunner>
+  SetScopedModelUpdaterFactoryForTest(ModelUpdaterFactoryCallback callback);
 
   using SyncItemMap = std::map<std::string, std::unique_ptr<SyncItem>>;
 
@@ -256,8 +246,6 @@ class AppListSyncableService : public syncer::SyncableService,
   virtual void OnFirstSync(
       base::OnceCallback<void(bool was_first_sync_ever)> callback);
 
-  const Profile* profile() const { return profile_; }
-  Profile* profile() { return profile_; }
   const std::string& GetOemFolderNameForTest() const {
     return oem_folder_name_;
   }

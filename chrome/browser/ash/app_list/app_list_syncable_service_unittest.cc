@@ -196,8 +196,7 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
   // Returns the app list order stored as preference.
   ash::AppListSortOrder GetSortOrderFromPrefs() {
     return static_cast<ash::AppListSortOrder>(
-        app_list_syncable_service()->profile()->GetPrefs()->GetInteger(
-            prefs::kAppListPreferredOrder));
+        profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
   }
 
   ash::AppListItem* FindItemForApp(extensions::Extension* app) {

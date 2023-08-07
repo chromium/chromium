@@ -12,11 +12,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -255,19 +257,23 @@ bool SetIconColorIfChanged(const ash::IconColor& new_color,
 
 }  // namespace
 
-// AppListSyncableService::ScopedModelUpdaterFactoryForTest
-
-AppListSyncableService::ScopedModelUpdaterFactoryForTest::
-    ScopedModelUpdaterFactoryForTest(ModelUpdaterFactoryCallback factory) {
-  DCHECK(factory);
-  factory_ = std::move(factory);
-  g_model_updater_factory_callback_for_test_ = &factory_;
-}
-
-AppListSyncableService::ScopedModelUpdaterFactoryForTest::
-    ~ScopedModelUpdaterFactoryForTest() {
-  DCHECK_EQ(&factory_, g_model_updater_factory_callback_for_test_);
-  g_model_updater_factory_callback_for_test_ = nullptr;
+// static
+std::unique_ptr<base::ScopedClosureRunner>
+AppListSyncableService::SetScopedModelUpdaterFactoryForTest(
+    ModelUpdaterFactoryCallback callback) {
+  // The idea is to bind both `callback` and `resetter`-s lifetimes to the
+  // lifetime of the returned ScopedClosureRunner so that on destruction the
+  // resetter will set the test factory to nullptr, and the callback itself will
+  // be released too. `callback_on_heap` ensures pointer stability for
+  // `g_model_updater_factory_callback_for_test_`.
+  auto callback_on_heap =
+      std::make_unique<ModelUpdaterFactoryCallback>(std::move(callback));
+  g_model_updater_factory_callback_for_test_ = callback_on_heap.get();
+  return std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+      [](std::unique_ptr<ModelUpdaterFactoryCallback>) {
+        g_model_updater_factory_callback_for_test_ = nullptr;
+      },
+      std::move(callback_on_heap)));
 }
 
 // AppListSyncableService::SyncItem
@@ -1349,7 +1355,7 @@ bool AppListSyncableService::CalculateItemPositionInPermanentSortOrder(
 
 ash::AppListSortOrder AppListSyncableService::GetPermanentSortingOrder() const {
   return static_cast<ash::AppListSortOrder>(
-      profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
+      profile_->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
 }
 
 // AppListSyncableService private
