@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -73,6 +74,8 @@ using content_settings::PageSpecificContentSettings;
 using custom_handlers::ProtocolHandler;
 using testing::Pair;
 using testing::UnorderedElementsAre;
+using ContentSettingBubbleAction =
+    ContentSettingBubbleModel::ContentSettingBubbleAction;
 
 class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -1533,6 +1536,7 @@ TEST_F(ContentSettingBubbleModelTest, InvalidUrl) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
+  base::HistogramTester t;
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   auto* content_settings = PageSpecificContentSettings::GetForFrame(
@@ -1550,6 +1554,8 @@ TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           nullptr, web_contents(), ContentSettingsType::STORAGE_ACCESS));
+  t.ExpectUniqueSample("ContentSettings.Bubble.StorageAccess.Action",
+                       ContentSettingBubbleAction::kOpened, 1);
   const ContentSettingBubbleModel::BubbleContent& bubble_content =
       content_setting_bubble_model->bubble_content();
 
@@ -1562,7 +1568,9 @@ TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             map->GetContentSetting(site.GetURL(), web_contents()->GetURL(),
                                    ContentSettingsType::STORAGE_ACCESS));
-
+  t.ExpectTotalCount("ContentSettings.Bubble.StorageAccess.Action", 2);
+  t.ExpectBucketCount("ContentSettings.Bubble.StorageAccess.Action",
+                      ContentSettingBubbleAction::kPermissionAllowed, 1);
   content_setting_bubble_model->CommitChanges();
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(site.GetURL(), web_contents()->GetURL(),

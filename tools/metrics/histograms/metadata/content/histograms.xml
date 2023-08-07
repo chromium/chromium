@@ -88,6 +88,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSettings.Bubble.StorageAccess.Action"
+    enum="ContentSettingBubbleAction" expires_after="2024-07-10">
+  <owner>fsenra@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>Logs actions within the StorageAccess bubble.</summary>
+</histogram>
+
 <histogram name="ContentSettings.ExtensionEmbeddedSettingSet"
     enum="ContentType" expires_after="2023-05-01">
   <owner>engedy@chromium.org</owner>

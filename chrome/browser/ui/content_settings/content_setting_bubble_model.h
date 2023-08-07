@@ -140,6 +140,17 @@ class ContentSettingBubbleModel {
     kHoverButton,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ContentSettingBubbleAction {
+    kOpened = 1,
+    kPermissionAllowed = 2,
+    kPermissionBlocked = 3,
+    kManageButtonClicked = 4,
+
+    kMaxValue = kManageButtonClicked
+  };
+
   struct BubbleContent {
     BubbleContent();
 

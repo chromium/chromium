@@ -18869,6 +18869,13 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="DETECT_IMPORTANT_CONTENT"/>
 </enum>
 
+<enum name="ContentSettingBubbleAction">
+  <int value="1" label="kOpened"/>
+  <int value="2" label="kPermissionAllowed"/>
+  <int value="3" label="kPermissionBlocked"/>
+  <int value="4" label="KManageButtonClicked"/>
+</enum>
+
 <enum name="ContentSettingImageType">
   <int value="0" label="COOKIES"/>
   <int value="1" label="IMAGES"/>

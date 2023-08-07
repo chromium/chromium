@@ -14,8 +14,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -107,6 +109,21 @@ using content_settings::SettingSource;
 using device::LocationSystemPermissionStatus;
 
 namespace {
+using ContentSettingBubbleAction =
+    ContentSettingBubbleModel::ContentSettingBubbleAction;
+
+void RecordActionHistogram(ContentSettingsType type,
+                           ContentSettingBubbleAction action) {
+  switch (type) {
+    case ContentSettingsType::STORAGE_ACCESS:
+      base::UmaHistogramEnumeration(
+          "ContentSettings.Bubble.StorageAccess.Action", action);
+      break;
+    default:
+      // Currently only defined and implemented for StorageAccess.
+      NOTREACHED_NORETURN();
+  }
+}
 
 using QuietUiReason = permissions::PermissionRequestManager::QuietUiReason;
 
@@ -702,6 +719,8 @@ ContentSettingStorageAccessBubbleModel::ContentSettingStorageAccessBubbleModel(
     Delegate* delegate,
     WebContents* web_contents)
     : ContentSettingBubbleModel(delegate, web_contents) {
+  RecordActionHistogram(ContentSettingsType::STORAGE_ACCESS,
+                        ContentSettingBubbleAction::kOpened);
   set_title(l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS));
 
   // TODO(crbug.com/1433644): Consider to add subtitles to all permissions.
@@ -757,6 +776,10 @@ void ContentSettingStorageAccessBubbleModel::CommitChanges() {
 void ContentSettingStorageAccessBubbleModel::OnSiteRowClicked(
     const net::SchemefulSite& site,
     bool is_allowed) {
+  RecordActionHistogram(ContentSettingsType::STORAGE_ACCESS,
+                        is_allowed
+                            ? ContentSettingBubbleAction::kPermissionAllowed
+                            : ContentSettingBubbleAction::kPermissionBlocked);
   changed_permissions_[site] = is_allowed;
 }
 
@@ -765,6 +788,8 @@ void ContentSettingStorageAccessBubbleModel::OnManageButtonClicked() {
     return;
   }
 
+  RecordActionHistogram(ContentSettingsType::STORAGE_ACCESS,
+                        ContentSettingBubbleAction::kManageButtonClicked);
   delegate()->ShowContentSettingsPage(ContentSettingsType::STORAGE_ACCESS);
 }
 
