@@ -8062,6 +8062,12 @@
     "expiry_milestone": 116
   },
   {
+    "name": "username-first-flow-with-intermediate-values",
+    "owners": [ "kolos", "shaikhitdin@google.com" ],
+    "expiry_milestone": 122
+  },
+
+  {
     "name": "uxstudy1",
     "owners": [ "erikchen", "meredithguo@google.com" ],
     "expiry_milestone": 110

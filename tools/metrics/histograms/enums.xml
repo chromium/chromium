@@ -61570,6 +61570,8 @@ from previous Chrome versions.
       label="OminboxUIExperimentUseGenericSearchEngineIcon:disabled"/>
   <int value="-1256279698" label="AllowDevtoolsInSystemUI:enabled"/>
   <int value="-1256187739" label="ClientStorageAccessContextAuditing:disabled"/>
+  <int value="-1255571408"
+      label="UsernameFirstFlowWithIntermediateValues:enabled"/>
   <int value="-1255427595" label="HomePageButtonForceEnabled:enabled"/>
   <int value="-1254961530" label="MessagesForAndroidChromeSurvey:disabled"/>
   <int value="-1254640444"
@@ -67612,6 +67614,8 @@ from previous Chrome versions.
   <int value="1822452137" label="ClipboardHistoryLongpress:enabled"/>
   <int value="1823102966" label="disable-ipc-flooding-protection"/>
   <int value="1823337908" label="SmartDim20190221:enabled"/>
+  <int value="1823457914"
+      label="UsernameFirstFlowWithIntermediateValues:disabled"/>
   <int value="1824332134" label="EnableDnsProxy:disabled"/>
   <int value="1824931483"
       label="EnableHistoryFaviconsGoogleServerQuery:disabled"/>
