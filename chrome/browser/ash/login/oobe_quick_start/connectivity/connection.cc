@@ -218,6 +218,9 @@ void Connection::OnRequestAccountTransferAssertionResponse(
     RequestAccountTransferAssertionCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
   if (!response_bytes.has_value()) {
+    quick_start_metrics::RecordGaiaTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            GaiaTransferResultFailureReason::kNoAccountsReceivedFromPhone);
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -234,6 +237,8 @@ void Connection::GenerateFidoAssertionInfo(
     RequestAccountTransferAssertionCallback callback,
     ash::quick_start::mojom::FidoAssertionResponsePtr fido_response,
     absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error) {
+  // TODO (b/279614284): Emit metric for Gaia transfer failure reasons when
+  // unknown message logic is finalized.
   if (error.has_value()) {
     // TODO (b/286877412): Update this logic once we've aligned on an unknown
     // message strategy.
@@ -249,6 +254,9 @@ void Connection::GenerateFidoAssertionInfo(
   assertion_info.credential_id = fido_response->credential_id;
   assertion_info.authenticator_data = fido_response->auth_data;
   assertion_info.signature = fido_response->signature;
+
+  quick_start_metrics::RecordGaiaTransferResult(
+      /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
 
   std::move(callback).Run(assertion_info);
 }

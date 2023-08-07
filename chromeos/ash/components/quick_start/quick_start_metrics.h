@@ -125,10 +125,25 @@ enum class WifiTransferResultFailureReason {
   kMaxValue = kWifiHideStatusNotFound,
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should be never modified
+// or deleted. Only additions possible.
 enum class GaiaTransferResultFailureReason {
-  kNoAccountsReceivedFromPhone,
-  kIneligibleAccount,
-  kFailedToSignIn,
+  kNoAccountsReceivedFromPhone = 0,
+  kIneligibleAccount = 1,
+  kFailedToSignIn = 2,
+  kEmptyResponseBytes = 3,
+  kUnableToReadAsJSON = 4,
+  kUnexpectedResponseSize = 5,
+  kUnsuccessfulCtapDeviceResponseStatus = 6,
+  kCborDecodingError = 7,
+  kInvalidCborDecodedValuesMap = 8,
+  kEmptyCredentialId = 9,
+  kEmptyAuthData = 10,
+  kEmptySignature = 11,
+  kEmptyEmail = 12,
+  kMaxValue = kEmptyEmail,
 };
 
 enum class EntryPoint {
@@ -196,10 +211,9 @@ void RecordWifiTransferResult(
     bool succeeded,
     absl::optional<WifiTransferResultFailureReason> failure_reason);
 
-void RecordGaiaTransferAttempted(int32_t session_id);
+void RecordGaiaTransferAttempted(bool attempted);
 
 void RecordGaiaTransferResult(
-    int32_t session_id,
     bool succeeded,
     absl::optional<GaiaTransferResultFailureReason> failure_reason);
 

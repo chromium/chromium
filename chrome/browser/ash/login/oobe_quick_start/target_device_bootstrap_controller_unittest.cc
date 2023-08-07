@@ -58,6 +58,8 @@ constexpr char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr char kWifiTransferResultFailureReasonHistogramName[] =
     "QuickStart.WifiTransferResult.FailureReason";
+constexpr char kGaiaTransferAttemptedName[] =
+    "QuickStart.GaiaTransferAttempted";
 
 class FakeObserver : public Observer {
  public:
@@ -532,6 +534,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED);
+  histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, false, 1);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -558,6 +561,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
             Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS);
   EXPECT_TRUE(absl::holds_alternative<FidoAssertionInfo>(
       fake_observer_->last_status.payload));
+  histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, true, 1);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -583,6 +587,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
+  histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, true, 1);
 }
 
 // Ensures that the discoverable name that is shown Chromebook (123) matches

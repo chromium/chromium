@@ -85,6 +85,10 @@ constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
 
 constexpr base::TimeDelta kResponseTimeout = base::Seconds(3);
 
+constexpr char kGaiaTransferResultName[] = "QuickStart.GaiaTransferResult";
+constexpr char kGaiaTransferResultFailureReasonName[] =
+    "QuickStart.GaiaTransferResult.FailureReason";
+
 }  // namespace
 
 class ConnectionTest : public testing::Test {
@@ -169,6 +173,12 @@ class ConnectionTest : public testing::Test {
   void OnHandshakeResponse(base::OnceCallback<void(bool)> callback) {
     connection_->OnHandshakeResponse(kAuthToken, std::move(callback),
                                      absl::nullopt);
+  }
+
+  void OnRequestAccountTransferAssertionResponse() {
+    base::test::TestFuture<absl::optional<FidoAssertionInfo>> future;
+    connection_->OnRequestAccountTransferAssertionResponse(future.GetCallback(),
+                                                           absl::nullopt);
   }
 
   void TestMessageMetrics(
@@ -485,6 +495,17 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(expected_credential_id, assertion_info_->credential_id);
   EXPECT_EQ(auth_data, assertion_info_->authenticator_data);
   EXPECT_EQ(signature, assertion_info_->signature);
+  histogram_tester_.ExpectBucketCount(kGaiaTransferResultName, true, 1);
+}
+
+TEST_F(ConnectionTest, RequestAccountTransferAssertion_EmptyResponse) {
+  OnRequestAccountTransferAssertionResponse();
+  histogram_tester_.ExpectBucketCount(kGaiaTransferResultName, false, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGaiaTransferResultFailureReasonName,
+      quick_start_metrics::GaiaTransferResultFailureReason::
+          kNoAccountsReceivedFromPhone,
+      1);
 }
 
 TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {

@@ -339,6 +339,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
                                << "Reason: " << challenge.error().ToString();
     status_.step = Step::ERROR;
     status_.payload = ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED;
+    quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/false);
     NotifyObservers();
     return;
     // TODO(b:286853512) - Implement retry mechanism.
@@ -354,6 +355,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
       << "Received challenge bytes from Gaia. Requesting FIDO assertion.";
   challenge_bytes_ = challenge.value();
 
+  quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/true);
   authenticated_connection_->RequestAccountTransferAssertion(
       challenge_bytes_,
       base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,

@@ -51,6 +51,12 @@ constexpr const char kHandshakeResultDurationName[] =
 constexpr const char kHandshakeResultErrorCodeName[] =
     "QuickStart.HandshakeResult.ErrorCode";
 constexpr const char kHandshakeStartedName[] = "QuickStart.HandshakeStarted";
+constexpr const char kGaiaTransferAttemptedName[] =
+    "QuickStart.GaiaTransferAttempted";
+constexpr const char kGaiaTransferResultName[] =
+    "QuickStart.GaiaTransferResult";
+constexpr const char kGaiaTransferResultFailureReasonName[] =
+    "QuickStart.GaiaTransferResult.FailureReason";
 
 std::string MapMessageTypeToMetric(MessageType message_type) {
   switch (message_type) {
@@ -191,15 +197,21 @@ void RecordWifiTransferResult(
   base::UmaHistogramBoolean(kWifiTransferResultHistogramName, succeeded);
 }
 
-void RecordGaiaTransferAttempted(int32_t session_id) {
-  // TODO(279614284): Add FIDO assertion metrics.
+void RecordGaiaTransferAttempted(bool attempted) {
+  base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
 }
 
 void RecordGaiaTransferResult(
-    int32_t session_id,
     bool succeeded,
     absl::optional<GaiaTransferResultFailureReason> failure_reason) {
-  // TODO(279614284): Add FIDO assertion metrics.
+  if (succeeded) {
+    CHECK(!failure_reason.has_value());
+  } else {
+    CHECK(failure_reason.has_value());
+    base::UmaHistogramEnumeration(kGaiaTransferResultFailureReasonName,
+                                  failure_reason.value());
+  }
+  base::UmaHistogramBoolean(kGaiaTransferResultName, succeeded);
 }
 
 void RecordEntryPoint(EntryPoint entry_point) {

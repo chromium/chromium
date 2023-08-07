@@ -90762,6 +90762,23 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Invalid advertisement error code"/>
 </enum>
 
+<enum name="QuickStartGaiaTransferResultFailureReason">
+  <int value="0" label="No account received from phone"/>
+  <int value="1" label="Ineligible account"/>
+  <int value="2" label="Failed to sign in"/>
+  <int value="3" label="Empty response bytes"/>
+  <int value="4" label="Unable to read as JSON"/>
+  <int value="5" label="Unexpected response size"/>
+  <int value="6" label="Ctap device response status is not success"/>
+  <int value="7" label="Cbor decoding error"/>
+  <int value="8"
+      label="Cbor decoded response values are not valid Cbor value map"/>
+  <int value="9" label="Empty credential ID"/>
+  <int value="10" label="Empty auth data"/>
+  <int value="11" label="Empty signature"/>
+  <int value="12" label="Empty email"/>
+</enum>
+
 <enum name="QuickStartHandshakeResultErrorCode">
   <int value="0" label="Error: Could not read response"/>
   <int value="1" label="Error: Failed to parse message"/>
