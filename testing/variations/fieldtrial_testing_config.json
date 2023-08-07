@@ -16993,6 +16993,21 @@
             ]
         }
     ],
+    "WebViewClearFunctorInBackground": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_V2",
+                    "enable_features": [
+                        "WebViewClearFunctorInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewExitReasonMetric": [
         {
             "platforms": [
