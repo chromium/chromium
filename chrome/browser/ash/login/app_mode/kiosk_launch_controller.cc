@@ -249,15 +249,9 @@ KioskLaunchController::KioskLaunchController(
     KioskAppLauncherFactory app_launcher_factory)
     : host_(host),
       splash_screen_view_(splash_screen),
-      app_launcher_factory_(std::move(app_launcher_factory)),
-      network_ui_controller_(
-          std::make_unique<NetworkUiController>(*this, host, splash_screen)) {}
+      app_launcher_factory_(std::move(app_launcher_factory)) {}
 
-KioskLaunchController::~KioskLaunchController() {
-  if (splash_screen_view_) {
-    splash_screen_view_->SetDelegate(nullptr);
-  }
-}
+KioskLaunchController::~KioskLaunchController() = default;
 
 void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                                   bool auto_launch) {
@@ -284,7 +278,9 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     }
   }
 
-  splash_screen_view_->SetDelegate(network_ui_controller_.get());
+  network_ui_controller_ =
+      std::make_unique<NetworkUiController>(*this, host_, splash_screen_view_);
+
   splash_screen_view_->Show(GetAppData());
 
   splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
@@ -452,11 +448,8 @@ void KioskLaunchController::CleanUp() {
 
   app_launcher_observation_.Reset();
 
-  // Deleting the local objects later so they
-  DeleteSoon(std::move(kiosk_profile_loader_));
-  DeleteSoon(std::move(force_install_observer_));
-  DeleteSoon(std::move(app_launcher_));
-  DeleteSoon(std::move(network_ui_controller_));
+  app_launcher_.reset();
+  network_ui_controller_.reset();
 
   // Can be null in tests.
   if (host_) {
