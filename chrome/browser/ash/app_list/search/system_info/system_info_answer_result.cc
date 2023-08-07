@@ -81,7 +81,8 @@ SystemInfoAnswerResult::SystemInfoAnswerResult(
   set_relevance(relevance_score);
   // TODO(b/278271038): Consider changing all icons in SystemInfoAnswerResult to
   // use ImageModel instead of ImageSkia.
-  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon),
+                   kSystemAnswerCardIconDimension));
   SetCategory(Category::kSettings);
   SetResultType(ResultType::kSystemInfo);
   UpdateTitleAndDetails(title, description, accessibility_label);
