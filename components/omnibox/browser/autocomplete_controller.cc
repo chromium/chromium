@@ -363,7 +363,9 @@ AutocompleteController::AutocompleteController(
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()),
       triggered_feature_service_(
-          provider_client_->GetOmniboxTriggeredFeatureService()) {
+          provider_client_->GetOmniboxTriggeredFeatureService()),
+      steady_state_omnibox_position_(
+          metrics::OmniboxEventProto::UNKNOWN_POSITION) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
 
   // Providers run in the order they're added. Async providers should run first
@@ -720,6 +722,8 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
     // This is also a good place to put code to add info that you want to
     // add for every provider.
   }
+
+  logs->steady_state_omnibox_position = steady_state_omnibox_position_;
 
   // Add any features that have been triggered.
   triggered_feature_service_->RecordToLogs(
@@ -1584,6 +1588,11 @@ size_t AutocompleteController::InjectAdHocMatch(AutocompleteMatch match) {
   result_.AppendMatches({std::move(match)});
   NotifyChanged();
   return index;
+}
+
+void AutocompleteController::SetSteadyStateOmniboxPosition(
+    metrics::OmniboxEventProto::OmniboxPosition position) {
+  steady_state_omnibox_position_ = position;
 }
 
 bool AutocompleteController::ShouldRunProvider(

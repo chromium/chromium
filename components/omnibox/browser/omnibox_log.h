@@ -136,6 +136,10 @@ struct OmniboxLog {
   // Whether the item selection happened on an off-the-record/incognito profile.
   // This is used to disable logging of scoring signals in incognito mode.
   bool is_incognito;
+
+  // The preferred steady state (unfocused) omnibox position. Only logged on
+  // iOS phones.
+  metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_LOG_H_

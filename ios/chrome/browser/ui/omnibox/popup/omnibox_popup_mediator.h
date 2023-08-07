@@ -121,6 +121,7 @@ class OmniboxPopupMediatorDelegate {
     protocolProvider;
 @property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
+@property(nonatomic, assign) PrefService* prefService;
 
 /// Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)

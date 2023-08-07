@@ -42,7 +42,9 @@ OmniboxLog::OmniboxLog(
           elapsed_time_since_last_change_to_default_match),
       result(result),
       final_destination_url(final_destination_url),
-      is_incognito(is_incognito) {
+      is_incognito(is_incognito),
+      steady_state_omnibox_position(
+          metrics::OmniboxEventProto::UNKNOWN_POSITION) {
   DCHECK(selection.line < result.size())
       << "The selection line index should always be valid. See comments on "
          "OmniboxLog::selection.";
