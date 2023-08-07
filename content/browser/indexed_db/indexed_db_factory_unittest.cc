@@ -96,10 +96,10 @@ class IndexedDBFactoryTest : public testing::Test {
       }
       // All leveldb databases are closed, and they can be deleted.
       for (auto bucket_locator : context_->GetAllBuckets()) {
-        bool success = false;
-        storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForStorageKey(bucket_locator.storage_key, &success);
-        EXPECT_TRUE(success);
+        base::test::TestFuture<bool> success;
+        context_->DeleteForStorageKey(bucket_locator.storage_key,
+                                      success.GetCallback());
+        EXPECT_TRUE(success.Get());
       }
     }
     IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(nullptr);
@@ -361,9 +361,10 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   EXPECT_TRUE(bucket_state5_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> infos;
-  storage::mojom::IndexedDBControlAsyncWaiter sync_control(context());
-  sync_control.GetUsage(&infos);
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+      infos_future;
+  context()->GetUsage(infos_future.GetCallback());
+  auto infos = infos_future.Take();
 
   int64_t bucket_size_1 =
       filesystem_proxy->ComputeDirectorySize(file_1.DirName());

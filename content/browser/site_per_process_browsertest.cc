@@ -43,6 +43,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -202,14 +203,9 @@ void VerifyChildProcessHasMainFrame(
     mojo::Remote<mojom::MainFrameCounterTest>& main_frame_counter,
     bool expected_state) {
   main_frame_counter.FlushForTesting();
-  base::RunLoop run_loop;
-  main_frame_counter->HasMainFrame(base::BindOnce(
-      [](base::RunLoop* loop, bool expected_state, bool has_main_frame) {
-        EXPECT_EQ(expected_state, has_main_frame);
-        loop->Quit();
-      },
-      &run_loop, expected_state));
-  run_loop.Run();
+  base::test::TestFuture<bool> has_main_frame_future;
+  main_frame_counter->HasMainFrame(has_main_frame_future.GetCallback());
+  EXPECT_EQ(expected_state, has_main_frame_future.Get());
 }
 
 using CrashVisibility = CrossProcessFrameConnector::CrashVisibility;
@@ -8946,13 +8942,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   mojo::Remote<blink::mojom::LeakDetector> leak_detector_remote;
   new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->BindReceiver(
       leak_detector_remote.BindNewPipeAndPassReceiver());
-  blink::mojom::LeakDetectorAsyncWaiter leak_detector(
-      leak_detector_remote.get());
 
   // One live document is expected from the newly opened popup.
   {
-    blink::mojom::LeakDetectionResultPtr result;
-    leak_detector.PerformLeakDetection(&result);
+    base::test::TestFuture<blink::mojom::LeakDetectionResultPtr> result_future;
+    leak_detector_remote->PerformLeakDetection(result_future.GetCallback());
+    auto result = result_future.Take();
     EXPECT_EQ(1u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
     EXPECT_EQ(2u, result->number_of_live_frames);
@@ -8968,8 +8963,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   // Speculative RFH should be created in B, increasing the number of live
   // documents and frames.
   {
-    blink::mojom::LeakDetectionResultPtr result;
-    leak_detector.PerformLeakDetection(&result);
+    base::test::TestFuture<blink::mojom::LeakDetectionResultPtr> result_future;
+    leak_detector_remote->PerformLeakDetection(result_future.GetCallback());
+    auto result = result_future.Take();
     EXPECT_EQ(2u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
     EXPECT_EQ(3u, result->number_of_live_frames);
@@ -8983,8 +8979,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   // The resources associated with the speculative RFH should be freed now, as
   // well as the original frame from the now closed shell.
   {
-    blink::mojom::LeakDetectionResultPtr result;
-    leak_detector.PerformLeakDetection(&result);
+    base::test::TestFuture<blink::mojom::LeakDetectionResultPtr> result_future;
+    leak_detector_remote->PerformLeakDetection(result_future.GetCallback());
+    auto result = result_future.Take();
     EXPECT_EQ(1u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
     EXPECT_EQ(1u, result->number_of_live_frames);
@@ -9007,13 +9004,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   mojo::Remote<blink::mojom::LeakDetector> leak_detector_remote;
   new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->BindReceiver(
       leak_detector_remote.BindNewPipeAndPassReceiver());
-  blink::mojom::LeakDetectorAsyncWaiter leak_detector(
-      leak_detector_remote.get());
 
   // One live document is expected from the newly opened popup.
   {
-    blink::mojom::LeakDetectionResultPtr result;
-    leak_detector.PerformLeakDetection(&result);
+    base::test::TestFuture<blink::mojom::LeakDetectionResultPtr> result_future;
+    leak_detector_remote->PerformLeakDetection(result_future.GetCallback());
+    auto result = result_future.Take();
     EXPECT_EQ(1u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
     EXPECT_EQ(3u, result->number_of_live_frames);
@@ -9034,8 +9030,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   // Speculative RFH should be created in B, increasing the number of live
   // documents and frames.
   {
-    blink::mojom::LeakDetectionResultPtr result;
-    leak_detector.PerformLeakDetection(&result);
+    base::test::TestFuture<blink::mojom::LeakDetectionResultPtr> result_future;
+    leak_detector_remote->PerformLeakDetection(result_future.GetCallback());
+    auto result = result_future.Take();
     EXPECT_EQ(2u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
     EXPECT_EQ(4u, result->number_of_live_frames);
@@ -9049,8 +9046,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
 
   // The resources associated with the speculative RFH should be freed now.
   {
-    blink::mojom::LeakDetectionResultPtr result;
-    leak_detector.PerformLeakDetection(&result);
+    base::test::TestFuture<blink::mojom::LeakDetectionResultPtr> result_future;
+    leak_detector_remote->PerformLeakDetection(result_future.GetCallback());
+    auto result = result_future.Take();
     EXPECT_EQ(1u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
     EXPECT_EQ(2u, result->number_of_live_frames);

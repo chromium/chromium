@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -239,10 +240,7 @@ class IndexedDBTest : public testing::Test,
       }
       // All leveldb databases are closed, and they can be deleted.
       for (auto bucket_locator : context_->GetAllBuckets()) {
-        bool success = false;
-        storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForStorageKey(bucket_locator.storage_key, &success);
-        EXPECT_TRUE(success);
+        EXPECT_TRUE(DeleteForStorageKeySync(bucket_locator.storage_key));
       }
     }
 
@@ -252,16 +250,9 @@ class IndexedDBTest : public testing::Test,
 
   base::FilePath GetFilePathForTesting(
       const storage::BucketLocator& bucket_locator) {
-    base::FilePath path;
-    base::RunLoop run_loop;
-    context()->GetFilePathForTesting(
-        bucket_locator,
-        base::BindLambdaForTesting([&](const base::FilePath& async_path) {
-          path = async_path;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return path;
+    base::test::TestFuture<const base::FilePath&> path_future;
+    context()->GetFilePathForTesting(bucket_locator, path_future.GetCallback());
+    return path_future.Take();
   }
 
   bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
@@ -272,6 +263,12 @@ class IndexedDBTest : public testing::Test,
         remote;
     return base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
         std::move(remote));
+  }
+
+  bool DeleteForStorageKeySync(blink::StorageKey key) {
+    base::test::TestFuture<bool> success;
+    context()->DeleteForStorageKey(key, success.GetCallback());
+    return success.Get();
   }
 
  protected:
@@ -504,11 +501,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
 
   RunPostedTasks();
 
-  bool success = false;
-  storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-  waiter.DeleteForStorageKey(kTestStorageKey, &success);
-  EXPECT_TRUE(success);
-
+  EXPECT_TRUE(DeleteForStorageKeySync(kTestStorageKey));
   EXPECT_FALSE(base::DirectoryExists(test_path));
 }
 
@@ -566,10 +559,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
 
   RunPostedTasks();
 
-  bool success = false;
-  storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-  waiter.DeleteForStorageKey(kTestStorageKey, &success);
-  EXPECT_TRUE(success);
+  EXPECT_TRUE(DeleteForStorageKeySync(kTestStorageKey));
 
   EXPECT_FALSE(base::DirectoryExists(test_path));
 }
@@ -586,16 +576,13 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
   auto lock = LockForTesting(test_path);
   ASSERT_TRUE(lock);
 
-  bool success = false;
-  base::RunLoop loop;
+  base::test::TestFuture<bool> success_future;
   context()->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-        waiter.DeleteForStorageKey(kTestStorageKey, &success);
-        loop.Quit();
+        context()->DeleteForStorageKey(kTestStorageKey,
+                                       success_future.GetCallback());
       }));
-  loop.Run();
-  EXPECT_FALSE(success);
+  EXPECT_FALSE(success_future.Get());
 
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
@@ -614,16 +601,13 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
   auto lock = LockForTesting(test_path);
   ASSERT_TRUE(lock);
 
-  bool success = false;
-  base::RunLoop loop;
+  base::test::TestFuture<bool> success_future;
   context()->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-        waiter.DeleteForStorageKey(kTestStorageKey, &success);
-        loop.Quit();
+        context()->DeleteForStorageKey(kTestStorageKey,
+                                       success_future.GetCallback());
       }));
-  loop.Run();
-  EXPECT_FALSE(success);
+  EXPECT_FALSE(success_future.Get());
 
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
