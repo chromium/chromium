@@ -11,6 +11,7 @@ config("mediapipe_config") {
   include_dirs = [
     "src",
     "shims",
+    "shims/protobuf",
 
     # TODO(b/283522287): Change the file under this directory to a gn action
     # instead.
@@ -51,15 +52,21 @@ config("mediapipe_header_flags_need_to_upstream") {
   ]
 }
 
-proto_library("any_proto") {
-  proto_in_dir = "shims/protobuf"
-  cc_generator_options = "lite=true:"
-  sources = [ "shims/protobuf/any.proto" ]
+source_set("any_lite_proto_impl") {
+  visibility = [ ":*" ]
+  sources = [
+    "shims/protobuf/google/protobuf/any_lite.pb.cc",
+    "shims/protobuf/google/protobuf/any_lite.pb.h",
+  ]
+  include_dirs = [ "shims/protobuf" ]
+  public_configs = [ ":mediapipe_config" ]
+  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
 }
 
 proto_library("mediapipe_proto") {
   proto_in_dir = "src"
   cc_generator_options = "lite=true:"
+  link_deps = [ ":any_lite_proto_impl" ]
   sources = [
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
@@ -111,7 +118,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/util/label_map.proto",
   ]
 
-  import_dirs = [ "//third_party/protobuf/src" ]
+  import_dirs = [ "shims/protobuf" ]
 }
 
 flatbuffer("mediapipe_flatbuffer_schema") {
@@ -127,12 +134,8 @@ flatbuffer("mediapipe_flatbuffer_schema") {
 
 source_set("mediapipe_shims") {
   sources = [ "shims/glog/logging.h" ]
-  public_deps = [ ":any_proto" ]
 
-  deps = [
-    "//third_party/abseil-cpp:absl",
-    "//third_party/protobuf:protobuf_lite",
-  ]
+  deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 # These calculators are found at runtime and must be linked in, despite not

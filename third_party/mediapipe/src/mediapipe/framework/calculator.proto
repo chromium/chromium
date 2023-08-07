@@ -21,7 +21,7 @@ package mediapipe;
 
 import public "mediapipe/framework/calculator_options.proto";
 
-import "google/protobuf/any.proto";
+import "google/protobuf/any_lite.proto";
 import "mediapipe/framework/mediapipe_options.proto";
 import "mediapipe/framework/packet_factory.proto";
 import "mediapipe/framework/packet_generator.proto";
@@ -273,7 +273,7 @@ message CalculatorGraphConfig {
     // Each node_options message must have a different message type.
     // If the same message type is specified in |options| and |node_options|,
     // only the message in |options| is used.
-    repeated google.protobuf.Any node_options = 8;
+    repeated google.protobuf.AnyLite node_options = 8;
 
     // Note: the following fields are only applicable to calculators, not
     // subgraphs.
@@ -432,5 +432,5 @@ message CalculatorGraphConfig {
   MediaPipeOptions options = 1001;
 
   // The types and default values for graph options, in proto3 syntax.
-  repeated google.protobuf.Any graph_options = 1002;
+  repeated google.protobuf.AnyLite graph_options = 1002;
 }

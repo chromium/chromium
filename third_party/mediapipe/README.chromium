@@ -79,3 +79,31 @@ supports it.
 runfiles or through command line flags is not needed in Chromium, so it's either
 to simply remove all that code than add bazel's runfiles lib and support the
 ABSL_FLAG.
+
+Other patches
+=============
+* update-any-usage.patch - Renames usage of the proto google.protobuf.Any to
+google.protobuf.AnyLite as well as checking in generated source for these
+protos (in shims/protobuf). The checked in source is required as protoc
+special cases google.protobuf.Any, and mediapipe can not use that name as
+protobuf already uses that name and chrome has the full implementation
+checked into the repo. To use the same name would result in ODR violations. The
+souce was generated using normal protoc and the special functions added for Any
+were copied over (specifically variants of PackFrom, UnpackTo and Is).
+Here's the set of functions that were added to the generated file:
+  template <typename T>
+  bool PackFrom(const T& message) {
+    internal::AnyMetadata any_metadata(&type_url_, &value_);
+    return any_metadata.PackFrom(GetArena(), message);
+  }
+  template <typename T>
+  bool UnpackTo(T* message) const {
+    internal::AnyMetadata any_metadata(&(const_cast<AnyLite*>(this)->type_url_),
+                                       &(const_cast<AnyLite*>(this)->value_));
+    return any_metadata.UnpackTo(message);
+  }
+  template<typename T> bool Is() const {
+    internal::AnyMetadata any_metadata(&(const_cast<AnyLite*>(this)->type_url_),
+                                       &(const_cast<AnyLite*>(this)->value_));
+    return any_metadata.Is<T>();
+  }

@@ -22,7 +22,7 @@ namespace protobuf {
 
 #if !defined(MEDIAPIPE_PROTO_LITE) || !defined(MEDIAPIPE_PROTO_THIRD_PARTY)
 // The full definition of protobuf::Any for most platforms.
-using Any = google::protobuf::Any;
+using Any = google::protobuf::AnyLite;
 #else
 // A dummy definition of protobuf::Any for third_party/protobuf:protobuf-lite.
 class Any {
