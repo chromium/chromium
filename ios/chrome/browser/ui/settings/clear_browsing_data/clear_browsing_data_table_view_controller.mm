@@ -45,6 +45,7 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 @interface ClearBrowsingDataTableViewController () <
     ClearBrowsingDataConsumer,
@@ -112,6 +113,7 @@
 }
 
 - (void)stop {
+  [self prepareForDismissal];
   _identityManagerObserverBridge.reset();
   [_dataManager disconnect];
   _dataManager.consumer = nil;
@@ -175,7 +177,7 @@
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
-                           action:@selector(dismss)];
+                           action:@selector(dismiss)];
   dismissButton.accessibilityIdentifier = kSettingsDoneButtonId;
   self.navigationItem.rightBarButtonItem = dismissButton;
 
@@ -203,7 +205,7 @@
   [self.dataManager loadModel:self.tableViewModel];
 }
 
-- (void)dismss {
+- (void)dismiss {
   base::RecordAction(base::UserMetricsAction("MobileClearBrowsingDataClose"));
   [self prepareForDismissal];
   [self.delegate clearBrowsingDataTableViewControllerWantsDismissal:self];
@@ -216,10 +218,7 @@
     [self.actionSheetCoordinator stop];
     self.actionSheetCoordinator = nil;
   }
-  if (self.alertCoordinator) {
-    [self.alertCoordinator stop];
-    self.alertCoordinator = nil;
-  }
+  [self dismissAlertCoordinator];
   if (self.overlayCoordinator.started) {
     [self.overlayCoordinator stop];
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
@@ -345,7 +344,7 @@
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self dismss];
+  [self dismiss];
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
@@ -377,6 +376,11 @@
 }
 
 #pragma mark - ClearBrowsingDataConsumer
+
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+}
 
 - (void)updateCellsForItem:(TableViewItem*)item reload:(BOOL)reload {
   if (self.suppressTableViewUpdates)
@@ -488,13 +492,16 @@
                       clearBrowsingDataTableViewController:weakSelf
                                             wantsToOpenURL:
                                                 GURL(kGoogleMyAccountURL)];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OK_BUTTON)
-                action:nil
+                action:^{
+                  [weakSelf dismissAlertCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
 
   [self.alertCoordinator start];
@@ -547,6 +554,13 @@
                                baseViewController:self
                                           browser:_browser
                               sourceBarButtonItem:sender];
+  __weak ClearBrowsingDataTableViewController* weakSelf = self;
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissAlertCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
 }
 

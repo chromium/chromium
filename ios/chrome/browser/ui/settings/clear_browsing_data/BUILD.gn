@@ -65,6 +65,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 

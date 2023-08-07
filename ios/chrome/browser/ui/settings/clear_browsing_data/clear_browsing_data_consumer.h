@@ -32,6 +32,9 @@ enum class BrowsingDataRemoveMask;
 // Indicate to user that data has been cleared.
 - (void)showBrowsingHistoryRemovedDialog;
 
+// Dismisses the alert coordinator.
+- (void)dismissAlertCoordinator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_CONSUMER_H_

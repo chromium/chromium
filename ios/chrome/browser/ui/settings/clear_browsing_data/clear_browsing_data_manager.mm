@@ -376,6 +376,7 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
                 action:^{
                   [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
+                  [weakSelf.consumer dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
   return actionCoordinator;
