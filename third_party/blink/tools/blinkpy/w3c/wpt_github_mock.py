@@ -36,6 +36,10 @@ class MockWPTGitHub(object):
         self.create_pr_fail_index = create_pr_fail_index
         self.merged_index = merged_index
         self.check_runs = []
+        self.skipped_revisions = ['77578ccb4082ae20a9326d9e673225f1189ebb63']
+        self.url = 'https://github.com/web-platform-tests/wpt/'
+        self.provisional_pr_label = 'do not merge yet'
+        self.export_pr_label = 'chromium-export'
 
     def all_provisional_pull_requests(self):
         self.calls.append('all_provisional_pull_requests')

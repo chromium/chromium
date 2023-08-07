@@ -36,8 +36,8 @@ from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.port.test import add_unit_tests_to_mock_filesystem
+from blinkpy.w3c.chromium_configs import ChromiumWPTConfig
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
-
 
 class MockHost(MockSystemHost):
     def __init__(self,
@@ -58,6 +58,7 @@ class MockHost(MockSystemHost):
         self._add_base_manifest_to_mock_filesystem(self.filesystem)
         self.web = web or MockWeb()
         self._git = git
+        self.project_config = ChromiumWPTConfig(self.filesystem)
 
         # Note: We're using a real PortFactory here. Tests which don't wish to depend
         # on the list of known ports should override this with a MockPortFactory.
