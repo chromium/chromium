@@ -51,14 +51,16 @@ std::wstring GetCommandLine(int key, const std::wstring& exe_name) {
 
 }  // namespace
 
-class AppCommandRunnerTestBase {
+class AppCommandRunnerTestBase : public ::testing::Test {
  protected:
-  AppCommandRunnerTestBase() {
+  AppCommandRunnerTestBase() = default;
+  ~AppCommandRunnerTestBase() override = default;
+
+  void SetUp() override {
     SetupCmdExe(GetTestScope(), cmd_exe_command_line_, temp_programfiles_dir_);
   }
-  virtual ~AppCommandRunnerTestBase() {
-    DeleteAppClientKey(GetTestScope(), kAppId1);
-  }
+
+  void TearDown() override { DeleteAppClientKey(GetTestScope(), kAppId1); }
 
   HResultOr<AppCommandRunner> CreateAppCommandRunner(
       const std::wstring& app_id,
@@ -85,16 +87,15 @@ class AppCommandRunnerTestBase {
   base::ScopedTempDir temp_programfiles_dir_;
 };
 
-class AppCommandRunnerTest : public ::testing::Test,
-                             public AppCommandRunnerTestBase {};
+class AppCommandRunnerTest : public AppCommandRunnerTestBase {};
 
 struct AppCommandFormatComponentsInvalidPathsTestCase {
   const UpdaterScope scope;
-  const wchar_t* command_format;
+  const wchar_t* const command_format;
 };
 
 class AppCommandFormatComponentsInvalidPathsTest
-    : public ::testing::TestWithParam<
+    : public ::testing::WithParamInterface<
           AppCommandFormatComponentsInvalidPathsTestCase>,
       public AppCommandRunnerTestBase {};
 
@@ -123,7 +124,7 @@ TEST_P(AppCommandFormatComponentsInvalidPathsTest, TestCases) {
 }
 
 class AppCommandFormatComponentsProgramFilesPathsTest
-    : public ::testing::TestWithParam<int>,
+    : public ::testing::WithParamInterface<int>,
       public AppCommandRunnerTestBase {};
 
 INSTANTIATE_TEST_SUITE_P(AppCommandFormatComponentsProgramFilesPathsTestCases,
@@ -147,13 +148,13 @@ TEST_P(AppCommandFormatComponentsProgramFilesPathsTest, TestCases) {
 }
 
 struct AppCommandFormatParameterTestCase {
-  const wchar_t* format_string;
-  const wchar_t* expected_output;
+  const wchar_t* const format_string;
+  const wchar_t* const expected_output;
   const std::vector<std::wstring> substitutions;
 };
 
 class AppCommandFormatParameterTest
-    : public ::testing::TestWithParam<AppCommandFormatParameterTestCase>,
+    : public ::testing::WithParamInterface<AppCommandFormatParameterTestCase>,
       public AppCommandRunnerTestBase {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -208,12 +209,12 @@ TEST_P(AppCommandFormatParameterTest, TestCases) {
 
 struct AppCommandFormatComponentsAndCommandLineTestCase {
   const std::vector<std::wstring> input;
-  const wchar_t* output;
+  const wchar_t* const output;
   const std::vector<std::wstring> substitutions;
 };
 
 class AppCommandFormatComponentsAndCommandLineTest
-    : public ::testing::TestWithParam<
+    : public ::testing::WithParamInterface<
           AppCommandFormatComponentsAndCommandLineTestCase>,
       public AppCommandRunnerTestBase {};
 
@@ -354,7 +355,7 @@ struct AppCommandTestCase {
 };
 
 class AppCommandExecuteTest
-    : public ::testing::TestWithParam<AppCommandTestCase>,
+    : public ::testing::WithParamInterface<AppCommandTestCase>,
       public AppCommandRunnerTestBase {};
 
 INSTANTIATE_TEST_SUITE_P(AppCommandExecuteTestCases,
@@ -390,7 +391,7 @@ TEST_F(AppCommandRunnerTest, NoCmd) {
 }
 
 class RunAppCommandFormatTest
-    : public ::testing::TestWithParam<AppCommandTestCase>,
+    : public ::testing::WithParamInterface<AppCommandTestCase>,
       public AppCommandRunnerTestBase {};
 
 INSTANTIATE_TEST_SUITE_P(RunAppCommandFormatTestCases,
@@ -429,16 +430,16 @@ TEST_F(AppCommandRunnerTest, CheckChromeBrandedName) {
 }
 
 struct RunProcessLauncherFormatTestCase {
-  const wchar_t* app_name;
-  const wchar_t* app_version;
-  const wchar_t* cmd_id;
+  const wchar_t* const app_name;
+  const wchar_t* const app_version;
+  const wchar_t* const cmd_id;
   const std::vector<std::wstring> input;
   const int expected_exit_code;
   const int expected_hr;
 };
 
 class RunProcessLauncherFormatTest
-    : public ::testing::TestWithParam<RunProcessLauncherFormatTestCase>,
+    : public ::testing::WithParamInterface<RunProcessLauncherFormatTestCase>,
       public AppCommandRunnerTestBase {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -512,16 +513,16 @@ TEST_P(RunProcessLauncherFormatTest, TestCases) {
 }
 
 struct RunBothFormatsTestCase {
-  const wchar_t* cmd_id_to_execute;
-  const wchar_t* cmd_id_appcommand;
+  const wchar_t* const cmd_id_to_execute;
+  const wchar_t* const cmd_id_appcommand;
   const std::vector<std::wstring> input_appcommand;
-  const wchar_t* cmd_id_processlauncher;
+  const wchar_t* const cmd_id_processlauncher;
   const std::vector<std::wstring> input_processlauncher;
   const int expected_exit_code;
 };
 
 class RunBothFormatsTest
-    : public ::testing::TestWithParam<RunBothFormatsTestCase>,
+    : public ::testing::WithParamInterface<RunBothFormatsTestCase>,
       public AppCommandRunnerTestBase {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -580,13 +581,13 @@ TEST_P(RunBothFormatsTest, TestCases) {
 
 struct EachAppCommand {
   const std::vector<std::wstring> input;
-  const wchar_t* command_id;
+  const wchar_t* const command_id;
 };
 
 using LoadAutoRunOnOsUpgradeAppCommandsTestCase = std::vector<EachAppCommand>;
 
 class LoadAutoRunOnOsUpgradeAppCommandsTest
-    : public ::testing::TestWithParam<
+    : public ::testing::WithParamInterface<
           LoadAutoRunOnOsUpgradeAppCommandsTestCase>,
       public AppCommandRunnerTestBase {};
 
