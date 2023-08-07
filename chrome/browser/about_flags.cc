@@ -5900,11 +5900,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxWarmRecycledViewPoolDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOmniboxWarmRecycledViewPool)},
 
-    {"android-app-inintegration", flag_descriptions::kAndroidAppIntegrationName,
+    {"android-app-integration", flag_descriptions::kAndroidAppIntegrationName,
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},
 
-    {"android-app-inintegration-safesearch",
+    {"android-app-integration-safesearch",
      flag_descriptions::kAndroidAppIntegrationSafeSearchName,
      flag_descriptions::kAndroidAppIntegrationSafeSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegrationSafeSearch)},

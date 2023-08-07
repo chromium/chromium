@@ -167,12 +167,12 @@
     "expiry_milestone": -1
   },
   {
-    "name": "android-app-inintegration",
+    "name": "android-app-integration",
     "owners": [ "gangwu", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 130
   },
   {
-    "name": "android-app-inintegration-safesearch",
+    "name": "android-app-integration-safesearch",
     "owners": [ "thaothao", "public-content-toast@google.com" ],
     "expiry_milestone": 130
   },
