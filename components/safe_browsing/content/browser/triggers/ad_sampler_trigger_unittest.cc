@@ -161,7 +161,9 @@ TEST_F(AdSamplerTriggerTest, PageWithMultipleAds) {
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
                                             web_contents_key(), _, _, _, _, _))
-      .Times(2);
+      .Times(2)
+      .WillRepeatedly(Return(
+          MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
 
   // This page contains two ads - one identifiable by its URL, the other by the
   // name of the frame.

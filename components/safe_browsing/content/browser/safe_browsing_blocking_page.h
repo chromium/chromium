@@ -120,6 +120,16 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // navigation elsewhere.
   void OnInterstitialClosing() override;
 
+  // Called when the trigger manager can't send the report because the threat
+  // details are unavailable. This typically happens when the user closes the
+  // tab without using the interstitial UI.
+  void SendFallbackReport(
+      const security_interstitials::UnsafeResource resource,
+      bool did_proceed,
+      int num_visits,
+      security_interstitials::InterstitialInteractionMap* interactions,
+      bool is_hats_candidate);
+
   // Called when the interstitial is going away. If there is a
   // pending threat details object, we look at the user's
   // preferences, and if the option to send threat details is

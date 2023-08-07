@@ -2248,6 +2248,13 @@ IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
   ClientSafeBrowsingReportRequest report;
   ASSERT_TRUE(report.ParseFromString(serialized));
 
+  EXPECT_EQ(report.url(), embedded_test_server()->GetURL(kEmptyPage));
+  SBThreatType threat_type = GetThreatType();
+  // SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING does not set the page_url because
+  // its resource's navigation_url is empty.
+  if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+    EXPECT_EQ(report.page_url(), embedded_test_server()->GetURL(kEmptyPage));
+  }
   // Create sorted vector of interstitial interactions. Sorted by
   // security_interstitial_interaction numeric value.
   std::vector<ClientSafeBrowsingReportRequest::InterstitialInteraction>
@@ -2277,23 +2284,45 @@ IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
-                       CheckReportEmptyInteractionList) {
+                       CheckReportCloseTabOnInterstitial) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
+  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
+      new content::MessageLoopRunner);
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
   SetupWarningAndNavigate(browser());
   ASSERT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Send CSBRR without interactions.
   chrome::CloseTab(browser());
+  observer.WaitForNavigationFinished();
+  threat_report_sent_runner->Run();
 
   std::string serialized = GetReportSent();
   ClientSafeBrowsingReportRequest report;
   ASSERT_TRUE(report.ParseFromString(serialized));
 
-  // Verify the report interactions are empty.
-  EXPECT_EQ(report.interstitial_interactions_size(), 0);
+  EXPECT_EQ(report.url(), embedded_test_server()->GetURL(kEmptyPage));
+  // Verify the report interactions only contain interstitial interactions.
+  SBThreatType threat_type = GetThreatType();
+  if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+    EXPECT_EQ(report.type(),
+              ClientSafeBrowsingReportRequest_ReportType_URL_PHISHING);
+    EXPECT_EQ(report.page_url(), embedded_test_server()->GetURL(kEmptyPage));
+  }
+  if (threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
+    EXPECT_EQ(
+        report.type(),
+        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_PHISHING);
+  }
+  EXPECT_EQ(report.interstitial_interactions_size(), 1);
+  EXPECT_EQ(
+      report.interstitial_interactions(0).security_interstitial_interaction(),
+      ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_CLOSE_INTERSTITIAL_WITHOUT_UI);
+  EXPECT_EQ(report.interstitial_interactions(0).occurrence_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2321,6 +2350,11 @@ IN_PROC_BROWSER_TEST_P(
   ClientSafeBrowsingReportRequest report;
   ASSERT_TRUE(report.ParseFromString(serialized));
 
+  EXPECT_EQ(report.url(), embedded_test_server()->GetURL(kEmptyPage));
+  SBThreatType threat_type = GetThreatType();
+  if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+    EXPECT_EQ(report.page_url(), embedded_test_server()->GetURL(kEmptyPage));
+  }
   // Verify the report interaction only contains a
   // CMD_CLOSE_INTERSTITIAL_WITHOUT_UI interaction.
   EXPECT_EQ(report.interstitial_interactions_size(), 1);
@@ -3245,6 +3279,14 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     EXPECT_TRUE(WaitForReady(browser));
   }
 
+  // A test should call this function if it is expected to trigger a threat
+  // report.
+  void SetReportSentCallback(base::OnceClosure callback) {
+    static_cast<FakeSafeBrowsingUIManager*>(
+        factory_.test_safe_browsing_service()->ui_manager().get())
+        ->set_threat_details_done_callback(std::move(callback));
+  }
+
  private:
   TestSafeBrowsingServiceFactory factory_;
   TestThreatDetailsFactory details_factory_;
@@ -3303,6 +3345,11 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
             browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
+
+  // Set threat report sent runner, since a report will be sent when web
+  // contents are destroyed.
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
@@ -3314,6 +3361,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   SetupWarningAndNavigateToURL(embedded_test_server()->GetURL("/empty.html"),
                                browser());
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+
   EXPECT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   // Check enhanced protection message is not shown.
@@ -3387,6 +3437,12 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
         ->CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
   }
 
+  void SetReportSentCallback(base::OnceClosure callback) {
+    static_cast<FakeSafeBrowsingUIManager*>(
+        factory_.test_safe_browsing_service()->ui_manager().get())
+        ->set_threat_details_done_callback(std::move(callback));
+  }
+
  private:
   TestSafeBrowsingServiceFactory factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3399,6 +3455,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   GURL url = embedded_test_server()->GetURL("/empty.html");
   SetupUnsafeVerdict(url, browser()->profile());
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(IsShowingInterstitial(

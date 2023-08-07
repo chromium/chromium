@@ -90,6 +90,14 @@ enum class TriggerManagerReason {
 // tracking how often triggers fire and throttling them when necessary.
 class TriggerManager {
  public:
+  struct FinishCollectingThreatDetailsResult {
+    FinishCollectingThreatDetailsResult(bool should_send_report,
+                                        bool are_threat_details_available);
+    bool IsReportSent();
+    bool should_send_report;
+    bool are_threat_details_available;
+  };
+
   TriggerManager(BaseUIManager* ui_manager, PrefService* local_state_prefs);
 
   TriggerManager(const TriggerManager&) = delete;
@@ -166,10 +174,10 @@ class TriggerManager {
   // created by TriggerManager::GetSBErrorDisplayOptions(). |is_hats_candidate|
   // indicates whether the user is a candidate for a HaTS survey, in which case
   // this method will trigger launching it and attaching ThreatDetails report
-  // information to it. Returns true if the report was completed and sent, or
-  // false otherwise (eg: the user was not opted-in to extended reporting after
-  // collection began).
-  virtual bool FinishCollectingThreatDetails(
+  // information to it. Returns whether the report is supposed to be sent (eg:
+  // is user  opted-in to extended reporting after collection began) and
+  // whether the threat details were available to send.
+  virtual FinishCollectingThreatDetailsResult FinishCollectingThreatDetails(
       TriggerType trigger_type,
       WebContentsKey web_contents_key,
       const base::TimeDelta& delay,

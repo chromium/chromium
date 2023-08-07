@@ -210,7 +210,8 @@ TEST_F(SuspiciousSiteTriggerTest, MAYBE_SuspiciousHitDuringLoad) {
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _, _))
       .Times(1)
-      .WillOnce(Return(true));
+      .WillOnce(Return(
+          MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
   CreateAndNavigateSubFrame(kSuspiciousUrl, main_frame);
@@ -248,7 +249,8 @@ TEST_F(SuspiciousSiteTriggerTest, SuspiciousHitAfterLoad) {
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _, _))
       .Times(1)
-      .WillOnce(Return(true));
+      .WillOnce(Return(
+          MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
   CreateAndNavigateSubFrame(kSuspiciousUrl, main_frame);
@@ -496,7 +498,8 @@ TEST_F(SuspiciousSiteTriggerTest, VisibleURLChangeMidLoad_Suspicious) {
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _, _))
       .Times(1)
-      .WillOnce(Return(true));
+      .WillOnce(Return(
+          MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
 
   // Change visible URL by starting a new navigation without committing it.
   // Sanity check the visible URL changed.

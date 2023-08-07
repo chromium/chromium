@@ -75,6 +75,16 @@ bool CanSendReport(const SBErrorOptions& error_display_options,
 DataCollectorsContainer::DataCollectorsContainer() {}
 DataCollectorsContainer::~DataCollectorsContainer() {}
 
+TriggerManager::FinishCollectingThreatDetailsResult::
+    FinishCollectingThreatDetailsResult(bool should_send_report,
+                                        bool are_threat_details_available)
+    : should_send_report(should_send_report),
+      are_threat_details_available(are_threat_details_available) {}
+
+bool TriggerManager::FinishCollectingThreatDetailsResult::IsReportSent() {
+  return should_send_report && are_threat_details_available;
+}
+
 TriggerManager::TriggerManager(BaseUIManager* ui_manager,
                                PrefService* local_state_prefs)
     : ui_manager_(ui_manager),
@@ -203,7 +213,8 @@ void TriggerManager::SetInterstitialInteractions(
   interstitial_interactions_ = std::move(interstitial_interactions);
 }
 
-bool TriggerManager::FinishCollectingThreatDetails(
+TriggerManager::FinishCollectingThreatDetailsResult
+TriggerManager::FinishCollectingThreatDetails(
     const TriggerType trigger_type,
     WebContentsKey web_contents_key,
     const base::TimeDelta& delay,
@@ -231,7 +242,9 @@ bool TriggerManager::FinishCollectingThreatDetails(
 
   // Make sure there's a ThreatDetails collector running on this tab.
   if (!has_threat_details_in_map)
-    return false;
+    return FinishCollectingThreatDetailsResult(
+        should_send_report,
+        /*are_threat_details_available=*/false);
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
   bool has_threat_details = !!collectors->threat_details;
 
@@ -244,7 +257,9 @@ bool TriggerManager::FinishCollectingThreatDetails(
   }
 
   if (!has_threat_details) {
-    return false;
+    return FinishCollectingThreatDetailsResult(
+        should_send_report,
+        /*are_threat_details_available=*/false);
   }
 
   // Trigger finishing the ThreatDetails collection if we should send the
@@ -269,7 +284,9 @@ bool TriggerManager::FinishCollectingThreatDetails(
     ThreatDetailsDone(web_contents_key);
   }
 
-  return should_send_report;
+  return FinishCollectingThreatDetailsResult(
+      should_send_report,
+      /*are_threat_details_available=*/true);
 }
 
 void TriggerManager::ThreatDetailsDone(WebContentsKey web_contents_key) {

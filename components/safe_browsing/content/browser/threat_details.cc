@@ -28,6 +28,7 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
@@ -89,116 +90,6 @@ struct AllowlistedHttpsHeadersTraits
 };
 base::LazyInstance<StringSet, AllowlistedHttpsHeadersTraits>
     g_https_headers_allowlist = LAZY_INSTANCE_INITIALIZER;
-
-// Helper function that converts SBThreatType to
-// ClientSafeBrowsingReportRequest::ReportType.
-ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
-    SBThreatType threat_type) {
-  switch (threat_type) {
-    case SB_THREAT_TYPE_URL_PHISHING:
-      return ClientSafeBrowsingReportRequest::URL_PHISHING;
-    case SB_THREAT_TYPE_URL_MALWARE:
-      return ClientSafeBrowsingReportRequest::URL_MALWARE;
-    case SB_THREAT_TYPE_URL_UNWANTED:
-      return ClientSafeBrowsingReportRequest::URL_UNWANTED;
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-      return ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING;
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      return ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE;
-    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-      return ClientSafeBrowsingReportRequest::BLOCKED_AD_POPUP;
-    case SB_THREAT_TYPE_AD_SAMPLE:
-      return ClientSafeBrowsingReportRequest::AD_SAMPLE;
-    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
-      return ClientSafeBrowsingReportRequest::BLOCKED_AD_REDIRECT;
-    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
-      return ClientSafeBrowsingReportRequest::URL_PASSWORD_PROTECTION_PHISHING;
-    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
-      return ClientSafeBrowsingReportRequest::URL_SUSPICIOUS;
-    case SB_THREAT_TYPE_BILLING:
-      return ClientSafeBrowsingReportRequest::BILLING;
-    case SB_THREAT_TYPE_APK_DOWNLOAD:
-      return ClientSafeBrowsingReportRequest::APK_DOWNLOAD;
-    case SB_THREAT_TYPE_UNUSED:
-    case SB_THREAT_TYPE_SAFE:
-    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
-    case SB_THREAT_TYPE_EXTENSION:
-    case SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
-    case SB_THREAT_TYPE_API_ABUSE:
-    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case SB_THREAT_TYPE_CSD_ALLOWLIST:
-    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
-    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
-      // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
-      NOTREACHED() << "We should not send report for threat type: "
-                   << threat_type;
-      return ClientSafeBrowsingReportRequest::UNKNOWN;
-  }
-}
-
-// Helper function that converts mojom::RequestDestination to
-// ClientSafeBrowsingReportRequest::UrlRequestDestination.
-ClientSafeBrowsingReportRequest::UrlRequestDestination
-GetUrlRequestDestinationFromMojomRequestDestination(
-    network::mojom::RequestDestination request_destination) {
-  switch (request_destination) {
-    case network::mojom::RequestDestination::kEmpty:
-      return ClientSafeBrowsingReportRequest::EMPTY;
-    case network::mojom::RequestDestination::kAudio:
-      return ClientSafeBrowsingReportRequest::AUDIO;
-    case network::mojom::RequestDestination::kAudioWorklet:
-      return ClientSafeBrowsingReportRequest::AUDIO_WORKLET;
-    case network::mojom::RequestDestination::kDocument:
-      return ClientSafeBrowsingReportRequest::DOCUMENT;
-    case network::mojom::RequestDestination::kEmbed:
-      return ClientSafeBrowsingReportRequest::EMBED;
-    case network::mojom::RequestDestination::kFont:
-      return ClientSafeBrowsingReportRequest::FONT;
-    case network::mojom::RequestDestination::kFrame:
-      return ClientSafeBrowsingReportRequest::FRAME;
-    case network::mojom::RequestDestination::kIframe:
-      return ClientSafeBrowsingReportRequest::IFRAME;
-    case network::mojom::RequestDestination::kImage:
-      return ClientSafeBrowsingReportRequest::IMAGE;
-    case network::mojom::RequestDestination::kManifest:
-      return ClientSafeBrowsingReportRequest::MANIFEST;
-    case network::mojom::RequestDestination::kObject:
-      return ClientSafeBrowsingReportRequest::OBJECT;
-    case network::mojom::RequestDestination::kPaintWorklet:
-      return ClientSafeBrowsingReportRequest::PAINT_WORKLET;
-    case network::mojom::RequestDestination::kReport:
-      return ClientSafeBrowsingReportRequest::REPORT;
-    case network::mojom::RequestDestination::kScript:
-      return ClientSafeBrowsingReportRequest::SCRIPT;
-    case network::mojom::RequestDestination::kServiceWorker:
-      return ClientSafeBrowsingReportRequest::SERVICE_WORKER;
-    case network::mojom::RequestDestination::kSharedWorker:
-      return ClientSafeBrowsingReportRequest::SHARED_WORKER;
-    case network::mojom::RequestDestination::kStyle:
-      return ClientSafeBrowsingReportRequest::STYLE;
-    case network::mojom::RequestDestination::kTrack:
-      return ClientSafeBrowsingReportRequest::TRACK;
-    case network::mojom::RequestDestination::kVideo:
-      return ClientSafeBrowsingReportRequest::VIDEO;
-    case network::mojom::RequestDestination::kWebBundle:
-      return ClientSafeBrowsingReportRequest::WEB_BUNDLE;
-    case network::mojom::RequestDestination::kWorker:
-      return ClientSafeBrowsingReportRequest::WORKER;
-    case network::mojom::RequestDestination::kXslt:
-      return ClientSafeBrowsingReportRequest::XSLT;
-    case network::mojom::RequestDestination::kFencedframe:
-      return ClientSafeBrowsingReportRequest::FENCED_FRAME;
-    case network::mojom::RequestDestination::kWebIdentity:
-      return ClientSafeBrowsingReportRequest::WEB_IDENTITY;
-    case network::mojom::RequestDestination::kDictionary:
-      return ClientSafeBrowsingReportRequest::DICTIONARY;
-  }
-}
 
 // Clears the specified HTTPS resource of any sensitive data, only retaining
 // data that is allowlisted for collection.
@@ -484,11 +375,6 @@ ThreatDetails::ThreatDetails()
 
 ThreatDetails::~ThreatDetails() = default;
 
-bool ThreatDetails::IsReportableUrl(const GURL& url) const {
-  // TODO(panayiotis): also skip internal urls.
-  return url.SchemeIs("http") || url.SchemeIs("https");
-}
-
 // Looks for a Resource for the given url in resources_.  If found, it
 // updates |resource|. Otherwise, it creates a new message, adds it to
 // resources_ and updates |resource| to point to it.
@@ -526,7 +412,7 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
     const GURL& parent,
     const std::string& tagname,
     const std::vector<GURL>* children) {
-  if (!url.is_valid() || !IsReportableUrl(url)) {
+  if (!url.is_valid() || !client_report_utils::IsReportableUrl(url)) {
     return nullptr;
   }
 
@@ -536,7 +422,7 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
   if (!tagname.empty()) {
     url_resource->set_tag_name(tagname);
   }
-  if (!parent.is_empty() && IsReportableUrl(parent)) {
+  if (!parent.is_empty() && client_report_utils::IsReportableUrl(parent)) {
     // Add the resource for the parent.
     ClientSafeBrowsingReportRequest::Resource* parent_resource =
         FindOrCreateResource(parent);
@@ -644,39 +530,10 @@ void ThreatDetails::StartCollection() {
   DVLOG(1) << "Starting to compute threat details.";
   report_ = std::make_unique<ClientSafeBrowsingReportRequest>();
 
-  if (IsReportableUrl(resource_.url)) {
-    report_->set_url(resource_.url.spec());
-    report_->set_type(GetReportTypeFromSBThreatType(resource_.threat_type));
-    report_->set_url_request_destination(
-        GetUrlRequestDestinationFromMojomRequestDestination(
-            resource_.request_destination));
-  }
+  client_report_utils::FillReportBasicResourceDetails(report_.get(), resource_);
 
-  GURL referrer_url;
-  GURL page_url;
-
-  // With committed interstitials, the information is pre-filled into the
-  // UnsafeResource, since the navigation entry we have at this point is for the
-  // navigation to the interstitial, and the entry with the page details get
-  // destroyed when leaving the interstitial.
-  if (!resource_.navigation_url.is_empty()) {
-    page_url = resource_.navigation_url;
-    referrer_url = resource_.referrer_url;
-  } else {
-    NavigationEntry* nav_entry = GetNavigationEntryForResource(resource_);
-    if (nav_entry) {
-      page_url = nav_entry->GetURL();
-      referrer_url = nav_entry->GetReferrer().url;
-    }
-  }
-
-  if (IsReportableUrl(page_url)) {
-    report_->set_page_url(page_url.spec());
-  }
-
-  if (IsReportableUrl(referrer_url)) {
-    report_->set_referrer_url(referrer_url.spec());
-  }
+  GURL referrer_url = client_report_utils::GetReferrerUrl(resource_);
+  GURL page_url = client_report_utils::GetPageUrl(resource_);
 
   // Add the nodes, starting from the page url.
   AddUrl(page_url, GURL(), std::string(), nullptr);
@@ -944,7 +801,8 @@ void ThreatDetails::OnCacheCollectionReady() {
 
   // Fill interstitial interactions if applicable.
   if (ShouldFillInterstitialInteractions()) {
-    FillInterstitialInteractions(report_->mutable_interstitial_interactions());
+    client_report_utils::FillInterstitialInteractionsHelper(
+        report_.get(), interstitial_interactions_.get());
   }
 
   // Add report to HaTS survey response if applicable.
@@ -979,67 +837,6 @@ void ThreatDetails::FillReferrerChain(
       out_referrer_chain);
 }
 
-// Helper function that converts SecurityInterstitialCommand to CSBRR
-// SecurityInterstitialInteraction.
-ClientSafeBrowsingReportRequest::InterstitialInteraction::
-    SecurityInterstitialInteraction
-    GetSecurityInterstitialInteractionFromCommand(
-        security_interstitials::SecurityInterstitialCommand command) {
-  switch (command) {
-    case security_interstitials::CMD_DONT_PROCEED:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_DONT_PROCEED;
-    case security_interstitials::CMD_PROCEED:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_PROCEED;
-    case security_interstitials::CMD_SHOW_MORE_SECTION:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_SHOW_MORE_SECTION;
-    case security_interstitials::CMD_OPEN_HELP_CENTER:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_HELP_CENTER;
-    case security_interstitials::CMD_OPEN_DIAGNOSTIC:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_DIAGNOSTIC;
-    case security_interstitials::CMD_RELOAD:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_RELOAD;
-    case security_interstitials::CMD_OPEN_DATE_SETTINGS:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_DATE_SETTINGS;
-    case security_interstitials::CMD_OPEN_LOGIN:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_LOGIN;
-    case security_interstitials::CMD_DO_REPORT:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_DO_REPORT;
-    case security_interstitials::CMD_DONT_REPORT:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_DONT_REPORT;
-    case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_REPORTING_PRIVACY;
-    case security_interstitials::CMD_OPEN_WHITEPAPER:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_WHITEPAPER;
-    case security_interstitials::CMD_REPORT_PHISHING_ERROR:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_REPORT_PHISHING_ERROR;
-    case security_interstitials::CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_ENHANCED_PROTECTION_SETTINGS;
-    case security_interstitials::CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_CLOSE_INTERSTITIAL_WITHOUT_UI;
-    case security_interstitials::CMD_TEXT_FOUND:
-    case security_interstitials::CMD_TEXT_NOT_FOUND:
-    case security_interstitials::CMD_ERROR:
-    case security_interstitials::CMD_REQUEST_SITE_ACCESS_PERMISSION:
-      break;
-  }
-  return ClientSafeBrowsingReportRequest::InterstitialInteraction::UNSPECIFIED;
-}
-
 bool ThreatDetails::ShouldFillInterstitialInteractions() {
   if (!base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
     return false;
@@ -1049,31 +846,6 @@ bool ThreatDetails::ShouldFillInterstitialInteractions() {
           {ClientSafeBrowsingReportRequest::URL_PHISHING,
            ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING});
   return base::Contains(valid_report_types, report_->type());
-}
-
-void ThreatDetails::FillInterstitialInteractions(
-    google::protobuf::RepeatedPtrField<
-        ClientSafeBrowsingReportRequest::InterstitialInteraction>*
-        interstitial_interactions) {
-  if (interstitial_interactions_ == nullptr) {
-    return;
-  }
-  for (auto const& interaction : *interstitial_interactions_) {
-    // Create InterstitialInteraction object.
-    ClientSafeBrowsingReportRequest::InterstitialInteraction
-        new_interstitial_interaction;
-    new_interstitial_interaction.set_security_interstitial_interaction(
-        GetSecurityInterstitialInteractionFromCommand(interaction.first));
-    new_interstitial_interaction.set_occurrence_count(
-        interaction.second.occurrence_count);
-    new_interstitial_interaction.set_first_interaction_timestamp_msec(
-        interaction.second.first_timestamp);
-    new_interstitial_interaction.set_last_interaction_timestamp_msec(
-        interaction.second.last_timestamp);
-
-    // Add the InterstitialInteraction object to interstitial_interactions.
-    interstitial_interactions->Add()->Swap(&new_interstitial_interaction);
-  }
 }
 
 void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {
@@ -1088,7 +860,8 @@ void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {
   report->set_url(report_->url());
   report->set_page_url(report_->page_url());
   report->set_referrer_url(report_->referrer_url());
-  FillInterstitialInteractions(report->mutable_interstitial_interactions());
+  client_report_utils::FillInterstitialInteractionsHelper(
+      report.get(), interstitial_interactions_.get());
   ui_manager_->AttachThreatDetailsAndLaunchSurvey(browser_context_,
                                                   std::move(report));
 }
