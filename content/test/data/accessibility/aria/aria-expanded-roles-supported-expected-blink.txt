@@ -21,7 +21,7 @@ rootWebArea
 ++++++emphasis
 ++++++feed
 ++++++figure
-++++++form
+++++++form name='Name required for form'
 ++++++grid
 ++++++++columnHeader expanded
 ++++++++cell expanded

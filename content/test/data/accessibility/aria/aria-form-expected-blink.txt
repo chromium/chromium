@@ -1,5 +1,22 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++form
-++++++++genericContainer ignored
+++++++group
+++++++++staticText name='Unnamed ARIA form: must fall back to the native role.'
+++++++++++inlineTextBox name='Unnamed ARIA form: must fall back to the native role.'
+++++++genericContainer
+++++++++staticText name='Unnamed ARIA form on plain div uses generic container role.'
+++++++++++inlineTextBox name='Unnamed ARIA form on plain div uses generic container role.'
+++++++form name='Named form'
+++++++++staticText name='Named ARIA form#1 gets the form role.'
+++++++++++inlineTextBox name='Named ARIA form#1 gets the form role.'
+++++++form name='Named ARIA form#2 gets the form role.'
+++++++++genericContainer
+++++++++++staticText name='Named ARIA form#2 gets the form role.'
+++++++++++++inlineTextBox name='Named ARIA form#2 gets the form role.'
+++++++form name='Named form'
+++++++++staticText name='Named ARIA form#3 gets the form role.'
+++++++++++inlineTextBox name='Named ARIA form#3 gets the form role.'
+++++++form roleDescription='form'
+++++++++staticText name='An aria-rolescription works on a nameless role=form.'
+++++++++++inlineTextBox name='An aria-rolescription works on a nameless role=form.'

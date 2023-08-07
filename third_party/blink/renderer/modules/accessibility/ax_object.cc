@@ -5009,11 +5009,13 @@ ax::mojom::blink::Role AXObject::RawAriaRole() const {
 ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   ax::mojom::blink::Role role = RawAriaRole();
 
-  if (role == ax::mojom::blink::Role::kRegion && !IsNameFromAuthorAttribute() &&
+  if ((role == ax::mojom::blink::Role::kForm ||
+       role == ax::mojom::blink::Role::kRegion) &&
+      !IsNameFromAuthorAttribute() &&
       !HasAttribute(html_names::kAriaRoledescriptionAttr)) {
-    // Nameless ARIA regions fall back on the native element's role.
+    // Nameless ARIA form and region fall back on the native element's role.
     // We only check aria-label/aria-labelledby because those are the only
-    // allowed ways to name an ARIA region.
+    // allowed ways to name an ARIA role.
     // TODO(accessibility) The aria-roledescription logic is required, otherwise
     // ChromeVox will ignore the aria-roledescription. It only speaks the role
     // description on certain roles, and ignores it on the generic role.
