@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -18,7 +19,6 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -486,13 +486,13 @@ std::string GenerateLastPickedDirectoryKey(const std::string& id) {
                     : base::StrCat({kCustomLastPickedDirectoryKey, "-", id});
 }
 
-base::StringPiece PathAsPermissionKey(const base::FilePath& path) {
-  return base::StringPiece(
+std::string_view PathAsPermissionKey(const base::FilePath& path) {
+  return std::string_view(
       reinterpret_cast<const char*>(path.value().data()),
       path.value().size() * sizeof(base::FilePath::CharType));
 }
 
-base::StringPiece GetGrantKeyFromGrantType(GrantType type) {
+std::string_view GetGrantKeyFromGrantType(GrantType type) {
   return type == GrantType::kWrite ? kPermissionWritableKey
                                    : kPermissionReadableKey;
 }
@@ -892,7 +892,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     std::move(callback).Run(outcome);
   }
 
-  base::StringPiece GetKey() const {
+  std::string_view GetKey() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return PathAsPermissionKey(path_);
   }
