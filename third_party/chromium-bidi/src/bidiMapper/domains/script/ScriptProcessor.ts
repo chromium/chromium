@@ -20,6 +20,7 @@ import {
   Script,
   NoSuchScriptException,
 } from '../../../protocol/protocol';
+import type {LoggerFn} from '../../../utils/log';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage';
 import type {CdpTarget} from '../context/cdpTarget';
 
@@ -32,21 +33,24 @@ export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmStorage: RealmStorage;
   readonly #preloadScriptStorage;
+  readonly #logger?: LoggerFn;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
-    preloadScriptStorage: PreloadScriptStorage
+    preloadScriptStorage: PreloadScriptStorage,
+    logger?: LoggerFn
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
+    this.#logger = logger;
   }
 
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    const preloadScript = new BidiPreloadScript(params);
+    const preloadScript = new BidiPreloadScript(params, this.#logger);
     this.#preloadScriptStorage.addPreloadScript(preloadScript);
 
     const cdpTargets = new Set<CdpTarget>(

@@ -19,8 +19,9 @@
 import {Protocol} from 'devtools-protocol';
 
 import {ChromiumBidi, Script} from '../../../protocol/protocol.js';
-import type {EventManager} from '../events/EventManager.js';
 import {uuidv4} from '../../../utils/uuid';
+import type {EventManager} from '../events/EventManager.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 
 import type {Realm} from './realm.js';
 
@@ -31,8 +32,9 @@ export class ChannelProxy {
   readonly #properties: Script.ChannelProperties;
 
   readonly #id = uuidv4();
+  readonly #logger?: LoggerFn;
 
-  constructor(channel: Script.ChannelProperties) {
+  constructor(channel: Script.ChannelProperties, logger?: LoggerFn) {
     if (
       ![0, null, undefined].includes(channel.serializationOptions?.maxDomDepth)
     ) {
@@ -52,6 +54,7 @@ export class ChannelProxy {
     }
 
     this.#properties = channel;
+    this.#logger = logger;
   }
 
   /**
@@ -171,63 +174,66 @@ export class ChannelProxy {
     channelHandle: Script.Handle,
     eventManager: EventManager
   ) {
-    // TODO(#294): Remove this loop after the realm is destroyed.
-    // Rely on the CDP throwing exception in such a case.
     // noinspection InfiniteLoopJS
     for (;;) {
-      const message = await realm.cdpClient.sendCommand(
-        'Runtime.callFunctionOn',
-        {
-          functionDeclaration: String(
-            async (channelHandle: {getMessage: () => Promise<unknown>}) =>
-              channelHandle.getMessage()
-          ),
-          arguments: [
-            {
-              objectId: channelHandle,
-            },
-          ],
-          awaitPromise: true,
-          executionContextId: realm.executionContextId,
-          serializationOptions: {
-            serialization:
-              Protocol.Runtime.SerializationOptionsSerialization.Deep,
-            ...(this.#properties.serializationOptions?.maxObjectDepth ===
-              undefined ||
-            this.#properties.serializationOptions.maxObjectDepth === null
-              ? {}
-              : {
-                  maxDepth:
-                    this.#properties.serializationOptions.maxObjectDepth,
-                }),
-          },
-        }
-      );
-
-      if (message.exceptionDetails) {
-        // TODO: add logging.
-        // TODO: check if a error should be thrown.
-        return;
-      }
-
-      eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.Script.EventNames.MessageEvent,
-          params: {
-            channel: this.#properties.channel,
-            data: realm.cdpToBidiValue(
-              message,
-              this.#properties.ownership ?? Script.ResultOwnership.None
+      try {
+        const message = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(
+              async (channelHandle: {getMessage: () => Promise<unknown>}) =>
+                channelHandle.getMessage()
             ),
-            source: {
-              realm: realm.realmId,
-              context: realm.browsingContextId,
+            arguments: [
+              {
+                objectId: channelHandle,
+              },
+            ],
+            awaitPromise: true,
+            executionContextId: realm.executionContextId,
+            serializationOptions: {
+              serialization:
+                Protocol.Runtime.SerializationOptionsSerialization.Deep,
+              ...(this.#properties.serializationOptions?.maxObjectDepth ===
+                undefined ||
+              this.#properties.serializationOptions.maxObjectDepth === null
+                ? {}
+                : {
+                    maxDepth:
+                      this.#properties.serializationOptions.maxObjectDepth,
+                  }),
+            },
+          }
+        );
+
+        if (message.exceptionDetails) {
+          throw message.exceptionDetails;
+        }
+
+        eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.Script.EventNames.MessageEvent,
+            params: {
+              channel: this.#properties.channel,
+              data: realm.cdpToBidiValue(
+                message,
+                this.#properties.ownership ?? Script.ResultOwnership.None
+              ),
+              source: {
+                realm: realm.realmId,
+                context: realm.browsingContextId,
+              },
             },
           },
-        },
-        realm.browsingContextId
-      );
+          realm.browsingContextId
+        );
+      } catch (error) {
+        // If an error is thrown, then the channel is permanently broken, so we
+        // exit the loop.
+        this.#logger?.(LogType.debug, error);
+        break;
+      }
     }
   }
 

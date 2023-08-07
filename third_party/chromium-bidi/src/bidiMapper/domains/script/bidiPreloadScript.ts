@@ -21,6 +21,7 @@ import type Protocol from 'devtools-protocol';
 import type {Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../context/cdpTarget.js';
+import type {LoggerFn} from '../../../utils/log.js';
 
 import {ChannelProxy} from './channelProxy.js';
 
@@ -63,9 +64,9 @@ export class BidiPreloadScript {
     return this.#targetIds;
   }
 
-  constructor(params: Script.AddPreloadScriptParameters) {
+  constructor(params: Script.AddPreloadScriptParameters, logger?: LoggerFn) {
     this.#channels =
-      params.arguments?.map((a) => new ChannelProxy(a.value)) ?? [];
+      params.arguments?.map((a) => new ChannelProxy(a.value, logger)) ?? [];
     this.#functionDeclaration = params.functionDeclaration;
     this.#sandbox = params.sandbox;
   }

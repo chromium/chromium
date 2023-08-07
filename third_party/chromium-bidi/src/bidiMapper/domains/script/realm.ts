@@ -672,7 +672,7 @@ export class Realm {
       }
 
       case 'channel': {
-        const channelProxy = new ChannelProxy(localValue.value);
+        const channelProxy = new ChannelProxy(localValue.value, this.#logger);
         const channelProxySendMessageHandle = await channelProxy.init(
           this,
           this.#eventManager
