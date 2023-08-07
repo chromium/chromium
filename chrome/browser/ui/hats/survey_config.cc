@@ -396,7 +396,9 @@ std::vector<SurveyConfig> GetSurveyConfigs() {
       &safe_browsing::kRedWarningSurvey, kHatsSurveyTriggerRedWarning,
       safe_browsing::kRedWarningSurveyTriggerId.Get(),
       std::vector<std::string>{},
-      std::vector<std::string>{safe_browsing::kUserActivityWithUrls});
+      std::vector<std::string>{
+          safe_browsing::kFlaggedUrl, safe_browsing::kMainFrameUrl,
+          safe_browsing::kReferrerUrl, safe_browsing::kUserActivityWithUrls});
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 

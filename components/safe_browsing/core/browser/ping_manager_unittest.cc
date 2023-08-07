@@ -605,6 +605,9 @@ TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
 TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey) {
   auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
   report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_url("http://url.com");
+  report->set_page_url("http://page-url.com");
+  report->set_referrer_url("http://referrer-url.com");
   SetNewPingManager(
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
@@ -621,19 +624,24 @@ TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey) {
   FakeSafeBrowsingHatsDelegate* raw_fake_sb_hats_delegate = SetUpHatsDelegate();
   ping_manager()->AttachThreatDetailsAndLaunchSurvey(std::move(report));
   std::string deserialized_report_string;
-  bool decoded = base::Base64UrlDecode(
+  EXPECT_TRUE(base::Base64UrlDecode(
       raw_fake_sb_hats_delegate->GetSurveyStringData()[kUserActivityWithUrls],
-      base::Base64UrlDecodePolicy::IGNORE_PADDING, &deserialized_report_string);
-  EXPECT_TRUE(decoded);
+      base::Base64UrlDecodePolicy::IGNORE_PADDING,
+      &deserialized_report_string));
   ClientSafeBrowsingReportRequest actual_report;
   actual_report.ParseFromString(deserialized_report_string);
-
   EXPECT_EQ(actual_report.type(),
             ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
   EXPECT_EQ(actual_report.population().user_population(),
             ChromeUserPopulation::SAFE_BROWSING);
   EXPECT_EQ(actual_report.population().page_load_tokens()[0].token_value(),
             "testing_page_load_token");
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kFlaggedUrl],
+            "http://url.com/");
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kMainFrameUrl],
+            "http://page-url.com/");
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kReferrerUrl],
+            "http://referrer-url.com/");
 }
 
 }  // namespace safe_browsing

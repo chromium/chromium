@@ -1088,7 +1088,6 @@ void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {
   report->set_url(report_->url());
   report->set_page_url(report_->page_url());
   report->set_referrer_url(report_->referrer_url());
-  FillReferrerChain(report->mutable_referrer_chain());
   FillInterstitialInteractions(report->mutable_interstitial_interactions());
   ui_manager_->AttachThreatDetailsAndLaunchSurvey(browser_context_,
                                                   std::move(report));

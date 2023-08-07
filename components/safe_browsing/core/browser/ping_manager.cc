@@ -281,7 +281,10 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &url_encoded_serialized_report);
   hats_delegate_->LaunchRedWarningSurvey(
-      {{kUserActivityWithUrls, url_encoded_serialized_report}});
+      {{kFlaggedUrl, report->url()},
+       {kMainFrameUrl, report->page_url()},
+       {kReferrerUrl, report->referrer_url()},
+       {kUserActivityWithUrls, url_encoded_serialized_report}});
 }
 
 void PingManager::ReportThreatDetailsOnGotAccessToken(

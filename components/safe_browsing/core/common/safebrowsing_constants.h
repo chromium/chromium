@@ -48,8 +48,19 @@ enum class CredentialPhishedStatus {
   kMaxValue = kSiteMarkedAsLegitimate,
 };
 
+// Product Specific (String) Data field name for the URL that triggered the
+// warning.
+extern const char kFlaggedUrl[];
+
+// Product Specific (String) Data field name for the main frame URL.
+extern const char kMainFrameUrl[];
+
+// Product Specific (String) Data field name for the referrer URL.
+extern const char kReferrerUrl[];
+
 // Product Specific (String) Data field name for user activity.
 extern const char kUserActivityWithUrls[];
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFEBROWSING_CONSTANTS_H_

@@ -31,5 +31,11 @@ const std::vector<std::string> GetExcludedCountries() {
   return {"cn"};
 }
 
+const char kFlaggedUrl[] = "flagged_url";
+
+const char kMainFrameUrl[] = "main_frame_url";
+
+const char kReferrerUrl[] = "referrer_url";
+
 const char kUserActivityWithUrls[] = "user_activity_with_urls";
 }  // namespace safe_browsing
