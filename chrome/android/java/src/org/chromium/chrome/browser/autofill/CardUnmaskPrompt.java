@@ -187,10 +187,8 @@ public class CardUnmaskPrompt implements EmptyTextWatcher, OnClickListener,
                     /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                     /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
                     /* showCustomIcon= */
-                    (isVirtualCard
-                            && cardArtUrl.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL))
-                            || ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE));
+                    AutofillUiUtils.shouldShowCustomIcon(
+                            cardArtUrl, /* isVirtualCard= */ isVirtualCard));
         } else {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         }
