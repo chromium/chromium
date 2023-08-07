@@ -45,7 +45,8 @@ struct CollectionInfo {
   CollectionInfo& operator=(CollectionInfo&&);
 
   static CollectionInfo CreateFromProto(
-      const ntp::background::Collection& collection);
+      const ntp::background::Collection& collection,
+      absl::optional<std::string> preview_image_url);
 
   // A unique identifier for the collection.
   std::string collection_id;

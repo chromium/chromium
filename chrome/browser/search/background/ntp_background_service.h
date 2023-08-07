@@ -167,8 +167,8 @@ class NtpBackgroundService : public KeyedService {
   // request, refreshing the contents of collection_images_ with
   // server-provided data.
   void OnCollectionImageInfoFetchComplete(
-      const ntp::background::GetImagesInCollectionResponse images_response,
-      const ErrorType);
+      ntp::background::GetImagesInCollectionResponse images_response,
+      ErrorType error_type);
 
   // Callback that processes the response from VerifyCollectionImageURL request.
   void OnImageURLHeadersFetchComplete(
@@ -183,6 +183,31 @@ class NtpBackgroundService : public KeyedService {
       ntp::background::Image image,
       const GURL& thumbnail_image_url,
       base::OnceClosure collection_urls_verification_complete_closure,
+      int headers_response_code);
+
+  // Callback that processes the response from the FetchCollectionImages
+  // request, and verifies the preview image URLs in the response, refreshing
+  // the contents of collection_images_ with server-provided data.
+  void OnCollectionPreviewURLHeadersReceived(
+      base::OnceClosure collection_fetch_complete_closure,
+      ntp::background::Collection collection,
+      const std::string& preview_image_url,
+      int headers_response_code);
+  // Callback that processes the response of a FetchImageInfo request made by a
+  // collection image whose preview image's URL is broken. The images in the
+  // collection are fetched and then verified using VerifyImageUrl.
+  void OnFetchReplacementPreviewInfoComplete(
+      base::OnceClosure collection_fetch_complete_closure,
+      ntp::background::Collection collection,
+      ntp::background::GetImagesInCollectionResponse images_response,
+      ErrorType error_type);
+  // Callback that processes the response of a VerifyImageUrl request made by a
+  // collection image, to replace its preview image URL.
+  void OnReplacementCollectionPreviewURLHeadersReceived(
+      base::OnceClosure collection_fetch_complete_closure,
+      ntp::background::Collection collection,
+      ntp::background::GetImagesInCollectionResponse images_response,
+      int replacement_preview_index,
       int headers_response_code);
 
   // Callback that processes the response from the FetchNextCollectionImage
