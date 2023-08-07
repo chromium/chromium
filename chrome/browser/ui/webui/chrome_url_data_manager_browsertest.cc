@@ -21,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/history_clusters/core/features.h"
+#include "components/nacl/common/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/navigation_details.h"
@@ -468,11 +469,10 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
-// NaCl isn't supported on ARM64 Windows.
-#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
+#endif  // !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_NACL)
     "chrome://nacl",
 #endif
-#endif  // !BUILDFLAG(IS_MAC)
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1219651): this test is flaky on mac.
     "chrome://bluetooth-internals",
