@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/obfuscated_file_util.h"
@@ -137,15 +138,14 @@ class QuotaBackendImplTest : public testing::Test,
     ASSERT_TRUE(file_util_->InitOriginDatabase(origin, true /* create */));
     ASSERT_TRUE(file_util_->origin_database_ != nullptr);
 
-    base::FileErrorOr<base::FilePath> path =
-        file_util_->GetDirectoryForStorageKeyAndType(
-            blink::StorageKey::CreateFirstParty(origin), type,
-            true /* create */);
-    ASSERT_TRUE(path.has_value());
+    ASSERT_TRUE(file_util_
+                    ->GetDirectoryForStorageKeyAndType(
+                        blink::StorageKey::CreateFirstParty(origin), type,
+                        true /* create */)
+                    .has_value());
 
-    path = GetUsageCachePath(origin, type);
-    ASSERT_TRUE(path.has_value());
-    ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(*path, 0));
+    ASSERT_OK_AND_ASSIGN(base::FilePath path, GetUsageCachePath(origin, type));
+    ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(path, 0));
   }
 
   base::SequencedTaskRunner* file_task_runner() {
@@ -266,21 +266,20 @@ TEST_P(QuotaBackendImplTest, CommitQuotaUsage) {
   FileSystemType type = kFileSystemTypeTemporary;
   InitializeForOriginAndType(kOrigin, type);
   quota_manager_proxy_->set_quota(10000);
-  auto path = GetUsageCachePath(kOrigin, type);
-  ASSERT_TRUE(path.has_value());
+  ASSERT_OK_AND_ASSIGN(base::FilePath path, GetUsageCachePath(kOrigin, type));
 
   const int64_t kDelta1 = 1000;
   backend_->CommitQuotaUsage(kOrigin, type, kDelta1);
   EXPECT_EQ(kDelta1, quota_manager_proxy_->usage());
   int64_t usage = 0;
-  EXPECT_TRUE(file_system_usage_cache_.GetUsage(*path, &usage));
+  EXPECT_TRUE(file_system_usage_cache_.GetUsage(path, &usage));
   EXPECT_EQ(kDelta1, usage);
 
   const int64_t kDelta2 = -300;
   backend_->CommitQuotaUsage(kOrigin, type, kDelta2);
   EXPECT_EQ(kDelta1 + kDelta2, quota_manager_proxy_->usage());
   usage = 0;
-  EXPECT_TRUE(file_system_usage_cache_.GetUsage(*path, &usage));
+  EXPECT_TRUE(file_system_usage_cache_.GetUsage(path, &usage));
   EXPECT_EQ(kDelta1 + kDelta2, usage);
 
   EXPECT_EQ(2, quota_manager_proxy_->storage_modified_count());
@@ -291,16 +290,15 @@ TEST_P(QuotaBackendImplTest, DirtyCount) {
 
   FileSystemType type = kFileSystemTypeTemporary;
   InitializeForOriginAndType(kOrigin, type);
-  auto path = GetUsageCachePath(kOrigin, type);
-  ASSERT_TRUE(path.has_value());
+  ASSERT_OK_AND_ASSIGN(base::FilePath path, GetUsageCachePath(kOrigin, type));
 
   backend_->IncrementDirtyCount(kOrigin, type);
   uint32_t dirty = 0;
-  ASSERT_TRUE(file_system_usage_cache_.GetDirty(*path, &dirty));
+  ASSERT_TRUE(file_system_usage_cache_.GetDirty(path, &dirty));
   EXPECT_EQ(1u, dirty);
 
   backend_->DecrementDirtyCount(kOrigin, type);
-  ASSERT_TRUE(file_system_usage_cache_.GetDirty(*path, &dirty));
+  ASSERT_TRUE(file_system_usage_cache_.GetDirty(path, &dirty));
   EXPECT_EQ(0u, dirty);
 }
 

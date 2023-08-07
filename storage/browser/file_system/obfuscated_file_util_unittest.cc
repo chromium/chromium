@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -2601,11 +2602,10 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType) {
 
   // The directory for default_bucket_'s persistent filesystem should be
   // removed.
-  const auto directory = ofu()->GetDirectoryForBucketAndType(
-      default_bucket_, kFileSystemTypePersistent,
-      /*create=*/false);
-  ASSERT_FALSE(directory.has_value());
-  ASSERT_EQ(directory.error(), base::File::FILE_ERROR_NOT_FOUND);
+  ASSERT_THAT(ofu()->GetDirectoryForBucketAndType(default_bucket_,
+                                                  kFileSystemTypePersistent,
+                                                  /*create=*/false),
+              base::test::ErrorIs(base::File::FILE_ERROR_NOT_FOUND));
 
   // The directories for custom_bucket_ should not be removed.
   ASSERT_TRUE(ofu()
@@ -2663,16 +2663,14 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType_DeleteAll) {
   ofu()->DeleteDirectoryForBucketAndType(default_bucket_, absl::nullopt);
 
   // The directories for default_bucket_ should be removed.
-  auto directory = ofu()->GetDirectoryForBucketAndType(default_bucket_,
-                                                       kFileSystemTypeTemporary,
-                                                       /*create=*/false);
-  ASSERT_FALSE(directory.has_value());
-  ASSERT_EQ(directory.error(), base::File::FILE_ERROR_NOT_FOUND);
-  directory = ofu()->GetDirectoryForBucketAndType(default_bucket_,
+  ASSERT_THAT(ofu()->GetDirectoryForBucketAndType(default_bucket_,
+                                                  kFileSystemTypeTemporary,
+                                                  /*create=*/false),
+              base::test::ErrorIs(base::File::FILE_ERROR_NOT_FOUND));
+  ASSERT_THAT(ofu()->GetDirectoryForBucketAndType(default_bucket_,
                                                   kFileSystemTypePersistent,
-                                                  /*create=*/false);
-  ASSERT_FALSE(directory.has_value());
-  ASSERT_EQ(directory.error(), base::File::FILE_ERROR_NOT_FOUND);
+                                                  /*create=*/false),
+              base::test::ErrorIs(base::File::FILE_ERROR_NOT_FOUND));
 
   // The directories for custom_bucket_ should not be removed.
   ASSERT_TRUE(ofu()

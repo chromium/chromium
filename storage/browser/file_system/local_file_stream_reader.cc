@@ -18,6 +18,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -205,10 +206,7 @@ void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
     base::FileErrorOr<base::File::Info> result) {
   std::move(callback).Run([&]() -> int64_t {
-    if (!result.has_value()) {
-      return net::FileErrorToNetError(result.error());
-    }
-    const auto& file_info = result.value();
+    ASSIGN_OR_RETURN(const auto& file_info, result, net::FileErrorToNetError);
     if (file_info.is_directory) {
       return net::ERR_FILE_NOT_FOUND;
     }

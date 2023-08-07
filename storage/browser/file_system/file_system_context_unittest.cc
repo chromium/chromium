@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -220,16 +221,15 @@ TEST_F(FileSystemContextTest, ResolveURLOnOpenFileSystem_CustomBucket) {
       storage_key, "custom_bucket", blink::mojom::StorageType::kTemporary,
       base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
-  auto bucket = bucket_future.Take();
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
   ASSERT_FALSE(last_resolved_url_.has_value());
 
   file_system_context->ResolveURLOnOpenFileSystemForTesting(
-      storage_key, bucket->ToBucketLocator(), kFileSystemTypeTest,
+      storage_key, bucket.ToBucketLocator(), kFileSystemTypeTest,
       OpenFileSystemMode::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       std::move(open_callback));
   ASSERT_TRUE(last_resolved_url_.has_value());
-  ASSERT_EQ(last_resolved_url_.value().bucket(), bucket->ToBucketLocator());
+  ASSERT_EQ(last_resolved_url_.value().bucket(), bucket.ToBucketLocator());
 }
 
 TEST_F(FileSystemContextTest, CrackFileSystemURL) {

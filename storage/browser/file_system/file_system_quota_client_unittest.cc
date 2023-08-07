@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -160,11 +161,11 @@ class FileSystemQuotaClientTest : public testing::Test {
     for (const TestFile& file : files) {
       base::FilePath path = base::FilePath().AppendASCII(file.name);
       if (file.isDirectory) {
-        auto bucket =
+        ASSERT_OK_AND_ASSIGN(
+            auto bucket,
             GetOrCreateBucket(file.origin_url, kDefaultBucketName,
-                              FileSystemTypeToQuotaStorageType(file.type));
-        ASSERT_TRUE(bucket.has_value());
-        quota_manager_->SetQuota(bucket->storage_key, bucket->type,
+                              FileSystemTypeToQuotaStorageType(file.type)));
+        quota_manager_->SetQuota(bucket.storage_key, bucket.type,
                                  1024 * 1024 * 100);
         ASSERT_TRUE(
             CreateFileSystemDirectory(path, file.origin_url, file.type));
@@ -174,7 +175,7 @@ class FileSystemQuotaClientTest : public testing::Test {
           // create it later, this will fail due to a quota mismatch.  If we
           // call this before we create the root, it succeeds, but hasn't
           // actually created the cache.
-          GetBucketUsage(quota_client, *bucket);
+          GetBucketUsage(quota_client, bucket);
         }
       } else {
         ASSERT_TRUE(
@@ -267,9 +268,10 @@ class FileSystemQuotaClientTest : public testing::Test {
 TEST_F(FileSystemQuotaClientTest, NoFileSystemTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
-  auto bucket = GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
-  EXPECT_EQ(0, GetBucketUsage(quota_client, *bucket));
+  ASSERT_OK_AND_ASSIGN(
+      auto bucket,
+      GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary));
+  EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
 }
 
 TEST_F(FileSystemQuotaClientTest, NoFileTest) {
@@ -278,20 +280,21 @@ TEST_F(FileSystemQuotaClientTest, NoFileTest) {
   InitializeOriginFiles(quota_client,
                         {{true, "", 0, kDummyURL1, kFileSystemTypeTemporary}});
 
-  auto bucket = GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      auto bucket,
+      GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary));
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(0, GetBucketUsage(quota_client, *bucket));
+    EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
   }
 }
 
 TEST_F(FileSystemQuotaClientTest, NonDefaultBucket) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
-  auto bucket = GetOrCreateBucket(kDummyURL1, "logs_bucket", kTemporary);
-  ASSERT_TRUE(bucket.has_value());
-  ASSERT_FALSE(bucket->is_default);
-  EXPECT_EQ(0, GetBucketUsage(quota_client, *bucket));
-  DeleteBucketData(&quota_client, *bucket);
+  ASSERT_OK_AND_ASSIGN(
+      auto bucket, GetOrCreateBucket(kDummyURL1, "logs_bucket", kTemporary));
+  ASSERT_FALSE(bucket.is_default);
+  EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
+  DeleteBucketData(&quota_client, bucket);
 }
 
 TEST_F(FileSystemQuotaClientTest, OneFileTest) {
@@ -305,10 +308,10 @@ TEST_F(FileSystemQuotaClientTest, OneFileTest) {
   const int64_t file_paths_cost = ComputeFilePathsCostForOriginAndType(
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
-  auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(4921 + file_paths_cost, GetBucketUsage(quota_client, *bucket));
+    EXPECT_EQ(4921 + file_paths_cost, GetBucketUsage(quota_client, bucket));
   }
 }
 
@@ -323,11 +326,11 @@ TEST_F(FileSystemQuotaClientTest, TwoFilesTest) {
   const int64_t file_paths_cost = ComputeFilePathsCostForOriginAndType(
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
-  auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(10310 + 41 + file_paths_cost,
-              GetBucketUsage(quota_client, *bucket));
+              GetBucketUsage(quota_client, bucket));
   }
 }
 
@@ -343,10 +346,10 @@ TEST_F(FileSystemQuotaClientTest, EmptyFilesTest) {
   const int64_t file_paths_cost = ComputeFilePathsCostForOriginAndType(
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
-  auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(file_paths_cost, GetBucketUsage(quota_client, *bucket));
+    EXPECT_EQ(file_paths_cost, GetBucketUsage(quota_client, bucket));
   }
 }
 
@@ -362,11 +365,11 @@ TEST_F(FileSystemQuotaClientTest, SubDirectoryTest) {
   const int64_t file_paths_cost = ComputeFilePathsCostForOriginAndType(
       kFiles, kDummyURL1, kFileSystemTypeTemporary);
 
-  auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(11921 + 4814 + file_paths_cost,
-              GetBucketUsage(quota_client, *bucket));
+              GetBucketUsage(quota_client, bucket));
   }
 }
 
@@ -391,11 +394,11 @@ TEST_F(FileSystemQuotaClientTest, MultiTypeTest) {
                                            kFileSystemTypePersistent);
 
   for (int i = 0; i < 2; i++) {
-    auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-    ASSERT_TRUE(bucket.has_value());
+    ASSERT_OK_AND_ASSIGN(auto bucket,
+                         GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
     EXPECT_EQ(133 + 14 + file_paths_cost_temporary + 193 + 9 +
                   file_paths_cost_persistent,
-              GetBucketUsage(quota_client, *bucket));
+              GetBucketUsage(quota_client, bucket));
   }
 }
 
@@ -434,16 +437,16 @@ TEST_F(FileSystemQuotaClientTest, MultiDomainTest) {
                                            kFileSystemTypePersistent);
 
   for (int i = 0; i < 2; i++) {
-    auto bucket1 = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-    ASSERT_TRUE(bucket1.has_value());
-    auto bucket2 = GetBucket(kDummyURL2, kDefaultBucketName, kTemporary);
-    ASSERT_TRUE(bucket2.has_value());
+    ASSERT_OK_AND_ASSIGN(auto bucket1,
+                         GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
+    ASSERT_OK_AND_ASSIGN(auto bucket2,
+                         GetBucket(kDummyURL2, kDefaultBucketName, kTemporary));
     EXPECT_EQ(1331 + 134 + file_paths_cost_temporary1 + 1903 + 19 +
                   file_paths_cost_persistent1,
-              GetBucketUsage(quota_client, *bucket1));
+              GetBucketUsage(quota_client, bucket1));
     EXPECT_EQ(1319 + 113 + file_paths_cost_temporary2 + 2013 + 18 +
                   file_paths_cost_persistent2,
-              GetBucketUsage(quota_client, *bucket2));
+              GetBucketUsage(quota_client, bucket2));
   }
 }
 
@@ -460,20 +463,20 @@ TEST_F(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
 
   // Dispatching three GetUsage tasks.
   set_additional_callback_count(0);
-  auto bucket = GetBucket(kDummyURL1, kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bucket.has_value());
-  GetBucketUsageAsync(quota_client, *bucket);
-  RunAdditionalBucketUsageTask(quota_client, *bucket);
-  RunAdditionalBucketUsageTask(quota_client, *bucket);
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetBucket(kDummyURL1, kDefaultBucketName, kTemporary));
+  GetBucketUsageAsync(quota_client, bucket);
+  RunAdditionalBucketUsageTask(quota_client, bucket);
+  RunAdditionalBucketUsageTask(quota_client, bucket);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(11 + 22 + file_paths_cost, usage());
   EXPECT_EQ(2, additional_callback_count());
 
   // Once more, in a different order.
   set_additional_callback_count(0);
-  RunAdditionalBucketUsageTask(quota_client, *bucket);
-  GetBucketUsageAsync(quota_client, *bucket);
-  RunAdditionalBucketUsageTask(quota_client, *bucket);
+  RunAdditionalBucketUsageTask(quota_client, bucket);
+  GetBucketUsageAsync(quota_client, bucket);
+  RunAdditionalBucketUsageTask(quota_client, bucket);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(11 + 22 + file_paths_cost, usage());
   EXPECT_EQ(2, additional_callback_count());
@@ -530,38 +533,38 @@ TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
       ComputeFilePathsCostForOriginAndType(kFiles, "https://bar.com/",
                                            kFileSystemTypePersistent);
 
-  auto foo_temp_bucket =
-      GetBucket("http://foo.com/", kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(foo_temp_bucket.has_value());
-  DeleteBucketData(&quota_client, *foo_temp_bucket);
+  ASSERT_OK_AND_ASSIGN(
+      auto foo_temp_bucket,
+      GetBucket("http://foo.com/", kDefaultBucketName, kTemporary));
+  DeleteBucketData(&quota_client, foo_temp_bucket);
 
-  auto buz_temp_bucket =
-      GetOrCreateBucket("http://buz.com/", kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(buz_temp_bucket.has_value());
-  DeleteBucketData(&quota_client, *buz_temp_bucket);
+  ASSERT_OK_AND_ASSIGN(
+      auto buz_temp_bucket,
+      GetOrCreateBucket("http://buz.com/", kDefaultBucketName, kTemporary));
+  DeleteBucketData(&quota_client, buz_temp_bucket);
 
-  EXPECT_EQ(0, GetBucketUsage(quota_client, *foo_temp_bucket));
-  EXPECT_EQ(0, GetBucketUsage(quota_client, *buz_temp_bucket));
+  EXPECT_EQ(0, GetBucketUsage(quota_client, foo_temp_bucket));
+  EXPECT_EQ(0, GetBucketUsage(quota_client, buz_temp_bucket));
 
-  auto foo_https_temp_bucket =
-      GetBucket("https://foo.com/", kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(foo_https_temp_bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      auto foo_https_temp_bucket,
+      GetBucket("https://foo.com/", kDefaultBucketName, kTemporary));
   EXPECT_EQ(2 + file_paths_cost_temporary_foo_https,
-            GetBucketUsage(quota_client, *foo_https_temp_bucket));
+            GetBucketUsage(quota_client, foo_https_temp_bucket));
 
-  auto bar_temp_bucket =
-      GetBucket("http://bar.com/", kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bar_temp_bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      auto bar_temp_bucket,
+      GetBucket("http://bar.com/", kDefaultBucketName, kTemporary));
   EXPECT_EQ(
       8 + file_paths_cost_temporary_bar + 16 + file_paths_cost_persistent_bar,
-      GetBucketUsage(quota_client, *bar_temp_bucket));
+      GetBucketUsage(quota_client, bar_temp_bucket));
 
-  auto bar_https_temp_bucket =
-      GetBucket("https://bar.com/", kDefaultBucketName, kTemporary);
-  ASSERT_TRUE(bar_https_temp_bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      auto bar_https_temp_bucket,
+      GetBucket("https://bar.com/", kDefaultBucketName, kTemporary));
   EXPECT_EQ(64 + file_paths_cost_temporary_bar_https + 32 +
                 file_paths_cost_persistent_bar_https,
-            GetBucketUsage(quota_client, *bar_https_temp_bucket));
+            GetBucketUsage(quota_client, bar_https_temp_bucket));
 }
 
 }  // namespace storage

@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
@@ -223,10 +224,7 @@ void FilesystemProxyFileStreamReader::DidGetFileInfoForGetLength(
   }
 
   std::move(callback).Run([&]() -> int64_t {
-    if (!result.has_value()) {
-      return net::FileErrorToNetError(result.error());
-    }
-    const auto& file_info = result.value();
+    ASSIGN_OR_RETURN(const auto& file_info, result, net::FileErrorToNetError);
     if (file_info.is_directory) {
       return net::ERR_FILE_NOT_FOUND;
     }
