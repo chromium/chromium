@@ -267,9 +267,7 @@ class TestCookieChangeListener : public network::mojom::CookieChangeListener {
 }  // namespace
 
 class RestrictedCookieManagerTest
-    : public testing::TestWithParam<
-          std::tuple<mojom::RestrictedCookieManagerRole,
-                     net::CookieSettingOverrides>> {
+    : public testing::TestWithParam<mojom::RestrictedCookieManagerRole> {
  public:
   RestrictedCookieManagerTest()
       : cookie_monster_(/*store=*/nullptr,
@@ -303,16 +301,11 @@ class RestrictedCookieManagerTest
   }
 
   mojom::RestrictedCookieManagerRole RestrictedCookieManagerRole() const {
-    return std::get<0>(GetParam());
+    return GetParam();
   }
 
   net::CookieSettingOverrides CookieSettingOverrides() const {
-    return std::get<1>(GetParam());
-  }
-
-  bool IsForceThirdPartyByUser() const {
-    return CookieSettingOverrides().Has(
-        net::CookieSettingOverride::kForceThirdPartyByUser);
+    return net::CookieSettingOverrides();
   }
 
   // Set a canonical cookie directly into the store.
@@ -631,10 +624,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlEqualsMatch_WithStorageAccess) {
   EXPECT_THAT(sync_service_->GetAllForUrl(
                   kDefaultUrlWithPath, net::SiteForCookies(), kOtherOrigin,
                   /*has_storage_access=*/false, options.Clone()),
-              IsForceThirdPartyByUser()
-                  ? ElementsAreArray({net::MatchesCookieNameValue(
-                        "cookie-name", "cookie-value")})
-                  : testing::ElementsAreArray<CanonicalCookieMatcher>({}));
+              testing::ElementsAreArray<CanonicalCookieMatcher>({}));
 
   // When `has_storage_access` is true, Storage Access grants may be used to
   // access cookies.
@@ -777,7 +767,6 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
                   net::IsInclude())));
 
   // Disabling getting third-party cookies works correctly.
-  // That is, unless the cookie setting override is set to force 3PCs.
   cookie_settings_.set_block_third_party_cookies(true);
   {
     auto options = mojom::CookieManagerGetOptions::New();
@@ -787,31 +776,22 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
     EXPECT_THAT(sync_service_->GetAllForUrl(
                     kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
                     /*has_storage_access=*/false, std::move(options)),
-                IsForceThirdPartyByUser()
-                    ? ElementsAreArray({net::MatchesCookieNameValue(
-                          "cookie-name", "cookie-value")})
-                    : testing::ElementsAreArray<CanonicalCookieMatcher>({}));
+                testing::ElementsAreArray<CanonicalCookieMatcher>({}));
   }
 
-  if (IsForceThirdPartyByUser()) {
-    // No additional activity when 3PCs are forced, because the second access
-    // was not a change in result.
-    EXPECT_THAT(recorded_activity(), testing::SizeIs(1));
-  } else {
-    WaitForCallback();
-    EXPECT_THAT(
-        recorded_activity(),
-        ElementsAre(
-            testing::_,
-            MatchesCookieOp(
-                mojom::CookieAccessDetails::Type::kRead,
-                "https://example.com/test/", net::SiteForCookies(),
-                CookieOrLine("cookie-name=cookie-value",
-                             mojom::CookieOrLine::Tag::kCookie),
-                net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                    {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
-                    {}))));
-  }
+  WaitForCallback();
+  EXPECT_THAT(
+      recorded_activity(),
+      ElementsAre(
+          testing::_,
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead,
+              "https://example.com/test/", net::SiteForCookies(),
+              CookieOrLine("cookie-name=cookie-value",
+                           mojom::CookieOrLine::Tag::kCookie),
+              net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
+                  {}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
@@ -892,10 +872,7 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
     EXPECT_THAT(sync_service_->GetAllForUrl(
                     kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
                     /*has_storage_access=*/false, std::move(options)),
-                IsForceThirdPartyByUser()
-                    ? ElementsAreArray({net::MatchesCookieNameValue(
-                          "cookie-name", "new-cookie-value")})
-                    : testing::ElementsAreArray<CanonicalCookieMatcher>({}));
+                testing::ElementsAreArray<CanonicalCookieMatcher>({}));
 
     WaitForCallback();
 
@@ -1012,7 +989,6 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlSameParty) {
   }
 
   // Should still be blocked when third-party cookie blocking is enabled.
-  // That is, unless the cookie setting override is set to force 3PCs.
   cookie_settings_.set_block_third_party_cookies(true);
   auto options = mojom::CookieManagerGetOptions::New();
   options->name = "cookie-name";
@@ -1027,30 +1003,21 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlSameParty) {
   EXPECT_THAT(sync_service_->GetAllForUrl(
                   kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
                   /*has_storage_access=*/false, std::move(options)),
-              IsForceThirdPartyByUser()
-                  ? ElementsAreArray({net::MatchesCookieNameValue(
-                        "cookie-name", "cookie-value")})
-                  : testing::ElementsAreArray<CanonicalCookieMatcher>({}));
+              testing::ElementsAreArray<CanonicalCookieMatcher>({}));
 
-  if (IsForceThirdPartyByUser()) {
-    // No additional activity when 3PCs are forced, because the second access
-    // was not a change in result.
-    EXPECT_THAT(recorded_activity(), testing::SizeIs(2));
-  } else {
-    WaitForCallback();
-    EXPECT_THAT(
-        recorded_activity(),
-        ElementsAre(
-            testing::_, testing::_,
-            MatchesCookieOp(
-                mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
-                net::SiteForCookies(),
-                CookieOrLine("cookie-name=cookie-value",
-                             mojom::CookieOrLine::Tag::kCookie),
-                net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                    {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
-                    {}))));
-  }
+  WaitForCallback();
+  EXPECT_THAT(
+      recorded_activity(),
+      ElementsAre(
+          testing::_, testing::_,
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              net::SiteForCookies(),
+              CookieOrLine("cookie-name=cookie-value",
+                           mojom::CookieOrLine::Tag::kCookie),
+              net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
+                  {}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlCrossParty) {
@@ -1114,15 +1081,14 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie_WithStorageAccess) {
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
       /*incognito=*/false)});
 
-  EXPECT_EQ(IsForceThirdPartyByUser(),
-            sync_service_->SetCanonicalCookie(
-                *net::CanonicalCookie::CreateUnsafeCookieForTesting(
-                    "new-name", "new-value", "example.com", "/", base::Time(),
-                    base::Time(), base::Time(), base::Time(), /*secure=*/true,
-                    /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
-                    net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false),
-                kDefaultUrlWithPath, net::SiteForCookies(), kOtherOrigin,
-                /*has_storage_access=*/false));
+  EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "new-name", "new-value", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false),
+      kDefaultUrlWithPath, net::SiteForCookies(), kOtherOrigin,
+      /*has_storage_access=*/false));
 
   // When `has_storage_access` is true, the write should succeed.
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
@@ -1274,38 +1240,26 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
 
   {
     // Not if third-party cookies are disabled, though.
-    // That is, unless the cookie setting override is set to force 3PCs.
     cookie_settings_.set_block_third_party_cookies(true);
     auto cookie = net::CanonicalCookie::Create(
         kDefaultUrl, "A2=B2; SameSite=none; Secure", base::Time::Now(),
         absl::nullopt /* server_time */,
         absl::nullopt /* cookie_partition_key */);
-    EXPECT_EQ(IsForceThirdPartyByUser(),
-              sync_service_->SetCanonicalCookie(
-                  *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
-                  /*has_storage_access=*/false));
+    EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+        *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
+        /*has_storage_access=*/false));
   }
 
   WaitForCallback();
-
-  if (IsForceThirdPartyByUser()) {
-    EXPECT_THAT(recorded_activity(),
-                Contains(MatchesCookieOp(
-                    mojom::CookieAccessDetails::Type::kChange,
-                    "https://example.com/", net::SiteForCookies(),
-                    CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
-                    net::IsInclude())));
-  } else {
-    EXPECT_THAT(
-        recorded_activity(),
-        Contains(MatchesCookieOp(
-            mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
-            net::SiteForCookies(),
-            CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
-            net::HasExactlyExclusionReasonsForTesting(
-                std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                    net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
-  }
+  EXPECT_THAT(
+      recorded_activity(),
+      Contains(MatchesCookieOp(
+          mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
+          net::SiteForCookies(),
+          CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
+          net::HasExactlyExclusionReasonsForTesting(
+              std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                  net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
 
   // Read back, in first-party context
   auto options = mojom::CookieManagerGetOptions::New();
@@ -1316,9 +1270,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   EXPECT_THAT(sync_service_->GetAllForUrl(
                   kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
                   /*has_storage_access=*/false, std::move(options)),
-              Contains(IsForceThirdPartyByUser()
-                           ? net::MatchesCookieNameValue("A2", "B2")
-                           : net::MatchesCookieNameValue("A", "B")));
+              Contains(net::MatchesCookieNameValue("A", "B")));
 
   WaitForCallback();
 
@@ -1327,8 +1279,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
       Contains(MatchesCookieOp(
           mojom::CookieAccessDetails::Type::kRead, "https://example.com/test/",
           net::SiteForCookies::FromUrl(GURL("https://example.com/")),
-          CookieOrLine(IsForceThirdPartyByUser() ? "A2=B2" : "A=B",
-                       mojom::CookieOrLine::Tag::kCookie),
+          CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
           net::IsInclude())));
 }
 
@@ -1406,12 +1357,12 @@ TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor) {
       /*has_storage_access=*/false, &result));
   EXPECT_TRUE(result);
 
-  // Third-party cookies disabled, unless 3PCs are forced to allow by override.
+  // Third-party cookies disabled.
   cookie_settings_.set_block_third_party_cookies(true);
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
       /*has_storage_access=*/false, &result));
-  EXPECT_EQ(IsForceThirdPartyByUser(), result);
+  EXPECT_FALSE(result);
 
   // First-party ones still OK.
   service_->OverrideIsolationInfoForTesting(kDefaultIsolationInfo);
@@ -1436,7 +1387,7 @@ TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor_WithStorageAccess) {
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kOtherOrigin,
       /*has_storage_access=*/false, &result));
-  EXPECT_EQ(IsForceThirdPartyByUser(), result);
+  EXPECT_FALSE(result);
 
   // When `has_storage_access` is true, access is allowed since there's a
   // matching permission grant.
@@ -1554,17 +1505,8 @@ TEST_P(RestrictedCookieManagerTest, ChangeSettings) {
   cookie_settings_.set_block_third_party_cookies(true);
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
 
-  if (IsForceThirdPartyByUser()) {
-    listener->WaitForChange();
-    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
-    EXPECT_EQ(net::CookieChangeCause::INSERTED,
-              listener->observed_changes()[0].cause);
-    EXPECT_THAT(listener->observed_changes()[0].cookie,
-                net::MatchesCookieNameValue("cookie-name", "cookie-value"));
-  } else {
-    base::RunLoop().RunUntilIdle();
-    EXPECT_THAT(listener->observed_changes(), IsEmpty());
-  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(listener->observed_changes(), IsEmpty());
 }
 
 TEST_P(RestrictedCookieManagerTest, AddChangeListenerFromWrongOrigin) {
@@ -2015,12 +1957,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     RestrictedCookieManagerTest,
-    testing::Combine(
-        testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
-                        mojom::RestrictedCookieManagerRole::NETWORK),
-        testing::Values(
-            net::CookieSettingOverrides(),
-            net::CookieSettingOverrides(
-                {net::CookieSettingOverride::kForceThirdPartyByUser}))));
+    testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
+                    mojom::RestrictedCookieManagerRole::NETWORK));
 
 }  // namespace network

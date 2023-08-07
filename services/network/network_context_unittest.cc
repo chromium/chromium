@@ -4608,40 +4608,6 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
 
-TEST_F(NetworkContextTest, CanSetCookieTrueIfBlockThirdPartyCookiesOverridden) {
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  std::unique_ptr<net::URLRequestContext> context =
-      CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<net::URLRequest> request = context->CreateRequest(
-      GURL("http://foo.com"), net::DEFAULT_PRIORITY,
-      /*delegate=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
-  request->set_site_for_cookies(
-      net::SiteForCookies::FromUrl(GURL("http://bar.com")));
-  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      "ThirdPartyCookie", "1", "www.foo.com", "/", base::Time(), base::Time(),
-      base::Time(), base::Time(), false, false, net::CookieSameSite::LAX_MODE,
-      net::COOKIE_PRIORITY_LOW, false);
-
-  network_context->cookie_manager()->BlockThirdPartyCookies(true);
-  EXPECT_FALSE(
-      network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, /* options */ nullptr,
-          /* inclusion_status */ nullptr));
-
-  // Now the cookie should be allowed if the request includes the override that
-  // the user is forcing 3PCs.
-  request->cookie_setting_overrides().Clear();
-  request->cookie_setting_overrides().Put(
-      net::CookieSettingOverride::kForceThirdPartyByUser);
-  net::CookieInclusionStatus status;
-  EXPECT_TRUE(
-      network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, /* options */ nullptr, &status));
-  EXPECT_FALSE(status.HasWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
-}
-
 TEST_F(NetworkContextTest,
        AnnotateAndMoveUserBlockedCookies_FalseIfCookiesBlocked) {
   std::unique_ptr<NetworkContext> network_context =
@@ -4676,24 +4642,11 @@ TEST_F(NetworkContextTest,
                                                   /*top_frame_entry=*/nullptr),
                                               included, excluded));
 
-  // Even with override, third party cookies blocked by content setting.
-  request->cookie_setting_overrides().Clear();
-  request->cookie_setting_overrides().Put(
-      net::CookieSettingOverride::kForceThirdPartyByUser);
-  EXPECT_FALSE(
-      network_context->url_request_context()
-          ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(*request,
-                                              net::FirstPartySetMetadata(
-                                                  /*frame_entry=*/nullptr,
-                                                  /*top_frame_entry=*/nullptr),
-                                              included, excluded));
-
-  // Set blocking third party cookies instead of content setting.
-  // Now override should apply.
+  // Reset content setting, but block third party cookies. The call should still
+  // return false.
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   network_context->cookie_manager()->BlockThirdPartyCookies(true);
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       network_context->url_request_context()
           ->network_delegate()
           ->AnnotateAndMoveUserBlockedCookies(*request,

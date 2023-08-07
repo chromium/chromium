@@ -298,13 +298,6 @@ CookieSettingsBase::GetCookieSettingInternal(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
   }
 
-  if (block_third &&
-      overrides.Has(net::CookieSettingOverride::kForceThirdPartyByUser)) {
-    block_third = false;
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
-  }
-
   if (!IsAllowed(setting) || block_third) {
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
