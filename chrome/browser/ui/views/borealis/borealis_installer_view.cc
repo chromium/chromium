@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/borealis/borealis_beta_badge.h"
-#include "chrome/browser/ui/views/borealis/borealis_installer_disallowed_dialog.h"
+#include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_installer_error_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
