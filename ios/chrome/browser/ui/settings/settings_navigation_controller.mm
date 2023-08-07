@@ -843,6 +843,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       initWithBaseNavigationController:self
                                browser:self.browser];
   self.savedPasswordsCoordinator.delegate = self;
+  self.savedPasswordsCoordinator.openViewControllerForPasswordSearch = true;
   [self.savedPasswordsCoordinator start];
 }
 

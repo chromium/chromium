@@ -3329,6 +3329,35 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   CheckReauthenticationUIEventMetricTotalCount(0);
 }
 
+- (void)testOpenSearchPasswordsWidget {
+  // Add a saved password to not get the Password Manager's empty state.
+  SavePasswordForm();
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [ChromeEarlGrey
+      sceneOpenURL:
+          GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
+
+  // The Password Manager should be visible behind the keyboard.
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+  [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
+      assertWithMatcher:grey_minimumVisiblePercent(0.5)];
+
+  // The search bar should be enabled.
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      assertWithMatcher:grey_userInteractionEnabled()];
+
+  // Dismiss the search controller and the Password Manager.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
 @end
 
 // Rerun all the tests in this file but with kIOSPasswordCheckup disabled.

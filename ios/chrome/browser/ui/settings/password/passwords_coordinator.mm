@@ -185,7 +185,9 @@ using password_manager::WarningType;
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   self.passwordsViewController = [[PasswordManagerViewController alloc]
       initWithChromeAccountManagerService:accountManagerService
-                              prefService:browserState->GetPrefs()];
+                              prefService:browserState->GetPrefs()
+                   shouldOpenInSearchMode:
+                       self.openViewControllerForPasswordSearch];
 
   self.passwordsViewController.handler = self;
   self.passwordsViewController.delegate = self.mediator;

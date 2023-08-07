@@ -30,6 +30,7 @@ struct CredentialUIEntry;
 - (instancetype)initWithChromeAccountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
                                         prefService:(PrefService*)prefService
+                             shouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

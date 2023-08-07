@@ -211,6 +211,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   BOOL _tableIsInSearchMode;
   // Whether the favicon metric was already logged.
   BOOL _faviconMetricLogged;
+  // Whether the search controller should be set as active when the view is
+  // presented.
+  BOOL _shouldOpenInSearchMode;
 }
 
 // Current passwords search term.
@@ -291,7 +294,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (instancetype)initWithChromeAccountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
-                                        prefService:(PrefService*)prefService {
+                                        prefService:(PrefService*)prefService
+                             shouldOpenInSearchMode:
+                                 (BOOL)shouldOpenInSearchMode {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _prefService = prefService;
@@ -304,6 +309,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
     // Default behavior: search bar is enabled.
     self.shouldEnableSearchBar = YES;
+    _shouldOpenInSearchMode = shouldOpenInSearchMode;
 
     [self updateUIForEditState];
   }
@@ -348,7 +354,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   UISearchController* searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
   self.searchController = searchController;
-
   searchController.obscuresBackgroundDuringPresentation = NO;
   searchController.delegate = self;
 
@@ -388,8 +393,21 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-
   self.navigationController.toolbarHidden = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  if (_shouldOpenInSearchMode) {
+    // Queue search bar focus so the keyboard animation doesn't collide with
+    // other animations.
+    __weak __typeof(self.searchController.searchBar) weakSearchBar =
+        self.searchController.searchBar;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSearchBar becomeFirstResponder];
+        }));
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -401,11 +419,16 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [self logMetricsForFavicons];
     _faviconMetricLogged = YES;
   }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
 
   // Dismiss the search bar if presented; otherwise UIKit may retain it and
   // cause a memory leak. If this dismissal happens before viewWillDisappear
   // (e.g., settingsWillBeDismissed) an internal UIKit crash occurs. See also:
-  // crbug.com/947417, crbug.com/1350625.
+  // crbug.com/947417, crbug.com/1350625. Dismissing in viewDidDisappear to make
+  // sure that it happens when the view is well and truly gone.
   if (self.navigationItem.searchController.active == YES) {
     self.navigationItem.searchController.active = NO;
   }
