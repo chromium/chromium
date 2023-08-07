@@ -77,8 +77,6 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
     mixer[kColorItemHighlight] = {SkColorSetA(
         skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
         0x66)};
-    mixer[kColorTextSelectionBackground] = {
-        skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
   };
 
   if (@available(macOS 11, *)) {
@@ -120,6 +118,11 @@ void AddNativeUiColorMixer(ColorProvider* provider,
           properties.dark ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
                           : SkColorSetA(SK_ColorBLACK, 0x26);
       mixer[kColorMenuSeparator] = {menu_separator_color};
+    }
+
+    if (!features::IsChromeRefresh2023() || !key.user_color.has_value()) {
+      mixer[kColorTextSelectionBackground] = {
+          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
     }
 
     if (!properties.high_contrast) {
