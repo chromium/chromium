@@ -79,7 +79,7 @@ const test::UIPath kSplashScreenLaunchText = {"app-launch-splash",
 // Webstore data json is in
 //     chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
 //         detail/enelnimkndkcejhjnpaofdlbbfmdnagi
-const char kTestGetVolumeListKioskApp[] = "enelnimkndkcejhjnpaofdlbbfmdnagi";
+const char kTestGetVolumeListKioskAppId[] = "enelnimkndkcejhjnpaofdlbbfmdnagi";
 
 constexpr char kSettingsPage1[] = "chrome://os-settings/manageAccessibility";
 constexpr char kSettingsPage2[] =
@@ -338,9 +338,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 
 // Verifies available volumes for kiosk apps in kiosk session.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, GetVolumeList) {
-  set_test_app_id(kTestGetVolumeListKioskApp);
-  set_test_app_version("0.1");
-  set_test_crx_file(test_app_id() + ".crx");
+  SetTestApp(kTestGetVolumeListKioskAppId, /*version=*/"0.1");
 
   extensions::ResultCatcher catcher;
   StartAppLaunchFromLoginScreen(

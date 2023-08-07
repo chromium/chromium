@@ -237,7 +237,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
     std::vector<policy::DeviceLocalAccount> accounts;
     accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
                           policy::DeviceLocalAccount::EphemeralMode::kUnset,
-                          kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
+                          kTestEnterpriseAccountId, kTestEnterpriseKioskAppId,
                           "");
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
     scoped_testing_cros_settings_.device_settings()->SetString(

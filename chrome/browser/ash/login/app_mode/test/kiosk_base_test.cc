@@ -64,7 +64,7 @@ void WaitForNetworkConfigureLink() {
 
 }  // namespace
 
-const char kTestEnterpriseKioskApp[] = "gcpjojfkologpegommokeppihdbcnahn";
+const char kTestEnterpriseKioskAppId[] = "gcpjojfkologpegommokeppihdbcnahn";
 const char kTestEnterpriseAccountId[] = "enterprise-kiosk-app@localhost";
 
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
@@ -150,9 +150,7 @@ KioskLaunchController* KioskBaseTest::GetKioskLaunchController() {
 }
 
 void KioskBaseTest::SetUp() {
-  test_app_id_ = KioskAppsMixin::kKioskAppId;
-  set_test_app_version("1.0.0");
-  set_test_crx_file(test_app_id() + ".crx");
+  SetTestApp(KioskAppsMixin::kKioskAppId);
   needs_background_networking_ = true;
   ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   skip_splash_wait_override_ =
@@ -202,9 +200,9 @@ void KioskBaseTest::ReloadKioskApps() {
   SetupTestAppUpdateCheck();
 
   // Remove then add to ensure UI update.
-  KioskAppManager::Get()->RemoveApp(test_app_id_,
+  KioskAppManager::Get()->RemoveApp(test_app_id(),
                                     owner_settings_service_.get());
-  KioskAppManager::Get()->AddApp(test_app_id_, owner_settings_service_.get());
+  KioskAppManager::Get()->AddApp(test_app_id(), owner_settings_service_.get());
 }
 
 void KioskBaseTest::SetupTestAppUpdateCheck() {
@@ -218,8 +216,8 @@ void KioskBaseTest::SetupTestAppUpdateCheck() {
 void KioskBaseTest::ReloadAutolaunchKioskApps() {
   SetupTestAppUpdateCheck();
 
-  KioskAppManager::Get()->AddApp(test_app_id_, owner_settings_service_.get());
-  KioskAppManager::Get()->SetAutoLaunchApp(test_app_id_,
+  KioskAppManager::Get()->AddApp(test_app_id(), owner_settings_service_.get());
+  KioskAppManager::Get()->SetAutoLaunchApp(test_app_id(),
                                            owner_settings_service_.get());
 }
 
@@ -249,7 +247,7 @@ void KioskBaseTest::StartExistingAppLaunchFromLoginScreen(
 const extensions::Extension* KioskBaseTest::GetInstalledApp() {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   return extensions::ExtensionRegistry::Get(app_profile)
-      ->GetInstalledExtension(test_app_id_);
+      ->GetInstalledExtension(test_app_id());
 }
 
 const base::Version& KioskBaseTest::GetInstalledAppVersion() {
@@ -282,14 +280,14 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
   // Check if the kiosk webapp is really installed for the default profile.
   const extensions::Extension* app =
       extensions::ExtensionRegistry::Get(app_profile)
-          ->GetInstalledExtension(test_app_id_);
+          ->GetInstalledExtension(test_app_id());
   EXPECT_TRUE(app);
 
   // App should appear with its window.
   extensions::AppWindowRegistry* app_window_registry =
       extensions::AppWindowRegistry::Get(app_profile);
   extensions::AppWindow* window =
-      apps::AppWindowWaiter(app_window_registry, test_app_id_).Wait();
+      apps::AppWindowWaiter(app_window_registry, test_app_id()).Wait();
   EXPECT_TRUE(window);
 
   OobeWindowVisibilityWaiter(false /*target_visibility*/).Wait();
@@ -301,7 +299,7 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
 
   // Wait until the app terminates if it is still running.
   if (!keep_app_open &&
-      !app_window_registry->GetAppWindowsForApp(test_app_id_).empty()) {
+      !app_window_registry->GetAppWindowsForApp(test_app_id()).empty()) {
     RunUntilBrowserProcessQuits();
   }
 
@@ -367,8 +365,8 @@ void KioskBaseTest::BlockAppLaunch(bool block) {
 }
 
 void KioskBaseTest::SetTestApp(const std::string& app_id,
-                               const std::string& crx_file,
-                               const std::string& version) {
+                               const std::string& version,
+                               const std::string& crx_file) {
   test_app_id_ = app_id;
   test_crx_file_ = (crx_file == "") ? app_id + ".crx" : crx_file;
   test_app_version_ = version;
