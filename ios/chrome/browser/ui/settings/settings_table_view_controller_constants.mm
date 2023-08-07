@@ -12,6 +12,7 @@ NSString* const kSettingsSignInDisabledByPolicyCellId =
     @"kSettingsSignInDisabledByPolicyCellId";
 NSString* const kSettingsAccountCellId = @"kSettingsAccountCellId";
 NSString* const kSettingsSearchEngineCellId = @"kSettingsSearchEngineCellId";
+NSString* const kSettingsAddressBarCellId = @"kSettingsAddressBarCellId";
 NSString* const kSettingsManagedSearchEngineCellId =
     @"kSettingsManagedSearchEngineCellId";
 NSString* const kSettingsVoiceSearchCellId = @"kSettingsVoiceSearchCellId";

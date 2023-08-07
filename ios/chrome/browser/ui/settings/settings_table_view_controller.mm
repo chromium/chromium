@@ -94,6 +94,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
@@ -247,6 +248,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TableViewDetailIconItem* _voiceSearchDetailItem;
   TableViewDetailIconItem* _defaultSearchEngineItem;
   TableViewInfoButtonItem* _managedSearchEngineItem;
+  TableViewDetailIconItem* _addressBarPreferenceItem;
   TableViewDetailIconItem* _passwordsDetailItem;
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
@@ -258,6 +260,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Tabs settings coordinator.
   TabsSettingsCoordinator* _tabsCoordinator;
+
+  // Address bar setting coordinator.
+  AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
 }
 
 // The item related to the switch for the bottom omnibox settings.
@@ -451,6 +456,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   } else {
     [model addItem:[self searchEngineDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
+  }
+
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [model addItem:[self addressBarPreferenceItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
 
@@ -837,6 +847,17 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           accessibilityIdentifier:kSettingsSearchEngineCellId];
 
   return _defaultSearchEngineItem;
+}
+
+- (TableViewItem*)addressBarPreferenceItem {
+  _addressBarPreferenceItem = [self
+           detailItemWithType:SettingsItemTypeAddressBar
+                         text:@"Address Bar"
+                   detailText:[_bottomOmniboxEnabled value] ? @"Bottom" : @"Top"
+                       symbol:DefaultSettingsRootSymbol(kGlobeAmericasSymbol)
+        symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
+      accessibilityIdentifier:kSettingsAddressBarCellId];
+  return _addressBarPreferenceItem;
 }
 
 - (TableViewInfoButtonItem*)managedSearchEngineItem {
@@ -1388,6 +1409,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       controller = [[SearchEngineTableViewController alloc]
           initWithBrowserState:_browserState];
       break;
+    case SettingsItemTypeAddressBar:
+      [self showAddressBarPreferenceSetting];
+      break;
     case SettingsItemTypePasswords:
       base::RecordAction(
           base::UserMetricsAction("Options_ShowPasswordManager"));
@@ -1624,6 +1648,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
   [_tabsCoordinator start];
+}
+
+- (void)showAddressBarPreferenceSetting {
+  _addressBarPreferenceCoordinator = [[AddressBarPreferenceCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  [_addressBarPreferenceCoordinator start];
 }
 
 - (BOOL)shouldReplaceSyncSettingsWithAccountSettings {
@@ -2051,6 +2082,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [_tabsCoordinator stop];
   _tabsCoordinator = nil;
 
+  [_addressBarPreferenceCoordinator stop];
+  _addressBarPreferenceCoordinator = nil;
+
   // Stop observable prefs.
   [_showMemoryDebugToolsEnabled stop];
   [_showMemoryDebugToolsEnabled setObserver:nil];
@@ -2197,6 +2231,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         sectionForSectionIdentifier:SettingsSectionIdentifierAdvanced];
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
                   withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else if (observableBoolean == _bottomOmniboxEnabled) {
+    _addressBarPreferenceItem.detailText =
+        [_bottomOmniboxEnabled value] ? @"Bottom" : @"Top";
+    [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   } else {
     NOTREACHED();
   }

@@ -34,6 +34,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeAutofillCreditCard,
   SettingsItemTypeAutofillProfile,
   SettingsItemTypeVoiceSearch,
+  SettingsItemTypeAddressBar,
   SettingsItemTypeBottomOmnibox,
   SettingsItemTypeNotifications,
   SettingsItemTypePrivacy,
@@ -70,6 +71,9 @@ extern NSString* const kSettingsAccountCellId;
 
 // The accessibility identifier of the Search Engine cell.
 extern NSString* const kSettingsSearchEngineCellId;
+
+// The accessibility identifier of the Address bar option cell.
+extern NSString* const kSettingsAddressBarCellId;
 
 // The accessibility identifier of the Managed Search Engine cell.
 extern NSString* const kSettingsManagedSearchEngineCellId;
