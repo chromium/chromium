@@ -1253,7 +1253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.Events.DispatchToAckLongTime.{BackgroundContextType}"
-    units="microseconds" expires_after="never">
+    units="ms" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
 
   <owner>jlulejian@chromium.org</owner>
@@ -1261,19 +1261,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time it took for the event to be sent to the event router for
     dispatch for background page of type {BackgroundContextType}. Reports
-    samples at seconds granualarity up to 1 day. This is meant to investigate an
-    appropriate time maximum for
-    Extensions.Events.DispatchToAckTime.{BackgroundContextType}.
+    samples at milliseconds granualarity up to 1 day. This is meant to
+    investigate an appropriate time maximum for
+    Extensions.Events.DispatchToAckTime.{BackgroundContextType}. It does not
+    include any requests that utilize the EventRouter::DispatchEventToSender()
+    event routing flow (some web request API, and web view API events).
   </summary>
   <token key="BackgroundContextType">
-    <variant name="ExtensionServiceWorker"
+    <variant name="ExtensionServiceWorker2"
         summary="service worker. Emitted shortly after extensions browser
                  code receives the ack from the renderer that it fired the
                  event in the service worker. &quot;shortly&quot; because
                  there is a function call between the receipt by the browser
                  and recording the value. Note: this may include some amount
                  of execution time of the extension service worker JS
-                 listener"/>
+                 listener. Replaced previous version because values were
+                 inaccurate due to a bug with recording the dispatch start
+                 time 2023-08"/>
   </token>
 </histogram>
 
@@ -1285,25 +1289,32 @@ chromium-metrics-reviews@google.com.
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the time it took for the event to be sent to the event router for
-    dispatch for background page of type {BackgroundContextType}. Values over 5
-    minutes are bucketed together since no ack is expected to take longer than
-    that. 5 minutes was decided since that is the maximum for extension service
-    worker event lifetime. This is recorded only for clients with
-    high-resolution clocks.
+    dispatch for background page of type {BackgroundContextType}. Reports
+    samples at microseconds granualarity up to 5 minutes. Values over 5 minutes
+    are bucketed together since no ack is expected to take longer than that. 5
+    minutes was decided since that is the maximum for extension service worker
+    event lifetime. This is recorded only for clients with high-resolution
+    clocks. It does not include any requests that utilize the
+    EventRouter::DispatchEventToSender() event routing flow (some web request
+    API, and web view API events).
   </summary>
   <token key="BackgroundContextType">
-    <variant name="ExtensionEventPage"
+    <variant name="ExtensionEventPage2"
         summary="event page. Emitted when extensions browser code receives
                  receives an ack from the renderer that it fired the event in
-                 the event page"/>
-    <variant name="ExtensionServiceWorker"
+                 the event page. Replaced previous version because values
+                 were inaccurate due to a bug with recording the dispatch
+                 start time 2023-08"/>
+    <variant name="ExtensionServiceWorker2"
         summary="service worker. Emitted shortly after extensions browser
                  code receives the ack from the renderer that it fired the
                  event in the service worker. &quot;shortly&quot; because
                  there is a function call between the receipt by the browser
                  and recording the value. Note: this may include some amount
                  of execution time of the extension service worker JS
-                 listener"/>
+                 listener. Replaced previous version because values were
+                 inaccurate due to a bug with recording the dispatch start
+                 time 2023-08"/>
   </token>
 </histogram>
 

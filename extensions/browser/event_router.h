@@ -60,6 +60,15 @@ struct Event;
 struct EventListenerInfo;
 struct ServiceWorkerIdentifier;
 
+// Which flow an event follows when being sent to the event router. Used in
+// UMA histogram logic.
+enum class EventDispatchSource : int {
+  // Event went through EventRouter::DispatchEventToProcess() dispatch flow.
+  kDispatchEventToProcess,
+  // Event went through EventRouter::DispatchEventToSender() dispatch flow.
+  kDispatchEventToSender,
+};
+
 // TODO(lazyboy): Document how extension events work, including how listeners
 // are registered and how listeners are tracked in renderer and browser process.
 class EventRouter : public KeyedService,
@@ -477,7 +486,8 @@ class EventRouter : public KeyedService,
                                int event_id,
                                const std::string& event_name,
                                base::TimeTicks dispatch_start_time,
-                               int64_t service_worker_version_id);
+                               int64_t service_worker_version_id,
+                               EventDispatchSource dispatch_source);
 
   void RouteDispatchEvent(content::RenderProcessHost* rph,
                           mojom::DispatchEventParamsPtr params,
@@ -641,7 +651,8 @@ struct Event {
         content::BrowserContext* restrict_to_browser_context,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
-        mojom::EventFilteringInfoPtr info);
+        mojom::EventFilteringInfoPtr info,
+        base::TimeTicks dispatch_start_time = base::TimeTicks{});
 
   ~Event();
 

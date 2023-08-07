@@ -347,11 +347,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
 
   // Call to runtime.onInstalled and tabs.onCreated are expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker",
+      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
       /*expected_count=*/2);
+
+  // Verify that the recorded values are sane -- that is, that they are less
+  // than the maximum bucket.
+  // This is the best we can do, since the other buckets are determined
+  // by the histogram, rather than by us.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*sample=*/base::Minutes(5).InMicroseconds(), /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
+      /*sample=*/base::Days(1).InMilliseconds(), /*expected_count=*/0);
 }
 
 // After browser restarts, this test step ensures that opening a tab fires

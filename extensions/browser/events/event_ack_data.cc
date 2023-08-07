@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_external_request_result.h"
+#include "extensions/browser/event_router.h"
 
 namespace extensions {
 
@@ -27,7 +28,8 @@ void EventAckData::IncrementInflightEvent(
     int render_process_id,
     int64_t version_id,
     int event_id,
-    base::TimeTicks dispatch_start_time) {
+    base::TimeTicks dispatch_start_time,
+    EventDispatchSource dispatch_source) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
@@ -47,7 +49,7 @@ void EventAckData::IncrementInflightEvent(
   // it got a chance to ack |event_id|. This shouldn't happen in common cases.
   auto insert_result = unacked_events_.try_emplace(
       event_id, EventInfo{request_uuid, render_process_id, start_ok,
-                          dispatch_start_time});
+                          dispatch_start_time, dispatch_source});
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 }
 
@@ -67,22 +69,28 @@ void EventAckData::DecrementInflightEvent(
     return;
   }
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker",
-      /*time=*/base::TimeTicks::Now() -
-          request_info_iter->second.dispatch_start_time,
-      /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
-      /*bucket_count=*/100);
+  EventInfo& event_info = request_info_iter->second;
 
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker",
-      /*time=*/base::TimeTicks::Now() -
-          request_info_iter->second.dispatch_start_time,
-      /*minimum=*/base::Seconds(1), /*maximum=*/base::Days(1),
-      /*bucket_count=*/100);
+  // Only emit events that use the EventRouter::DispatchEventToProcess() event
+  // routing flow since EventRouter::DispatchEventToSender() uses a different
+  // flow that doesn't include dispatch start and service worker start time.
+  if (event_info.dispatch_source ==
+      EventDispatchSource::kDispatchEventToProcess) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+        /*time=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
+        /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
+        /*bucket_count=*/100);
 
-  base::Uuid request_uuid = std::move(request_info_iter->second.request_uuid);
-  bool start_ok = request_info_iter->second.start_ok;
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
+        /*time=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
+        /*minimum=*/base::Seconds(1), /*maximum=*/base::Days(1),
+        /*bucket_count=*/100);
+  }
+
+  base::Uuid request_uuid = std::move(event_info.request_uuid);
+  bool start_ok = event_info.start_ok;
   unacked_events_.erase(request_info_iter);
 
   content::ServiceWorkerExternalRequestResult result =

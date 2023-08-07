@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   // Call to runtime.onInstalled and bookmarks.onCreated are expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionEventPage",
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
       /*expected_count=*/2);
 }
 
