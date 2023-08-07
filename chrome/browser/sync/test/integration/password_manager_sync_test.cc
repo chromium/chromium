@@ -769,16 +769,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                   MatchesLoginAndRealm("user", "pass", GetPSLOrigin())));
 }
 
-// TODO(crbug.com/1469411): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DontOfferToSavePrimaryAccountCredential \
-  DISABLED_DontOfferToSavePrimaryAccountCredential
-#else
-#define MAYBE_DontOfferToSavePrimaryAccountCredential \
-  DontOfferToSavePrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_DontOfferToSavePrimaryAccountCredential) {
+                       DontOfferToSavePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   SetupSyncTransportWithPasswordAccountStorage();
@@ -798,16 +790,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_FALSE(bubble_observer.IsSavePromptAvailable());
 }
 
-// TODO(crbug.com/1469411): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
-  DISABLED_OfferToSaveNonPrimaryAccountCredential
-#else
-#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
-  OfferToSaveNonPrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_OfferToSaveNonPrimaryAccountCredential) {
+                       OfferToSaveNonPrimaryAccountCredential) {
   // Disable signin interception, because it suppresses the password bubble.
   // See PasswordManagerBrowserTestWithSigninInterception for tests with
   // interception enabled.
@@ -830,19 +814,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // Since the submitted credential is *not* for the primary account, Chrome
   // should offer to save it normally.
   BubbleObserver bubble_observer(web_contents);
-  EXPECT_TRUE(bubble_observer.IsSavePromptAvailable());
+  bubble_observer.WaitForAutomaticSavePrompt();
 }
 
-// TODO(crbug.com/1469411): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OfferToUpdatePrimaryAccountCredential \
-  DISABLED_OfferToUpdatePrimaryAccountCredential
-#else
-#define MAYBE_OfferToUpdatePrimaryAccountCredential \
-  OfferToUpdatePrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_OfferToUpdatePrimaryAccountCredential) {
+                       OfferToUpdatePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // The password for the primary account is already saved.
@@ -864,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // should offer to update it, even though it otherwise does *not* offer to
   // save this credential.
   BubbleObserver bubble_observer(web_contents);
-  EXPECT_TRUE(bubble_observer.IsUpdatePromptAvailable());
+  bubble_observer.WaitForAutomaticUpdatePrompt();
 }
 
 // Signing out on Lacros is not possible,
