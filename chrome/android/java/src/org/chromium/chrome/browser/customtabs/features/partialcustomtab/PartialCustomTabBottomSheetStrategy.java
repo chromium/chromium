@@ -207,7 +207,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                 end = initialY();
                 break;
             case HeightStatus.CLOSE:
-                end = mDisplayHeight - mNavbarHeight;
+                end = mDisplayHeight;
                 if (isFullHeight()) {
                     attrs.y = getFullyExpandedY();
                     window.setAttributes(attrs);

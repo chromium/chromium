@@ -127,7 +127,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             closeAnimation = (animator) -> setWindowY((int) animator.getAnimatedValue());
         } else {
             start = window.getAttributes().x;
-            end = mSheetOnRight ? mVersionCompat.getDisplayWidth() : -window.getAttributes().width;
+            end = mSheetOnRight ? mVersionCompat.getScreenWidth() : -window.getAttributes().width;
             closeAnimation = (animator) -> setWindowX((int) animator.getAnimatedValue());
         }
         startAnimation(start, end, closeAnimation, this::onCloseAnimationEnd, true);
