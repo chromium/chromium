@@ -152,7 +152,7 @@ void PopulateChromeFrameBindersForExtension(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Registry InputEngineManager for official Google XKB Input only.
+  // Register InputEngineManager for official Google ChromeOS 1P Input only.
   if (extension->id() == ash::extension_ime_util::kXkbExtensionId) {
     binder_map->Add<ash::ime::mojom::InputEngineManager>(
         base::BindRepeating(&BindInputEngineManager));
