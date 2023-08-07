@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_SERVICES_CSV_PASSWORD_PUBLIC_MOJOM_CSV_PASSWORD_PARSER_TRAITS_H_
 
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -34,9 +35,7 @@ struct StructTraits<password_manager::mojom::CSVPasswordDataView,
   }
   static absl::optional<std::string> invalid_url(
       const password_manager::CSVPassword& r) {
-    base::expected<GURL, std::string> expected_url = r.GetURL();
-    if (!expected_url.has_value())
-      return expected_url.error();
+    RETURN_IF_ERROR(r.GetURL());
     return absl::nullopt;
   }
   static const std::string& username(const password_manager::CSVPassword& r) {
