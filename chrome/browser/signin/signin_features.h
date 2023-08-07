@@ -32,6 +32,15 @@ enum class WithDefaultBrowserStep {
 extern const base::FeatureParam<WithDefaultBrowserStep>
     kForYouFreWithDefaultBrowserStep;
 
+enum class DefaultBrowserVariant {
+  // Use the current strings for the default browser prompt.
+  kCurrent,
+  // Use the new strings for the default browser prompt.
+  kNew,
+};
+extern const base::FeatureParam<DefaultBrowserVariant>
+    kForYouFreDefaultBrowserVariant;
+
 BASE_DECLARE_FEATURE(kForYouFreSyntheticTrialRegistration);
 
 extern const base::FeatureParam<std::string> kForYouFreStudyGroup;

@@ -51,6 +51,17 @@ const base::FeatureParam<WithDefaultBrowserStep>
         /*default_value=*/WithDefaultBrowserStep::kNo,
         /*options=*/&kWithDefaultBrowserStepOptions};
 
+constexpr base::FeatureParam<DefaultBrowserVariant>::Option
+    kDefaultBrowserVariantOptions[] = {
+        {DefaultBrowserVariant::kCurrent, "current"},
+        {DefaultBrowserVariant::kNew, "new"},
+};
+
+const base::FeatureParam<DefaultBrowserVariant> kForYouFreDefaultBrowserVariant{
+    &kForYouFre, /*name=*/"default_browser_variant",
+    /*default_value=*/DefaultBrowserVariant::kCurrent,
+    /*options=*/&kDefaultBrowserVariantOptions};
+
 // Feature that indicates that we should put the client in a study group
 // (provided through `kForYouFreStudyGroup`) to be able to look at metrics in
 // the long term. Does not affect the client's behavior by itself, instead this

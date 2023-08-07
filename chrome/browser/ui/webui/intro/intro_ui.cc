@@ -62,6 +62,21 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
     default:
       NOTREACHED();
   }
+
+  int default_browser_title_id;
+  int default_browser_subtitle_id;
+  switch (kForYouFreDefaultBrowserVariant.Get()) {
+    case DefaultBrowserVariant::kCurrent: {
+      default_browser_title_id = IDS_FRE_DEFAULT_BROWSER_TITLE;
+      default_browser_subtitle_id = IDS_FRE_DEFAULT_BROWSER_SUBTITLE;
+      break;
+    }
+    case DefaultBrowserVariant::kNew: {
+      default_browser_title_id = IDS_FRE_DEFAULT_BROWSER_TITLE_NEW;
+      default_browser_subtitle_id = IDS_FRE_DEFAULT_BROWSER_SUBTITLE_NEW;
+      break;
+    }
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   int title_id = IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE;
 #endif
@@ -86,8 +101,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
     {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
     {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
     // Strings for default browser promo subpage.
-    {"defaultBrowserTitle", IDS_FRE_DEFAULT_BROWSER_TITLE},
-    {"defaultBrowserSubtitle", IDS_FRE_DEFAULT_BROWSER_SUBTITLE},
+    {"defaultBrowserTitle", default_browser_title_id},
+    {"defaultBrowserSubtitle", default_browser_subtitle_id},
     {"defaultBrowserIllustrationAltText",
      IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT},
     {"defaultBrowserSetAsDefault", IDS_FRE_DEFAULT_BROWSER_SET_AS_DEFAULT},

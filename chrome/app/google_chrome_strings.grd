@@ -1643,6 +1643,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
           Set Chrome as your default browser
         </message>
+        <message name="IDS_FRE_DEFAULT_BROWSER_SUBTITLE_NEW" desc="Subtitle for the page that prompts user to set Chrome as their default browser in the first run experience.">
+          Use Chrome anytime you click links in messages, documents, and other apps
+        </message>
         <message name="IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT" desc="Alt text for the illustration in the page that prompts user to set Chrome as their default browser.">
           Chrome logo inside a computer screen.
         </message>
