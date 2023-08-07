@@ -210,16 +210,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
             4 * 1024 * 1024);
 }
 
-// TODO(crbug.com/1304977): Failing on Mac and Linux builders.
+// TODO(crbug.com/1304977): Failing on Mac, Linux, and ChromeOS builders.
 // TODO(crbug.com/1459385): Re-enable this test
-#if (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_QuotaUsageShrinks DISABLED_QuotaUsageShrinks
-#else
-#define MAYBE_QuotaUsageShrinks QuotaUsageShrinks
-#endif
 IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
-                       MAYBE_QuotaUsageShrinks) {
+                       DISABLED_QuotaUsageShrinks) {
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");
   Shell* browser = CreateBrowser();
