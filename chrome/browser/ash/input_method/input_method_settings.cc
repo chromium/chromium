@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
@@ -163,6 +164,39 @@ bool IsVietnameseVniEngine(base::StringPiece engine_id) {
   return engine_id == "vkd_vi_vni";
 }
 
+void RecordSettingsMetrics(const mojom::VietnameseTelexSettings& settings) {
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseTelex.FlexibleTyping",
+      settings.allow_flexible_diacritics);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseTelex.ModernToneMark",
+      settings.new_style_tone_mark_placement);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseTelex.UODoubleHorn",
+      settings.enable_insert_double_horn_on_uo);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseTelex.WForUHorn",
+      settings.enable_w_for_u_horn_shortcut);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseTelex.ShowUnderline",
+      settings.show_underline_for_composition_text);
+}
+
+void RecordSettingsMetrics(const mojom::VietnameseVniSettings& settings) {
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseVNI.FlexibleTyping",
+      settings.allow_flexible_diacritics);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseVNI.ModernToneMark",
+      settings.new_style_tone_mark_placement);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseVNI.UODoubleHorn",
+      settings.enable_insert_double_horn_on_uo);
+  base::UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.VietnameseVNI.ShowUnderline",
+      settings.show_underline_for_composition_text);
+}
+
 mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseVniSettings::New();
@@ -180,6 +214,7 @@ mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
   settings->show_underline_for_composition_text =
       input_method_specific_pref.FindBool("vietnameseVniShowUnderline")
           .value_or(true);
+  RecordSettingsMetrics(*settings);
   return settings;
 }
 
@@ -203,6 +238,7 @@ mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
   settings->show_underline_for_composition_text =
       input_method_specific_pref.FindBool("vietnameseTelexShowUnderline")
           .value_or(true);
+  RecordSettingsMetrics(*settings);
   return settings;
 }
 

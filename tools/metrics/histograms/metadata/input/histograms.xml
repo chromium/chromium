@@ -1250,6 +1250,96 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.FlexibleTyping"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether flexible typing is enabled by the Vietnamese Telex IME. Recorded on
+    IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.ModernToneMark"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether modern tone mark is enabled by the Vietnamese Telex IME. Recorded on
+    IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.ShowUnderline"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether show underline setting is enabled by the Vietnamese Telex IME.
+    Recorded on IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.UODoubleHorn"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether UO double horn shortcut is enabled by the Vietnamese Telex IME.
+    Recorded on IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.WForUHorn"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether W for U Horn shortcut is enabled by the Vietnamese Telex IME.
+    Recorded on IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.FlexibleTyping"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether flexible typing is enabled by the Vietnamese VNI IME. Recorded on
+    IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.ModernToneMark"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether modern tone mark is enabled by the Vietnamese VNI IME. Recorded on
+    IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.ShowUnderline"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether show underline setting is enabled by the Vietnamese VNI IME.
+    Recorded on IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.UODoubleHorn"
+    enum="Boolean" expires_after="2024-01-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Whether UO double horn shortcut is enabled by the Vietnamese VNI IME.
+    Recorded on IME activation (settings change or changing IME).
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.PkCommit.Index" units="units"
     expires_after="2023-05-01">
   <owner>shend@chromium.org</owner>
