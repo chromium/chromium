@@ -24492,6 +24492,74 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ThirdPartyCookies.CookieControlsActivated">
+  <owner>sauski@google.com</owner>
+  <owner>kmg@google.com</owner>
+  <summary>
+    Recorded each time User Bypass is activated to bypass 3PC blocking and
+    re-enable 3PC for the page. Only applicable if the user is blocking 3PC by
+    default.
+  </summary>
+  <metric name="FedCmInitiated" enum="Boolean">
+    <summary>
+      Whether the page attempted to call the FedCM API on the current page load,
+      prior to the user re-enabling 3PC.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PageRefreshCount">
+    <summary>
+      The number of times the user refreshed the current page (without
+      navigating elsewhere) before re-enabling 3PC. An integer clamped to the
+      range 0 to 10.
+    </summary>
+  </metric>
+  <metric name="RepeatedActivation" enum="Boolean">
+    <summary>
+      Whether the user has previously re-enabled 3PC on this page via the
+      in-context controls.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SiteEngagementLevel" enum="SiteEngagementLevel">
+    <summary>
+      The site engagement level of the page when the user re-enabled 3PC.
+    </summary>
+  </metric>
+  <metric name="StorageAccessAPIRequested" enum="Boolean">
+    <summary>
+      Whether the page had requested access to storage via the Storage Access
+      API on the current page load, prior to the user re-enabling 3PC
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ThirdPartySiteDataAccessType"
+      enum="ThirdPartySiteDataAccessType">
+    <summary>
+      The state of site data access (e.g. blocked, allowed, etc) for the the
+      current page load prior to the user re-enabling 3PC.
+    </summary>
+  </metric>
+</event>
+
 <event name="TopToolbar.Share">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>

@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -382,9 +383,46 @@ class CookieControlsUserBypassTest : public CookieControlsTest,
  protected:
   void SetUp() override {
     CookieControlsTest::SetUp();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     cookie_controls()->AddObserver(mock());
     testing::Mock::VerifyAndClearExpectations(mock());
+  }
+
+  void ValidateCookieControlsActivatedUKM(
+      bool fed_cm_initiated,
+      bool storage_access_api_requested,
+      int page_refresh_count,
+      bool repeated_activation,
+      blink::mojom::EngagementLevel site_engagement_level,
+      ThirdPartySiteDataAccessType site_data_access_type) {
+    auto entries = ukm_recorder_->GetEntriesByName(
+        "ThirdPartyCookies.CookieControlsActivated");
+    ASSERT_EQ(1u, entries.size());
+    auto* entry = entries.front();
+
+    ukm_recorder_->ExpectEntryMetric(entry, "FedCmInitiated", fed_cm_initiated);
+    ukm_recorder_->ExpectEntryMetric(entry, "StorageAccessAPIRequested",
+                                     storage_access_api_requested);
+    ukm_recorder_->ExpectEntryMetric(entry, "PageRefreshCount",
+                                     page_refresh_count);
+    ukm_recorder_->ExpectEntryMetric(entry, "RepeatedActivation",
+                                     repeated_activation);
+    ukm_recorder_->ExpectEntryMetric(
+        entry, "SiteEngagementLevel",
+        static_cast<uint64_t>(site_engagement_level));
+    ukm_recorder_->ExpectEntryMetric(
+        entry, "ThirdPartySiteDataAccessType",
+        static_cast<uint64_t>(site_data_access_type));
+
+    // Ideally we would check the associated URL directly, but that is
+    // evidently non-trivial, so we settle for making sure the right ID was
+    // used.
+    EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+              entry->source_id);
+
+    // Reset the recorder, tests should check every UKM report they expect.
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   MockCookieControlsObserver* mock() { return &mock_; }
@@ -400,6 +438,7 @@ class CookieControlsUserBypassTest : public CookieControlsTest,
  private:
   MockCookieControlsObserver mock_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 TEST_P(CookieControlsUserBypassTest, SiteCounts) {
@@ -902,6 +941,12 @@ TEST_P(CookieControlsUserBypassTest, FrequestPageReloadsMetrics) {
   t.ExpectUniqueSample(
       "CookieControlsActivated.SiteDataAccessType",
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/false,
+      /*page_refresh_count=*/3,  // Count was reset to 0 after timeout.
+      /*repeated_activation=*/false, blink::mojom::EngagementLevel::NONE,
+      ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -980,6 +1025,12 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
   t.ExpectUniqueSample(
       "CookieControlsActivated.SiteDataAccessType",
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/false,
+      /*page_refresh_count=*/1,  // Count was reset to 0 after timeout.
+      /*repeated_activation=*/false, blink::mojom::EngagementLevel::NONE,
+      ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1116,6 +1167,12 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   t.ExpectUniqueSample(
       "CookieControlsActivated.SiteDataAccessType",
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/true,
+      /*page_refresh_count=*/0, /*repeated_activation=*/false,
+      blink::mojom::EngagementLevel::HIGH,
+      ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1254,17 +1311,37 @@ TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
 
   // Loading the same page after not making an effective change should not fire.
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/false,
+      /*page_refresh_count=*/0, /*repeated_activation=*/false,
+      blink::mojom::EngagementLevel::NONE,
+      ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
+
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   NavigateAndCommit(GURL("https://example.com"));
 
   // Loading a different page after making an effective change should not fire.
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/false,
+      /*page_refresh_count=*/1, /*repeated_activation=*/true,
+      blink::mojom::EngagementLevel::NONE,
+      ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
+
   NavigateAndCommit(GURL("https://example2.com"));
+  testing::Mock::VerifyAndClearExpectations(mock());
 
   // Observer should fire when reloaded after change.
-  testing::Mock::VerifyAndClearExpectations(mock());
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/false,
+      /*page_refresh_count=*/0, /*repeated_activation=*/false,
+      blink::mojom::EngagementLevel::NONE,
+      ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
 
   NavigateAndCommit(GURL("https://example2.com"));
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
@@ -1300,6 +1377,13 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  ValidateCookieControlsActivatedUKM(
+      /*fed_cm_initiated=*/false,
+      /*storage_access_api_requested=*/false,
+      /*page_refresh_count=*/0, /*repeated_activation=*/false,
+      blink::mojom::EngagementLevel::NONE,
+      ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses);
+
   NavigateAndCommit(GURL("https://example.com"));
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -1333,8 +1417,6 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
                               CookieControlsEnforcement::kNoEnforcement,
                               zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 1));
-
-  // Why is this still reporting high?
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->Update(web_contents());

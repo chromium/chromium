@@ -29,10 +29,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 using base::UserMetricsAction;
 using site_engagement::SiteEngagementService;
@@ -46,6 +50,7 @@ constexpr int kFrequentReloadThreshold = 3;
 constexpr char kEntryPointAnimatedKey[] = "entry_point_animated";
 constexpr char kLastExpirationKey[] = "last_expiration";
 constexpr char kLastVisitedActiveException[] = "last_visited_active_exception";
+constexpr char kActivationsCountKey[] = "activations_count_key";
 
 base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
                               const GURL& url) {
@@ -62,6 +67,10 @@ bool WasEntryPointAlreadyAnimated(const base::Value::Dict& metadata) {
   absl::optional<bool> entry_point_animated =
       metadata.FindBool(kEntryPointAnimatedKey);
   return entry_point_animated.has_value() && entry_point_animated.value();
+}
+
+int GetActivationCount(const base::Value::Dict& metadata) {
+  return metadata.FindInt(kActivationsCountKey).value_or(0);
 }
 
 bool HasExceptionExpiredSinceLastVisit(const base::Value::Dict& metadata) {
@@ -287,13 +296,16 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   CHECK(
       base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI));
   cookie_settings_->SetCookieSettingForUserBypass(url);
-  RecordActivationMetrics();
 
-  // Record expiration metadata for the newly created exception.
+  // Record expiration metadata for the newly created exception, and increased
+  // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
   metadata.Set(kLastExpirationKey,
                base::TimeToValue(GetStatus(GetWebContents()).expiration));
+  metadata.Set(kActivationsCountKey, GetActivationCount(metadata) + 1);
   ApplyMetadataChanges(settings_map_, url, std::move(metadata));
+
+  RecordActivationMetrics();
 }
 
 void CookieControlsController::OnEntryPointAnimated() {
@@ -513,9 +525,29 @@ void CookieControlsController::RecordActivationMetrics() {
 
   int allowed_sites = GetAllowedSitesCount();
   int blocked_sites = GetBlockedSitesCount();
-  base::UmaHistogramEnumeration(
-      "CookieControlsActivated.SiteDataAccessType",
-      GetSiteDataAccessType(allowed_sites, blocked_sites));
+  auto site_data_access_type =
+      GetSiteDataAccessType(allowed_sites, blocked_sites);
+  base::UmaHistogramEnumeration("CookieControlsActivated.SiteDataAccessType",
+                                site_data_access_type);
+
+  // Record activation UKM.
+  // TODO(crbug.com/1446230): Include FedCM information.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto ukm_source_id =
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::ThirdPartyCookies_CookieControlsActivated(ukm_source_id)
+      .SetFedCmInitiated(false)
+      .SetStorageAccessAPIRequested(
+          cookie_settings_->HasAnyFrameRequestedStorageAccess(url))
+      .SetPageRefreshCount(std::clamp(recent_reloads_count_, 0, 10))
+      .SetRepeatedActivation(
+          GetActivationCount(GetMetadata(settings_map_, url)) > 1)
+      .SetSiteEngagementLevel(static_cast<uint64_t>(
+          SiteEngagementService::Get(GetWebContents()->GetBrowserContext())
+              ->GetEngagementLevel(url)))
+      .SetThirdPartySiteDataAccessType(
+          static_cast<uint64_t>(site_data_access_type))
+      .Record(ukm::UkmRecorder::Get());
 
   // TODO(crbug.com/1446230): Add metrics, related to repeated activations.
 }
