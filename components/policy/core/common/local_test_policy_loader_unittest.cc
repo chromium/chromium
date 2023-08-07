@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/common/policy_loader_local_test.h"
+#include "components/policy/core/common/local_test_policy_loader.h"
 
 #include <string>
 
@@ -15,9 +15,9 @@
 
 namespace policy {
 
-class PolicyLoaderLocalTestTest : public ::testing::Test {
+class LocalTestPolicyLoaderTest : public ::testing::Test {
  public:
-  void LoadAndVerifyPolicies(PolicyLoaderLocalTest* loader,
+  void LoadAndVerifyPolicies(LocalTestPolicyLoader* loader,
                              const base::Value::List& expected_policies) {
     std::unique_ptr<PolicyBundle> bundle =
         std::make_unique<PolicyBundle>(loader->Load());
@@ -58,9 +58,9 @@ class PolicyLoaderLocalTestTest : public ::testing::Test {
   }
 };
 
-TEST_F(PolicyLoaderLocalTestTest, LoadFromJson) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, LoadFromJson) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
   policy_loader->SetPolicyListJson(R"(
   [
     {
@@ -89,9 +89,9 @@ TEST_F(PolicyLoaderLocalTestTest, LoadFromJson) {
   LoadAndVerifyPolicies(policy_loader.get(), expected_policies);
 }
 
-TEST_F(PolicyLoaderLocalTestTest, SamePolicyCombination) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, SamePolicyCombination) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   // Set same policy with different source
   policy_loader->SetPolicyListJson(R"(
@@ -130,9 +130,61 @@ TEST_F(PolicyLoaderLocalTestTest, SamePolicyCombination) {
   EXPECT_TRUE(entry->Equals(expected_entry));
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_MissingScope) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(LocalTestPolicyLoaderTest, PrecedencePolicy) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
+  policy_loader->SetUserAffiliated(true);
+
+  // Set same policy with different source
+  policy_loader->SetPolicyListJson(R"(
+  [
+    {
+      "level": 1,
+      "scope": 1,
+      "source": 2,
+      "name": "CloudReportingEnabled",
+      "value": true
+    },
+    {
+      "level": 1,
+      "scope": 0,
+      "source": 2,
+      "name": "CloudReportingEnabled",
+      "value": false
+    },
+    {
+      "level": 1,
+      "scope": 1,
+      "source": 2,
+      "name": "CloudUserPolicyOverridesCloudMachinePolicy",
+      "value": true
+    }
+  ])");
+
+  std::unique_ptr<PolicyBundle> bundle =
+      std::make_unique<PolicyBundle>(policy_loader->Load());
+
+  const PolicyMap::Entry* entry =
+      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .Get(policy::key::kCloudReportingEnabled);
+
+  PolicyMap::Entry expected_entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                                  POLICY_SOURCE_CLOUD, base::Value(false),
+                                  nullptr);
+  expected_entry.AddConflictingPolicy(
+      PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                       POLICY_SOURCE_CLOUD, base::Value(true), nullptr));
+  expected_entry.AddMessage(PolicyMap::MessageType::kWarning,
+                            IDS_POLICY_CONFLICT_DIFF_VALUE);
+
+  EXPECT_TRUE(entry->Equals(expected_entry));
+}
+#endif
+
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_MissingScope) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
@@ -156,9 +208,9 @@ TEST_F(PolicyLoaderLocalTestTest, InvalidInput_MissingScope) {
       "");
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_MissingName) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_MissingName) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
@@ -182,25 +234,25 @@ TEST_F(PolicyLoaderLocalTestTest, InvalidInput_MissingName) {
       "");
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_NotList) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_NotList) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
   // Not a list
   EXPECT_DEATH_IF_SUPPORTED({ policy_loader->SetPolicyListJson(R"({})"); }, "");
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_PolicyNotDict) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_PolicyNotDict) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   // Entry not a dictionary
   EXPECT_DEATH_IF_SUPPORTED({ policy_loader->SetPolicyListJson(R"([[]])"); },
                             "");
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_PolicyLevel) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_PolicyLevel) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   // Invalid policy level
   EXPECT_DEATH_IF_SUPPORTED(
@@ -219,9 +271,9 @@ TEST_F(PolicyLoaderLocalTestTest, InvalidInput_PolicyLevel) {
       "");
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_PolicyScope) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_PolicyScope) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   // Invalid policy scope
   EXPECT_DEATH_IF_SUPPORTED(
@@ -240,9 +292,9 @@ TEST_F(PolicyLoaderLocalTestTest, InvalidInput_PolicyScope) {
       "");
 }
 
-TEST_F(PolicyLoaderLocalTestTest, InvalidInput_PolicySource) {
-  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
-      std::make_unique<PolicyLoaderLocalTest>();
+TEST_F(LocalTestPolicyLoaderTest, InvalidInput_PolicySource) {
+  std::unique_ptr<LocalTestPolicyLoader> policy_loader =
+      std::make_unique<LocalTestPolicyLoader>();
 
   // Invalid policy source
   EXPECT_DEATH_IF_SUPPORTED(

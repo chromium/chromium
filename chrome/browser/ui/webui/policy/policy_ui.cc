@@ -197,6 +197,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
         {"testTablePresetCustom", IDS_POLICY_TEST_PRESET_CUSTOM},
         {"testTablePresetLocalMachine", IDS_POLICY_TEST_PRESET_LOCAL_MACHINE},
         {"testTablePresetCloudAccount", IDS_POLICY_TEST_PRESET_CLOUD_ACCOUNT},
+        {"testUserAffiliated", IDS_POLICY_TEST_USER_AFFILIATED},
     };
 
     source->AddLocalizedStrings(kPolicyTestStrings);

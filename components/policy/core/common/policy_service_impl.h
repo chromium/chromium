@@ -82,6 +82,11 @@ class POLICY_EXPORT PolicyServiceImpl
   // Has no effect if initialization was not throttled.
   void UnthrottleInitialization();
 
+  // Precedence policies cannot be set at the user cloud level regardless of
+  // affiliation status. This is done to prevent cloud users from potentially
+  // giving themselves increased priority, causing a security issue.
+  static void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies);
+
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
 

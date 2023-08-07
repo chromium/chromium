@@ -48,6 +48,10 @@ void LocalTestPolicyProvider::LoadJsonPolicies(
   RefreshPolicies();
 }
 
+void LocalTestPolicyProvider::SetUserAffiliated(bool affiliated) {
+  loader_.SetUserAffiliated(affiliated);
+}
+
 void LocalTestPolicyProvider::ClearPolicies() {
   loader_.ClearPolicies();
   RefreshPolicies();

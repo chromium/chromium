@@ -96,15 +96,19 @@ let instance: PolicyTestBrowserProxy|null = null;
 
 export class PolicyTestBrowserProxy {
   applyTestPolicies(jsonString: string) {
-    sendWithPromise('setLocalTestPolicies', jsonString);
+    return sendWithPromise('setLocalTestPolicies', jsonString);
   }
 
   revertTestPolicies() {
-    sendWithPromise('revertLocalTestPolicies');
+    return sendWithPromise('revertLocalTestPolicies');
   }
 
   restartWithTestPolicies(jsonString: string) {
-    sendWithPromise('restartBrowser', jsonString);
+    return sendWithPromise('restartBrowser', jsonString);
+  }
+
+  setUserAffiliation(affiliation: boolean) {
+    return sendWithPromise('setUserAffiliation', affiliation);
   }
 
   static getInstance(): PolicyTestBrowserProxy {

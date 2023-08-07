@@ -93,15 +93,20 @@ function convertToPolicyInfo(policyName: string, value: {[key: string]: any}) {
   return policy;
 }
 
-function applyPolicies() {
+async function applyPolicies() {
   const jsonString =
       getRequiredElement<PolicyTestTableElement>('policy-test-table')
           .getTestPoliciesJsonString();
   if (jsonString) {
+    // Set user affiliation
+    const userAffiliation =
+        getRequiredElement<HTMLInputElement>('user-affiliated').checked;
+    await policyTestBrowserProxy.setUserAffiliation(userAffiliation);
+
     // Disable the Apply policies button and re-enable after sending, to ensure
     // that the JSON string is not accidentally sent twice.
     getRequiredElement<HTMLButtonElement>('apply-policies').disabled = true;
-    policyTestBrowserProxy.applyTestPolicies(jsonString);
+    await policyTestBrowserProxy.applyTestPolicies(jsonString);
     getRequiredElement<HTMLButtonElement>('revert-applied-policies').disabled =
         false;
     getRequiredElement<HTMLButtonElement>('apply-policies').disabled = false;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_LOCAL_TEST_H_
-#define COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_LOCAL_TEST_H_
+#ifndef COMPONENTS_POLICY_CORE_COMMON_LOCAL_TEST_POLICY_LOADER_H_
+#define COMPONENTS_POLICY_CORE_COMMON_LOCAL_TEST_POLICY_LOADER_H_
 
 #include <string>
 
@@ -15,11 +15,11 @@ namespace policy {
 class PolicyBundle;
 
 // Loads policies from policy testing page
-class POLICY_EXPORT PolicyLoaderLocalTest {
+class POLICY_EXPORT LocalTestPolicyLoader {
  public:
-  explicit PolicyLoaderLocalTest();
+  explicit LocalTestPolicyLoader();
 
-  ~PolicyLoaderLocalTest();
+  ~LocalTestPolicyLoader();
 
   PolicyBundle Load();
 
@@ -34,10 +34,14 @@ class POLICY_EXPORT PolicyLoaderLocalTest {
 
   void ClearPolicies();
 
+  void SetUserAffiliated(bool affiliated);
+
  private:
+  bool is_user_affiliated_ = false;
+
   PolicyBundle bundle_;
 };
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_LOCAL_TEST_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_LOCAL_TEST_POLICY_LOADER_H_

@@ -6,7 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_LOCAL_TEST_POLICY_PROVIDER_H_
 
 #include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/policy_loader_local_test.h"
+#include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -33,6 +33,7 @@ class POLICY_EXPORT LocalTestPolicyProvider
 
   void LoadJsonPolicies(const std::string& json_policies_string);
   void ClearPolicies();
+  void SetUserAffiliated(bool affiliated);
 
   // ConfigurationPolicyProvider implementation
   void RefreshPolicies() override;
@@ -44,7 +45,7 @@ class POLICY_EXPORT LocalTestPolicyProvider
   explicit LocalTestPolicyProvider();
 
   bool first_policies_loaded_;
-  PolicyLoaderLocalTest loader_;
+  LocalTestPolicyLoader loader_;
 };
 
 }  // namespace policy

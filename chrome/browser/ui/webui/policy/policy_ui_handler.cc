@@ -63,9 +63,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_details.h"
-#include "components/policy/core/common/policy_loader_local_test.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_scheduler.h"
@@ -223,6 +223,11 @@ void PolicyUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "restartBrowser",
       base::BindRepeating(&PolicyUIHandler::HandleRestartBrowser,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setUserAffiliation",
+      base::BindRepeating(&PolicyUIHandler::HandleSetUserAffiliated,
                           base::Unretained(this)));
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -481,6 +486,8 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
   if (!local_test_infobar_added_) {
     AddInfobarsForActiveLocalTestPoliciesAllTabs();
   }
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
@@ -504,6 +511,18 @@ void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
 
   // Restart browser
   chrome::AttemptRestart();
+}
+
+void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
+  CHECK_EQ(static_cast<int>(args.size()), 2);
+  bool affiliated = args[1].GetBool();
+
+  auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
+      g_browser_process->browser_policy_connector()
+          ->local_test_policy_provider());
+  local_test_provider->SetUserAffiliated(affiliated);
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {

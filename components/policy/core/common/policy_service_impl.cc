@@ -44,23 +44,6 @@ namespace policy {
 
 namespace {
 
-// Precedence policies cannot be set at the user cloud level regardless of
-// affiliation status. This is done to prevent cloud users from potentially
-// giving themselves increased priority, causing a security issue.
-void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
-  for (auto* policy_name : metapolicy::kPrecedence) {
-    const PolicyMap::Entry* policy_entry = policies->Get(policy_name);
-    if (policy_entry && policy_entry->scope == POLICY_SCOPE_USER &&
-        policy_entry->source == POLICY_SOURCE_CLOUD) {
-      PolicyMap::Entry* policy_entry_mutable =
-          policies->GetMutable(policy_name);
-      policy_entry_mutable->SetIgnored();
-      policy_entry_mutable->AddMessage(PolicyMap::MessageType::kError,
-                                       IDS_POLICY_IGNORED_CHROME_PROFILE);
-    }
-  }
-}
-
 // Metrics should not be enforced so if this policy is set as mandatory
 // downgrade it to a recommended level policy.
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
@@ -529,6 +512,21 @@ void PolicyServiceImpl::CheckRefreshComplete() {
     callbacks.swap(refresh_callbacks_);
     for (auto& callback : callbacks)
       std::move(callback).Run();
+  }
+}
+
+// static
+void PolicyServiceImpl::IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
+  for (auto* policy_name : metapolicy::kPrecedence) {
+    const PolicyMap::Entry* policy_entry = policies->Get(policy_name);
+    if (policy_entry && policy_entry->scope == POLICY_SCOPE_USER &&
+        policy_entry->source == POLICY_SOURCE_CLOUD) {
+      PolicyMap::Entry* policy_entry_mutable =
+          policies->GetMutable(policy_name);
+      policy_entry_mutable->SetIgnored();
+      policy_entry_mutable->AddMessage(PolicyMap::MessageType::kError,
+                                       IDS_POLICY_IGNORED_CHROME_PROFILE);
+    }
   }
 }
 
