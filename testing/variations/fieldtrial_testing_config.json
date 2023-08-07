@@ -15989,6 +15989,25 @@
             ]
         }
     ],
+    "VisibilityAwareResourceScheduler": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230807",
+                    "enable_features": [
+                        "VisibilityAwareResourceScheduler"
+                    ]
+                }
+            ]
+        }
+    ],
     "VisualFeaturesInCsppPings": [
         {
             "platforms": [
