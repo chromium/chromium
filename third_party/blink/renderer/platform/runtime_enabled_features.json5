@@ -3466,6 +3466,10 @@
       status: "experimental",
     },
     {
+      name: "SvgTextSkipZeroLengthItems",
+      status: "stable",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
       base_feature: "none",

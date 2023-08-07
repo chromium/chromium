@@ -127,6 +127,11 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
 
   bool found_first_character = false;
   for (wtf_size_t i : sorted_item_indexes) {
+    // Zero-length item is not addressable.
+    if (RuntimeEnabledFeatures::SvgTextSkipZeroLengthItemsEnabled() &&
+        items[i]->TextLength() == 0) {
+      continue;
+    }
     SvgPerCharacterInfo info;
     info.item_index = i;
     // 2.3. If the character at index i corresponds to a typographic
