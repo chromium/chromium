@@ -253,6 +253,7 @@ public class ManualFillingTestHelper {
     }
 
     public void waitForKeyboardAccessoryToBeShown() {
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         waitForKeyboardAccessoryToBeShown(false);
     }
 

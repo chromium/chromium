@@ -17,6 +17,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -233,23 +234,25 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void toggleAccessorySheet() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             mKeyboardAccessoryBarItems = (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
             return mKeyboardAccessoryBarItems != null;
         });
-        CriteriaHelper.pollInstrumentationThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             return mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0) != null;
         });
         KeyboardAccessoryButtonGroupView keyboardAccessoryView =
                 (KeyboardAccessoryButtonGroupView) mKeyboardAccessoryBarItems
                         .findViewHolderForLayoutPosition(0)
                         .itemView;
-        CriteriaHelper.pollInstrumentationThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             return keyboardAccessoryView.getButtons().size() == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
         });
         ArrayList<ChromeImageButton> buttons = keyboardAccessoryView.getButtons();
         ChromeImageButton keyButton = buttons.get(0);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         runOnUiThreadBlocking(() -> { keyButton.callOnClick(); });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void focusField(String node) throws TimeoutException, InterruptedException {
