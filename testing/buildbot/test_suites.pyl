@@ -627,6 +627,7 @@
     # them. The test suite should not be critical to builders.
     'chromeos_chrome_disabled_tast_tests': {
       'chrome_disabled_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:chrome" && !"dep:no_chrome_dcheck")',
         'test_level_retries': 1,
         'timeout_sec': 7200,
         'experiment_percentage': 100,
