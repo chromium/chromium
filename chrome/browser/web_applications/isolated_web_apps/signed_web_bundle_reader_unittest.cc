@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
@@ -428,13 +429,13 @@ TEST_F(SignedWebBundleReaderTest, ReadResponse) {
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
-                                         metadata_->requests[kUrl]->Clone(),
-                                         response_->Clone());
-  ASSERT_TRUE(response.has_value()) << response.error().message;
-  EXPECT_EQ((*response)->response_code, 200);
-  EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
-  EXPECT_EQ((*response)->payload_length, response_->payload_length);
+  ASSERT_OK_AND_ASSIGN(
+      auto response, ReadAndFulfillResponse(*reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->payload_offset, response_->payload_offset);
+  EXPECT_EQ(response->payload_length, response_->payload_length);
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
@@ -457,13 +458,13 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
   replacements.SetRefStr("baz");
   resource_request.url = kUrl.ReplaceComponents(replacements);
 
-  auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
-                                         metadata_->requests[kUrl]->Clone(),
-                                         response_->Clone());
-  ASSERT_TRUE(response.has_value()) << response.error().message;
-  EXPECT_EQ((*response)->response_code, 200);
-  EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
-  EXPECT_EQ((*response)->payload_length, response_->payload_length);
+  ASSERT_OK_AND_ASSIGN(
+      auto response, ReadAndFulfillResponse(*reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->payload_offset, response_->payload_offset);
+  EXPECT_EQ(response->payload_length, response_->payload_length);
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
@@ -585,13 +586,13 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
 
   SimulateAndWaitForParserDisconnect(*reader.get());
   {
-    auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
-                                           metadata_->requests[kUrl]->Clone(),
-                                           response_->Clone());
-    ASSERT_TRUE(response.has_value()) << response.error().message;
-    EXPECT_EQ((*response)->response_code, 200);
-    EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
-    EXPECT_EQ((*response)->payload_length, response_->payload_length);
+    ASSERT_OK_AND_ASSIGN(auto response, ReadAndFulfillResponse(
+                                            *reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
+    EXPECT_EQ(response->response_code, 200);
+    EXPECT_EQ(response->payload_offset, response_->payload_offset);
+    EXPECT_EQ(response->payload_length, response_->payload_length);
   }
 
   EXPECT_EQ(parser_factory_->GetParserCreationCount(), 2);
@@ -600,13 +601,13 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   // multiple disconnects over the course of its lifetime.
   SimulateAndWaitForParserDisconnect(*reader.get());
   {
-    auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
-                                           metadata_->requests[kUrl]->Clone(),
-                                           response_->Clone());
-    ASSERT_TRUE(response.has_value()) << response.error().message;
-    EXPECT_EQ((*response)->response_code, 200);
-    EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
-    EXPECT_EQ((*response)->payload_length, response_->payload_length);
+    ASSERT_OK_AND_ASSIGN(auto response, ReadAndFulfillResponse(
+                                            *reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
+    EXPECT_EQ(response->response_code, 200);
+    EXPECT_EQ(response->payload_offset, response_->payload_offset);
+    EXPECT_EQ(response->payload_length, response_->payload_length);
   }
 
   EXPECT_EQ(parser_factory_->GetParserCreationCount(), 3);
@@ -700,13 +701,13 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
-                                         metadata_->requests[kUrl]->Clone(),
-                                         response_->Clone());
-  ASSERT_TRUE(response.has_value()) << response.error().message;
+  ASSERT_OK_AND_ASSIGN(
+      auto response, ReadAndFulfillResponse(*reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
 
   std::string response_body =
-      ReadAndFulfillResponseBody(*reader.get(), std::move(*response));
+      ReadAndFulfillResponseBody(*reader.get(), std::move(response));
   EXPECT_EQ(response_body, kResponseBody);
 }
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -64,15 +65,14 @@ IsolatedWebAppValidator::ValidateMetadata(
     // Verify that the bundle only contains isolated-app:// URLs using the
     // Signed Web Bundle ID as their host.
     for (const GURL& entry : entries) {
-      base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-          IsolatedWebAppUrlInfo::Create(entry);
-      if (!url_info.has_value()) {
-        return base::unexpected("The URL of an exchange is invalid: " +
-                                url_info.error());
-      }
+      ASSIGN_OR_RETURN(
+          IsolatedWebAppUrlInfo url_info, IsolatedWebAppUrlInfo::Create(entry),
+          [](std::string error) {
+            return "The URL of an exchange is invalid: " + std::move(error);
+          });
 
       const web_package::SignedWebBundleId& entry_web_bundle_id =
-          url_info->web_bundle_id();
+          url_info.web_bundle_id();
       if (entry_web_bundle_id != web_bundle_id) {
         return base::unexpected(
             "The URL of an exchange contains the wrong Signed Web Bundle ID: " +

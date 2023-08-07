@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,10 +42,13 @@ namespace web_app {
 
 namespace {
 
+using base::test::ErrorIs;
+using base::test::HasValue;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsFalse;
 using testing::IsTrue;
+using testing::Property;
 using testing::StartsWith;
 
 using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
@@ -273,9 +277,9 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
 
   FulfillIntegrityBlock();
 
-  ReaderResult result = reader_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message(), Eq("test error"));
+  ASSERT_THAT(
+      reader_future.Take(),
+      ErrorIs(Property(&UnusableSwbnFileError::message, Eq("test error"))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -328,9 +332,9 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
         ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
         UnusableSwbnFileError::Error::kSignatureVerificationError, 0);
   } else {
-    ReaderResult result = reader_future.Take();
-    ASSERT_FALSE(result.has_value());
-    EXPECT_THAT(result.error().message(), Eq(error_.message));
+    ASSERT_THAT(
+        reader_future.Take(),
+        ErrorIs(Property(&UnusableSwbnFileError::message, Eq(error_.message))));
 
     histogram_tester.ExpectBucketCount(
         ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -409,10 +413,9 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
-  ReaderResult result = reader_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message(),
-              StartsWith("Primary URL must not be present"));
+  ASSERT_THAT(reader_future.Take(),
+              ErrorIs(Property(&UnusableSwbnFileError::message,
+                               StartsWith("Primary URL must not be present"))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -434,10 +437,10 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
-  ReaderResult result = reader_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message(),
-              StartsWith("The URL of an exchange is invalid"));
+  ASSERT_THAT(
+      reader_future.Take(),
+      ErrorIs(Property(&UnusableSwbnFileError::message,
+                       StartsWith("The URL of an exchange is invalid"))));
 }
 
 }  // namespace

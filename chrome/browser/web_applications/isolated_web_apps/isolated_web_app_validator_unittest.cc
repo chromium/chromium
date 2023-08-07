@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -117,15 +118,15 @@ class IsolatedWebAppValidatorIntegrityBlockTest
     : public IsolatedWebAppValidatorTest {};
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
-  auto web_bundle_id =
-      web_package::SignedWebBundleId::Create(kSignedWebBundleId);
-  ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
+  ASSERT_OK_AND_ASSIGN(
+      auto web_bundle_id,
+      web_package::SignedWebBundleId::Create(kSignedWebBundleId));
   auto integrity_block = MakeIntegrityBlock();
 
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
   EXPECT_CALL(*isolated_web_app_trust_checker,
-              IsTrusted(*web_bundle_id, integrity_block))
+              IsTrusted(web_bundle_id, integrity_block))
       .WillOnce([](auto web_bundle_id,
                    auto integrity_block) -> IsolatedWebAppTrustChecker::Result {
         return {.status = IsolatedWebAppTrustChecker::Result::Status::kTrusted};
@@ -133,21 +134,21 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
 
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
   base::test::TestFuture<absl::optional<std::string>> future;
-  validator.ValidateIntegrityBlock(*web_bundle_id, integrity_block,
+  validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
                                    future.GetCallback());
   EXPECT_EQ(future.Get(), absl::nullopt);
 }
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
-  auto web_bundle_id =
-      web_package::SignedWebBundleId::Create(kSignedWebBundleId);
-  ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
+  ASSERT_OK_AND_ASSIGN(
+      auto web_bundle_id,
+      web_package::SignedWebBundleId::Create(kSignedWebBundleId));
   auto integrity_block = MakeIntegrityBlock();
 
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
   EXPECT_CALL(*isolated_web_app_trust_checker,
-              IsTrusted(*web_bundle_id, integrity_block))
+              IsTrusted(web_bundle_id, integrity_block))
       .WillOnce(
           [](auto web_bundle_id,
              auto public_key_stack) -> IsolatedWebAppTrustChecker::Result {
@@ -160,7 +161,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
 
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
   base::test::TestFuture<absl::optional<std::string>> future;
-  validator.ValidateIntegrityBlock(*web_bundle_id, integrity_block,
+  validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
                                    future.GetCallback());
   EXPECT_EQ(future.Get(), "test error");
 }
@@ -187,14 +188,14 @@ class IsolatedWebAppValidatorMetadataTest
 };
 
 TEST_P(IsolatedWebAppValidatorMetadataTest, Validate) {
-  auto web_bundle_id =
-      web_package::SignedWebBundleId::Create(kSignedWebBundleId);
-  ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
+  ASSERT_OK_AND_ASSIGN(
+      auto web_bundle_id,
+      web_package::SignedWebBundleId::Create(kSignedWebBundleId));
 
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  EXPECT_EQ(validator.ValidateMetadata(*web_bundle_id, primary_url_, entries_),
+  EXPECT_EQ(validator.ValidateMetadata(web_bundle_id, primary_url_, entries_),
             status_);
 }
 

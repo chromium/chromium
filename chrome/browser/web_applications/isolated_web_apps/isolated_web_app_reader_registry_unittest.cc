@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -228,9 +229,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  ReadResult result = read_response_future.Take();
-  ASSERT_TRUE(result.has_value()) << result.error().message;
-  EXPECT_EQ(result->head()->response_code, 200);
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                       read_response_future.Take());
+  EXPECT_EQ(response.head()->response_code, 200);
 
   GURL expected_parser_base_url(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
@@ -242,9 +243,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
       /*success*/ 1, 1);
 
   std::string response_body = ReadAndFulfillResponseBody(
-      result->head()->payload_length,
+      response.head()->payload_length,
       base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
-                     base::Unretained(&*result)));
+                     base::Unretained(&response)));
   EXPECT_EQ(kResponseBody, response_body);
 }
 
@@ -261,14 +262,14 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  ReadResult result = read_response_future.Take();
-  ASSERT_TRUE(result.has_value()) << result.error().message;
-  EXPECT_EQ(result->head()->response_code, 200);
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                       read_response_future.Take());
+  EXPECT_EQ(response.head()->response_code, 200);
 
   std::string response_body = ReadAndFulfillResponseBody(
-      result->head()->payload_length,
+      response.head()->payload_length,
       base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
-                     base::Unretained(&*result)));
+                     base::Unretained(&response)));
   EXPECT_EQ(kResponseBody, response_body);
 }
 
@@ -285,20 +286,20 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  ReadResult result = read_response_future.Take();
-  ASSERT_TRUE(result.has_value()) << result.error().message;
-  EXPECT_EQ(result->head()->response_code, 200);
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                       read_response_future.Take());
+  EXPECT_EQ(response.head()->response_code, 200);
 
-  // Delete the registry so that the `SignedWebBundleReader`, which `result`
-  // holds onto weakly, is deleted, which should make `result->ReadBody()`
+  // Delete the registry so that the `SignedWebBundleReader`, which `response`
+  // holds onto weakly, is deleted, which should make `response.ReadBody()`
   // fail with `net::ERR_FAILED`.
   registry_.reset();
 
   base::test::TestFuture<net::Error> error_future;
   ReadResponseBody(
-      result->head()->payload_length,
+      response.head()->payload_length,
       base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
-                     base::Unretained(&*result)),
+                     base::Unretained(&response)),
       error_future.GetCallback());
   EXPECT_EQ(net::ERR_FAILED, error_future.Take());
 }
@@ -369,9 +370,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     FulfillMetadata();
     FulfillResponse(resource_request);
 
-    ReadResult result = read_response_future.Take();
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    EXPECT_EQ(result->head()->response_code, 200);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -394,9 +395,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     // `SignedWebBundleReader` should still be cached.
     FulfillResponse(resource_request);
 
-    ReadResult result = read_response_future.Take();
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    EXPECT_EQ(result->head()->response_code, 200);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -431,9 +432,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     FulfillMetadata();
     FulfillResponse(resource_request);
 
-    ReadResult result = read_response_future.Take();
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    EXPECT_EQ(result->head()->response_code, 200);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -768,27 +769,27 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   FulfillMetadata();
   FulfillResponse(resource_request);
   {
-    ReadResult result = read_response_future_1.Take();
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    EXPECT_EQ(result->head()->response_code, 200);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future_1.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
 
     std::string response_body = ReadAndFulfillResponseBody(
-        result->head()->payload_length,
+        response.head()->payload_length,
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
-                       base::Unretained(&*result)));
+                       base::Unretained(&response)));
     EXPECT_EQ(kResponseBody, response_body);
   }
 
   FulfillResponse(resource_request);
   {
-    ReadResult result = read_response_future_2.Take();
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    EXPECT_EQ(result->head()->response_code, 200);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future_2.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
 
     std::string response_body = ReadAndFulfillResponseBody(
-        result->head()->payload_length,
+        response.head()->payload_length,
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
-                       base::Unretained(&*result)));
+                       base::Unretained(&response)));
     EXPECT_EQ(kResponseBody, response_body);
   }
 
@@ -803,14 +804,14 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 
   FulfillResponse(resource_request);
   {
-    ReadResult result = read_response_future_3.Take();
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    EXPECT_EQ(result->head()->response_code, 200);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future_3.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
 
     std::string response_body = ReadAndFulfillResponseBody(
-        result->head()->payload_length,
+        response.head()->payload_length,
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
-                       base::Unretained(&*result)));
+                       base::Unretained(&response)));
     EXPECT_EQ(kResponseBody, response_body);
   }
 }

@@ -4,6 +4,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
 #include "base/strings/string_piece_forward.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
@@ -40,11 +41,11 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValue) {
   const base::Value policy_entry =
       CreatePolicyEntry(kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl);
 
-  const auto options =
-      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
-  ASSERT_TRUE(options.has_value());
-  EXPECT_EQ(options->web_bundle_id().id(), kEd25519SignedWebBundleId);
-  EXPECT_EQ(options->update_manifest_url(), GURL(kCorrectUpdateManifestUrl));
+  ASSERT_OK_AND_ASSIGN(
+      const auto options,
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
+  EXPECT_EQ(options.web_bundle_id().id(), kEd25519SignedWebBundleId);
+  EXPECT_EQ(options.update_manifest_url(), GURL(kCorrectUpdateManifestUrl));
 }
 
 // We don't install apps signed by not a release key.

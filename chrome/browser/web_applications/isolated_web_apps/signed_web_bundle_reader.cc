@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -245,7 +246,7 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
-  auto integrity_block =
+  const auto create_block =
       [&]() -> base::expected<web_package::SignedWebBundleIntegrityBlock,
                               UnusableSwbnFileError> {
     if (error) {
@@ -259,20 +260,18 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
               "Error while parsing the Signed Web Bundle's integrity block: " +
                   std::move(error));
         });
-  }();
-  if (!integrity_block.has_value()) {
-    FulfillWithError(std::move(read_error_callback),
-                     std::move(integrity_block.error()));
-    return;
-  }
+  };
+  ASSIGN_OR_RETURN(auto integrity_block, create_block(),
+                   &SignedWebBundleReader::FulfillWithError, this,
+                   std::move(read_error_callback));
 
-  integrity_block_size_in_bytes_ = integrity_block->size_in_bytes();
+  integrity_block_size_in_bytes_ = integrity_block.size_in_bytes();
 
   std::move(integrity_block_result_callback)
-      .Run(*integrity_block,
+      .Run(integrity_block,
            base::BindOnce(&SignedWebBundleReader::
                               OnShouldContinueParsingAfterIntegrityBlock,
-                          weak_ptr_factory_.GetWeakPtr(), *integrity_block,
+                          weak_ptr_factory_.GetWeakPtr(), integrity_block,
                           std::move(read_error_callback)));
 }
 
@@ -310,13 +309,13 @@ void SignedWebBundleReader::OnFileLengthRead(
     web_package::SignedWebBundleIntegrityBlock integrity_block,
     ReadErrorCallback callback,
     base::expected<uint64_t, base::File::Error> file_length) {
-  if (!file_length.has_value()) {
-    UnusableSwbnFileError error = UnusableSwbnFileError(
-        UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
-        base::File::ErrorToString(file_length.error()));
-    FulfillWithError(std::move(callback), std::move(error));
-    return;
-  }
+  RETURN_IF_ERROR(file_length, [&](base::File::Error error) {
+    FulfillWithError(
+        std::move(callback),
+        UnusableSwbnFileError(
+            UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
+            base::File::ErrorToString(error)));
+  });
 
   signature_verifier_->VerifySignatures(
       connection_->file_, std::move(integrity_block),

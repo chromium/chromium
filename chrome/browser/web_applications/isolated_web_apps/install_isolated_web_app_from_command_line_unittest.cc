@@ -11,10 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/task/task_traits.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -44,74 +44,17 @@
 namespace web_app {
 namespace {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::HasSubstr;
+using ::testing::Optional;
+using ::testing::VariantWith;
+
 using MaybeIwaLocation =
     base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
-
-void DescribeOptionalLocation(::testing::MatchResultListener* result_listener,
-                              MaybeIwaLocation arg) {
-  if (arg.has_value()) {
-    if (arg.value().has_value()) {
-      *result_listener << IsolatedWebAppLocationAsDebugValue(
-          arg.value().value());
-    } else {
-      *result_listener << "nullopt";
-    }
-  } else {
-    *result_listener << "an error with message: \"" << arg.error() << '"';
-  }
-}
-
-MATCHER_P(HasErrorWithSubstr,
-          substr,
-          std::string(negation ? "not " : "") +
-              " an error with a message containing: \"" + substr + '"') {
-  if (arg.has_value() || arg.error().find(substr) == std::string::npos) {
-    DescribeOptionalLocation(result_listener, arg);
-    return false;
-  }
-  return true;
-}
-
-MATCHER(HasNoValue, negation ? "not absent" : "absent") {
-  if (!arg.has_value() || arg.value().has_value()) {
-    DescribeOptionalLocation(result_listener, arg);
-    return false;
-  }
-  return true;
-}
-
-MATCHER_P(IsDevModeProxy,
-          proxy_url,
-          base::StrCat({negation ? "isn't " : "Dev Mode proxy with URL: \"",
-                        proxy_url, "\""})) {
-  if (!arg.has_value() || !arg.value().has_value()) {
-    DescribeOptionalLocation(result_listener, arg);
-    return false;
-  }
-  const DevModeProxy* proxy = absl::get_if<DevModeProxy>(&arg.value().value());
-  if (proxy == nullptr || !proxy->proxy_url.IsSameOriginWith(GURL(proxy_url))) {
-    DescribeOptionalLocation(result_listener, arg);
-    return false;
-  }
-  return true;
-}
-
-MATCHER_P(IsDevModeBundle,
-          bundle_path,
-          std::string(negation ? "isn't " : "Dev Mode bundle at: \"") +
-              bundle_path.AsUTF8Unsafe() + '"') {
-  if (!arg.has_value() || !arg.value().has_value()) {
-    DescribeOptionalLocation(result_listener, arg);
-    return false;
-  }
-  const DevModeBundle* bundle =
-      absl::get_if<DevModeBundle>(&arg.value().value());
-  if (bundle == nullptr || bundle->path != bundle_path) {
-    DescribeOptionalLocation(result_listener, arg);
-    return false;
-  }
-  return true;
-}
 
 class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
  public:
@@ -211,10 +154,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine("http://example.com:12345", absl::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
-  auto error = future.Take();
-  ASSERT_THAT(!error.has_value(), testing::IsTrue());
-  EXPECT_THAT(error.error(),
-              testing::HasSubstr("Isolated Web Apps are not enabled"));
+  EXPECT_THAT(future.Take(),
+              ErrorIs(HasSubstr("Isolated Web Apps are not enabled")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -233,11 +174,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine("http://example.com:12345", absl::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
-  auto error = future.Take();
-  ASSERT_THAT(!error.has_value(), testing::IsTrue());
   EXPECT_THAT(
-      error.error(),
-      testing::HasSubstr("Isolated Web App Developer Mode is not enabled"));
+      future.Take(),
+      ErrorIs(HasSubstr("Isolated Web App Developer Mode is not enabled")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -257,11 +196,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine("http://example.com:12345", absl::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
-  auto error = future.Take();
-  ASSERT_THAT(!error.has_value(), testing::IsTrue());
   EXPECT_THAT(
-      error.error(),
-      testing::HasSubstr("Isolated Web App Developer Mode is not enabled"));
+      future.Take(),
+      ErrorIs(HasSubstr("Isolated Web App Developer Mode is not enabled")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -269,7 +206,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(absl::nullopt, absl::nullopt), future.GetCallback());
-  EXPECT_THAT(future.Get(), HasNoValue());
+  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -278,7 +215,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(absl::nullopt, base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasNoValue());
+  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -288,7 +225,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine(absl::nullopt,
                         base::FilePath::FromUTF8Unsafe("does_not_exist.wbn)")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("Invalid path provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid path provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -297,7 +234,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(absl::nullopt, cwd.directory()), future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("Invalid path provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid path provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -307,7 +244,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(absl::nullopt, cwd.existing_file_name()),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeBundle(cwd.existing_file_path()));
+  EXPECT_THAT(future.Get(),
+              ValueIs(Optional(VariantWith<DevModeBundle>(
+                  Field(&DevModeBundle::path, cwd.existing_file_path())))));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -317,7 +256,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(absl::nullopt, cwd.existing_file_path()),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeBundle(cwd.existing_file_path()));
+  EXPECT_THAT(future.Get(),
+              ValueIs(Optional(VariantWith<DevModeBundle>(
+                  Field(&DevModeBundle::path, cwd.existing_file_path())))));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -326,7 +267,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(CreateCommandLine("", absl::nullopt),
 
                                            future.GetCallback());
-  EXPECT_THAT(future.Get(), HasNoValue());
+  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -335,7 +276,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("", base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasNoValue());
+  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -345,7 +286,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine("",
                         base::FilePath::FromUTF8Unsafe("does_not_exist.wbn")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("Invalid path provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid path provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -354,7 +295,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("", cwd.existing_file_name()), future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeBundle(cwd.existing_file_path()));
+  EXPECT_THAT(future.Get(),
+              ValueIs(Optional(VariantWith<DevModeBundle>(
+                  Field(&DevModeBundle::path, cwd.existing_file_path())))));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -362,7 +305,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("invalid", absl::nullopt), future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("Invalid URL"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid URL")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -371,7 +314,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("invalid", base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("Invalid URL"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid URL")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -381,7 +324,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine("invalid",
                         base::FilePath::FromUTF8Unsafe("does_not_exist.wbn")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("cannot both be provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("cannot both be provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -391,7 +334,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("invalid", cwd.existing_file_name()),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("cannot both be provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("cannot both be provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -400,7 +343,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(kUrl, absl::nullopt), future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeProxy(kUrl));
+  EXPECT_THAT(future.Get(), ValueIs(Optional(VariantWith<DevModeProxy>(_))));
+  EXPECT_TRUE(absl::get<DevModeProxy>(**future.Get())
+                  .proxy_url.IsSameOriginWith(GURL(kUrl)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -409,7 +354,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(kUrl, absl::nullopt), future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeProxy(kUrl));
+  EXPECT_THAT(future.Get(), ValueIs(Optional(VariantWith<DevModeProxy>(_))));
+  EXPECT_TRUE(absl::get<DevModeProxy>(**future.Get())
+                  .proxy_url.IsSameOriginWith(GURL(kUrl)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -418,7 +365,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("http://example.com/path", absl::nullopt),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("Non-origin URL provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Non-origin URL provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -428,7 +375,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine(kUrl, base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeProxy(kUrl));
+  EXPECT_THAT(future.Get(), ValueIs(Optional(VariantWith<DevModeProxy>(_))));
+  EXPECT_TRUE(absl::get<DevModeProxy>(**future.Get())
+                  .proxy_url.IsSameOriginWith(GURL(kUrl)));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -438,7 +387,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       CreateCommandLine("http://example.com",
                         base::FilePath::FromUTF8Unsafe("does_not_exist.wbn")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("cannot both be provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("cannot both be provided")));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -448,7 +397,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("http://example.com", cwd.existing_file_name()),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), HasErrorWithSubstr("cannot both be provided"));
+  EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("cannot both be provided")));
 }
 
 }  // namespace
