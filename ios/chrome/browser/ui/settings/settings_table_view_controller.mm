@@ -858,6 +858,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                        symbol:DefaultSettingsRootSymbol(kGlobeAmericasSymbol)
         symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
       accessibilityIdentifier:kSettingsAddressBarCellId];
+  // TODO(crbug.com/1470650): Show the badge when needed.
+  _addressBarPreferenceItem.badgeType = BadgeType::kNone;
   return _addressBarPreferenceItem;
 }
 
@@ -1906,7 +1908,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature,
           tracker, syncService)) {
     // Add the blue dot promo badge to the default browser row.
-    defaultBrowserCellItem.showNotificationDot = YES;
+    defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
     self.showingDefaultBrowserNotificationDot = YES;
 
     // If we've only started showing the blue dot recently (<6 hours), don't

@@ -155,6 +155,7 @@ NSString* const kSunFillSymbol = @"sun.max.fill";
 NSString* const kCalendarSymbol = @"calendar";
 NSString* const kTabsSymbol = @"square.on.square";
 NSString* const kHighlighterSymbol = @"highlighter";
+NSString* const kSealFillSymbol = @"seal.fill";
 NSString* const kSquareOnSquareDashedSymbol = @"square.on.square.dashed";
 NSString* const kDocPlaintext = @"doc.plaintext";
 NSString* const kFlagSymbol = @"flag";

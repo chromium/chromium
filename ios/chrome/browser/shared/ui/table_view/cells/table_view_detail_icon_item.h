@@ -9,6 +9,14 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
+// Enum defining the different badges that can be shown in
+// `TableViewDetailIconCell`.
+enum class BadgeType {
+  kNone,             // No badge.
+  kNotificationDot,  // The blue notification dot.
+  kNew,              // The "new" ("N") IPH badge.
+};
+
 // TableViewDetailIconItem is a model class that uses TableViewDetailIconCell.
 @interface TableViewDetailIconItem : TableViewItem
 
@@ -36,10 +44,10 @@
 // Defaults to UILayoutConstraintAxisHorizontal.
 @property(nonatomic, assign) UILayoutConstraintAxis textLayoutConstraintAxis;
 
-// If set to YES, a kBlue600Color dot will be shown in the Cell. The
-// notification dot is only supported when `textLayoutConstraintAxis` is set to
-// `UILayoutConstraintAxisHorizontal`.
-@property(nonatomic, assign) BOOL showNotificationDot;
+// Selects the badge shown in the Cell. These are only supported when
+// `textLayoutConstraintAxis` is set to `UILayoutConstraintAxisHorizontal`.
+// Default in no badge (BadgeType::kNone).
+@property(nonatomic, assign) BadgeType badgeType;
 
 @end
 
@@ -75,11 +83,11 @@
 // text.
 - (void)setDetailText:(NSString*)detailText;
 
-// Sets whether or not to show the notification dot. The notification dot is
-// only supported when `textLayoutConstraintAxis` is set to
-// `UILayoutConstraintAxisHorizontal`. If the notification dot is activated
-// while the axis is vertical, the app will crash through DCHECK.
-- (void)setShowNotificationDot:(BOOL)showNotificationDot;
+// Sets the badge to display in the cell. Badges are only supported when
+// `textLayoutConstraintAxis` is set to `UILayoutConstraintAxisHorizontal`. If
+// they are activated while the axis is vertical, the app will crash through
+// CHECK. Remove the badge by setting the type to BadgeType::kNone.
+- (void)setBadgeType:(BadgeType)badgeType;
 
 @end
 

@@ -145,7 +145,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* tableViewBlueDotItem =
       [[TableViewDetailIconItem alloc]
           initWithType:ItemTypeTableViewWithBlueDot];
-  tableViewBlueDotItem.showNotificationDot = YES;
+  tableViewBlueDotItem.badgeType = BadgeType::kNotificationDot;
   tableViewBlueDotItem.text = @"I have a blue dot badge!";
   tableViewBlueDotItem.iconImage =
       DefaultSettingsRootSymbol(kDefaultBrowserSymbol);

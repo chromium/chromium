@@ -164,6 +164,7 @@ extern NSString* const kSunFillSymbol;
 extern NSString* const kCalendarSymbol;
 extern NSString* const kTabsSymbol;
 extern NSString* const kHighlighterSymbol;
+extern NSString* const kSealFillSymbol;
 extern NSString* const kSquareOnSquareDashedSymbol;
 extern NSString* const kDocPlaintext;
 extern NSString* const kFlagSymbol;
