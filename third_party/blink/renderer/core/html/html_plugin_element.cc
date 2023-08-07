@@ -415,6 +415,11 @@ v8::Local<v8::Object> HTMLPlugInElement::PluginWrapper() {
 }
 
 ScriptValue HTMLPlugInElement::AnonymousNamedGetter(const AtomicString& name) {
+  if (!GetExecutionContext()) {
+    // PluginWrapper() is guaranteed nullptr if there's no ExecutionContext.
+    return ScriptValue();
+  }
+
   v8::Local<v8::Context> context =
       GetExecutionContext()->GetIsolate()->GetCurrentContext();
   ScriptState* script_state = ScriptState::From(context);

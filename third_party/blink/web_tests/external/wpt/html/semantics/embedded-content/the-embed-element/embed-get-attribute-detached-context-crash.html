@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<body>
+<iframe id="i"></iframe>
+<script>
+let e = i.contentDocument.createElement("embed");
+i.contentDocument.body.appendChild(e);
+i.remove();
+e.tryToGetAnAttribute; // This should not crash.
+</script>
+</body>
