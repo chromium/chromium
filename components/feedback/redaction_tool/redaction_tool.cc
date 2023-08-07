@@ -125,6 +125,11 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     {"GAIA", R"xxx((\"?\bgaia_id\"?[=:]['\"])(\d+)(\b['\"]))xxx",
      PIIType::kGaiaID},
     {"GAIA", R"xxx((\{id: )(\d+)(, email:))xxx", PIIType::kGaiaID},
+    // The next two patterns are used by support tool when exporting PII.
+    {"GAIA", R"xxx(("accountId":\s*")([^"]+)("))xxx", PIIType::kGaiaID},
+    {"GAIA",
+     R"xxx(("label":\s*"(?:Account|Gaia) Id",\s*"status":\s*")([^"]+)("))xxx",
+     PIIType::kGaiaID},
 
     // UUIDs given by the 'blkid' tool. These don't necessarily look like
     // standard UUIDs, so treat them specially.

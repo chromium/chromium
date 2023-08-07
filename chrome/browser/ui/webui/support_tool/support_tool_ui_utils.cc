@@ -106,6 +106,8 @@ std::string GetDataCollectorName(
           IDS_SUPPORT_TOOL_CHROMEOS_VIRTUAL_KEYBOARD);
     case support_tool::CHROMEOS_NETWORK_HEALTH:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CHROMEOS_NETWORK_HEALTH);
+    case support_tool::SIGN_IN_STATE:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_SIGN_IN);
     case support_tool::PERFORMANCE:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_PERFORMANCE);
     default:

@@ -171,6 +171,9 @@
         <message name="IDS_SUPPORT_TOOL_PERFORMANCE" desc="Performance and battery state of ChromeOS device.">
             Performance and Battery State
         </message>
+        <message name="IDS_SUPPORT_TOOL_SIGN_IN" desc="Sign In State.">
+            Sign In State
+        </message>
         <!-- PII type strings -->
         <message name="IDS_SUPPORT_TOOL_ANDROID_APP_INFO" desc="Android App informations on the device. Includes information like app storage paths etc.">
             Android App Information

@@ -20,6 +20,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/policy_data_collector.h"
+#include "chrome/browser/support_tool/signin_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -53,7 +54,8 @@ namespace {
 constexpr support_tool::DataCollectorType kDataCollectors[] = {
     support_tool::CHROME_INTERNAL,       support_tool::CRASH_IDS,
     support_tool::MEMORY_DETAILS,        support_tool::POLICIES,
-    support_tool::CHROMEOS_DEVICE_EVENT, support_tool::PERFORMANCE};
+    support_tool::CHROMEOS_DEVICE_EVENT, support_tool::PERFORMANCE,
+    support_tool::SIGN_IN_STATE};
 
 // Data collector types can only work on Chrome OS Ash.
 constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
@@ -143,6 +145,10 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 "or battery saver mode is active and details about current "
                 "battery state.",
                 std::make_unique<system_logs::PerformanceLogSource>()));
+        break;
+      case support_tool::SIGN_IN_STATE:
+        handler->AddDataCollector(
+            std::make_unique<SigninDataCollector>(profile));
         break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case support_tool::CHROMEOS_UI_HIERARCHY:
@@ -294,11 +300,13 @@ GetAllAvailableDataCollectorsOnDevice() {
   for (const auto& type : kDataCollectorsChromeosAsh) {
     data_collectors.push_back(type);
   }
-  if (crosapi::browser_util::IsLacrosEnabled())
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     data_collectors.push_back(support_tool::CHROMEOS_LACROS);
+  }
   if (crosapi::BrowserManager::Get()->IsRunning() &&
-      crosapi::BrowserManager::Get()->GetFeedbackDataSupported())
+      crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
     data_collectors.push_back(support_tool::CHROMEOS_CROS_API);
+  }
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
   for (const auto& type : kDataCollectorsChromeosHwDetails) {
     data_collectors.push_back(type);

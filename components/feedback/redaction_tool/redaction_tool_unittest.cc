@@ -532,6 +532,14 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("gaia_id='(GAIA: 2)'", RedactCustomPatterns("gaia_id='987654321'"));
   EXPECT_EQ("{id: (GAIA: 1), email:",
             RedactCustomPatterns("{id: 1234567890, email:"));
+  EXPECT_EQ("\"accountId\": \"(GAIA: 3)\"",
+            RedactCustomPatterns("\"accountId\": \"01234\""));
+  EXPECT_EQ("\"label\": \"Account Id\",\n  \"status\": \"(GAIA: 3)\"",
+            RedactCustomPatterns(
+                "\"label\": \"Account Id\",\n  \"status\": \"01234\""));
+  EXPECT_EQ(
+      "\"label\": \"Gaia Id\",\n  \"status\": \"(GAIA: 3)\"",
+      RedactCustomPatterns("\"label\": \"Gaia Id\",\n  \"status\": \"01234\""));
 
   EXPECT_EQ("(email: 1)", RedactCustomPatterns("foo@bar.com"));
   EXPECT_EQ("Email: (email: 1).", RedactCustomPatterns("Email: foo@bar.com."));
