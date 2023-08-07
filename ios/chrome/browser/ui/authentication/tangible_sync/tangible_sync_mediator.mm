@@ -83,11 +83,13 @@
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   self.consumer = nil;
-  _authenticationService = nil;
-  _accountManagerService = nil;
-  _identityManager = nil;
-  _syncService = nil;
-  _syncSetupService = nil;
+  _authenticationService = nullptr;
+  _accountManagerService = nullptr;
+  _consentAuditor = nullptr;
+  _identityManager = nullptr;
+  _syncService = nullptr;
+  _syncSetupService = nullptr;
+  _unifiedConsentService = nullptr;
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
