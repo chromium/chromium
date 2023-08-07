@@ -215,11 +215,13 @@ class APP_LIST_MODEL_EXPORT SearchResult {
     metadata_->system_info_answer_card_data = system_info_data;
   }
 
+  base::FilePath file_path() const { return metadata_->file_path; }
+
   ash::FileMetadataLoader* file_metadata_loader() {
-    return &metadata_->file_metadata_loader_;
+    return &metadata_->file_metadata_loader;
   }
   void set_file_metadata_loader_for_test(ash::FileMetadataLoader* loader) {
-    metadata_->file_metadata_loader_ = *loader;
+    metadata_->file_metadata_loader = *loader;
   }
 
   void AddObserver(SearchResultObserver* observer);

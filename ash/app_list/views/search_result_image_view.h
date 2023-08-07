@@ -46,6 +46,9 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   // Returns true if the image view has a valid result and icon.
   bool HasValidResultIcon();
 
+  // Creates the image skia that is used for dragged image view.
+  gfx::ImageSkia CreateDragImage();
+
   SearchResultImageListView* list_view() { return list_view_; }
 
   PulsingBlockView* pulsing_block_view_for_test() const {

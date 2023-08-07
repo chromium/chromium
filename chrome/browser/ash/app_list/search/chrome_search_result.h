@@ -110,7 +110,7 @@ class ChromeSearchResult {
     return metadata_->system_info_answer_card_data;
   }
   ash::FileMetadataLoader* file_metadata_loader() {
-    return &metadata_->file_metadata_loader_;
+    return &metadata_->file_metadata_loader;
   }
 
   // The following methods set Chrome side data here, and call model updater
@@ -148,6 +148,7 @@ class ChromeSearchResult {
   void SetUseBadgeIconBackground(bool use_badge_icon_background);
   void SetSystemInfoAnswerCardData(
       ash::SystemInfoAnswerCardData answer_card_info);
+  void SetFilePath(base::FilePath file_path);
   void SetMetadataLoaderCallback(MetadataLoaderCallback callback);
 
   void SetSearchResultMetadata();

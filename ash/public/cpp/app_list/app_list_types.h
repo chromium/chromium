@@ -762,8 +762,12 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // is only set for this specific result type.
   absl::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
 
+  // The file path for this search result. This is set only if the search result
+  // is a file.
+  base::FilePath file_path;
+
   // Details for file type results.
-  FileMetadataLoader file_metadata_loader_;
+  FileMetadataLoader file_metadata_loader;
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.

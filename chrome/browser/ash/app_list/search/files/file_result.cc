@@ -186,6 +186,7 @@ FileResult::FileResult(const std::string& id,
     SetDetails(details.value());
 
   // Initialize the file metadata.
+  SetFilePath(filepath_);
   if (result_type == ash::AppListSearchResultType::kImageSearch) {
     auto displayable_path =
         file_manager::util::GetDisplayablePath(profile_, filepath_)
