@@ -868,11 +868,18 @@ void VideoDecoderPipeline::OnDecoderWaiting(WaitingReason reason) {
 }
 
 bool VideoDecoderPipeline::HasPendingFrames() const {
-  DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  const bool frame_converter_has_pending_frames_ =
+      frame_converter_ && frame_converter_->HasPendingFrames();
+  const bool image_processor_has_pending_frames_ =
+      image_processor_ && image_processor_->HasPendingFrames();
 
-  return (frame_converter_ && frame_converter_->HasPendingFrames()) ||
-         (image_processor_ && image_processor_->HasPendingFrames());
+  DVLOGF(3) << "|frame_converter_|: "
+            << (frame_converter_has_pending_frames_ ? "yes" : "no")
+            << ", |image_processor_|: "
+            << (image_processor_has_pending_frames_ ? "yes" : "no");
+  return frame_converter_has_pending_frames_ ||
+         image_processor_has_pending_frames_;
 }
 
 void VideoDecoderPipeline::OnError(const std::string& msg) {

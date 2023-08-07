@@ -519,10 +519,10 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
   const auto allocated_buffers = CAPTURE_queue_->AllocateBuffers(
       v4l2_num_buffers, buffer_type, /*incoherent=*/false);
   CHECK_GE(allocated_buffers, v4l2_num_buffers);
-
   if (!CAPTURE_queue_->Streamon()) {
     return false;
   }
+
   // We need to "enqueue" allocated buffers in the driver in order to use them.
   TryAndEnqueueCAPTUREQueueBuffers();
   return true;
@@ -550,20 +550,10 @@ V4L2StatefulVideoDecoder::EnumeratePixelLayoutCandidates(
     // depth and a low bit depth pixel formats. We'd like to choose the higher
     // bit depth and let Chrome's display pipeline decide what to do.
 
-    absl::optional<struct v4l2_format> readback_format =
-        CAPTURE_queue_->TryFormat(pixfmt, coded_size, /*buffer_size=*/0);
-    if (!readback_format) {
-      continue;
-    }
-    const gfx::Size adjusted_coded_size(readback_format->fmt.pix_mp.width,
-                                        readback_format->fmt.pix_mp.height);
-
     candidates.emplace_back(ImageProcessor::PixelLayoutCandidate{
-        .fourcc = *candidate_fourcc, .size = adjusted_coded_size});
-
+        .fourcc = *candidate_fourcc, .size = coded_size});
     VLOG(2) << "CAPTURE queue candidate format: "
-            << candidate_fourcc->ToString() << ", "
-            << adjusted_coded_size.ToString();
+            << candidate_fourcc->ToString() << ", " << coded_size.ToString();
   }
   return candidates;
 }
@@ -683,7 +673,6 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       CHECK(video_frame);
       video_frame->set_timestamp(
           TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
-      VLOGF(3) << video_frame->AsHumanReadableString();
 
       //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to
       //  return |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled".
@@ -708,8 +697,10 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
                 base::BindOnce([](scoped_refptr<V4L2ReadableBuffer> buffer) {},
                                std::move(dequeued_buffer))));
         CHECK(wrapped_frame);
+        VLOGF(3) << wrapped_frame->AsHumanReadableString();
         output_cb_.Run(std::move(wrapped_frame));
       } else {
+        VLOGF(3) << video_frame->AsHumanReadableString();
         output_cb_.Run(std::move(video_frame));
       }
 
