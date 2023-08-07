@@ -43,8 +43,6 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
                             SynchronizationCallback callback) override;
 
  private:
-  absl::optional<std::string> GetDmServerUrl();
-
   void OnUploadRequestCreated(
       SynchronizationCallback callback,
       absl::optional<const KeyUploadRequest> upload_request);

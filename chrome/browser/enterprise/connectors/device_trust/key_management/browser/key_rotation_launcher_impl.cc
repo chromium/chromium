@@ -13,14 +13,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/dm_auth.h"
-#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_connectors {
@@ -65,7 +63,14 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   }
 
   auto dm_token = dm_token_storage_->RetrieveDMToken();
-  auto dm_server_url = GetDmServerUrl();
+  if (!dm_token.is_valid()) {
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    return;
+  }
+
+  auto dm_server_url = GetUploadBrowserPublicKeyUrl(
+      dm_token_storage_->RetrieveClientId(), dm_token.value(),
+      device_management_service_);
   if (!dm_token.is_valid() || !dm_server_url) {
     std::move(callback).Run(KeyRotationCommand::Status::FAILED);
     return;
@@ -102,7 +107,9 @@ void KeyRotationLauncherImpl::SynchronizePublicKey(
     return;
   }
 
-  auto dm_server_url = GetDmServerUrl();
+  auto dm_server_url = GetUploadBrowserPublicKeyUrl(
+      dm_token_storage_->RetrieveClientId(), dm_token.value(),
+      device_management_service_);
   if (!dm_server_url) {
     LogSynchronizationError(DTSynchronizationError::kInvalidServerUrl);
     std::move(callback).Run(absl::nullopt);
@@ -120,27 +127,6 @@ void KeyRotationLauncherImpl::SynchronizePublicKey(
       base::BindOnce(&KeyRotationLauncherImpl::OnUploadRequestCreated,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
-
-absl::optional<std::string> KeyRotationLauncherImpl::GetDmServerUrl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto client_id = dm_token_storage_->RetrieveClientId();
-  auto dm_token = dm_token_storage_->RetrieveDMToken();
-
-  if (!dm_token.is_valid()) {
-    return absl::nullopt;
-  }
-
-  // Get the DM server URL to upload the public key.  Reuse
-  // DMServerJobConfiguration to reuse the URL building steps.
-  policy::DMServerJobConfiguration config(
-      device_management_service_,
-      policy::DeviceManagementService::JobConfiguration::
-          TYPE_BROWSER_UPLOAD_PUBLIC_KEY,
-      client_id, true, policy::DMAuth::FromDMToken(dm_token.value()),
-      absl::nullopt, nullptr, base::DoNothing());
-  return config.GetResourceRequest(false, 0)->url.spec();
-}
-
 void KeyRotationLauncherImpl::OnUploadRequestCreated(
     SynchronizationCallback callback,
     absl::optional<const KeyUploadRequest> upload_request) {
