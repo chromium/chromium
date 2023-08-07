@@ -5341,11 +5341,14 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
 #elif BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(
             features::kMacAllowBackgroundingRenderProcesses)) {
-      child_process_launcher_->SetProcessBackgrounded(
-          priority_.is_background());
+      child_process_launcher_->SetProcessPriority(
+          priority_.is_background() ? base::Process::Priority::kBestEffort
+                                    : base::Process::Priority::kUserBlocking);
     }
 #else
-    child_process_launcher_->SetProcessBackgrounded(priority_.is_background());
+    child_process_launcher_->SetProcessPriority(
+        priority_.is_background() ? base::Process::Priority::kBestEffort
+                                  : base::Process::Priority::kUserBlocking);
 #endif
   }
 
@@ -5422,9 +5425,9 @@ void RenderProcessHostImpl::OnProcessLaunched() {
       // sure |priority_.visible| reflects this platform's initial process
       // state.
 #if BUILDFLAG(IS_APPLE)
-    priority_.visible =
-        !child_process_launcher_->GetProcess().IsProcessBackgrounded(
-            ChildProcessTaskPortProvider::GetInstance());
+    priority_.visible = child_process_launcher_->GetProcess().GetPriority(
+                            ChildProcessTaskPortProvider::GetInstance()) ==
+                        base::Process::Priority::kUserBlocking;
 #elif BUILDFLAG(IS_ANDROID)
     // Android child process priority works differently and cannot be queried
     // directly from base::Process.
@@ -5432,8 +5435,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     // reflect |priority_.is_background()|.
     DCHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible);
 #else
-    priority_.visible =
-        !child_process_launcher_->GetProcess().IsProcessBackgrounded();
+    priority_.visible = child_process_launcher_->GetProcess().GetPriority() ==
+                        base::Process::Priority::kUserBlocking;
 #endif  // BUILDFLAG(IS_MAC)
 
     // Only update the priority on startup if boosting is enabled (to avoid

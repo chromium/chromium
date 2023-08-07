@@ -221,8 +221,8 @@ class ChildProcessLauncherHelper
       base::Process process,
       const RenderProcessPriority& priority);
 #else   // !BUILDFLAG(IS_ANDROID)
-  void SetProcessBackgroundedOnLauncherThread(base::Process process,
-                                              bool is_background);
+  void SetProcessPriorityOnLauncherThread(base::Process process,
+                                          base::Process::Priority priority);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   std::string GetProcessType();
@@ -263,9 +263,9 @@ class ChildProcessLauncherHelper
   base::WeakPtr<ChildProcessLauncher> child_process_launcher_;
 
 #if BUILDFLAG(IS_WIN)
-  // Whether the child process is backgrounded, the state is stored to avoid
-  // setting the process priority repeatedly.
-  bool is_process_backgrounded_ = false;
+  // The priority of the process. The state is stored to avoid changing the
+  // setting repeatedly.
+  base::Process::Priority priority_ = base::Process::Priority::kUserBlocking;
 #endif
 
   // The PlatformChannel that will be used to transmit an invitation to the

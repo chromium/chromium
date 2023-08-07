@@ -166,12 +166,13 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   }
 }
 
-void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
+void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
     base::Process process,
-    bool is_background) {
+    base::Process::Priority priority) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (process.CanBackgroundProcesses())
-    process.SetProcessBackgrounded(is_background);
+  if (process.CanSetPriority()) {
+    process.SetPriority(priority);
+  }
 }
 
 ZygoteCommunication* ChildProcessLauncherHelper::GetZygoteForLaunch() {

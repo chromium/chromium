@@ -127,7 +127,7 @@ class BrowserChildProcessHostImpl
       bool terminate_on_shutdown);
 
 #if !BUILDFLAG(IS_ANDROID)
-  void SetProcessBackgrounded(bool is_background);
+  void SetProcessPriority(base::Process::Priority priority);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -249,7 +249,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
 #else
   // Changes whether the process runs in the background or not.  Only call
   // this after the process has started.
-  void SetProcessBackgrounded(bool is_background);
+  void SetProcessPriority(base::Process::Priority priority);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Terminates the process associated with this ChildProcessLauncher.

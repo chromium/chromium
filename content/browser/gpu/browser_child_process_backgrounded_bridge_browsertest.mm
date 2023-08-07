@@ -16,27 +16,27 @@
 
 namespace content {
 
-bool IsProcessBackgrounded(base::ProcessId pid) {
+base::Process::Priority GetProcessPriority(base::ProcessId pid) {
   base::Process process = base::Process::Open(pid);
   if (process.is_current()) {
     base::SelfPortProvider self_port_provider;
-    return process.IsProcessBackgrounded(&self_port_provider);
+    return process.GetPriority(&self_port_provider);
   }
 
-  return process.IsProcessBackgrounded(
+  return process.GetPriority(
       content::BrowserChildProcessHost::GetPortProvider());
 }
 
-void SetProcessBackgrounded(base::ProcessId pid, bool backgrounded) {
+void SetProcessPriority(base::ProcessId pid, base::Process::Priority priority) {
   base::Process process = base::Process::Open(pid);
   if (process.is_current()) {
     base::SelfPortProvider self_port_provider;
-    process.SetProcessBackgrounded(&self_port_provider, backgrounded);
+    process.SetPriority(&self_port_provider, priority);
     return;
   }
 
-  process.SetProcessBackgrounded(
-      content::BrowserChildProcessHost::GetPortProvider(), backgrounded);
+  process.SetPriority(content::BrowserChildProcessHost::GetPortProvider(),
+                      priority);
 }
 
 class BrowserChildProcessBackgroundedBridgeTest
@@ -100,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
     GTEST_SKIP() << "Flaking on macOS 13: https://crbug.com/1444130";
   }
   // Set the browser process as foregrounded.
-  SetProcessBackgrounded(base::Process::Current().Pid(), false);
+  SetProcessPriority(base::Process::Current().Pid(),
+                     base::Process::Priority::kUserBlocking);
 
   // Wait until we receive the port for the GPU process.
   WaitForPort();
@@ -110,14 +111,16 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
 
   auto* gpu_process_host = content::GpuProcessHost::Get();
   EXPECT_TRUE(gpu_process_host);
-  EXPECT_FALSE(IsProcessBackgrounded(gpu_process_host->process_id()));
+  EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
+            base::Process::Priority::kUserBlocking);
 }
 
 // TODO(crbug.com/1426160): Disabled because this test is flaky.
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
                        DISABLED_InitiallyBackgrounded) {
   // Set the browser process as backgrounded.
-  SetProcessBackgrounded(base::Process::Current().Pid(), true);
+  SetProcessPriority(base::Process::Current().Pid(),
+                     base::Process::Priority::kBestEffort);
 
   // Wait until we receive the port for the GPU process.
   WaitForPort();
@@ -127,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
 
   auto* gpu_process_host = content::GpuProcessHost::Get();
   EXPECT_TRUE(gpu_process_host);
-  EXPECT_TRUE(IsProcessBackgrounded(gpu_process_host->process_id()));
+  EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
+            base::Process::Priority::kBestEffort);
 }
 
 // Flaky: https://crbug.com/1443367
@@ -146,17 +150,20 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
   bridge->SimulateBrowserProcessForegroundedForTesting();
   EnsureBackgroundedStateChange();
 
-  EXPECT_FALSE(IsProcessBackgrounded(gpu_process_host->process_id()));
+  EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
+            base::Process::Priority::kUserBlocking);
 
   bridge->SimulateBrowserProcessBackgroundedForTesting();
   EnsureBackgroundedStateChange();
 
-  EXPECT_TRUE(IsProcessBackgrounded(gpu_process_host->process_id()));
+  EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
+            base::Process::Priority::kBestEffort);
 
   bridge->SimulateBrowserProcessForegroundedForTesting();
   EnsureBackgroundedStateChange();
 
-  EXPECT_FALSE(IsProcessBackgrounded(gpu_process_host->process_id()));
+  EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
+            base::Process::Priority::kUserBlocking);
 }
 
 }  // namespace content

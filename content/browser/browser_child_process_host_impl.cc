@@ -365,10 +365,11 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void BrowserChildProcessHostImpl::SetProcessBackgrounded(bool is_background) {
+void BrowserChildProcessHostImpl::SetProcessPriority(
+    base::Process::Priority priority) {
   DCHECK(child_process_launcher_);
   DCHECK(!child_process_launcher_->IsStarting());
-  child_process_launcher_->SetProcessBackgrounded(is_background);
+  child_process_launcher_->SetProcessPriority(priority);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
