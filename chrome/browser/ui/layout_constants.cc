@@ -99,7 +99,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return GetLayoutConstant(TAB_HEIGHT) +
              GetLayoutConstant(TAB_STRIP_PADDING);
     case TAB_STRIP_PADDING:
-      return 6;
+      return features::IsChromeRefresh2023() ? 6 : 0;
     case TAB_SEPARATOR_HEIGHT:
       // TODO (crbug.com/1451400): ChromeRefresh2023 needs different values for
       // this constant.
