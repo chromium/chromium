@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+
+<button id=button>Test</button>
+<script>
+const [prop, value] = location.search.slice(1).split('&');
+// Deprecation warning should be generated if a non standard appearance value was specified.
+button.style = `${prop}: ${value}`;
+</script>

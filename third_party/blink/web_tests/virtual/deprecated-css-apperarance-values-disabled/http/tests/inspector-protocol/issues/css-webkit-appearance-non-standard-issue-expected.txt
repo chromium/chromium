@@ -1,0 +1,213 @@
+Tests that non-standard -webkit-appearance values trigger a deprecation issue.
+Issue for -webkit-appearance "inner-spin-button": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&inner-spin-button
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "media-slider": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-slider
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "media-sliderthumb": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-sliderthumb
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "media-volume-slider": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-volume-slider
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "media-volume-sliderthumb": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-volume-sliderthumb
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "push-button": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&push-button
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "searchfield-cancel-button": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&searchfield-cancel-button
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "slider-horizontal": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&slider-horizontal
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "sliderthumb-horizontal": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&sliderthumb-horizontal
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "sliderthumb-vertical": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&sliderthumb-vertical
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "square-button": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&square-button
+                }
+                type : CSSValueAppearanceNonStandard
+            }
+        }
+    }
+}
+-webkit-appearance value "auto" did not generate issue.
+-webkit-appearance value "none" did not generate issue.
+

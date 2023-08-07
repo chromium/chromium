@@ -1,0 +1,15 @@
+Tests that non-standard appearance values trigger a deprecation issue.
+appearance value "inner-spin-button" did not generate issue.
+appearance value "media-slider" did not generate issue.
+appearance value "media-sliderthumb" did not generate issue.
+appearance value "media-volume-slider" did not generate issue.
+appearance value "media-volume-sliderthumb" did not generate issue.
+appearance value "push-button" did not generate issue.
+appearance value "searchfield-cancel-button" did not generate issue.
+appearance value "slider-horizontal" did not generate issue.
+appearance value "sliderthumb-horizontal" did not generate issue.
+appearance value "sliderthumb-vertical" did not generate issue.
+appearance value "square-button" did not generate issue.
+appearance value "auto" did not generate issue.
+appearance value "none" did not generate issue.
+

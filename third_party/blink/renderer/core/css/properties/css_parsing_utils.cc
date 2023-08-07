@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -3506,8 +3507,8 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
   }
   switch (property) {
     case CSSPropertyID::kAppearance:
-      // TODO(crbug.com/924486): Remove CSS value slider-horizontal,
-      // slider-vertical and the associated warnings.
+      // TODO(crbug.com/924486): Remove CSS value slider-vertical
+      // and the associated warnings.
       if (value_id == CSSValueID::kSliderVertical ||
           (!RuntimeEnabledFeatures::RemoveNonStandardAppearanceValueEnabled() &&
            (value_id == CSSValueID::kInnerSpinButton ||
@@ -3523,13 +3524,15 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
             value_id == CSSValueID::kSearchfieldCancelButton))) {
         if (const auto* document = context.GetDocument()) {
           document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageSource::kDeprecation,
               mojom::blink::ConsoleMessageLevel::kWarning,
               String("The keyword '") + getValueName(value_id) +
                   "' specified to an 'appearance' property is not "
                   "standardized. It will be removed in the future."));
+          Deprecation::CountDeprecation(
+              document->GetExecutionContext(),
+              WebFeature::kCSSValueAppearanceNonStandard);
         }
-        context.Count(WebFeature::kCSSValueAppearanceNonStandard);
       }
       [[fallthrough]];
       // This function distinguishes 'appearance' and '-webkit-appearance'
