@@ -45,7 +45,7 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
   const int width = 32 * screen_scale_;
   const int height = 20 * screen_scale_;
   return GURL(card_art_url.spec() +
-              base::StringPrintf("=w%d-h%d-n", width, height));
+              base::StringPrintf("=w%d-h%d-s", width, height));
 }
 
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(

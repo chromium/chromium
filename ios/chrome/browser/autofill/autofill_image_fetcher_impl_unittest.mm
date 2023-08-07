@@ -36,7 +36,7 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
   autofill_image_fetcher()->SetScreenScaleForTesting(4);
   EXPECT_EQ(autofill_image_fetcher()->ResolveCardArtURL(
                 GURL("https://www.example.com/fake_image1")),
-            GURL("https://www.example.com/fake_image1=w128-h80-n"));
+            GURL("https://www.example.com/fake_image1=w128-h80-s"));
 }
 
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
