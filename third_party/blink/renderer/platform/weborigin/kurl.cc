@@ -490,6 +490,12 @@ bool KURL::SetProtocol(const String& protocol) {
   const String new_protocol_canon =
       String(canon_protocol.data(), protocol_length);
 
+  if (SchemeRegistry::IsSpecialScheme(Protocol())) {
+    base::UmaHistogramBoolean(
+        "URL.Scheme.SetNonSpecialSchemeOnSpecialScheme",
+        !SchemeRegistry::IsSpecialScheme(new_protocol_canon));
+  }
+
   // We don't currently perform the check from
   // https://url.spec.whatwg.org/#scheme-state that special schemes are not
   // converted to non-special schemes and vice-versa, but the following logic

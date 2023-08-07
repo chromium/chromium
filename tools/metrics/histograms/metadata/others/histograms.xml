@@ -13509,6 +13509,25 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="URL.Scheme.SetNonSpecialSchemeOnSpecialScheme" enum="Boolean"
+    expires_after="2024-02-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>src/url/OWNERS</owner>
+  <summary>
+    This metrics is recorded each time when KRUL.SetProtocol is called on a
+    special scheme URL. The value is whether a new scheme is a non-special
+    scheme or not.
+
+    The measurement is not specific to any particular use case. For example,
+    this is recorded in the following:
+
+    const url = new URL(&quot;https://example.com/&quot;); url.protocol =
+    &quot;non-special&quot;;
+
+    See https://crbug.com/1416018 for details.
+  </summary>
+</histogram>
+
 <histogram name="UsageStats.Events" enum="UsageStatsEvents"
     expires_after="2024-01-14">
   <owner>pnoland@chromium.org</owner>
