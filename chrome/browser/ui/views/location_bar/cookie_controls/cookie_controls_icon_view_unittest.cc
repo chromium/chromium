@@ -46,9 +46,6 @@ const char kUMABubbleOpenedUnknown[] =
 class MockCookieControlsBubbleCoordinator
     : public CookieControlsBubbleCoordinator {
  public:
-  explicit MockCookieControlsBubbleCoordinator(views::View* anchor_view)
-      : CookieControlsBubbleCoordinator(anchor_view) {}
-
   MOCK_METHOD(void,
               ShowBubble,
               (content::WebContents * web_contents,
@@ -73,8 +70,7 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
     auto icon_view = std::make_unique<CookieControlsIconView>(
         browser(), delegate_, delegate_);
     auto fake_coordinator =
-        std::make_unique<NiceMock<MockCookieControlsBubbleCoordinator>>(
-            icon_view.get());
+        std::make_unique<NiceMock<MockCookieControlsBubbleCoordinator>>();
     icon_view->SetCoordinatorForTesting(std::move(fake_coordinator));
     view_ = browser_view()->GetLocationBarView()->AddChildView(
         std::move(icon_view));

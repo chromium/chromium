@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace content {
@@ -14,9 +16,7 @@ class WebContents;
 
 namespace {}  // namespace
 
-CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator(
-    views::View* anchor_view)
-    : anchor_view_(anchor_view) {}
+CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator() = default;
 
 CookieControlsBubbleCoordinator::~CookieControlsBubbleCoordinator() = default;
 
@@ -26,8 +26,15 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   if (bubble_view_ != nullptr) {
     return;
   }
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  views::View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAnchorView(
+          PageActionIconType::kCookieControls);
+
   auto bubble_view = std::make_unique<CookieControlsBubbleViewImpl>(
-      anchor_view_, web_contents,
+      anchor_view, web_contents,
       base::BindOnce(&CookieControlsBubbleCoordinator::OnViewIsDeleting,
                      base::Unretained(this)));
   bubble_view_ = bubble_view.get();

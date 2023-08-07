@@ -75,10 +75,7 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
-    PageActionIconView* button =
-        browser_view()->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kCookieControls);
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
+    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 
     AddTab(browser(), GURL("http://a.com"));
   }
@@ -302,15 +299,11 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
     AddTab(browser(), url);
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-    PageActionIconView* button =
-        browser_view()->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kCookieControls);
-
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
+    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
     coordinator_->ShowBubble(web_contents, controller_.get());
   }
 

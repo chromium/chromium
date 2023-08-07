@@ -94,7 +94,7 @@ CookieControlsIconView::CookieControlsIconView(
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 
-  bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(this);
+  bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 }
 
 CookieControlsIconView::~CookieControlsIconView() = default;
