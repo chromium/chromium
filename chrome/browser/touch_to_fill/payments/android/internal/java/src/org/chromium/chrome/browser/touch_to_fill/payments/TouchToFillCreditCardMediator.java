@@ -20,6 +20,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties;
@@ -29,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -163,7 +165,10 @@ class TouchToFillCreditCardMediator {
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
                                 card.getIssuerIconDrawableId())
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL,
-                                card.getCardArtUrl())
+                                AutofillUiUtils.shouldShowCustomIcon(
+                                        card.getCardArtUrl(), card.getIsVirtual())
+                                        ? card.getCardArtUrl()
+                                        : new GURL(""))
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME, "")
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())

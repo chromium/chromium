@@ -12,13 +12,18 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.url.GURL;
 
 import java.util.Calendar;
 
@@ -33,6 +38,9 @@ public class AutofillUiUtilsTest {
     private EditText mYearInput;
     private int mThisMonth;
     private int mTwoDigitThisYear;
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -280,6 +288,34 @@ public class AutofillUiUtilsTest {
         int fourDigitYear = AutofillUiUtils.getFourDigitYear(mYearInput);
 
         Assert.assertEquals(-1, fourDigitYear);
+    }
+
+    @Test
+    @SmallTest
+    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)
+    public void testVirtualCardShowsCapitalOneVirtualCardIconWhenMetadataNotEnabled() {
+        Assert.assertTrue(AutofillUiUtils.shouldShowCustomIcon(
+                new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL), /* isVirtualCard= */ true));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)
+    public void testNonVirtualCardDoesNotShowCapitalOneVirtualCardIconWhenMetadataEnabled() {
+        Assert.assertFalse(AutofillUiUtils.shouldShowCustomIcon(
+                new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL), /* isVirtualCard= */ false));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)
+    public void testBothVirtualAndNonVirtualCardsShowRichCardArtWhenMetadataEnabled() {
+        Assert.assertTrue(AutofillUiUtils.shouldShowCustomIcon(
+                new GURL("https://www.richcardart.com/richcardart.png"),
+                /* isVirtualCard= */ false));
+        Assert.assertTrue(AutofillUiUtils.shouldShowCustomIcon(
+                new GURL("https://www.richcardart.com/richcardart.png"),
+                /* isVirtualCard= */ true));
     }
 
     private @ErrorType int getExpirationDateErrorForUserEnteredMonthAndYear() {

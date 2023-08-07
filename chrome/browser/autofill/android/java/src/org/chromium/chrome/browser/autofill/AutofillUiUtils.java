@@ -534,6 +534,31 @@ public class AutofillUiUtils {
     }
 
     /**
+     * Always show the Capital One virtual card icon for virtual cards if the card icon URL is
+     * available for the card. Never show the Capital One virtual card icon for FPAN. Show rich card
+     * art when the metadata experiment is enabled.
+     * @param customIconUrl {@link GURL} for fetching the custom icon.
+     * @param isVirtualCard Whether or not the card is a virtual card.
+     * @return True if the custom icon should be shown. False otherwise.
+     */
+    public static boolean shouldShowCustomIcon(GURL customIconUrl, boolean isVirtualCard) {
+        if (customIconUrl == null) {
+            return false;
+        }
+
+        if (isVirtualCard && customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
+            return true;
+        }
+
+        if (!customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * If {@code showCustomIcon} is true, and the {@code cardArtUrl} is valid, it fetches the bitmap
      * of the required size from PersonalDataManager. If not, the default icon {@code defaultIconId}
      * is fetched from the resources. If the bitmap is not available in cache, then it is fetched

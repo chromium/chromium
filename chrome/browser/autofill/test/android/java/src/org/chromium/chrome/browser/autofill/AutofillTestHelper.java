@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.Calendar;
 import java.util.List;
@@ -315,7 +316,7 @@ public class AutofillTestHelper {
                 /* basicCardIssuerNetwork =*/network, /* issuerIconDrawableId= */ iconId,
                 /* billingAddressId= */ "",
                 /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
-                /* cardArtUrl= */ null,
+                /* cardArtUrl= */ new GURL(""),
                 /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ cardNameForAutofillDisplay,
