@@ -682,11 +682,6 @@ AttributionStorageSql::AttributionStorageSql(
   DCHECK(delegate_);
 
   db_.set_histogram_tag("Conversions");
-
-  // `base::Unretained()` is safe because the callback will only be called
-  // while the `sql::Database` in `db_` is alive, and this instance owns `db_`.
-  db_.set_error_callback(base::BindRepeating(
-      &AttributionStorageSql::DatabaseErrorCallback, base::Unretained(this)));
 }
 
 AttributionStorageSql::~AttributionStorageSql() {
@@ -2337,6 +2332,16 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       return false;
     case DbStatus::kOpen:
       return true;
+  }
+
+  if (!db_.has_error_callback()) {
+    // The error callback may be reset if recovery was attempted, so ensure the
+    // callback is re-set when the database is re-opened.
+    //
+    // `base::Unretained()` is safe because the callback will only be called
+    // while `db_` is alive, and this instance owns `db_`.
+    db_.set_error_callback(base::BindRepeating(
+        &AttributionStorageSql::DatabaseErrorCallback, base::Unretained(this)));
   }
 
   if (path_to_database_.empty()) {
