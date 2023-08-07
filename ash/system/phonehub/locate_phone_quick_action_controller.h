@@ -30,6 +30,7 @@ class LocatePhoneQuickActionController
   // QuickActionControllerBase:
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
+  void UpdateQuickActionItemUi() override;
 
   // phonehub::FindMyDeviceController::Observer:
   void OnPhoneRingingStateChanged() override;

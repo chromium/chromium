@@ -32,6 +32,8 @@ class ASH_EXPORT QuickActionsView : public views::View {
   QuickActionItem* silence_phone_for_testing() { return silence_phone_; }
   QuickActionItem* locate_phone_for_testing() { return locate_phone_; }
 
+  void OnThemeChanged() override;
+
  private:
   // Add all the quick actions items to the view.
   void InitQuickActionItems();

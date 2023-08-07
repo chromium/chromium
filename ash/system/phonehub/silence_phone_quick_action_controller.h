@@ -34,6 +34,7 @@ class ASH_EXPORT SilencePhoneQuickActionController
   // QuickActionControllerBase:
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
+  void UpdateQuickActionItemUi() override;
 
   // phonehub::DoNotDisturbController::Observer:
   void OnDndStateChanged() override;

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -78,17 +79,18 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
                                           *label_);
     TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                           *sub_label_);
+    sub_label_color_ = GetColorProvider()
+                           ? GetColorProvider()->GetColor(
+                                 cros_tokens::kCrosSysOnSurfaceVariant)
+                           : gfx::kPlaceholderColor;
   } else {
     ConfigureLabelFonts(label_, kUnifiedFeaturePodLabelLineHeight,
                         kUnifiedFeaturePodLabelFontSize);
     ConfigureLabelFonts(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
                         kUnifiedFeaturePodSubLabelFontSize);
+    sub_label_color_ = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
   }
-
-  // TODO(b/281844561): Update |sub_label_color_| in accordance to the Phone Hub
-  // specs. Needs additional logic for the EnableHotspotQuickAction controls.
-  sub_label_color_ = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
 
   SetEnabled(true /* enabled */);
 }
@@ -125,12 +127,29 @@ const std::u16string& QuickActionItem::GetItemLabel() const {
 void QuickActionItem::SetEnabled(bool enabled) {
   View::SetEnabled(enabled);
   icon_button_->SetEnabled(enabled);
+  if (chromeos::features::IsJellyrollEnabled() && !GetColorProvider()) {
+    return;
+  }
+
+  // When creating QuickActionItem |sub_label_color_| may have been set to
+  // gfx::kPlaceholderColor, if color provider was null and Jellyroll enabled,
+  // update color here.
+  sub_label_color_ =
+      chromeos::features::IsJellyrollEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorSecondary);
 
   if (!enabled) {
     label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary));
-    sub_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    if (chromeos::features::IsJellyrollEnabled()) {
+      sub_label_->SetEnabledColor(
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+    } else {
+      sub_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorSecondary));
+    }
 
     sub_label_->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE));
