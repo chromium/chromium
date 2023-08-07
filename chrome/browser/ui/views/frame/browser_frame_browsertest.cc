@@ -113,6 +113,7 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
   static constexpr SkColor kDarkColor = SK_ColorBLACK;
   static constexpr SkColor kGrayColor = SK_ColorGRAY;
   static constexpr SkColor kTransparentColor = SK_ColorTRANSPARENT;
+  static constexpr SkColor kBaselineColor = SK_ColorBLUE;
 
   BrowserFrameColorProviderTest() {
     feature_list_.InitWithFeatureState(features::kChromeRefresh2023,
@@ -166,6 +167,10 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
         key.scheme_variant
             ? GetColorForSchemeVariant(key.scheme_variant.value())
             : kTransparentColor};
+
+    // Used to check user_color.
+    mixer[ui::kColorSysHeader] = {key.user_color.value_or(
+        key.is_grayscale ? kGrayColor : kBaselineColor)};
   }
 
   // Sets the `kBrowserColorScheme` pref for the `profile`.
@@ -361,6 +366,24 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
   SetIsGrayscale(profile(), false);
   EXPECT_EQ(kTransparentColor,
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysTertiary));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       GrayscaleUsesBaselinePalette) {
+  // Set native theme to an obviously different color.
+  test_native_theme_.set_user_color(SK_ColorMAGENTA);
+  test_native_theme_.set_scheme_variant(
+      ui::ColorProviderKey::SchemeVariant::kVibrant);
+
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  browser_frame->SetNativeThemeForTest(&test_native_theme_);
+  SetIsGrayscale(profile(), true);
+  EXPECT_EQ(kGrayColor,
+            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
+
+  SetIsGrayscale(profile(), false);
+  EXPECT_EQ(SK_ColorMAGENTA,
+            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
 }
 
 // Verifies incognito browsers always force is_grayscale.

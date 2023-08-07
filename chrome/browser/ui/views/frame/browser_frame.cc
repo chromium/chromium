@@ -457,10 +457,21 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
     }
   }();
 
+  const auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
+
+  // is_grayscale.
+  // Incognito mode browser should be forced to grayscale.
+  key.is_grayscale = IsIncognitoBrowser() ||
+                     (theme_service && theme_service->GetIsGrayscale());
+
   // user_color.
   [this, &key]() {
-    // Incognito profiles should always fall back to the material baseline.
-    if (IsIncognitoBrowser()) {
+    // The grayscale theme also assumes that the baseline palette is used.
+    if (key.is_grayscale) {
+      // Baseline palette is used when `ColorProviderKey::user_color` is empty.
+      key.user_color.reset();
+
       key.user_color = absl::nullopt;
       return;
     }
@@ -478,8 +489,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   }();
 
   // scheme_variant.
-  const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
   ui::mojom::BrowserColorVariant color_variant =
       theme_service->GetBrowserColorVariant();
   if (color_variant != ui::mojom::BrowserColorVariant::kSystem) {
@@ -490,10 +499,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
                                     : ui::ColorProviderKey::FrameType::kNative;
 
-  // is_grayscale.
-  // Incognito mode browser should be forced to grayscale.
-  key.is_grayscale = IsIncognitoBrowser() ||
-                     (theme_service && theme_service->GetIsGrayscale());
 
   return key;
 }
