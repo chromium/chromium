@@ -124,7 +124,6 @@ extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
 extern NSString* const kCheckmarkSymbol;
 extern NSString* const kDownloadSymbol;
-extern NSString* const kSecureSymbol;
 extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpSymbol;

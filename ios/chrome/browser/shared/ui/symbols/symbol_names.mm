@@ -114,7 +114,6 @@ NSString* const kPlusSymbol = @"plus";
 NSString* const kSearchSymbol = @"magnifyingglass";
 NSString* const kCheckmarkSymbol = @"checkmark";
 NSString* const kDownloadSymbol = @"arrow.down.circle";
-NSString* const kSecureSymbol = @"lock";
 NSString* const kWarningSymbol = @"exclamationmark.triangle";
 NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
 NSString* const kHelpSymbol = @"questionmark.circle";

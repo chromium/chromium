@@ -182,8 +182,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   // Valid HTTPS
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE);
-  dataHolder.iconImage =
-      DefaultSymbolTemplateWithPointSize(kSecureSymbol, kSymbolSize);
+  dataHolder.iconImage = nil;
   dataHolder.iconBackgroundColor = [UIColor colorNamed:kGreen500Color];
 
   dataHolder.message = BuildMessage(@[
