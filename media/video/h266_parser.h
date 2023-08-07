@@ -1008,8 +1008,6 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   // present.
   const H266APS* GetAPS(const H266APS::ParamType& type, int aps_id) const;
 
-  static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
-
  private:
   Result ParseProfileTierLevel(bool profile_tier_present,
                                int max_num_sub_layers_minus1,

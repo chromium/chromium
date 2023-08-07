@@ -1194,9 +1194,13 @@ bool H264Decoder::ProcessSPS(int sps_id,
 
   VideoCodecProfile new_profile =
       H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
-  uint8_t new_bit_depth = 0;
-  if (!ParseBitDepth(*sps, new_bit_depth))
+  if (new_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
     return false;
+  }
+  uint8_t new_bit_depth = 0;
+  if (!ParseBitDepth(*sps, new_bit_depth)) {
+    return false;
+  }
   if (!IsValidBitDepth(new_bit_depth, new_profile)) {
     DVLOG(1) << "Invalid bit depth=" << base::strict_cast<int>(new_bit_depth)
              << ", profile=" << GetProfileName(new_profile);
