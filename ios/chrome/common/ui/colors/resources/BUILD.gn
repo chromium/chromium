@@ -7,6 +7,7 @@ import("//build/config/ios/asset_catalog.gni")
 group("resources") {
   deps = [
     ":background_color",
+    ":blue_300_color",
     ":blue_400_color",
     ":blue_500_color",
     ":blue_600_color",
@@ -83,6 +84,10 @@ colorset("blue_color") {
 
 colorset("blue_halo_color") {
   sources = [ "blue_halo_color.colorset/Contents.json" ]
+}
+
+colorset("blue_300_color") {
+  sources = [ "blue_300_color.colorset/Contents.json" ]
 }
 
 colorset("blue_400_color") {

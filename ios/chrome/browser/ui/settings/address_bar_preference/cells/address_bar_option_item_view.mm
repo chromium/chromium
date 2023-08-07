@@ -13,7 +13,7 @@ namespace {
 // Returns the palette to be used on bottom/top address bar selected state.
 NSArray<UIColor*>* AddressBarSelectedOptionPalette() {
   return @[
-    [UIColor colorNamed:kBlue600Color], [UIColor colorNamed:kBlue400Color]
+    [UIColor colorNamed:kBlue600Color], [UIColor colorNamed:kBlue300Color]
   ];
 }
 
