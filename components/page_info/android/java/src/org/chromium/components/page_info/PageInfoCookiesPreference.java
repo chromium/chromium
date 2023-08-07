@@ -173,7 +173,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
     // Only used when UserBypassUI flag is on.
     public void setCookieStatus(
-            @CookieControlsStatus int status, boolean isEnforced, long expiration) {
+            @CookieControlsStatus int status, final boolean isEnforced, long expiration) {
         assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
             : "This should only be invoked when UserBypassUI is enabled.";
 
@@ -191,6 +191,13 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                                 : R.drawable.ic_visibility_black));
         mCookieSwitch.setChecked(!blockingEnabled);
         mCookieSwitch.setEnabled(!isEnforced);
+        mCookieSwitch.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
+                getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return isEnforced;
+            }
+        });
 
         boolean permanentException = (expiration == 0);
 
