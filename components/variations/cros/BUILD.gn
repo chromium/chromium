@@ -15,6 +15,8 @@ executable("evaluate_seed") {
 
 source_set("evaluate_seed_lib") {
   sources = [
+    "cros_safe_seed_manager.cc",
+    "cros_safe_seed_manager.h",
     "cros_variations_field_trial_creator.cc",
     "cros_variations_field_trial_creator.h",
     "evaluate_seed.cc",
@@ -37,7 +39,10 @@ source_set("evaluate_seed_lib") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "evaluate_seed_unittest.cc" ]
+  sources = [
+    "cros_safe_seed_manager_unittest.cc",
+    "evaluate_seed_unittest.cc",
+  ]
   deps = [
     ":evaluate_seed_lib",
     ":proto",
@@ -47,6 +52,7 @@ source_set("unit_tests") {
     "//build/config/chromebox_for_meetings:buildflags",
     "//components/test:test_support",
     "//components/variations",
+    "//components/variations/service:service",
     "//testing/gmock",
     "//testing/gtest",
   ]
