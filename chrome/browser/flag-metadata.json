@@ -2172,6 +2172,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-cloud-identifiers",
+    "owners": ["hendrich", "asully"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-code-based-rbd",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 116

@@ -60519,6 +60519,7 @@ from previous Chrome versions.
   <int value="-1793010019" label="DesktopPWAsKeepAlive:enabled"/>
   <int value="-1792162033" label="WebID:enabled"/>
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
+  <int value="-1791149148" label="FileSystemAccessGetCloudIdentifiers:enabled"/>
   <int value="-1790251283" label="GainmapHdrImages:disabled"/>
   <int value="-1790227231" label="show-autofill-signatures"/>
   <int value="-1789139269" label="SmbFs:disabled"/>
@@ -62058,6 +62059,8 @@ from previous Chrome versions.
   <int value="-1014936248" label="SyncUSSBookmarks:enabled"/>
   <int value="-1014649471" label="committed-interstitials"/>
   <int value="-1013986101" label="FirstScrollLatencyMeasurement:disabled"/>
+  <int value="-1012816526"
+      label="FileSystemAccessGetCloudIdentifiers:disabled"/>
   <int value="-1012657256" label="WebAuthenticationConditionalUI:enabled"/>
   <int value="-1011390415" label="AutofillRejectCompanyBirthyear:enabled"/>
   <int value="-1010590882" label="MutationEvents:enabled"/>
