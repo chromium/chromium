@@ -642,11 +642,19 @@ IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, OfficialBuild) {
 }
 #endif
 
-using SettingsPrivacyGuideTest = SettingsBrowserTest;
+class SettingsPrivacyGuideTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kPrivacyGuide3};
+};
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuidePage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePagePG3Off) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('PrivacyGuidePagePG3Off')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
@@ -654,9 +662,20 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
           "runMochaSuite('MsbbCardNavigations')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigationsPG3Off) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('MsbbCardNavigationsPG3Off')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('HistorySyncCardNavigations')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       HistorySyncCardNavigationsPG3Off) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('HistorySyncCardNavigationsPG3Off')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingCardNavigations) {
@@ -664,9 +683,26 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingCardNavigations) {
           "runMochaSuite('SafeBrowsingCardNavigations')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       SafeBrowsingCardNavigationsPG3Off) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('SafeBrowsingCardNavigationsPG3Off')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('CookiesCardNavigations')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesCardNavigationsPG3Off) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('CookiesCardNavigationsPG3Off')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       SearchSuggestionsCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('SearchSuggestionsCardNavigations')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {

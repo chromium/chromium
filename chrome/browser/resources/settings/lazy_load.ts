@@ -16,8 +16,6 @@ import './privacy_page/anti_abuse_page.js';
 import './privacy_page/preloading_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
-import './privacy_page/privacy_guide/privacy_guide_history_sync_fragment.js';
-import './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.js';
@@ -175,6 +173,7 @@ export {PrivacyGuideHistorySyncFragmentElement} from './privacy_page/privacy_gui
 export {PrivacyGuideMsbbFragmentElement} from './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/privacy_guide_page.js';
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
+export {PrivacyGuideSearchSuggestionsFragmentElement} from './privacy_page/privacy_guide/privacy_guide_search_suggestions_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.js';

@@ -130,8 +130,8 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
   test('recordStepsAreEligibleReached', async function() {
     const optionalSteps: PrivacyGuideStep[] = [
       PrivacyGuideStep.HISTORY_SYNC,
-      PrivacyGuideStep.SAFE_BROWSING,
       PrivacyGuideStep.COOKIES,
+      PrivacyGuideStep.SAFE_BROWSING,
     ];
 
     const masks: number[] = [];
@@ -196,6 +196,11 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
         assertTrue(!!nextButtonElementOnStep);
         nextButtonElementOnStep.click();
       }
+
+      const nextButtonElementOnSearchSuggestionsStep =
+          page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+      assertTrue(!!nextButtonElementOnSearchSuggestionsStep);
+      nextButtonElementOnSearchSuggestionsStep.click();
 
       expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);
