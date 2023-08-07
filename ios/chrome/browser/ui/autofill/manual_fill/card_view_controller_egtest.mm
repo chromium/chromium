@@ -470,10 +470,6 @@ BOOL WaitForKeyboardToAppear() {
 // Tests that after switching fields the content size of the table view didn't
 // grow.
 - (void)testCreditCardControllerKeepsRightSize {
-  // TODO(crbug.com/1454907): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"FirstResponder.inputView is buggy on iOS17 as of beta 3.");
-  }
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
