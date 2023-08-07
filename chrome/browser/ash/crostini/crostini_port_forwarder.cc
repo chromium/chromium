@@ -73,17 +73,30 @@ CrostiniPortForwarder* CrostiniPortForwarder::GetForProfile(Profile* profile) {
 
 CrostiniPortForwarder::CrostiniPortForwarder(Profile* profile)
     : profile_(profile) {
-  current_interface_ = kDefaultInterfaceToForward;
-  const ash::DeviceState* device =
-      ash::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
-          current_interface_);
-  if (device) {
-    ip_address_ = device->GetIpAddressByType(shill::kTypeIPv4);
-    if (ip_address_.empty()) {
-      ip_address_ = device->GetIpAddressByType(shill::kTypeIPv6);
-    }
-  } else {
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  ash::NetworkStateHandler::NetworkStateList active_networks;
+
+  // Get Physical networks only (so no Tether/VPN).
+  network_state_handler->GetActiveNetworkListByType(
+      ash::NetworkTypePattern::Physical(), &active_networks);
+
+  if (active_networks.empty()) {
+    current_interface_ = kDefaultInterfaceToForward;
     ip_address_ = "";
+  } else {
+    // Select the first active network for now.
+    const ash::DeviceState* device = network_state_handler->GetDeviceState(
+        active_networks[0]->device_path());
+    current_interface_ = device->interface();
+    if (device) {
+      ip_address_ = device->GetIpAddressByType(shill::kTypeIPv4);
+      if (ip_address_.empty()) {
+        ip_address_ = device->GetIpAddressByType(shill::kTypeIPv6);
+      }
+    } else {
+      ip_address_ = "";
+    }
   }
 }
 
