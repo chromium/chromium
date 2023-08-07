@@ -66,7 +66,9 @@ class Runner():
     if args:
       self.parse_args(args)
 
-  def install_xcode(self):
+  # TODO(crbug.com/1077277): Move this function to xcode_util.py with explicitly
+  #  listing the arguments as parameters.
+  def install_xcode(self, args):
     """Installs the requested Xcode build version.
 
     Returns:
@@ -75,18 +77,18 @@ class Runner():
         Second bool: True if Xcode is legacy package. False if it's new.
     """
     try:
-      if not self.args.mac_toolchain_cmd:
-        raise test_runner.MacToolchainNotFoundError(self.args.mac_toolchain_cmd)
+      if not args.mac_toolchain_cmd:
+        raise test_runner.MacToolchainNotFoundError(args.mac_toolchain_cmd)
       # Guard against incorrect install paths. On swarming, this path
       # should be a requested named cache, and it must exist.
-      if not os.path.exists(self.args.xcode_path):
-        raise test_runner.XcodePathNotFoundError(self.args.xcode_path)
+      if not os.path.exists(args.xcode_path):
+        raise test_runner.XcodePathNotFoundError(args.xcode_path)
 
       runtime_cache_folder = None
       # Runner script only utilizes runtime cache when it's a simulator task.
-      if self.args.version:
+      if args.version:
         runtime_cache_folder = xcode.construct_runtime_cache_folder(
-            self.args.runtime_cache_prefix, self.args.version)
+            args.runtime_cache_prefix, args.version)
         if not os.path.exists(runtime_cache_folder):
           # Depending on infra project, runtime named cache might not be
           # deployed. Create the dir if it doesn't exist since xcode_util
@@ -100,24 +102,23 @@ class Runner():
       # Update as of 2023: for MacOS13+, iOS runtime will not be installed in
       # xcode.install(). See xcode.install_runtime_dmg below().
       is_legacy_xcode = xcode.install(
-          self.args.mac_toolchain_cmd,
-          self.args.xcode_build_version,
-          self.args.xcode_path,
+          args.mac_toolchain_cmd,
+          args.xcode_build_version,
+          args.xcode_path,
           runtime_cache_folder=runtime_cache_folder,
-          ios_version=self.args.version)
-      xcode.select(self.args.xcode_path)
+          ios_version=args.version)
+      xcode.select(args.xcode_path)
 
       # Starting MacOS13+, additional simulator runtime will be installed
       # in DMG format
-      if self.args.version and mac_util.is_macos_13_or_higher():
-        xcode.install_runtime_dmg(self.args.mac_toolchain_cmd,
-                                  runtime_cache_folder, self.args.version,
-                                  self.args.xcode_build_version)
+      if args.version and mac_util.is_macos_13_or_higher():
+        xcode.install_runtime_dmg(args.mac_toolchain_cmd, runtime_cache_folder,
+                                  args.version, args.xcode_build_version)
     except subprocess.CalledProcessError as e:
       # Flush buffers to ensure correct output ordering.
       sys.stdout.flush()
       sys.stderr.write('Xcode build version %s failed to install: %s\n' %
-                       (self.args.xcode_build_version, e))
+                       (args.xcode_build_version, e))
       sys.stderr.flush()
       return (False, False)
     else:
@@ -195,7 +196,7 @@ class Runner():
 
     # This logic is run by default before the otool command is invoked such that
     # otool has the correct Xcode selected for command line dev tools.
-    install_success, is_legacy_xcode = self.install_xcode()
+    install_success, is_legacy_xcode = self.install_xcode(self.args)
     if not install_success:
       raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
 
