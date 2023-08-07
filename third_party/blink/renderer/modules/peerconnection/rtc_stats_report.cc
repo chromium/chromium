@@ -306,6 +306,9 @@ RTCInboundRtpStreamStats* ToV8Stat(
     v8_stat->setRetransmittedBytesReceived(
         *webrtc_stat.retransmitted_bytes_received);
   }
+  if (webrtc_stat.rtx_ssrc.has_value()) {
+    v8_stat->setRtxSsrc(*webrtc_stat.rtx_ssrc);
+  }
   return v8_stat;
 }
 
@@ -408,6 +411,9 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.retransmitted_bytes_sent.has_value()) {
     v8_stat->setRetransmittedBytesSent(*webrtc_stat.retransmitted_bytes_sent);
+  }
+  if (webrtc_stat.rtx_ssrc.has_value()) {
+    v8_stat->setRtxSsrc(*webrtc_stat.rtx_ssrc);
   }
   if (webrtc_stat.target_bitrate.has_value()) {
     v8_stat->setTargetBitrate(*webrtc_stat.target_bitrate);

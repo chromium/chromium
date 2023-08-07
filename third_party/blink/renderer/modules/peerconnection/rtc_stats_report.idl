@@ -123,6 +123,7 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
   DOMString            googTimingFrameInfo;
   unsigned long long   retransmittedPacketsReceived;
   unsigned long long   retransmittedBytesReceived;
+  unsigned long        rtxSsrc;
 };
 
 // https://w3c.github.io/webrtc-stats/#remoteinboundrtpstats-dict*
@@ -149,6 +150,7 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
   unsigned long long   headerBytesSent;
   unsigned long long   retransmittedPacketsSent;
   unsigned long long   retransmittedBytesSent;
+  unsigned long        rtxSsrc;
   double               targetBitrate;
   unsigned long long   totalEncodedBytesTarget;
   unsigned long        frameWidth;
