@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -47,7 +48,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                               base::TimeDelta lifetime,
                               std::unique_ptr<UserContext>,
                               absl::optional<AuthenticationError>)>;
-
+  using RecoveryRequestCallback =
+      base::OnceCallback<void(absl::optional<RecoveryRequest>,
+                              std::unique_ptr<UserContext>,
+                              absl::optional<AuthenticationError>)>;
   // Invalidates any ongoing mount attempts by invalidating Weak pointers on
   // internal callbacks. Callbacks for ongoing operations will not be called
   // afterwards, but there is no guarantees about state of the session.
@@ -130,6 +134,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                             AuthSessionStatusCallback callback);
 
+  void GetRecoveryRequest(const std::string& access_token,
+                          const CryptohomeRecoveryEpochResponse& epoch,
+                          std::unique_ptr<UserContext> context,
+                          RecoveryRequestCallback callback);
+
+  void AuthenticateWithRecovery(
+      const CryptohomeRecoveryEpochResponse& epoch,
+      const CryptohomeRecoveryResponse& recovery_response,
+      const RecoveryLedgerName ledger_name,
+      const RecoveryLedgerPubKey ledger_public_key,
+      uint32_t ledger_public_key_hash,
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback);
+
  private:
   void OnServiceRunning(std::unique_ptr<UserContext> context,
                         bool ephemeral,
@@ -175,6 +193,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       std::unique_ptr<UserContext> context,
       AuthSessionStatusCallback callback,
       absl::optional<user_data_auth::GetAuthSessionStatusReply> reply);
+
+  void OnGetRecoveryRequest(
+      RecoveryRequestCallback callback,
+      std::unique_ptr<UserContext> context,
+      absl::optional<user_data_auth::GetRecoveryRequestReply> reply);
 
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthPerformer> weak_factory_{this};

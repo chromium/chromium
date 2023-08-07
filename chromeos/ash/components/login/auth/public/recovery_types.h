@@ -23,6 +23,10 @@ using GaiaAccessToken =
 using GaiaReauthProofToken =
     base::StrongAlias<class GaiaReauthProofTokenTag, std::string>;
 
+// Recovery request (`nonce`) issued by cryptohome.
+using RecoveryRequest =
+    base::StrongAlias<class RecoveryRequestTag, std::string>;
+
 // Serialized proto response for FetchEpoch request.
 using CryptohomeRecoveryEpochResponse =
     base::StrongAlias<class CryptohomeRecoveryEpochResponseTag,
@@ -32,6 +36,11 @@ using CryptohomeRecoveryEpochResponse =
 using CryptohomeRecoveryResponse =
     base::StrongAlias<class CryptohomeRecoveryResponseTag,
                       std::vector<uint8_t>>;
+
+using RecoveryLedgerName =
+    base::StrongAlias<class RecoveryLedgerNameTag, std::string>;
+using RecoveryLedgerPubKey =
+    base::StrongAlias<class RecoveryLedgerPubKeyTag, std::string>;
 
 enum class CryptohomeRecoveryServerStatusCode {
   // The request was completed successfully.

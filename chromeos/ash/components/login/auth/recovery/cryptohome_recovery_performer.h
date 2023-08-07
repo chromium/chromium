@@ -8,12 +8,15 @@
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
+
+class UserDataAuthClient;
 
 // Helper class to authenticate using recovery. Coordinates calls to cryptohome
 // and the requests over network to the recovery service.
@@ -55,9 +58,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
       CryptohomeRecoveryServerStatusCode);
 
   // Called with the reply to a call of GetRecoveryRequest.
-  void OnGetRecoveryRequest(
-      CryptohomeRecoveryEpochResponse epoch,
-      absl::optional<user_data_auth::GetRecoveryRequestReply> reply);
+  void OnGetRecoveryRequest(CryptohomeRecoveryEpochResponse epoch,
+                            absl::optional<RecoveryRequest> recovery_request,
+                            std::unique_ptr<UserContext> context,
+                            absl::optional<AuthenticationError> error);
 
   // Called with the reply when fetching the recovery secret from the recovery
   // service via network.
@@ -66,9 +70,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
       absl::optional<CryptohomeRecoveryResponse> response,
       CryptohomeRecoveryServerStatusCode);
 
-  // Called with the response to the final call to AuthenticateAuthFactor.
-  void OnAuthenticateAuthFactor(
-      absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
+  // Called with the response to the final call to AuthenticateWithRecovery.
+  void OnAuthenticateWithRecovery(std::unique_ptr<UserContext> context,
+                                  absl::optional<AuthenticationError> error);
 
   // Record the result of the recovery and time taken.
   void RecordRecoveryResult(
@@ -80,13 +84,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   std::string access_token_;
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
 
-  const raw_ptr<UserDataAuthClient> user_data_auth_client_;
+  std::unique_ptr<AuthPerformer> auth_performer_;
   CryptohomeRecoveryServiceClient service_client_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Used to record time taken for recovery.
   std::unique_ptr<base::ElapsedTimer> timer_;
-
   base::WeakPtrFactory<CryptohomeRecoveryPerformer> weak_factory_{this};
 };
 

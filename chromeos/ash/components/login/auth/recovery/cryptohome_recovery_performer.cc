@@ -10,8 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
@@ -44,7 +43,7 @@ GetRecoveryResultFromCryptohomeError(
 CryptohomeRecoveryPerformer::CryptohomeRecoveryPerformer(
     UserDataAuthClient* user_data_auth_client,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : user_data_auth_client_(user_data_auth_client),
+    : auth_performer_(std::make_unique<AuthPerformer>(user_data_auth_client)),
       service_client_(url_loader_factory),
       url_loader_factory_(url_loader_factory) {}
 
@@ -109,49 +108,32 @@ void CryptohomeRecoveryPerformer::OnNetworkFetchEpoch(
   }
   CryptohomeRecoveryEpochResponse epoch = std::move(*opt_epoch);
 
-  user_data_auth::GetRecoveryRequestRequest request;
-
-  request.set_auth_session_id(user_context_->GetAuthSessionId());
-
-  const std::string& gaia_id = user_context_->GetGaiaID();
-  DCHECK(!gaia_id.empty()) << "Recovery is only supported for gaia users";
-  DCHECK(!access_token_.empty());
-  const std::string& reauth_proof_token = user_context_->GetReauthProofToken();
-  CHECK(!reauth_proof_token.empty()) << "Reauth proof token must be set";
-
-  request.set_requestor_user_id_type(
-      user_data_auth::GetRecoveryRequestRequest::GAIA_ID);
-  request.set_requestor_user_id(gaia_id);
-  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
-  request.set_gaia_access_token(access_token_);
-  request.set_gaia_reauth_proof_token(reauth_proof_token);
-  request.set_epoch_response(epoch->data(), epoch->size());
-
-  user_data_auth_client_->GetRecoveryRequest(
-      std::move(request),
+  auth_performer_->GetRecoveryRequest(
+      access_token_, epoch, std::move(user_context_),
       base::BindOnce(&CryptohomeRecoveryPerformer::OnGetRecoveryRequest,
-                     weak_factory_.GetWeakPtr(), std::move(epoch)));
+                     weak_factory_.GetWeakPtr(), epoch));
 }
 
 void CryptohomeRecoveryPerformer::OnGetRecoveryRequest(
     CryptohomeRecoveryEpochResponse epoch,
-    absl::optional<user_data_auth::GetRecoveryRequestReply> reply) {
-  auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    absl::optional<RecoveryRequest> recovery_request,
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
     LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
-                     << error;
+                     << error->get_cryptohome_code();
     RecordRecoveryResult(
         AuthEventsRecorder::CryptohomeRecoveryResult::kGetRecoveryRequestError);
-    std::move(callback_).Run(std::move(user_context_),
-                             AuthenticationError{error});
+    std::move(callback_).Run(std::move(context), std::move(error));
     return;
   }
-
-  DCHECK(!reply->recovery_request().empty());
-  DCHECK(!access_token_.empty());
+  user_context_ = std::move(context);
+  CHECK(!access_token_.empty());
+  CHECK(recovery_request.has_value());
+  CHECK(!recovery_request.value()->empty());
 
   service_client_.FetchRecoveryResponse(
-      reply->recovery_request(), GaiaAccessToken(access_token_),
+      recovery_request.value().value(), GaiaAccessToken(access_token_),
       base::BindOnce(
           &CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse,
           weak_factory_.GetWeakPtr(), std::move(epoch)));
@@ -170,54 +152,37 @@ void CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse(
   }
   const CryptohomeRecoveryResponse& response = *opt_response;
 
-  user_data_auth::AuthenticateAuthFactorRequest request;
-  request.set_auth_session_id(user_context_->GetAuthSessionId());
-  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
-
-  user_data_auth::CryptohomeRecoveryAuthInput* recovery_input =
-      request.mutable_auth_input()->mutable_cryptohome_recovery_input();
-  recovery_input->set_epoch_response(epoch->data(), epoch->size());
-  recovery_input->set_recovery_response(response->data(), response->size());
-  user_data_auth::CryptohomeRecoveryAuthInput::LedgerInfo* ledger =
-      recovery_input->mutable_ledger_info();
-  ledger->set_name(GetRecoveryLedgerName());
-  ledger->set_key_hash(GetRecoveryLedgerPublicKeyHash());
-  ledger->set_public_key(GetRecoveryLedgerPublicKey());
-
-  user_data_auth_client_->AuthenticateAuthFactor(
-      std::move(request),
-      base::BindOnce(&CryptohomeRecoveryPerformer::OnAuthenticateAuthFactor,
+  auth_performer_->AuthenticateWithRecovery(
+      epoch, response, RecoveryLedgerName(GetRecoveryLedgerName()),
+      RecoveryLedgerPubKey(GetRecoveryLedgerPublicKey()),
+      GetRecoveryLedgerPublicKeyHash(), std::move(user_context_),
+      base::BindOnce(&CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery,
                      weak_factory_.GetWeakPtr()));
 }
 
-void CryptohomeRecoveryPerformer::OnAuthenticateAuthFactor(
-    absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
-  auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
-    LOGIN_LOG(EVENT)
-        << "Failed to authenticate session via recovery factor, error code "
-        << error;
-    RecordRecoveryResult(GetRecoveryResultFromCryptohomeError(error));
-    std::move(callback_).Run(std::move(user_context_),
-                             AuthenticationError{error});
+void CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery(
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    RecordRecoveryResult(
+        GetRecoveryResultFromCryptohomeError(error->get_cryptohome_code()));
+    std::move(callback_).Run(std::move(context), std::move(error));
     return;
   }
-  CHECK(reply.has_value());
-  if (!base::Contains(reply->authorized_for(),
-                      user_data_auth::AUTH_INTENT_DECRYPT)) {
+  if (!context->GetAuthorizedIntents().Has(AuthSessionIntent::kDecrypt)) {
     NOTREACHED() << "Authentication via recovery factor failed to authorize "
                     "for decryption";
     RecordRecoveryResult(
         AuthEventsRecorder::CryptohomeRecoveryResult::kMountCryptohomeError);
     std::move(callback_).Run(
-        std::move(user_context_),
+        std::move(context),
         AuthenticationError(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
     return;
   }
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   RecordRecoveryResult(
       AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded);
-  std::move(callback_).Run(std::move(user_context_), absl::nullopt);
+  std::move(callback_).Run(std::move(context), absl::nullopt);
 }
 
 void CryptohomeRecoveryPerformer::RecordRecoveryResult(
