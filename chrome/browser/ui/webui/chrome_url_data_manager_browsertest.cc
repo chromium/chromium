@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
@@ -238,7 +239,8 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       const ::testing::TestParamInfo<const char*>& info) {
     std::string name(info.param);
     std::replace_if(
-        name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+        name.begin(), name.end(),
+        [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
     return name;
   }
 

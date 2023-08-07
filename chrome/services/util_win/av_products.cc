@@ -32,6 +32,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/windows_version.h"
 #include "components/variations/hashing.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace {
 
@@ -42,9 +43,10 @@ bool ShouldFilterPart(const std::string& str) {
   // "NOD32" (used by ESET).
   if (str == "365" || str == "360" || str == "NOD32")
     return false;
-  for (const auto ch : str) {
-    if (isdigit(ch))
+  for (char ch : str) {
+    if (absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       return true;
+    }
   }
   return false;
 }

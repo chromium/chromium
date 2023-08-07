@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 
-#include <cctype>
 #include <cmath>
 #include <utility>
 

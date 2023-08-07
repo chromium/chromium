@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cctype>
 #include <cstddef>
 #include <memory>
 
@@ -89,6 +88,7 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
@@ -196,13 +196,14 @@ bool IsSimilarToDoubleABNF(const std::string& header_value) {
   if (header_value.empty())
     return false;
   char first_char = header_value.at(0);
-  if (!isdigit(first_char))
+  if (!absl::ascii_isdigit(static_cast<unsigned char>(first_char))) {
     return false;
+  }
 
   bool period_found = false;
   bool digit_found_after_period = false;
   for (char ch : header_value) {
-    if (isdigit(ch)) {
+    if (absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       if (period_found) {
         digit_found_after_period = true;
       }
@@ -227,8 +228,9 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
     return false;
 
   for (char ch : header_value) {
-    if (!isdigit(ch))
+    if (!absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       return false;
+    }
   }
   return true;
 }

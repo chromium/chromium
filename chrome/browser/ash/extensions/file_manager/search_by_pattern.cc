@@ -4,12 +4,11 @@
 
 #include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 
-#include <ctype.h>
-
 #include "base/files/file_enumerator.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/fileapi/recent_disk_source.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace extensions {
 
@@ -17,15 +16,15 @@ std::string CreateFnmatchQuery(const std::string& query) {
   std::vector<std::string> query_pieces = {"*"};
   size_t sequence_start = 0;
   for (size_t i = 0; i < query.size(); ++i) {
-    if (isalpha(query[i])) {
+    if (absl::ascii_isalpha(static_cast<unsigned char>(query[i]))) {
       if (sequence_start != i) {
         query_pieces.push_back(
             query.substr(sequence_start, i - sequence_start));
       }
       std::string piece("[");
       piece.resize(4);
-      piece[1] = tolower(query[i]);
-      piece[2] = toupper(query[i]);
+      piece[1] = absl::ascii_tolower(static_cast<unsigned char>(query[i]));
+      piece[2] = absl::ascii_toupper(static_cast<unsigned char>(query[i]));
       piece[3] = ']';
       query_pieces.push_back(std::move(piece));
       sequence_start = i + 1;

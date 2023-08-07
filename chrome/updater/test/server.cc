@@ -5,7 +5,6 @@
 #include "chrome/updater/test/server.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iterator>
 #include <list>
 #include <memory>

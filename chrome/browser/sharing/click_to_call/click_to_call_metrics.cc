@@ -4,8 +4,6 @@
 
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 
-#include <cctype>
-
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

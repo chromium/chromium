@@ -5,7 +5,6 @@
 #include "chrome/updater/test/http_request.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iterator>
 #include <string>
 
@@ -14,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace updater::test {
@@ -54,12 +54,12 @@ std::string GetPrintableContent(const HttpRequest& request) {
       std::min(request.decoded_content.size(), size_t{2048});
   std::string printable_content;
   printable_content.reserve(dump_limit);
-  base::ranges::transform(request.decoded_content.begin(),
-                          request.decoded_content.begin() + dump_limit,
-                          std::back_inserter(printable_content),
-                          [](unsigned char c) {
-                            return std::isprint(c) || std::isspace(c) ? c : '.';
-                          });
+  base::ranges::transform(
+      request.decoded_content.begin(),
+      request.decoded_content.begin() + dump_limit,
+      std::back_inserter(printable_content), [](unsigned char c) {
+        return absl::ascii_isprint(c) || absl::ascii_isspace(c) ? c : '.';
+      });
 
   if (request.decoded_content.size() <= dump_limit) {
     return printable_content;

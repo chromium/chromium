@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
-#include <cctype>
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
@@ -38,6 +37,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/icu/source/common/unicode/bytestream.h"
 #include "third_party/icu/source/common/unicode/casemap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -496,9 +496,10 @@ void DemoSetupController::SetAndCanonicalizeRetailerName(
   icu::CaseMap::utf8Fold(/* options= */ 0, retailer_name, byte_sink,
                          /* edits= */ nullptr, error_code);
   retailer_name_.erase(
-      std::remove_if(
-          retailer_name_.begin(), retailer_name_.end(),
-          [](unsigned char c) { return std::ispunct(c) || std::isspace(c); }),
+      std::remove_if(retailer_name_.begin(), retailer_name_.end(),
+                     [](unsigned char c) {
+                       return absl::ascii_ispunct(c) || absl::ascii_isspace(c);
+                     }),
       retailer_name_.end());
 }
 

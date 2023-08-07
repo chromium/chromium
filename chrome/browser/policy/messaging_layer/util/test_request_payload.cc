@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/json/json_reader.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace reporting {
 
@@ -18,12 +19,11 @@ namespace reporting {
 static bool IsPositiveInteger(std::string_view s) {
   if (s.empty()) {
     return false;
-  } else if (s.size() == 1) {
-    return std::isdigit(s[0]);
-  } else {
-    return s[0] != '0' &&
-           s.find_first_not_of("0123456789") == std::string::npos;
   }
+  if (s.size() == 1) {
+    return absl::ascii_isdigit(static_cast<unsigned char>(s[0]));
+  }
+  return s[0] != '0' && s.find_first_not_of("0123456789") == std::string::npos;
 }
 
 // Get the record list. If it can't, print the message to listener and return a

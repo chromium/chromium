@@ -42,6 +42,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -336,13 +337,9 @@ void AccessCodeCastIntegrationBrowserTest::CloseDialogUsingKeyPress() {
 
 void AccessCodeCastIntegrationBrowserTest::SetAccessCodeUsingKeyPress(
     const std::string& access_code) {
-  for (const char& letter : access_code) {
-#if BUILDFLAG(IS_WIN)
-    ui::KeyboardCode keyboard_code = ui::KeyboardCode(toupper(letter));
-#else
-    ui::KeyboardCode keyboard_code =
-        static_cast<ui::KeyboardCode>(toupper(letter));
-#endif
+  for (char letter : access_code) {
+    const auto keyboard_code = static_cast<ui::KeyboardCode>(
+        absl::ascii_toupper(static_cast<unsigned char>(letter)));
     EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), keyboard_code, false,
                                                 false, false, false));
   }

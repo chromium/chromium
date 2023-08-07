@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
 
-#include <ctype.h>
 #include <stddef.h>
 
 #include <memory>

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 
-#include <cctype>
 #include <string>
 #include <utility>
 

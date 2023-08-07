@@ -8,7 +8,6 @@
 #include <sys/xattr.h>
 
 #include <algorithm>
-#include <cctype>
 #include <cstdint>
 #include <iterator>
 #include <memory>

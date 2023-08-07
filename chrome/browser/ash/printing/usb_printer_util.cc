@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/usb_printer_util.h"
 
-#include <ctype.h>
 #include <stdint.h>
 
 #include <algorithm>

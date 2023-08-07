@@ -4,7 +4,6 @@
 
 #include "chrome/updater/util/util.h"
 
-#include <cwctype>
 #include <string>
 #include <vector>
 
@@ -296,7 +295,7 @@ GURL AppendQueryParameter(const GURL& url,
 
 std::wstring GetTaskNamePrefix(UpdaterScope scope) {
   std::wstring task_name = GetTaskDisplayName(scope);
-  base::EraseIf(task_name, std::iswspace);
+  base::EraseIf(task_name, base::IsAsciiWhitespace<wchar_t>);
   return task_name;
 }
 

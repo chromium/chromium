@@ -14,7 +14,6 @@
 
 #include <algorithm>
 #include <cstdlib>
-#include <cwctype>
 #include <memory>
 #include <string>
 #include <vector>
@@ -455,7 +454,7 @@ std::string GetUACState() {
 
 std::wstring GetServiceName(bool is_internal_service) {
   std::wstring service_name = GetServiceDisplayName(is_internal_service);
-  base::EraseIf(service_name, std::iswspace);
+  base::EraseIf(service_name, base::IsAsciiWhitespace<wchar_t>);
   return service_name;
 }
 

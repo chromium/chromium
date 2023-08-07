@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 
-#include <cctype>
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
