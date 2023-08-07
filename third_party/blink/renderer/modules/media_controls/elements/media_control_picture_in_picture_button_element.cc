@@ -44,9 +44,9 @@ void MediaControlPictureInPictureButtonElement::UpdateDisplayType() {
       PictureInPictureController::IsElementInPictureInPicture(
           &To<HTMLVideoElement>(MediaElement()));
   SetClass("on", isInPictureInPicture);
-  UpdateOverflowString();
 
   UpdateAriaString(isInPictureInPicture);
+  UpdateOverflowString();
 
   MediaControlInputElement::UpdateDisplayType();
 }
@@ -104,6 +104,7 @@ void MediaControlPictureInPictureButtonElement::UpdateAriaString(
                 IDS_AX_MEDIA_ENTER_PICTURE_IN_PICTURE_BUTTON);
 
   setAttribute(html_names::kAriaLabelAttr, WTF::AtomicString(aria_string));
+  UpdateAriaLabel(aria_string);
 }
 
 }  // namespace blink

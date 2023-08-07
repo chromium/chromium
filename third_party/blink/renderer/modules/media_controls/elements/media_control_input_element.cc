@@ -292,6 +292,10 @@ void MediaControlInputElement::UpdateDisplayType() {
     overflow_element_->UpdateDisplayType();
 }
 
+void MediaControlInputElement::UpdateAriaLabel(const String& new_aria_label) {
+  aria_label_ = new_aria_label;
+}
+
 gfx::Size MediaControlInputElement::GetSizeOrDefault() const {
   if (IsControlPanelButton()) {
     return MediaControlElementsHelper::GetSizeOrDefault(
