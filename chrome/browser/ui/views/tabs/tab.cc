@@ -784,12 +784,6 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
       break;
   }
 
-  if (features::IsChromeRefresh2023()) {
-    const ui::ColorId color_ids[3] = {kColorTabAlertMediaRecordingIcon,
-                                      kColorTabAlertPipPlayingIcon,
-                                      kColorTabAlertAudioPlayingIcon};
-    return color_ids[group];
-  } else {
     const ui::ColorId color_ids[3][2][2] = {
         {{kColorTabAlertMediaRecordingInactiveFrameInactive,
           kColorTabAlertMediaRecordingInactiveFrameActive},
@@ -806,7 +800,6 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
     return color_ids[group][tab_style_views()->GetApparentActiveState() ==
                             TabActive::kActive]
                     [GetWidget()->ShouldPaintAsActive()];
-  }
 }
 
 bool Tab::IsActive() const {

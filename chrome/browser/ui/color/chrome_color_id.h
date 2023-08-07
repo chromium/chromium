@@ -459,9 +459,9 @@
   E_CPONLY(kColorTabAlertPipPlayingInactiveFrameActive) \
   E_CPONLY(kColorTabAlertPipPlayingInactiveFrameInactive) \
   /* Tab alert colors in hover cards */ \
-  E_CPONLY(kColorTabAlertMediaRecordingIcon) \
-  E_CPONLY(kColorTabAlertPipPlayingIcon) \
-  E_CPONLY(kColorTabAlertAudioPlayingIcon) \
+  E_CPONLY(kColorHoverCardTabAlertMediaRecordingIcon) \
+  E_CPONLY(kColorHoverCardTabAlertPipPlayingIcon) \
+  E_CPONLY(kColorHoverCardTabAlertAudioPlayingIcon) \
   /* Tab colors. */ \
   E_CPONLY(kColorTabBackgroundActiveFrameActive) \
   E_CPONLY(kColorTabBackgroundActiveFrameInactive) \

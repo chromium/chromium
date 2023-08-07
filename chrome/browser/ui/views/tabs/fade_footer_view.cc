@@ -163,7 +163,7 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
       row_text.empty()
           ? ui::ImageModel()
           : ui::ImageModel::FromVectorIcon(
-                kHighEfficiencyIcon, kColorTabAlertAudioPlayingIcon,
+                kHighEfficiencyIcon, kColorHoverCardTabAlertAudioPlayingIcon,
                 GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH));
 
   SetContent(icon_image_model, row_text, data.footer_row_width);

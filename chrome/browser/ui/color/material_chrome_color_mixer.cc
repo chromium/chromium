@@ -207,10 +207,30 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
 
-  // Tab alert colors.
-  mixer[kColorTabAlertMediaRecordingIcon] = {ui::kColorSysError};
-  mixer[kColorTabAlertPipPlayingIcon] = {ui::kColorSysPrimary};
-  mixer[kColorTabAlertAudioPlayingIcon] = {ui::kColorSysOnSurfaceSubtle};
+  // Tabstrip tab alert colors.
+  mixer[kColorTabAlertAudioPlayingActiveFrameActive] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabAlertAudioPlayingActiveFrameInactive] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabAlertAudioPlayingInactiveFrameActive] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabAlertAudioPlayingInactiveFrameInactive] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabAlertMediaRecordingActiveFrameActive] = {ui::kColorSysError};
+  mixer[kColorTabAlertMediaRecordingActiveFrameInactive] = {ui::kColorSysError};
+  mixer[kColorTabAlertMediaRecordingInactiveFrameActive] = {ui::kColorSysError};
+  mixer[kColorTabAlertMediaRecordingInactiveFrameInactive] = {
+      ui::kColorSysError};
+  mixer[kColorTabAlertPipPlayingActiveFrameActive] = {ui::kColorSysPrimary};
+  mixer[kColorTabAlertPipPlayingActiveFrameInactive] = {ui::kColorSysPrimary};
+  mixer[kColorTabAlertPipPlayingInactiveFrameActive] = {ui::kColorSysPrimary};
+  mixer[kColorTabAlertPipPlayingInactiveFrameInactive] = {ui::kColorSysPrimary};
+
+  // Hover card tab alert colors.
+  mixer[kColorHoverCardTabAlertMediaRecordingIcon] = {ui::kColorSysError};
+  mixer[kColorHoverCardTabAlertPipPlayingIcon] = {ui::kColorSysPrimary};
+  mixer[kColorHoverCardTabAlertAudioPlayingIcon] = {
+      ui::kColorSysOnSurfaceSubtle};
 
   // Toolbar colors.
   mixer[kColorToolbar] = {ui::kColorSysBase};

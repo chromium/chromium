@@ -438,11 +438,11 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorTabAlertMediaRecordingIcon);
+          alert_state, kColorHoverCardTabAlertMediaRecordingIcon);
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::PIP_PLAYING:
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorTabAlertPipPlayingIcon);
+          alert_state, kColorHoverCardTabAlertPipPlayingIcon);
     case TabAlertState::AUDIO_PLAYING:
     case TabAlertState::AUDIO_MUTING:
     case TabAlertState::BLUETOOTH_CONNECTED:
@@ -452,7 +452,7 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
     case TabAlertState::SERIAL_CONNECTED:
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorTabAlertAudioPlayingIcon);
+          alert_state, kColorHoverCardTabAlertAudioPlayingIcon);
   }
   NOTREACHED_NORETURN();
 }
