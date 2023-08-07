@@ -7833,10 +7833,12 @@ bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
   // Check if the enterprise policy that regulates Isolated Web Apps force
   // installing is present. If it is there then the IWAs should be enabled.
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::Value::List& isolated_web_apps =
-      profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
-  if (!isolated_web_apps.empty()) {
-    return true;
+  if (profile) {
+    const base::Value::List& isolated_web_apps =
+        profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
+    if (!isolated_web_apps.empty()) {
+      return true;
+    }
   }
 #endif
   return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
