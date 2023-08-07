@@ -117,6 +117,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
+  // Do not allow further changes to the AXMode.
+  void DisallowAXModeChanges();
+
  protected:
   // Called a short while after startup to allow time for the accessibility
   // state to be determined. Updates histograms with the current state.
@@ -152,17 +155,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Whether there is a pending task to run UpdateAccessibilityActivityTask.
   bool accessibility_update_task_pending_ = false;
 
-  // Whether the force-renderer-accessibility flag is enabled.
-  // Cached here so that we don't have to check base::CommandLine in
-  // a function that's called frequently.
-  bool force_renderer_accessibility_ = false;
-
-  // The AXMode flags to set only if the the force-renderer-accessibility flag
-  // is enabled. If the optional parameter is present, then force the AXMode to
-  // be the provided bundle value. If the optional parameter is
-  // invalid, this will default to kAXModeComplete. If the optional parameter is
-  // absent, the .flags() will default to kNone.
-  ui::AXMode force_renderer_accessibility_ax_mode_flags_;
+  // Whether changes to the AXMode are disallowed.
+  // Changes are disallowed while running tests or when
+  // --force-renderer-accessibility is used on the command line.
+  bool disallow_ax_mode_changes_ = false;
 
   // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
   bool disable_hot_tracking_ = false;

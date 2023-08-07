@@ -4386,6 +4386,10 @@ void AXNodeObject::AddInlineTextBoxChildren() {
   DCHECK(GetDocument());
   DCHECK(CanHaveInlineTextBoxChildren(this));
   DCHECK(!GetLayoutObject()->NeedsLayout());
+  DCHECK(AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes));
+  DCHECK(!AXObjectCache().GetAXMode().HasExperimentalFlags(
+      ui::AXMode::kExperimentalFormControls))
+      << "Form controls mode should not have inline text boxes turned on.";
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;

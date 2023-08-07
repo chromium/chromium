@@ -456,6 +456,9 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 
+  static_cast<content::BrowserAccessibilityStateImpl*>(
+      content::BrowserAccessibilityState::GetInstance())
+      ->DisallowAXModeChanges();
   WaitForAllFramesLoaded(mode);
 
   // Call the subclass to dump the output.

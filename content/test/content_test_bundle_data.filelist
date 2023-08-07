@@ -2449,12 +2449,15 @@ data/accessibility/event/value-value-changed.html
 data/accessibility/event/visibility-hidden-changed-expected-auralinux.txt
 data/accessibility/event/visibility-hidden-changed-expected-uia-win.txt
 data/accessibility/event/visibility-hidden-changed.html
+data/accessibility/form-controls/bdo-table-cell.html
 data/accessibility/form-controls/contenteditable-descendants-expected-android.txt
 data/accessibility/form-controls/contenteditable-descendants-expected-blink.txt
 data/accessibility/form-controls/contenteditable-descendants.html
 data/accessibility/form-controls/img-form-expected-android.txt
 data/accessibility/form-controls/img-form-expected-blink.txt
 data/accessibility/form-controls/img-form.html
+data/accessibility/form-controls/img-map-pseudo.html
+data/accessibility/form-controls/map-inside-map.html
 data/accessibility/form-controls/role-group-expected-android.txt
 data/accessibility/form-controls/role-group-expected-blink.txt
 data/accessibility/form-controls/role-group.html

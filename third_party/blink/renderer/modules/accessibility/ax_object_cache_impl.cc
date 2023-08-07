@@ -2722,10 +2722,12 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, the inline textboxes of focused editable subtrees are always
-  // loaded.
-  AXObject* focus = FocusedObject();
-  if (focus && focus->IsEditableRoot()) {
-    focus->LoadInlineTextBoxes();
+  // loaded, but only if inline text boxes are enabled.
+  if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {
+    AXObject* focus = FocusedObject();
+    if (focus && focus->IsEditableRoot()) {
+      focus->LoadInlineTextBoxes();
+    }
   }
 #endif
 
