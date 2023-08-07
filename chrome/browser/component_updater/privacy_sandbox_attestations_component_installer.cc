@@ -45,6 +45,29 @@ constexpr uint8_t kPrivacySandboxAttestationsPublicKeySHA256[32] = {
 const char kPrivacySandboxAttestationsManifestName[] =
     "Privacy Sandbox Attestations";
 
+// The task priority used to register the component. These two priorities have
+// different behaviors when the component file exists on disk from previous
+// runs.
+//
+// USER_VISIBLE: The registration happens almost immediately after starting the
+// browser. Since registration checks component installation, the attestations
+// file will be detected at the same time.
+// BEST_EFFORT: The registration does not happen until after a few minutes after
+// starting the browser. The existing attestations file will not be detected
+// until then.
+// See crbug.com/1466862.
+//
+// By comparing the metrics on how many Privacy Sandbox APIs are rejected
+// because of the attestations map not being ready, we can determine whether it
+// is worth using a higher priority, which will regress the startup time.
+base::TaskPriority GetRegistrationPriority() {
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::
+                 kPrivacySandboxAttestationsHigherComponentRegistrationPriority)
+             ? base::TaskPriority::USER_VISIBLE
+             : base::TaskPriority::BEST_EFFORT;
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -171,7 +194,7 @@ void RegisterPrivacySandboxAttestationsComponent(ComponentUpdateService* cus) {
               }));
 
   base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus, base::OnceClosure(), base::TaskPriority::BEST_EFFORT);
+      ->Register(cus, base::OnceClosure(), GetRegistrationPriority());
 }
 
 }  // namespace component_updater
