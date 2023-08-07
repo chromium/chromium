@@ -216,7 +216,8 @@ void SystemLiveCaptionService::CreateClient() {
           /*enable_formatting=*/true,
           prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
           /*is_server_based=*/false,
-          media::mojom::RecognizerClientType::kLiveCaption));
+          media::mojom::RecognizerClientType::kLiveCaption,
+          /*skip_continuously_empty_audio=*/true));
 }
 
 }  // namespace ash

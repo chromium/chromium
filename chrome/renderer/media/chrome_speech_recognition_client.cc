@@ -181,6 +181,7 @@ void ChromeSpeechRecognitionClient::Initialize() {
   options->enable_formatting = true;
   options->recognizer_client_type =
       media::mojom::RecognizerClientType::kLiveCaption;
+  options->skip_continuously_empty_audio = true;
 
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
