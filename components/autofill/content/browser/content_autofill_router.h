@@ -281,22 +281,22 @@ class ContentAutofillRouter {
   // Routing of events called by the browser:
   std::vector<FieldGlobalId> FillOrPreviewForm(
       ContentAutofillDriver* source,
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
       void (*callback)(ContentAutofillDriver* target,
-                       mojom::RendererFormDataAction action,
+                       mojom::AutofillActionPersistence action_persistence,
                        const FormData& form));
   void UndoAutofill(
       ContentAutofillDriver* source,
-      mojom::RendererFormDataAction renderer_action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
       void (*callback)(ContentAutofillDriver* target,
                        const FormData& form,
-                       mojom::RendererFormDataAction renderer_action));
+                       mojom::AutofillActionPersistence action_persistence));
   void SendAutofillTypePredictionsToRenderer(
       ContentAutofillDriver* source,
       const std::vector<FormDataPredictions>& type_predictions,

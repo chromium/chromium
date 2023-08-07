@@ -213,12 +213,12 @@ class ContentAutofillDriver : public AutofillDriver,
   // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through browser_events().
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void UndoAutofill(mojom::RendererFormDataAction renderer_action,
+  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
                     const FormData& data,
                     const url::Origin& triggered_origin,
                     const base::flat_map<FieldGlobalId, ServerFieldType>&

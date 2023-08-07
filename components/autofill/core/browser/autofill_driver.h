@@ -137,7 +137,7 @@ class AutofillDriver {
   //
   // This method is a no-op if the renderer is not currently available.
   virtual std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
@@ -158,7 +158,7 @@ class AutofillDriver {
   //
   // This method is a no-op if the renderer is not currently available.
   virtual void UndoAutofill(
-      mojom::RendererFormDataAction renderer_action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;

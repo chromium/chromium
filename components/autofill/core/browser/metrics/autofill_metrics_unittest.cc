@@ -1944,7 +1944,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   {
     base::UserActionTester user_action_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_FilledCreditCardSuggestion"));
@@ -2622,7 +2622,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // Simulating selecting a masked server card suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields[2],
+        mojom::AutofillActionPersistence::kFill, form, form.fields[2],
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     EXPECT_THAT(
@@ -2646,11 +2646,11 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // Simulating selecting a masked server card multiple times.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields[2],
+        mojom::AutofillActionPersistence::kFill, form, form.fields[2],
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields[2],
+        mojom::AutofillActionPersistence::kFill, form, form.fields[2],
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     EXPECT_THAT(
@@ -2675,7 +2675,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, kTestMaskedCardId, form,
+        mojom::AutofillActionPersistence::kFill, kTestMaskedCardId, form,
         form.fields[2], AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
@@ -2700,12 +2700,12 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // Simulating selecting a virtual card multiple times.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, kTestMaskedCardId, form,
+        mojom::AutofillActionPersistence::kFill, kTestMaskedCardId, form,
         form.fields[2], AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
     autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, kTestMaskedCardId, form,
+        mojom::AutofillActionPersistence::kFill, kTestMaskedCardId, form,
         form.fields[2], AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
@@ -2744,7 +2744,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // Simulating filling a local card suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -2766,7 +2766,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // based on the enrolled masked card.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, kTestMaskedCardId, form,
+        mojom::AutofillActionPersistence::kFill, kTestMaskedCardId, form,
         form.fields.front(), AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
@@ -2790,7 +2790,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424");
@@ -2823,7 +2823,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // Simulating filling a full card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestFullServerCardId),
         AutofillTriggerSource::kPopup);
     EXPECT_THAT(
@@ -2845,10 +2845,10 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // Simulating filling multiple times.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -2888,7 +2888,7 @@ TEST_P(
   // Simulate filling a unique local card suggestion.
   base::HistogramTester histogram_tester;
   autofill_manager().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
       Suggestion::BackendId(local_guid), AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
@@ -2935,7 +2935,7 @@ TEST_P(AutofillMetricsIFrameTest,
   base::HistogramTester histogram_tester;
   // Local card with a duplicate server card present at index 0.
   autofill_manager().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
       Suggestion::BackendId(local_guid), AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
@@ -2984,7 +2984,7 @@ TEST_P(AutofillMetricsIFrameTest,
   base::HistogramTester histogram_tester;
   // Server card with a duplicate local card present at index 0.
   autofill_manager().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
       Suggestion::BackendId(local_guid), AutofillTriggerSource::kPopup);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
   DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
@@ -3053,7 +3053,7 @@ TEST_P(AutofillMetricsIFrameTest,
   base::HistogramTester histogram_tester;
   // Server card with a duplicate local card present at index 0.
   autofill_manager().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
       Suggestion::BackendId(local_guid), AutofillTriggerSource::kPopup);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
   DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
@@ -3114,7 +3114,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -3138,7 +3138,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -3175,7 +3175,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPanWithNonHttpOkResponse();
@@ -3447,7 +3447,7 @@ TEST_P(AutofillMetricsIFrameTest,
   DidShowAutofillSuggestions(form);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   autofill_manager().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+      mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
       Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
 
   SubmitForm(form);
@@ -3623,7 +3623,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     SubmitForm(form);
     EXPECT_THAT(
@@ -3664,7 +3664,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, kTestMaskedCardId, form,
+        mojom::AutofillActionPersistence::kFill, kTestMaskedCardId, form,
         form.fields.front(), AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
@@ -3708,7 +3708,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestFullServerCardId),
         AutofillTriggerSource::kPopup);
     SubmitForm(form);
@@ -3749,7 +3749,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     // Simulating submission with a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424");
@@ -3993,7 +3993,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     SubmitForm(form);
     EXPECT_THAT(
@@ -4017,7 +4017,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
     autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, kTestMaskedCardId, form,
+        mojom::AutofillActionPersistence::kFill, kTestMaskedCardId, form,
         form.fields.front(), AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
@@ -4045,7 +4045,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
     // Full server card.
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestFullServerCardId),
         AutofillTriggerSource::kPopup);
     SubmitForm(form);
@@ -4068,7 +4068,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     // Simulating submission with a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(u"6011000990139424");
@@ -4207,7 +4207,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -4253,7 +4253,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
     // Select the masked server card with the linked offer.
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kMaskedServerCardIds[0]),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -4300,7 +4300,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // Select another card, and still log to offer
     // sub-histogram because user has another masked server card with offer.
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -4353,7 +4353,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // Select the card with linked offer, though metrics should not record it
     // since the offer is expired.
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kMaskedServerCardIds[1]),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -4418,7 +4418,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
     // Select the masked server card with the linked offer.
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kMaskedServerCardIds[2]),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -4470,7 +4470,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // Select the masked server card with the linked offer, but fail the CVC
     // check.
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kMaskedServerCardIds[2]),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -4519,7 +4519,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kMaskedServerCardIds[2]),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -4529,7 +4529,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.back(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     SubmitForm(form);
     EXPECT_THAT(
@@ -5962,7 +5962,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
     SCOPED_TRACE("Edit autofilled field");
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(kTestLocalCardId), AutofillTriggerSource::kPopup);
     SimulateUserChangedTextField(form, form.fields.front());
     // Simulate a second keystroke; make sure we don't log the metric twice.
@@ -9382,7 +9382,7 @@ TEST_P(AutofillMetricsTestForLaxLocalHeuristics, TestHistogramReporting) {
   DidShowAutofillSuggestions(form);
   // Simulate filling the form.
   autofill_manager().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
       Suggestion::BackendId(is_cc_form ? kTestLocalCardId : kTestProfileId),
       AutofillTriggerSource::kPopup);
 

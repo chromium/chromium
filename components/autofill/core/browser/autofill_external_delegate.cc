@@ -248,7 +248,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   switch (suggestion.popup_item_id) {
     case PopupItemId::kClearForm:
       if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
-        manager_->UndoAutofill(mojom::RendererFormDataAction::kPreview,
+        manager_->UndoAutofill(mojom::AutofillActionPersistence::kPreview,
                                query_form_, query_field_);
       }
       break;
@@ -268,7 +268,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case PopupItemId::kVirtualCreditCardEntry:
       manager_->FillOrPreviewVirtualCardInformation(
-          mojom::RendererFormDataAction::kPreview, backend_id.value(),
+          mojom::AutofillActionPersistence::kPreview, backend_id.value(),
           query_form_, query_field_, AutofillTriggerSource::kKeyboardAccessory);
       break;
     default:
@@ -294,7 +294,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // This serves as a clear form or undo autofill suggestion, depending on
       // the state of the feature `kAutofillUndo`.
       if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
-        manager_->UndoAutofill(mojom::RendererFormDataAction::kFill,
+        manager_->UndoAutofill(mojom::AutofillActionPersistence::kFill,
                                query_form_, query_field_);
       } else {
         // User selected 'Clear form'.
@@ -359,7 +359,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // case, the payload contains the backend id, which is a GUID that
       // identifies the actually chosen credit card.
       manager_->FillOrPreviewVirtualCardInformation(
-          mojom::RendererFormDataAction::kFill,
+          mojom::AutofillActionPersistence::kFill,
           suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
           query_field_, AutofillTriggerSource::kPopup);
       break;
@@ -480,13 +480,13 @@ void AutofillExternalDelegate::FillAutofillFormData(
     return;
   }
 
-  mojom::RendererFormDataAction renderer_action =
-      is_preview ? mojom::RendererFormDataAction::kPreview
-                 : mojom::RendererFormDataAction::kFill;
+  mojom::AutofillActionPersistence action_persistence =
+      is_preview ? mojom::AutofillActionPersistence::kPreview
+                 : mojom::AutofillActionPersistence::kFill;
 
   DCHECK(manager_->driver().RendererIsAvailable());
   // Fill the values for the whole form.
-  manager_->FillOrPreviewForm(renderer_action, query_form_, query_field_,
+  manager_->FillOrPreviewForm(action_persistence, query_form_, query_field_,
                               backend_id, trigger_source);
 }
 

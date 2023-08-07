@@ -55,12 +55,12 @@ class AutofillDriverIOS : public AutofillDriver,
   ui::AXTreeID GetAxTreeId() const override;
   bool RendererIsAvailable() override;
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void UndoAutofill(mojom::RendererFormDataAction renderer_action,
+  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
                     const FormData& data,
                     const url::Origin& triggered_origin,
                     const base::flat_map<FieldGlobalId, ServerFieldType>&

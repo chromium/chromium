@@ -261,7 +261,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
-              (mojom::RendererFormDataAction action,
+              (mojom::AutofillActionPersistence action_persistence,
                AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));
@@ -524,14 +524,14 @@ class MockAutofillDriver : public TestAutofillDriver {
   // Mock methods to enable testability.
   MOCK_METHOD((std::vector<FieldGlobalId>),
               FillOrPreviewForm,
-              (mojom::RendererFormDataAction action,
+              (mojom::AutofillActionPersistence action_persistence,
                const FormData& data,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
               (override));
   MOCK_METHOD(void,
               UndoAutofill,
-              (mojom::RendererFormDataAction renderer_action,
+              (mojom::AutofillActionPersistence action_persistence,
                const FormData& data,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
@@ -801,7 +801,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, field, {},
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
     browser_autofill_manager_->FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, field,
+        mojom::AutofillActionPersistence::kFill, form, field,
         Suggestion::BackendId(guid), AutofillTriggerSource::kPopup);
   }
 
@@ -820,7 +820,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void PreviewVirtualCardDataAndSaveResults(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const std::string& guid,
       const FormData& input_form,
       const FormFieldData& input_field,
@@ -829,7 +829,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         .WillOnce((DoAll(testing::SaveArg<1>(response_data),
                          testing::Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
-        action, guid, input_form, input_field, AutofillTriggerSource::kPopup);
+        action_persistence, guid, input_form, input_field,
+        AutofillTriggerSource::kPopup);
   }
 
   bool WillFillCreditCardNumber(const FormData& form,
@@ -906,7 +907,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
         .Times(AtLeast(1));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
-        mojom::RendererFormDataAction::kFill, *form, form->fields[0], card,
+        mojom::AutofillActionPersistence::kFill, *form, form->fields[0], card,
         AutofillTriggerSource::kPopup);
   }
 
@@ -2700,8 +2701,8 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormsSeen({form});
   CreditCard credit_card = test::GetMaskedServerCard();
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields[0], &credit_card,
-      AutofillTriggerSource::kPopup);
+      mojom::AutofillActionPersistence::kFill, form, form.fields[0],
+      &credit_card, AutofillTriggerSource::kPopup);
 
   test_api(*browser_autofill_manager_)
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card,
@@ -2921,7 +2922,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
       .WillOnce((DoAll(testing::SaveArg<1>(&response_data),
                        testing::Return(std::vector<FieldGlobalId>{}))));
   test_api(*browser_autofill_manager_)
-      .FillOrPreviewDataModelForm(mojom::RendererFormDataAction::kFill, form,
+      .FillOrPreviewDataModelForm(mojom::AutofillActionPersistence::kFill, form,
                                   form.fields.front(), profile, nullptr,
                                   form_structure, autofill_field);
   std::vector<FormFieldData> filled_fields(response_data.fields.begin(),
@@ -2956,7 +2957,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormChanged) {
   FormData response_data;
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm).Times(0);
   test_api(*browser_autofill_manager_)
-      .FillOrPreviewDataModelForm(mojom::RendererFormDataAction::kFill, form,
+      .FillOrPreviewDataModelForm(mojom::AutofillActionPersistence::kFill, form,
                                   form.fields.front(), profile, nullptr,
                                   form_structure, autofill_field);
 }
@@ -2974,13 +2975,13 @@ TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
       .WillOnce(Return(safe_fields));
   test_api(*browser_autofill_manager_)
       .FillOrPreviewDataModelForm(
-          mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+          mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
           personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
           form_structure, autofill_field);
 
   EXPECT_CALL(*autofill_driver_, UndoAutofill);
-  browser_autofill_manager_->UndoAutofill(mojom::RendererFormDataAction::kFill,
-                                          form, form.fields.front());
+  browser_autofill_manager_->UndoAutofill(
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front());
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2995,7 +2996,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(autofill_client_, DidFillOrPreviewForm);
   test_api(*browser_autofill_manager_)
       .FillOrPreviewDataModelForm(
-          mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+          mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
           personal_data().GetCreditCards()[0], /*optional_cvc=*/nullptr,
           form_structure, autofill_field);
 }
@@ -3783,7 +3784,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
       .WillOnce(DoAll(testing::SaveArg<1>(&filled_form),
                       testing::Return(std::vector<FieldGlobalId>{})));
   browser_autofill_manager_->FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields[0],
+      mojom::AutofillActionPersistence::kFill, form, form.fields[0],
       Suggestion::BackendId(kElvisProfileGuid),
       AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized);
   ExpectFilledForm(filled_form, kElvisAddressFillData,
@@ -4573,9 +4574,9 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   FormsSeen({form});
 
   FormData response_data;
-  PreviewVirtualCardDataAndSaveResults(mojom::RendererFormDataAction::kPreview,
-                                       virtual_card.guid(), form,
-                                       form.fields[1], &response_data);
+  PreviewVirtualCardDataAndSaveResults(
+      mojom::AutofillActionPersistence::kPreview, virtual_card.guid(), form,
+      form.fields[1], &response_data);
 
   std::u16string expected_cardholder_name = u"Lorem Ipsum";
   // Virtual card number using obfuscated dots only: Virtual card Mastercard

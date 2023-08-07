@@ -23,13 +23,13 @@ interface AutofillAgent {
   // Instructs the renderer to fill or preview the active form with the given
   // form data.
   FillOrPreviewForm(FormData form,
-                    RendererFormDataAction action);
+                    AutofillActionPersistence action);
 
   // Fill the active form with some of `forms` data. This operation is ran
   // with the specific intention to "undo" the last autofill operation that
   // affected the field on which Undo was triggered. `renderer_action` denotes
   // whether the renderer should actually fill or preview those changes.
-  UndoAutofill(FormData form, RendererFormDataAction renderer_action);
+  UndoAutofill(FormData form, AutofillActionPersistence renderer_action);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);

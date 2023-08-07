@@ -405,13 +405,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
   typedef WebString (*GetValueFunction)(WebFormControlElement element);
 
   // Test FormFillxxx functions.
-  void TestFormFillFunctions(const char* html,
-                             bool unowned,
-                             const char* url_override,
-                             const AutofillFieldCase* field_cases,
-                             size_t number_of_field_cases,
-                             mojom::RendererFormDataAction action,
-                             GetValueFunction get_value_function) {
+  void TestFormFillFunctions(
+      const char* html,
+      bool unowned,
+      const char* url_override,
+      const AutofillFieldCase* field_cases,
+      size_t number_of_field_cases,
+      mojom::AutofillActionPersistence action_persistence,
+      GetValueFunction get_value_function) {
     if (url_override)
       LoadHTMLWithUrlOverride(html, url_override);
     else
@@ -468,7 +469,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     }
 
     // Autofill the form using the given fill form function.
-    FillOrPreviewForm(form_data, input_element, action);
+    FillOrPreviewForm(form_data, input_element, action_persistence);
 
     // Validate Autofill or Preview results.
     for (size_t i = 0; i < number_of_field_cases; ++i) {
@@ -582,7 +583,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     };
     TestFormFillFunctions(
         html, unowned, url_override, field_cases, std::size(field_cases),
-        mojom::RendererFormDataAction::kFill, &GetValueWrapper);
+        mojom::AutofillActionPersistence::kFill, &GetValueWrapper);
     // Verify preview selection.
     WebInputElement firstname = GetInputElementById("firstname");
     EXPECT_EQ(16, firstname.SelectionStart());
@@ -658,7 +659,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     };
     TestFormFillFunctions(
         html, unowned, url_override, field_cases, std::size(field_cases),
-        mojom::RendererFormDataAction::kPreview, &GetSuggestedValueWrapper);
+        mojom::AutofillActionPersistence::kPreview, &GetSuggestedValueWrapper);
 
     // Verify preview selection.
     WebInputElement firstname = GetInputElementById("firstname");
@@ -848,7 +849,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -934,7 +935,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].value = u"Jonathan";
     form.fields[2].value = u"brotherj@example.com";
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1012,7 +1013,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].value = u"Earp";
     form.fields[2].value = u"wyatt@example.com";
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1101,7 +1102,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[unowned_offset + 1].is_autofilled = true;
     form.fields[unowned_offset + 2].is_autofilled = true;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1224,14 +1225,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kPreview);
+                      mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the second character.
     EXPECT_EQ(2, input_element.SelectionStart());
     EXPECT_EQ(2, input_element.SelectionEnd());
 
     // Fill the form.
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1360,14 +1361,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[4].is_autofilled = true;
     form.fields[5].is_autofilled = true;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kPreview);
+                      mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the fifth character.
     EXPECT_EQ(5, input_element.SelectionStart());
     EXPECT_EQ(5, input_element.SelectionEnd());
 
     // Fill the form.
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1518,14 +1519,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = false;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kPreview);
+                      mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the fifth character.
     EXPECT_EQ(5, input_element.SelectionStart());
     EXPECT_EQ(5, input_element.SelectionEnd());
 
     // Fill the form.
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1634,14 +1635,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kPreview);
+                      mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the 19th character.
     EXPECT_EQ(19, input_element.SelectionStart());
     EXPECT_EQ(19, input_element.SelectionEnd());
 
     // Fill the form.
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
@@ -1753,14 +1754,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kPreview);
+                      mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the 19th character.
     EXPECT_EQ(19, input_element.SelectionStart());
     EXPECT_EQ(19, input_element.SelectionEnd());
 
     // Fill the form.
     FillOrPreviewForm(form, input_element,
-                      mojom::RendererFormDataAction::kFill);
+                      mojom::AutofillActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;

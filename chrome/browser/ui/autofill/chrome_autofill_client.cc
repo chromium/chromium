@@ -1101,11 +1101,11 @@ void ChromeAutofillClient::PropagateAutofillPredictionsDeprecated(
 }
 
 void ChromeAutofillClient::DidFillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (action == mojom::RendererFormDataAction::kFill &&
+  if (action_persistence == mojom::AutofillActionPersistence::kFill &&
       trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
       !is_refill) {
     // TODO(crbug.com/1428492): Test that the message was announced.

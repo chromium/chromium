@@ -134,7 +134,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               FillOrPreviewVirtualCardInformation,
-              (mojom::RendererFormDataAction action,
+              (mojom::AutofillActionPersistence action_persistence,
                const std::string& guid,
                const FormData& form,
                const FormFieldData& field,
@@ -151,13 +151,13 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   }
   MOCK_METHOD(void,
               UndoAutofill,
-              (mojom::RendererFormDataAction renderer_action,
+              (mojom::AutofillActionPersistence action_persistence,
                FormData form,
                const FormFieldData& trigger_field),
               (override));
   MOCK_METHOD(void,
               FillOrPreviewForm,
-              (mojom::RendererFormDataAction action,
+              (mojom::AutofillActionPersistence action_persistence,
                const FormData& form,
                const FormFieldData& field,
                Suggestion::BackendId backend_id,
@@ -266,7 +266,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
+      FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _, _, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -633,9 +633,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
       test::CreateAutofillSuggestion(PopupItemId::kPasswordEntry, u"baz foo"),
       kDefaultTriggerSource);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm());
-  EXPECT_CALL(
-      *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewForm(mojom::AutofillActionPersistence::kPreview, _,
+                                _, _, _));
   external_delegate_->DidSelectSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"baz foo"),
       kDefaultTriggerSource);
@@ -655,7 +655,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm());
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewVirtualCardInformation(
-                  mojom::RendererFormDataAction::kPreview, _, _, _, _));
+                  mojom::AutofillActionPersistence::kPreview, _, _, _, _));
   external_delegate_->DidSelectSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry),
       kDefaultTriggerSource);
@@ -695,7 +695,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
+      FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _, _, _));
 
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry,
@@ -709,7 +709,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
+      FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _, _, _));
 
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
@@ -735,8 +735,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
       AutofillTriggerSource::kPopup;
 #endif
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _,
-                                expected_source));
+              FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _,
+                                _, expected_source));
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 
@@ -747,8 +747,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   expected_source =
       AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _,
-                                expected_source));
+              FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _,
+                                _, expected_source));
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 }
@@ -1079,7 +1079,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
   FormData form;
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewVirtualCardInformation(
-                  mojom::RendererFormDataAction::kFill, _, _, _, _));
+                  mojom::AutofillActionPersistence::kFill, _, _, _, _));
   external_delegate_->DidAcceptSuggestion(
       Suggestion(PopupItemId::kVirtualCreditCardEntry), 0,
       kDefaultTriggerSource);
@@ -1088,7 +1088,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
 TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewVirtualCardInformation(
-                  mojom::RendererFormDataAction::kPreview, _, _, _, _));
+                  mojom::AutofillActionPersistence::kPreview, _, _, _, _));
   external_delegate_->DidSelectSuggestion(
       Suggestion(PopupItemId::kVirtualCreditCardEntry), kDefaultTriggerSource);
 }

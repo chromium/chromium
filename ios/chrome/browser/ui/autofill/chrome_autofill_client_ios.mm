@@ -490,7 +490,7 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

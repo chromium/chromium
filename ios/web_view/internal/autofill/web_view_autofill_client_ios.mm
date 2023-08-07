@@ -352,7 +352,7 @@ void WebViewAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
 }
 
 void WebViewAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

@@ -91,7 +91,7 @@ class TestAutofillDriverTemplate : public T {
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
@@ -106,7 +106,7 @@ class TestAutofillDriverTemplate : public T {
     return result;
   }
 
-  void UndoAutofill(mojom::RendererFormDataAction renderer_action,
+  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
                     const FormData& form_data,
                     const url::Origin& triggered_origin,
                     const base::flat_map<FieldGlobalId, ServerFieldType>&

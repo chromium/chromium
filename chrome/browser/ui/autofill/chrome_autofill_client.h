@@ -257,7 +257,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void PropagateAutofillPredictionsDeprecated(
       AutofillDriver* driver,
       const std::vector<FormStructure*>& forms) override;
-  void DidFillOrPreviewForm(mojom::RendererFormDataAction action,
+  void DidFillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,

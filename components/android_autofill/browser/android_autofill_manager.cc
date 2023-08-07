@@ -227,12 +227,12 @@ FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
 }
 
 void AndroidAutofillManager::FillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& form,
     FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
-  DCHECK_EQ(action, mojom::RendererFormDataAction::kFill);
-  driver().FillOrPreviewForm(action, form, triggered_origin, {});
+  DCHECK_EQ(action_persistence, mojom::AutofillActionPersistence::kFill);
+  driver().FillOrPreviewForm(action_persistence, form, triggered_origin, {});
 
   if (auto* logger = GetEventFormLogger(field_type_group)) {
     logger->OnDidFillSuggestion();

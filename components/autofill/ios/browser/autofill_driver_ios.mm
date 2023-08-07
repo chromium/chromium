@@ -89,7 +89,7 @@ bool AutofillDriverIOS::RendererIsAvailable() {
 }
 
 std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
@@ -104,7 +104,7 @@ std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
 }
 
 void AutofillDriverIOS::UndoAutofill(
-    mojom::RendererFormDataAction renderer_action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {}

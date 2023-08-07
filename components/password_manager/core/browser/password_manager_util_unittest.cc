@@ -282,7 +282,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
-              (autofill::mojom::RendererFormDataAction action,
+              (autofill::mojom::AutofillActionPersistence action_persistence,
                autofill::AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));

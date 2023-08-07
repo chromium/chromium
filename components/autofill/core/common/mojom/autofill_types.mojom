@@ -469,10 +469,11 @@ enum AutofillState {
   kAutocompleteAvailable,
 };
 
-// The possible actions that the renderer can take on receiving form data.
-enum RendererFormDataAction {
-  kFill,     // The renderer should fill the form data.
-  kPreview,  // The renderer should preview the form data.
+// Represents whether an autofill action, which is an operation that changes a
+// form, will persist (kFill) or will be cleared later (kPreview)
+enum AutofillActionPersistence {
+  kFill,     // The action is filled.
+  kPreview,  // The action is previewed and will be cleared afterwards.
 };
 
 // Describes which action triggered Autofill suggestions. This has implications

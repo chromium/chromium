@@ -92,7 +92,7 @@ class CategoryResolvedKeyMetricsTest
     ASSERT_TRUE(personal_data().GetProfileByGUID(profile.guid()));
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
     autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
         Suggestion::BackendId(profile.guid()), AutofillTriggerSource::kPopup);
   }
 

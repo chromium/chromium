@@ -174,9 +174,10 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
 
-  void FillOrPreviewForm(const FormData& form,
-                         mojom::RendererFormDataAction action) override {
-    if (action == mojom::RendererFormDataAction::kPreview) {
+  void FillOrPreviewForm(
+      const FormData& form,
+      mojom::AutofillActionPersistence action_persistence) override {
+    if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
       preview_form_form_ = form;
     } else {
       fill_form_form_ = form;
@@ -184,8 +185,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
-  void UndoAutofill(const FormData& form,
-                    mojom::RendererFormDataAction renderer_action) override {}
+  void UndoAutofill(
+      const FormData& form,
+      mojom::AutofillActionPersistence action_persistence) override {}
 
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override {
@@ -586,8 +588,8 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kFill, input_form_data, triggered_origin,
-      {});
+      mojom::AutofillActionPersistence::kFill, input_form_data,
+      triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -612,7 +614,7 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().FillOrPreviewForm(
-      mojom::RendererFormDataAction::kPreview, input_form_data,
+      mojom::AutofillActionPersistence::kPreview, input_form_data,
       triggered_origin, {});
 
   run_loop.RunUntilIdle();

@@ -94,14 +94,14 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               FillOrPreviewCreditCardForm,
-              (mojom::RendererFormDataAction action,
+              (mojom::AutofillActionPersistence action_persistence,
                const FormData& form,
                const FormFieldData& field,
                const CreditCard* credit_card,
                const AutofillTriggerSource trigger_source));
   MOCK_METHOD(void,
               FillOrPreviewVirtualCardInformation,
-              (mojom::RendererFormDataAction action,
+              (mojom::AutofillActionPersistence action_persistence,
                const std::string& guid,
                const FormData& form,
                const FormFieldData& field,

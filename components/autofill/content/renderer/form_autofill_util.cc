@@ -1118,7 +1118,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     std::vector<WebFormControlElement>& control_elements,
     const WebElement& initiating_element,
     const FormData& data,
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const Callback& callback) {
   const bool num_elements_matches_num_fields =
       control_elements.size() == data.fields.size();
@@ -1146,7 +1146,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
 
   // If this is a preview filling, prevent already autofilled fields from being
   // highlighted.
-  if (action == mojom::RendererFormDataAction::kPreview &&
+  if (action_persistence == mojom::AutofillActionPersistence::kPreview &&
       base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
     for (auto& element : control_elements) {
@@ -1178,14 +1178,16 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // Autofill the initiating element.
     bool is_initiating_element = (element == initiating_element);
     if (is_initiating_element) {
-      if (action == mojom::RendererFormDataAction::kFill && element.Focused())
+      if (action_persistence == mojom::AutofillActionPersistence::kFill &&
+          element.Focused()) {
         initially_focused_element = &element;
+      }
 
       matching_fields.push_back(element);
       // In preview mode, only fill the field if it changes the fields value.
       // With this, the WebAutofillState is not changed from kAutofilled to
       // kPreviewed. This prevents the highlighting to change.
-      if (action == mojom::RendererFormDataAction::kFill ||
+      if (action_persistence == mojom::AutofillActionPersistence::kFill ||
           data.fields[i].value != element.Value().Utf16() ||
           !base::FeatureList::IsEnabled(
               features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
@@ -1230,12 +1232,12 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
     const WebFormElement& form_element,
     const WebElement& initiating_element,
     const FormData& data,
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const Callback& callback) {
   std::vector<WebFormControlElement> control_elements =
       ExtractAutofillableElementsInForm(form_element);
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, action, callback);
+                                        data, action_persistence, callback);
 }
 
 // For each autofillable field in |data| that matches a field in the set of
@@ -1244,7 +1246,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
 std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     const WebElement& initiating_element,
     const FormData& data,
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const Callback& callback) {
   if (initiating_element.IsNull())
     return {};
@@ -1255,7 +1257,7 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     return {};
 
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, action, callback);
+                                        data, action_persistence, callback);
 }
 
 // Sets the |field|'s value to the value in |data|, and specifies the section
@@ -2514,17 +2516,19 @@ bool FindFormAndFieldForFormControlElement(
 std::vector<WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
     const WebFormControlElement& element,
-    mojom::RendererFormDataAction action) {
+    mojom::AutofillActionPersistence action_persistence) {
   WebFormElement form_element = GetOwningForm(element);
 
-  Callback callback = action == mojom::RendererFormDataAction::kPreview
-                          ? &PreviewFormField
-                          : &FillFormField;
+  Callback callback =
+      action_persistence == mojom::AutofillActionPersistence::kPreview
+          ? &PreviewFormField
+          : &FillFormField;
   if (form_element.IsNull()) {
-    return ForEachMatchingUnownedFormField(element, form, action, callback);
+    return ForEachMatchingUnownedFormField(element, form, action_persistence,
+                                           callback);
   }
-  return ForEachMatchingFormField(form_element, element, form, action,
-                                  callback);
+  return ForEachMatchingFormField(form_element, element, form,
+                                  action_persistence, callback);
 }
 
 void UndoForm(const FormData& form,

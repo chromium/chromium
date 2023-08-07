@@ -212,33 +212,34 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
 }
 
 std::vector<FieldGlobalId> ContentAutofillDriver::FillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   return autofill_router().FillOrPreviewForm(
-      this, action, data, triggered_origin, field_type_map,
-      [](ContentAutofillDriver* target, mojom::RendererFormDataAction action,
+      this, action_persistence, data, triggered_origin, field_type_map,
+      [](ContentAutofillDriver* target,
+         mojom::AutofillActionPersistence action_persistence,
          const FormData& data) {
         if (!target->RendererIsAvailable())
           return;
-        target->GetAutofillAgent()->FillOrPreviewForm(data, action);
+        target->GetAutofillAgent()->FillOrPreviewForm(data, action_persistence);
       });
 }
 
 void ContentAutofillDriver::UndoAutofill(
-    mojom::RendererFormDataAction renderer_action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   return autofill_router().UndoAutofill(
-      this, renderer_action, data, triggered_origin, field_type_map,
+      this, action_persistence, data, triggered_origin, field_type_map,
       [](ContentAutofillDriver* target, const FormData& data,
-         mojom::RendererFormDataAction renderer_action) {
+         mojom::AutofillActionPersistence action_persistence) {
         if (!target->RendererIsAvailable()) {
           return;
         }
-        target->GetAutofillAgent()->UndoAutofill(data, renderer_action);
+        target->GetAutofillAgent()->UndoAutofill(data, action_persistence);
       });
 }
 

@@ -427,7 +427,7 @@ void FillAndCheckState(
   }
 
   form_util::FillOrPreviewForm(values_to_fill, autofill_initiating_element,
-                               mojom::RendererFormDataAction::kFill);
+                               mojom::AutofillActionPersistence::kFill);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
@@ -517,7 +517,7 @@ TEST_F(FormCacheBrowserTest,
 
   // Simulate filling the form using Autofill.
   form_util::FillOrPreviewForm(values_to_fill, fname,
-                               mojom::RendererFormDataAction::kFill);
+                               mojom::AutofillActionPersistence::kFill);
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname);

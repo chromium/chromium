@@ -809,9 +809,10 @@ class AutofillClient : public RiskDataLoader {
       const std::vector<FormStructure*>& forms) = 0;
 
   // Inform the client that the form has been filled.
-  virtual void DidFillOrPreviewForm(mojom::RendererFormDataAction action,
-                                    AutofillTriggerSource trigger_source,
-                                    bool is_refill) = 0;
+  virtual void DidFillOrPreviewForm(
+      mojom::AutofillActionPersistence action_persistence,
+      AutofillTriggerSource trigger_source,
+      bool is_refill) = 0;
 
   // Inform the client that the field has been filled.
   virtual void DidFillOrPreviewField(

@@ -339,7 +339,7 @@ bool FindFormAndFieldForFormControlElement(
 std::vector<blink::WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
     const blink::WebFormControlElement& element,
-    mojom::RendererFormDataAction action);
+    mojom::AutofillActionPersistence action_persistence);
 
 // Applies undo to the form represented by `form`. `element` is the input
 // element that initiated the autofill undo process. Returns the filled fields.

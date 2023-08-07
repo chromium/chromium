@@ -96,7 +96,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void FillOrPreviewDataModelForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
@@ -105,7 +105,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       FormStructure* form_structure,
       AutofillField* autofill_field) {
     return manager_->FillOrPreviewDataModelForm(
-        action, form, field, profile_or_credit_card, optional_cvc,
+        action_persistence, form, field, profile_or_credit_card, optional_cvc,
         form_structure, autofill_field, AutofillTriggerSource::kPopup);
   }
 

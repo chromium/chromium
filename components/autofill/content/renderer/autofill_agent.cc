@@ -640,8 +640,9 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::FillOrPreviewForm(const FormData& form,
-                                      mojom::RendererFormDataAction action) {
+void AutofillAgent::FillOrPreviewForm(
+    const FormData& form,
+    mojom::AutofillActionPersistence action_persistence) {
   // If `element_` is null or not focused, Autofill was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
   // was moved otherwise.
@@ -672,9 +673,10 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
   // Clear anything that might have been previewing previously.
   ClearPreviewedForm();
 
-  if (action == mojom::RendererFormDataAction::kPreview) {
+  if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
     query_node_autofill_state_ = element_.GetAutofillState();
-    previewed_elements_ = form_util::FillOrPreviewForm(form, element_, action);
+    previewed_elements_ =
+        form_util::FillOrPreviewForm(form, element_, action_persistence);
 
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->DidPreviewAutofillFormData();
@@ -684,7 +686,8 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
 
     query_node_autofill_state_ = element_.GetAutofillState();
     bool filled_some_fields =
-        !form_util::FillOrPreviewForm(form, element_, action).empty();
+        !form_util::FillOrPreviewForm(form, element_, action_persistence)
+             .empty();
 
     if (!element_.Form().IsNull()) {
       UpdateLastInteractedForm(element_.Form());
@@ -707,7 +710,7 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
 
 void AutofillAgent::UndoAutofill(
     const FormData& form,
-    mojom::RendererFormDataAction renderer_action) {
+    mojom::AutofillActionPersistence action_persistence) {
   // If `element_` is null or not focused, Undo was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
   // was moved otherwise. If `element_` is from a different form than `form`,
@@ -731,7 +734,7 @@ void AutofillAgent::UndoAutofill(
   if (element_.IsNull()) {
     return;
   }
-  if (renderer_action == mojom::RendererFormDataAction::kFill) {
+  if (action_persistence == mojom::AutofillActionPersistence::kFill) {
     form_util::UndoForm(form, element_);
   }
 }
