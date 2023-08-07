@@ -3592,6 +3592,9 @@ extern const char kFrameThrottleFps30[];
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 
+extern const char kGlanceablesV2Name[];
+extern const char kGlanceablesV2Description[];
+
 extern const char kHelpAppAutoTriggerInstallDialogName[];
 extern const char kHelpAppAutoTriggerInstallDialogDescription[];
 

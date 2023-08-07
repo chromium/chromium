@@ -6251,6 +6251,10 @@ const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
 
+const char kGlanceablesV2Name[] = "Glanceables";
+const char kGlanceablesV2Description[] =
+    "Enables Glanceables on the Calendar surface.";
+
 const char kHelpAppAutoTriggerInstallDialogName[] =
     "Help App Auto Trigger Install Dialog";
 const char kHelpAppAutoTriggerInstallDialogDescription[] =

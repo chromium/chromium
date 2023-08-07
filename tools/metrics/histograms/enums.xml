@@ -60131,6 +60131,7 @@ from previous Chrome versions.
   <int value="-1975970208" label="(Obsolete) TranslateSubFrames:disabled"/>
   <int value="-1975719988" label="GlobalMediaControlsSeamlessTransfer:enabled"/>
   <int value="-1974861173" label="ShelfGesturesWithVirtualKeyboard:enabled"/>
+  <int value="-1974183367" label="GlanceablesV2:enabled"/>
   <int value="-1973722176" label="VoiceSearchOnLocalNtp:enabled"/>
   <int value="-1973559591" label="AppDiscoveryForOobe:enabled"/>
   <int value="-1972383451" label="disable-pinch"/>
@@ -66709,6 +66710,7 @@ from previous Chrome versions.
   <int value="1364309298" label="SupportToolCopyTokenButton:enabled"/>
   <int value="1365642727" label="IdentityStatusConsistency:enabled"/>
   <int value="1365857480" label="WebUITabStripNewTabButtonInTabStrip:enabled"/>
+  <int value="1366396538" label="GlanceablesV2:disabled"/>
   <int value="1367406392" label="VaapiVideoDecoder:disabled"/>
   <int value="1367467733" label="AutoplayIgnoreWebAudio:enabled"/>
   <int value="1367487214" label="VaapiJpegImageDecodeAcceleration:enabled"/>

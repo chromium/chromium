@@ -912,7 +912,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGifRecordingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGifRenderingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2TrustedTestersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesV2ClassroomTeacherViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();

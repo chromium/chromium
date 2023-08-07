@@ -37,8 +37,7 @@ void GlanceablesV2Controller::OnActiveUserSessionChanged(
 }
 
 bool GlanceablesV2Controller::AreGlanceablesAvailable() const {
-  return (features::AreGlanceablesV2Enabled() ||
-          features::AreGlanceablesV2TrustedTestersEnabled()) &&
+  return features::AreGlanceablesV2Enabled() &&
          (GetClassroomClient() != nullptr || GetTasksClient() != nullptr);
 }
 
