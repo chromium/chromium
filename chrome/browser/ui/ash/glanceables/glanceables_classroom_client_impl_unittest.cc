@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -169,6 +171,8 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
+  base::test::ScopedFeatureList feature_list_{
+      features::kGlanceablesV2ClassroomTeacherView};
   net::EmbeddedTestServer test_server_;
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_ =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>(

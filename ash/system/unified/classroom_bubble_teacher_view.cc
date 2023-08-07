@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
@@ -86,6 +87,7 @@ ClassroomBubbleTeacherView::ClassroomBubbleTeacherView(
     : ClassroomBubbleBaseView(
           delegate,
           std::make_unique<ClassroomTeacherComboboxModel>()) {
+  CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
   combo_box_view_->SetCallback(base::BindRepeating(
       &ClassroomBubbleTeacherView::SelectedAssignmentListChanged,
       base::Unretained(this)));

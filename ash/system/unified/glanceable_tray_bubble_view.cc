@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/public/cpp/session/user_info.h"
@@ -173,7 +174,8 @@ void GlanceableTrayBubbleView::InitializeContents() {
           weak_ptr_factory_.GetWeakPtr(),
           base::Unretained(&classroom_bubble_student_view_)));
     }
-    if (!classroom_bubble_teacher_view_) {
+    if (features::IsGlanceablesV2ClassroomTeacherViewEnabled() &&
+        !classroom_bubble_teacher_view_) {
       classroom_client->IsTeacherRoleActive(base::BindOnce(
           &GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded<
               ClassroomBubbleTeacherView>,

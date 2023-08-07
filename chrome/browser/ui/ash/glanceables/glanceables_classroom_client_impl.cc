@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
@@ -223,15 +224,17 @@ GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
       clock_(clock),
       create_request_sender_callback_(create_request_sender_callback),
       number_of_assignments_prioritized_for_display_(3) {
-  if (use_best_effort_prefetch_task_runner) {
-    teacher_data_prefetch_timer_.SetTaskRunner(
-        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
-  }
+  if (features::IsGlanceablesV2ClassroomTeacherViewEnabled()) {
+    if (use_best_effort_prefetch_task_runner) {
+      teacher_data_prefetch_timer_.SetTaskRunner(
+          content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
+    }
 
-  teacher_data_prefetch_timer_.Start(
-      FROM_HERE, base::Seconds(20),
-      base::BindOnce(&GlanceablesClassroomClientImpl::PrefetchTeacherData,
-                     base::Unretained(this)));
+    teacher_data_prefetch_timer_.Start(
+        FROM_HERE, base::Seconds(20),
+        base::BindOnce(&GlanceablesClassroomClientImpl::PrefetchTeacherData,
+                       base::Unretained(this)));
+  }
 }
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
@@ -557,6 +560,7 @@ void GlanceablesClassroomClientImpl::FetchStudentCourses(
 
 void GlanceablesClassroomClientImpl::FetchTeacherCourses(
     FetchCoursesCallback callback) {
+  CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
   CHECK(callback);
 
   const bool needs_refetch =
@@ -1122,6 +1126,7 @@ bool GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
     SortComparator sort_comparator,
     bool allow_submissions_refresh,
     GetAssignmentsCallback callback) {
+  CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
   CHECK(due_predicate);
   CHECK(callback);
 
@@ -1224,6 +1229,7 @@ void GlanceablesClassroomClientImpl::PruneInvalidCourseWork(
 }
 
 void GlanceablesClassroomClientImpl::PrefetchTeacherData() {
+  CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
   CHECK_EQ(teacher_data_fetch_status_, FetchStatus::kNotFetched);
 
   callbacks_waiting_for_teacher_data_.push_back(base::BindOnce(
@@ -1258,17 +1264,24 @@ void GlanceablesClassroomClientImpl::PrefetchTeacherData() {
 RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
-    request_sender_ =
-        std::move(create_request_sender_callback_)
-            .Run(
-                {GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
-                 GaiaConstants::kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
-                 GaiaConstants::kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
-                 GaiaConstants::
-                     kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope,
-                 GaiaConstants::
-                     kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope},
-                kTrafficAnnotationTag);
+
+    std::vector<std::string> scopes = {
+        GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+        GaiaConstants::kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
+        GaiaConstants::kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope,
+    };
+    if (features::IsGlanceablesV2ClassroomTeacherViewEnabled()) {
+      // Additional scopes for teachers to view course work and grades for
+      // students in the Google Classroom classes they teach or administer.
+      scopes.insert(
+          scopes.end(),
+          {GaiaConstants::kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
+           GaiaConstants::
+               kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope});
+    }
+
+    request_sender_ = std::move(create_request_sender_callback_)
+                          .Run(std::move(scopes), kTrafficAnnotationTag);
     CHECK(request_sender_);
   }
   return request_sender_.get();

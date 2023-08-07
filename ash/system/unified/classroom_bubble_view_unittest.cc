@@ -184,6 +184,13 @@ class ClassroomBubbleStudentViewTest : public ClassroomBubbleViewTest {
 
 class ClassroomBubbleTeacherViewTest : public ClassroomBubbleViewTest {
  public:
+  ClassroomBubbleTeacherViewTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlanceablesV2,
+                              features::kGlanceablesV2ClassroomTeacherView},
+        /*disabled_features=*/{});
+  }
+
   void SetUp() override {
     ClassroomBubbleViewTest::SetUp();
     // `view_` gets teacher assignments with approaching due date during
@@ -196,6 +203,9 @@ class ClassroomBubbleTeacherViewTest : public ClassroomBubbleViewTest {
     view_ = widget_->SetContentsView(
         std::make_unique<ClassroomBubbleTeacherView>(&detailed_view_delegate_));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ClassroomBubbleStudentViewTest, RendersComboBoxView) {

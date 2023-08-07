@@ -1222,6 +1222,11 @@ BASE_FEATURE(kGlanceablesV2TrustedTesters,
              "GlanceablesV2TrustedTesters",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables glanceables on time management surface for classroom teachers.
+BASE_FEATURE(kGlanceablesV2ClassroomTeacherView,
+             "GlanceablesV2ClassroomTeacherView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia reauth endpoint.
 BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
@@ -3210,6 +3215,10 @@ bool AreGlanceablesV2Enabled() {
 
 bool AreGlanceablesV2TrustedTestersEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2TrustedTesters);
+}
+
+bool IsGlanceablesV2ClassroomTeacherViewEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesV2ClassroomTeacherView);
 }
 
 bool IsHibernateEnabled() {
