@@ -410,16 +410,12 @@ WebContents* MaybeOpenApplicationForLaunchTypeMultipleClients(
 WebContents* CheckForMultiClientLaunchSupport(
     const Extension* extension,
     Profile* profile,
+    const extensions::WebFileHandlersInfo& handlers,
     const apps::AppLaunchParams& params) {
-  auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
-  if (!handlers) {
-    return nullptr;
-  }
-
   // Find a matching manifest file handler action for the intent. If there's a
   // match, return early with the last web_contents opened.
   WebContents* web_contents = nullptr;
-  for (const auto& handler : *handlers) {
+  for (const auto& handler : handlers) {
     web_contents = MaybeOpenApplicationForLaunchTypeMultipleClients(
         handler, params, profile, *extension);
     if (web_contents) {
@@ -446,11 +442,17 @@ WebContents* OpenEnabledApplication(Profile* profile,
 
   if (extensions::WebFileHandlers::SupportsWebFileHandlers(
           extension->manifest_version())) {
+    // If the extension supports Web File Handlers, File Handlers are required.
+    auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
+    if (!handlers) {
+      return nullptr;
+    }
+
     // Support for multiple-clients in Web File Handlers. Launch if this is a
     // multi-client launch. Otherwise fallthrough to
     // `OpenEnabledApplicationHelper`.
     WebContents* web_contents =
-        CheckForMultiClientLaunchSupport(extension, profile, params);
+        CheckForMultiClientLaunchSupport(extension, profile, *handlers, params);
     if (web_contents) {
       return web_contents;
     }
