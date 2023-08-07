@@ -63,6 +63,10 @@ class NoSuchScriptException(BidiException):
     error_code = "no such script"
 
 
+class UnableToCaptureScreenException(BidiException):
+    error_code = "unable to capture screen"
+
+
 class UnknownCommandException(BidiException):
     error_code = "unknown command"
 
@@ -94,5 +98,5 @@ def get(error_code: str) -> Type[BidiException]:
 
 _errors: DefaultDict[str, Type[BidiException]] = collections.defaultdict()
 for item in list(locals().values()):
-    if type(item) == type and item != BidiException and issubclass(item, BidiException):
+    if isinstance(item, type) and item != BidiException and issubclass(item, BidiException):
         _errors[item.error_code] = item
