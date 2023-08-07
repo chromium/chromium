@@ -48,13 +48,8 @@ void SubAppsInstallDialogController::Init(
 
   callback_ = std::move(callback);
 
-  std::vector<SubAppDialogInfo> sub_apps_processed;
-  for (const auto& sub_app : sub_apps) {
-    sub_apps_processed.emplace_back(SubAppDialogInfo(sub_app->title));
-  }
-
   widget_ = chrome::CreateSubAppsInstallDialogWidget(
-      parent_app_name, parent_app_scope, sub_apps_processed, window);
+      parent_app_name, parent_app_scope, sub_apps, window);
   widget_->AddObserver(this);
   widget_->Show();
 }

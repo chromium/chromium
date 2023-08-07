@@ -8,17 +8,30 @@
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace web_app {
 
 using SubAppsInstallDialogControllerTest = BrowserWithTestWindowTest;
+using DialogViewIDForTesting =
+    SubAppsInstallDialogController::DialogViewIDForTesting;
 
 constexpr const char kParentAppName[] = "Parent App";
 constexpr const char kParentAppScope[] = "https://www.parent-app.com/";
+
+constexpr const char kSubAppStartURL[] = "https://www.parent-app.com/sub-app";
+constexpr const char kSubAppIconURL[] =
+    "https://www.parent-app.com/sub-app/icon";
+
+const std::u16string kSubAppName1 = u"Sub App 1";
+const std::u16string kSubAppName2 = u"Sub App 2";
+const std::u16string kSubAppName3 = u"Sub App 3";
 
 std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
     base::OnceCallback<void(bool)> callback,
@@ -29,9 +42,23 @@ std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
   return controller;
 }
 
+std::unique_ptr<WebAppInstallInfo> CreateInstallInfoWithIconForSubApp(
+    const std::u16string& name) {
+  const GeneratedIconsInfo icon_info(
+      IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
+  std::unique_ptr<WebAppInstallInfo> sub_app_install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+  sub_app_install_info->title = name;
+  web_app::AddIconsToWebAppInstallInfo(sub_app_install_info.get(),
+                                       GURL(kSubAppIconURL), {icon_info});
+  return sub_app_install_info;
+}
+
 TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
-  std::vector<SubAppDialogInfo> sub_apps = {
-      {u"Sub App 1"}, {u"Sub App 2"}, {u"Sub App 3"}};
+  std::vector<std::unique_ptr<WebAppInstallInfo>> sub_apps;
+  sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName1));
+  sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName2));
+  sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
   views::Widget* widget = chrome::CreateSubAppsInstallDialogWidget(
       kParentAppName, kParentAppScope, sub_apps, GetContext());
@@ -40,22 +67,30 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   EXPECT_FALSE(dialog->ShouldShowCloseButton());
   EXPECT_TRUE(dialog->owned_by_widget());
 
-  // Confirm that all sub app names were added to the view.
-  std::vector<views::View*> views_group;
+  // Confirm that all sub app names and icons were added to the view.
+  std::vector<views::View*> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
-      base::to_underlying(SubAppsInstallDialogController::
-                              DialogViewIDForTesting::SUB_APP_LABEL),
-      &views_group);
-  EXPECT_EQ(views_group.size(), 3u);
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
+      &sub_app_labels);
+  EXPECT_EQ(sub_app_labels.size(), 3u);
+
+  std::vector<views::View*> sub_app_icons;
+  widget->GetContentsView()->GetViewsInGroup(
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
+      &sub_app_icons);
+  EXPECT_EQ(sub_app_icons.size(), 3u);
+
   widget->CloseNow();
 }
 
 TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
-  std::u16string sub_app_name = u"Sub App 1";
-
-  auto sub_app_install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://www.app.com"));
-  sub_app_install_info->title = sub_app_name;
+  std::unique_ptr<WebAppInstallInfo> sub_app_install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+  sub_app_install_info->title = kSubAppName1;
+  const GeneratedIconsInfo icon_info(
+      IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
+  web_app::AddIconsToWebAppInstallInfo(sub_app_install_info.get(),
+                                       GURL(kSubAppIconURL), {icon_info});
 
   std::vector<std::unique_ptr<WebAppInstallInfo>> sub_apps;
   sub_apps.emplace_back(std::move(sub_app_install_info));
@@ -65,15 +100,23 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
                    GetContext());
   views::Widget* widget = controller->GetWidgetForTesting();
 
-  std::vector<views::View*> views_group;
+  std::vector<views::View*> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
-      base::to_underlying(SubAppsInstallDialogController::
-                              DialogViewIDForTesting::SUB_APP_LABEL),
-      &views_group);
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
+      &sub_app_labels);
+  EXPECT_EQ(sub_app_labels.size(), 1u);
+  EXPECT_EQ(static_cast<views::Label*>(sub_app_labels[0])->GetText(),
+            kSubAppName1);
 
-  EXPECT_EQ(views_group.size(), 1u);
-  EXPECT_EQ(static_cast<views::Label*>(views_group[0])->GetText(),
-            sub_app_name);
+  std::vector<views::View*> sub_app_icons;
+  widget->GetContentsView()->GetViewsInGroup(
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
+      &sub_app_icons);
+  EXPECT_EQ(sub_app_icons.size(), 1u);
+  views::ImageView* icon_view =
+      static_cast<views::ImageView*>(sub_app_icons[0]);
+  EXPECT_FALSE(icon_view->GetImageModel().IsEmpty());
+  EXPECT_EQ(icon_view->GetVisibleBounds().size(), gfx::Size(32, 32));
 }
 
 TEST_F(SubAppsInstallDialogControllerTest, DialogAccepted) {

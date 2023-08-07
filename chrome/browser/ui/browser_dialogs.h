@@ -83,7 +83,6 @@ struct Screenshot;
 }  // namespace webapps
 
 namespace web_app {
-struct SubAppDialogInfo;
 struct WebAppInstallInfo;
 }  // namespace web_app
 
@@ -182,7 +181,7 @@ void ShowWebAppInstallDialog(
 views::Widget* CreateSubAppsInstallDialogWidget(
     const std::string_view parent_app_name,
     const std::string_view parent_app_scope,
-    const std::vector<web_app::SubAppDialogInfo>& sub_apps,
+    const std::vector<std::unique_ptr<web_app::WebAppInstallInfo>>& sub_apps,
     gfx::NativeWindow window);
 
 // When an app changes its icon or name, that is considered an app identity
