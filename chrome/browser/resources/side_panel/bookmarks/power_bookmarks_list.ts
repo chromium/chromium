@@ -784,11 +784,13 @@ export class PowerBookmarksListElement extends PolymerElement {
     afterNextRender(this, () => {
       const primaryList = this.getDisplayListElement_(0);
       const secondaryList = this.getDisplayListElement_(1);
+      const bookmarksOffsetTop = this.$.bookmarks.offsetTop;
       if (primaryList) {
-        primaryList.scrollOffset = primaryList.offsetTop;
+        primaryList.scrollOffset = primaryList.offsetTop - bookmarksOffsetTop;
       }
       if (secondaryList) {
-        secondaryList.scrollOffset = secondaryList.offsetTop;
+        secondaryList.scrollOffset =
+            secondaryList.offsetTop - bookmarksOffsetTop;
       }
     });
   }
