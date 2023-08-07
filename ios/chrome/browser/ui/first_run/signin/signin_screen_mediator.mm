@@ -30,6 +30,8 @@
 @interface SigninScreenMediator () {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
+  // YES if this is part of a first run signin.
+  BOOL _firstRun;
 }
 
 // Account manager service to retrieve Chrome identities.
@@ -87,7 +89,7 @@
     _hadIdentitiesAtStartup = self.accountManagerService->HasIdentities();
     _firstRun =
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-    if (self.firstRun) {
+    if (_firstRun) {
       _logger = [[FirstRunSigninLogger alloc]
             initWithAccessPoint:accessPoint
                     promoAction:promoAction
@@ -98,6 +100,10 @@
                                             promoAction:promoAction
                                   accountManagerService:accountManagerService];
     }
+    _ignoreDismissGesture =
+        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
+        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN;
+
     [_logger logSigninStarted];
   }
   return self;
@@ -197,7 +203,7 @@
   if (self.UMALinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
   }
-  if (self.firstRun) {
+  if (_firstRun) {
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
@@ -245,7 +251,7 @@
       break;
   }
   self.consumer.isManaged = IsApplicationManagedByPlatform();
-  if (!self.firstRun) {
+  if (!_firstRun) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
   } else {
     BOOL metricReportingDisabled =
