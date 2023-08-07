@@ -5,98 +5,101 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:gravity="start"
-    style="@style/AlertDialogContent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <Spinner
-        android:id="@+id/quick_delete_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="18dp"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="start"
+        style="@style/AlertDialogContent">
 
-    <RelativeLayout
-        android:id="@+id/quick_delete_history_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="20dp"
-        android:gravity="center_vertical">
+        <Spinner
+            android:id="@+id/quick_delete_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"/>
 
-        <ImageView
-            android:id="@+id/quick_delete_history_row_icon"
-            android:importantForAccessibility="no"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="14dp"
-            android:src="@drawable/ic_history_24dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            style="@style/ListItemStartIcon" />
-
-        <org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView
-            android:id="@+id/quick_delete_history_row_title"
+        <RelativeLayout
+            android:id="@+id/quick_delete_history_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:layout_toEndOf="@id/quick_delete_history_row_icon"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/quick_delete_history_row_icon"
+                android:importantForAccessibility="no"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_history_24dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                style="@style/ListItemStartIcon" />
+
+            <org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView
+                android:id="@+id/quick_delete_history_row_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/quick_delete_history_row_icon"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+            <TextView
+                android:id="@+id/quick_delete_history_row_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:visibility="gone"
+                android:layout_alignStart="@id/quick_delete_history_row_title"
+                android:layout_below="@id/quick_delete_history_row_title"
+                android:text="@string/quick_delete_dialog_browsing_history_secondary_text"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        </RelativeLayout>
+
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/quick_delete_tabs_close_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textDirection="locale"
+            android:drawableStart="@drawable/quick_delete_dialog_tab_icon_24dp"
+            android:paddingBottom="24dp"
+            android:drawablePadding="12dp"
+            app:chromeDrawableTint="@macro/default_icon_color"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-        <TextView
-            android:id="@+id/quick_delete_history_row_subtitle"
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:visibility="gone"
-            android:layout_alignStart="@id/quick_delete_history_row_title"
-            android:layout_below="@id/quick_delete_history_row_title"
-            android:text="@string/quick_delete_dialog_browsing_history_secondary_text"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-    </RelativeLayout>
+            android:gravity="center_vertical"
+            android:textDirection="locale"
+            android:drawableStart="@drawable/quick_delete_cookies_24dp"
+            android:paddingBottom="24dp"
+            android:drawablePadding="12dp"
+            app:chromeDrawableTint="@macro/default_icon_color"
+            android:text="@string/quick_delete_dialog_cookies_cache_and_other_site_data_text"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-        android:id="@+id/quick_delete_tabs_close_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textDirection="locale"
-        android:drawableStart="@drawable/quick_delete_dialog_tab_icon_24dp"
-        android:paddingBottom="24dp"
-        android:drawablePadding="12dp"
-        app:chromeDrawableTint="@macro/default_icon_color"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <org.chromium.ui.widget.TextViewWithClickableSpans
+            android:id="@+id/search_history_disambiguation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone" />
 
-    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textDirection="locale"
-        android:drawableStart="@drawable/quick_delete_cookies_24dp"
-        android:paddingBottom="24dp"
-        android:drawablePadding="12dp"
-        app:chromeDrawableTint="@macro/default_icon_color"
-        android:text="@string/quick_delete_dialog_cookies_cache_and_other_site_data_text"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/search_history_disambiguation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone" />
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/quick_delete_more_options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textDirection="locale"
-        android:layout_marginBottom="16dp"
-        android:drawableEnd="@drawable/ic_expand_more_horizontal_black_24dp"
-        android:text="@string/quick_delete_dialog_more_options_button_text"
-        style="@style/MoreOptionsButton"/>
-</LinearLayout>
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/quick_delete_more_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textDirection="locale"
+            android:layout_marginBottom="16dp"
+            android:drawableEnd="@drawable/ic_expand_more_horizontal_black_24dp"
+            android:text="@string/quick_delete_dialog_more_options_button_text"
+            style="@style/MoreOptionsButton"/>
+    </LinearLayout>
+</ScrollView>
