@@ -36,10 +36,11 @@ async function runSelectRawURL(href, resolve_to_config = false) {
     // gracefully fail rather than bring the whole test down.
   }
   return await sharedStorage.selectURL(
-      'test-url-selection-operation', [{url: href}], {
+      'test-url-selection-operation', [{url: href,
+          reportingMetadata: {'reserved.top_navigation': BEACON_URL}}], {
         data: {'mockResult': 0},
         resolveToConfig: resolve_to_config,
-        keepAlive: true
+        keepAlive: true,
       });
 }
 
