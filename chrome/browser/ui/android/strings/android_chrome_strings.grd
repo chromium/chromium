@@ -3570,7 +3570,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Translate
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_READ_ALOUD" desc="Title name for the read aloud option in the preference.">
-        Read Aloud
+        Listen to this page
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_BASED_ON_YOUR_USAGE" desc="Title name for the based on your usage option in the preference.">
         Based on your usage
@@ -3596,8 +3596,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_TRANSLATE_IPH" desc="An in-product-help message for the voice search button.">
         Quickly translate this page. To edit this shortcut, touch and hold.
       </message>
-      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_READ_ALOUD_IPH" desc="An in-product-help message for the read aloud button.">
-      Read aloud supported pages. To edit this shortcut, touch and hold.
+      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_READ_ALOUD_IPH" desc="An in-product-help message for the Listen to this page button.">
+       Listen to this page. To edit this shortcut, touch and hold.
        </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_NEW_TAB_IPH_SETTINGS" desc="An in-product-help message for the new tab button referring to toolbar settings.">
         Quickly open a new tab. To edit this shortcut, go to Settings.
