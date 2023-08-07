@@ -11,8 +11,8 @@ import logging
 import math
 import os
 import queue
-import threading
 import signal
+import threading
 import time
 from typing import (
     Any,
@@ -393,6 +393,7 @@ class WPTResultsProcessor:
         finally:
             # Send a shutdown event, if one has not been sent already, to tell
             # the worker to exit.
+            _log.error('Send shutdown event to stop the workers...')
             events.put({'action': 'shutdown'}, timeout=timeout)
             worker.join(timeout=timeout)
 
@@ -413,8 +414,12 @@ class WPTResultsProcessor:
                       raw_event.pop('thread'), raw_event.pop('pid'),
                       raw_event.pop('source'))
         test = raw_event.pop('test', None)
+        subsuite = raw_event.pop('subsuite', '')
         if test:
-            raw_event['test'] = test[1:] if test.startswith('/') else test
+            test = test[1:] if test.startswith('/') else test
+            if not self.run_info.get('used_upstream'):
+                test = self._get_chromium_test_name(test, subsuite)
+            raw_event['test'] = test
         status = raw_event.get('status')
         if status:
             expected = {raw_event.get('expected', status)}
@@ -438,6 +443,13 @@ class WPTResultsProcessor:
     def suite_end(self, event: Event, **_):
         self._iteration += 1
 
+    def _get_chromium_test_name(self, test: str, subsuite: str):
+        if not self.path_finder.is_wpt_internal_path(test):
+            test = self.path_finder.wpt_prefix() + test
+        if subsuite:
+            test = f'virtual/{subsuite}/{test}'
+        return test
+
     def test_start(self, event: Event, test: str, **_):
         self._results[test] = WPTResult(
             test,
@@ -450,29 +462,37 @@ class WPTResultsProcessor:
             file_path=self._file_path_for_test(test),
             pid=event.pid)
 
+    def is_virtual_test(self, test: str) -> bool:
+        return test.startswith('virtual/')
+
     def get_path_from_test_root(self, test: str) -> str:
         if self.path_finder.is_wpt_internal_path(test):
             path_from_test_root = self.internal_manifest.file_path_for_test_url(
                 test[len('wpt_internal/'):])
         else:
             path_from_test_root = self.wpt_manifest.file_path_for_test_url(
-                test)
+                test[len(self.path_finder.wpt_prefix()):])
         return path_from_test_root
 
     @memoized
     def _file_path_for_test(self, test: str) -> str:
+        if self.is_virtual_test(test):
+            _, _, test = test.split('/', 2)
         path_from_test_root = self.get_path_from_test_root(test)
-        if self.path_finder.is_wpt_internal_path(test):
-            prefix = 'wpt_internal'
-        else:
-            prefix = self.path_finder.wpt_prefix()
         if not path_from_test_root:
             raise EventProcessingError(
                 'Test ID %r does not exist in the manifest' % test)
+        if self.path_finder.is_wpt_internal_path(test):
+            prefix = 'wpt_internal'
+        else:
+            prefix = self.fs.join('external', 'wpt')
         return self.path_finder.path_from_web_tests(prefix,
                                                     path_from_test_root)
 
-    def get_test_type(self, test_path: str) -> str:
+    def get_test_type(self, test: str) -> str:
+        if self.is_virtual_test(test):
+            _, _, test = test.split('/', 2)
+        test_path = self.get_path_from_test_root(test)
         if self.path_finder.is_wpt_internal_path(test_path):
             return self.internal_manifest.get_test_type(test_path)
         else:
@@ -579,10 +599,8 @@ class WPTResultsProcessor:
             if rounded_run_time:
                 test_dict['time'] = rounded_run_time
 
-            manifest = (self.internal_manifest
-                        if test_name.startswith('wpt_internal/') else
-                        self.wpt_manifest)
-            if manifest.is_slow_test(test_name):
+            if (not self.run_info.get('used_upstream')
+                    and self.port.is_slow_wpt_test(test_name)):
                 test_dict['is_slow_test'] = True
 
             if is_unexpected:
@@ -669,11 +687,9 @@ class WPTResultsProcessor:
         produce diff, but will still produce pretty diff.
 
         Arguments:
-            test_name: Web test name (a path).
+            result: WPT test result.
             artifacts: Artifact manager (note that this is not the artifact ID
                 to paths mapping itself).
-            actual_text: (Sub)test results in the WPT metadata format. There
-                should be no conditions (i.e., no `if <expr>: <value>`).
         """
         actual_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
@@ -710,8 +726,7 @@ class WPTResultsProcessor:
             artifacts.CreateArtifact('text_diff', diff_subpath,
                                      diff_content.encode())
 
-        path_from_test_root = self.get_path_from_test_root(result.name)
-        test_type = self.get_test_type(path_from_test_root)
+        test_type = self.get_test_type(result.name)
         actual = result.test_section(self.run_info)
         html_diff_content = wpt_results_diff.wpt_results_diff(
             actual, expected, test_type)
@@ -735,6 +750,11 @@ class WPTResultsProcessor:
             The diff stats if the screenshots are different.
         """
         # Remember the two images so we can diff them later.
+        if self.is_virtual_test(test_name):
+            _, _, test_url = test_name.split('/', 2)
+        else:
+            test_url = test_name
+        test_url = self.path_finder.strip_wpt_path(test_url)
         actual_image_bytes = b''
         expected_image_bytes = b''
 
@@ -751,7 +771,7 @@ class WPTResultsProcessor:
 
             screenshot_key = 'expected_image'
             file_suffix = test_failures.FILENAME_SUFFIX_EXPECTED
-            if test_name == url:
+            if url == test_url:
                 screenshot_key = 'actual_image'
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
                 actual_image_bytes = image_bytes

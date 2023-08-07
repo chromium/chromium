@@ -5,23 +5,24 @@
 
 import argparse
 import contextlib
-import fnmatch
 import functools
 import json
 import logging
 import os
 import optparse
-import posixpath
 import re
 import signal
 import sys
+import traceback
+from collections import defaultdict
 from datetime import datetime
-from typing import FrozenSet, List, Optional, Tuple
+from typing import List, Optional
 
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
+from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests.product import make_product_registry
@@ -134,9 +135,35 @@ class WPTAdapter:
                   args: List[str],
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
+        cls._ensure_value(options, 'wpt_only', True)
+        cls._ensure_value(options, 'no_virtual_tests', True)
         port = host.port_factory.get(port_name, options)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
+
+    def set_up_derived_options(self):
+        if not self.paths and not self.options.test_list and self.options.smoke is None:
+            self.options.smoke = self.port.default_smoke_test_only()
+        if self.options.smoke:
+            if not self.paths and not self.options.test_list and self.options.num_retries is None:
+                # Retry failures 3 times if we're running a smoke test without
+                # additional tests. SmokeTests is an explicit list of tests, so we
+                # wouldn't retry by default without this special case.
+                self.options.num_retries = 3
+
+            if not self.options.test_list:
+                self.options.test_list = []
+            self.options.test_list.append(self.port.path_to_smoke_tests_file())
+
+        if self.options.gtest_filter:
+            self.paths.extend(self.options.gtest_filter.split(':'))
+
+        if not self.options.total_shards and 'GTEST_TOTAL_SHARDS' in self.host.environ:
+            self.options.total_shards = int(
+                self.port.host.environ['GTEST_TOTAL_SHARDS'])
+        if not self.options.shard_index and 'GTEST_SHARD_INDEX' in self.port.host.environ:
+            self.options.shard_index = int(
+                self.port.host.environ['GTEST_SHARD_INDEX'])
 
     def log_config(self):
         logger.info(f'Running tests for {self.product.name}')
@@ -146,7 +173,7 @@ class WPTAdapter:
         )
         logger.info(f'Using {self.port.get_option("configuration")} build')
 
-    def _set_up_runner_options(self):
+    def _set_up_runner_options(self, tmp_dir):
         """Set up wptrunner options based on run_wpt_tests.py arguments and defaults."""
         parser = wptcommandline.create_parser()
         # Nightly installation is not supported, so just add defaults.
@@ -181,10 +208,9 @@ class WPTAdapter:
 
         # Set up logging as early as possible.
         self._set_up_runner_output_options(runner_options)
-        self._set_up_runner_sharding_options(runner_options)
         self._set_up_runner_config_options(runner_options)
         self._set_up_runner_debugging_options(runner_options)
-        self._set_up_runner_tests(runner_options)
+        self._set_up_runner_tests(runner_options, tmp_dir)
 
         for name, value in self.product.product_specific_options().items():
             self._ensure_value(runner_options, name, value)
@@ -193,7 +219,8 @@ class WPTAdapter:
             self.product.additional_webdriver_args())
         return runner_options
 
-    def _ensure_value(self, options, name, value):
+    @classmethod
+    def _ensure_value(cls, options, name, value):
         if not getattr(options, name, None):
             setattr(options, name, value)
 
@@ -222,17 +249,14 @@ class WPTAdapter:
         logging.root.addHandler(StructuredLogAdapter(runner_options.log))
 
     def _set_up_runner_sharding_options(self, runner_options):
-        if (self.options.total_shards is not None
-                or 'GTEST_TOTAL_SHARDS' in self.host.environ):
-            runner_options.total_chunks = int(
-                self.options.total_shards
-                or self.host.environ['GTEST_TOTAL_SHARDS'])
+        # This is now only used for '--use-upstream-wpt'. For other cases
+        # sharding is done inside the wrapper, and total_chunks is always
+        # set to 1.
+        if self.options.total_shards is not None:
+            runner_options.total_chunks = int(self.options.total_shards)
 
-        if (self.options.shard_index is not None
-                or 'GTEST_SHARD_INDEX' in self.host.environ):
-            runner_options.this_chunk = 1 + int(
-                self.options.shard_index
-                or self.host.environ['GTEST_SHARD_INDEX'])
+        if self.options.shard_index is not None:
+            runner_options.this_chunk = 1 + int(self.options.shard_index)
 
         # Override the default sharding strategy, which is to shard by directory
         # (`dir_hash`). Sharding by test ID attempts to maximize shard workload
@@ -297,15 +321,15 @@ class WPTAdapter:
             # disable that to be consistent with Chromium CI. Add
             # '--run-by-dir=0' so that tests can be more evenly distributed
             # among workers.
-            runner_options.retry_unexpected = 3
+            if self.options.num_retries is None:
+                runner_options.retry_unexpected = 3
+            else:
+                runner_options.retry_unexpected = self.options.num_retries
             runner_options.fail_on_unexpected_pass = False
             runner_options.restart_on_unexpected = False
             runner_options.restart_on_new_group = False
             runner_options.run_by_dir = 0
             runner_options.reuse_window = True
-
-        if self.options.num_retries is not None:
-            runner_options.retry_unexpected = self.options.num_retries
 
         # TODO: repeat_each will restart browsers between tests. Wptrunner's
         # rerun will not restart browsers. Might also need to restart the
@@ -323,71 +347,103 @@ class WPTAdapter:
             # tests headfully without giving a chance for interaction.
             runner_options.pause_after_test = True
 
-    def _set_up_runner_tests(self, runner_options):
-        if self.options.gtest_filter:
-            runner_options.include.extend(
-                self._parse_gtest_filter(self.options.gtest_filter))
+    def _prepare_lists(self, test_names):
+        tests_to_skip = set()
+        for test in test_names:
+            if (self.port.virtual_test_skipped_due_to_platform_config(test)
+                    or self.port.skipped_due_to_exclusive_virtual_tests(test)):
+                tests_to_skip.add(test)
+                continue
 
-        if self.options.isolated_script_test_filter:
-            include, exclude = self._parse_isolated_script_test_filter(
-                self.options.isolated_script_test_filter)
-            runner_options.include.extend(include)
-            runner_options.exclude.extend(exclude)
+            if self.options.enable_sanitizer and Port.is_wpt_idlharness_test(
+                    test):
+                tests_to_skip.update({test})
 
-        runner_options.exclude.extend(self.options.ignore_tests)
-        runner_options.test_types = self.options.test_types
+        tests_to_run = [
+            test for test in test_names if test not in tests_to_skip
+        ]
 
-        for path in self.paths:
-            runner_options.include.append(self.finder.strip_wpt_path(path))
+        return tests_to_run, tests_to_skip
 
-        if self.port.default_smoke_test_only():
-            smoke_file_short_path = self.fs.relpath(
-                self.port.path_to_smoke_tests_file(),
-                self.port.web_tests_dir())
-            if not _has_explicit_tests(runner_options):
-                runner_options.include.extend(self._load_smoke_tests())
-                logger.info(
-                    'Tests not explicitly specified; '
-                    'running tests from %s', smoke_file_short_path)
-            else:
-                logger.warning(
-                    'Tests explicitly specified; '
-                    'not running tests from %s', smoke_file_short_path)
+    def _collect_tests(self):
+        finder = WebTestFinder(self.port, self.options)
 
-        # The `chromium_tests` recipe passes `--isolated-script-test-filter` to
-        # retry failed tests without the patch. Because the patch may have added
-        # the failed tests (common for imported tests),
-        #  1. `run_wpt_tests.py --isolated-script-test-filter` must tolerate
-        #     test IDs that don't exist.
-        #  2. When all tests retried don't exist without the patch, wptrunner
-        #     must run zero tests and exit successfully instead of interpreting
-        #     the lack of explicit tests as running all tests.
-        if self.options.zero_tests_executed_ok and (
-                _has_explicit_tests(runner_options)
-                or self.options.isolated_script_test_filter):
-            runner_options.default_exclude = True
+        try:
+            self.paths, all_test_names, _ = finder.find_tests(
+                self.paths,
+                test_lists=self.options.test_list,
+                filter_files=self.options.isolated_script_test_filter_file,
+                fastest_percentile=None,
+                filters=self.options.isolated_script_test_filter)
+        except IOError:
+            logger.exception('Failed to find tests.')
 
-    def _load_smoke_tests(self):
-        """Read the smoke tests file and append its tests to the test list.
+        # sharding the tests the same way as in RWT
+        test_names = finder.split_into_chunks(all_test_names)
 
-        This method handles smoke test files inherited from `run_web_tests.py`
-        differently from the native `wpt run --include-file` parameter.
-        Specifically, tests are assumed to be relative to `web_tests/`, so a
-        line without a recognized `external/wpt/` or `wpt_internal/` prefix is
-        assumed to be a legacy layout test that is excluded.
+        tests_to_run, _ = self._prepare_lists(test_names)
+
+        if not tests_to_run and not self.options.zero_tests_executed_ok:
+            logger.error('No tests to run.')
+            sys.exit(exit_codes.NO_TESTS_EXIT_STATUS)
+
+        return self._prepare_tests_for_wptrunner(tests_to_run)
+
+    def _lookup_subsuite_args(self, subsuite_name):
+        for suite in self.port.virtual_test_suites():
+            if suite.full_prefix == f"virtual/{subsuite_name}/":
+                return suite.args
+        return []
+
+    def _prepare_tests_for_wptrunner(self, tests_to_run):
+        """Remove external/wpt from test name, and create subsuite config
         """
-        smoke_file_path = self.port.path_to_smoke_tests_file()
-        tests = []
-        with self.fs.open_text_file_for_reading(smoke_file_path) as smoke_file:
-            for line in smoke_file:
-                test, _, _ = line.partition('#')
-                test = test.strip()
-                for wpt_dir, url_prefix in Port.WPT_DIRS.items():
-                    if not wpt_dir.endswith('/'):
-                        wpt_dir += '/'
-                    if test.startswith(wpt_dir):
-                        tests.append(test.replace(wpt_dir, url_prefix, 1))
-        return tests
+        tests_by_subsuite = defaultdict(list)
+        include_tests = []
+        for test in tests_to_run:
+            if test.startswith('virtual/'):
+                _, subsuite_name, base_test = test.split('/', 2)
+                base_test = self.finder.strip_wpt_path(base_test)
+                tests_by_subsuite[subsuite_name].append(base_test)
+            else:
+                include_tests.append(self.finder.strip_wpt_path(test))
+
+        subsuite_json = {}
+        for subsuite_name, tests in tests_by_subsuite.items():
+            subsuite_args = self._lookup_subsuite_args(subsuite_name)
+            subsuite = {
+                'name': subsuite_name,
+                'config': {
+                    'binary_args': subsuite_args
+                },
+                'run_info': {
+                    'virtual_suite': subsuite_name
+                },
+                'include': tests
+            }
+            subsuite_json[subsuite_name] = subsuite
+        return include_tests, subsuite_json
+
+    def _set_up_runner_tests(self, runner_options, tmp_dir):
+        if not self.options.use_upstream_wpt:
+            include_tests, subsuite_json = self._collect_tests()
+            if subsuite_json:
+                config_path = self.fs.join(tmp_dir, "subsuite.json")
+                with self.fs.open_text_file_for_writing(
+                        config_path) as outfile:
+                    json.dump(subsuite_json, outfile)
+                runner_options.subsuite_file = config_path
+                runner_options.subsuites = list(subsuite_json)
+
+            runner_options.include.extend(include_tests)
+            runner_options.test_types = self.options.test_types
+
+            # sharding is done inside wrapper
+            runner_options.total_chunks = 1
+            runner_options.this_chunk = 1
+            runner_options.default_exclude = True
+        else:
+            self._set_up_runner_sharding_options(runner_options)
 
     @contextlib.contextmanager
     def test_env(self):
@@ -397,7 +453,7 @@ class WPTAdapter:
             # after the tests complete. Otherwise, `mkdtemp()` raise an error.
             stack.callback(self.fs.rmtree, tmp_dir)
             stack.enter_context(self.product.test_env())
-            runner_options = self._set_up_runner_options()
+            runner_options = self._set_up_runner_options(tmp_dir)
             self.log_config()
 
             if self.options.clobber_old_results:
@@ -505,56 +561,6 @@ class WPTAdapter:
             self.port.show_results_html_file(
                 self.fs.join(artifacts_dir, 'results.html'))
 
-    def _parse_gtest_filter(self, value: str) -> List[str]:
-        return [
-            self.finder.strip_wpt_path(test_id) for test_id in value.split(':')
-        ]
-
-    def _resolve_tests(self, all_tests: FrozenSet[str],
-                       test_filter: str) -> Tuple[List[str], List[str]]:
-        """Resolve an isolated script-style filter string into lists of tests.
-
-        Arguments:
-            test_filter: Glob patterns delimited by double colons ('::'). The
-                glob is prefixed with '-' to indicate that tests matching the
-                pattern should not run. Assume a valid wpt name cannot start
-                with '-'.
-
-        Returns:
-            Tests to include and exclude, respectively.
-        """
-        included_tests, excluded_tests = [], []
-        for pattern in test_filter.split('::'):
-            test_group = included_tests
-            if pattern.startswith('-'):
-                test_group, pattern = excluded_tests, pattern[1:]
-            # '?' is a significant token to `fnmatch`. Escape them to treat them
-            # into literals.
-            pattern = self.finder.strip_wpt_path(pattern).replace('?', '[?]')
-            test_group.extend(test_id for test_id in all_tests
-                              if fnmatch.fnmatch(test_id, pattern))
-
-        return included_tests, excluded_tests
-
-    def _parse_isolated_script_test_filter(self, values):
-        include, exclude = [], []
-        all_tests = set(self.port.wpt_manifest('external/wpt').all_urls())
-        for url in self.port.wpt_manifest('wpt_internal').all_urls():
-            all_tests.add(posixpath.join('wpt_internal', url))
-        if isinstance(values, str):
-            values = [values]
-        if isinstance(values, list):
-            for test_filter in values:
-                extra_include, extra_exclude = self._resolve_tests(
-                    all_tests, test_filter)
-                include.extend(extra_include)
-                exclude.extend(extra_exclude)
-        return include, exclude
-
-
-def _has_explicit_tests(options: argparse.Namespace) -> bool:
-    return options.include or options.exclude or options.include_file
-
 
 def _load_entry_point(tools_root: str):
     """Import and return a callable that runs wptrunner.
@@ -652,11 +658,13 @@ def main(argv) -> int:
     try:
         host = Host()
         adapter = WPTAdapter.from_args(host, argv)
+        adapter.set_up_derived_options()
         exit_code = adapter.run_tests()
     except KeyboardInterrupt:
         logger.critical('Harness exited after signal interrupt')
         exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:
+        traceback.print_exc()
         logger.error(error)
     logger.info(f'Testing completed. Exit status: {exit_code}')
     return exit_code

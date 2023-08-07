@@ -285,6 +285,11 @@ class Port(object):
         # set the default to make unit tests happy
         if not hasattr(options, 'wpt_only'):
             self.set_option_default('wpt_only', False)
+        if not hasattr(options, 'no_virtual_tests'):
+            self.set_option_default('virtual_tests', True)
+        else:
+            self.set_option_default('virtual_tests',
+                                    not options.no_virtual_tests)
         self._test_configuration = None
         self._results_directory = None
         self._used_expectation_files = None
@@ -972,7 +977,8 @@ class Port(object):
         tests = self.real_tests(paths)
 
         if paths:
-            tests.extend(self._virtual_tests_matching_paths(paths))
+            if self._options.virtual_tests:
+                tests.extend(self._virtual_tests_matching_paths(paths))
             if (any(wpt_path in path for wpt_path in self.WPT_DIRS
                     for path in paths)
                     # TODO(robertma): Remove this special case when external/wpt is moved to wpt.
@@ -990,7 +996,8 @@ class Port(object):
                 dirname = self._filesystem.dirname(test) + '/'
                 tests_by_dir[dirname].append(test)
 
-            tests.extend(self._all_virtual_tests(tests_by_dir))
+            if self._options.virtual_tests:
+                tests.extend(self._all_virtual_tests(tests_by_dir))
             tests.extend(wpt_tests)
         return tests
 

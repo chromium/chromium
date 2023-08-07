@@ -240,8 +240,9 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
         group.add_argument(
             '--use-upstream-wpt',
             action='store_true',
-            help=('Use tests and tools from upstream WPT GitHub repo. '
-                  'Used to create wpt reports for uploading to wpt.fyi.'))
+            help=
+            ('CI only parameter. Use tests and tools from upstream WPT GitHub repo. '
+             'Used to create wpt reports for uploading to wpt.fyi.'))
 
 
 def add_results_options_group(parser: argparse.ArgumentParser,
@@ -284,6 +285,15 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         help="Don't launch a browser with results after the tests are done")
     results_group.add_argument('--results-directory',
                                help='Location of test results')
+    results_group.add_argument('--smoke',
+                               action='store_true',
+                               default=None,
+                               help='Run just the SmokeTests')
+    results_group.add_argument('--no-smoke',
+                               dest='smoke',
+                               action='store_false',
+                               default=None,
+                               help='Do not run just the SmokeTests')
     if rwt:
         results_group.add_argument(
             '--additional-expectations',
@@ -333,15 +343,6 @@ def add_results_options_group(parser: argparse.ArgumentParser,
              '--additional-driver-flag is specified, reset the flag-specific '
              'baselines. If --copy-baselines is specified, the copied '
              'baselines will be reset.'))
-        results_group.add_argument('--smoke',
-                                   action='store_true',
-                                   default=None,
-                                   help='Run just the SmokeTests')
-        results_group.add_argument('--no-smoke',
-                                   dest='smoke',
-                                   action='store_false',
-                                   default=None,
-                                   help='Do not run just the SmokeTests')
     else:
         results_group.add_argument(
             '--reset-results',

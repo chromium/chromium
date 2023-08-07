@@ -51,6 +51,9 @@ class WPTAdapterTest(unittest.TestCase):
                     },
                 },
             }))
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('VirtualTestSuites'),
+            json.dumps([]))
 
         self._mocks = contextlib.ExitStack()
         self._mocks.enter_context(self.fs.patch_builtins())
@@ -84,8 +87,8 @@ class WPTAdapterTest(unittest.TestCase):
             '--repeat-each=9',
             '--num-retries=11',
             '--zero-tests-executed-ok',
-            '--ignore-tests=wpt_internal/variant.html',
-            'dir/',
+            '--no-manifest-update',
+            'external/wpt/dir/',
         ]
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
         with adapter.test_env() as options:
@@ -95,11 +98,10 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(options.rerun, 9)
             self.assertEqual(options.retry_unexpected, 11)
             self.assertEqual(options.default_exclude, True)
-            self.assertEqual(set(options.exclude),
-                             {'wpt_internal/variant.html'})
+            self.assertEqual(set(options.exclude), set())
             # `*webdriver/` tests are implicitly excluded by default.
             self.assertNotIn('wdspec', options.test_types)
-            self.assertEqual(options.include, ['dir/'])
+            self.assertEqual(options.include, ['dir/reftest.html'])
 
             run_info = self._read_run_info(options)
             self.assertEqual(run_info['os'], 'linux')
@@ -120,7 +122,7 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_scratch_directory_cleanup(self):
         """Only test results should be left behind, even with an exception."""
-        adapter = WPTAdapter.from_args(self.host, [])
+        adapter = WPTAdapter.from_args(self.host, ["--no-manifest-update"])
         files_before = dict(self.fs.files)
         with self.assertRaises(KeyboardInterrupt):
             with adapter.test_env() as options:
@@ -132,28 +134,6 @@ class WPTAdapterTest(unittest.TestCase):
         }
         files.pop('/mock-checkout/out/Release/wpt_reports.json')
         self.assertEqual(files, files_before)
-
-    def test_parse_filters(self):
-        adapter = WPTAdapter.from_args(
-            self.host,
-            [
-                # Do not replace the mock manifest in `setUp()` with the empty base
-                # manifest.
-                '--no-manifest-update',
-                '--isolated-script-test-filter',
-                'wpt_internal/variant.html?*b*z::-external/wpt/dir*',
-                '--gtest_filter',
-                'wpt_internal/variant.html?foo=bar/abc:wpt_internal/variant.html?xyz',
-            ])
-        with adapter.test_env() as options:
-            self.assertEqual(
-                set(options.include), {
-                    'wpt_internal/variant.html?foo=bar/abc',
-                    'wpt_internal/variant.html?xyz',
-                    'wpt_internal/variant.html?foo=baz',
-                })
-            self.assertIn('dir/reftest.html', options.exclude)
-            self.assertFalse(options.default_exclude)
 
     def test_parse_isolated_filter_nonexistent_tests(self):
         """Check that no tests run if all tests in the filter do not exist.
@@ -173,15 +153,19 @@ class WPTAdapterTest(unittest.TestCase):
     def test_run_all_with_zero_tests_executed_ok(self):
         # `--zero-tests-executed-ok` without explicit tests should still run the
         # entire suite. This matches the `run_web_tests.py` behavior.
-        adapter = WPTAdapter.from_args(self.host, [
-            '--zero-tests-executed-ok',
-        ])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--zero-tests-executed-ok', '--no-manifest-update'])
         with adapter.test_env() as options:
-            self.assertEqual(options.include, [])
-            self.assertFalse(options.default_exclude)
+            self.assertEqual(sorted(options.include), ([
+                'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
+                'wpt_internal/variant.html?foo=baz',
+                'wpt_internal/variant.html?xyz'
+            ]))
+            self.assertTrue(options.default_exclude)
 
     def test_binary_args_propagation(self):
         adapter = WPTAdapter.from_args(self.host, [
+            '--no-manifest-update',
             '--enable-leak-detection',
             '--additional-driver-flag=--enable-features=FakeFeature',
             '--additional-driver-flag=--remote-debugging-address=0.0.0.0:8080',
@@ -210,35 +194,105 @@ class WPTAdapterTest(unittest.TestCase):
                 'args': ['--enable-features=FakeFeature'],
                 'smoke_file': 'TestLists/fake-flag',
             }]))
-        adapter = WPTAdapter.from_args(self.host,
-                                       ['--flag-specific=fake-flag'])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--flag-specific=fake-flag', '--no-manifest-update'])
         with adapter.test_env() as options:
             self.assertIn('--enable-features=FakeFeature', options.binary_args)
-            self.assertEqual(set(options.include), {
-                '/dir/',
-                '/wpt_internal/variant.html',
-            })
+            self.assertEqual(sorted(options.include), ([
+                'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
+                'wpt_internal/variant.html?foo=baz',
+                'wpt_internal/variant.html?xyz'
+            ]))
             run_info = self._read_run_info(options)
             self.assertEqual(run_info['flag_specific'], 'fake-flag')
 
+    @unittest.skip("unskipping this when enable virtual tests")
+    def test_run_virtual_tests(self):
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('VirtualTestSuites'),
+            json.dumps([{
+                "prefix":
+                "fake",
+                "platforms": ["Linux", "Mac", "Win"],
+                "bases": [
+                    "external/wpt/dir/reftest.html",
+                    "wpt_internal/variant.html?xyz",
+                ],
+                "args": ["--features=a"],
+                "owners": ["x@google.com"],
+                "expires":
+                "Jan 1, 2024"
+            }]))
+        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'])
+        with adapter.test_env() as options:
+            self.assertEqual(sorted(options.include), ([
+                'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
+                'wpt_internal/variant.html?foo=baz',
+                'wpt_internal/variant.html?xyz'
+            ]))
+            self.assertEqual(options.subsuites, ['fake'])
+            with open(options.subsuite_file) as fp:
+                subsuite_config = json.load(fp)
+                self.assertEqual(len(subsuite_config), 1)
+                self.assertIn('fake', subsuite_config)
+                self.assertEqual(subsuite_config['fake']['name'], 'fake')
+                self.assertEqual(subsuite_config['fake']['config'],
+                                 {'binary_args': ['--features=a']})
+                self.assertEqual(subsuite_config['fake']['run_info'],
+                                 {'virtual_suite': 'fake'})
+                self.assertEqual(
+                    sorted(subsuite_config['fake']['include']),
+                    ['dir/reftest.html', 'wpt_internal/variant.html?xyz'])
+
+        adapter = WPTAdapter.from_args(self.host, [
+            '--no-manifest-update',
+            'virtual/fake/external/wpt/dir/reftest.html'
+        ])
+        with adapter.test_env() as options:
+            self.assertEqual(sorted(options.include), [])
+            self.assertEqual(options.subsuites, ['fake'])
+            with open(options.subsuite_file) as fp:
+                self.assertEqual(subsuite_config['fake']['include'],
+                                 ['dir/reftest.html'])
+
     def test_sanitizer_enabled(self):
-        adapter = WPTAdapter.from_args(self.host, ['--enable-sanitizer'])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--enable-sanitizer'])
         with adapter.test_env() as options:
             self.assertEqual(options.timeout_multiplier, 2)
             run_info = self._read_run_info(options)
             self.assertTrue(run_info['sanitizer_enabled'])
 
-    def test_sharding(self):
-        self.host.environ['GTEST_SHARD_INDEX'] = 4
-        self.host.environ['GTEST_TOTAL_SHARDS'] = 5
-        adapter = WPTAdapter.from_args(self.host, [])
+    def test_retry_unexpected(self):
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('TestLists', 'Default.txt'),
+            textwrap.dedent("""\
+                # The non-WPT test should be excluded.
+                external/wpt/dir/reftest.html
+                """))
+        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'])
         with adapter.test_env() as options:
-            # Convert from a 0-based index to 1-based.
-            self.assertEqual(options.this_chunk, 5)
-            self.assertEqual(options.total_chunks, 5)
+            self.assertEqual(options.retry_unexpected, 3)
+
+        # TODO We should not retry failures when running with '--use-upstream-wpt'
+        # Consider add a unit test for that
+
+        adapter = WPTAdapter.from_args(self.host,
+                                       ['--no-manifest-update', '--smoke'])
+        with adapter.test_env() as options:
+            self.assertEqual(options.retry_unexpected, 3)
+
+        # TODO We should not retry the failure in this case
+        adapter = WPTAdapter.from_args(
+            self.host,
+            ['--no-manifest-update', 'external/wpt/dir/reftest.html'])
+        with adapter.test_env() as options:
+            self.assertEqual(options.retry_unexpected, 3)
 
     def test_env_var(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ["--additional-env-var=NEW_ENV_VAR=new_env_var_value"])
+        adapter = WPTAdapter.from_args(self.host, [
+            "--no-manifest-update",
+            "--additional-env-var=NEW_ENV_VAR=new_env_var_value"
+        ])
         with adapter.test_env():
             self.assertEqual(os.environ["NEW_ENV_VAR"], "new_env_var_value")

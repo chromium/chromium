@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
+import posixpath
 import sys
 
 from blinkpy.common.memoized import memoized
@@ -187,7 +188,9 @@ class PathFinder(object):
                                             'perf_tests')
 
     def wpt_prefix(self):
-        return self._filesystem.join('external', 'wpt', '')
+        # Always use '/' instead of the platform dependent separator.
+        # This should be only used with a test id.
+        return posixpath.join('external', 'wpt', '')
 
     def webdriver_prefix(self):
         return self._filesystem.join('external', 'wpt', 'webdriver', '')
