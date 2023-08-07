@@ -63,6 +63,11 @@ NSString* const kPassphrase = @"hello";
 
 // Tests to open the sync passphrase view, and to close it.
 - (void)testShowSyncPassphraseAndDismiss {
+  // TODO(crbug.com/1469537): Test fails when run on iOS 17.
+  if (base::ios::IsRunningOnIOS17OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 17.");
+  }
+
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
