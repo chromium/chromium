@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -24,8 +22,6 @@ HRESULT FontFilePathAndTtcIndex(IDWriteFont* font,
   HRESULT hr;
   hr = font->CreateFontFace(&font_face);
   if (FAILED(hr)) {
-    base::UmaHistogramSparse("DirectWrite.Fonts.Proxy.CreateFontFaceResult",
-                             hr);
     return hr;
   }
   return FontFilePathAndTtcIndex(font_face.Get(), file_path, ttc_index);

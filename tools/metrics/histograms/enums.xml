@@ -28516,23 +28516,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Font was missing require styles"/>
 </enum>
 
-<enum name="DirectWriteFontProxyError">
-  <int value="0" label="FindFamily: send failed"/>
-  <int value="1" label="GetFamilyCount: send failed"/>
-  <int value="2" label="CreateEnumeratorFromKey: invalid key"/>
-  <int value="3" label="CreateEnumeratorFromKey: family index out of range"/>
-  <int value="4" label="GetFontFiles: send failed"/>
-  <int value="5" label="FontFileStream: failed to created mapped file"/>
-</enum>
-
-<enum name="DirectWriteLoadFamilyResult">
-  <int value="0" label="Success: single family"/>
-  <int value="1" label="Success: matched from collection"/>
-  <int value="2" label="Error: multiple families"/>
-  <int value="3" label="Error: no families"/>
-  <int value="4" label="Error: failed to create collection"/>
-</enum>
-
 <enum name="DirectWriteMessageFilterError">
   <int value="0" label="OnGetFontFiles: GetFont failed"/>
   <int value="1" label="OnGetFontFiles: AddFilesForFont failed"/>
