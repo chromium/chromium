@@ -42,6 +42,12 @@ const ENABLE_DOCS_OFFLINE_MESSAGE =
 /** The query selector for the search box input field. */
 const searchBox = '#search-box cr-input';
 
+/** The id attribute of the dismiss button in the educational banner. */
+async function getDismissButtonId(appId) {
+  return await remoteCall.isCrosComponents(appId) ? '#dismiss-button' :
+                                                    '#dismiss-button-old';
+}
+
 /**
  * Returns the steps to start a search for 'hello' and wait for the
  * autocomplete results to appear.
@@ -856,7 +862,7 @@ testcase.driveWelcomeBanner = async () => {
   const driveWelcomeBannerDismissButtonQuery = [
     '#banners > drive-welcome-banner',
     'educational-banner',
-    '#dismiss-button',
+    await getDismissButtonId(appId),
   ];
 
   // Open the Drive volume in the files-list.
@@ -1480,9 +1486,11 @@ testcase.driveGoogleOneOfferBannerDismiss = async () => {
       appId, 'google-one-offer-banner:not([hidden])');
 
   // dismiss-button is provided by educational-banner.
-  await remoteCall.waitAndClickElement(
-      appId,
-      ['google-one-offer-banner', 'educational-banner', '#dismiss-button']);
+  await remoteCall.waitAndClickElement(appId, [
+    'google-one-offer-banner',
+    'educational-banner',
+    await getDismissButtonId(appId),
+  ]);
   chrome.test.assertEq(1, await getUserActionCount(userActionDismiss));
   await remoteCall.waitForElement(appId, 'google-one-offer-banner[hidden]');
 };
@@ -1851,8 +1859,11 @@ testcase.driveBulkPinningBannerDisabled = async () => {
   await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
 
   // extra-button (get perk button) is provided by google-one-offer-banner.
-  await remoteCall.waitAndClickElement(
-      appId, ['drive-welcome-banner', 'educational-banner', '#dismiss-button']);
+  await remoteCall.waitAndClickElement(appId, [
+    'drive-welcome-banner',
+    'educational-banner',
+    await getDismissButtonId(appId),
+  ]);
 
   await remoteCall.waitForElement(appId, 'drive-welcome-banner[hidden]');
   // Check: If Google One offer banner is shown, Drive welcome banner should not
@@ -1874,8 +1885,11 @@ testcase.driveBulkPinningBannerEnabled = async () => {
   await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
 
   // extra-button (get perk button) is provided by google-one-offer-banner.
-  await remoteCall.waitAndClickElement(
-      appId, ['drive-welcome-banner', 'educational-banner', '#dismiss-button']);
+  await remoteCall.waitAndClickElement(appId, [
+    'drive-welcome-banner',
+    'educational-banner',
+    await getDismissButtonId(appId),
+  ]);
 
   await remoteCall.waitForElement(appId, 'drive-welcome-banner[hidden]');
   // Check: If Google One offer banner is shown, Drive welcome banner should not

@@ -23,7 +23,8 @@ testcase.holdingSpaceWelcomeBanner = async () => {
   const holdingSpaceBannerDismissButton = [
     '#banners > holding-space-welcome-banner',
     'educational-banner',
-    '#dismiss-button',
+    await remoteCall.isCrosComponents(appId) ? '#dismiss-button' :
+                                               '#dismiss-button-old',
   ];
   const holdingSpaceBannerHidden =
       '#banners > holding-space-welcome-banner[hidden]';

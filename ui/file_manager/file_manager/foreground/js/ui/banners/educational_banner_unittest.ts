@@ -13,9 +13,11 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
+import {util} from '../../../../common/js/util.js';
 
 import {EducationalBanner} from './educational_banner.js';
 import {Banner, BannerEvent} from './types.js';
+
 
 let educationalBanner: EducationalBanner;
 
@@ -73,7 +75,9 @@ export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
   educationalBanner.addEventListener(
       BannerEvent.BANNER_DISMISSED_FOREVER, handler);
   educationalBanner.shadowRoot!
-      .querySelector<CrButtonElement>('#dismiss-button')!.click();
+      .querySelector<HTMLElement>(
+          util.isCrosComponentsEnabled() ? '#dismiss-button' :
+                                           '#dismiss-button-old')!.click();
 }
 
 /**

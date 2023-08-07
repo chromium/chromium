@@ -8,6 +8,12 @@ import {testcase} from '../testcase.js';
 import {openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
+/** The id attribute of the dismiss button in the educational banner. */
+async function getDismissButtonId(appId) {
+  return await remoteCall.isCrosComponents(appId) ? 'dismiss-button' :
+                                                    'dismiss-button-old';
+}
+
 /**
  * Tests the focus behavior of the search box.
  */
@@ -74,8 +80,8 @@ testcase.tabindexFocus = async () => {
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
-  chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
+  chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
+      appId, await getDismissButtonId(appId)));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
@@ -112,8 +118,8 @@ testcase.tabindexFocusDownloads = async () => {
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
-  chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
+  chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
+      appId, await getDismissButtonId(appId)));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
@@ -182,8 +188,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
-  chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
+  chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
+      appId, await getDismissButtonId(appId)));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
@@ -209,12 +215,13 @@ testcase.tabindexFocusDirectorySelected = async () => {
  * @param {!Array<string>} initialElements Selectors of the elements which
  *     shows the Files app is ready. After all the elements show up, the
  *     tabfocus tests starts.
- * @param {!Array<string>} expectedTabOrder Array with the IDs of the element
- *     with the corresponding order of expected tab-indexes.
+ * @param {function(string):(!Promise<!Array<string>>)} getExpectedTabOrder
+ *     Array with the IDs of the element with the corresponding order of
+ *     expected tab-indexes.
  */
 async function tabindexFocus(
     dialogParams, volumeName, expectedSet, initialize, initialElements,
-    expectedTabOrder) {
+    getExpectedTabOrder) {
   await Promise.all([
     addEntries(['local'], BASIC_LOCAL_ENTRY_SET),
     addEntries(['drive'], BASIC_DRIVE_ENTRY_SET),
@@ -241,7 +248,7 @@ async function tabindexFocus(
     }));
 
     // Checks tabfocus.
-    for (const className of expectedTabOrder) {
+    for (const className of await getExpectedTabOrder(appId)) {
       chrome.test.assertTrue(
           await remoteCall.checkNextTabFocus(appId, className), className);
     }
@@ -258,25 +265,27 @@ async function tabindexFocus(
  * Tests the tab focus behavior of Open Dialog (Downloads).
  */
 testcase.tabindexOpenDialogDownloads = async () => {
-  const tabindexIds = [
-    'cancel-button',
-    'ok-button',
-    'directory-tree',
-    /* first breadcrumb */ 'first',
-    'search-button',
-    'view-button',
-    'sort-button',
-    'gear-button',
-    'dismiss-button',
-    'sort-direction-button',
-    'file-list',
-  ];
   return tabindexFocus(
-      {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, async (appId) => {
+      {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET,
+      async (appId) => {
         await remoteCall.waitUntilSelected(appId, 'hello.txt');
         await remoteCall.isolateBannerForTesting(
             appId, 'holding-space-welcome-banner');
-      }, ['#ok-button:not([disabled])'], tabindexIds);
+      },
+      ['#ok-button:not([disabled])'],
+      async (appId) =>
+          ['cancel-button',
+           'ok-button',
+           'directory-tree',
+           /* first breadcrumb */ 'first',
+           'search-button',
+           'view-button',
+           'sort-button',
+           'gear-button',
+           await getDismissButtonId(appId),
+           'sort-direction-button',
+           'file-list',
+  ]);
 };
 
 
@@ -284,23 +293,25 @@ testcase.tabindexOpenDialogDownloads = async () => {
  * Tests the tab focus behavior of Open Dialog (Drive).
  */
 testcase.tabindexOpenDialogDrive = async () => {
-  const tabindexIds = [
-    'cancel-button',
-    'ok-button',
-    'search-button',
-    'view-button',
-    'sort-button',
-    'gear-button',
-    'drive-learn-more-button',
-    'dismiss-button',
-    'directory-tree',
-    'file-list',
-  ];
   return tabindexFocus(
-      {type: 'openFile'}, 'drive', BASIC_DRIVE_ENTRY_SET, async (appId) => {
+      {type: 'openFile'}, 'drive', BASIC_DRIVE_ENTRY_SET,
+      async (appId) => {
         await remoteCall.waitUntilSelected(appId, 'hello.txt');
         await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
-      }, ['#ok-button:not([disabled])'], tabindexIds);
+      },
+      ['#ok-button:not([disabled])'],
+      async (appId) =>
+          ['cancel-button',
+           'ok-button',
+           'search-button',
+           'view-button',
+           'sort-button',
+           'gear-button',
+           'drive-learn-more-button',
+           await getDismissButtonId(appId),
+           'directory-tree',
+           'file-list',
+  ]);
 };
 
 /**
@@ -313,19 +324,19 @@ testcase.tabindexSaveFileDialogDownloads = async () => {
         suggestedName: 'hoge.txt',  // Prevent showing a override prompt
       },
       'downloads', BASIC_LOCAL_ENTRY_SET, null, ['#ok-button:not([disabled])'],
-      [
-        'cancel-button',
-        'ok-button',
-        'directory-tree',
-        /* first breadcrumb */ 'first',
-        'search-button',
-        'view-button',
-        'sort-button',
-        'gear-button',
-        'file-list',
-        'new-folder-button',
-        'filename-input-textbox',
-      ]);
+      async () =>
+          ['cancel-button',
+           'ok-button',
+           'directory-tree',
+           /* first breadcrumb */ 'first',
+           'search-button',
+           'view-button',
+           'sort-button',
+           'gear-button',
+           'file-list',
+           'new-folder-button',
+           'filename-input-textbox',
+  ]);
 };
 
 
@@ -338,16 +349,17 @@ testcase.tabindexSaveFileDialogDrive = async () => {
         type: 'saveFile',
         suggestedName: 'hoge.txt',  // Prevent showing a override prompt
       },
-      'drive', BASIC_DRIVE_ENTRY_SET, null, ['#ok-button:not([disabled])'], [
-        'cancel-button',
-        'ok-button',
-        'directory-tree',
-        'search-button',
-        'view-button',
-        'sort-button',
-        'gear-button',
-        'file-list',
-        'new-folder-button',
-        'filename-input-textbox',
-      ]);
+      'drive', BASIC_DRIVE_ENTRY_SET, null, ['#ok-button:not([disabled])'],
+      async () =>
+          ['cancel-button',
+           'ok-button',
+           'directory-tree',
+           'search-button',
+           'view-button',
+           'sort-button',
+           'gear-button',
+           'file-list',
+           'new-folder-button',
+           'filename-input-textbox',
+  ]);
 };

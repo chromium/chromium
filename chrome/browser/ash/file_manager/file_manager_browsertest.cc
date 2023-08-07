@@ -1697,6 +1697,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
+        TestCase("driveWelcomeBanner").EnableCrosComponents(),
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveEncryptionBadge"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
@@ -1744,6 +1745,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("holdingSpaceWelcomeBanner"),
+        TestCase("holdingSpaceWelcomeBanner").EnableCrosComponents(),
         TestCase("holdingSpaceWelcomeBannerWillShowForModalDialogs")
             .WithBrowser(),
         TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")));
@@ -1878,6 +1880,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kNonManaged)
             .EnableGoogleOneOfferFilesBanner(),
+        TestCase("driveGoogleOneOfferBannerDismiss")
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManaged)
+            .EnableGoogleOneOfferFilesBanner()
+            .EnableCrosComponents(),
         TestCase("driveGoogleOneOfferBannerDisabled")
             .EnableGoogleOneOfferFilesBanner()
             .SetDeviceMode(DeviceMode::kConsumerOwned)
@@ -1913,6 +1920,26 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableBulkPinning()
             .SetDeviceMode(DeviceMode::kEnrolled)
             .SetTestAccountType(TestAccountType::kEnterprise),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kEnterprise)
+            .EnableCrosComponents(),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kChild)
+            .EnableCrosComponents(),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kChild)
+            .EnableCrosComponents(),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kEnterprise)
+            .EnableCrosComponents(),
         TestCase("driveBulkPinningBannerEnabled")
             .EnableBulkPinning()
             .SetDeviceMode(DeviceMode::kConsumerOwned)
@@ -1924,7 +1951,22 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveBulkPinningBannerEnabled")
             .EnableBulkPinning()
             .SetDeviceMode(DeviceMode::kEnrolled)
-            .SetTestAccountType(TestAccountType::kGoogler)));
+            .SetTestAccountType(TestAccountType::kGoogler),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManaged)
+            .EnableCrosComponents(),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManagedNonOwner)
+            .EnableCrosComponents(),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kGoogler)
+            .EnableCrosComponents()));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()
@@ -2041,11 +2083,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("tabindexSearchBoxFocus"),
         TestCase("tabindexFocus"),
+        TestCase("tabindexFocus").EnableCrosComponents(),
         TestCase("tabindexFocusDownloads"),
+        TestCase("tabindexFocusDownloads").EnableCrosComponents(),
         TestCase("tabindexFocusDownloads").InGuestMode(),
         TestCase("tabindexFocusDirectorySelected"),
         TestCase("tabindexFocusDirectorySelected").EnableCrosComponents(),
-        TestCase("tabindexOpenDialogDownloads").WithBrowser()
+        TestCase("tabindexOpenDialogDownloads").WithBrowser(),
+        TestCase("tabindexOpenDialogDownloads")
+            .WithBrowser()
+            .EnableCrosComponents()
         // TODO(b/189173190): Enable
         // TestCase("tabindexOpenDialogDownloads").WithBrowser(),
         // TODO(b/189173190): Enable
@@ -2500,7 +2547,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("androidPhotosBanner").EnablePhotosDocumentsProvider()));
+        TestCase("androidPhotosBanner").EnablePhotosDocumentsProvider(),
+        TestCase("androidPhotosBanner")
+            .EnablePhotosDocumentsProvider()
+            .EnableCrosComponents()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Office, /* office.js */

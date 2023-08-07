@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_jstest_base.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 
 class FileManagerJsTest : public FileManagerJsTestBase {
@@ -428,4 +429,21 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeContainer) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, EntryUtils) {
   RunTestURL("common/js/entry_utils_unittest.js");
+}
+
+// Rerun some of the tests above, using CrosComponents.
+class FileManagerJsCrosComponentsTest : public FileManagerJsTest {
+ public:
+  void SetUp() override {
+    FileManagerJsTest::SetUp();
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kCrosComponents},
+                                          {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsCrosComponentsTest, BannerEducational) {
+  RunTestURL("foreground/js/ui/banners/educational_banner_unittest.js");
 }
