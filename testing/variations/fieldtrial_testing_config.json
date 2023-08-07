@@ -4243,6 +4243,21 @@
             ]
         }
     ],
+    "CrOSLateBootResourcedVariableTimeMemorySignal": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootResourcedVariableTimeMemorySignal"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSchedTrace": [
         {
             "platforms": [
