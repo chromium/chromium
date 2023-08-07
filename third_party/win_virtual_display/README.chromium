@@ -5,9 +5,10 @@ Version: 0
 Date: Jun 29 2023
 Revision: d9acf794c92ba2fb0525f6c794ef394709035ac3
 License: MPL 1
-License File: NOT_SHIPPED
+License File: LICENSE
+Shipped: no
 Security Critical: no
-License Android Compatible:
+License Android Compatible: yes
 CPEPrefix: unknown
 
 Description:
