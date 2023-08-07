@@ -7,14 +7,17 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <atomic>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -58,7 +61,7 @@ static constexpr uint32_t kOldCompatibleVersions[] = {2};
 // Constant values placed in the block headers to indicate its state.
 constexpr uint32_t kBlockCookieFree = 0;
 constexpr uint32_t kBlockCookieQueue = 1;
-constexpr uint32_t kBlockCookieWasted = (uint32_t)-1;
+constexpr uint32_t kBlockCookieWasted = 0x4B594F52;
 constexpr uint32_t kBlockCookieAllocated = 0xC8799269;
 
 // TODO(bcwhite): When acceptable, consider moving flags to std::atomic<char>
@@ -693,6 +696,34 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
         SetCorrupt();
         return kReferenceNull;
       }
+
+#if !BUILDFLAG(IS_NACL)
+      // In production, with the current state of the code, this code path
+      // should not be reached. However, crash reports have been hinting that it
+      // is. Add crash keys to investigate this.
+      // TODO(crbug.com/1432981): Remove them once done.
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "mem_size_",
+                              mem_size_);
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "mem_page_",
+                              mem_page_);
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "freeptr", freeptr);
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "page_free",
+                              page_free);
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "size", size);
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "req_size",
+                              req_size);
+      SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "type_id", type_id);
+      std::string persistent_file_name = "N/A";
+      auto* allocator = GlobalHistogramAllocator::Get();
+      if (allocator && allocator->HasPersistentLocation()) {
+        persistent_file_name =
+            allocator->GetPersistentLocation().BaseName().AsUTF8Unsafe();
+      }
+      SCOPED_CRASH_KEY_STRING256("PersistentMemoryAllocator", "file_name",
+                                 persistent_file_name);
+      debug::DumpWithoutCrashing();
+#endif  // !BUILDFLAG(IS_NACL)
+
       const uint32_t new_freeptr = freeptr + page_free;
       if (shared_meta()->freeptr.compare_exchange_strong(
               freeptr, new_freeptr, std::memory_order_acq_rel,
@@ -1256,6 +1287,27 @@ void* DelayedPersistentAllocation::Get() const {
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "raced", raced);
     SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "type_", type_);
     SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "size_", size_);
+    if (ref == 0xC8799269) {
+      // There are many crash reports containing the corrupted "0xC8799269"
+      // value in |ref|. This value is actually a "magic" number to indicate
+      // that a certain block in persistent memory was successfully allocated,
+      // so it should not appear there. Include some extra crash keys to see if
+      // the surrounding values were also corrupted. If so, the value before
+      // would be the size of the allocated object, and the value after would be
+      // the type id of the allocated object. If they are not corrupted, these
+      // would contain |ranges_checksum| and the start of |samples_metadata|
+      // respectively (see PersistentHistogramData struct). We do some pointer
+      // arithmetic here -- it should theoretically be safe, unless something
+      // went terribly wrong...
+      SCOPED_CRASH_KEY_NUMBER(
+          "PersistentMemoryAllocator", "ref_before",
+          (reference_ - 1)->load(std::memory_order_relaxed));
+      SCOPED_CRASH_KEY_NUMBER(
+          "PersistentMemoryAllocator", "ref_after",
+          (reference_ + 1)->load(std::memory_order_relaxed));
+      NOTREACHED();
+      return nullptr;
+    }
 #endif  // !BUILDFLAG(IS_NACL)
     // This should never happen but be tolerant if it does as corruption from
     // the outside is something to guard against.
