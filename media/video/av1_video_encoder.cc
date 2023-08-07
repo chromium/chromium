@@ -613,7 +613,7 @@ void Av1VideoEncoder::UpdateEncoderColorSpace() {
     auto status = aom_codec_control(codec_.get(), AV1E_SET_MATRIX_COEFFICIENTS,
                                     static_cast<int>(aom_cs.matrix));
     if (status != AOM_CODEC_OK)
-      LogAomErrorMessage(codec_.get(), "Failed to set color transfer", status);
+      LogAomErrorMessage(codec_.get(), "Failed to set color matrix", status);
   }
 
   if (last_frame_color_space_.GetRangeID() == gfx::ColorSpace::RangeID::FULL ||
