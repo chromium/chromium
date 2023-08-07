@@ -114,6 +114,7 @@ source_set("scene") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands:commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:capabilities_types",

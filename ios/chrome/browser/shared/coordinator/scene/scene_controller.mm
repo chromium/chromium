@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -823,8 +824,9 @@ void InjectNTP(Browser* browser) {
             "Signin.AccountCapabilities.GetFromSystemLibraryDuration."
             "SigninUpgradePromo",
             fetch_duration);
-        if (fetch_duration > signin::GetWaitThresholdForCapabilities() ||
-            result != CapabilityResult::kTrue) {
+        if (!experimental_flags::AlwaysDisplayUpgradePromo() &&
+            (fetch_duration > signin::GetWaitThresholdForCapabilities() ||
+             result != CapabilityResult::kTrue)) {
           return;
         }
         [weakSelf presentSigninUpgradePromo];
@@ -1358,7 +1360,9 @@ void InjectNTP(Browser* browser) {
   if (self.sceneState.appState.initStage <= InitStageFirstRun) {
     return NO;
   }
-
+  if (experimental_flags::AlwaysDisplayUpgradePromo()) {
+    return YES;
+  }
   if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.appState.mainBrowserState,
           version_info::GetVersion())) {
