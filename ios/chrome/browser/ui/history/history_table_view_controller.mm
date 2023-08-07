@@ -43,8 +43,8 @@
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
 #import "ios/chrome/browser/ui/history/history_entry_item.h"
 #import "ios/chrome/browser/ui/history/history_menu_provider.h"
+#import "ios/chrome/browser/ui/history/history_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
-#import "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #import "ios/chrome/browser/ui/history/history_util.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
@@ -486,9 +486,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   base::RecordAction(base::UserMetricsAction("IOSHistoryCloseWithSwipe"));
-  // Call the delegate dismissHistoryWithCompletion to clean up state and
-  // stop the Coordinator.
-  [self.delegate dismissHistoryWithCompletion:nil];
+  // Call the delegate dismissHistoryTableViewController:withCompletion: to
+  // clean up state and stop the Coordinator.
+  [self.delegate dismissHistoryTableViewController:self withCompletion:nil];
 }
 
 #pragma mark - History Data Updates
@@ -710,7 +710,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self.delegate dismissHistoryWithCompletion:nil];
+  [self.delegate dismissHistoryTableViewController:self withCompletion:nil];
 }
 
 #pragma mark - TableViewURLDragDataSource
@@ -1113,9 +1113,13 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissHistoryWithCompletion:^{
-    [weakSelf loadAndActivateTabFromHistoryWithParams:params incognito:NO];
-  }];
+  [self.delegate
+      dismissHistoryTableViewController:self
+                         withCompletion:^{
+                           [weakSelf
+                               loadAndActivateTabFromHistoryWithParams:params
+                                                             incognito:NO];
+                         }];
 }
 
 // Opens URL in a new non-incognito tab in a new window and dismisses the
@@ -1138,9 +1142,13 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = YES;
   __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissHistoryWithCompletion:^{
-    [weakSelf loadAndActivateTabFromHistoryWithParams:params incognito:YES];
-  }];
+  [self.delegate
+      dismissHistoryTableViewController:self
+                         withCompletion:^{
+                           [weakSelf
+                               loadAndActivateTabFromHistoryWithParams:params
+                                                             incognito:YES];
+                         }];
 }
 
 #pragma mark Helper Methods
@@ -1218,15 +1226,19 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   params.load_strategy = self.loadStrategy;
   __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissHistoryWithCompletion:^{
-    [weakSelf loadAndActivateTabFromHistoryWithParams:params incognito:NO];
-  }];
+  [self.delegate
+      dismissHistoryTableViewController:self
+                         withCompletion:^{
+                           [weakSelf
+                               loadAndActivateTabFromHistoryWithParams:params
+                                                             incognito:NO];
+                         }];
 }
 
 // Dismisses this ViewController.
 - (void)dismissHistory {
   base::RecordAction(base::UserMetricsAction("MobileHistoryClose"));
-  [self.delegate dismissHistoryWithCompletion:nil];
+  [self.delegate dismissHistoryTableViewController:self withCompletion:nil];
 }
 
 - (void)openPrivacySettings {
@@ -1238,7 +1250,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self.delegate dismissHistoryWithCompletion:nil];
+  [self.delegate dismissHistoryTableViewController:self withCompletion:nil];
   return YES;
 }
 

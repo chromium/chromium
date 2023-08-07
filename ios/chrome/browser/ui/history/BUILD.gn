@@ -62,7 +62,7 @@ source_set("history_ui") {
     "history_menu_provider.h",
     "history_table_view_controller.h",
     "history_table_view_controller.mm",
-    "history_ui_delegate.h",
+    "history_table_view_controller_delegate.h",
     "history_util.h",
     "history_util.mm",
   ]
@@ -127,6 +127,7 @@ source_set("clear_browsing_data") {
   sources = [
     "history_clear_browsing_data_coordinator.h",
     "history_clear_browsing_data_coordinator.mm",
+    "history_clear_browsing_data_coordinator_delegate.h",
   ]
   deps = [
     ":history_ui",

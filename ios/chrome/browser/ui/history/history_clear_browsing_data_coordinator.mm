@@ -9,7 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/ui/history/history_ui_delegate.h"
+#import "ios/chrome/browser/ui/history/history_clear_browsing_data_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
@@ -71,8 +71,8 @@
         dismissViewControllerAnimated:YES
                            completion:^() {
                              // completionHandler might trigger
-                             // dismissHistoryWithCompletion, which will call
-                             // stopWithCompletion:, so
+                             // dismissHistory:withCompletion:, which will
+                             // call stopWithCompletion:, so
                              // historyClearBrowsingDataNavigationController
                              // needs to be nil, otherwise stopWithCompletion:
                              // will call dismiss with nothing to dismiss and
@@ -98,10 +98,14 @@
   CHECK_EQ(controller, self.clearBrowsingDataTableViewController);
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.load_strategy = self.loadStrategy;
-  [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-    [self.presentationDelegate showActiveRegularTabFromHistory];
-  }];
+  [self.delegate
+      dismissHistoryClearBrowsingData:self
+                       withCompletion:^{
+                         UrlLoadingBrowserAgent::FromBrowser(self.browser)
+                             ->Load(params);
+                         [self.presentationDelegate
+                                 showActiveRegularTabFromHistory];
+                       }];
 }
 
 - (void)clearBrowsingDataTableViewControllerWantsDismissal:
@@ -112,13 +116,13 @@
 
 - (void)dismissClearBrowsingData {
   DCHECK(self.historyClearBrowsingDataNavigationController);
-  [self.delegate dismissHistoryWithCompletion:nil];
+  [self.delegate dismissHistoryClearBrowsingData:self withCompletion:nil];
 }
 
 - (void)clearBrowsingDataTableViewControllerWasRemoved:
     (ClearBrowsingDataTableViewController*)controller {
   DCHECK_EQ(self.clearBrowsingDataTableViewController, controller);
-  [self.delegate dismissHistoryWithCompletion:nil];
+  [self.delegate dismissHistoryClearBrowsingData:self withCompletion:nil];
 }
 
 @end
