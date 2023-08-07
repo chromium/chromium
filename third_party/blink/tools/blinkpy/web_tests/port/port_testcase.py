@@ -335,7 +335,6 @@ class PortTestCase(LoggingTestCase):
         port = self.make_port()
         self.assertEqual(list(port.default_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
-            port.path_to_webdriver_expectations_file(),
             port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
             port.host.filesystem.join(port.web_tests_dir(),
                                       'StaleTestExpectations'),
@@ -376,7 +375,6 @@ class PortTestCase(LoggingTestCase):
             '[{"name": "a", "args": ["--aa"]}]')
         self.assertEqual(list(port.used_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
-            port.path_to_webdriver_expectations_file(),
             port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
             port.host.filesystem.join(port.web_tests_dir(),
                                       'StaleTestExpectations'),

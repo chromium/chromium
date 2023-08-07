@@ -173,7 +173,6 @@
         "main": "tryserver.blink",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
-        "has_webdriver_tests": true,
         "steps": {
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {},
@@ -293,7 +292,6 @@
         "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
-        "has_webdriver_tests": true,
         "steps": {
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {},

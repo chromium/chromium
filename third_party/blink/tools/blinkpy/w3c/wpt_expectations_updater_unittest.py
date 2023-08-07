@@ -5,7 +5,6 @@
 import copy
 import json
 import textwrap
-import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import TryJobStatus
@@ -56,7 +55,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'main': 'tryserver.blink',
-                'has_webdriver_tests': True,
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
@@ -298,10 +296,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 },
                 builder_name='MOCK Try Trusty',
                 step_name='fake_flag_blink_wpt_tests'))
-        host.results_fetcher.set_results(
-            Build('MOCK Try Trusty', 222, 'Build-3'),
-            WebTestResults.from_rdb_responses(
-                {}, step_name='webdriver_tests_suite'))
 
         # `updater.run` does not update flag-specific expectations.
         updater.update_expectations('fake-flag')
@@ -387,59 +381,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
-
-    @unittest.skip(
-        "The webdriver test runner doesn't upload results to ResultDB; "
-        'see crbug.com/1414565')
-    def test_run_with_webdriver_failure(self):
-        host = self.mock_host()
-        host.results_fetcher.set_results(
-            Build('MOCK Try Trusty', 123, 'Build-123'),
-            WebTestResults.from_rdb_responses(
-                {
-                    'external/wpt/x/failing-test.html': [{
-                        'status': 'FAIL',
-                    }] * 3,
-                },
-                step_name='blink_wpt_tests',
-                builder_name='MOCK Try Trusty'))
-        host.results_fetcher.set_webdriver_test_results(
-            Build('MOCK Try Trusty', 123, 'Build-123'), 'tryserver.blink',
-            WebTestResults.from_json(
-                {
-                    'tests': {
-                        'external': {
-                            'wpt': {
-                                'webdriver': {
-                                    'fail.html': {
-                                        'expected': 'PASS',
-                                        'actual': 'FAIL',
-                                        'is_unexpected': True,
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                step_name='webdriver_tests_suite',
-                builder_name='MOCK Try Trusty'))
-        expectations_path = (
-            host.port_factory.get().path_to_webdriver_expectations_file())
-        host.filesystem.write_text_file(
-            expectations_path, WPTExpectationsUpdater.MARKER_COMMENT + '\n')
-
-        updater = WPTExpectationsUpdater(host)
-        updater.git_cl = MockGitCL(
-            updater.host, {
-                Build('MOCK Try Trusty', 123, 'Build-123'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-            })
-        self.assertEqual(0, updater.run())
-        self.assertEqual(
-            host.filesystem.read_text_file(expectations_path),
-            '# ====== New tests from wpt-importer added here ======\n'
-            'crbug.com/626703 [ Trusty ] external/wpt/webdriver/fail.html [ Failure ]\n'
-        )
 
     def test_merge_same_valued_keys_all_match(self):
         updater = WPTExpectationsUpdater(self.mock_host())
@@ -1144,45 +1085,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
-    @unittest.skip(
-        "The webdriver test runner doesn't upload results to ResultDB; "
-        'see crbug.com/1414565')
-    def test_write_to_test_expectations_with_webdriver_lines(self):
-        host = self.mock_host()
-
-        webdriver_expectations_path = \
-            host.port_factory.get().path_to_webdriver_expectations_file()
-        host.filesystem.write_text_file(webdriver_expectations_path,
-                                        WPTExpectationsUpdater.MARKER_COMMENT + '\n')
-        updater = WPTExpectationsUpdater(host)
-
-        test_expectations = {'external/wpt/webdriver/fake/file/path.html': {
-            tuple([DesktopConfig(port_name='test-linux-trusty')]):
-            SimpleTestResult(actual='PASS', expected='', bug='crbug.com/123')}}
-
-        expectations_path = \
-            host.port_factory.get().path_to_generic_test_expectations_file()
-        expectations_value_origin = host.filesystem.read_text_file(
-            expectations_path)
-
-        skip_path = host.port_factory.get().path_to_never_fix_tests_file()
-        skip_value_origin = host.filesystem.read_text_file(skip_path)
-
-        updater.write_to_test_expectations(test_expectations)
-        value = host.filesystem.read_text_file(webdriver_expectations_path)
-
-        self.assertMultiLineEqual(value, (
-            WPTExpectationsUpdater.MARKER_COMMENT + '\n'
-            'crbug.com/123 [ Trusty ] external/wpt/webdriver/fake/file/path.html [ Pass ]\n'
-        ))
-
-        skip_value = host.filesystem.read_text_file(skip_path)
-        self.assertMultiLineEqual(skip_value, skip_value_origin)
-
-        expectations_value = host.filesystem.read_text_file(expectations_path)
-        self.assertMultiLineEqual(expectations_value,
-                                  expectations_value_origin)
-
     def test_write_to_test_expectations_with_no_marker_comment(self):
         host = self.mock_host()
         expectations_path = \
@@ -1497,9 +1399,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host = self.mock_host()
         fs = host.filesystem
         test_expect_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
-        webdriver_expect_path = fs.join(MOCK_WEB_TESTS,
-                                        'WebDriverExpectations')
-
         fs.write_text_file(
             test_expect_path,
             (
@@ -1510,16 +1409,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'some/test/c\*.html [ Failure ]\n'
                 # default test case, line below should exist in new file
                 'some/test/d.html [ Failure ]\n'))
-        fs.write_text_file(
-            webdriver_expect_path,
-            (
-                '# results: [ Failure ]\n'
-                'external/wpt/webdriver/some/test/a\*.html>>foo\* [ Failure ]\n'
-                'external/wpt/webdriver/some/test/a\*.html>>bar [ Failure ]\n'
-                'external/wpt/webdriver/some/test/b.html>>foo [ Failure ]\n'
-                'external/wpt/webdriver/some/test/c.html>>a [ Failure ]\n'
-                # default test case, line below should exist in new file
-                'external/wpt/webdriver/some/test/d.html>>foo [ Failure ]\n'))
         fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'VirtualTestSuites'), '[]')
         fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'new', 'a.html'), '')
         fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'new', 'b.html'), '')
@@ -1528,13 +1417,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             host, ['--clean-up-test-expectations-only',
                    '--clean-up-affected-tests-only'])
         deleted_files = [
-            'some/test/b.html', 'external/wpt/webdriver/some/test/b.html'
+            'some/test/b.html',
         ]
         renamed_file_pairs = {
             'some/test/a.html': 'new/a.html',
             'some/test/c*.html': 'new/c*.html',
-            'external/wpt/webdriver/some/test/a*.html': 'old/a*.html',
-            'external/wpt/webdriver/some/test/c.html': 'old/c.html',
         }
         updater._list_deleted_files = lambda: deleted_files
         updater._list_renamed_files = lambda: renamed_file_pairs
@@ -1545,13 +1432,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                                    'ignore/globs/* [ Failure ]\n'
                                    'new/c\*.html [ Failure ]\n'
                                    'some/test/d.html [ Failure ]\n'))
-        self.assertMultiLineEqual(
-            fs.read_text_file(webdriver_expect_path),
-            ('# results: [ Failure ]\n'
-             'old/a\*.html>>foo\* [ Failure ]\n'
-             'old/a\*.html>>bar [ Failure ]\n'
-             'old/c.html>>a [ Failure ]\n'
-             'external/wpt/webdriver/some/test/d.html>>foo [ Failure ]\n'))
 
     def test_merging_platforms_if_possible(self):
         host = self.mock_host()
@@ -1605,7 +1485,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'main': 'tryserver.blink',
-                'has_webdriver_tests': True,
                 'is_try_builder': True,
             },
             'MOCK Try Win10': {
@@ -1695,7 +1574,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'main': 'tryserver.blink',
-                'has_webdriver_tests': True,
                 'is_try_builder': True,
             },
             'MOCK Try Win10': {

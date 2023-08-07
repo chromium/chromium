@@ -102,7 +102,6 @@ class BuilderListTest(unittest.TestCase):
                 'is_try_builder': True,
                 'is_cq_builder': True,
                 'main': "luci",
-                'has_webdriver_tests': True
             },
             'Flag Specific C': {
                 'port_name': 'port-c',
@@ -200,16 +199,6 @@ class BuilderListTest(unittest.TestCase):
     def test_main_for_builder_configured_main(self):
         builders = self.sample_builder_list()
         self.assertEqual('luci', builders.main_for_builder('CQ Try C'))
-
-    def test_has_webdriver_tests_for_builder_default_value(self):
-        builders = self.sample_builder_list()
-        self.assertEqual(None,
-                         builders.has_webdriver_tests_for_builder('Try A'))
-
-    def test_has_webdriver_tests_for_builder_configured_value(self):
-        builders = self.sample_builder_list()
-        self.assertEqual(True,
-                         builders.has_webdriver_tests_for_builder('CQ Try C'))
 
     def test_port_name_for_builder_name(self):
         builders = self.sample_builder_list()
