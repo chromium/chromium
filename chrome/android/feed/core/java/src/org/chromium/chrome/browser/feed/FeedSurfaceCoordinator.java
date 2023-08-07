@@ -718,7 +718,7 @@ public class FeedSurfaceCoordinator
         if (mHybridListRenderer != null) {
             // XSurface returns a View, but it should be a RecyclerView.
             boolean useStaggeredLayout =
-                    DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mActivity);
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
             view = (RecyclerView) mHybridListRenderer.bind(
                     mContentManager, mViewportView, useStaggeredLayout);
             view.setId(R.id.feed_stream_recycler_view);
