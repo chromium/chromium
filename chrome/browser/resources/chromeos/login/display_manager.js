@@ -422,8 +422,7 @@ export function invokePolymerMethod(element, name, ...args) {
       }
 
       innerContainer.classList.remove('down');
-      innerContainer.addEventListener('transitionend', function f(e) {
-        innerContainer.removeEventListener('transitionend', f);
+      innerContainer.addEventListener('transitionend', () => {
         // Refresh defaultControl. It could have changed.
         const stepId = this.screens_[this.currentStep_];
         const step = $(stepId);
@@ -432,7 +431,7 @@ export function invokePolymerMethod(element, name, ...args) {
         if (defaultControl) {
           defaultControl.focus();
         }
-      }.bind(this));
+      }, /*AddEventListenerOptions=*/ {once: true});
       ensureTransitionEndEvent(innerContainer, MAX_SCREEN_TRANSITION_DURATION);
     }
 
