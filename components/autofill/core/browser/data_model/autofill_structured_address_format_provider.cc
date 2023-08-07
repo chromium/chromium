@@ -38,8 +38,7 @@ std::u16string GetHomeStreetAddressPattern(const std::string& country_code) {
          u"${ADDRESS_HOME_FLOOR;FL } ${ADDRESS_HOME_APT_NUM;APT }";
 }
 
-std::u16string GetFullNamePattern(const std::string& country_code,
-                                  bool name_has_cjk_characteristics) {
+std::u16string GetFullNamePattern(bool name_has_cjk_characteristics) {
   if (name_has_cjk_characteristics) {
     return u"${NAME_LAST}${NAME_FIRST}";
   }
@@ -67,8 +66,7 @@ std::u16string StructuredAddressesFormatProvider::GetPattern(
     case ADDRESS_HOME_STREET_ADDRESS:
       return GetHomeStreetAddressPattern(country_code);
     case NAME_FULL:
-      return GetFullNamePattern(country_code,
-                                info.name_has_cjk_characteristics);
+      return GetFullNamePattern(info.name_has_cjk_characteristics);
     default:
       return u"";
   }
