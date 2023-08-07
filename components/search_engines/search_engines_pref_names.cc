@@ -24,8 +24,8 @@ const char kDefaultSearchProviderGUID[] = "default_search_provider.guid";
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
-// The timestamp that is recorded once the user chooses a search engine using
-// the search engine choice screen.
+// Windows epoch timestamp in seconds of when the user chose a search engine in
+// the choice screen.
 const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
     "default_search_provider.choice_screen_completion_timestamp";
 

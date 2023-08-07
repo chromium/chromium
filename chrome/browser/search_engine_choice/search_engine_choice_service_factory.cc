@@ -11,6 +11,11 @@
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif
+
 SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
     : ProfileKeyedServiceFactory(
           "SearchEngineChoiceServiceFactory",
@@ -48,7 +53,7 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
                         !profiles::IsChromeAppKioskSession();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  is_regular_profile &= !profiles::IsGuestSession();
+  is_regular_profile &= !profile.IsGuestSession();
 #endif
 
   return search_engines::ShouldShowChoiceScreen(

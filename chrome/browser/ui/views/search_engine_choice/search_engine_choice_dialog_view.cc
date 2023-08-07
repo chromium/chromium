@@ -51,10 +51,15 @@ SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(Browser* browser)
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
 }
 
+SearchEngineChoiceDialogView::~SearchEngineChoiceDialogView() = default;
+
 void SearchEngineChoiceDialogView::Initialize() {
   auto* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser_->profile());
-  search_engine_choice_service->NotifyDialogOpened(browser_);
+  search_engine_choice_service->NotifyDialogOpened(
+      browser_, /*close_dialog_callback=*/base::BindOnce(
+          &SearchEngineChoiceDialogView::CloseView,
+          weak_ptr_factory_.GetWeakPtr()));
 
   web_view_->LoadInitialURL(GURL(chrome::kChromeUISearchEngineChoiceURL));
 
@@ -98,6 +103,10 @@ void SearchEngineChoiceDialogView::ShowNativeView(int content_height) {
       widget, browser_->window()->GetWebContentsModalDialogHost());
   widget->Show();
   web_view_->RequestFocus();
+}
+
+void SearchEngineChoiceDialogView::CloseView() {
+  GetWidget()->Close();
 }
 
 BEGIN_METADATA(SearchEngineChoiceDialogView, views::View)

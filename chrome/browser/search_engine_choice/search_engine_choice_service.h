@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -24,7 +25,14 @@ class SearchEngineChoiceService : public KeyedService {
   // Informs the service that a Search Engine Choice dialog has been opened
   // for `browser`.
   // Virtual to be able to mock in tests.
-  virtual void NotifyDialogOpened(Browser* browser);
+  virtual void NotifyDialogOpened(Browser* browser,
+                                  base::OnceClosure close_dialog_callback);
+
+  // This function is called when the user makes a search engine choice. It
+  // closes the dialogs that are open on other browser windows that
+  // have the same profile as the one on which the choice was made.
+  // Virtual to be able to mock in tests.
+  virtual void NotifyChoiceMade();
 
   // Informs the service that a Search Engine Choice dialog has been closed for
   // `browser`.
@@ -55,11 +63,13 @@ class SearchEngineChoiceService : public KeyedService {
   };
   friend class SearchEngineChoiceServiceFactory;
 
-  // The set of Browser windows which have an open Search Engine Choice dialog.
-  base::flat_set<Browser*> browsers_with_open_dialogs_;
+  // A map of Browser windows which have an open Search Engine Choice dialog to
+  // the callback that will close the browser's dialog.
+  base::flat_map<Browser*, base::OnceClosure> browsers_with_open_dialogs_;
 
   // Observes the browser list for closed browsers.
   BrowserObserver browser_observer_{*this};
+
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
 

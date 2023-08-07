@@ -132,7 +132,7 @@ TEST_F(SearchEngineChoiceUtilsTest,
 
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
   EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
       policy_service(),
       /*profile_properties=*/{.is_regular_profile = true,
