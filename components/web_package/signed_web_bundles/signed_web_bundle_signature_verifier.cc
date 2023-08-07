@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "components/web_package/shared_file.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -131,11 +132,9 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
         unsigned_web_bundle_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!unsigned_web_bundle_hash.has_value()) {
-    std::move(callback).Run(
-        Error::ForInternalError(unsigned_web_bundle_hash.error()));
-    return;
-  }
+  RETURN_IF_ERROR(unsigned_web_bundle_hash, [&](std::string error) {
+    std::move(callback).Run(Error::ForInternalError(std::move(error)));
+  });
 
   if (integrity_block.signature_stack().size() != 1) {
     std::move(callback).Run(Error::ForInvalidSignature(base::StringPrintf(

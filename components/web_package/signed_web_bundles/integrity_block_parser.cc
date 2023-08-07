@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -283,13 +284,10 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
         "Error reading signature stack entry's public key.");
     return;
   }
-  base::expected<Ed25519PublicKey, std::string> public_key =
-      Ed25519PublicKey::Create(*public_key_bytes);
-  if (!public_key.has_value()) {
-    RunErrorCallbackAndDestroy(public_key.error());
-    return;
-  }
-  signature_stack_entry->public_key = *public_key;
+  ASSIGN_OR_RETURN(
+      signature_stack_entry->public_key,
+      Ed25519PublicKey::Create(*public_key_bytes),
+      [&](std::string error) { RunErrorCallbackAndDestroy(std::move(error)); });
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
@@ -361,13 +359,10 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
     return;
   }
 
-  base::expected<Ed25519Signature, std::string> signature =
-      Ed25519Signature::Create(*signature_bytes);
-  if (!signature.has_value()) {
-    RunErrorCallbackAndDestroy(signature.error());
-    return;
-  }
-  signature_stack_entry->signature = *signature;
+  ASSIGN_OR_RETURN(
+      signature_stack_entry->signature,
+      Ed25519Signature::Create(*signature_bytes),
+      [&](std::string error) { RunErrorCallbackAndDestroy(std::move(error)); });
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
   signature_stack_entry->complete_entry_cbor.insert(

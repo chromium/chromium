@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/cbor/values.h"
@@ -147,9 +148,9 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   raw_integrity_block->size = 135;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_TRUE(integrity_block.has_value()) << integrity_block.error();
+  ASSERT_OK_AND_ASSIGN(
+      auto integrity_block,
+      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block)));
 
   auto shared_file =
       base::MakeRefCounted<SharedFile>(std::make_unique<base::File>(
@@ -157,7 +158,7 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   ASSERT_TRUE((*shared_file)->IsValid());
 
   SignedWebBundleSignatureVerifier signature_verifier(std::get<1>(GetParam()));
-  signature_verifier.VerifySignatures(shared_file, std::move(*integrity_block),
+  signature_verifier.VerifySignatures(shared_file, std::move(integrity_block),
                                       future.GetCallback());
 
   auto error = future.Take();
@@ -289,16 +290,16 @@ TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
   base::FilePath signed_web_bundle_path =
       WriteSignedWebBundleToDisk(signed_web_bundle);
   auto shared_file = MakeSharedFile(signed_web_bundle_path);
-  auto parsed_integrity_block =
-      CreateParsedIntegrityBlock(integrity_block, integrity_block_size);
-  ASSERT_TRUE(parsed_integrity_block.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      auto parsed_integrity_block,
+      CreateParsedIntegrityBlock(integrity_block, integrity_block_size));
 
   base::test::TestFuture<
       absl::optional<SignedWebBundleSignatureVerifier::Error>>
       future;
   SignedWebBundleSignatureVerifier signature_verifier;
   signature_verifier.VerifySignatures(
-      shared_file, std::move(*parsed_integrity_block), future.GetCallback());
+      shared_file, std::move(parsed_integrity_block), future.GetCallback());
 
   auto error = future.Take();
   auto expected_error = std::get<1>(GetParam());

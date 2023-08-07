@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/gmock_expected_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_package {
@@ -76,9 +77,8 @@ TEST(Ed25519SignatureTest, ValidSignatureFromVector) {
   std::vector<uint8_t> bytes(64);
   bytes[3] = 123;
 
-  auto signature = Ed25519Signature::Create(bytes);
-  ASSERT_TRUE(signature.has_value()) << signature.error();
-  EXPECT_TRUE(base::ranges::equal(bytes, signature->bytes()));
+  ASSERT_OK_AND_ASSIGN(auto signature, Ed25519Signature::Create(bytes));
+  EXPECT_TRUE(base::ranges::equal(bytes, signature.bytes()));
 }
 
 TEST(Ed25519SignatureTest, ValidSignatureFromArray) {
@@ -105,10 +105,9 @@ TEST(Ed25519SignatureTest, InvalidSignature) {
   bytes[3] = 123;
 
   auto signature = Ed25519Signature::Create(bytes);
-  ASSERT_FALSE(signature.has_value());
-  EXPECT_EQ(
-      signature.error(),
-      "The signature has the wrong length. Expected 64, but got 17 bytes.");
+  EXPECT_THAT(signature,
+              base::test::ErrorIs("The signature has the wrong length. "
+                                  "Expected 64, but got 17 bytes."));
 }
 
 TEST(Ed25519SignatureTest, Verify) {
