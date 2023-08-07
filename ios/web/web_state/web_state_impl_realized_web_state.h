@@ -241,9 +241,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   GURL GetCurrentURL() const final;
 
  private:
-  // Class storing both a WebStateStorage and some metadata. Used to
-  // correctly implement methods returning const references during
-  // session restoration.
+  // Class storing metadata needed while the navigation history restoration
+  // is in progress. The instance is deleted when the restoration completes.
   class PendingSession;
 
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns

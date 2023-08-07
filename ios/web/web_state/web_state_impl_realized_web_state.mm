@@ -73,6 +73,10 @@ class WebStateImpl::RealizedWebState::PendingSession {
   const GURL& page_visible_url() const { return page_visible_url_; }
 
  private:
+  // The WebStateStorage is only needed to implement SerializeToProto() while
+  // the navigation history restoration is in progress for the legacy session
+  // serialization logic.
+  // TODO(crbug.com/1383087): Remove it once the feature has launched.
   const proto::WebStateStorage storage_;
   const std::u16string page_title_;
   const GURL page_visible_url_;
@@ -167,7 +171,11 @@ void WebStateImpl::RealizedWebState::InitWithProto(
 void WebStateImpl::RealizedWebState::SerializeToProto(
     proto::WebStateStorage& storage) const {
   // If restorating is in progress, copy the currently cached storage.
+  // TODO(crbug.com/1383087): This is required to support legacy logic
+  // that captures the state of the WebState even while restoration is
+  // in progress. Remove when the feature is launched.
   if (restored_session_) {
+    DCHECK(!features::UseSessionSerializationOptimizations());
     storage = restored_session_->storage();
     return;
   }
