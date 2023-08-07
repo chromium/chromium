@@ -108,6 +108,9 @@ const char kIosModuleRankerUmaName[] = "IosModuleRanker";
 const char kDesktopNtpModuleKey[] = "desktop_ntp_module";
 const char kDesktopNtpModuleUmaName[] = "DesktopNtpModule";
 
+const char kOptimizationTargetSegmentationDummyKey[] = "segmentation_dummy";
+const char kOptimizationTargetSegmentationDummyUmaName[] = "SegmentationDummy";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in

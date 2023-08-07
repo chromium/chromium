@@ -300,7 +300,7 @@ TEST_F({test_class}, InitAndFetchModel) {{
 
 TEST_F({test_class}, ExecuteModelWithInput) {{
   // TODO: Add test cases to verify if the heuristic returns the right segment.
-  ExpectExecutionWithInput(/*inputs=*/{{2}}, /*expected_error=*/false,
+  ExpectExecutionWithInput(/*inputs=*/{{1, 2, 3}}, /*expected_error=*/false,
                            /*expected_result=*/{{1}});
 }}
 
