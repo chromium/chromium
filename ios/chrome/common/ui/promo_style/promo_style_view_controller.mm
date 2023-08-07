@@ -623,7 +623,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _headerImageView = [[UIImageView alloc] initWithImage:self.headerImage];
     _headerImageView.clipsToBounds = YES;
     _headerImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    if (self.headerImageType != PromoStyleImageType::kAvatar) {
+    if (self.headerImageType == PromoStyleImageType::kAvatar) {
       _headerImageView.layer.cornerRadius = kheaderImageSize / 2.;
     }
   }
