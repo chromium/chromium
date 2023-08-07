@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -183,10 +184,10 @@ TEST(JsonWriterTest, TestMaxDepthWithValidNodes) {
   }
 
   // Ensure we can read and write the JSON
-  auto json_val = JSONReader::ReadAndReturnValueWithError(
-      nested_json, JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(json_val.has_value());
-  EXPECT_NE(WriteJson(*json_val), absl::nullopt);
+  ASSERT_OK_AND_ASSIGN(Value value,
+                       JSONReader::ReadAndReturnValueWithError(
+                           nested_json, JSON_ALLOW_TRAILING_COMMAS));
+  EXPECT_TRUE(WriteJson(std::move(value)).has_value());
 }
 
 // Test that the JSONWriter::Write method still works.
