@@ -398,13 +398,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug109187Test) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
 }
 
-// TODO(crbug.com/1469760): Disabled due to timeout failures.
-#if defined(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Bug941965Test DISABLED_Bug941965Test
-#else
-#define MAYBE_Bug941965Test Bug941965Test
-#endif
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, MAYBE_Bug941965Test) {
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug941965Test) {
   // Double-open an incognito window to test that saving & reading a blob from
   // indexeddb works.
   Shell* incognito_browser = nullptr;
