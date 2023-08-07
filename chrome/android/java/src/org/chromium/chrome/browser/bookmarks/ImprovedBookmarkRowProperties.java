@@ -22,11 +22,15 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Responsible for hosting properties of the improved bookmark row. */
 class ImprovedBookmarkRowProperties {
-    @IntDef({StartImageVisibility.DRAWABLE, StartImageVisibility.FOLDER_DRAWABLE})
+    @IntDef({ImageVisibility.DRAWABLE, ImageVisibility.FOLDER_DRAWABLE, ImageVisibility.MENU})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface StartImageVisibility {
+    public @interface ImageVisibility {
+        // Single drawable displayed.
         int DRAWABLE = 0;
+        // Multiple images displayed for folders.
         int FOLDER_DRAWABLE = 1;
+        // Menu displayed.
+        int MENU = 2;
     }
 
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -49,8 +53,11 @@ class ImprovedBookmarkRowProperties {
     static final WritableBooleanPropertyKey SELECTION_ACTIVE = new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
-    static final WritableObjectPropertyKey<Runnable> OPEN_BOOKMARK_CALLBACK =
+    static final WritableObjectPropertyKey<View.OnClickListener> ROW_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+
+    static final WritableIntPropertyKey END_IMAGE_VISIBILITY = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey END_IMAGE_RES = new WritableIntPropertyKey();
 
     static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
@@ -60,8 +67,9 @@ class ImprovedBookmarkRowProperties {
     private static final PropertyKey[] IMPROVED_BOOKAMRK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
             DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
             START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
-            POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE,
-            OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR};
+            POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
+            SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR, END_IMAGE_VISIBILITY,
+            END_IMAGE_RES};
     static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKAMRK_ROW_PROPERTIES);
 }

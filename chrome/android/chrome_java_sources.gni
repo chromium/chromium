@@ -207,6 +207,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderViewProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandler.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRow.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowCoordinator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowViewBinder.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowProperties.java",

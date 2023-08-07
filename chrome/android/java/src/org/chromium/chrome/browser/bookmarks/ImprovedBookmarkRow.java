@@ -46,6 +46,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private ImageView mCheckImageView;
     // 3-dot menu which displays contextual actions.
     private ListMenuButton mMoreButton;
+    private ImageView mEndImageView;
 
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
@@ -102,6 +103,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mCheckImageView = findViewById(R.id.check_image);
 
         mMoreButton = findViewById(R.id.more);
+        mEndImageView = findViewById(R.id.end_image);
     }
 
     void setTitle(String title) {
@@ -175,10 +177,6 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mDragEnabled = dragEnabled;
     }
 
-    void setOpenBookmarkCallback(Runnable openBookmarkCallback) {
-        mOpenBookmarkCallback = openBookmarkCallback;
-    }
-
     void setBookmarkIdEditable(boolean bookmarkIdEditable) {
         mBookmarkIdEditable = bookmarkIdEditable;
         updateView(false);
@@ -186,6 +184,22 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
 
     void setFolderCoordinator(ImprovedBookmarkFolderViewCoordinator folderCoordinator) {
         folderCoordinator.setView(mFolderIconView);
+    }
+
+    void setRowClickListener(View.OnClickListener listener) {
+        setOnClickListener(listener);
+    }
+
+    void setEndImageVisible(boolean visible) {
+        mEndImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setEndMenuVisible(boolean visible) {
+        mMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setEndImageRes(int res) {
+        mEndImageView.setImageResource(res);
     }
 
     // SelectableItemViewBase implementation.
@@ -205,5 +219,9 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     @Override
     protected void onClick() {
         mOpenBookmarkCallback.run();
+    }
+
+    ImprovedBookmarkFolderView getFolderView() {
+        return mFolderIconView;
     }
 }

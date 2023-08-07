@@ -81,8 +81,8 @@ public class ImprovedBookmarkRowTest {
                          .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                                  mListMenuButtonDelegate)
                          .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)
-                         .with(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK,
-                                 mOpenBookmarkCallback)
+                         .with(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                                 (v) -> { mOpenBookmarkCallback.run(); })
                          .with(ImprovedBookmarkRowProperties.EDITABLE, true)
                          .build();
 

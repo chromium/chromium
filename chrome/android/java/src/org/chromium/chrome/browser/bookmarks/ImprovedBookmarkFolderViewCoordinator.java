@@ -68,11 +68,15 @@ public class ImprovedBookmarkFolderViewCoordinator {
      * Sets the {@link View} that this coordinator sets up. Will destroy any previously bound view.
      */
     public void setView(ImprovedBookmarkFolderView view) {
+        if (mView == view) return;
+
         if (mChangeProcessor != null) {
             mChangeProcessor.destroy();
         }
 
         mView = view;
+        if (mView == null) return;
+
         mChangeProcessor = PropertyModelChangeProcessor.create(
                 mModel, mView, ImprovedBookmarkFolderViewBinder::bind);
     }

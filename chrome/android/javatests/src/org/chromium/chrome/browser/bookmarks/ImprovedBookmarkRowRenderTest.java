@@ -37,7 +37,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.StartImageVisibility;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -153,10 +153,12 @@ public class ImprovedBookmarkRowRenderTest {
                              .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                                      () -> buildListMenu())
                              .with(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
-                                     StartImageVisibility.DRAWABLE)
+                                     ImageVisibility.DRAWABLE)
                              .with(ImprovedBookmarkRowProperties.START_ICON_TINT, null)
                              .with(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
                                      mImprovedBookmarkFolderViewCoordinator)
+                             .with(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                                     ImageVisibility.MENU)
                              .build();
 
             PropertyModelChangeProcessor.create(
@@ -174,11 +176,25 @@ public class ImprovedBookmarkRowRenderTest {
         ListMenu.Delegate delegate = item -> {};
         return new BasicListMenu(mActivityTestRule.getActivity(), listItems, delegate);
     }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal() throws IOException {
         mRenderTestRule.render(mContentView, "normal");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testEndImageVisibility() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(
+                    ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
+            mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_RES,
+                    R.drawable.outline_chevron_right_24dp);
+        });
+        mRenderTestRule.render(mContentView, "end_image_visibility");
     }
 
     @Test

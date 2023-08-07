@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.view.View;
 
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.StartImageVisibility;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,8 +23,9 @@ class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY) {
             int startImageVisibility =
                     model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY);
-            row.setStartImageVisible(startImageVisibility == StartImageVisibility.DRAWABLE);
-            row.setFolderViewVisible(startImageVisibility == StartImageVisibility.FOLDER_DRAWABLE);
+            assert startImageVisibility != ImageVisibility.MENU;
+            row.setStartImageVisible(startImageVisibility == ImageVisibility.DRAWABLE);
+            row.setFolderViewVisible(startImageVisibility == ImageVisibility.FOLDER_DRAWABLE);
         } else if (key == ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR) {
             row.setStartAreaBackgroundColor(
                     model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
@@ -48,11 +49,17 @@ class ImprovedBookmarkRowViewBinder {
             row.setDragEnabled(model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         } else if (key == ImprovedBookmarkRowProperties.EDITABLE) {
             row.setBookmarkIdEditable(model.get(ImprovedBookmarkRowProperties.EDITABLE));
-        } else if (key == ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK) {
-            row.setOpenBookmarkCallback(
-                    model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
+        } else if (key == ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER) {
+            row.setRowClickListener(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
         } else if (key == BookmarkManagerProperties.BOOKMARK_ID) {
             row.setItem(model.get(BookmarkManagerProperties.BOOKMARK_ID));
+        } else if (key == ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY) {
+            int endImageVisibility = model.get(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY);
+            assert endImageVisibility != ImageVisibility.FOLDER_DRAWABLE;
+            row.setEndImageVisible(endImageVisibility == ImageVisibility.DRAWABLE);
+            row.setEndMenuVisible(endImageVisibility == ImageVisibility.MENU);
+        } else if (key == ImprovedBookmarkRowProperties.END_IMAGE_RES) {
+            row.setEndImageRes(model.get(ImprovedBookmarkRowProperties.END_IMAGE_RES));
         } else if (key == ImprovedBookmarkRowProperties.FOLDER_COORDINATOR) {
             row.setFolderCoordinator(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
         }

@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.StartImageVisibility;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
@@ -319,6 +318,7 @@ class BookmarkManagerMediator
     private final BookmarkImageFetcher mBookmarkImageFetcher;
     private final ShoppingService mShoppingService;
     private final SnackbarManager mSnackbarManager;
+    private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -377,6 +377,9 @@ class BookmarkManagerMediator
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
+
+        mImprovedBookmarkRowCoordinator = new ImprovedBookmarkRowCoordinator(mContext,
+                mBookmarkImageFetcher, mBookmarkModel, mBookmarkUiPrefs, mShoppingService);
 
         initializeToLoadingState();
         if (!sPreventLoadingForTesting) {
@@ -1104,106 +1107,27 @@ class BookmarkManagerMediator
 
     @VisibleForTesting
     ListItem buildImprovedBookmarkRow(BookmarkListEntry bookmarkListEntry) {
-        PropertyModel propertyModel = new PropertyModel(ImprovedBookmarkRowProperties.ALL_KEYS);
-        BookmarkItem item = bookmarkListEntry.getBookmarkItem();
-        BookmarkId id = item.getId();
-        PowerBookmarkMeta meta = bookmarkListEntry.getPowerBookmarkMeta();
-        final @BookmarkRowDisplayPref int displayPref =
-                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
+        BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
+        BookmarkId bookmarkId = bookmarkItem.getId();
 
+        PropertyModel propertyModel =
+                mImprovedBookmarkRowCoordinator.createBasePropertyModel(bookmarkId);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
-        propertyModel.set(BookmarkManagerProperties.BOOKMARK_ID, id);
-
-        // Title
-        if (displayPref == BookmarkRowDisplayPref.COMPACT && item.isFolder()) {
-            propertyModel.set(ImprovedBookmarkRowProperties.TITLE,
-                    String.format(item.getTitle() + " (%s)",
-                            BookmarkUtils.getChildCountForDisplay(id, mBookmarkModel)));
-        } else {
-            propertyModel.set(ImprovedBookmarkRowProperties.TITLE, item.getTitle());
-        }
-
-        // Description
-        propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !item.isFolder());
-        // Only bookmarks have descriptions.
-        if (!item.isFolder()) {
-            propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION, item.getUrlForDisplay());
-        }
-
-        // Icon
-        resolveIconForBookmark(item, propertyModel);
 
         // Menu
+        propertyModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.MENU);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.POPUP_LISTENER, this::onBookmarkItemMenuOpened);
         // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
         propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
-
-        // Selection and drag state
-        propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
-        propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
-        propertyModel.set(ImprovedBookmarkRowProperties.DRAG_ENABLED, false);
-        propertyModel.set(ImprovedBookmarkRowProperties.EDITABLE, item.isEditable());
-        propertyModel.set(
-                ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK, () -> openBookmarkId(id));
-
-        if (meta != null && meta.hasShoppingSpecifics()) {
-            ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
-                    new ShoppingAccessoryCoordinator(
-                            mContext, meta.getShoppingSpecifics(), mShoppingService);
-            propertyModel.set(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR,
-                    shoppingAccessoryCoordinator);
-            propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW,
-                    shoppingAccessoryCoordinator.getView());
-        } else {
-            propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
-        }
+        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                (v) -> openBookmarkId(bookmarkId));
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
 
     // ImprovedBookmarkRow methods.
-
-    private void resolveIconForBookmark(BookmarkItem item, PropertyModel model) {
-        final @BookmarkRowDisplayPref int displayPref =
-                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        boolean useImages = displayPref == BookmarkRowDisplayPref.VISUAL;
-        model.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
-                item.isFolder() && useImages ? StartImageVisibility.FOLDER_DRAWABLE
-                                             : StartImageVisibility.DRAWABLE);
-
-        @BookmarkType
-        int type = item.getId().getType();
-        if (item.isFolder()) {
-            if (displayPref == BookmarkRowDisplayPref.VISUAL) {
-                model.set(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
-                        new ImprovedBookmarkFolderViewCoordinator(
-                                mContext, mBookmarkImageFetcher, mBookmarkModel));
-                model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
-                        .setBookmarkId(item.getId());
-            }
-            model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
-                    BookmarkUtils.getIconBackground(mContext, mBookmarkModel, item));
-            model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
-                    BookmarkUtils.getIconTint(mContext, mBookmarkModel, item));
-            model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
-                    BookmarkUtils.getFolderIcon(mContext, type, displayPref));
-        } else {
-            model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
-                    ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
-            model.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
-            if (useImages) {
-                mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, image -> {
-                    model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
-                });
-            } else {
-                mBookmarkImageFetcher.fetchFaviconForBookmark(item, image -> {
-                    model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
-                });
-            }
-        }
-    }
 
     @VisibleForTesting
     ModelList createListMenuModelList(BookmarkListEntry entry, @Location int location) {
