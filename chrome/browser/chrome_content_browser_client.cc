@@ -38,6 +38,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1865,13 +1866,12 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
     CHECK(site.SchemeIs(chrome::kIsolatedAppScheme));
-    const base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
-        iwa_url_info = web_app::IsolatedWebAppUrlInfo::Create(site);
-    if (!iwa_url_info.has_value()) {
-      LOG(ERROR) << "Invalid isolated-app URL: " << site;
-      return default_storage_partition_config;
-    }
-    return iwa_url_info->storage_partition_config(browser_context);
+    ASSIGN_OR_RETURN(const auto iwa_url_info,
+                     web_app::IsolatedWebAppUrlInfo::Create(site), [&](auto) {
+                       LOG(ERROR) << "Invalid isolated-app URL: " << site;
+                       return default_storage_partition_config;
+                     });
+    return iwa_url_info.storage_partition_config(browser_context);
   }
 #endif
 

@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
@@ -705,7 +706,7 @@ void CastActivityManager::SendRouteJsonMessage(
     const std::string& media_route_id,
     const std::string& message,
     data_decoder::DataDecoder::ValueOrError result) {
-  const auto activity = [&]()
+  const auto get_activity = [&]()
       -> base::expected<std::pair<CastActivity*, std::string>, std::string> {
     if (!result.has_value()) {
       return base::unexpected(
@@ -733,16 +734,15 @@ void CastActivityManager::SendRouteJsonMessage(
           "message.");
     }
     return std::make_pair(it->second.get(), *client_id);
-  }();
-  if (!activity.has_value()) {
+  };
+  ASSIGN_OR_RETURN(auto activity, get_activity(), [&](std::string error) {
     logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent, activity.error(), "",
+        mojom::LogCategory::kRoute, kLoggerComponent, std::move(error), "",
         MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id),
         MediaRoute::GetPresentationIdFromMediaRouteId(media_route_id));
-    return;
-  }
-  activity->first->SendMessageToClient(
-      std::move(activity->second),
+  });
+  activity.first->SendMessageToClient(
+      std::move(activity.second),
       blink::mojom::PresentationConnectionMessage::NewMessage(message));
 }
 

@@ -14,7 +14,9 @@
 #include "base/format_macros.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -132,13 +134,13 @@ bool FakeLog::Emptied() const {
 
 base::expected<base::Value::Dict, std::string> ParseDictionary(
     const std::string& json) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
-  if (!parsed_json.has_value()) {
-    return base::unexpected("Couldn't parse " + json +
-                            ", got: " + parsed_json.error().message);
-  }
+  ASSIGN_OR_RETURN(
+      auto parsed_json, base::JSONReader::ReadAndReturnValueWithError(json),
+      [&](base::JSONReader::Error error) {
+        return "Couldn't parse " + json + ", got: " + std::move(error).message;
+      });
 
-  base::Value::Dict* dict = parsed_json->GetIfDict();
+  base::Value::Dict* dict = parsed_json.GetIfDict();
   if (!dict) {
     return base::unexpected("JSON object is not a dictionary");
   }
@@ -153,17 +155,16 @@ void ValidateLogEntry(const LogEntry* entry,
   EXPECT_EQ(Log::kInfo, entry->level);
   EXPECT_LT(0, entry->timestamp.ToTimeT());
 
-  base::expected<base::Value::Dict, std::string> message =
-      ParseDictionary(entry->message);
-  ASSERT_TRUE(message.has_value()) << message.error();
-  const std::string* webview = message->FindString("webview");
+  ASSERT_OK_AND_ASSIGN(base::Value::Dict message,
+                       ParseDictionary(entry->message));
+  const std::string* webview = message.FindString("webview");
   ASSERT_TRUE(webview);
   EXPECT_EQ(expected_webview, *webview);
-  const std::string* method = message->FindStringByDottedPath("message.method");
+  const std::string* method = message.FindStringByDottedPath("message.method");
   ASSERT_TRUE(method);
   EXPECT_EQ(expected_method, *method);
 
-  base::Value::Dict* params = message->FindDictByDottedPath("message.params");
+  base::Value::Dict* params = message.FindDictByDottedPath("message.params");
   ASSERT_TRUE(params);
   EXPECT_EQ(expected_params, *params);
 }
@@ -391,17 +392,16 @@ TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
   LogEntry* entry = log.GetEntries()[0].get();
   EXPECT_EQ(Log::kWarning, entry->level);
   EXPECT_LT(0, entry->timestamp.ToTimeT());
-  base::expected<base::Value::Dict, std::string> message =
-      ParseDictionary(entry->message);
-  ASSERT_TRUE(message.has_value()) << message.error();
-  const std::string* webview = message->FindString("webview");
+  ASSERT_OK_AND_ASSIGN(base::Value::Dict message,
+                       ParseDictionary(entry->message));
+  const std::string* webview = message.FindString("webview");
   ASSERT_TRUE(webview);
   EXPECT_EQ(DevToolsClientImpl::kBrowserwideDevToolsClientId, *webview);
-  const std::string* method = message->FindStringByDottedPath("message.method");
+  const std::string* method = message.FindStringByDottedPath("message.method");
   ASSERT_TRUE(method);
   EXPECT_EQ("Tracing.bufferUsage", *method);
   const base::Value::Dict* actual_params =
-      message->FindDictByDottedPath("message.params");
+      message.FindDictByDottedPath("message.params");
   ASSERT_TRUE(actual_params);
   EXPECT_TRUE(actual_params->contains("error"));
   client.RemoveListener(&logger);

@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -564,15 +565,14 @@ void PrintBackendServiceImpl::FetchCapabilities(
 #if BUILDFLAG(IS_WIN)
   if (xml_parser_remote_.is_bound() &&
       base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps)) {
-    base::expected<XpsCapabilities, mojom::ResultCode> xps_capabilities =
-        GetXpsCapabilities(printer_name);
-    if (!xps_capabilities.has_value()) {
-      std::move(callback).Run(mojom::PrinterCapsAndInfoResult::NewResultCode(
-          xps_capabilities.error()));
-      return;
-    }
+    ASSIGN_OR_RETURN(
+        XpsCapabilities xps_capabilities, GetXpsCapabilities(printer_name),
+        [&](mojom::ResultCode error) {
+          return std::move(callback).Run(
+              mojom::PrinterCapsAndInfoResult::NewResultCode(error));
+        });
 
-    MergeXpsCapabilities(std::move(xps_capabilities.value()), caps);
+    MergeXpsCapabilities(std::move(xps_capabilities), caps);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -946,17 +946,17 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
 #if BUILDFLAG(IS_WIN)
 base::expected<XpsCapabilities, mojom::ResultCode>
 PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
-  base::expected<std::string, mojom::ResultCode> xml =
-      print_backend_->GetXmlPrinterCapabilitiesForXpsDriver(printer_name);
-  if (!xml.has_value()) {
-    DLOG(ERROR) << "Failure getting XPS capabilities of printer "
-                << printer_name << ", error: " << xml.error();
-    return base::unexpected(xml.error());
-  }
+  ASSIGN_OR_RETURN(
+      std::string xml,
+      print_backend_->GetXmlPrinterCapabilitiesForXpsDriver(printer_name),
+      [&](mojom::ResultCode error) {
+        DLOG(ERROR) << "Failure getting XPS capabilities of printer "
+                    << printer_name << ", error: " << error;
+        return error;
+      });
 
   mojom::PrinterCapabilitiesValueResultPtr value_result;
-  xml_parser_remote_->ParseXmlForPrinterCapabilities(xml.value(),
-                                                     &value_result);
+  xml_parser_remote_->ParseXmlForPrinterCapabilities(xml, &value_result);
   if (value_result->is_result_code()) {
     DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
                 << printer_name

@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -42,6 +43,8 @@
 
 namespace ash::quick_start {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
@@ -324,47 +327,35 @@ TEST_F(SecondDeviceAuthBrokerDeathTest,
 TEST_F(SecondDeviceAuthBrokerTest,
        FetchChallengeBytesReturnsAnErrorForAuthErrors) {
   SimulateAuthError(kGetChallengeDataUrl);
-  base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      FetchChallengeBytes();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_THAT(response.error(), Property(&GoogleServiceAuthError::state,
-                                         Eq(State::SERVICE_ERROR)));
+  EXPECT_THAT(FetchChallengeBytes(),
+              ErrorIs(Property(&GoogleServiceAuthError::state,
+                               Eq(State::SERVICE_ERROR))));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
        FetchChallengeBytesReturnsAnErrorForMalformedResponse) {
   AddFakeResponse(kGetChallengeDataUrl, "");
-  base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      FetchChallengeBytes();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_THAT(response.error(),
-              Property(&GoogleServiceAuthError::state,
-                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
+  EXPECT_THAT(FetchChallengeBytes(),
+              ErrorIs(Property(&GoogleServiceAuthError::state,
+                               Eq(State::UNEXPECTED_SERVICE_RESPONSE))));
 
   AddFakeResponse(kGetChallengeDataUrl, "{}");
-  response = FetchChallengeBytes();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_THAT(response.error(),
-              Property(&GoogleServiceAuthError::state,
-                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
+  EXPECT_THAT(FetchChallengeBytes(),
+              ErrorIs(Property(&GoogleServiceAuthError::state,
+                               Eq(State::UNEXPECTED_SERVICE_RESPONSE))));
 
   AddFakeResponse(kGetChallengeDataUrl, "{\"challengeData\": \"\"}");
-  response = FetchChallengeBytes();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_THAT(response.error(),
-              Property(&GoogleServiceAuthError::state,
-                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
+  EXPECT_THAT(FetchChallengeBytes(),
+              ErrorIs(Property(&GoogleServiceAuthError::state,
+                               Eq(State::UNEXPECTED_SERVICE_RESPONSE))));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
        FetchChallengeBytesReturnsAnErrorForBase64ParsingError) {
   AddFakeResponse(kGetChallengeDataUrl, kInvalidBase64ChallengeDataResponse);
-  base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      FetchChallengeBytes();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_THAT(response.error(),
-              Property(&GoogleServiceAuthError::state,
-                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
+  EXPECT_THAT(FetchChallengeBytes(),
+              ErrorIs(Property(&GoogleServiceAuthError::state,
+                               Eq(State::UNEXPECTED_SERVICE_RESPONSE))));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesReturnsChallengeBytes) {
@@ -403,10 +394,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesReturnsChallengeBytes) {
         AddFakeResponse(kGetChallengeDataUrl, kFakeChallengeDataResponse);
       }));
 
-  base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      FetchChallengeBytes();
-  ASSERT_TRUE(response.has_value());
-  EXPECT_THAT(*response.value(), Property(&std::string::size, Gt(0UL)));
+  EXPECT_THAT(FetchChallengeBytes(),
+              ValueIs(Property(&Base64UrlString::value,
+                               Property(&std::string::size, Gt(0UL)))));
 }
 
 TEST_F(
@@ -430,12 +420,10 @@ TEST_F(
                 /*pem_certificate_chain=*/std::string());
           })));
 
-  base::expected<PEMCertChain, SecondDeviceAuthBroker::AttestationErrorType>
-      response = FetchAttestationCertificate(kFidoCredentialId);
-  ASSERT_FALSE(response.has_value());
   EXPECT_THAT(
-      response.error(),
-      Eq(SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
+      FetchAttestationCertificate(kFidoCredentialId),
+      ErrorIs(
+          Eq(SecondDeviceAuthBroker::AttestationErrorType::kTransientError)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -458,12 +446,10 @@ TEST_F(SecondDeviceAuthBrokerTest,
                 /*pem_certificate_chain=*/std::string());
           })));
 
-  base::expected<PEMCertChain, SecondDeviceAuthBroker::AttestationErrorType>
-      response = FetchAttestationCertificate(kFidoCredentialId);
-  ASSERT_FALSE(response.has_value());
   EXPECT_THAT(
-      response.error(),
-      Eq(SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+      FetchAttestationCertificate(kFidoCredentialId),
+      ErrorIs(
+          Eq(SecondDeviceAuthBroker::AttestationErrorType::kPermanentError)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -489,10 +475,8 @@ TEST_F(SecondDeviceAuthBrokerTest,
             /*pem_certificate_chain=*/*GetCertificate());
       })));
 
-  base::expected<PEMCertChain, SecondDeviceAuthBroker::AttestationErrorType>
-      response = FetchAttestationCertificate(kFidoCredentialId);
-  ASSERT_TRUE(response.has_value());
-  EXPECT_THAT(response.value(), Eq(GetCertificate()));
+  EXPECT_THAT(FetchAttestationCertificate(kFidoCredentialId),
+              ValueIs(Eq(GetCertificate())));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,

@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
@@ -100,11 +101,12 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
   }
 
   void SetWebAppSettingsListPref(const base::StringPiece pref) {
-    auto result = base::JSONReader::ReadAndReturnValueWithError(
-        pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    ASSERT_TRUE(result->is_list());
-    profile()->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result));
+    ASSERT_OK_AND_ASSIGN(
+        auto result,
+        base::JSONReader::ReadAndReturnValueWithError(
+            pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+    ASSERT_TRUE(result.is_list());
+    profile()->GetPrefs()->Set(prefs::kWebAppSettings, std::move(result));
   }
 
  protected:

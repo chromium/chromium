@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -78,17 +79,11 @@ AddOptionsFromMojo(
     const std::vector<SubAppsServiceAddParametersPtr>& sub_apps_to_add_mojo) {
   std::vector<std::pair<ManifestId, GURL>> sub_apps;
   for (const auto& sub_app : sub_apps_to_add_mojo) {
-    base::expected<ManifestId, std::string> manifest_id =
-        ConvertPathToUrl(sub_app->manifest_id_path, origin);
-    if (!manifest_id.has_value()) {
-      return base::unexpected(manifest_id.error());
-    }
-    base::expected<GURL, std::string> install_url =
-        ConvertPathToUrl(sub_app->install_url_path, origin);
-    if (!install_url.has_value()) {
-      return base::unexpected(install_url.error());
-    }
-    sub_apps.emplace_back(manifest_id.value(), install_url.value());
+    ASSIGN_OR_RETURN(ManifestId manifest_id,
+                     ConvertPathToUrl(sub_app->manifest_id_path, origin));
+    ASSIGN_OR_RETURN(GURL install_url,
+                     ConvertPathToUrl(sub_app->install_url_path, origin));
+    sub_apps.emplace_back(std::move(manifest_id), std::move(install_url));
   }
   return sub_apps;
 }
@@ -183,13 +178,12 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
-  base::expected<std::vector<std::pair<ManifestId, GURL>>, std::string>
-      add_options = AddOptionsFromMojo(
-          render_frame_host().GetLastCommittedOrigin(), sub_apps_to_add);
-  if (!add_options.has_value()) {
-    // Compromised renderer, bail immediately (this call deletes *this).
-    return ReportBadMessageAndDeleteThis(add_options.error());
-  }
+  ASSIGN_OR_RETURN(
+      (std::vector<std::pair<ManifestId, GURL>> add_options),
+      AddOptionsFromMojo(render_frame_host().GetLastCommittedOrigin(),
+                         sub_apps_to_add),
+      // Compromised renderer, bail immediately (this call deletes *this).
+      &SubAppsServiceImpl::ReportBadMessageAndDeleteThis, this);
 
   CHECK(AreWebAppsUserInstallable(
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext())));
@@ -199,7 +193,7 @@ void SubAppsServiceImpl::Add(
   AddCallInfo& add_call_info = add_call_info_[add_call_id];
   add_call_info.mojo_callback = std::move(result_callback);
 
-  CollectInstallData(add_call_id, add_options.value());
+  CollectInstallData(add_call_id, std::move(add_options));
 }
 
 void SubAppsServiceImpl::CollectInstallData(
@@ -426,14 +420,13 @@ void SubAppsServiceImpl::RemoveSubApp(
     base::OnceCallback<void(SubAppsServiceRemoveResultPtr)> callback,
     const AppId* calling_app_id) {
   // Convert `manifest_id_path` from path form to full URL form.
-  base::expected<GURL, std::string> manifest_id_with_error = ConvertPathToUrl(
-      manifest_id_path, render_frame_host().GetLastCommittedOrigin());
-  if (!manifest_id_with_error.has_value()) {
-    // Compromised renderer, bail immediately (this call deletes *this).
-    return ReportBadMessageAndDeleteThis(manifest_id_with_error.error());
-  }
+  ASSIGN_OR_RETURN(
+      const ManifestId manifest_id,
+      ConvertPathToUrl(manifest_id_path,
+                       render_frame_host().GetLastCommittedOrigin()),
+      // Compromised renderer, bail immediately (this call deletes *this).
+      &SubAppsServiceImpl::ReportBadMessageAndDeleteThis, this);
 
-  const ManifestId manifest_id = GURL(manifest_id_with_error.value());
   AppId sub_app_id = GenerateAppIdFromManifestId(manifest_id);
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const WebApp* app = provider->registrar_unsafe().GetAppById(sub_app_id);

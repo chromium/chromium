@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -493,11 +494,12 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   ScopedTestingLocalState testing_local_state_;
 
   void SetWebAppSettingsListPref(const base::StringPiece pref) {
-    auto result = base::JSONReader::ReadAndReturnValueWithError(
-        pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    ASSERT_TRUE(result->is_list());
-    profile()->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result));
+    ASSERT_OK_AND_ASSIGN(
+        auto result,
+        base::JSONReader::ReadAndReturnValueWithError(
+            pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+    ASSERT_TRUE(result.is_list());
+    profile()->GetPrefs()->Set(prefs::kWebAppSettings, std::move(result));
   }
 
   void ValidateEmptyWebAppSettingsPolicy() {

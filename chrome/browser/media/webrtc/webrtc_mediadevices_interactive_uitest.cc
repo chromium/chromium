@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -101,15 +102,16 @@ class WebRtcMediaDevicesInteractiveUITest
     std::string devices_as_json = ExecuteJavascript("enumerateDevices()", tab);
     EXPECT_FALSE(devices_as_json.empty());
 
-    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-        devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-    ASSERT_TRUE(parsed_json->is_list());
-    ASSERT_FALSE(parsed_json->GetList().empty());
+    ASSERT_OK_AND_ASSIGN(
+        auto parsed_json,
+        base::JSONReader::ReadAndReturnValueWithError(
+            devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS));
+    ASSERT_TRUE(parsed_json.is_list());
+    ASSERT_FALSE(parsed_json.GetList().empty());
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (const auto& value : parsed_json->GetList()) {
+    for (const auto& value : parsed_json.GetList()) {
       const base::Value::Dict* dict = value.GetIfDict();
       ASSERT_TRUE(dict);
       MediaDeviceInfo device;
