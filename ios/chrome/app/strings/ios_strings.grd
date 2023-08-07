@@ -4432,10 +4432,10 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP" desc="This string appears as a subheading a full-page screen that asks users if they want to turn on sync. This string explains to users that they can back up their Chrome/Chromium data and use it on all their computers, phones, and other devices; a user's Chrome/Chromium data includes their bookmarks, passwords, history, settings, and more. The word 'stuff' can be translated as 'data' or similar if there is no natural translation of 'stuff'. Maintain the level of formality that your language generally uses in the Chrome/Chromium app. The tone should be informative and inviting. [iOS only][CHAR_LIMIT=100]">
         Back up your stuff and use it on any device.
       </message>
-      <message name="IDS_IOS_HISTORY_SYNC_TITLE" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on sync for their browsing history and tabs, to be able to resume their navigation easily and quickly on other devices. The tone should be informative and inviting.">
+      <message name="IDS_IOS_HISTORY_SYNC_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         Save Time, Type Less
       </message>
-      <message name="IDS_IOS_HISTORY_SYNC_SUBTITLE" desc="This string appears as a subheading a full-page screen that asks users if they want to turn on sync for their browsing history and tabs. This string explains to users that they can back up the history of their visited websites and opened tabs, to use them on other devices ; Maintain the level of formality that your language generally uses in the Chrome/Chromium app. The tone should be informative and inviting.">
+      <message name="IDS_IOS_HISTORY_SYNC_SUBTITLE" desc="Text of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         To quickly get back to sites you've visited, sync your tabs and history.
       </message>
       <message name="IDS_IOS_HISTORY_SYNC_PRIMARY_ACTION" desc="Title of the button to validate the user consent to sync their history and tabs data.">
@@ -4443,6 +4443,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_HISTORY_SYNC_SECONDARY_ACTION" desc="Title of the button to refuse to give the  consent to sync their history and tabs data.">
         No Thanks
+      </message>
+      <message name="IDS_IOS_HISTORY_SYNC_FOOTER_WITH_EMAIL" desc="Small text above the main button on a page that asks users to start syncing their tabs and browsing history. The first sentence reminds the user that they're signed in with a certain account. The second sentence is meant to reassure users that they can always change their mind and opt out again. The third sentence explains how history data may be used to personalise the user's experience in other services. The tone should be friendly and reassuring.">
+        You are signed in as <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+      </message>
+      <message name="IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL" desc="Small text above the main button on a page that asks users to start syncing their tabs and browsing history. The first sentence is meant to reassure users that they can always change their mind and opt out again. Separately, the second sentence explains how history data may be used to personalise the user's experience in other services.  The tone should be friendly and reassuring.">
+        You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
       </message>
       <message name="IDS_IOS_TERMS_OF_SERVICE" desc="The label to access the terms of service, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
         Terms of Service
