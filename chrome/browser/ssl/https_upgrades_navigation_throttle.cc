@@ -34,6 +34,24 @@ namespace {
 // showing the HTTPS-First Mode interstitial.
 base::TimeDelta g_fallback_delay = base::Seconds(3);
 
+// Returns true if HTTPS-First Mode interstitial should be enabled by the
+// Typically Secure User heuristic. The heuristic can set the HFM pref to true,
+// but it shouldn't override user preference. If the user ever modified
+// the HFM pref by enabling or disabling it before, this will return false.
+bool IsInterstitialEnabledByTypicallySecureUserHeuristic(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
+    return false;
+  }
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile);
+  hfm_service->MaybeEnableHttpsFirstModeForUser(
+      /*add_fallback_entry=*/false);
+
+  return profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled) &&
+         profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+}
+
 }  // namespace
 
 // static
@@ -67,13 +85,16 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
-    hfm_service->MaybeEnableHttpsFirstModeForUrl(profile, handle->GetURL());
+    hfm_service->MaybeEnableHttpsFirstModeForUrl(handle->GetURL());
   }
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state && state->IsHttpsEnforcedForHost(handle->GetURL().host(),
                                              storage_partition)) {
     interstitial_state.enabled_by_engagement_heuristic = true;
   }
+
+  interstitial_state.enabled_by_typically_secure_browsing =
+      IsInterstitialEnabledByTypicallySecureUserHeuristic(profile);
 
   bool https_upgrades_enabled =
       interstitial_state.enabled_by_pref ||
@@ -90,15 +111,17 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   HttpsOnlyModeTabHelper::CreateForWebContents(handle->GetWebContents());
 
   return std::make_unique<HttpsUpgradesNavigationThrottle>(
-      handle, std::move(blocking_page_factory), interstitial_state);
+      handle, profile, std::move(blocking_page_factory), interstitial_state);
 }
 
 HttpsUpgradesNavigationThrottle::HttpsUpgradesNavigationThrottle(
     content::NavigationHandle* handle,
+    Profile* profile,
     std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
     security_interstitials::https_only_mode::HttpInterstitialState
         interstitial_state)
     : content::NavigationThrottle(handle),
+      profile_(profile),
       blocking_page_factory_(std::move(blocking_page_factory)),
       interstitial_state_(interstitial_state) {}
 

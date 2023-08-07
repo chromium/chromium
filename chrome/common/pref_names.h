@@ -92,8 +92,22 @@ inline constexpr char kHomePageIsNewTabPage[] = "homepage_is_newtabpage";
 // This is the URL of the page to load when opening new tabs.
 inline constexpr char kHomePage[] = "homepage";
 
-// A boolean specifying whether HTTPS-Only Mode is enabled.
+// A boolean specifying whether HTTPS-Only Mode is enabled by the user.
 inline constexpr char kHttpsOnlyModeEnabled[] = "https_only_mode_enabled";
+
+// A boolean specifying whether HTTPS-Only Mode is automatically enabled by
+// heuristics. Can only be set to true if this pref or kHttpsOnlyModeEnabled has
+// never been set before (true or false). If kHttpsOnlyModeEnabled is modified,
+// this will be set to false, disabling automatic enabling of HTTPS-First Mode
+// forever for this profile.
+inline constexpr char kHttpsOnlyModeAutoEnabled[] =
+    "https_only_mode_auto_enabled";
+
+// A dictionary containing information about HTTPS Upgrade failures in the
+// recent days. Failure entries are stored in a list with a timestamp. Old
+// entries are evicted from the list and new entries are added when a new HTTPS
+// Upgrade fallback happens.
+inline constexpr char kHttpsUpgradeFallbacks[] = "https_upgrade_fallbacks";
 
 // Stores information about the important sites dialog, including the time and
 // frequency it has been ignored.

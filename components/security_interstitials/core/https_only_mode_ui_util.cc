@@ -35,6 +35,9 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
   } else if (interstitial_state.enabled_by_advanced_protection) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH;
+  } else if (interstitial_state.enabled_by_typically_secure_browsing) {
+    primary_paragraph_id =
+        IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
   }
 
   load_time_data.Set("primaryParagraph",

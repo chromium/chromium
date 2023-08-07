@@ -686,6 +686,12 @@ BASE_FEATURE(kHttpsFirstModeV2ForEngagedSites,
              "HttpsFirstModeV2ForEngagedSites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables HTTPS-First Mode for typically secure users. No-op if
+// HttpsFirstModeV2 or HTTPS-Upgrades is disabled.
+BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
+             "HttpsFirstModeV2ForTypicallySecureUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables automatically upgrading main frame navigations to HTTPS.
 BASE_FEATURE(kHttpsUpgrades,
              "HttpsUpgrades",

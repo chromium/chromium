@@ -13,6 +13,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -77,6 +78,21 @@ using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 // Mode are enabled (to test any interactions between the two upgrade modes).
 // The code also needs to be able to run safely when neither HTTPS-First Mode
 // nor HTTPS-Upgrades are enabled.
+//
+// Quick summary of all features tested here:
+// * HTTPS-Upgrades:
+//     Automatically upgrades main frame navigations to HTTPS. Silently falls
+//     back to HTTP on failure.
+// * HTTPS First Mode:
+//     Automatically upgrades main frame navigations to HTTPS. Shows an
+//     interstitial on failure.
+// * HTTPS First Mode With Site Engagement:
+//     Automatically enables HTTPS First Mode for sites that are visited mainly
+//     over HTTPS. Requires HTTPS-Upgrades to be enabled.
+// * HTTPS First Mode for Typically Secure Users
+//     Automatically enables HTTPS First Mode for users that mainly visit HTTPS
+//     sites. Requires HTTPS-Upgrades to be enabled.
+//
 enum class HttpsUpgradesTestType {
   // Enables HFM pref.
   kHttpsFirstModeOnly,
@@ -87,11 +103,20 @@ enum class HttpsUpgradesTestType {
   // Enables HFM with Site Engagement heuristic and HTTPS Upgrades feature flag.
   // HTTPS Upgrades is a prerequisite for HFM with Site Engagement heuristic.
   kHttpsFirstModeWithSiteEngagementAndHttpsUpgrades,
-  // Enables HFM pref, HFM with Site Engagement heuristic and HTTPS upgrades
-  // feature flag.
+
+  // Enables HFM for Typically Secure Users and HTTPS Upgrades feature flag.
+  // HTTPS Upgrades is a prerequisite for HFM for Typically Secure users.
+  kHttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades,
+
+  // Enables HFM with Site Engagement and HFM for Typically Secure Users (both
+  // automatically enable HFM) and HTTPS upgrades feature flag.
+  kAllAutoHFM,
+
+  // Enables HFM pref, HFM with Site Engagement heuristic, HFM for typically
+  // secure users and HTTPS upgrades feature flag.
   kAll,
-  // Disables HFM pref, HFM with Site Engagement heuristic and HTTPS Upgrades
-  // feature.
+  // Disables HFM pref, HFM with Site Engagement heuristic, HFM for typically
+  // secure users and HTTPS Upgrades feature.
   kNeither,
 };
 
@@ -114,20 +139,26 @@ class HttpsUpgradesBrowserTest
       case HttpsUpgradesTestType::kHttpsFirstModeOnly:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{},
-            /*disabled_features=*/{features::kHttpsUpgrades,
-                                   features::kHttpsFirstModeV2ForEngagedSites});
+            /*disabled_features=*/{
+                features::kHttpsUpgrades,
+                features::kHttpsFirstModeV2ForEngagedSites,
+                features::kHttpsFirstModeV2ForTypicallySecureUsers});
         break;
 
       case HttpsUpgradesTestType::kHttpsUpgradesOnly:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsUpgrades},
-            /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites});
+            /*disabled_features=*/{
+                features::kHttpsFirstModeV2ForEngagedSites,
+                features::kHttpsFirstModeV2ForTypicallySecureUsers});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeAndHttpsUpgrades:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsUpgrades},
-            /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites});
+            /*disabled_features=*/{
+                features::kHttpsFirstModeV2ForEngagedSites,
+                features::kHttpsFirstModeV2ForTypicallySecureUsers});
         break;
 
       case HttpsUpgradesTestType::
@@ -135,6 +166,27 @@ class HttpsUpgradesBrowserTest
         // HFM pref is disabled in SetUpOnMainThread.
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsUpgrades,
+                                  features::kHttpsFirstModeV2ForEngagedSites},
+            /*disabled_features=*/{
+                features::kHttpsFirstModeV2ForTypicallySecureUsers});
+        break;
+
+      case HttpsUpgradesTestType::
+          kHttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades:
+        // HFM pref is disabled in SetUpOnMainThread.
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kHttpsUpgrades,
+                                  features::
+                                      kHttpsFirstModeV2ForTypicallySecureUsers},
+            /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites});
+        break;
+
+      case HttpsUpgradesTestType::kAllAutoHFM:
+        // HFM pref is disabled in SetUpOnMainThread.
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kHttpsUpgrades,
+                                  features::
+                                      kHttpsFirstModeV2ForTypicallySecureUsers,
                                   features::kHttpsFirstModeV2ForEngagedSites},
             /*disabled_features=*/{});
         break;
@@ -144,7 +196,9 @@ class HttpsUpgradesBrowserTest
         // HFM pref is enabled in SetUpOnMainThread.
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsUpgrades,
-                                  features::kHttpsFirstModeV2ForEngagedSites},
+                                  features::kHttpsFirstModeV2ForEngagedSites,
+                                  features::
+                                      kHttpsFirstModeV2ForTypicallySecureUsers},
             /*disabled_features=*/{});
         break;
 
@@ -153,8 +207,10 @@ class HttpsUpgradesBrowserTest
       case HttpsUpgradesTestType::kNeither:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{},
-            /*disabled_features=*/{features::kHttpsUpgrades,
-                                   features::kHttpsFirstModeV2ForEngagedSites});
+            /*disabled_features=*/{
+                features::kHttpsUpgrades,
+                features::kHttpsFirstModeV2ForEngagedSites,
+                features::kHttpsFirstModeV2ForTypicallySecureUsers});
         break;
     }
 
@@ -189,7 +245,12 @@ class HttpsUpgradesBrowserTest
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server()->port());
 
     // Only enable the HTTPS-First Mode pref when the test config calls for it.
-    SetPref(IsHttpsFirstModePrefEnabled());
+    // Some of the HFM heuristics check that the preference wasn't set so as
+    // not to override user preference (e.g. if the user changed the pref by
+    // turning it off from the UI, we don't want to override it).
+    if (IsHttpsFirstModePrefEnabled()) {
+      SetPref(IsHttpsFirstModePrefEnabled());
+    }
   }
 
   void TearDownOnMainThread() override { SetPref(false); }
@@ -256,10 +317,29 @@ class HttpsUpgradesBrowserTest
   // Engagement scores on their HTTPS URLs. HFM with Site Engagement requires
   // HTTPS-Upgrades to be enabled.
   bool IsSiteEngagementHeuristicEnabled() const {
-    bool enabled = https_upgrades_test_type() ==
-                       HttpsUpgradesTestType::
-                           kHttpsFirstModeWithSiteEngagementAndHttpsUpgrades ||
-                   https_upgrades_test_type() == HttpsUpgradesTestType::kAll;
+    bool enabled =
+        https_upgrades_test_type() ==
+            HttpsUpgradesTestType::
+                kHttpsFirstModeWithSiteEngagementAndHttpsUpgrades ||
+        https_upgrades_test_type() == HttpsUpgradesTestType::kAllAutoHFM ||
+        https_upgrades_test_type() == HttpsUpgradesTestType::kAll;
+    if (enabled) {
+      DCHECK(IsHttpUpgradingEnabled());
+    }
+    return enabled;
+  }
+
+  // Whether automatic HTTPS-First Mode for typically secure users is enabled.
+  // When enabled, this feature will enable HFM for users who would see HFM
+  // warnings very rarely. HFM for typically secure users requires
+  // HTTPS-Upgrades to be enabled.
+  bool IsTypicallySecureUserFeatureEnabled() const {
+    bool enabled =
+        https_upgrades_test_type() ==
+            HttpsUpgradesTestType::
+                kHttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades ||
+        https_upgrades_test_type() == HttpsUpgradesTestType::kAllAutoHFM ||
+        https_upgrades_test_type() == HttpsUpgradesTestType::kAll;
     if (enabled) {
       DCHECK(IsHttpUpgradingEnabled());
     }
@@ -293,13 +373,17 @@ class HttpsUpgradesBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     HttpsUpgradesBrowserTest,
-    ::testing::Values(HttpsUpgradesTestType::kHttpsFirstModeOnly,
-                      HttpsUpgradesTestType::kHttpsUpgradesOnly,
-                      HttpsUpgradesTestType::kHttpsFirstModeAndHttpsUpgrades,
-                      HttpsUpgradesTestType::
-                          kHttpsFirstModeWithSiteEngagementAndHttpsUpgrades,
-                      HttpsUpgradesTestType::kAll,
-                      HttpsUpgradesTestType::kNeither),
+    ::testing::Values(
+        HttpsUpgradesTestType::kHttpsFirstModeOnly,
+        HttpsUpgradesTestType::kHttpsUpgradesOnly,
+        HttpsUpgradesTestType::kHttpsFirstModeAndHttpsUpgrades,
+        HttpsUpgradesTestType::
+            kHttpsFirstModeWithSiteEngagementAndHttpsUpgrades,
+        HttpsUpgradesTestType::
+            kHttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades,
+        HttpsUpgradesTestType::kAllAutoHFM,
+        HttpsUpgradesTestType::kAll,
+        HttpsUpgradesTestType::kNeither),
     // Map param to a human-readable string for better test output.
     [](testing::TestParamInfo<HttpsUpgradesTestType> input_type)
         -> std::string {
@@ -313,6 +397,11 @@ INSTANTIATE_TEST_SUITE_P(
         case HttpsUpgradesTestType::
             kHttpsFirstModeWithSiteEngagementAndHttpsUpgrades:
           return "HttpsFirstModeWithSiteEngagementAndHttpsUpgrades";
+        case HttpsUpgradesTestType::
+            kHttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades:
+          return "HttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades";
+        case HttpsUpgradesTestType::kAllAutoHFM:
+          return "AllAutoHFM";
         case HttpsUpgradesTestType::kAll:
           return "AllFeatures";
         case HttpsUpgradesTestType::kNeither:
@@ -748,6 +837,132 @@ IN_PROC_BROWSER_TEST_P(
       kSiteEngagementHeuristicEnforcementDurationHistogram, 1);
   histograms()->ExpectTimeBucketCount(
       kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1), 1);
+}
+
+// TODO(https://crbug.com/1469343): Fails on the linux-wayland-rel bot.
+#if defined(OZONE_PLATFORM_WAYLAND)
+#define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser \
+  DISABLED_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser
+#else
+#define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser \
+  UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser
+#endif
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+
+  // Set test clock.
+  base::SimpleTestClock clock;
+
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile);
+  hfm_service->SetClockForTesting(&clock);
+  base::Time now = base::Time::NowFromSystemTime();
+
+  // Start the clock at standard system time.
+  clock.SetNow(now);
+  profile->SetCreationTimeForTesting(now);
+
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+
+  // Visit the HTTP URL. Profile age isn't old enough so Typically Secure
+  // Users feature won't show an interstitial here.
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  if (IsHttpsFirstModePrefEnabled()) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        "You are seeing this warning because this site does not support "
+        "HTTPS."));
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+
+  // Move the clock forward and revisit HTTP. Profile is old enough now, so
+  // Typically Secure Users feature will auto-enable HFM and show an
+  // interstitial.
+  clock.SetNow(base::Time::NowFromSystemTime() + base::Days(15));
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  bool expect_interstitial =
+      IsHttpsFirstModePrefEnabled() || IsTypicallySecureUserFeatureEnabled();
+  // Expect typically secure text only when HFM is auto-enabled, so exclude
+  // HttpsUpgradesTestType::kAll where HFM is enabled via pref).
+  bool expect_typically_secure_user_interstitial_text =
+      https_upgrades_test_type() ==
+          HttpsUpgradesTestType::
+              kHttpsFirstModeForTypicallySecureUsersAndHttpsUpgrades ||
+      https_upgrades_test_type() == HttpsUpgradesTestType::kAllAutoHFM;
+
+  if (expect_interstitial) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        expect_typically_secure_user_interstitial_text
+            ? "You usually connect to sites securely"
+            : "You are seeing this warning because this site does not support "
+              "HTTPS."));
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+
+  // Move the clock forward a day and revisit HTTP. Should still show HFM
+  // interstitial.
+  clock.SetNow(base::Time::NowFromSystemTime() + base::Days(16));
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  if (expect_interstitial) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        expect_typically_secure_user_interstitial_text
+            ? "You usually connect to sites securely"
+            : "You are seeing this warning because this site does not support "
+              "HTTPS."));
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+
+  // Disable HFM. Should no longer auto-enable it.
+  SetPref(false);
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Re-enable HFM. Should now show HFM interstitial without the auto-enabled
+  // text.
+  SetPref(true);
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+      contents->GetPrimaryMainFrame(),
+      "You are seeing this warning because this site does not support "
+      "HTTPS."));
 }
 
 // Regression test for crbug.com/1441276. Sequence of events:

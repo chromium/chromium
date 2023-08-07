@@ -82,7 +82,10 @@ bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
                                        "this site does not support HTTPS.") ||
           IsInterstitialDisplayingText(
               tab->GetPrimaryMainFrame(),
-              "You usually connect to this site securely"));
+              "You usually connect to this site securely") ||
+          IsInterstitialDisplayingText(
+              tab->GetPrimaryMainFrame(),
+              "You usually connect to sites securely"));
 }
 
 }  // namespace chrome_browser_interstitials

@@ -157,6 +157,10 @@ struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled because the user is in the Advanced
   // Protection program.
   bool enabled_by_advanced_protection = false;
+
+  // Whether HTTPS-First Mode is enabled because the user's browsing pattern
+  // is typically secure, i.e. they mainly visit HTTPS sites.
+  bool enabled_by_typically_secure_browsing = false;
 };
 
 // Helper to record an HTTPS-First Mode navigation event.
