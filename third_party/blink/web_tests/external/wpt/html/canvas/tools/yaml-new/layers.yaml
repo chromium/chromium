@@ -267,6 +267,40 @@
 
     ctx.fillRect(70, 70, 75, 50);
 
+- name: 2d.layer.layer-rendering-state-reset-in-layer
+  desc: Tests that layers ignore the global context filter.
+  code: |
+    ctx.globalAlpha = 0.5;
+    ctx.globalCompositeOperation = 'xor';
+    ctx.shadowColor = '#0000ff';
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 20;
+    ctx.shadowBlur = 30;
+
+    @assert ctx.globalAlpha === 0.5;
+    @assert ctx.globalCompositeOperation === 'xor';
+    @assert ctx.shadowColor === '#0000ff';
+    @assert ctx.shadowOffsetX === 10;
+    @assert ctx.shadowOffsetY === 20;
+    @assert ctx.shadowBlur === 30;
+
+    ctx.beginLayer();
+
+    @assert ctx.globalAlpha === 1.0;
+    @assert ctx.globalCompositeOperation === 'source-over';
+    @assert ctx.shadowColor === 'rgba(0, 0, 0, 0)';
+    @assert ctx.shadowOffsetX === 0;
+    @assert ctx.shadowOffsetY === 0;
+    @assert ctx.shadowBlur === 0;
+
+    ctx.endLayer();
+
+    @assert ctx.globalAlpha === 0.5;
+    @assert ctx.globalCompositeOperation === 'xor';
+    @assert ctx.shadowColor === '#0000ff';
+    @assert ctx.shadowOffsetX === 10;
+    @assert ctx.shadowOffsetY === 20;
+    @assert ctx.shadowBlur === 30;
 
 - name: 2d.layer.unclosed
   desc: Check that layers are rendered even if not closed.
