@@ -423,8 +423,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
 
         # A full port name should normally always be of the form <os>-<version>;
-        # for example "win-win11", or "linux-trusty". For the test port used in
-        # unit tests, though, the full port name may be "test-<os>-<version>".
+        # for example "win-win11", or "mac-mac13-arm64". For the test port used
+        # in unit tests, though, the full port name may be
+        # "test-<os>-<version>".
         def os_name(port):
             if '-' not in port:
                 return port

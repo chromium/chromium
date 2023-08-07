@@ -3771,7 +3771,7 @@ crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Crash Failure Pass Time
 skbug.com/7641 external/wpt/css/css-paint-api/paint2d-paths.https.html [ Failure Pass ]
 
 # Sheriff failures 2018-01-25
-# Flaking on Linux Tests, WebKit Linux Trusty (also ASAN, Leak)
+# Flaking on Linux Tests, WebKit Linux (also ASAN, Leak)
 crbug.com/805794 [ Linux ] virtual/android/url-bar/bottom-fixed-adjusted-when-showing-url-bar.html [ Failure Pass ]
 
 # Sheriff failures 2018-02-05
@@ -4525,7 +4525,7 @@ crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcs
 crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Crash Failure Pass Timeout ]
 
 # Sheriff 2020-12-11
-# Flaking on Linux Trusty
+# Flaking on Linux
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Failure Pass ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Failure Pass ]
 

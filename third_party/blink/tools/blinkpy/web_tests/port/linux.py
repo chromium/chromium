@@ -41,29 +41,22 @@ _log = logging.getLogger(__name__)
 class LinuxPort(base.Port):
     port_name = 'linux'
 
-    SUPPORTED_VERSIONS = ('trusty', )
+    SUPPORTED_VERSIONS = ('linux', )
 
     FALLBACK_PATHS = {}
-    FALLBACK_PATHS['trusty'] = (
-        ['linux'] + win.WinPort.latest_platform_fallback_path())
+    FALLBACK_PATHS['linux'] = (['linux'] +
+                               win.WinPort.latest_platform_fallback_path())
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md'
 
     XVFB_START_STOP_TIMEOUT = 5.0  # Wait up to 5 seconds for Xvfb to start or stop.
 
-    @classmethod
-    def determine_full_port_name(cls, host, options, port_name):
-        if port_name.endswith('linux'):
-            assert host.platform.is_linux()
-            version = host.platform.os_version
-            return port_name + '-' + version
-        return port_name
-
     def __init__(self, host, port_name, **kwargs):
         super(LinuxPort, self).__init__(host, port_name, **kwargs)
-        self._version = port_name[port_name.index('linux-') + len('linux-'):]
+        (self._version, ) = self.SUPPORTED_VERSIONS
         self._architecture = 'x86_64'
-        assert self._version in self.SUPPORTED_VERSIONS
+        assert port_name == 'linux', ('Only one version of Linux is '
+                                      'supported. See crbug.com/1468322')
 
         if not self.get_option('disable_breakpad'):
             self._dump_reader = DumpReaderLinux(host, self.build_path())

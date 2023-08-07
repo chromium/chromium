@@ -16,7 +16,7 @@ from unexpected_passes_common import queries as upc_queries
 # List of data selected from the database:
 # exported.id - build id of this test, like build-12345
 # test_metadata.name - the full test name, like external/wpt/rendering/test1
-# typ_tags - list of the test build tag, like [linux,release,trusty,x86_64]
+# typ_tags - list of the test build tag, like [linux,release,x86_64]
 # typ_expectations - list of expectations, like [Failure,Pass,Timeout]
 # step_names - list of step name from test task, like [blink_wpt_tests on Mac]
 # test_type - test type of this test, like image

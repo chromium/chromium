@@ -99,11 +99,11 @@ class BaselineOptimizerTest(BaselineTest):
                 'specifiers': ['Win11', 'Release']
             },
             'Fake Test Linux': {
-                'port_name': 'linux-trusty',
+                'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release']
             },
             'Fake Test Linux HighDPI': {
-                'port_name': 'linux-trusty',
+                'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
                     'high_dpi_blink_web_tests (with patch)': {
@@ -132,8 +132,8 @@ class BaselineOptimizerTest(BaselineTest):
         # assertion fails, port configurations are likely changed, and the
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
-            'linux-trusty', 'mac-mac10.15', 'mac-mac11', 'mac-mac12',
-            'mac-mac13', 'win-win10.20h2', 'win-win11'
+            'linux', 'mac-mac10.15', 'mac-mac11', 'mac-mac12', 'mac-mac13',
+            'win-win10.20h2', 'win-win11'
         ])
 
     def _assert_optimization(self,

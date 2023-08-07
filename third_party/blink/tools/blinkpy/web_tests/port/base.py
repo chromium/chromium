@@ -163,7 +163,7 @@ class Port(object):
         ('win10.20h2', 'x86'),
         ('win11-arm64', 'arm64'),
         ('win11', 'x86_64'),
-        ('trusty', 'x86_64'),
+        ('linux', 'x86_64'),
         ('fuchsia', 'x86_64'),
     )
 
@@ -173,7 +173,7 @@ class Port(object):
             'mac13', 'mac13-arm64'
         ],
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
-        'linux': ['trusty'],
+        'linux': ['linux'],
         'fuchsia': ['fuchsia'],
     }
 
@@ -1561,7 +1561,8 @@ class Port(object):
 
     def version(self):
         """Returns a string indicating the version of a given platform
-        For example, "win10" or "trusty". This is used to help identify the
+
+        For example, "win10" or "linux". This is used to help identify the
         exact port when parsing test expectations, determining search paths,
         and logging information.
         """
@@ -1951,7 +1952,6 @@ class Port(object):
         refer to them as one term or alias specific values to more generic ones. For example:
 
         (win10, win11) -> win # Abbreviate all Windows versions into one namesake.
-        (precise, trusty) -> linux  # Change specific name of Linux distro to a more generic term.
 
         Returns a dictionary, each key representing a macro term ('win', for example),
         and value being a list of valid configuration specifiers (such as ['win10', 'win11']).

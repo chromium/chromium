@@ -283,7 +283,7 @@ class BuilderList:
         """Returns the builder name for a give version and build type.
 
         Args:
-            version: A string with the OS version specifier. e.g. "Trusty", "Win10".
+            version: A string with the OS or OS version specifier. e.g. "Win10".
             build_type: A string with the build type. e.g. "Debug" or "Release".
 
         Returns:

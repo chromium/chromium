@@ -38,10 +38,8 @@ from blinkpy.web_tests.port import port_testcase
 
 
 class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
-    os_name = 'linux'
-    os_version = 'trusty'
-    port_name = 'linux'
-    full_port_name = 'linux-trusty'
+    os_name = os_version = 'linux'
+    port_name = full_port_name = 'linux'
     port_maker = linux.LinuxPort
 
     def assert_version_properties(self,
@@ -61,12 +59,8 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertEqual(port.version(), expected_version)
 
     def test_versions(self):
-        self.assertTrue(self.make_port().name() in ('linux-trusty', ))
-
-        self.assert_version_properties('linux', 'trusty', 'linux-trusty',
-                                       'trusty')
-        self.assert_version_properties('linux-trusty', None, 'linux-trusty',
-                                       'trusty')
+        self.assertIn(self.make_port().name(), {'linux'})
+        self.assert_version_properties('linux', None, 'linux', 'linux')
         with self.assertRaises(AssertionError):
             self.assert_version_properties('linux-utopic', None, 'ignored',
                                            'ignored', 'ignored')
@@ -82,11 +76,10 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
     def test_get_platform_tags(self):
         port = self.make_port()
         self.assertEqual(port.get_platform_tags(),
-                         {'linux', 'trusty', 'x86_64', 'release'})
+                         {'linux', 'x86_64', 'release'})
 
     def test_baseline_paths(self):
-        self.assert_baseline_paths('linux', 'trusty', 'linux', '/win')
-        self.assert_baseline_paths('linux-trusty', None, 'linux', '/win')
+        self.assert_baseline_paths('linux', None, 'linux', '/win')
 
     def test_check_illegal_port_names(self):
         # FIXME: Check that, for now, these are illegal port names.

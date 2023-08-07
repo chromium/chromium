@@ -213,7 +213,9 @@ class PlatformInfo:
                 13, major_release), )
 
     def _determine_linux_version(self, _):
-        return 'trusty'
+        # Assume we only test against one Linux version at a time (see
+        # crbug.com/1468322). Therefore, there's no need to name that version.
+        return 'linux'
 
     def _determine_win_version(self, win_version_tuple):
         if win_version_tuple[:2] == (10, 0):

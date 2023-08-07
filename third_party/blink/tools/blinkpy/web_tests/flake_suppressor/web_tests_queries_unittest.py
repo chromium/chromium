@@ -41,7 +41,7 @@ class WebTestQueriesUnittest(unittest.TestCase):
                 # Try results.
                 query_result = [
                     {
-                        'typ_tags': ['linux', 'trusty'],
+                        'typ_tags': ['linux'],
                         'test_name': 'foo/bar/linux',
                         'result_count': '25',
                     },
