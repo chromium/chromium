@@ -90,10 +90,9 @@ void CompatModeButtonController::Update(
         this,
         base::BindRepeating(&CompatModeButtonController::ToggleResizeToggleMenu,
                             GetWeakPtr(), window, pref_delegate));
-    compat_mode_button->SetSubImage(chromeos::features::IsJellyEnabled()
-                                        ? ash::kKsvArrowDownIcon
-                                        : views::kMenuDropArrowIcon);
     frame_header->SetCenterButton(compat_mode_button);
+
+    UpdateArrowIcon(window, /*widget_visibility=*/false);
 
     auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
     // Ideally, we want HeaderView to update properties, but as currently
@@ -140,10 +139,6 @@ void CompatModeButtonController::OnButtonPressed() {
 
 void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
                                                  bool widget_visibility) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
   auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
   // |frame_view| can be null in unittest.
   if (!frame_view) {
@@ -152,8 +147,12 @@ void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
 
   auto* const compat_mode_button =
       frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
-  compat_mode_button->SetSubImage(widget_visibility ? ash::kKsvArrowUpIcon
-                                                    : ash::kKsvArrowDownIcon);
+  if (chromeos::features::IsJellyEnabled()) {
+    compat_mode_button->SetSubImage(widget_visibility ? ash::kKsvArrowUpIcon
+                                                      : ash::kKsvArrowDownIcon);
+  } else {
+    compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
+  }
   compat_mode_button->SchedulePaint();
 }
 
