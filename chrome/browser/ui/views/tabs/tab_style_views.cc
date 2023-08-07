@@ -1135,7 +1135,8 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
   if ((path_type == TabStyle::PathType::kFill &&
        state != TabStyle::TabSelectionState::kActive) ||
       path_type == TabStyle::PathType::kHighlight ||
-      path_type == TabStyle::PathType::kInteriorClip) {
+      path_type == TabStyle::PathType::kInteriorClip ||
+      path_type == TabStyle::PathType::kHitTest) {
     // TODO (crbug.com/1451400): This constant should be unified with
     // kCRtabstripRegionViewControlPadding in tab_strip_region_view.
 
@@ -1153,7 +1154,8 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
     // The tab displays favicon animations that can emerge from the toolbar. The
     // interior clip needs to extend the entire height of the toolbar to support
     // this. Detached tab shapes do not need to respect this.
-    if (path_type != TabStyle::PathType::kInteriorClip) {
+    if (path_type != TabStyle::PathType::kInteriorClip ||
+        path_type == TabStyle::PathType::kHitTest) {
       tab_height -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
     }
 
@@ -1162,15 +1164,24 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
     int right = aligned_bounds.right() - extension_corner_radius;
     const int bottom = top + tab_height;
 
-    // If the width is less than the favicon size, the separator margins are
-    // shrunk so that there is exactly 1 pixel of margins.
-    constexpr int kMinWidthSeparatorMarginPx = 1;
-    if ((right - left) < (gfx::kFaviconSize * scale)) {
-      // extend the interior clip to the separators by exactly 1 pixel.
-      left -= (tab_style()->GetSeparatorMargins().left() * scale) -
-              kMinWidthSeparatorMarginPx;
-      right += (tab_style()->GetSeparatorMargins().right() * scale) -
-               kMinWidthSeparatorMarginPx;
+    // if the size of the space for the path is smaller than the size of a
+    // favicon or if we are building a path for the hit test, expand to take the
+    // entire width of the separator margins AND the separator.
+    if ((right - left) < (gfx::kFaviconSize * scale) ||
+        path_type == TabStyle::PathType::kHitTest) {
+      // Take the entire size of the separator. in odd separator size cases, the
+      // right side will take the remaining space.
+      const int left_separator_overlap =
+          tab_style()->GetSeparatorSize().width() / 2;
+      const int right_separator_overlap =
+          tab_style()->GetSeparatorSize().width() - left_separator_overlap;
+
+      left -= (tab_style()->GetSeparatorMargins().right() +
+               left_separator_overlap) *
+              scale;
+      right += (tab_style()->GetSeparatorMargins().left() +
+                right_separator_overlap) *
+               scale;
     }
 
     SkPath path;
