@@ -2687,6 +2687,17 @@ TEST_F(LoginDatabaseTest, RemoveLoginRemovesInsecureCredentials) {
               IsEmpty());
 }
 
+TEST_F(LoginDatabaseTest, AddLoginWithNonEmptyInvalidURL) {
+  PasswordForm form;
+  form.signon_realm = "invalid";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"username";
+  form.password_value = u"password";
+  auto error = AddCredentialError::kNone;
+  EXPECT_THAT(db().AddLogin(form, &error), IsEmpty());
+  EXPECT_EQ(error, AddCredentialError::kConstraintViolation);
+}
+
 class LoginDatabaseForAccountStoreTest : public testing::Test {
  protected:
   void SetUp() override {

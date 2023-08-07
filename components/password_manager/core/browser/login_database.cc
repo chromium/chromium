@@ -303,6 +303,10 @@ bool DoesMatchConstraints(const PasswordForm& form) {
     DLOG(ERROR) << "Constraint violation: form.signon_realm is empty";
     return false;
   }
+  if (!form.url.is_empty() && !form.url.is_valid()) {
+    DLOG(ERROR) << "Constraint violation: form.url is non-empty and invalid";
+    return false;
+  }
   return true;
 }
 
