@@ -8020,6 +8020,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_WITH_DISCOUNT_INFO" desc="Text shown in the body of the info dialog of the history clusters module when the cluster has available discount.">
+        You’re seeing suggested searches and shopping discounts that might interest you based on your recent activity.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        You can manage settings from this card anytime or see more options in Customize Chrome.
+      </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2" desc="Variant of the name of the History Clusters module in sentence case shown in various UIs.">
         Journeys
       </message>
