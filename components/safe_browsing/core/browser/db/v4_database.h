@@ -179,6 +179,10 @@ class V4Database {
   // with the combined size of all the stores.
   void RecordFileSizeHistograms();
 
+  // Returns the migration result of the stores in this database. If the
+  // migration results for all stores do not match, returns kUnknown.
+  HashPrefixMap::MigrateResult GetMigrateResult();
+
   // Populates the DatabaseInfo message of the safe_browsing_page proto.
   void CollectDatabaseInfo(DatabaseManagerInfo::DatabaseInfo* database_info);
 

@@ -126,7 +126,7 @@ class HashPrefixMap {
   virtual HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) = 0;
 
   // Migrates the file format between the different types of HashPrefixMap.
-  enum class MigrateResult { kSuccess, kFailure, kNotNeeded };
+  enum class MigrateResult { kUnknown, kSuccess, kFailure, kNotNeeded };
   virtual MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                           V4StoreFileFormat* file_format) = 0;
 

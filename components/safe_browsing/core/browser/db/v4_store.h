@@ -175,6 +175,10 @@ class V4Store {
       DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
       const std::string& base_metric);
 
+  HashPrefixMap::MigrateResult migrate_result() const {
+    return migrate_result_;
+  }
+
  protected:
   std::unique_ptr<HashPrefixMap> hash_prefix_map_;
 
@@ -410,6 +414,8 @@ class V4Store {
   std::string state_;
   const base::FilePath store_path_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  HashPrefixMap::MigrateResult migrate_result_ =
+      HashPrefixMap::MigrateResult::kUnknown;
 };
 
 std::ostream& operator<<(std::ostream& os, const V4Store& store);
