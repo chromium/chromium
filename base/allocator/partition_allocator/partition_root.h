@@ -1250,7 +1250,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
 }
 
 template <unsigned int flags>
-PA_ALWAYS_INLINE void PartitionRoot::Free(void* object) {
+PA_NOINLINE void PartitionRoot::Free(void* object) {
   bool early_return = FreeProlog<flags>(object, this);
   if (early_return) {
     return;
@@ -1261,7 +1261,7 @@ PA_ALWAYS_INLINE void PartitionRoot::Free(void* object) {
 
 // static
 template <unsigned int flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeInUnknownRoot(void* object) {
+PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(void* object) {
   // The correct PartitionRoot might not be deducible if the |object| originates
   // from an override hook.
   bool early_return = FreeProlog<flags>(object, nullptr);
