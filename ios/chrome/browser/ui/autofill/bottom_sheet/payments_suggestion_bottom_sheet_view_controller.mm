@@ -463,6 +463,8 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   } else {
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
+  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  cell.textLabel.numberOfLines = 1;
   return cell;
 }
 
