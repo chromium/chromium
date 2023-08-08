@@ -122,6 +122,35 @@ void CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
   id_to_node_output_map[output_id] = std::move(relu_output);
 }
 
+// DirectML API does not have a real Reshape operator. The WebNN Reshape is
+// implemented by creating a new NodeOutput for the input Node. The new
+// NodeOutput has the reshaped dimensions and is used as the output of the WebNN
+// Reshape operator. And if the input and output of the Reshape are exactly the
+// input and output of the DirectML graph, we need to add another DirectML
+// Identity operator to ensure that the DirectML graph can be compiled and
+// calculated correctly.
+void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
+                                const OperatorPtr& operation,
+                                GraphBuilder& graph_builder,
+                                IdToNodeOutputMap& id_to_node_output_map) {
+  uint64_t input_id = operation->input_operands[0];
+  const auto input_iterator = id_to_node_output_map.find(input_id);
+  CHECK(input_iterator != id_to_node_output_map.end());
+  NodeOutputInfo input_node_output_info = input_iterator->second;
+  NodeOutput input_node_output =
+      graph_builder.GetNodeOutput(input_node_output_info);
+  TensorDesc input_tensor_desc = input_node_output.tensor_desc;
+  NodeInfo input_node = input_node_output.node_info;
+  uint64_t output_id = operation->output_operands[0];
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  TensorDesc output_tensor_desc(input_tensor_desc.GetDataType(),
+                                DML_TENSOR_FLAG_NONE,
+                                output_operand->dimensions);
+  NodeOutputInfo reshaped_input_node_output =
+      graph_builder.CreateNodeOutput(input_node, std::move(output_tensor_desc));
+  id_to_node_output_map[output_id] = std::move(reshaped_input_node_output);
+}
+
 }  // namespace
 
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
@@ -170,6 +199,11 @@ void GraphImpl::CreateAndBuild(
                                   id_to_node_output_map);
         break;
       }
+      case Operator::Kind::kReshape: {
+        CreateNodeOutputForReshape(id_to_operand_map, operation, graph_builder,
+                                   id_to_node_output_map);
+        break;
+      }
       default:
         DLOG(ERROR) << "This operator kind (" +
                            OpKindToString(operation->kind) +
@@ -185,19 +219,37 @@ void GraphImpl::CreateAndBuild(
     const auto output_iterator = id_to_node_output_map.find(output_id);
     CHECK(output_iterator != id_to_node_output_map.end());
     NodeOutputInfo node_output = output_iterator->second;
-    // TODO(crbug.com/1273291): A DML graph's output tensor may have adjusted
-    // strides rather than default strides which are calculated by its'
-    // dimensions. For example, dimensions [1,2,3,4] should have default strides
-    // [24,12,4,1] according to
+
+    // TODO: A DML graph's output tensor may have adjusted strides rather than
+    // default strides which are calculated by its' dimensions. For example,
+    // dimensions [1,2,3,4] should have default strides [24,12,4,1] according to
     // https://docs.microsoft.com/en-us/windows/win32/direct3d12/dml-helper-functions#calculatestrides,
-    // but the strides may be adjusted for supporting some ops like transpose,
-    // squeeze, reshape, etc.
-    // Appending an identity operator DML_OPERATOR_ACTIVATION_IDENTITY which
-    // effectively copying input tensor to the output tensor can consume the
-    // adjusted strides to ensure a correct output result. In addition, this
-    // solution can also ensure a real DML operator exists in the DML graph to
-    // avoid directly using graph input as output.
-    graph_outputs.push_back(std::move(node_output));
+    // but the strides may be adjusted for supporting some ops such as
+    // transpose. Append an identity operator to consume the adjusted strides to
+    // ensure a correct output result.
+
+    // Appending an identity operator DML_OPERATOR_ELEMENT_WISE_IDENTITY which
+    // effectively copies input tensor to the output tensor to avoid directly
+    // using graph input as output.
+    NodeOutput output_node = graph_builder.GetNodeOutput(node_output);
+    TensorDesc output_tensor_desc = output_node.tensor_desc;
+    auto output_type = output_node.node_info.type;
+    if (output_type == NodeInfo::Type::kInput) {
+      TensorDesc identity_tensor_desc(output_tensor_desc.GetDataType(),
+                                      DML_TENSOR_FLAG_NONE,
+                                      output_tensor_desc.GetDimensions());
+      DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC identity_operator_desc{
+          .InputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+          .OutputTensor = &identity_tensor_desc.GetDMLTensorDesc()};
+      NodeInfo identity_node = graph_builder.CreateOperatorNode(
+          DML_OPERATOR_ELEMENT_WISE_IDENTITY, &identity_operator_desc,
+          {node_output});
+      NodeOutputInfo identity_node_output = graph_builder.CreateNodeOutput(
+          identity_node, std::move(identity_tensor_desc));
+      graph_outputs.push_back(std::move(identity_node_output));
+    } else {
+      graph_outputs.push_back(std::move(node_output));
+    }
   }
 
   // TODO(crbug.com/1273291): This method compiles all DML operators into an

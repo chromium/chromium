@@ -99,4 +99,110 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoRelu) {
   EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
 }
 
+// Test building a DML graph with single operator reshape.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorReshape) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id},
+                        {output_operand_id});
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with two operators (reshape as the last node).
+//    [input]
+//       |
+//      relu
+//       |
+//     reshape
+TEST_F(WebNNGraphDMLImplTest, BuildGraphWithReshapeAsLastNode) {
+  SKIP_TEST_IF(!is_compile_graph_supported_);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t relu_output_id =
+      builder.BuildOperand({1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
+                        {relu_output_id});
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {relu_output_id},
+                        {output_operand_id});
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with two operators (reshape as an intermediate
+// node).
+//    [input]
+//       |
+//    reshape
+//       |
+//      relu
+TEST_F(WebNNGraphDMLImplTest, BuildGraphWithReshapeAsIntermediateNode) {
+  SKIP_TEST_IF(!is_compile_graph_supported_);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t reshape_output_id =
+      builder.BuildOperand({1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id},
+                        {reshape_output_id});
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kRelu, {reshape_output_id},
+                        {output_operand_id});
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with two reshape operators
+//    [input]
+//       |
+//    reshape1
+//       |
+//    reshape2
+TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoReshape) {
+  SKIP_TEST_IF(!is_compile_graph_supported_);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t reshape_output_id =
+      builder.BuildOperand({1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id},
+                        {reshape_output_id});
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {reshape_output_id},
+                        {output_operand_id});
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with two operators and two outputs
+//      [input]
+//       /   \
+//  reshape   relu
+//     |        |
+// [output1] [output2]
+TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoOutputs) {
+  SKIP_TEST_IF(!is_compile_graph_supported_);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t output1_operand_id = builder.BuildOutput(
+      "output1", {1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id},
+                        {output1_operand_id});
+  uint64_t output2_operand_id = builder.BuildOutput(
+      "output2", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
+                        {output2_operand_id});
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
 }  // namespace webnn::dml
