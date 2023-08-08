@@ -10,6 +10,13 @@ python_library("test_utils") {
   data_deps = [ "//third_party/catapult/third_party/gsutil:gsutil" ]
 }
 
+if (is_chromeos && is_chromeos_device) {
+  import("//build/config/chromeos/rules.gni")
+  generate_chromeos_sdk_deps("cros_sdk_deps") {
+    deploy_chrome = false
+  }
+}
+
 python_library("fixtures") {
   testonly = true
 
@@ -36,7 +43,7 @@ python_library("fixtures") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos && is_chromeos_device) {
     data += [
       "//third_party/catapult/common/py_utils/",
       "//third_party/catapult/common/py_trace_event/",
@@ -48,16 +55,10 @@ python_library("fixtures") {
       "//third_party/catapult/third_party/six/",
       "//third_party/catapult/tracing/",
       "//third_party/chromite/",
-
-      # VM image caches for the test bot to load.
-      "//build/cros_cache/chrome-sdk/",
-
-      # The LKGM file controls what version of the VM image to download. Add it
-      # as data here so that changes to it will trigger analyze.
-      "//chromeos/CHROMEOS_LKGM",
     ]
 
     data_deps += [
+      ":cros_sdk_deps",
       "//third_party/catapult/devil:devil",
       "//third_party/catapult/telemetry:telemetry",
     ]
