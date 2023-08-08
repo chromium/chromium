@@ -72,6 +72,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->event_configs.insert(
         EventConfig("post_restore_default_browser_promo_trigger",
                     Comparator(EQUAL, 0), 7, 365));
+    // The promo should only show once per month.
+    config->event_configs.insert(EventConfig("default_browser_promo_trigger",
+                                             Comparator(EQUAL, 0), 30, 365));
     return config;
   }
 
