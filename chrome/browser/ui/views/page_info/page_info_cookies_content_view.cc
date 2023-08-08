@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -25,12 +26,16 @@ namespace views {
 class StyledLabel;
 }  // namespace views
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoCookiesContentView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BasePageInfoCookiesContentView,
                                       kCookieDialogButton);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoCookiesContentView, kCookiesPage);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BasePageInfoCookiesContentView,
+                                      kCookiesPage);
 
-PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
-    : presenter_(presenter) {
+BasePageInfoCookiesContentView::BasePageInfoCookiesContentView(
+    PageInfo* presenter)
+    : presenter_(presenter) {}
+
+void BasePageInfoCookiesContentView::Initialize() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -57,7 +62,7 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   gfx::Range link_range(offset, offset + settings_text_for_link.length());
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PageInfoCookiesContentView::CookiesSettingsLinkClicked,
+          &BasePageInfoCookiesContentView::CookiesSettingsLinkClicked,
           base::Unretained(this)));
 
   auto* cookies_description_label =
@@ -93,9 +98,9 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   SetProperty(views::kElementIdentifierKey, kCookiesPage);
 }
 
-PageInfoCookiesContentView::~PageInfoCookiesContentView() = default;
+BasePageInfoCookiesContentView::~BasePageInfoCookiesContentView() = default;
 
-void PageInfoCookiesContentView::SetInitializedCallbackForTesting(
+void BasePageInfoCookiesContentView::SetInitializedCallbackForTesting(
     base::OnceClosure initialized_callback) {
   if (cookies_dialog_button_) {
     std::move(initialized_callback).Run();
@@ -104,7 +109,7 @@ void PageInfoCookiesContentView::SetInitializedCallbackForTesting(
   }
 }
 
-void PageInfoCookiesContentView::InitCookiesDialogButton() {
+void BasePageInfoCookiesContentView::InitCookiesDialogButton() {
   if (cookies_dialog_button_)
     return;
   // Get the icon.
@@ -121,7 +126,7 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
   cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
       std::make_unique<RichHoverButton>(
           base::BindRepeating(
-              [](PageInfoCookiesContentView* view) {
+              [](BasePageInfoCookiesContentView* view) {
                 view->presenter_->OpenCookiesDialog();
               },
               this),
@@ -137,12 +142,12 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
                                       kCookieDialogButton);
 }
 
-void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
+void BasePageInfoCookiesContentView::CookiesSettingsLinkClicked(
     const ui::Event& event) {
   presenter_->OpenCookiesSettingsView();
 }
 
-void PageInfoCookiesContentView::SetCookieInfo(
+void BasePageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
   const bool is_fps_allowed =
       base::FeatureList::IsEnabled(
@@ -154,16 +159,8 @@ void PageInfoCookiesContentView::SetCookieInfo(
           IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
           cookie_info.allowed_sites_count);
 
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    SetThirdPartyCookiesInfo(cookie_info);
-  } else {
-    // Create the cookie dialog button, blocking third-party cookies button
-    // (only if third-party cookies are blocked in settings) and FPS button
-    // (only if fps are not blocked) if they don't yet exist. Those methods get
-    // called each time site data is updated, so if they *do* already exist,
-    // skip creating the buttons and just update the texts.
-    SetBlockingThirdPartyCookiesInfo(cookie_info);
-  }
+  // Create the cookie dialog button
+  SetThirdPartyCookiesInfo(cookie_info);
 
   InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.
@@ -176,7 +173,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
     std::move(initialized_callback_).Run();
 }
 
-void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
+void OldPageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     const CookiesNewInfo& cookie_info) {
   bool show_cookies_block_control = false;
   bool are_cookies_blocked = false;
@@ -325,13 +322,13 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
       third_party_cookies_label_wrapper_->GetHeightForWidth(title_width)));
 }
 
-void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
+void OldPageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
     bool are_cookies_blocked) {
   DCHECK(blocking_third_party_cookies_toggle_);
   blocking_third_party_cookies_toggle_->SetIsOn(are_cookies_blocked);
 }
 
-void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
+void OldPageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
     CookieControlsEnforcement enforcement) {
   // The row needs to be initiated before with
   // |InitBlockingThirdPartyCookiesRow| because we're adding subview to it.
@@ -385,7 +382,7 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
     blocking_third_party_cookies_toggle_ =
         blocking_third_party_cookies_row_->AddControl(
             std::make_unique<views::ToggleButton>(base::BindRepeating(
-                &PageInfoCookiesContentView::OnToggleButtonPressed,
+                &BasePageInfoCookiesContentView::OnToggleButtonPressed,
                 base::Unretained(this))));
     blocking_third_party_cookies_toggle_->SetAccessibleName(tooltip);
     blocking_third_party_cookies_toggle_->SetPreferredSize(gfx::Size(
@@ -397,7 +394,7 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
   }
 }
 
-void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
+void OldPageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
   if (blocking_third_party_cookies_row_)
     return;
 
@@ -424,18 +421,18 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
           VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE);
 }
 
-void PageInfoCookiesContentView::OnToggleButtonPressed() {
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    presenter_->OnThirdPartyToggleClicked(
-        /*block_third_party_cookies=*/!third_party_cookies_toggle_->GetIsOn());
-  } else {
-    presenter_->OnThirdPartyToggleClicked(
-        /*block_third_party_cookies=*/blocking_third_party_cookies_toggle_
-            ->GetIsOn());
-  }
+void OldPageInfoCookiesContentView::OnToggleButtonPressed() {
+  presenter_->OnThirdPartyToggleClicked(
+      /*block_third_party_cookies=*/blocking_third_party_cookies_toggle_
+          ->GetIsOn());
 }
 
-void PageInfoCookiesContentView::SetFpsCookiesInfo(
+void PageInfoCookiesContentView::OnToggleButtonPressed() {
+  presenter_->OnThirdPartyToggleClicked(
+      /*block_third_party_cookies=*/!third_party_cookies_toggle_->GetIsOn());
+}
+
+void BasePageInfoCookiesContentView::SetFpsCookiesInfo(
     absl::optional<CookiesFpsInfo> fps_info,
     bool is_fps_allowed) {
   if (is_fps_allowed) {
@@ -460,7 +457,7 @@ void PageInfoCookiesContentView::SetFpsCookiesInfo(
   }
 }
 
-void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
+void BasePageInfoCookiesContentView::InitFpsButton(bool is_managed) {
   if (fps_button_)
     return;
 
@@ -472,7 +469,7 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
   fps_button_ = cookies_buttons_container_view_->AddChildView(
       std::make_unique<RichHoverButton>(
           base::BindRepeating(
-              &PageInfoCookiesContentView::FpsSettingsButtonClicked,
+              &BasePageInfoCookiesContentView::FpsSettingsButtonClicked,
               base::Unretained(this)),
           PageInfoViewFactory::GetFpsIcon(),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), std::u16string(),
@@ -485,7 +482,8 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
 }
 
-void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
+void BasePageInfoCookiesContentView::FpsSettingsButtonClicked(
+    ui::Event const&) {
   presenter_->OpenAllSitesViewFilteredToFps();
 }
 
@@ -549,3 +547,21 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_container_->AddChildView(
       PageInfoViewFactory::CreateSeparator());
 }
+
+std::unique_ptr<OldPageInfoCookiesContentView>
+OldPageInfoCookiesContentView::Create(PageInfo* presenter) {
+  auto view = absl::WrapUnique(new OldPageInfoCookiesContentView(presenter));
+  view->Initialize();
+  return view;
+}
+
+OldPageInfoCookiesContentView::~OldPageInfoCookiesContentView() = default;
+
+std::unique_ptr<PageInfoCookiesContentView> PageInfoCookiesContentView::Create(
+    PageInfo* presenter) {
+  auto view = absl::WrapUnique(new PageInfoCookiesContentView(presenter));
+  view->Initialize();
+  return view;
+}
+
+PageInfoCookiesContentView::~PageInfoCookiesContentView() = default;

@@ -803,7 +803,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     // Open Cookies Subpage and wait for it to be fully initialized.
     base::RunLoop run_loop2;
     bubble_view->OpenCookiesPage();
-    auto* cookies_subpage_content = static_cast<PageInfoCookiesContentView*>(
+    auto* cookies_subpage_content = static_cast<OldPageInfoCookiesContentView*>(
         bubble_view
             ->GetViewByID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW)
             ->children()[1]);

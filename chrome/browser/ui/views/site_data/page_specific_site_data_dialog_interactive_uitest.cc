@@ -159,7 +159,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
             : MultiStep(),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
-        PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+        PressButton(OldPageInfoCookiesContentView::kCookieDialogButton),
         InAnyContext(AfterShow(
             section_id,
             ExpectActionCount(PageSpecificSiteDataDialogAction::kDialogOpened,
@@ -436,7 +436,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
               button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO, 0);
             })),
         PressButton(PageInfoMainView::kCookieButtonElementId),
-        PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+        PressButton(OldPageInfoCookiesContentView::kCookieDialogButton),
         InAnyContext(AfterShow(
             section_id,
             ExpectActionCount(PageSpecificSiteDataDialogAction::kDialogOpened,

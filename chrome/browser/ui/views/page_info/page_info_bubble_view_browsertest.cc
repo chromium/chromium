@@ -1207,7 +1207,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
     base::RunLoop run_loop2;
     base::UserActionTester user_actions_stats;
     PerformMouseClickOnView(cookies_button);
-    auto* cookies_subpage_content = static_cast<PageInfoCookiesContentView*>(
+    auto* cookies_subpage_content = static_cast<OldPageInfoCookiesContentView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()
             ->GetViewByID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW)
             ->children()[1]);
