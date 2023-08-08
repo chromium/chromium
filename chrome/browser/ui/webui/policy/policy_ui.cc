@@ -187,7 +187,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
         {"testClearPolicies", IDS_CLEAR},
         {"testTableName", IDS_POLICY_HEADER_NAME},
         {"testTableSource", IDS_POLICY_HEADER_SOURCE},
-        {"testTableTarget", IDS_POLICY_TEST_TABLE_TARGET},
+        {"testTableScope", IDS_POLICY_TEST_TABLE_SCOPE},
         {"testTableLevel", IDS_POLICY_HEADER_LEVEL},
         {"testTableValue", IDS_POLICY_LABEL_VALUE},
         {"testTableRemove", IDS_REMOVE},

@@ -759,8 +759,8 @@ Additional details:
   <message name="IDS_POLICY_TEST_REVERT" desc="Text for the Reset policies button.">
     Revert applied policies
   </message>
-  <message name="IDS_POLICY_TEST_TABLE_TARGET" desc="Text for the column of the policy table for the policy target.">
-    Target
+  <message name="IDS_POLICY_TEST_TABLE_SCOPE" desc="Text for the column of the policy table for the policy scope.">
+    Scope
   </message>
   <message name="IDS_POLICY_TEST_ADD" desc="Label for the add-policy-btn button.">
     Add policy
