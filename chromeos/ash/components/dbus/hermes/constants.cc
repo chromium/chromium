@@ -6,8 +6,8 @@
 
 namespace ash::hermes_constants {
 
-// 4min * 60s/min * 1000ms/s.
-int kHermesNetworkOperationTimeoutMs = 4 * 60 * 1000;
+// 6min * 60s/min * 1000ms/s.
+int kHermesNetworkOperationTimeoutMs = 6 * 60 * 1000;
 
 // 2min * 60s/min * 1000ms/s
 int kHermesOperationTimeoutMs = 2 * 60 * 1000;
