@@ -10843,7 +10843,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_V2",
+                    "name": "Enabled_20230807",
+                    "params": {
+                        "pwd_migration_warning_prefs_version": "1"
+                    },
                     "enable_features": [
                         "UnifiedPasswordManagerLocalPasswordsMigrationWarning"
                     ]
