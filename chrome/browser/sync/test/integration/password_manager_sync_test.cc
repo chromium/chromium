@@ -809,6 +809,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // is *not* the primary one.
   NavigateToFileHttps(web_contents, "accounts.google.com",
                       "/password/simple_password.html");
+  // The call ensures that the form wasn't submitted too quickly before the
+  // password store returned something. Otherwise, the password prompt won't be
+  // shown.
+  GetAllLoginsFromProfilePasswordStore();
+  GetAllLoginsFromAccountPasswordStore();
   FillAndSubmitPasswordForm(web_contents, "different-user@gmail.com", "pass");
 
   // Since the submitted credential is *not* for the primary account, Chrome
@@ -834,6 +839,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // account.
   NavigateToFileHttps(web_contents, "accounts.google.com",
                       "/password/simple_password.html");
+  // The call ensures that the form wasn't submitted too quickly before the
+  // password store returned something. Otherwise, the password prompt won't be
+  // shown.
+  GetAllLoginsFromProfilePasswordStore();
+  GetAllLoginsFromAccountPasswordStore();
   FillAndSubmitPasswordForm(web_contents, kTestUserEmail, "newpass");
 
   // Since (an outdated version of) the credential is already saved, Chrome
