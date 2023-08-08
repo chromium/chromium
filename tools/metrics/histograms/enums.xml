@@ -13423,11 +13423,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Memory low, tabs discarded"/>
 </enum>
 
-<enum name="BooleanTabDiscardFastShutdown">
-  <int value="0" label="Fast shutdown failed"/>
-  <int value="1" label="Fast shutdown succeeded"/>
-</enum>
-
 <enum name="BooleanTablet">
   <int value="0" label="Non tablet"/>
   <int value="1" label="Tablet"/>

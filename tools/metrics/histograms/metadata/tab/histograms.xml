@@ -992,24 +992,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.Discarding.DiscardedTabCouldFastShutdown"
-    enum="BooleanTabDiscardFastShutdown" expires_after="M77">
-  <owner>oysteine@chromium.org</owner>
-  <summary>
-    Recorded for each discarding, indicates whether the discarded tab succeeded
-    in doing a render process fast shutdown or not.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.Discarding.DiscardedTabCouldUnsafeFastShutdown"
-    enum="BooleanTabDiscardFastShutdown" expires_after="M77">
-  <owner>oysteine@chromium.org</owner>
-  <summary>
-    Recorded for each discarding, allowing us to know whether the discarded tab
-    succeeded an unsafe process shutdown (not invoking unload handlers).
-  </summary>
-</histogram>
-
 <histogram name="TabManager.Discarding.DiscardedTabHasBeforeUnloadHandler"
     enum="Boolean" expires_after="M77">
   <owner>georgesak@chromium.org</owner>
