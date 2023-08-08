@@ -41,6 +41,8 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   raw_ptr<PrefService, ExperimentalAsh> prefs_;
+
+  bool action_assignment_pane_active_ = false;
 };
 
 }  // namespace ash::settings
