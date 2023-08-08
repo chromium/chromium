@@ -11,9 +11,6 @@
 namespace ios {
 namespace provider {
 
-// Returns whether the material branding APIs are available or not.
-bool MaterialBrandingAvailable();
-
 // Applies branding to the Snackbar `manager`.
 void ApplyBrandingToSnackbarManager(MDCSnackbarManager* manager);
 

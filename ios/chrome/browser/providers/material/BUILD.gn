@@ -4,6 +4,8 @@
 
 source_set("chromium_material_branding") {
   sources = [ "chromium_material_branding.mm" ]
-  deps =
-      [ "//ios/public/provider/chrome/browser/material:material_branding_api" ]
+  deps = [
+    "//ios/public/provider/chrome/browser/material:material_branding_api",
+    "//ios/third_party/material_components_ios",
+  ]
 }

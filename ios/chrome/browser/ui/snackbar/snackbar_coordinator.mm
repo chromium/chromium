@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/public/provider/chrome/browser/material/material_branding_api.h"
 
 @interface SnackbarCoordinator () <MDCSnackbarManagerDelegate>
 
@@ -37,7 +38,8 @@
 
   MDCSnackbarManager* manager = [MDCSnackbarManager defaultManager];
   manager.delegate = self;
-  manager.usesGM3Shapes = YES;
+
+  ios::provider::ApplyBrandingToSnackbarManager(manager);
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
@@ -92,11 +94,7 @@
 
 - (void)snackbarManager:(MDCSnackbarManager*)snackbarManager
     willPresentSnackbarWithMessageView:(MDCSnackbarMessageView*)messageView {
-  // Set the font which supports the Dynamic Type.
-  UIFont* defaultSnackbarFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  messageView.messageFont = defaultSnackbarFont;
-  messageView.buttonFont = defaultSnackbarFont;
+  ios::provider::ApplyBrandingToSnackbarMessageView(messageView);
 }
 
 @end
