@@ -22,9 +22,9 @@ source_set("common") {
     "common_words_util.h",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
     ":common_words_dafsa",
-    "//base",
     "//net",
   ]
 }
