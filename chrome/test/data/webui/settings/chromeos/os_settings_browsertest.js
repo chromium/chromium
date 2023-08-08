@@ -603,6 +603,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsBluetoothPageOsBluetoothDeviceDetailSubpage',
    'os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
    'OsBluetoothPageOsBluetoothPairingDialog',
