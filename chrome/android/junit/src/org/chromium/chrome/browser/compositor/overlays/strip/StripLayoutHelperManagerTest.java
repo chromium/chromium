@@ -369,23 +369,32 @@ public class StripLayoutHelperManagerTest {
         int expectedIncognitoCount = 0;
         int expectedStandardActiveTabIndex = 2;
         int expectedIncognitoActiveTabIndex = Tab.INVALID_TAB_ID;
+        boolean expectedStandardCreatedTabOnStartup = false;
+        boolean expectedIncognitoCreatedTabOnStartup = false;
         TabModelStartupInfo startupInfo =
                 new TabModelStartupInfo(expectedStandardCount, expectedIncognitoCount,
-                        expectedStandardActiveTabIndex, expectedIncognitoActiveTabIndex);
+                        expectedStandardActiveTabIndex, expectedIncognitoActiveTabIndex,
+                        expectedStandardCreatedTabOnStartup, expectedIncognitoCreatedTabOnStartup);
         mTabModelStartupInfoSupplier.set(startupInfo);
 
         // Verify
         StripLayoutHelper standardHelper = mStripLayoutHelperManager.getStripLayoutHelper(false);
         assertEquals("Unexpected standard tab count.", expectedStandardCount,
                 standardHelper.getTabCountOnStartupForTesting());
-        assertEquals("Unexpected standard active tab index", expectedStandardActiveTabIndex,
+        assertEquals("Unexpected standard active tab index.", expectedStandardActiveTabIndex,
                 standardHelper.getActiveTabIndexOnStartupForTesting());
+        assertEquals("Unexpected standard tab created on startup value",
+                expectedStandardCreatedTabOnStartup,
+                standardHelper.getCreatedTabOnStartupForTesting());
 
         StripLayoutHelper incognitoHelper = mStripLayoutHelperManager.getStripLayoutHelper(true);
-        assertEquals("Unexpected incognito tab count", expectedIncognitoCount,
+        assertEquals("Unexpected incognito tab count.", expectedIncognitoCount,
                 incognitoHelper.getTabCountOnStartupForTesting());
-        assertEquals("Unexpected incognito active tab index", expectedIncognitoActiveTabIndex,
+        assertEquals("Unexpected incognito active tab index.", expectedIncognitoActiveTabIndex,
                 incognitoHelper.getActiveTabIndexOnStartupForTesting());
+        assertEquals("Unexpected incognito tab created on startup value",
+                expectedIncognitoCreatedTabOnStartup,
+                standardHelper.getCreatedTabOnStartupForTesting());
     }
 
     @Test

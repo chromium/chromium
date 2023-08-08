@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -21,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 
@@ -29,6 +32,10 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
 public class TabModelOrchestratorUnitTest {
     @Mock
     private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;
+    @Mock
+    private TabModel mMockTabModel;
+    @Mock
+    private TabModelSelectorBase mMockTabModelSelectorBase;
     @Mock
     private TabPersistentStore mMockTabPersistentStore;
 
@@ -39,7 +46,14 @@ public class TabModelOrchestratorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mTabModelOrchestrator = new TabModelOrchestrator() {};
+        when(mMockTabModelSelectorBase.getModel(anyBoolean())).thenReturn(mMockTabModel);
+
+        mTabModelOrchestrator = new TabModelOrchestrator() {
+            @Override
+            public TabModelSelectorBase getTabModelSelector() {
+                return mMockTabModelSelectorBase;
+            }
+        };
         mTabModelOrchestrator.setTabPersistentStoreForTesting(mMockTabPersistentStore);
 
         mObserverCaptor = ArgumentCaptor.forClass(TabPersistentStoreObserver.class);
@@ -120,5 +134,6 @@ public class TabModelOrchestratorUnitTest {
         }
 
         observer.onInitialized(numIncognitoTabs + numStandardTabs);
+        mTabModelOrchestrator.restoreTabs(false);
     }
 }
