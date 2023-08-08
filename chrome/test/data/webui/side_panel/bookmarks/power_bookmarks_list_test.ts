@@ -541,6 +541,33 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertNotEquals(0, childFolderElement.imageUrls.length);
   });
 
+  test('DeletesSelectedBookmarks', () => {
+    const editButton: HTMLElement =
+        powerBookmarksList.shadowRoot!.querySelector('#editButton')!;
+    editButton.click();
+
+    flush();
+
+    const bookmarkElement3 = getCrUrlListItemElementWithId('3');
+    assertTrue(!!bookmarkElement3);
+    bookmarkElement3.click();
+    const bookmarkElement5 = getCrUrlListItemElementWithId('5');
+    assertTrue(!!bookmarkElement5);
+    bookmarkElement5.click();
+
+    flush();
+
+    const deleteButton: HTMLElement =
+        powerBookmarksList.shadowRoot!.querySelector('#deleteButton')!;
+    deleteButton.click();
+
+    flush();
+
+    assertEquals(1, bookmarksApi.getCallCount('deleteBookmarks'));
+    assertEquals('3', bookmarksApi.getArgs('deleteBookmarks')[0][0]);
+    assertEquals('5', bookmarksApi.getArgs('deleteBookmarks')[0][1]);
+  });
+
   test('TogglesSectionVisibilityAndEmptyStates', async () => {
     const search = powerBookmarksList.$.searchField;
     const filterChips = powerBookmarksList.$.filterChips;

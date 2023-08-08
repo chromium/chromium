@@ -180,8 +180,8 @@ export class PowerBookmarksListElement extends PolymerElement {
       },
 
       selectedBookmarks_: {
-        type: Array,
-        value: () => [],
+        type: Object,
+        value: {},
       },
 
       guestMode_: {
@@ -270,7 +270,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private searchQuery_: string|undefined;
   private currentUrl_: string|undefined;
   private editing_: boolean;
-  private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  private selectedBookmarks_: {[key: string]: boolean};
   private guestMode_: boolean;
   private renamingId_: string;
   private deletionDescription_: string;
@@ -669,7 +669,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private getBookmarkA11yLabel_(id: string, url: string, title: string):
       string {
     if (this.editing_) {
-      if (this.selectedBookmarks_.findIndex(b => b.id === id) > -1) {
+      if (this.get(`selectedBookmarks_.${id}`)) {
         if (url) {
           return loadTimeData.getStringF('deselectBookmarkLabel', title);
         }
@@ -846,6 +846,11 @@ export class PowerBookmarksListElement extends PolymerElement {
         sortType.sortOrder;
   }
 
+  private bookmarkIsSelected_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return this.get(`selectedBookmarks_.${bookmark.id.toString()}`);
+  }
+
   /**
    * Invoked when the user clicks a power bookmarks row. This will either
    * display children in the case of a folder row, or open the URL in the case
@@ -894,13 +899,13 @@ export class PowerBookmarksListElement extends PolymerElement {
           {bookmark: chrome.bookmarks.BookmarkTreeNode, checked: boolean}>) {
     event.preventDefault();
     event.stopPropagation();
-    if (event.detail.checked) {
-      this.unshift('selectedBookmarks_', event.detail.bookmark);
-    } else {
-      this.splice(
-          'selectedBookmarks_',
-          this.selectedBookmarks_.findIndex(b => b === event.detail.bookmark),
-          1);
+    const isSelected = this.bookmarkIsSelected_(event.detail.bookmark);
+    if (event.detail.checked && !isSelected) {
+      this.set(
+          `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, true);
+    } else if (!event.detail.checked && isSelected) {
+      this.set(
+          `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, false);
     }
   }
 
@@ -926,7 +931,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.bookmarksApi_.editBookmarks(
         event.detail.bookmarks.map(bookmark => bookmark.id), event.detail.name,
         event.detail.url, parentId);
-    this.selectedBookmarks_ = [];
+    this.selectedBookmarks_ = {};
     this.editing_ = false;
   }
 
@@ -967,7 +972,21 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private getSelectedDescription_() {
     return loadTimeData.getStringF(
-        'selectedBookmarkCount', this.selectedBookmarks_.length);
+        'selectedBookmarkCount', this.getSelectedBookmarksLength_());
+  }
+
+  private getSelectedBookmarksList_(): chrome.bookmarks.BookmarkTreeNode[] {
+    const selectedEntries = Object.entries(this.selectedBookmarks_)
+                                .filter(([_id, selected]) => selected);
+    const selectedIds = selectedEntries.map(([id, _selected]) => id);
+    return selectedIds.map(
+        (id) => this.bookmarksService_.findBookmarkWithId(id)!);
+  }
+
+  private getSelectedBookmarksLength_(): number {
+    return Object.values(this.selectedBookmarks_)
+        .filter((selected) => selected)
+        .length;
   }
 
   /**
@@ -1066,22 +1085,23 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     this.editing_ = !this.editing_;
     if (!this.editing_) {
-      this.selectedBookmarks_ = [];
+      this.selectedBookmarks_ = {};
     }
   }
 
   private onDeleteClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    if (editingDisabledByPolicy(this.selectedBookmarks_)) {
+    const selectedBookmarksList = this.getSelectedBookmarksList_();
+    if (editingDisabledByPolicy(selectedBookmarksList)) {
       this.showDisabledFeatureDialog_();
       return;
     }
     this.bookmarksApi_
-        .deleteBookmarks(this.selectedBookmarks_.map(bookmark => bookmark.id))
+        .deleteBookmarks(selectedBookmarksList.map((bookmark) => bookmark.id))
         .then(() => {
-          this.showDeletionToastWithCount_(this.selectedBookmarks_.length);
-          this.selectedBookmarks_ = [];
+          this.showDeletionToastWithCount_(selectedBookmarksList.length);
+          this.selectedBookmarks_ = {};
           this.editing_ = false;
         });
   }
@@ -1103,7 +1123,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.showDeletionToastWithCount_(event.detail.bookmarks.length);
-    this.selectedBookmarks_ = [];
+    this.selectedBookmarks_ = {};
     this.editing_ = false;
   }
 
@@ -1141,11 +1161,12 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onMoveClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    if (editingDisabledByPolicy(this.selectedBookmarks_)) {
+    const selectedBookmarksList = this.getSelectedBookmarksList_();
+    if (editingDisabledByPolicy(selectedBookmarksList)) {
       this.showDisabledFeatureDialog_();
       return;
     }
-    this.showEditDialog_(this.selectedBookmarks_, true);
+    this.showEditDialog_(selectedBookmarksList, true);
   }
 
   private showEditDialog_(
@@ -1159,7 +1180,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.$.contextMenu.showAt(
-        event, this.selectedBookmarks_.slice(), false, false);
+        event, this.getSelectedBookmarksList_(), false, false);
   }
 
   private onSortTypeClicked_(event: DomRepeatEvent<SortOption>) {

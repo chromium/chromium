@@ -316,7 +316,7 @@
           title="[[getViewButtonTooltip_(compact_)]]"
           aria-label="[[getViewButtonTooltip_(compact_)]]"
           on-click="onViewToggleClicked_"></cr-icon-button>
-      <cr-icon-button slot="buttons" class="icon-edit"
+      <cr-icon-button id="editButton" slot="buttons" class="icon-edit"
           disabled="[[!hasShownBookmarks_]]"
           title="$i18n{tooltipEdit}"
           aria-label="$i18n{editBookmarkListA11yLabel}"
@@ -390,6 +390,8 @@
                                               item.url, item.title)]]"
                   trailing-icon-tooltip="$i18n{tooltipMore}"
                   has-checkbox="[[editing_]]"
+                  checkbox-checked="[[bookmarkIsSelected_(
+                                      item, selectedBookmarks_.*)]]"
                   checkbox-disabled="[[!canEdit_(item)]]"
                   has-input="[[renamingItem_(item.id, renamingId_)]]"
                   on-row-clicked="onRowClicked_"
@@ -455,18 +457,18 @@
         selection-label="[[getSelectedDescription_(selectedBookmarks_.*)]]"
         on-clear-selected-items="onBulkEditClicked_">
       <div class="sp-icon-buttons-row">
-        <cr-icon-button iron-icon="bookmarks:delete"
-            disabled="[[!selectedBookmarks_.length]]"
+        <cr-icon-button id="deleteButton" iron-icon="bookmarks:delete"
+            disabled="[[!getSelectedBookmarksLength_(selectedBookmarks_.*)]]"
             title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
             on-click="onDeleteClicked_">
         </cr-icon-button>
         <cr-icon-button iron-icon="bookmarks:move"
-            disabled="[[!selectedBookmarks_.length]]"
+            disabled="[[!getSelectedBookmarksLength_(selectedBookmarks_.*)]]"
             title="$i18n{tooltipMove}" aria-label="$i18n{tooltipMove}"
             on-click="onMoveClicked_">
         </cr-icon-button>
         <cr-icon-button iron-icon="cr:more-vert"
-            disabled="[[!selectedBookmarks_.length]]"
+            disabled="[[!getSelectedBookmarksLength_(selectedBookmarks_.*)]]"
             title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
             on-click="onBulkEditMenuClicked_">
         </cr-icon-button>
