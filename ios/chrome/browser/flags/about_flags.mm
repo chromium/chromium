@@ -1672,6 +1672,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFamilyLinkControlsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)},
+    {"discover-feed-sport-card", flag_descriptions::kDiscoverFeedSportCardName,
+     flag_descriptions::kDiscoverFeedSportCardDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDiscoverFeedSportCard)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

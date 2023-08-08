@@ -337,6 +337,10 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
+const char kDiscoverFeedSportCardName[] = "Sport card in Discover feed";
+const char kDiscoverFeedSportCardDescription[] =
+    "Enables the live sport card in the NTP's Discover feed";
+
 const char kEnableDiscoverFeedTopSyncPromoName[] =
     "Enables the top of feed sync promo.";
 const char kEnableDiscoverFeedTopSyncPromoDescription[] =

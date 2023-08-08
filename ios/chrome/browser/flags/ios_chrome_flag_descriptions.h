@@ -278,6 +278,11 @@ extern const char kDefaultBrowserVideoPromoDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
+// Title and description for the flag that adds the sport card to the Discover
+// feed.
+extern const char kDiscoverFeedSportCardName[];
+extern const char kDiscoverFeedSportCardDescription[];
+
 // Title and description for the flag to enable the bookmarks account storage
 // and related UI features.
 extern const char kEnableBookmarksAccountStorageName[];

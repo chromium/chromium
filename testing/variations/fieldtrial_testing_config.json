@@ -7512,6 +7512,21 @@
             ]
         }
     ],
+    "IOSDiscoverFeedSportCard": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscoverFeedSportCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEditMenuSearchWith": [
         {
             "platforms": [

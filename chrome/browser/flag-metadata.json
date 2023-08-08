@@ -1781,6 +1781,13 @@
     "expiry_milestone": 116
   },
   {
+    "name": "discover-feed-sport-card",
+    "owners": [
+      "adamta", "chrome-feed-fundamentals@google.com"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "display-alignment-assistance",
     "owners": [ "cros-peripherals@google.com" ],
     "expiry_milestone": 130

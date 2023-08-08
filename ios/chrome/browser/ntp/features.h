@@ -53,6 +53,9 @@ BASE_DECLARE_FEATURE(kFeedDisableHotStartRefresh);
 // Feature flag to enable the Follow UI update.
 BASE_DECLARE_FEATURE(kEnableFollowUIUpdate);
 
+// Feature flag to enable the live sport card in the Discover feed.
+BASE_DECLARE_FEATURE(kDiscoverFeedSportCard);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
