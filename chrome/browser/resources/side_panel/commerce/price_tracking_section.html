@@ -47,7 +47,8 @@
     folder name and period will be in the same line. -->
     <div id="toggleAnnotation">[[toggleAnnotationText_]]<a href="#"
         id="toggleAnnotationButton"
-        on-click="onFolderClicked_">[[folderName_]]</a><span>.</span>
+        on-click="onFolderClicked_"
+        hidden="[[!folderName_]]">[[folderName_]]</a><span>.</span>
     </div>
   </div>
   <cr-toggle id="toggle" checked="{{isProductTracked_}}"
