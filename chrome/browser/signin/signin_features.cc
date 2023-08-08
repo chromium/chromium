@@ -94,7 +94,7 @@ BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
 // Disables signout for enteprise managed profiles
 BASE_FEATURE(kDisallowManagedProfileSignout,
              "DisallowManagedProfileSignout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_MIRROR)
 BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
