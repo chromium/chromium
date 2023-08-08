@@ -336,27 +336,27 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
     subprocess.run(ssh_prefix + ['--', 'pkgctl', 'gc'], check=False)
 
+    def _retry_command(cmd: List[str],
+                       retries: int = 2,
+                       **kwargs) -> Optional[subprocess.CompletedProcess]:
+        """Helper function for retrying a subprocess.run command."""
+
+        for i in range(retries):
+            if i == retries - 1:
+                proc = subprocess.run(cmd, **kwargs, check=True)
+                return proc
+            proc = subprocess.run(cmd, **kwargs, check=False)
+            if proc.returncode == 0:
+                return proc
+            time.sleep(3)
+        return None
+
     for package in packages:
         resolve_cmd = [
             '--', 'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
         ]
-        retry_command(ssh_prefix + resolve_cmd)
-
-
-def retry_command(cmd: List[str], retries: int = 2,
-                  **kwargs) -> Optional[subprocess.CompletedProcess]:
-    """Helper function for retrying a subprocess.run command."""
-
-    for i in range(retries):
-        if i == retries - 1:
-            proc = subprocess.run(cmd, **kwargs, check=True)
-            return proc
-        proc = subprocess.run(cmd, **kwargs, check=False)
-        if proc.returncode == 0:
-            return proc
-        time.sleep(3)
-    return None
+        _retry_command(ssh_prefix + resolve_cmd)
 
 
 def get_ssh_address(target_id: Optional[str]) -> str:
