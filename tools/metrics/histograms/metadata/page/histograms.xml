@@ -1242,12 +1242,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.CookieRead2" units="Count"
-    expires_after="2023-05-07">
+    expires_after="2024-05-07">
   <owner>jkarlin@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <summary>
     The number of third party (in respect to scheme://eTLD+1) origins on a page
     that read cookies either via resource request headers or document.cookie.
+
+    This metric was expired between May and August 2023 and may be missing data.
   </summary>
 </histogram>
 
