@@ -42,7 +42,7 @@ public final class Http2TestServer {
     private static Channel sServerChannel;
     private static final String TAG = Http2TestServer.class.getSimpleName();
 
-    private static final String HOST = "127.0.0.1";
+    private static final String HOST = "localhost";
     // Server port.
     private static final int PORT = 8443;
 
