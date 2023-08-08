@@ -7,9 +7,11 @@ import argparse
 import collections
 import contextlib
 import enum
+import functools
 import inspect
 import io
 import logging
+import multiprocessing
 import optparse
 import pathlib
 import re
@@ -315,16 +317,25 @@ class LintWPT(Command):
         options.json = True
         wptlint.output_errors_json = (
             lambda _log, worker_errors: errors.extend(worker_errors))
+        # This is ugly, but it works around crbug.com/1470511 while still
+        # allowing for parallelism.
+        self._initialize_rule_registry()
+        wptlint.multiprocessing.Pool = functools.partial(
+            multiprocessing.Pool, initializer=self._initialize_rule_registry)
+        exit_code = wptlint.main(**vars(options))
+        self._log_errors(errors, options.repo_root)
+        return exit_code
+
+    def _initialize_rule_registry(self):
+        """Add custom rules to the linter rule registry. Must be idempotent."""
         # Replace `web-platform.test` regexp rule with a metadata-aware one.
         wptlint.regexps = [
             regexp for regexp in wptlint.regexps
             if not isinstance(regexp, rules.WebPlatformTestRegexp)
         ]
         wptlint.regexps.append(WebPlatformTestRegexp(self._fs))
-        wptlint.file_lints.append(self.check_metadata)
-        exit_code = wptlint.main(**vars(options))
-        self._log_errors(errors, options.repo_root)
-        return exit_code
+        if self.check_metadata not in wptlint.file_lints:
+            wptlint.file_lints.append(self.check_metadata)
 
     def _log_errors(self, errors: List[LintError], repo_root: str):
         if not errors:
