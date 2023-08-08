@@ -776,7 +776,6 @@ bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
 
 void PrefetchContainer::TakeBlockUntilHeadTimer(
     std::unique_ptr<base::OneShotTimer> block_until_head_timer) {
-  CHECK(!block_until_head_timer_);
   block_until_head_timer_ = std::move(block_until_head_timer);
 }
 
