@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/missive/missive_client.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/proto/synced/interface.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/exported_object.h"
@@ -112,6 +114,8 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     auto* sequence_information = record_.mutable_sequence_information();
     sequence_information->set_sequencing_id(42);
     sequence_information->set_generation_id(1701);
+    sequence_information->set_generation_guid(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     sequence_information->set_priority(::reporting::Priority::SLOW_BATCH);
   }
 
@@ -161,6 +165,14 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
 
   std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
   ServiceProviderTestHelper test_helper_;
+
+  // Set up device as a managed device by default. To set the device as
+  // unmanaged, create a new `policy::ScopedManagementServiceOverrideForTesting`
+  // inside the test.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
 
 TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {

@@ -5,7 +5,10 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -21,7 +24,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
@@ -45,7 +50,7 @@ namespace {
 
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
-absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
+static absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
     const base::Value::Dict& sequence_information) {
   const absl::optional<int> int_priority_result =
       sequence_information.FindInt("priority");
@@ -68,6 +73,47 @@ absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
     return absl::nullopt;
   }
   return priority;
+}
+
+// Returns true if `generation_guid` is required and missing.
+// Returns false otherwise.
+static bool IsMissingGenerationGuid(const std::string* generation_guid) {
+  // Generation guid is only required for devices that aren't ChromeOS managed
+  // devices.
+  if (policy::ManagementServiceFactory::GetForPlatform()
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+    return false;
+  }
+  return !generation_guid || generation_guid->empty();
+}
+
+// Returns true if any required sequence info is missing. Returns
+// false otherwise.
+static bool IsMissingSequenceInformation(
+    const std::string* sequencing_id,
+    const std::string* generation_id,
+    const absl::optional<Priority> priority_result,
+    const std::string* generation_guid) {
+  return !sequencing_id || !generation_id || generation_id->empty() ||
+         !priority_result.has_value() ||
+         !Priority_IsValid(priority_result.value()) ||
+         IsMissingGenerationGuid(generation_guid);
+}
+
+// Returns true if `generation_guid` can be parsed as a GUID or if
+// `generation_guid` does not need to be parsed based on the type of device.
+// Returns false otherwise.
+static bool GenerationGuidIsValid(const std::string& generation_guid) {
+  if (generation_guid.empty() &&
+      policy::ManagementServiceFactory::GetForPlatform()
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+    // This is a legacy ChromeOS managed device and is not required to have
+    // a `generation_guid`.
+    return true;
+  }
+  return base::Uuid::ParseCaseInsensitive(generation_guid).is_valid();
 }
 
 // Processes LOG_UPLOAD event.
@@ -131,7 +177,88 @@ void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
       std::move(done_cb).Run(Status::StatusOK());
   }
 }
+
+// Returns a tuple of <SequencingId, GenerationId> if `sequencing_id` and
+// `generation_id` can be parse as numbers. Returns error status otherwise.
+StatusOr<std::tuple<int64_t, int64_t>> ParseSequencingIdAndGenerationId(
+    const std::string* sequencing_id,
+    const std::string* generation_id) {
+  int64_t seq_id;
+  int64_t gen_id;
+
+  if (!base::StringToInt64(*sequencing_id, &seq_id) ||
+      !base::StringToInt64(*generation_id, &gen_id) || gen_id == 0) {
+    // For backwards compatibility accept unsigned values if signed are not
+    // parsed.
+    // TODO(b/177677467): Remove this duplication once server is fully
+    // transitioned.
+    uint64_t unsigned_seq_id;
+    uint64_t unsigned_gen_id;
+    if (!base::StringToUint64(*sequencing_id, &unsigned_seq_id) ||
+        !base::StringToUint64(*generation_id, &unsigned_gen_id) ||
+        unsigned_gen_id == 0) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Could not parse sequencing id and generation id.");
+    }
+    seq_id = static_cast<int64_t>(unsigned_seq_id);
+    gen_id = static_cast<int64_t>(unsigned_gen_id);
+  }
+  return std::make_tuple(seq_id, gen_id);
+}
 }  // namespace
+
+// static
+StatusOr<SequenceInformation>
+RecordHandlerImpl::SequenceInformationValueToProto(
+    const base::Value::Dict& value) {
+  const std::string* sequencing_id =
+      value.FindString(UploadEncryptedReportingRequestBuilder::kSequencingId);
+  const std::string* generation_id =
+      value.FindString(UploadEncryptedReportingRequestBuilder::kGenerationId);
+  const std::string* generation_guid =
+      value.FindString(UploadEncryptedReportingRequestBuilder::kGenerationGuid);
+  const auto priority_result =
+      GetPriorityProtoFromSequenceInformationValue(value);
+  // If required sequence info fields don't exist, or are malformed,
+  // return error.
+  // Note: `generation_guid` is allowed to be empty - managed devices
+  // may not have it.
+  if (IsMissingSequenceInformation(sequencing_id, generation_id,
+                                   priority_result, generation_guid)) {
+    return Status(error::INVALID_ARGUMENT,
+                  base::StrCat({"Provided value lacks some fields required by "
+                                "SequenceInformation proto: ",
+                                value.DebugString()}));
+  }
+
+  const auto parse_seq_id_gen_id_result =
+      ParseSequencingIdAndGenerationId(sequencing_id, generation_id);
+  if (!parse_seq_id_gen_id_result.ok()) {
+    return Status(error::INVALID_ARGUMENT,
+                  base::StrCat({"Provided value did not conform to a valid "
+                                "SequenceInformation proto. Invalid sequencing "
+                                "id or generation id : ",
+                                value.DebugString()}));
+  }
+  const auto [seq_id, gen_id] = parse_seq_id_gen_id_result.ValueOrDie();
+
+  // If `generation_guid` does not exist, set it to be an empty string.
+  const std::string gen_guid = generation_guid ? *generation_guid : "";
+  if (!GenerationGuidIsValid(gen_guid)) {
+    return Status(
+        error::INVALID_ARGUMENT,
+        base::StrCat({"Provided value did not conform to a valid "
+                      "SequenceInformation proto. Invalid generation guid : ",
+                      value.DebugString()}));
+  }
+
+  SequenceInformation proto;
+  proto.set_sequencing_id(seq_id);
+  proto.set_generation_id(gen_id);
+  proto.set_priority(Priority(priority_result.value()));
+  proto.set_generation_guid(gen_guid);
+  return proto;
+}
 
 // ReportUploader handles enqueuing events on the `report_queue_`.
 class RecordHandlerImpl::ReportUploader
@@ -167,15 +294,10 @@ class RecordHandlerImpl::ReportUploader
   //   "sequencingId": 1234
   //   "generationId": 4321
   //   "priority": 3
+  //   "generationGuid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
   // }
   absl::optional<EncryptedRecord> HandleFailedUploadedSequenceInformation(
       const base::Value::Dict& sequence_information);
-
-  // Helper function for converting a base::Value representation of
-  // SequenceInformation into a proto. Will return an INVALID_ARGUMENT error
-  // if the base::Value is not convertible.
-  StatusOr<SequenceInformation> SequenceInformationValueToProto(
-      const base::Value::Dict& value);
 
   const base::WeakPtr<FileUploadJob::Delegate> delegate_;
 
@@ -259,10 +381,13 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
     size_t num_records) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (policy::IsDeviceEnterpriseManaged()) {
+  if (policy::ManagementServiceFactory::GetForPlatform()
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+    // This is a managed device, so log the upload as such.
     base::UmaHistogramCounts1000(
         "Browser.ERP.RecordsPerUploadFromManagedDevice", num_records);
-  } else {  // Device is unmanaged.
+  } else {
     base::UmaHistogramCounts1000(
         "Browser.ERP.RecordsPerUploadFromUnmanagedDevice", num_records);
   }
@@ -399,7 +524,10 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
       highest_sequence_information_ = std::move(seq_info_result.ValueOrDie());
     } else {
       LOG(ERROR) << "Server responded with an invalid SequenceInformation "
-                    "for lastSucceedUploadedRecord:"
+                    "for lastSucceedUploadedRecord"
+                 << "\n"
+                 << "error status = " << seq_info_result.status() << "\n"
+                 << "last_succeed_uploaded_record = "
                  << *last_succeed_uploaded_record;
     }
   }
@@ -506,13 +634,16 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
 
   SequenceInformation& seq_info = seq_info_result.ValueOrDie();
 
-  // |seq_info| should be of the same generation and priority as
-  // highest_sequence_information_, and have the next sequencing_id.
+  // |seq_info| should be of the same generation, generation guid, and priority
+  // as highest_sequence_information_, and have the next sequencing_id.
   if (seq_info.generation_id() !=
           highest_sequence_information_->generation_id() ||
+      seq_info.generation_guid() !=
+          highest_sequence_information_->generation_guid() ||
       seq_info.priority() != highest_sequence_information_->priority() ||
       seq_info.sequencing_id() !=
           highest_sequence_information_->sequencing_id() + 1) {
+    LOG(ERROR) << "Sequence info fields are incorrect.";
     return absl::nullopt;
   }
 
@@ -526,54 +657,6 @@ void RecordHandlerImpl::ReportUploader::Complete(
     CompletionResponse completion_result) {
   Schedule(&RecordHandlerImpl::ReportUploader::Response, base::Unretained(this),
            completion_result);
-}
-
-StatusOr<SequenceInformation>
-RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
-    const base::Value::Dict& value) {
-  const std::string* sequencing_id = value.FindString("sequencingId");
-  const std::string* generation_id = value.FindString("generationId");
-  const auto priority_result =
-      GetPriorityProtoFromSequenceInformationValue(value);
-
-  // If any of the previous values don't exist, or are malformed, return
-  // error.
-  int64_t seq_id;
-  int64_t gen_id;
-  if (!sequencing_id || !generation_id || generation_id->empty() ||
-      !priority_result.has_value() ||
-      !Priority_IsValid(priority_result.value())) {
-    return Status(error::INVALID_ARGUMENT,
-                  base::StrCat({"Provided value lacks some fields required by "
-                                "SequenceInformation proto: ",
-                                value.DebugString()}));
-  }
-
-  if (!base::StringToInt64(*sequencing_id, &seq_id) ||
-      !base::StringToInt64(*generation_id, &gen_id) || gen_id == 0) {
-    // For backwards compatibility accept unsigned values if signed are not
-    // parsed.
-    // TODO(b/177677467): Remove this duplication once server is fully
-    // transitioned.
-    uint64_t unsigned_seq_id;
-    uint64_t unsigned_gen_id;
-    if (!base::StringToUint64(*sequencing_id, &unsigned_seq_id) ||
-        !base::StringToUint64(*generation_id, &unsigned_gen_id) ||
-        unsigned_gen_id == 0) {
-      return Status(error::INVALID_ARGUMENT,
-                    base::StrCat({"Provided value did not conform to a valid "
-                                  "SequenceInformation proto: ",
-                                  value.DebugString()}));
-    }
-    seq_id = static_cast<int64_t>(unsigned_seq_id);
-    gen_id = static_cast<int64_t>(unsigned_gen_id);
-  }
-
-  SequenceInformation proto;
-  proto.set_sequencing_id(seq_id);
-  proto.set_generation_id(gen_id);
-  proto.set_priority(Priority(priority_result.value()));
-  return proto;
 }
 
 RecordHandlerImpl::RecordHandlerImpl(

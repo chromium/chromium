@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
-#include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
@@ -41,6 +40,16 @@ class RecordHandlerImpl : public RecordHandler {
       ScopedReservation scoped_reservation,
       CompletionCallback upload_complete,
       EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
+
+ protected:
+  // Uses `SequenceInformationValueToProto` for testing.
+  friend class FakeUploadClient;
+
+  // Helper function for converting a base::Value representation of
+  // SequenceInformation into a proto. Will return an INVALID_ARGUMENT error
+  // if the base::Value is not convertible.
+  static StatusOr<SequenceInformation> SequenceInformationValueToProto(
+      const base::Value::Dict& value);
 
  private:
   // Helper `ReportUploader` class handles events being uploaded.

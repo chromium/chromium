@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
@@ -34,10 +36,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -87,10 +85,12 @@ MATCHER_P(ResponseEquals,
                      << Priority_Name(arg_value.sequence_information.priority())
                      << "/" << arg_value.sequence_information.generation_id()
                      << "/" << arg_value.sequence_information.sequencing_id()
+                     << "/" << arg_value.sequence_information.generation_guid()
                      << ", expected="
                      << Priority_Name(expected.sequence_information.priority())
                      << "/" << expected.sequence_information.generation_id()
-                     << "/" << expected.sequence_information.sequencing_id();
+                     << "/" << expected.sequence_information.sequencing_id()
+                     << "/" << expected.sequence_information.generation_guid();
     return false;
   }
   if (arg_value.force_confirm != expected.force_confirm) {
@@ -209,13 +209,11 @@ class RecordHandlerUploadTest : public ::testing::Test {
 
   scoped_refptr<ResourceManager> memory_resource_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Control device management status for Ash.
-  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_ =
-      std::make_unique<ash::ScopedStubInstallAttributes>(
-          ash::StubInstallAttributes::CreateCloudManaged("fake-domain-name",
-                                                         "fake-device-id"));
-#endif
+  // Set up this device as a managed device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
 
 EncryptedRecord ComposeEncryptedRecord(
@@ -223,10 +221,13 @@ EncryptedRecord ComposeEncryptedRecord(
     UploadSettings upload_settings,
     absl::optional<UploadTracker> upload_tracker) {
   static constexpr int64_t kGenerationId = 1234;
+  static const std::string kGenerationGuid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   EncryptedRecord encrypted_record;
   encrypted_record.set_encrypted_wrapped_record(data.data(), data.size());
   auto* sequence_information = encrypted_record.mutable_sequence_information();
   sequence_information->set_generation_id(kGenerationId);
+  sequence_information->set_generation_guid(kGenerationGuid);
   sequence_information->set_sequencing_id(0);
   sequence_information->set_priority(Priority::SECURITY);
   {

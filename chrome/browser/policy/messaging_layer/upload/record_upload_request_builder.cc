@@ -9,28 +9,11 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/queue.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/json/json_reader.h"
-#include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/token.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/reporting_util.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
-#include "components/reporting/util/statusor.h"
-#include "components/reporting/util/task_runner_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -47,10 +30,7 @@ constexpr char kSequenceInformationKey[] = "sequenceInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
 constexpr char kCompressionInformationKey[] = "compressionInformation";
 
-// SequenceInformationDictionaryBuilder strings
-constexpr char kSequencingId[] = "sequencingId";
-constexpr char kGenerationId[] = "generationId";
-constexpr char kPriority[] = "priority";
+// SequenceInformationDictionaryBuilder strings located in header file.
 
 // EncryptionInfoDictionaryBuilder strings
 constexpr char kEncryptionKey[] = "encryptionKey";
@@ -242,10 +222,16 @@ EncryptedRecordDictionaryBuilder::GetCompressionInformationPath() {
 
 SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
     const SequenceInformation& sequence_information) {
-  // SequenceInformation requires all three fields be set.
+  // SequenceInformation requires these fields be set. `generation_guid` is
+  // required only for unmanaged devices.
   if (!sequence_information.has_sequencing_id() ||
       !sequence_information.has_generation_id() ||
-      !sequence_information.has_priority()) {
+      !sequence_information.has_priority() ||
+      // Require generation guid for non ChromeOS-managed devices.
+      (!policy::ManagementServiceFactory::GetForPlatform()
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
+       !sequence_information.has_generation_guid())) {
     return;
   }
 
@@ -255,6 +241,7 @@ SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
   result_->Set(GetGenerationIdPath(),
                base::NumberToString(sequence_information.generation_id()));
   result_->Set(GetPriorityPath(), sequence_information.priority());
+  result_->Set(GetGenerationGuidPath(), sequence_information.generation_guid());
 }
 
 SequenceInformationDictionaryBuilder::~SequenceInformationDictionaryBuilder() =
@@ -267,17 +254,22 @@ SequenceInformationDictionaryBuilder::Build() {
 
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetSequencingIdPath() {
-  return kSequencingId;
+  return UploadEncryptedReportingRequestBuilder::kSequencingId;
 }
 
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetGenerationIdPath() {
-  return kGenerationId;
+  return UploadEncryptedReportingRequestBuilder::kGenerationId;
 }
 
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetPriorityPath() {
-  return kPriority;
+  return UploadEncryptedReportingRequestBuilder::kPriority;
+}
+
+// static
+std::string_view SequenceInformationDictionaryBuilder::GetGenerationGuidPath() {
+  return UploadEncryptedReportingRequestBuilder::kGenerationGuid;
 }
 
 EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(

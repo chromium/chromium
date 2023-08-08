@@ -20,17 +20,12 @@
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/test_support_callbacks.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/network/test/test_network_connection_tracker.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -108,6 +103,7 @@ class UploadClientTest : public ::testing::TestWithParam<
   bool force_confirm() const { return std::get<1>(GetParam()); }
 
   content::BrowserTaskEnvironment task_environment_;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
@@ -120,6 +116,8 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   static constexpr int64_t kExpectedCallTimes = 10;
   static constexpr int64_t kGenerationId = 1234;
+  static constexpr char kGenerationGuid[] =
+      "c947e7e9-b87d-4592-9fe7-407792544e53";
 
   base::Value::Dict data;
   data.Set("TEST_KEY", "TEST_VALUE");
@@ -143,6 +141,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
         encrypted_record.mutable_sequence_information();
     sequence_information->set_sequencing_id(static_cast<int64_t>(i));
     sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_generation_guid(kGenerationGuid);
     sequence_information->set_priority(Priority::IMMEDIATE);
     ScopedReservation record_reservation(encrypted_record.ByteSizeLong(),
                                          memory_resource_);
@@ -170,6 +169,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
 {
   "sequenceInformation": {
     "generationId": "1234",
+    "generationGuid": "c947e7e9-b87d-4592-9fe7-407792544e53",
     "priority": 1,
     "sequencingId": "%d"
   }

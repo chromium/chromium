@@ -32,6 +32,11 @@ namespace reporting {
 //         "sequencingId": 1,
 //         "generationId": 123456789,
 //         "priority": 1
+//         // The string value of the `generation_guid` may be empty for managed
+//         // devices, but will always have a value for unmanaged devices. It's
+//         // value, if present, must be a string of base::Uuid. See base/uuid.h
+//         // for format information.
+//         "generation_guid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
 //       },
 //       "compressionInformation": {
 //         "compressionAlgorithm": 1
@@ -46,7 +51,8 @@ namespace reporting {
 //       "sequenceInformation": {
 //         "sequencingId": 2,
 //         "generationId": 123456789,
-//         "priority": 1
+//         "priority": 1,
+//         "generation_guid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
 //       },
 //       "compressionInformation": {
 //         "compressionAlgorithm": 1
@@ -78,6 +84,12 @@ namespace reporting {
 
 class UploadEncryptedReportingRequestBuilder {
  public:
+  // SequenceInformationDictionaryBuilder strings
+  static constexpr char kSequencingId[] = "sequencingId";
+  static constexpr char kGenerationId[] = "generationId";
+  static constexpr char kPriority[] = "priority";
+  static constexpr char kGenerationGuid[] = "generationGuid";
+
   // RequestId key used to build UploadEncryptedReportingRequest
   static constexpr char kRequestId[] = "requestId";
 
@@ -136,6 +148,7 @@ class SequenceInformationDictionaryBuilder {
   static std::string_view GetSequencingIdPath();
   static std::string_view GetGenerationIdPath();
   static std::string_view GetPriorityPath();
+  static std::string_view GetGenerationGuidPath();
 
  private:
   absl::optional<base::Value::Dict> result_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
+#include <cstddef>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -12,10 +13,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
@@ -25,6 +25,7 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -36,24 +37,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif
-
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Gt;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using testing::NotNull;
 using ::testing::Property;
-using ::testing::Return;
 using ::testing::SizeIs;
-using ::testing::WithArgs;
+using ::testing::StrEq;
 
 namespace reporting {
 namespace {
+
+static constexpr size_t kNumTestRecords = 10;
+static constexpr int64_t kGenerationId = 1234;
 
 MATCHER_P(ResponseEquals,
           expected,
@@ -112,6 +111,10 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
 class RecordHandlerImplTest : public ::testing::TestWithParam<
                                   ::testing::tuple</*need_encryption_key*/ bool,
                                                    /*force_confirm*/ bool>> {
+ public:
+  const std::string kGenerationGuid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
  protected:
   void SetUp() override {
     handler_ = std::make_unique<RecordHandlerImpl>(
@@ -148,29 +151,29 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
 
   scoped_refptr<ResourceManager> memory_resource_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Control device management status for Ash.
-  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_ =
-      std::make_unique<ash::ScopedStubInstallAttributes>(
-          ash::StubInstallAttributes::CreateCloudManaged("fake-domain-name",
-                                                         "fake-device-id"));
-#endif
+  // Set up this device as a managed device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
 
 std::pair<ScopedReservation, std::vector<EncryptedRecord>>
-BuildTestRecordsVector(int64_t number_of_test_records,
+BuildTestRecordsVector(size_t number_of_test_records,
                        int64_t generation_id,
+                       std::string generation_guid,
                        scoped_refptr<ResourceManager> memory_resource) {
   ScopedReservation total_reservation;
   std::vector<EncryptedRecord> test_records;
   test_records.reserve(number_of_test_records);
-  for (int64_t i = 0; i < number_of_test_records; i++) {
+  for (size_t i = 0; i < number_of_test_records; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
         base::StrCat({"Record Number ", base::NumberToString(i)}));
     auto* sequence_information =
         encrypted_record.mutable_sequence_information();
     sequence_information->set_generation_id(generation_id);
+    sequence_information->set_generation_guid(generation_guid);
     sequence_information->set_sequencing_id(i);
     sequence_information->set_priority(Priority::IMMEDIATE);
     ScopedReservation record_reservation(encrypted_record.ByteSizeLong(),
@@ -182,10 +185,8 @@ BuildTestRecordsVector(int64_t number_of_test_records,
 }
 
 TEST_P(RecordHandlerImplTest, UploadRecords) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
   SuccessfulUploadResponse expected_response{
@@ -201,12 +202,11 @@ TEST_P(RecordHandlerImplTest, UploadRecords) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
-  absl::optional<base::Value::Dict> response =
-      ResponseBuilder(std::move(request_body))
-          .SetForceConfirm(force_confirm_by_server)
-          .Build();
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
   ASSERT_TRUE(response.has_value());
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
@@ -223,10 +223,8 @@ TEST_P(RecordHandlerImplTest, UploadRecords) {
 }
 
 TEST_P(RecordHandlerImplTest, MissingPriorityField) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -238,12 +236,11 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
-  absl::optional<base::Value::Dict> response =
-      ResponseBuilder(std::move(request_body))
-          .SetForceConfirm(force_confirm_by_server)
-          .Build();
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
   ASSERT_TRUE(response.has_value());
   response->RemoveByDottedPath("lastSucceedUploadedRecord.priority");
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
@@ -254,10 +251,8 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
 }
 
 TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -269,15 +264,14 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body,
               RequestValidityMatcherBuilder<>::CreateDataUpload()
                   .RemoveMatcher("sequence-information-record-matcher")
                   .Build());
-  absl::optional<base::Value::Dict> response =
-      ResponseBuilder(std::move(request_body))
-          .SetForceConfirm(force_confirm_by_server)
-          .Build();
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
   ASSERT_TRUE(response.has_value());
   response->SetByDottedPath("lastSucceedUploadedRecord.priority", "abc");
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
@@ -287,12 +281,189 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
+TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
+
+  const auto force_confirm_by_server = force_confirm();
+
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<CompletionResponse> responder_event;
+
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  auto request_body = test_env_.request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
+  ASSERT_TRUE(response.has_value());
+
+  // Verify generation guid exists and equals kGenerationGuid.
+  ASSERT_THAT(response->FindStringByDottedPath(
+                  "lastSucceedUploadedRecord.generationGuid"),
+              NotNull());
+  EXPECT_THAT(*(response->FindStringByDottedPath(
+                  "lastSucceedUploadedRecord.generationGuid")),
+              StrEq(kGenerationGuid));
+
+  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+
+  const auto result = responder_event.result();
+  EXPECT_OK(result) << result.status();
+}
+
+TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
+  const auto force_confirm_by_server = force_confirm();
+
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<CompletionResponse> responder_event;
+
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  auto request_body = test_env_.request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
+  ASSERT_TRUE(response.has_value());
+
+  // Respond with a valid generation guid. Generation guids are random UUID
+  // strings and can be verified by parsing the string into a UUID class using
+  // UUID class functions.
+  response->SetByDottedPath("lastSucceedUploadedRecord.generationGuid",
+                            base::Uuid::GenerateRandomV4().AsLowercaseString());
+
+  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+
+  const auto result = responder_event.result();
+  EXPECT_OK(result) << result.status();
+}
+
+TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
+  const auto force_confirm_by_server = force_confirm();
+
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<CompletionResponse> responder_event;
+
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  auto request_body = test_env_.request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
+  ASSERT_TRUE(response.has_value());
+
+  // Generation guids must be parsable into `base::Uuid`.
+  response->SetByDottedPath("lastSucceedUploadedRecord.generationGuid",
+                            "invalid-generation-guid");
+
+  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+
+  const auto result = responder_event.result();
+  EXPECT_THAT(result.status(),
+              Property(&Status::error_code, Eq(error::INTERNAL)));
+}
+
+TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
+  // Set device as managed
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
+  const auto force_confirm_by_server = force_confirm();
+
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<CompletionResponse> responder_event;
+
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  auto request_body = test_env_.request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
+  ASSERT_TRUE(response.has_value());
+
+  // Remove the generation guid. Managed devices are not required to have a
+  // generation guid, since this is a new feature and legacy devices may not be
+  // updated for some time.
+  response->RemoveByDottedPath("lastSucceedUploadedRecord.generationGuid");
+
+  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+
+  const auto result = responder_event.result();
+  EXPECT_OK(result) << result.status();
+}
+
+TEST_P(RecordHandlerImplTest,
+       MissingGenerationGuidFromUnmanagedDeviceReturnError) {
+  // Set device as unmanaged
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::NONE);
+
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
+  const auto force_confirm_by_server = force_confirm();
+
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<CompletionResponse> responder_event;
+
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  auto request_body = test_env_.request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
+  ASSERT_TRUE(response.has_value());
+
+  // Remove the generation guid. This should result in an error since we set
+  // the device to an unmanaged state at the beginning of the test.
+  response->RemoveByDottedPath("lastSucceedUploadedRecord.generationGuid");
+
+  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+
+  const auto result = responder_event.result();
+  EXPECT_FALSE(result.status().ok());
+  EXPECT_THAT(result.status(),
+              Property(&Status::error_code, Eq(error::INTERNAL)));
+}
+
 TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
   // test records that has one record with missing sequence information.
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
   test_records.second.back().clear_sequence_information();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -314,10 +485,8 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
 }
 
 TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
 
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -327,7 +496,7 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
   test_env_.SimulateCustomResponseForRequest(
@@ -345,10 +514,8 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
 // `EncryptedReportingClient`). We need to resolve the issue, update the test
 // accordingly then re-enable it.
 TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
   const SuccessfulUploadResponse expected_response{
@@ -365,9 +532,9 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
-  absl::optional<base::Value::Dict> response =
+  auto response =
       ResponseBuilder(std::move(request_body)).SetSuccess(false).Build();
   ASSERT_TRUE(response.has_value());
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
@@ -406,10 +573,8 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
 // expected response, clients shouldn't crash in these instances, but simply
 // report an internal error.
 TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
-  static constexpr int64_t kNumTestRecords = 10;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> response_event;
@@ -432,10 +597,8 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
 }
 
 TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
-  static constexpr int64_t kNumTestRecords = 1;
-  static constexpr int64_t kGenerationId = 1234;
-  auto test_records =
-      BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
   SuccessfulUploadResponse expected_response{
@@ -449,12 +612,11 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
-  absl::optional<base::Value::Dict> response =
-      ResponseBuilder(std::move(request_body))
-          .SetForceConfirm(force_confirm_by_server)
-          .Build();
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
   ASSERT_TRUE(response.has_value());
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 

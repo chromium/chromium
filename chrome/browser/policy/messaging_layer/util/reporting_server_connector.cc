@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
@@ -208,7 +209,10 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
 // otherwise.
 bool DeviceInfoRequiredForUpload() {
   return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
-         policy::IsDeviceEnterpriseManaged();
+         // Check if this is a managed device.
+         policy::ManagementServiceFactory::GetForPlatform()
+             ->HasManagementAuthority(
+                 policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 }
 
 void ReportingServerConnector::UploadEncryptedReportInternal(
