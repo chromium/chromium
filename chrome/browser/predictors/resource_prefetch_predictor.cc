@@ -336,8 +336,7 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
     return;
   }
 
-  LearnRedirect(summary->initial_url.host(), summary->main_frame_url,
-                host_redirect_data_.get());
+  LearnRedirect(summary->initial_url.host(), summary->main_frame_url);
   LearnOrigins(summary->main_frame_url.host(),
                summary->main_frame_url.DeprecatedGetOriginAsURL(),
                summary->origins);
@@ -497,8 +496,7 @@ void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
 }
 
 void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
-                                              const GURL& final_redirect,
-                                              RedirectDataMap* redirect_data) {
+                                              const GURL& final_redirect) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // If the primary key is too long reject it.
@@ -506,7 +504,7 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
     return;
 
   RedirectData data;
-  bool exists = redirect_data->TryGetData(key, &data);
+  bool exists = host_redirect_data_->TryGetData(key, &data);
   if (!exists) {
     data.set_primary_key(key);
     data.set_last_visit_time(base::Time::Now().ToInternalValue());
@@ -572,9 +570,9 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
       &data, config_.max_redirect_consecutive_misses);
 
   if (data.redirect_endpoints_size() == 0)
-    redirect_data->DeleteData({key});
+    host_redirect_data_->DeleteData({key});
   else
-    redirect_data->UpdateData(key, data);
+    host_redirect_data_->UpdateData(key, data);
 }
 
 void ResourcePrefetchPredictor::LearnOrigins(

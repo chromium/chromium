@@ -303,10 +303,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   bool TryEnsureRecordingPrecondition();
 
   // Updates information about final redirect destination for the |key| in
-  // |redirect_data| and correspondingly updates the predictor database.
-  void LearnRedirect(const std::string& key,
-                     const GURL& final_redirect,
-                     RedirectDataMap* redirect_data);
+  // |host_redirect_data_| and correspondingly updates the predictor database.
+  void LearnRedirect(const std::string& key, const GURL& final_redirect);
 
   void LearnOrigins(
       const std::string& host,
