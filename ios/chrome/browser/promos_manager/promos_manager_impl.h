@@ -123,11 +123,6 @@ class PromosManagerImpl : public PromosManager {
   std::vector<int> ImpressionCounts(
       std::map<promos_manager::Promo, int>& promo_impression_counts) const;
 
-  // Returns the greatest impression count (int) from a promo impression counts
-  // map.
-  int MaxImpressionCount(
-      std::map<promos_manager::Promo, int>& promo_impression_counts) const;
-
   // Returns the total number of impressions (int) from a promo impression
   // counts map.
   int TotalImpressionCount(

@@ -446,8 +446,6 @@ bool PromosManagerImpl::CanShowPromo(
 
     int window_days = window_start - curr_day;
     int promo_impression_count = promo_impression_counts[promo];
-    int most_seen_promo_impression_count =
-        MaxImpressionCount(promo_impression_counts);
     int total_impression_count = TotalImpressionCount(promo_impression_counts);
 
     if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
@@ -460,8 +458,7 @@ bool PromosManagerImpl::CanShowPromo(
       return false;
     }
 
-    if (AnyImpressionLimitTriggered(most_seen_promo_impression_count,
-                                    window_days,
+    if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
                                     global_per_promo_impression_limits)) {
       base::UmaHistogramEnumeration(
           "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
@@ -512,17 +509,6 @@ std::vector<int> PromosManagerImpl::ImpressionCounts(
     counts.push_back(count);
 
   return counts;
-}
-
-int PromosManagerImpl::MaxImpressionCount(
-    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
-  std::vector<int> counts = ImpressionCounts(promo_impression_counts);
-  std::vector<int>::iterator max_count_iter =
-      std::max_element(counts.begin(), counts.end());
-  size_t index = std::distance(counts.begin(), max_count_iter);
-  if (index < counts.size())
-    return counts[index];
-  return 0;
 }
 
 int PromosManagerImpl::TotalImpressionCount(
