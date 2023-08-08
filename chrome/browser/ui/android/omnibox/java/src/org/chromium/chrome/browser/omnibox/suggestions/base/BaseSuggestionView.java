@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -28,6 +29,7 @@ import java.util.List;
  *
  * @param <T> The type of View being wrapped by this container.
  */
+@MockedInTests
 public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     public final @NonNull ImageView decorationIcon;
     public final @NonNull T contentView;
@@ -142,8 +144,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
                 || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
             // For views with exactly 1 action icon, continue to support the arrow key triggers.
             if (mActionButtons.size() == 1) {
-                mActionButtons.get(0).callOnClick();
+                return mActionButtons.get(0).performClick();
             }
+        } else if (KeyNavigationUtil.isEnter(event)) {
+            return performClick();
         }
         return super.onKeyDown(keyCode, event);
     }

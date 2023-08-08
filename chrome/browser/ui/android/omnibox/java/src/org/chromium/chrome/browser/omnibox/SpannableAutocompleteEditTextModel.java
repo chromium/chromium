@@ -247,14 +247,21 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         if (mInputConnection == null) {
             return mDelegate.super_dispatchKeyEvent(event);
         }
+
+        boolean retVal;
         mInputConnection.onBeginImeCommand();
-        if (((mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)
-                    || (!mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT)
-                    || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+        if (hasAutocomplete()
+                && ((mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)
+                        || (!mLayoutDirectionIsLtr
+                                && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT)
+                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB)
+                        || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
                 && event.getAction() == KeyEvent.ACTION_DOWN) {
             mInputConnection.commitAutocomplete();
+            retVal = true;
+        } else {
+            retVal = mDelegate.super_dispatchKeyEvent(event);
         }
-        boolean retVal = mDelegate.super_dispatchKeyEvent(event);
         mInputConnection.onEndImeCommand();
         return retVal;
     }
@@ -437,6 +444,11 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     @Override
     public void setLayoutDirectionIsLtr(boolean isLtr) {
         mLayoutDirectionIsLtr = isLtr;
+    }
+
+    @VisibleForTesting
+    public AutocompleteState getCurrentAutocompleteState() {
+        return mCurrentState;
     }
 
     /**

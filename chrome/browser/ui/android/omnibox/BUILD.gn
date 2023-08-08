@@ -447,6 +447,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/SimpleHorizontalLayoutViewTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/SimpleVerticalLayoutViewTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/SpacingRecyclerViewItemDecorationUnitTest.java",
