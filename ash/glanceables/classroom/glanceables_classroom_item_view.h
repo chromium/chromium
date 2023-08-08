@@ -21,7 +21,9 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
   METADATA_HEADER(GlanceablesClassroomItemView);
 
   GlanceablesClassroomItemView(const GlanceablesClassroomAssignment* assignment,
-                               base::RepeatingClosure pressed_callback);
+                               base::RepeatingClosure pressed_callback,
+                               size_t item_index,
+                               size_t last_item_index);
 
   GlanceablesClassroomItemView(const GlanceablesClassroomItemView&) = delete;
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =
@@ -30,6 +32,7 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
 
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void Layout() override;
 };
 
 }  // namespace ash

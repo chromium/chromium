@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/classroom_bubble_base_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
@@ -42,7 +43,7 @@ namespace {
 
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 
-constexpr int kMaxAssignments = 3;
+constexpr size_t kMaxAssignments = 3;
 
 }  // namespace
 
@@ -91,10 +92,6 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   list_container_view_ = AddChildView(std::make_unique<views::View>());
   list_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
-  list_container_view_->SetPaintToLayer();
-  list_container_view_->layer()->SetFillsBoundsOpaquely(false);
-  list_container_view_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(16));
   auto* layout =
       list_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
@@ -145,16 +142,14 @@ void ClassroomBubbleBaseView::OnGetAssignments(
   list_container_view_->RemoveAllChildViews();
   total_assignments_ = assignments.size();
 
-  for (const auto& assignment : assignments) {
+  const size_t num_assignments = std::min(kMaxAssignments, assignments.size());
+  for (size_t i = 0; i < num_assignments; ++i) {
     list_container_view_->AddChildView(
         std::make_unique<GlanceablesClassroomItemView>(
-            assignment.get(),
+            assignments[i].get(),
             base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
-                                base::Unretained(this), assignment->link)));
-
-    if (list_container_view_->children().size() >= kMaxAssignments) {
-      break;
-    }
+                                base::Unretained(this), assignments[i]->link),
+            /*item_index=*/i, /*last_item_index=*/num_assignments - 1));
   }
   const size_t shown_assignments = list_container_view_->children().size();
   list_footer_view_->UpdateItemsCount(shown_assignments, total_assignments_);

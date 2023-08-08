@@ -33,10 +33,12 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -46,12 +48,14 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
 
 // Styles for the whole `GlanceablesClassroomItemView`.
 constexpr int kBackgroundRadius = 4;
+constexpr int kLargeBackgroundRadius = 16;
 constexpr auto kInteriorMargin = gfx::Insets::VH(8, 0);
 
 // Styles for the icon view.
@@ -230,11 +234,24 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
       .Build();
 }
 
+// Returns rounded corners used for the item view. A larger radius is used for
+// top corners when the item is the first in the list. A larger radius is used
+// for bottom corners when the item is last in the list.
+gfx::RoundedCornersF GetRoundedCorners(size_t index, size_t last_index) {
+  size_t top_radius = (index == 0) ? kLargeBackgroundRadius : kBackgroundRadius;
+  size_t bottom_radius =
+      (index == last_index) ? kLargeBackgroundRadius : kBackgroundRadius;
+  return gfx::RoundedCornersF(top_radius, top_radius, bottom_radius,
+                              bottom_radius);
+}
+
 }  // namespace
 
 GlanceablesClassroomItemView::GlanceablesClassroomItemView(
     const GlanceablesClassroomAssignment* assignment,
-    base::RepeatingClosure pressed_callback)
+    base::RepeatingClosure pressed_callback,
+    size_t item_index,
+    size_t last_item_index)
     : views::Button(std::move(pressed_callback)) {
   CHECK(assignment);
 
@@ -242,8 +259,11 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetInteriorMargin(kInteriorMargin);
 
+  const gfx::RoundedCornersF corner_radii =
+      GetRoundedCorners(item_index, last_item_index);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
+      cros_tokens::kCrosSysSystemOnBase, corner_radii,
+      /*for_border_thickness=*/0));
 
   AddChildView(BuildIcon());
   AddChildView(BuildAssignmentTitleLabels(assignment));
@@ -255,6 +275,17 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   GetViewAccessibility().OverrideIsLeaf(true);
   SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
   SetAccessibleDescription(GetAssignmentAccessibleDescription(assignment));
+
+  views::FocusRing::Install(this);
+  views::FocusRing* const focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(), corner_radii));
+
+  // Prevent the layout manager from setting the focus ring to a default hidden
+  // visibility.
+  layout->SetChildViewIgnoredByLayout(focus_ring, true);
 }
 
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
@@ -264,6 +295,11 @@ void GlanceablesClassroomItemView::GetAccessibleNodeData(
   views::Button::GetAccessibleNodeData(node_data);
 
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+}
+
+void GlanceablesClassroomItemView::Layout() {
+  views::Button::Layout();
+  views::FocusRing::Get(this)->Layout();
 }
 
 BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
